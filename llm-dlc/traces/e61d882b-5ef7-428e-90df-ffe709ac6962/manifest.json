@@ -12,36 +12,36 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-25T10:47:45.447Z",
-  "duration_seconds": 684602,
+  "ended": "2026-11-25T13:02:58.064Z",
+  "duration_seconds": 692715,
   "stats": {
-    "turns": 263,
-    "api_calls": 2118,
-    "tool_calls": 1914,
-    "tool_errors": 26,
+    "turns": 270,
+    "api_calls": 2156,
+    "tool_calls": 1943,
+    "tool_errors": 27,
     "compactions": 9,
     "peak_context_tokens": 652775,
     "usage": {
-      "input_tokens": 104399,
-      "output_tokens": 1423212,
-      "cache_read_input_tokens": 608974357,
-      "cache_creation_input_tokens": 5923945
+      "input_tokens": 104503,
+      "output_tokens": 1439115,
+      "cache_read_input_tokens": 620389233,
+      "cache_creation_input_tokens": 5956001
     }
   },
   "tools": {
-    "Bash": 1641,
+    "Bash": 1664,
     "Edit": 80,
-    "SendMessage": 62,
+    "SendMessage": 63,
     "Read": 55,
-    "Write": 30,
-    "ToolSearch": 16,
+    "Write": 31,
+    "ToolSearch": 17,
     "ListAgents": 9,
     "CronCreate": 5,
+    "Monitor": 4,
     "CronDelete": 3,
+    "TaskStop": 3,
     "Agent": 2,
     "AskUserQuestion": 2,
-    "Monitor": 2,
-    "TaskStop": 2,
     "CronList": 1,
     "PushNotification": 1,
     "Skill": 1,
@@ -55,6 +55,7 @@
     "verification/findings.md",
     "~/.cache/in-the-loop/advisor/domain-prompt-scaffold-first.md",
     "~/.cache/in-the-loop/advisor/vf-inherited-session-context.md",
+    "~/.cache/in-the-loop/advisor/vf-manifest-merge-back.md",
     "~/.cache/in-the-loop/advisor/vf-new-capability-continue.md",
     "~/.cache/in-the-loop/advisor/vf-real-world-bugs.md",
     "~/.cache/in-the-loop/advisor/vf-scaffolding-gap.md",
@@ -232,24 +233,24 @@
     {
       "index": 9,
       "started": "2026-11-25T07:39:03.186Z",
-      "ended": "2026-11-25T10:47:45.447Z",
-      "turns": 28,
-      "api_calls": 150,
+      "ended": "2026-11-25T13:02:58.064Z",
+      "turns": 35,
+      "api_calls": 188,
       "usage": {
-        "input_tokens": 99661,
-        "output_tokens": 84960,
-        "cache_read_input_tokens": 30568576,
-        "cache_creation_input_tokens": 234857
+        "input_tokens": 99765,
+        "output_tokens": 100863,
+        "cache_read_input_tokens": 41983452,
+        "cache_creation_input_tokens": 266913
       },
-      "peak_context_tokens": 281502
+      "peak_context_tokens": 315772
     }
   ],
   "log": {
-    "sha256": "cdf1d329229622786639b3808f8f964ff43375495fa8104f21018cd5859d8ed4",
-    "bytes": 38756744,
-    "lines": 16650,
-    "gzip_bytes": 6803557,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/cdf1d329229622786639b3808f8f964ff43375495fa8104f21018cd5859d8ed4.jsonl.gz"
+    "sha256": "cd5b8230947c6d20629f8d303584f7298cf979ca1b47e2afbf699e74a2d8cc61",
+    "bytes": 39214055,
+    "lines": 17013,
+    "gzip_bytes": 6859603,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/cd5b8230947c6d20629f8d303584f7298cf979ca1b47e2afbf699e74a2d8cc61.jsonl.gz"
   },
   "subagents": [
     {
@@ -10995,6 +10996,14 @@
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "cdf1d329229622786639b3808f8f964ff43375495fa8104f21018cd5859d8ed4"
+    },
+    {
+      "change_id": "wzsnyuzrroxzrkxvkoposqvtkpxyutxr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the promotion record 20261125T102804Z into the line",
+      "body": "The promotion of develop to main (867fa025 -> be470ab3, 360 commits) put its record on develop, and the line has to descend from it before the next checkpoint. The merge conflicted in one session manifest (llm-dlc/traces/01a2115c-.../manifest.json, the L01-L20 generation session): the line's side holds the session's later state (10 commits, 10 logs), the promotion's side upload links for its 6 earlier logs. With the user's permission the line's side was taken whole (jj restore, no hand edit), and sync.py regenerate rebuilt the generated trace files. The upload links come back when those logs are next uploaded.",
+      "log_sha256": "cd5b8230947c6d20629f8d303584f7298cf979ca1b47e2afbf699e74a2d8cc61"
     }
   ],
   "logs": {
@@ -11026,13 +11035,13 @@
       "bytes": 35395945,
       "lines": 14822,
       "gzip_bytes": 6205884,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/06d2cc4403bf31cc0c1202bc94252b2a366fbe5dff163494b716cc52b47a73fc.jsonl.gz"
     },
     "06eff4a6e18eae00b8d45375b7594b8688cbcccc803abd5d74adcab814eb2faf": {
       "bytes": 37378971,
       "lines": 15716,
       "gzip_bytes": 6607206,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/06eff4a6e18eae00b8d45375b7594b8688cbcccc803abd5d74adcab814eb2faf.jsonl.gz"
     },
     "08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0": {
       "bytes": 11823407,
@@ -11044,13 +11053,13 @@
       "bytes": 31296357,
       "lines": 12844,
       "gzip_bytes": 5547687,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/0bc4263d2eb6dbcc49387bc78b4e529b54ee4d218b4c142ead2678b8c37cf5a7.jsonl.gz"
     },
     "0efa253bcd877895bfb0b427d9200ecd118fa314e63711af652ea3f628f89f4d": {
       "bytes": 38160277,
       "lines": 16217,
       "gzip_bytes": 6720550,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/0efa253bcd877895bfb0b427d9200ecd118fa314e63711af652ea3f628f89f4d.jsonl.gz"
     },
     "10ba682dc90de0289f6cf0a0e1180148a7857f272a02f78332422038158caba6": {
       "bytes": 4926174,
@@ -11068,7 +11077,7 @@
       "bytes": 32980827,
       "lines": 13840,
       "gzip_bytes": 5777477,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/112f73dce390c46e50659156e88648e57e2cd9c36e9474390c1866140e9897f4.jsonl.gz"
     },
     "12a2e11ddf2f5e3ac80b73be965cc341a583effbcf18abb17321ab7edd14ea2f": {
       "bytes": 16589580,
@@ -11080,13 +11089,13 @@
       "bytes": 31271885,
       "lines": 12833,
       "gzip_bytes": 5545712,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/12d0b4640af97a813e2456d51ab133c3926008baf899174077bbd5509c14b60f.jsonl.gz"
     },
     "131a49a72cf6789ab3cbca58f573cdcfde736465f5f5b5d36717e554b54a2d03": {
       "bytes": 27981872,
       "lines": 11417,
       "gzip_bytes": 4965637,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/131a49a72cf6789ab3cbca58f573cdcfde736465f5f5b5d36717e554b54a2d03.jsonl.gz"
     },
     "143756e2ea1f4f78e4948178f2d67096414daec8edb5528f61f6c41d8512af60": {
       "bytes": 5283975,
@@ -11128,7 +11137,7 @@
       "bytes": 35494831,
       "lines": 14900,
       "gzip_bytes": 6217382,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/1ba24d7b872365f4ffa670c6de24d7d422c677b82d6749d92348b0acad711346.jsonl.gz"
     },
     "1c1ed6678fa772c8b3d102b1b717380c4fca6ae1638184bebf2f3bbd36f74089": {
       "bytes": 19846863,
@@ -11152,19 +11161,19 @@
       "bytes": 32140955,
       "lines": 13339,
       "gzip_bytes": 5665771,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/1ea686718c0e8e3293be88f4219c1c8ff73c6e39b79b6ad029027c38b0356ef6.jsonl.gz"
     },
     "20cc85aad33dab4bdd6731a93237a4856c611e5c9fad74ed8610d8c66b491c9a": {
       "bytes": 30600280,
       "lines": 12455,
       "gzip_bytes": 5464158,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/20cc85aad33dab4bdd6731a93237a4856c611e5c9fad74ed8610d8c66b491c9a.jsonl.gz"
     },
     "22a24c00e5a69e6e9bd081ea8c1e5ed1b3717ca41f77f68f2692d6be6e4456ff": {
       "bytes": 32348560,
       "lines": 13475,
       "gzip_bytes": 5691583,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/22a24c00e5a69e6e9bd081ea8c1e5ed1b3717ca41f77f68f2692d6be6e4456ff.jsonl.gz"
     },
     "22e5fae288e8c630939384d70f5de9dc4bf0686fbdf0778ffb5938eff1fbb4f1": {
       "bytes": 16874962,
@@ -11182,7 +11191,7 @@
       "bytes": 37475992,
       "lines": 15782,
       "gzip_bytes": 6619842,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/274df7edd25400a4c75e8810653923c6195a51cd81011e32c4f0ca435f928156.jsonl.gz"
     },
     "27c2466eead7451f9009da4c520d5920d5b4584884d19a442669c9028577c7cd": {
       "bytes": 6902149,
@@ -11194,13 +11203,13 @@
       "bytes": 31483312,
       "lines": 12968,
       "gzip_bytes": 5572513,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2829a5e1068a161b7d1704a4eea31a39cb7e06b36fa210d2a46a227afbba58de.jsonl.gz"
     },
     "283b991826f16033e39e22be7da247371390de40878795c1bf75207250e7b0f6": {
       "bytes": 31095112,
       "lines": 12713,
       "gzip_bytes": 5527265,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/283b991826f16033e39e22be7da247371390de40878795c1bf75207250e7b0f6.jsonl.gz"
     },
     "28a891cc05c0f6105574303979ad70131b7cb477322c2bdea4cabc694490d3bd": {
       "bytes": 19294161,
@@ -11224,7 +11233,7 @@
       "bytes": 32523870,
       "lines": 13586,
       "gzip_bytes": 5713362,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2a36bd799f2bcd088ae87d4eefebb07ee81df49975ff32c9dd24a773671351e5.jsonl.gz"
     },
     "2b705f4af6d320fe277f2a9362786bfce05ba88e230e5744ef0c71cec25dbbe1": {
       "bytes": 38699792,
@@ -11260,7 +11269,7 @@
       "bytes": 31167990,
       "lines": 12762,
       "gzip_bytes": 5536009,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2db8d8fe4768fcfe740414d71f7361ec724a1e3906a8ad01100485067b8845fa.jsonl.gz"
     },
     "307b4d511a86b6f2a31713964402ad079bab9d254f6c2122d3f67fd34b4688a4": {
       "bytes": 10049038,
@@ -11326,7 +11335,7 @@
       "bytes": 28603711,
       "lines": 11757,
       "gzip_bytes": 5052384,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/393356bac8f19fb7c62803e748cbb5b641f9dc668deaf78a3c599e3c55791e16.jsonl.gz"
     },
     "3a5cdc6be686fc7a132ae54269fc646b7bafb80f9dbcb411b8d695db650fb269": {
       "bytes": 23051618,
@@ -11344,19 +11353,19 @@
       "bytes": 28568386,
       "lines": 11733,
       "gzip_bytes": 5046944,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3b19192263ace5e65918cdf069aeb122f0920c15413d311a996f928ae2934546.jsonl.gz"
     },
     "3be5765b16ddf0a24cf6c7f6a98345b3192efae0e79f92192d5f1547cab6b58f": {
       "bytes": 29135023,
       "lines": 12013,
       "gzip_bytes": 5131340,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3be5765b16ddf0a24cf6c7f6a98345b3192efae0e79f92192d5f1547cab6b58f.jsonl.gz"
     },
     "3d61ecb5ccc6144d6701c79b70578a92f42a860a0af6ff93c655b08b88c2d460": {
       "bytes": 31548480,
       "lines": 13009,
       "gzip_bytes": 5580744,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3d61ecb5ccc6144d6701c79b70578a92f42a860a0af6ff93c655b08b88c2d460.jsonl.gz"
     },
     "3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4": {
       "bytes": 16687377,
@@ -11380,7 +11389,7 @@
       "bytes": 31137265,
       "lines": 12741,
       "gzip_bytes": 5533207,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3ed68048fa1654107e8404dd4a82a4596c0e9c126fe17ca3c0c6ccefbb8b2e33.jsonl.gz"
     },
     "40edb99b7730ce4e5ab371742082cf3e354ded7e324eed7393b296e324c8bca1": {
       "bytes": 18696107,
@@ -11398,13 +11407,13 @@
       "bytes": 28146767,
       "lines": 11526,
       "gzip_bytes": 4986253,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/4315598a459c9618eb55109b4f37a1b9dd9d76e6f2bfce5a6eb53d9e52a9917c.jsonl.gz"
     },
     "43abad8f93d0ce1ea46df90898cfb737f84d59afbc9ffe186f55a92aa30ba7ba": {
       "bytes": 33101503,
       "lines": 13913,
       "gzip_bytes": 5795400,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/43abad8f93d0ce1ea46df90898cfb737f84d59afbc9ffe186f55a92aa30ba7ba.jsonl.gz"
     },
     "44c38faaa6d6b92e04b2c70f0e60b5e1b679f26425ed0bae67bd838627a1713f": {
       "bytes": 9800601,
@@ -11440,7 +11449,7 @@
       "bytes": 32304739,
       "lines": 13448,
       "gzip_bytes": 5685519,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/47dc7815df7c6eb047b4070910a6d6e193f94bcf0cc0289be54e8ef5be325ac1.jsonl.gz"
     },
     "4864f7bb126c1678933301d94a115337f711da95a21e10a88c60c15ff6f69a27": {
       "bytes": 15848366,
@@ -11458,7 +11467,7 @@
       "bytes": 28572191,
       "lines": 11736,
       "gzip_bytes": 5047524,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f.jsonl.gz"
     },
     "4d92e43d1f59c2c2c8e23e076e2029dd199a6287f1851dc1fec5267fbfd6013f": {
       "bytes": 38741210,
@@ -11488,13 +11497,13 @@
       "bytes": 31234672,
       "lines": 12807,
       "gzip_bytes": 5542754,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/526e66e6d4105b84a87bf05ccfa11c1437990aeb395602e0deaaad8d7ed92f18.jsonl.gz"
     },
     "52b1274e08cda47c85212d615479631edf7ec61ee39a220a03a09be6072c34d7": {
       "bytes": 35863452,
       "lines": 15146,
       "gzip_bytes": 6269636,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/52b1274e08cda47c85212d615479631edf7ec61ee39a220a03a09be6072c34d7.jsonl.gz"
     },
     "53711b3f3f40e4864657ffd8325057f6b5b1a0fea38f5d22c3b6c3840e28abce": {
       "bytes": 25584883,
@@ -11506,13 +11515,13 @@
       "bytes": 32236929,
       "lines": 13405,
       "gzip_bytes": 5676391,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/53b4add406db9ac5c476be2b8899eb9556c2b0c82646dfc86867363a1e1396d7.jsonl.gz"
     },
     "54dd7cb63d40f24b51384b64f6440d0223e88e3858bd024d9c8ba2948c7e2a1b": {
       "bytes": 27225801,
       "lines": 11001,
       "gzip_bytes": 4871380,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/54dd7cb63d40f24b51384b64f6440d0223e88e3858bd024d9c8ba2948c7e2a1b.jsonl.gz"
     },
     "55123f8d7e39104a48ecfe235f8d0bda0ee3bb726e57659d149e95cf34c56002": {
       "bytes": 12409482,
@@ -11530,13 +11539,13 @@
       "bytes": 38081335,
       "lines": 16170,
       "gzip_bytes": 6708670,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/55d6110cadb19b498e284ee350803ace4a2c20eb376f6b6fa57b6a4afb874546.jsonl.gz"
     },
     "5710b5d7167cf7687d78b5af5e2acb0f182f7f7aff6a780b6e131b5324cde53d": {
       "bytes": 32589156,
       "lines": 13630,
       "gzip_bytes": 5721167,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5710b5d7167cf7687d78b5af5e2acb0f182f7f7aff6a780b6e131b5324cde53d.jsonl.gz"
     },
     "57e0119593210341947d2e74725b7bbe3ccd1c41c667e8508d3b9090401fa689": {
       "bytes": 12614435,
@@ -11554,13 +11563,13 @@
       "bytes": 28508150,
       "lines": 11696,
       "gzip_bytes": 5038981,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/59aed5371ec7285de937a521e6fcac5fca777b6cb290801e226ce2d5caa99fe8.jsonl.gz"
     },
     "5babe4b5b0217b71c8c131e81f63ef4ccc7d9694ff5e5b72687a30814ff172fb": {
       "bytes": 27413147,
       "lines": 11109,
       "gzip_bytes": 4896801,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5babe4b5b0217b71c8c131e81f63ef4ccc7d9694ff5e5b72687a30814ff172fb.jsonl.gz"
     },
     "5dae5db9ab842400a6ccab9c7ba5ae8cc0feb5d974aeeb7dddb47be41d5e5025": {
       "bytes": 26411740,
@@ -11584,7 +11593,7 @@
       "bytes": 37187285,
       "lines": 15600,
       "gzip_bytes": 6579029,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5f74fdd9169302f86bffe9769784bff4a78fb537f3ae17cd06acc40ec5944e5f.jsonl.gz"
     },
     "5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979": {
       "bytes": 1460970,
@@ -11602,13 +11611,13 @@
       "bytes": 32446598,
       "lines": 13538,
       "gzip_bytes": 5703485,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6398060689ed9553d78c99b90aa4aa604f65bc8f9f8d86f3333492d52ba47e08.jsonl.gz"
     },
     "646c5b362a821aa98f36020ffb72c75b3bbf3f5466411d2c541bf8b606ead2c3": {
       "bytes": 32480702,
       "lines": 13560,
       "gzip_bytes": 5707488,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/646c5b362a821aa98f36020ffb72c75b3bbf3f5466411d2c541bf8b606ead2c3.jsonl.gz"
     },
     "64bc1004e98b7404245a0b2257d225356a31be6448954a35d02f566cb570abdd": {
       "bytes": 7402016,
@@ -11626,7 +11635,7 @@
       "bytes": 28485072,
       "lines": 11680,
       "gzip_bytes": 5035512,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/675a11a466fdcea2fc8fa2834f33d7e625e86b8fe92b86c909f30680391e21eb.jsonl.gz"
     },
     "6a69550fc550a1a49e6a7b5d3507ed01d40b60c305051c731c40be2f1331d714": {
       "bytes": 24563106,
@@ -11656,19 +11665,19 @@
       "bytes": 32067041,
       "lines": 13291,
       "gzip_bytes": 5656068,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7044f6435fadaafffd160cd529eec9f122fbe7c3c5face405459072193bea7df.jsonl.gz"
     },
     "706fbaa035f428062381f6ce0ea07015534b97006539123a6881f6fc7cf0a889": {
       "bytes": 28443384,
       "lines": 11653,
       "gzip_bytes": 5028639,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/706fbaa035f428062381f6ce0ea07015534b97006539123a6881f6fc7cf0a889.jsonl.gz"
     },
     "71282ab2d01c9a2143a2f3baa683407276fa3631dac80601a2a2c511ea8f3cfe": {
       "bytes": 32770648,
       "lines": 13748,
       "gzip_bytes": 5743350,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/71282ab2d01c9a2143a2f3baa683407276fa3631dac80601a2a2c511ea8f3cfe.jsonl.gz"
     },
     "71b932814d17b781efc8407b9535fc49013a835590a02041cb471c5267f84b81": {
       "bytes": 16508856,
@@ -11680,7 +11689,7 @@
       "bytes": 35429292,
       "lines": 14848,
       "gzip_bytes": 6210534,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/721553542ad10325eef56b582f712d6808299ea0e806cdf49d77353e3f7856d7.jsonl.gz"
     },
     "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d": {
       "bytes": 1685139,
@@ -11692,7 +11701,7 @@
       "bytes": 28832463,
       "lines": 11869,
       "gzip_bytes": 5086823,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/73ba8f58611fd93a713e7e1c65d7f2424bacecb5a0529c83bd16606b131052b7.jsonl.gz"
     },
     "7556d7b9b47cae327c803bf0e9edee67dcc0c32be5a7d5763f9078ac3f883636": {
       "bytes": 23023926,
@@ -11704,7 +11713,7 @@
       "bytes": 32024115,
       "lines": 13265,
       "gzip_bytes": 5650284,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/756c8728968487285876f725aec08f62de5be3aebcf6f3f8d5c8b2a9f4b9f50c.jsonl.gz"
     },
     "77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc": {
       "bytes": 11623384,
@@ -11740,7 +11749,7 @@
       "bytes": 34637126,
       "lines": 14571,
       "gzip_bytes": 6007635,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7be304859405faf298192320c4307da2e79c6815c9419c1bd38c86a6c9347579.jsonl.gz"
     },
     "7de38a978c87c565f8b9adcedec9841c5dc3cde11603e6a7a1996bce79e67b81": {
       "bytes": 5642769,
@@ -11776,7 +11785,7 @@
       "bytes": 33315412,
       "lines": 14042,
       "gzip_bytes": 5824474,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7ff569385c13aff826baa5a40eaf108c02462962bd6f128f6b1ecd5e301663b0.jsonl.gz"
     },
     "8384fc8209d72256393079453c102ae75b45054e25ff2f5c0eeb9b6abeabf44f": {
       "bytes": 22503959,
@@ -11824,7 +11833,7 @@
       "bytes": 35353496,
       "lines": 14790,
       "gzip_bytes": 6199927,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/878cf5d3825cd431ca4a9994541e75d81cabf09ce5204e26fbb0d8bdee562730.jsonl.gz"
     },
     "87a113a72ce079ca144e4b2ae2d0e0e12846aee2c61211035da79dc302d0f3d8": {
       "bytes": 16984683,
@@ -11836,7 +11845,7 @@
       "bytes": 28817506,
       "lines": 11862,
       "gzip_bytes": 5083818,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/87e351b84852c7fa78a2a9823eb6a00c8b561fd5b156ca0df4760b2f1286e006.jsonl.gz"
     },
     "887466d85ae2b9a053998b76061340b63451ab145972c3cfaaa378eb63fdfbef": {
       "bytes": 476320,
@@ -11860,7 +11869,7 @@
       "bytes": 38196351,
       "lines": 16243,
       "gzip_bytes": 6725448,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8ecbe12780199d652392c289c828c7704254727d2a2d8ba67aa5d4190bf3e6eb.jsonl.gz"
     },
     "8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d": {
       "bytes": 3142469,
@@ -11890,13 +11899,13 @@
       "bytes": 35462471,
       "lines": 14874,
       "gzip_bytes": 6214179,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9444ccb5c759b8d081c75c51f25370b0e67c931413a5967a7f2ba3a63cfba1e5.jsonl.gz"
     },
     "94456cbcdd7f2b2a82d60a0389615623891656849befd859a06af5c7e6a1d31a": {
       "bytes": 32171463,
       "lines": 13360,
       "gzip_bytes": 5668673,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/94456cbcdd7f2b2a82d60a0389615623891656849befd859a06af5c7e6a1d31a.jsonl.gz"
     },
     "94ed91063eaeb7b4d739e51e1105bab32010f39f770b98f115d5ceef12e1b50a": {
       "bytes": 19303672,
@@ -11908,7 +11917,7 @@
       "bytes": 26801399,
       "lines": 10773,
       "gzip_bytes": 4809611,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9580852fadee2325de1d30c0f16390a0b8b814265c69322321bc4d56d908564c.jsonl.gz"
     },
     "960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f": {
       "bytes": 816643,
@@ -11920,13 +11929,13 @@
       "bytes": 28471275,
       "lines": 11668,
       "gzip_bytes": 5033050,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/96bd72f9a08d272dbf792bf54137de2bbe18f9d0fc1602332e5025643f47958c.jsonl.gz"
     },
     "97f58a1dcd1c6920612f28e9b7e9681ff9f349ec609a778fa93e28406e1c3ea8": {
       "bytes": 32410702,
       "lines": 13517,
       "gzip_bytes": 5699080,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/97f58a1dcd1c6920612f28e9b7e9681ff9f349ec609a778fa93e28406e1c3ea8.jsonl.gz"
     },
     "9942325ff2cd091d660cc75bb96c62bcb740c865af020bdda9193485a0651f6d": {
       "bytes": 15925416,
@@ -11944,7 +11953,7 @@
       "bytes": 32556814,
       "lines": 13608,
       "gzip_bytes": 5718106,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9ae261ca70543423e19223e5d5b6c66db87e7fe7075752ac63f37e37770b71ec.jsonl.gz"
     },
     "9e67d8215623daf2af0b00c1a57423fa95d581ebb401e024156992327304a179": {
       "bytes": 22565756,
@@ -11962,7 +11971,7 @@
       "bytes": 36943297,
       "lines": 15446,
       "gzip_bytes": 6545028,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/a1ba6ba789eaa00f0493eccc6ad138f0787d7a7e00e0615fc11f3a68ff40b58a.jsonl.gz"
     },
     "a26aaa07b7144843397aa63d87807d1dcd9d435a08316b853694610a8e551654": {
       "bytes": 3655452,
@@ -11992,7 +12001,7 @@
       "bytes": 33285714,
       "lines": 14021,
       "gzip_bytes": 5820217,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/a41e4fcd98ab8a2c4a0455b83d3186648af5151611359838c9b1deb4f13e8017.jsonl.gz"
     },
     "a6a009f33f53e86e55e4b0daefebf76e1b20f82e9856c20bbd9dcf789fa0245d": {
       "bytes": 5954277,
@@ -12016,19 +12025,19 @@
       "bytes": 31203127,
       "lines": 12786,
       "gzip_bytes": 5539146,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/a86fcdf8398bc04a4c37b694e52ac3c9d7ce96d4daf89155f25a2e62ef408fb7.jsonl.gz"
     },
     "a8861b678c7147bf251e47ec5d79c9125b5d84016397c49736e1d174bab08fd6": {
       "bytes": 30324759,
       "lines": 12347,
       "gzip_bytes": 5426423,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/a8861b678c7147bf251e47ec5d79c9125b5d84016397c49736e1d174bab08fd6.jsonl.gz"
     },
     "a98a5f5db65dd0933cf6e295f26c3eecffd67e8748344e74f0228135239a6ad8": {
       "bytes": 32731231,
       "lines": 13723,
       "gzip_bytes": 5737596,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/a98a5f5db65dd0933cf6e295f26c3eecffd67e8748344e74f0228135239a6ad8.jsonl.gz"
     },
     "aa378f1fa1dce62a3afbec3c54386fd0a9a25cb5178c4aca505d86960450e289": {
       "bytes": 11886137,
@@ -12040,13 +12049,13 @@
       "bytes": 31581576,
       "lines": 13031,
       "gzip_bytes": 5585702,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b02d1831385c47421981e9f26ed5ee817e9bc3c50fba492b91b58684d72d219a.jsonl.gz"
     },
     "b0a6718e8c1cacbd34fba815205fe8faba1f76e264903db3f9ec1257635bab50": {
       "bytes": 32873905,
       "lines": 13792,
       "gzip_bytes": 5762024,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0a6718e8c1cacbd34fba815205fe8faba1f76e264903db3f9ec1257635bab50.jsonl.gz"
     },
     "b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435": {
       "bytes": 3772711,
@@ -12058,7 +12067,7 @@
       "bytes": 30293793,
       "lines": 12328,
       "gzip_bytes": 5421402,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b189836561374a9d714ba12ed109d680ecd3474ecfd1a803fbc7e8479ff7d2ae.jsonl.gz"
     },
     "b333edc6c47956d643b6d0703fea22635a0eb59c9e4429a02f5dd9ac9cc4ac37": {
       "bytes": 16160169,
@@ -12070,7 +12079,7 @@
       "bytes": 32379921,
       "lines": 13496,
       "gzip_bytes": 5696192,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b58a74110db94ac066c2e470be535d4d65be4cedccd4c4db70aa05cce6325e10.jsonl.gz"
     },
     "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76": {
       "bytes": 3002430,
@@ -12082,7 +12091,7 @@
       "bytes": 28784485,
       "lines": 11841,
       "gzip_bytes": 5079246,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b5bcca13f2e0db5e51a0426e4bd33bf985790432e0274c10a20dfa02073817a1.jsonl.gz"
     },
     "b5cdfe85a8edea3f64da225aba7b19cc584d78a934882c1daeea016e38652c7d": {
       "bytes": 26323045,
@@ -12106,7 +12115,7 @@
       "bytes": 32110097,
       "lines": 13318,
       "gzip_bytes": 5661547,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/bb9273623ec543d6d022a01d2bf3e2ffd96a2dfe86cdeac9a306b8488d42d8e1.jsonl.gz"
     },
     "bc247ffadad02a169b0e9941b872f16b351f960007ae917d812e78475be5c166": {
       "bytes": 24835466,
@@ -12130,7 +12139,7 @@
       "bytes": 31361963,
       "lines": 12886,
       "gzip_bytes": 5555468,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/c03d90546bd4348e088dce7cfa263a65e9666181dd6066a3360005c6d6a70611.jsonl.gz"
     },
     "c32d1b6b1f18fdb68d729a73438141b011210c4021983847b6c368df1bf8136d": {
       "bytes": 22891288,
@@ -12148,7 +12157,7 @@
       "bytes": 37696958,
       "lines": 15939,
       "gzip_bytes": 6651823,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/c4744bd65a581974fd5bd84323a5c516e30e42217bb18b3cc36e9967e515fdc6.jsonl.gz"
     },
     "c57b62e2f3463c8dcdf415844984e4da185cc1eb6b600f4e69180c7410f2eb85": {
       "bytes": 22923060,
@@ -12160,7 +12169,7 @@
       "bytes": 31927842,
       "lines": 13202,
       "gzip_bytes": 5637818,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/c8840ce439db8587b378771be3a5667f586ec8865e9d5b46fb6ebd6e2202c345.jsonl.gz"
     },
     "c93e7b64b12cb6cc9cee6c1a6c897a5423c1ed245285d9b03a893c11f3004b26": {
       "bytes": 12479111,
@@ -12192,6 +12201,12 @@
       "gzip_bytes": 3602141,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/cc12a9878234fba82c9e6e5ec752db40386d13725ec4c94513d7884f9c96818a.jsonl.gz"
     },
+    "cd5b8230947c6d20629f8d303584f7298cf979ca1b47e2afbf699e74a2d8cc61": {
+      "bytes": 39214055,
+      "lines": 17013,
+      "gzip_bytes": 6859603,
+      "url": null
+    },
     "cdf1d329229622786639b3808f8f964ff43375495fa8104f21018cd5859d8ed4": {
       "bytes": 38756744,
       "lines": 16650,
@@ -12202,7 +12217,7 @@
       "bytes": 31106475,
       "lines": 12720,
       "gzip_bytes": 5529133,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/d04c2ddbe1a924e9a67eef11fc728785bb910e0c34e5733a38834d873ba4b7dd.jsonl.gz"
     },
     "d0ff75871833c0ef00a9e66b4e9dea81e0fe57a6162e7e6374009527fb571dda": {
       "bytes": 38247552,
@@ -12220,19 +12235,19 @@
       "bytes": 31452872,
       "lines": 12947,
       "gzip_bytes": 5567901,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/d4622834a563454ad4a7b05e69f26e158db64ec3a6c1c7ccc9ba80e7f58db1b6.jsonl.gz"
     },
     "d7244a8c5cb7f909976312eb2ae0d4de4d7fc45c7148de1c9af12f0fab393de6": {
       "bytes": 27303438,
       "lines": 11048,
       "gzip_bytes": 4881969,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/d7244a8c5cb7f909976312eb2ae0d4de4d7fc45c7148de1c9af12f0fab393de6.jsonl.gz"
     },
     "d83607b709e478c5c5a2853120d11249f512b0e0c968d6d9d6c12971e072678f": {
       "bytes": 28718432,
       "lines": 11812,
       "gzip_bytes": 5069901,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/d83607b709e478c5c5a2853120d11249f512b0e0c968d6d9d6c12971e072678f.jsonl.gz"
     },
     "dcfef0c18b1623ad190d07fbc9af7e8043b0071dbbf63ab3221fafb455a5575b": {
       "bytes": 3896706,
@@ -12286,7 +12301,7 @@
       "bytes": 32619323,
       "lines": 13651,
       "gzip_bytes": 5724107,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/e4dbad9c66773090b9844c7cf8b5bcf7de2f2ff0a72445594739ee6da37c7dae.jsonl.gz"
     },
     "e54363ad2a75d03170605edd2a7971417e1d05355b4b1440da71135e3be78d32": {
       "bytes": 19782470,
@@ -12310,7 +12325,7 @@
       "bytes": 27962358,
       "lines": 11404,
       "gzip_bytes": 4962901,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/e8995530cebc17786002240ff8a6f5514b0ac253f356555dc4a244e80cd51876.jsonl.gz"
     },
     "e982322affb607c431ae3cca2a6510c2ed6d2c21ca247a56887ff81ed400b959": {
       "bytes": 19202862,
@@ -12328,7 +12343,7 @@
       "bytes": 31265913,
       "lines": 12828,
       "gzip_bytes": 5545384,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/eb46806113b7a7e9839951392762eb1981040b89360466473fe0ec41a7c1e9ea.jsonl.gz"
     },
     "ef3b037f4885bb1b798a49fc19823fa88da8ad4ca88acb8c7257d92efa99678d": {
       "bytes": 22995028,
@@ -12340,7 +12355,7 @@
       "bytes": 37089894,
       "lines": 15538,
       "gzip_bytes": 6564837,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f0435b99411c7f64d9d59bfeea1c53012d266765247c54939865d9db4ced3af7.jsonl.gz"
     },
     "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a": {
       "bytes": 6832608,
@@ -12352,7 +12367,7 @@
       "bytes": 32659021,
       "lines": 13677,
       "gzip_bytes": 5727857,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f28adcddf5b56df97f884ee30202a10c15df0daeb4d5b6af4882bd20d2c5b8bb.jsonl.gz"
     },
     "f2b5aea72bbcce0cc0c05acd081295bc91f27d67a41cf31aba30734aa84be3a6": {
       "bytes": 5942109,
@@ -12382,7 +12397,7 @@
       "bytes": 36805521,
       "lines": 15360,
       "gzip_bytes": 6523569,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f48a3bef447780e8efbf2aec7cba0a6945f994efdf35bffa346948eeff4adf64.jsonl.gz"
     },
     "f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491": {
       "bytes": 25140747,
@@ -12400,7 +12415,7 @@
       "bytes": 37304527,
       "lines": 15671,
       "gzip_bytes": 6596051,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f5d75d1e763e232f2309a6b9222d8a633b5c0de0f44ffdcc68fcfcade3dfa421.jsonl.gz"
     },
     "f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8": {
       "bytes": 14656243,
@@ -12412,7 +12427,7 @@
       "bytes": 28426103,
       "lines": 11646,
       "gzip_bytes": 5024602,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f8cadb2b29ce902fc3aaa589efd141d3a6a035675ce8cfda8c2b255ade748d11.jsonl.gz"
     },
     "f9a03c59044607197c9620b9f0316285b55d44dc196fc1b084e03c63fa0eae4f": {
       "bytes": 4910154,
@@ -12424,7 +12439,7 @@
       "bytes": 28061630,
       "lines": 11465,
       "gzip_bytes": 4976511,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fabe4f3412f1b46a56c7b69a57726b5f556ee687d9ac4970837c2d12a698122c.jsonl.gz"
     },
     "fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af": {
       "bytes": 14802808,
@@ -12442,7 +12457,7 @@
       "bytes": 37200309,
       "lines": 15610,
       "gzip_bytes": 6580681,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d.jsonl.gz"
     },
     "fd30449f7cadaddf640c5bb15a829799a1c433ca9df1a9e9a9f1b9a0d4140d02": {
       "bytes": 18377765,

@@ -18,7 +18,11 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-*No commits yet.*
+### Record verification results for 3 job(s)
+
+[`a4e56bd543d0`](https://github.com/pilifs/in-the-loop/commit/a4e56bd543d003e6f43bfbbfacf911fd7970b1ea) · [log `908ca758bd60`](https://terminalvalue.net/raw-traces/01a20bab-35a8-7421-85d0-8ad404368dcd/908ca758bd6028de3e26a6fdd4df003a66a9c1f88e4aa54a90dcfe9cd7a10481.jsonl.gz)
+
+Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261124-033410-qualify-long-range-fill-and-portable-gua: failed: 1 failed step(s) in 0.2s, peak 3.9 MiB (estimated 1m00s, 1.0 GiB) 20261124-033453-audit-historical-induction-queries-again: failed: 1 passed, 1 failed step(s) in 1.7s, peak 119.0 MiB (estimated 1m00s, 1.0 GiB) 20261124-033937-check-five-original-array-contracts-thro: failed: 1 failed step(s) in 0.2s, peak 11.8 MiB (estimated 2m00s, 1.0 GiB) Collected by the watcher of the trusted-kernel-and-receiver-recovery run, which keeps the queue while the run is under way.
 
 ## Conversation
 

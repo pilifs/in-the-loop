@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a20d2a-d9a0-7891-be8d-1b244bbed9ce` (open) |
+| Session | `01a20d2a-d9a0-7891-be8d-1b244bbed9ce` (ended) |
 | When | 2026-11-24 10:47 UTC to 2026-11-24 10:47 UTC (0 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Complete the beyond-JBMC campaign and verify its final evidence
 
-change `znsrxssurkqr` · [log `231f6be1d801`](https://terminalvalue.net/raw-traces/01a20d2a-d9a0-7891-be8d-1b244bbed9ce/231f6be1d8014b28e67ee74c1b7748fc77574a3bd65e985e7b22e518e92ad711.jsonl.gz)
+[`9afcacf047fd`](https://github.com/pilifs/in-the-loop/commit/9afcacf047fddd375b02dbd7e46734c14272a73a) · [log `231f6be1d801`](https://terminalvalue.net/raw-traces/01a20d2a-d9a0-7891-be8d-1b244bbed9ce/231f6be1d8014b28e67ee74c1b7748fc77574a3bd65e985e7b22e518e92ad711.jsonl.gz)
 
 The final Lean kernel proof establishes injectivity of the 128-bit Commons Codec seed transformation for fixed blocks, length and tail. It establishes the exact signed seed boundary, binds all three released JARs and the common 1.14 and 1.15 bytecode, and rejects the deliberately incorrect identity.
 

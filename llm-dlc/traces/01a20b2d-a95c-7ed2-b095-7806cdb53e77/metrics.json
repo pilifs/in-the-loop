@@ -1,55 +1,62 @@
 {
   "schema": "llm-trace-metrics/v2",
   "session_id": "01a20b2d-a95c-7ed2-b095-7806cdb53e77",
-  "source": {"log_sha256":"037b06aa4af8d8114102f9f521058d9aae308c77a975f7f0fe4c1e698addd46e","log_lines":639,"redaction_policy":7},
+  "source": {"log_sha256":"791da54e3aee39ab606434e3db74682a2ef78a379d2f91d2b441840f39faff7c","log_lines":1281,"redaction_policy":7},
   "pricing_as_of": "2026-11-15",
-  "totals": {"prompts":0,"commands":0,"commits":2,"compactions":0,"subagents":0,"tool_errors":7,"peak_context_tokens":191488,"api_calls":71,"tool_calls":244,"input_tokens":144203,"output_tokens":22548,"thinking_tokens":9720,"cache_read_tokens":10659840,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":6.319478,"uncached_usd":87.334264,"unpriced_calls":0},
+  "totals": {"prompts":0,"commands":0,"commits":6,"compactions":0,"subagents":0,"tool_errors":12,"peak_context_tokens":247378,"api_calls":165,"tool_calls":431,"input_tokens":206792,"output_tokens":47055,"thinking_tokens":23262,"cache_read_tokens":30983808,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":15.930057,"uncached_usd":251.407,"unpriced_calls":0},
   "after_last_commit": {"api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0},
-  "time": {"elapsed_ms":809341,"agent_ms":0,"model_ms":0,"tool_ms":0,"busy_ms":0,"compaction_ms":0,"paused_ms":0},
+  "time": {"elapsed_ms":2223041,"agent_ms":0,"model_ms":0,"tool_ms":0,"busy_ms":0,"compaction_ms":0,"paused_ms":0},
   "reported": null,
   "by_model": [
-    {"model":"gpt-6.2-astra","api_calls":71,"tool_calls":244,"input_tokens":144203,"output_tokens":22548,"thinking_tokens":9720,"cache_read_tokens":10659840,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":6.319478,"uncached_usd":87.334264,"unpriced_calls":0}
+    {"model":"gpt-6.2-astra","api_calls":165,"tool_calls":431,"input_tokens":206792,"output_tokens":47055,"thinking_tokens":23262,"cache_read_tokens":30983808,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":15.930057,"uncached_usd":251.407,"unpriced_calls":0}
   ],
   "by_effort": [
-    {"effort":"max","api_calls":71,"tool_calls":244,"input_tokens":144203,"output_tokens":22548,"thinking_tokens":9720,"cache_read_tokens":10659840,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":6.319478,"uncached_usd":87.334264,"unpriced_calls":0}
+    {"effort":"max","api_calls":165,"tool_calls":431,"input_tokens":206792,"output_tokens":47055,"thinking_tokens":23262,"cache_read_tokens":30983808,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":15.930057,"uncached_usd":251.407,"unpriced_calls":0}
   ],
   "by_tool": [
-    {"name":"Bash","calls":169,"errors":7,"no_result":0,"total_ms":127871,"median_ms":1,"max_ms":123854,"result_chars":474226},
-    {"name":"exec","calls":64,"errors":0,"no_result":1,"total_ms":89973,"median_ms":328,"max_ms":15053,"result_chars":521376},
-    {"name":"send_message","calls":7,"errors":0,"no_result":0,"total_ms":420,"median_ms":44,"max_ms":120,"result_chars":0},
-    {"name":"apply_patch","calls":3,"errors":0,"no_result":0,"total_ms":128,"median_ms":45,"max_ms":46,"result_chars":261},
+    {"name":"Bash","calls":260,"errors":12,"no_result":0,"total_ms":853548,"median_ms":1,"max_ms":707585,"result_chars":583030},
+    {"name":"exec","calls":132,"errors":0,"no_result":0,"total_ms":151526,"median_ms":321,"max_ms":15053,"result_chars":623001},
+    {"name":"send_message","calls":21,"errors":0,"no_result":0,"total_ms":1204,"median_ms":41,"max_ms":225,"result_chars":0},
+    {"name":"wait_agent","calls":9,"errors":0,"no_result":0,"total_ms":385143,"median_ms":45016,"max_ms":60015,"result_chars":414},
+    {"name":"apply_patch","calls":8,"errors":0,"no_result":0,"total_ms":363,"median_ms":45,"max_ms":78,"result_chars":749},
     {"name":"spawn_agent","calls":1,"errors":0,"no_result":1,"total_ms":0,"median_ms":null,"max_ms":null,"result_chars":0}
   ],
   "by_bash_family": [
-    {"family":"rg","calls":39,"errors":3,"no_result":0,"total_ms":162,"median_ms":1,"max_ms":52,"result_chars":90085},
-    {"family":"cat","calls":35,"errors":1,"no_result":0,"total_ms":48,"median_ms":0,"max_ms":6,"result_chars":198739},
-    {"family":"sed","calls":24,"errors":0,"no_result":0,"total_ms":71,"median_ms":1,"max_ms":45,"result_chars":120660},
-    {"family":"jq","calls":22,"errors":1,"no_result":0,"total_ms":66,"median_ms":1,"max_ms":32,"result_chars":27354},
-    {"family":"ls","calls":13,"errors":0,"no_result":0,"total_ms":28,"median_ms":2,"max_ms":5,"result_chars":2357},
-    {"family":"python3","calls":13,"errors":1,"no_result":0,"total_ms":124422,"median_ms":24,"max_ms":123854,"result_chars":25120},
-    {"family":"jj","calls":12,"errors":0,"no_result":0,"total_ms":507,"median_ms":0,"max_ms":239,"result_chars":4585},
-    {"family":"date","calls":3,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":87},
+    {"family":"rg","calls":53,"errors":4,"no_result":0,"total_ms":174,"median_ms":1,"max_ms":52,"result_chars":104095},
+    {"family":"cat","calls":37,"errors":1,"no_result":0,"total_ms":48,"median_ms":0,"max_ms":6,"result_chars":206891},
+    {"family":"python3","calls":35,"errors":2,"no_result":0,"total_ms":849030,"median_ms":65,"max_ms":707585,"result_chars":47525},
+    {"family":"sed","calls":33,"errors":1,"no_result":0,"total_ms":74,"median_ms":1,"max_ms":45,"result_chars":163049},
+    {"family":"jj","calls":32,"errors":0,"no_result":0,"total_ms":1536,"median_ms":1,"max_ms":247,"result_chars":11687},
+    {"family":"jq","calls":29,"errors":1,"no_result":0,"total_ms":68,"median_ms":1,"max_ms":32,"result_chars":34335},
+    {"family":"ls","calls":19,"errors":1,"no_result":0,"total_ms":32,"median_ms":2,"max_ms":5,"result_chars":2672},
+    {"family":"date","calls":7,"errors":0,"no_result":0,"total_ms":3,"median_ms":0,"max_ms":2,"result_chars":203},
+    {"family":"other","calls":3,"errors":0,"no_result":0,"total_ms":17,"median_ms":1,"max_ms":15,"result_chars":4069},
+    {"family":"tail","calls":3,"errors":0,"no_result":0,"total_ms":2,"median_ms":0,"max_ms":2,"result_chars":4727},
     {"family":"ps","calls":2,"errors":0,"no_result":0,"total_ms":2564,"median_ms":2563,"max_ms":2563,"result_chars":3071},
-    {"family":"tail","calls":2,"errors":0,"no_result":0,"total_ms":2,"median_ms":2,"max_ms":2,"result_chars":1701},
-    {"family":"other","calls":1,"errors":0,"no_result":0,"total_ms":1,"median_ms":1,"max_ms":1,"result_chars":75},
-    {"family":"pwd","calls":1,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":45},
-    {"family":"ruff","calls":1,"errors":1,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":43},
-    {"family":"sha256sum","calls":1,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":304}
+    {"family":"ruff","calls":2,"errors":2,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":43},
+    {"family":"sha256sum","calls":2,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":448},
+    {"family":"git","calls":1,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":0},
+    {"family":"head","calls":1,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":170},
+    {"family":"pwd","calls":1,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":45}
   ],
   "by_cache_cause": [],
   "by_day": [
-    {"date":"2026-11-24","api_calls":71,"tool_calls":244,"input_tokens":144203,"output_tokens":22548,"thinking_tokens":9720,"cache_read_tokens":10659840,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":6.319478,"uncached_usd":87.334264,"unpriced_calls":0}
+    {"date":"2026-11-24","api_calls":165,"tool_calls":431,"input_tokens":206792,"output_tokens":47055,"thinking_tokens":23262,"cache_read_tokens":30983808,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":15.930057,"uncached_usd":251.407,"unpriced_calls":0}
   ],
   "windows": [
-    {"index":0,"started":"2026-11-24T01:31:11.594Z","ended":"2026-11-24T01:44:40.933Z","prompts":0,"peak_context_tokens":191488,"api_calls":71,"tool_calls":244,"input_tokens":144203,"output_tokens":22548,"thinking_tokens":9720,"cache_read_tokens":10659840,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":6.319478,"uncached_usd":87.334264,"unpriced_calls":0}
+    {"index":0,"started":"2026-11-24T01:31:11.594Z","ended":"2026-11-24T02:08:14.626Z","prompts":0,"peak_context_tokens":247378,"api_calls":165,"tool_calls":431,"input_tokens":206792,"output_tokens":47055,"thinking_tokens":23262,"cache_read_tokens":30983808,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":15.930057,"uncached_usd":251.407,"unpriced_calls":0}
   ],
   "compactions": [],
   "pauses": [],
   "commits": [
-    {"index":0,"change_id":"nnzzokqzryuoqspqwttpzokkppumnvyr","summary":null,"log_sha256":"037b06aa4af8d8114102f9f521058d9aae308c77a975f7f0fe4c1e698addd46e","log_lines":639,"log_bytes":1716085,"log_gzip_bytes":371630,"ts":"2026-11-24T01:44:40.933Z","api_calls":71,"tool_calls":244,"input_tokens":144203,"output_tokens":22548,"thinking_tokens":9720,"cache_read_tokens":10659840,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":6.319478,"uncached_usd":87.334264,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":7},
-    {"index":1,"change_id":"lrvuoywssswvwssrrunusonkvyppmmql","summary":"Bind independent Guava proofs to change-plan obligations","log_sha256":"037b06aa4af8d8114102f9f521058d9aae308c77a975f7f0fe4c1e698addd46e","log_lines":639,"log_bytes":1716085,"log_gzip_bytes":371630,"ts":"2026-11-24T01:44:40.933Z","api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":0}
+    {"index":0,"change_id":"utxvlvpvtoloxxsxvqlyyqtlxrntqttz","summary":"Record verification results for 2 job(s)","log_sha256":"791da54e3aee39ab606434e3db74682a2ef78a379d2f91d2b441840f39faff7c","log_lines":1281,"log_bytes":2402030,"log_gzip_bytes":473519,"ts":"2026-11-24T02:08:14.633Z","api_calls":165,"tool_calls":431,"input_tokens":206792,"output_tokens":47055,"thinking_tokens":23262,"cache_read_tokens":30983808,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":15.930057,"uncached_usd":251.407,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":12},
+    {"index":1,"change_id":"lrvuoywssswvwssrrunusonkvyppmmql","summary":"Bind independent Guava proofs to change-plan obligations","log_sha256":"037b06aa4af8d8114102f9f521058d9aae308c77a975f7f0fe4c1e698addd46e","log_lines":639,"log_bytes":1716085,"log_gzip_bytes":371630,"ts":"2026-11-24T01:44:40.933Z","api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":0},
+    {"index":2,"change_id":"ntptqkotuzzpnsvtxwutlovtmntvtnnk","summary":"Freeze three Petclinic workflows before evaluating the Boot migration","log_sha256":"90b3873f809db817158ed674395c6a2f67cd516a4007c6703ec750c5c7b8f99b","log_lines":769,"log_bytes":1853014,"log_gzip_bytes":392925,"ts":"2026-11-24T01:48:57.827Z","api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":0},
+    {"index":3,"change_id":"wuxomzzrutmwxoqsztmswyqrzznmumqr","summary":"Run change plans on bound JVM deployments (verification pending)","log_sha256":"aca9a926b7afbaeaf36cba791c5fac4df377c11e9185b2d71851a7a72ac0d00b","log_lines":1089,"log_bytes":2191711,"log_gzip_bytes":443614,"ts":"2026-11-24T02:02:08.771Z","api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":0},
+    {"index":4,"change_id":"nrxuystzmqwkquuvnrommnxksrstqpww","summary":"Exercise the live Petclinic HTTP observer (verification pending)","log_sha256":"f63a57fc4f54f2700b1a5aff76e4849d4d92911311a9f3cf865525edb03b5840","log_lines":1251,"log_bytes":2365531,"log_gzip_bytes":467848,"ts":"2026-11-24T02:07:15.954Z","api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":0},
+    {"index":5,"change_id":"qrvtrtormltkywrqkrkysmwkunqtswuw","summary":"Pin the organic campaign grader and its receipt set","log_sha256":"791da54e3aee39ab606434e3db74682a2ef78a379d2f91d2b441840f39faff7c","log_lines":1281,"log_bytes":2402030,"log_gzip_bytes":473519,"ts":"2026-11-24T02:08:14.633Z","api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":0}
   ],
   "prompts": [],
-  "events": {"schema":"llm-trace-metrics-events/v1","calls":71,"tools":244,"bytes":108036,"sha256":"73116686933efbdfae2c6802605cc1ee70cceb83494c3a9653a1e40d4b6a418f"},
+  "events": {"schema":"llm-trace-metrics-events/v1","calls":165,"tools":431,"bytes":211473,"sha256":"c2d8ffc83e1a51ab39fb4cca48b55660456cc2923eacd9705d2cad80aae580b3"},
   "cache_events": []
 }

@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Freeze action discovery and register transfer cases (verification pending)
 
-change `qwtkvvswlppt` · [log `cfa6e53d9276`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/cfa6e53d9276a6d88d2ed1cdaa8215838a341266463bf2493873fd1e50c8c8ab.jsonl.gz)
+[`36739f13b1b6`](https://github.com/pilifs/in-the-loop/commit/36739f13b1b6ce220f31459dba45d7085735229b) · [log `cfa6e53d9276`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/cfa6e53d9276a6d88d2ed1cdaa8215838a341266463bf2493873fd1e50c8c8ab.jsonl.gz)
 
 Freeze the public action search on TrainingStock before the JGraphT holdout. Register Guava direct and composed hex parsing, independent MutableFloat operands and a three-worker shared monitor. Compare native, model checker and original JVM separately. The exact JVM hex censuses, 100081 float pairs, one mask-zero replay and all three example replays passed. All 59 changed test groups passed, with the performance group passing on retry.
 
@@ -28,25 +28,25 @@ Jobs 20261123-225413-measure-guava-direct-null-boxed-and-comp, 20261123-225413-c
 
 ### Record verification results for 4 job(s)
 
-change `omuqnzwnzylw` · [log `5ab30c91eb15`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/5ab30c91eb156361fe73486529966cd51bae3d8cb23053db0fe7ca36fdb8b492.jsonl.gz)
+[`f31e2d358a3a`](https://github.com/pilifs/in-the-loop/commit/f31e2d358a3a55bad93bd69962bbf69cedab5499) · [log `5ab30c91eb15`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/5ab30c91eb156361fe73486529966cd51bae3d8cb23053db0fe7ca36fdb8b492.jsonl.gz)
 
 Outputs applied for 4 of the 4 job(s). 20261123-225413-compare-guava-parser-properties-under-bo: passed: 1 passed step(s) in 13.5s, peak 178.3 MiB (estimated 6m00s, 4.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261123-225414-check-the-full-paired-float-comparator-a: passed: 1 passed step(s) in 2.4s, peak 85.3 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261123-225415-check-atomic-split-and-terminal-assertio: passed: 1 passed step(s) in 6.4s, peak 89.0 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261123-225415-discover-and-replay-every-three-worker-m: passed: 1 passed step(s) in 2.4s, peak 82.1 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `tulrpuqrrvru` · [log `5ab30c91eb15`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/5ab30c91eb156361fe73486529966cd51bae3d8cb23053db0fe7ca36fdb8b492.jsonl.gz)
+[`fd6ab1965d49`](https://github.com/pilifs/in-the-loop/commit/fd6ab1965d49edcdfb8678450cd49eb21893379f) · [log `5ab30c91eb15`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/5ab30c91eb156361fe73486529966cd51bae3d8cb23053db0fe7ca36fdb8b492.jsonl.gz)
 
 Outputs applied for 3 of the 4 job(s); 1 declared or produced none. 20261123-225413-measure-guava-direct-null-boxed-and-comp: passed: 1 passed step(s) in 4.2s, peak 80.7 MiB (estimated 6m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-225414-measure-strict-native-entry-on-all-three: passed: 1 passed step(s) in 1.6s, peak 80.8 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-225414-measure-two-independent-mutablefloat-ope: passed: 1 passed step(s) in 1.6s, peak 83.3 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-230231-check-xz-frame-bytes-and-cache-identity: failed: 1 failed step(s) in 0.6s, peak 80.9 MiB (estimated 5m00s, 3.0 GiB) Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `kmsutkmouwto` · [log `5ab30c91eb15`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/5ab30c91eb156361fe73486529966cd51bae3d8cb23053db0fe7ca36fdb8b492.jsonl.gz)
+[`cec09253d150`](https://github.com/pilifs/in-the-loop/commit/cec09253d150ee5be6e2c3ee66abfd17aaaf3bbe) · [log `5ab30c91eb15`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/5ab30c91eb156361fe73486529966cd51bae3d8cb23053db0fe7ca36fdb8b492.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261123-230231-check-javaparser-traversal-in-fresh-sepa: passed: 1 passed step(s) in 10m39s, peak 377.7 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Qualify receiver transfer and paired arithmetic (verification pending)
 
-change `lumssozszluk` · [log `5ab30c91eb15`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/5ab30c91eb156361fe73486529966cd51bae3d8cb23053db0fe7ca36fdb8b492.jsonl.gz)
+[`6db1fbd497bf`](https://github.com/pilifs/in-the-loop/commit/6db1fbd497bfb60af578db7bc71085066fa2def7) · [log `5ab30c91eb15`](https://terminalvalue.net/raw-traces/01a20aa4-76c6-7f70-82a6-fe71589863f7/5ab30c91eb156361fe73486529966cd51bae3d8cb23053db0fe7ca36fdb8b492.jsonl.gz)
 
 The frozen public-history search reached 25 JGraphT graphs, matching all 150 independently audited transitions and their earlier edge and endpoint identities. Preserve failed producers and multi-edge settings. Extend the source-bound native checker to real JDK byte-array fill, boxed narrowing and widening, and member-class assertion startup. A guarded fixed-point circuit adds and subtracts independent binary32 and binary64 operands with rounding to nearest, ties to even. Strict native probes now establish Guava’s boxed boundary result and Commons Lang’s complete 2^46-pair subtraction property.
 

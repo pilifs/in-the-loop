@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record the setup for the receiver construction and property discovery brief
 
-change `vvqmtvnvspyu` · [log `1cc030ec7ff5`](https://terminalvalue.net/raw-traces/ed4bfe21-7bf2-42af-893c-e4d46cb1628a/1cc030ec7ff5f5eb354cc5e156e3f867c45780a3786606e6887680e02e4be5f2.jsonl.gz)
+[`987fd98ed44a`](https://github.com/pilifs/in-the-loop/commit/987fd98ed44a6844ba82172e52cf827327d80a58) · [log `1cc030ec7ff5`](https://terminalvalue.net/raw-traces/ed4bfe21-7bf2-42af-893c-e4d46cb1628a/1cc030ec7ff5f5eb354cc5e156e3f867c45780a3786606e6887680e02e4be5f2.jsonl.gz)
 
 A setup session pinned and checked every input the brief and its cases name, before the domain work starts. The pinned revisions are JavaParser 360 and CSV 366 (parent and fix), Commons Configuration 565 and 601 and Commons Compress 767 (old and new sides), and JGraphT 1.5.2, XZ 1.11 and 1.12, Guava 33.4.8 and Lang 3.17.0. Each is a worktree from a bare mirror; the XZ tags are signature-checked. The released graphs were resolved from Maven Central with strict checksums, and all 20 signatures are valid (JGraphT's key has since expired). The JGraphT, Guava and Lang jars match the brief's SHA-256 values. The earlier receiver campaign's area and Maven cache were checked (586 classpath files, none changed) and hard-link snapshotted. JBMC 6.11.0 and the JDK Arrays.class match the brief's digests, and the checker's release binary is current at this head.
 
@@ -28,7 +28,7 @@ Every JVM observation the brief states for an existing library or fixture reprod
 
 ### Propose five receiver-construction setup values for the allow list
 
-change `lrkvkplppzmu` · [log `f39195ff9cb8`](https://terminalvalue.net/raw-traces/ed4bfe21-7bf2-42af-893c-e4d46cb1628a/f39195ff9cb80ab96e1c239ad8a7191bbf319e83028d83fc56175366b1df5777.jsonl.gz)
+[`340b37aa93d0`](https://github.com/pilifs/in-the-loop/commit/340b37aa93d0bbe08dc385d19a8f71eb12938a7a) · [log `f39195ff9cb8`](https://terminalvalue.net/raw-traces/ed4bfe21-7bf2-42af-893c-e4d46cb1628a/f39195ff9cb80ab96e1c239ad8a7191bbf319e83028d83fc56175366b1df5777.jsonl.gz)
 
 The receiver-construction setup agent proposed five false positives from its log: four base64 XZ test frames copied from the committed public receipt verification/domain-foundations/receiver-verified/04/callers/commons-compress-767.json, and one line of the public PGP signature on xz-java's v1.12 tag. Its own commit of the proposals was refused by the permission check, so the watcher commits them. Proposals only; no approval recorded.
 
