@@ -22,11 +22,11 @@
 | spring-projects/spring-framework#25305 | written | Compared the parent’s mandatory-query precondition with merged isValid(interval), the SQL fallback and close-in-finally. Distinct failed/successful connection ownership and the SQL-free retry remain unexecuted. |
 | spring-projects/spring-framework#23562 | written | Compared #23304’s Flux.next history with the two pinned operator paths and the Mono cancellation regression. Gated commit timing and fresh-connection visibility after transactional(Mono) remain unexecuted. |
 | spring-projects/spring-framework#29703 | written | Read both cleanup chains, the rollback/restore mock assertions, and the driver clarification about jasync 2.1.19 vs 2.1.20. Subscribed-close receipts and independent checkout after cleanup remain predictions. |
-| spring-projects/spring-framework#33533 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#35627 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#22260 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#34723 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#32469 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#33533 | written | Read registerBean with explicit qualifier classes, the flag-only regression and Fallback Javadoc. By-type lookup, stream membership and reversed registration order have not been executed. |
+| spring-projects/spring-framework#35627 | written | Read the three-service report, scoped proxy flag tests and @Bean qualifier contract. Consumer routing after adding a third restricted delegate remains unexecuted. |
+| spring-projects/spring-framework#22260 | written | Read the SPI overloads, both lifecycle options, prototype XML and integration assertions. The absent-name request in the presence of a same-type Spring decoy remains unexecuted. |
+| spring-projects/spring-framework#34723 | written | Read the named-level annotation and hierarchy docs, parent/child caller and mock cache regressions, and the related reload/spy reports. The no-selector control and paired-client identity check remain unexecuted. |
+| spring-projects/spring-framework#32469 | written | Read the PR’s separate caller/advice observations and new JDK/CGLIB test matrix. The two modules relocate wrapping to the generated class. Recovery by a typed advice catch remains unexecuted. |
 | spring-projects/spring-framework#28322 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#30020 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#33470 | not yet | Awaiting source review and claims. |
