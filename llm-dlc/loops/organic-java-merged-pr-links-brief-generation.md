@@ -13,10 +13,10 @@ The pinned comparisons and primary sources are linked in [the brief](organic-jav
 | apache/solr#3158 | written | Read SOLR-17649 and the pinned TestJsonFacets, schema, enum mapping, field type and terms guide. Counting the six input documents gives Low=4, Medium=3, Not Available=3, High=2. The release report describes empty buckets. Repeating a label within a document remains an open check on the merge. |
 | apache/commons-csv#613 | written | CSV-329 supplies the one-row StringReader failure. At 871f745, the regression uses package-level nextRecord(), iterator uses Uncheck.get, and the POM pins Commons IO 2.22.0. Independent UTF-8 prefix lengths are 8 (LF), 9 (CRLF) and 4 (ASCII delimiter/LF). Public suffix readback remains open. |
 | FasterXML/jackson-dataformats-text#625 | written | Read issue #9, the change from named to unnamed parser state, and both pinned quote tests. The schema-less regression asserts two EOF APIs; the wrapped branch only checks its first row. The added second-record/lookahead history is unexecuted. |
-| FasterXML/woodstox#335 | not yet | |
-| apache/avro#3709 | not yet | |
-| ical4j/ical4j#931 | not yet | |
-| brettwooldridge/HikariCP#2346 | not yet | |
+| FasterXML/woodstox#335 | written | Read issue #334, both buffered-writer revisions and the landed StAX2 regression. For offset 4, length 5 and selected X]]>Y, the first bracket is array index 5. After a one-character replacement the temporary copy puts it at index 1. The two-delimiter repaired-text readback remains a prediction. |
+| apache/avro#3709 | written | Read AVRO-4211, the 1.12.0 spec, Schema, IdlUtils, JacksonUtils and its landed scalar tests at 4c29cfb. The IDL writer serializes field.defaultVal(); nonempty array conversion on the primitive branch reaches getElementType(), which throws there. The proposed int-first array fixture and IDL output were not executed. |
+| ical4j/ical4j#931 | written | Read ComponentGroup’s two-parent landed range and its OpenSpec and parsed-calendar regression. The July 16 endpoint is included by that fixture, and the original and corrected lists both have three entries. The loop removes by start from a list containing earlier overrides. Order dependence when a moved occurrence lands on another original start is a source prediction. |
+| brettwooldridge/HikariCP#2346 | written | Read issue #2323, both ProxyConnection revisions, PoolBase and PostgresTest with postgres:16 and pgJDBC 42.7.7. The parent skips setting the dirty bit when the applied schema is null. The landed test expects test/null/test across the two borrows. Same-backend SQL lookup of the marker remains unexecuted. |
 | apache/commons-pool#85 | not yet | |
 | ReactiveX/RxJava#6019 | not yet | |
 | reactor/reactor-core#3822 | not yet | |
