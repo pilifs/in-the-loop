@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-25T09:25:25.511Z",
-  "duration_seconds": 98075,
+  "ended": "2026-11-25T10:10:58.625Z",
+  "duration_seconds": 100808,
   "stats": {
-    "turns": 15,
-    "api_calls": 3864,
-    "tool_calls": 9589,
-    "tool_errors": 204,
-    "compactions": 13,
+    "turns": 16,
+    "api_calls": 3981,
+    "tool_calls": 9981,
+    "tool_errors": 211,
+    "compactions": 14,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 5025064,
-      "output_tokens": 2111287,
-      "cache_read_input_tokens": 1129489792,
+      "input_tokens": 5186432,
+      "output_tokens": 2173187,
+      "cache_read_input_tokens": 1149320448,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5317,
-    "exec": 3685,
-    "apply_patch": 434,
+    "Bash": 5582,
+    "exec": 3800,
+    "apply_patch": 446,
     "wait": 75,
     "sleep": 73,
     "send_message_to_user_async": 4,
@@ -42,6 +42,10 @@
     "examples/404-jts-endpoint-projection/caller/PublicCaller.java",
     "examples/405-roaring-subtype-union/caller/PublicCaller.java",
     "examples/406-datasketches-quantile-image/caller/PublicCaller.java",
+    "examples/409-jackson-csv-end-of-input/README.md",
+    "examples/411-avro-idl-union-default/README.md",
+    "examples/412-ical4j-moved-occurrences/README.md",
+    "examples/419-jool-window-endpoints/README.md",
     "examples/419-jool-window-endpoints/caller/PublicCaller.java",
     "examples/422-guava-live-set-equality/caller/PublicCaller.java",
     "examples/schema/example.schema.json",
@@ -192,6 +196,7 @@
     "lib/tests/fixtures/claims/claims/Radix.java",
     "lib/tests/fixtures/claims/claims/Tokens.java",
     "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md",
+    "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md",
     "llm-dlc/loops/organic-java-pr-capability-composition-fast-follow-results.md",
     "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-results.md",
     "verification/beyond-jbmc/integer-codecs/RESULTS.md",
@@ -199,6 +204,9 @@
     "verification/beyond-jbmc/scaffold-first/RESULTS.md",
     "verification/beyond-jbmc/successor/RESULTS.md",
     "verification/findings.md",
+    "verification/merged-pr-links/upstream/JacksonWrapping.java",
+    "verification/merged-pr-links/upstream/README.md",
+    "verification/merged-pr-links/upstream/recheck.py",
     "verification/product-behaviour/audit.py",
     "verification/product-behaviour/cases/J02/UpgradeProbe.java",
     "verification/product-behaviour/cases/J02/case.json",
@@ -510,24 +518,38 @@
     {
       "index": 13,
       "started": "2026-11-25T08:33:50.411Z",
-      "ended": "2026-11-25T09:25:25.511Z",
+      "ended": "2026-11-25T09:33:34.357Z",
       "turns": 0,
-      "api_calls": 151,
+      "api_calls": 160,
       "usage": {
-        "input_tokens": 131666,
-        "output_tokens": 82540,
-        "cache_read_input_tokens": 23435648,
+        "input_tokens": 133385,
+        "output_tokens": 87965,
+        "cache_read_input_tokens": 25412096,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 217410
+      "peak_context_tokens": 221703
+    },
+    {
+      "index": 14,
+      "started": "2026-11-25T09:33:34.362Z",
+      "ended": "2026-11-25T10:10:58.625Z",
+      "turns": 1,
+      "api_calls": 108,
+      "usage": {
+        "input_tokens": 159649,
+        "output_tokens": 56475,
+        "cache_read_input_tokens": 17854208,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 221920
     }
   ],
   "log": {
-    "sha256": "8b677d26673de01eb4939859f7a54f32036ce9bb3a547fcc7c981257f9d8f693",
-    "bytes": 56288965,
-    "lines": 30358,
-    "gzip_bytes": 10166053,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/8b677d26673de01eb4939859f7a54f32036ce9bb3a547fcc7c981257f9d8f693.jsonl.gz"
+    "sha256": "9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996",
+    "bytes": 58503991,
+    "lines": 31375,
+    "gzip_bytes": 10617295,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1506,6 +1528,14 @@
       "summary": "Complete the merged Java public API campaign (verification pending)",
       "body": "Add the other fourteen public callers, the campaign audit and the twenty-case report. All 20 merged intent predictions and 20 unchanged controls held. Jackson CSV, Avro, ical4j and both jOOλ modules refuted four challenge predictions. Preserve the original expectations, typed outcomes, runtime digests and overlay boundaries. The H2 and PostgreSQL 16.16 and 18.1 jOOQ histories reproduce both the counting discrepancy and the repair.\n\nAll 143 physical observations across 24 deployment pairs were reproduced through the normal example route. All fourteen new example validations and the 56 selected test suites passed. The audit checks 61 original claim rows and the retained Avro receipt confirms four original-method entries. Adding a missing observation, wrong result or reversed source pins to the audit's inputs was checked to fail.\n\nIndependent full replay job 20261125-091819-replay-all-sixty-one-merged-java-public. Original-method control and challenge jobs 20261125-091819-qualify-avro-merged-challenge-and-contro, 20261125-091819-qualify-ical4j-merged-challenge-and-cont, 20261125-091819-qualify-jackson-csv-merged-challenge-and and 20261125-091819-qualify-joo-merged-challenge-and-control.",
       "log_sha256": "8b677d26673de01eb4939859f7a54f32036ce9bb3a547fcc7c981257f9d8f693"
+    },
+    {
+      "change_id": "ysxolvkmqrrnowulmkyrrtmtppmurzvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Classify four merged Java challenges (verification pending)",
+      "body": "Replayed the four disputed public callers on the current Maven releases and frozen upstream development commits. The same caller bytecode confirmed the Avro array-default and jOOλ window defects on release and development builds, and the ical4j override-order defect on its development branch. Three public reproductions and related tracker checks are ready for the user in VF-065. Jackson's documented wrapping and the independent token reader both preserved both rows on all four tested deployments, correcting the brief's two-row configuration assumption.\n\nAll 34 release and development observations and four historical Jackson controls reproduced in clean JVMs. The standalone report instructions reproduced the release behavior for every affected module. The four changed examples plus HikariCP and JDT passed their normal replay validators, incorrect artifact digests and class providers were rejected, the pipeline layout validated, and all 54 selected test suites passed. The five previous campaign jobs passed. Job 20261125-095857-replay-three-upstream-defects-and-the-ja independently repeats these 38 observations and the original 143-JVM campaign.",
+      "log_sha256": "9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996"
     }
   ],
   "logs": {
@@ -1807,6 +1837,12 @@
       "bytes": 38764538,
       "lines": 21072,
       "gzip_bytes": 6941786,
+      "url": null
+    },
+    "9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996": {
+      "bytes": 58503991,
+      "lines": 31375,
+      "gzip_bytes": 10617295,
       "url": null
     },
     "a073e9a82ba03c7d7480d9ab16ea02a91a68d8b97cc601683e6cfc70d60bb222": {

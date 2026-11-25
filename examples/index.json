@@ -23227,7 +23227,7 @@
       "id": "409",
       "path": "examples/409-jackson-csv-end-of-input",
       "title": "Jackson CSV identifies the end of a quoted array row",
-      "summary": "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides.",
+      "summary": "The fix stopped advertising a phantom row at EOF. The unwrapped schema-less iterator stopped after its first row. Jackson’s documented wrapped iterator read both quoted rows on both pins.",
       "origin": "real-world",
       "system": "Jackson CSV",
       "symbol": "MappingIterator.hasNextValue",
@@ -23259,7 +23259,8 @@
       "notes": [
         "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
         "The CSV module comes from each source pin, built against released Jackson 3.2.0 dependencies because the snapshot graph is unavailable.",
-        "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides."
+        "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides.",
+        "The schema-less String[] iterator needs WRAP_AS_ARRAY for multiple rows. With this setting both original pins, release 3.3.0 and the 3.x branch returned both quoted cells after repeated lookahead. The raw unwrapped token reader also exposed both rows on all four deployments. The refuted challenge was an incorrect configuration assumption in the brief."
       ],
       "source": "https://github.com/FasterXML/jackson-dataformats-text/pull/625",
       "target": null
@@ -23340,7 +23341,8 @@
       "existingTestsPassed": null,
       "notes": [
         "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
-        "The integer after a null branch changed from Java null and an IDL null initializer to Integer(1) and the literal 1. With the array default [1], both pins threw AvroRuntimeException from the field getter and the IDL writer when the int branch came first."
+        "The integer after a null branch changed from Java null and an IDL null initializer to Integer(1) and the literal 1. With the array default [1], both pins threw AvroRuntimeException from the field getter and the IDL writer when the int branch came first.",
+        "The original caller reproduced the scalar-first array exception in the published Avro and avro-idl 1.12.2 JARs and on main at a3355d0826fa. The Avro specification accepts the array in either position. VF-065 tracks the report and its reproduction."
       ],
       "source": "https://github.com/apache/avro/pull/3709",
       "target": null
@@ -23380,7 +23382,8 @@
       "existingTestsPassed": null,
       "notes": [
         "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
-        "The fix retained both the timed and all-day July 14 occurrences and removed the original timed July 15. With two moved events, the fix returned only B for input order A,B and both replacements for B,A."
+        "The fix retained both the timed and all-day July 14 occurrences and removed the original timed July 15. With two moved events, the fix returned only B for input order A,B and both replacements for B,A.",
+        "The same override-order defect reproduced on develop at 2c5ff9f211a8. Published 4.4.0 predates the fix and returns the original masters in either order. The newer branch excludes the midnight end of the control window by contract. Both moved meetings lie strictly inside the noon challenge window. VF-065 tracks the order-dependent loss."
       ],
       "source": "https://github.com/ical4j/ical4j/pull/931",
       "target": null
@@ -23665,7 +23668,8 @@
       "notes": [
         "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
         "The two published module variants run separately on the same JDK.",
-        "Both jOOλ modules repaired the ordinary wide window and preserved the future-only control. Widening the upper bound to Long.MAX_VALUE minus one changed the fixed third row’s last value from 3 to 1."
+        "Both jOOλ modules repaired the ordinary wide window and preserved the future-only control. Widening the upper bound to Long.MAX_VALUE minus one changed the fixed third row’s last value from 3 to 1.",
+        "Both published 0.9.16 artifacts and both modules built from main at 9273e1f54356 gave last value 1 on the third row after widening. The correct last value for that partition is 3. VF-065 tracks the report and three-row reproduction."
       ],
       "source": "https://github.com/jOOQ/jOOL/pull/418",
       "target": null

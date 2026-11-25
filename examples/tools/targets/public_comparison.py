@@ -94,6 +94,33 @@ def classpath(cache, runtime, deployment, side, work):
     return os.pathsep.join(map(str, files))
 
 
+def observe(jdk, classpath, trial, caller, args, providers, *, label, service_env=None):
+    """Run one public history and check which artifact actually supplied each original class."""
+    obs = trial / "observed"
+    log = trial / "loaded"
+    encoded = [base64.b64encode(s.encode("utf-16-be")).decode() for s in args]
+    cmd = [jdk / "bin/java", "-XX:-UsePerfData", "-Xmx256m", f"-Djava.io.tmpdir={trial}",
+           f"-Duser.home={trial}", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8",
+           f"-Dupgrade.observation.file={obs}", f"-Xlog:class+load=info:file={log}",
+           "-cp", classpath, "UpgradeObservation", caller, *encoded]
+    env = {"PATH": str(jdk / "bin") + ":/usr/bin:/bin", "HOME": str(trial),
+           "TMPDIR": str(trial), "TZ": "UTC", "LANG": "C.UTF-8", **(service_env or {})}
+    proc = subprocess.run(cmd, cwd=trial, env=env, capture_output=True, text=True, timeout=40)
+    if proc.returncode or not obs.is_file():
+        raise ValueError(f"{label} failed to run: {proc.stderr[-1200:]}")
+    records = obs.read_text().splitlines()
+    outcome = upgrade_replay.typed_outcome(records)
+    loaded = upgrade_replay.class_origins(log.read_text())
+    for cls, required in providers.items():
+        if loaded.get(cls) != {required.resolve()}:
+            details = next((s.split(" ", 1)[1] for s in records if s.startswith("UPGRADE-DETAIL ")), "")
+            detail = base64.b64decode(details).decode("utf-16-be", "replace")
+            if service_env and "PUBLIC_COMPARISON_PG_PASSWORD" in service_env:
+                detail = detail.replace(service_env["PUBLIC_COMPARISON_PG_PASSWORD"], "<fixture credential>")
+            raise ValueError(f"{label}: {cls} did not load from {required.name}. {detail}")
+    return outcome
+
+
 def replay(folder, record=False):
     comparison_plan(folder)
     spec = read(folder / "comparison.json")
@@ -126,6 +153,7 @@ def replay(folder, record=False):
                             "-cp", cp["fix"], "-d", classes, upgrade_replay.LAUNCHER, *sources], check=True)
             runs = []
             for side in SIDES:
+                providers = {cls: cache / deploy["classpath"][side][index] for cls, index in deploy["providers"].items()}
                 for row in spec["questions"]:
                     if side in row.get("omit", {}):
                         continue
@@ -133,31 +161,10 @@ def replay(folder, record=False):
                         trial = Path(trial_path)
                         if fixtures:
                             shutil.copytree(folder / "fixtures", trial / "fixtures")
-                        obs = trial / "observed"
-                        log = trial / "loaded"
-                        args = [base64.b64encode(s.encode("utf-16-be")).decode() for s in row["args"]]
-                        cmd = [jdk / "bin/java", "-XX:-UsePerfData", "-Xmx256m", "-Djava.io.tmpdir=" + trial_path,
-                               "-Duser.home=" + trial_path, "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8",
-                               "-Dupgrade.observation.file=" + str(obs), "-Xlog:class+load=info:file=" + str(log),
-                               "-cp", str(classes) + os.pathsep + cp[side], "UpgradeObservation", "PublicCaller", *args]
-                        env = {"PATH": str(jdk / "bin") + ":/usr/bin:/bin", "HOME": trial_path,
-                               "TMPDIR": trial_path, "TZ": "UTC", "LANG": "C.UTF-8"}
-                        env.update(service_env)
-                        proc = subprocess.run(cmd, cwd=trial, env=env, capture_output=True, text=True, timeout=40)
-                        if proc.returncode or not obs.is_file():
-                            raise ValueError(f"{folder.name} {side} {row['id']} failed to run: {proc.stderr[-1200:]}")
-                        actual = upgrade_replay.typed_outcome(obs.read_text().splitlines())
+                        actual = observe(jdk, str(classes) + os.pathsep + cp[side], trial, "PublicCaller",
+                                         row["args"], providers, label=f"{folder.name} {side} {row['id']}",
+                                         service_env=service_env)
                         print(f"{name} {side} {row['id']} {actual}", flush=True)
-                        loaded = upgrade_replay.class_origins(log.read_text())
-                        for cls, index in deploy["providers"].items():
-                            required = cache / deploy["classpath"][side][index]
-                            if loaded.get(cls) != {required.resolve()}:
-                                details = next((s.split(" ", 1)[1] for s in obs.read_text().splitlines()
-                                                if s.startswith("UPGRADE-DETAIL ")), "")
-                                detail = base64.b64decode(details).decode("utf-16-be", "replace")
-                                if service_env:
-                                    detail = detail.replace(service_env["PUBLIC_COMPARISON_PG_PASSWORD"], "<fixture credential>")
-                                raise ValueError(f"{side} {row['id']}: {cls} did not load from {required.name}. {detail}")
                         expected = row["expected"].get(side)
                         runs.append({"side": side, "id": row["id"], "outcome": actual,
                                      "prediction": "observed only" if expected is None else

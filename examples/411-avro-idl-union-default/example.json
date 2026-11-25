@@ -35,6 +35,7 @@
   "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
   "notes": [
     "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
-    "The integer after a null branch changed from Java null and an IDL null initializer to Integer(1) and the literal 1. With the array default [1], both pins threw AvroRuntimeException from the field getter and the IDL writer when the int branch came first."
+    "The integer after a null branch changed from Java null and an IDL null initializer to Integer(1) and the literal 1. With the array default [1], both pins threw AvroRuntimeException from the field getter and the IDL writer when the int branch came first.",
+    "The original caller reproduced the scalar-first array exception in the published Avro and avro-idl 1.12.2 JARs and on main at a3355d0826fa. The Avro specification accepts the array in either position. VF-065 tracks the report and its reproduction."
   ]
 }

@@ -2,7 +2,7 @@
   "$schema": "../schema/example.schema.json",
   "id": "409",
   "title": "Jackson CSV identifies the end of a quoted array row",
-  "summary": "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides.",
+  "summary": "The fix stopped advertising a phantom row at EOF. The unwrapped schema-less iterator stopped after its first row. Jackson’s documented wrapped iterator read both quoted rows on both pins.",
   "origin": "real-world",
   "categories": [
     "functional"
@@ -36,6 +36,7 @@
   "notes": [
     "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
     "The CSV module comes from each source pin, built against released Jackson 3.2.0 dependencies because the snapshot graph is unavailable.",
-    "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides."
+    "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides.",
+    "The schema-less String[] iterator needs WRAP_AS_ARRAY for multiple rows. With this setting both original pins, release 3.3.0 and the 3.x branch returned both quoted cells after repeated lookahead. The raw unwrapped token reader also exposed both rows on all four deployments. The refuted challenge was an incorrect configuration assumption in the brief."
   ]
 }

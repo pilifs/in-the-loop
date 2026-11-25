@@ -35,6 +35,7 @@
   "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
   "notes": [
     "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
-    "The fix retained both the timed and all-day July 14 occurrences and removed the original timed July 15. With two moved events, the fix returned only B for input order A,B and both replacements for B,A."
+    "The fix retained both the timed and all-day July 14 occurrences and removed the original timed July 15. With two moved events, the fix returned only B for input order A,B and both replacements for B,A.",
+    "The same override-order defect reproduced on develop at 2c5ff9f211a8. Published 4.4.0 predates the fix and returns the original masters in either order. The newer branch excludes the midnight end of the control window by contract. Both moved meetings lie strictly inside the noon challenge window. VF-065 tracks the order-dependent loss."
   ]
 }
