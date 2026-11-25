@@ -1,0 +1,136 @@
+{
+  "pins": {
+    "parent": "b8ccec91b7670d8c62a5712e210bb25f396ade7e",
+    "fix": "5f48eec8d5e3f25df641393c9440e086646868b7"
+  },
+  "runtimeSha256": "723a19a3feb43815066bf60bf37cc9cd49770cce907760f13b3ffdc2a2087ecb",
+  "wrapperSha256": "31addb4b2d19eb3028eb40f17a5e810ce8fdaaca56df60bbb162db488e24bdaf",
+  "observations": {
+    "parent": {
+      "apache/calcite#5378.1": {
+        "freshJvms": 2,
+        "publicReturn": "rule=true rows=[]/[10]",
+        "planners": 2,
+        "converted": [
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "trimmed": [
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "otherRulesAttempted": true,
+        "transposeAttempts": {
+          "EXCEPT": 1,
+          "INTERSECT": 1
+        },
+        "transposeProductions": {
+          "EXCEPT": 1,
+          "INTERSECT": 1
+        }
+      },
+      "apache/calcite#5378.2": {
+        "freshJvms": 2,
+        "publicReturn": "rule=true rows=[10, 10]",
+        "planners": 1,
+        "converted": [
+          "LogicalProject(LogicalUnion(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "trimmed": [
+          "LogicalUnion(LogicalProject(LogicalValues),LogicalProject(LogicalValues))"
+        ],
+        "otherRulesAttempted": true,
+        "transposeAttempts": {},
+        "transposeProductions": {}
+      },
+      "apache/calcite#5378.3": {
+        "freshJvms": 2,
+        "publicReturn": "rule=true rows=[]/[10, 10, 10] | []/[10, 10, 10]",
+        "planners": 4,
+        "converted": [
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "trimmed": [
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "otherRulesAttempted": true,
+        "transposeAttempts": {
+          "EXCEPT": 2,
+          "INTERSECT": 2
+        },
+        "transposeProductions": {
+          "EXCEPT": 2,
+          "INTERSECT": 2
+        }
+      }
+    },
+    "fix": {
+      "apache/calcite#5378.1": {
+        "freshJvms": 2,
+        "publicReturn": "rule=true rows=[10]/[]",
+        "planners": 2,
+        "converted": [
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "trimmed": [
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "otherRulesAttempted": true,
+        "transposeAttempts": {
+          "EXCEPT": 1,
+          "INTERSECT": 1
+        },
+        "transposeProductions": {}
+      },
+      "apache/calcite#5378.2": {
+        "freshJvms": 2,
+        "publicReturn": "rule=true rows=[10, 10]",
+        "planners": 1,
+        "converted": [
+          "LogicalProject(LogicalUnion(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "trimmed": [
+          "LogicalUnion(LogicalProject(LogicalValues),LogicalProject(LogicalValues))"
+        ],
+        "otherRulesAttempted": true,
+        "transposeAttempts": {},
+        "transposeProductions": {}
+      },
+      "apache/calcite#5378.3": {
+        "freshJvms": 2,
+        "publicReturn": "rule=true rows=[10, 10]/[10] | []/[10, 10, 10]",
+        "planners": 4,
+        "converted": [
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "trimmed": [
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalMinus(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))",
+          "LogicalProject(LogicalIntersect(LogicalProject(LogicalValues),LogicalProject(LogicalValues)))"
+        ],
+        "otherRulesAttempted": true,
+        "transposeAttempts": {
+          "EXCEPT": 2,
+          "INTERSECT": 2
+        },
+        "transposeProductions": {}
+      }
+    }
+  },
+  "callerClasses": {
+    "PublicCaller.class": "86414a2f1205bfac3984a412a2b2fbcd836a467a5c424b0cb59cb166679d4b3f",
+    "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+  }
+}
