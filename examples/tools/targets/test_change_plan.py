@@ -8,10 +8,19 @@ import unittest
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from targets import change_evidence, change_helpers, change_inventory, resource_workflows
+from targets import change_evidence, change_helpers, change_inventory, integer_codecs, resource_workflows
 
 
 class ChangePlanTest(unittest.TestCase):
+    def test_signed_codec_candidates_respect_instruction_boundaries_and_exception_handlers(self):
+        encode = bytes.fromhex("1a 04 78 1a 10 1f 7a 82 ac")
+        decode = bytes.fromhex("1a 04 7c 1a 04 7e 74 82 ac")
+        self.assertEqual(integer_codecs.roles(encode, 0), {"encoder"})
+        self.assertEqual(integer_codecs.roles(decode, 0), {"decoder"})
+        self.assertEqual(integer_codecs.roles(decode, 1), set())
+        # The byte value for ixor is an operand of bipush rather than an instruction.
+        self.assertEqual(integer_codecs.roles(bytes.fromhex("1a 04 7a 10 82 7e ac"), 0), set())
+
     def setUp(self):
         self.entry = "a.Client#read(I)I"
         self.cases = [{"args": [str(i)], "expected": {"return": str(i)}} for i in range(2)]

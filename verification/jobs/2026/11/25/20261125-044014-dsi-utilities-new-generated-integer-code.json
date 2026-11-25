@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-044014-dsi-utilities-new-generated-integer-code",
+  "title": "DSI Utilities new generated integer codec predicates",
+  "description": "The artifact-only integer selector nominated a signed decoder and inverse encoder. The generated consumer is locked and passed original JVM positive and control observations in both releases before this job. Use the same generated class bytes and complete registered domain to compare strict native, staged JBMC and stock JBMC, including the wrong inverse and the unsigned full-bit hypothesis.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/tools/targets/integer_codecs.py"
+    ]
+  },
+  "expected": "Four comparator rows for the observed release with the original class digest, its registration and raw results. An assertion or inverse that fails to reach its real target gets no credit.",
+  "submitted": {
+    "at": "2026-11-25T04:40:14+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc",
+    "dpkg-deb"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows.py measure 02 --side new",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/integer-codecs/matched/02/new"
+  ]
+}

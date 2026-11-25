@@ -1,5 +1,6 @@
 """Discover and scaffold a signed integer encoder/decoder from two ordered Java deployments."""
 import argparse
+from collections import defaultdict
 import hashlib
 import itertools
 import json
@@ -84,17 +85,17 @@ public final class ObserveCodec {
 """
 
 
-def scaffold(encode, decode, graphs, jdk, dest, identity):
+def scaffold(encode, decode, graphs, jdk, dest, identity, image):
     dest.mkdir()
     probe = dest / "IntegerCodec.java"
     probe.write_text(caller(encode, decode))
     expected = [[n, n // 2 if n % 2 == 0 else -1 - n // 2, n] for n in SAMPLES]
     registration = {"encoder": list(encode), "decoder": list(decode), "descriptor": "(I)I", "inputs": identity,
-                    "callerSha256": upgrade_replay.sha(probe), "jdkModulesSha256": upgrade_replay.sha(jdk / "lib/modules") if (jdk / "lib/modules").is_file() else None,
+                    "callerSha256": upgrade_replay.sha(probe), "jdkModulesSha256": image,
                     "primary": "Decode each nonnegative Java int by parity and half its magnitude.",
                     "unchangedControl": "Encode the decoded value and recover the input on the same domain.",
                     "rawBitHypothesis": "Decode all 32-bit inputs as unsigned zigzag bit patterns.",
-                    "boundaries": RAW_CONTROLS, "expectedSamples": expected}
+                    "rawBitPredictions": [[n, ((n & 0xffffffff) >> 1) ^ -(n & 1)] for n in RAW_CONTROLS], "expectedSamples": expected}
     change_evidence.write_json(dest / "registration.json", registration)
     record = {"registrationSha256": upgrade_replay.sha(dest / "registration.json"), "sides": {}, "firstScaffoldStop": None}
     with tempfile.TemporaryDirectory(prefix="integer-codec-") as temporary:
@@ -136,20 +137,28 @@ def discover(before, after, jdk, dest):
         raise ValueError("the original launch observer requires JDK 11 or newer")
     old, new = [inventory(graphs[s][0], feature) for s in ("old","new")]
     enc, dec = [sorted(old[r].keys() & new[r].keys()) for r in ("encoder", "decoder")]
-    # Pair within a Java package. Prefer a shared owner, then a stable lexical order.
-    choices = sorted(((a,b) for a,b in itertools.product(enc,dec) if a!=b and a[0].rpartition(".")[0] == b[0].rpartition(".")[0]),
-                     key=lambda p: (p[0][0] != p[1][0], p))
+    # Prefer a shared owner, then pair within a package. Count omitted pairs without materializing their product.
+    by_owner, by_package = defaultdict(list), defaultdict(list)
+    for target in dec:
+        by_owner[target[0]].append(target)
+        by_package[target[0].rpartition(".")[0]].append(target)
+    decoders = set(dec)
+    total = sum(len(by_package[a[0].rpartition(".")[0]]) - (a in decoders) for a in enc)
+    together = ((a,b) for a in enc for b in by_owner[a[0]] if a != b)
+    separate = ((a,b) for a in enc for b in by_package[a[0].rpartition(".")[0]] if a[0] != b[0])
+    choices = itertools.islice(itertools.chain(together, separate), 8)
+    image = upgrade_replay.sha(jdk / "lib/modules")
     dest.mkdir(parents=True, exist_ok=False)
     rows = []
-    for i, (encode, decode) in enumerate(choices[:8], 1):
+    for i, (encode, decode) in enumerate(choices, 1):
         sub = f"candidate-{i}"
         methods = {side: {role: inv[role][key] for role,key in (("encoder", encode),("decoder", decode))}
                    for side,inv in (("old",old),("new",new))}
-        state = scaffold(encode, decode, graphs, jdk, dest / sub, inputs)
+        state = scaffold(encode, decode, graphs, jdk, dest / sub, inputs, image)
         rows.append({"directory":sub,"encoder":encode,"decoder":decode,"methodBytes":methods,
                      "firstScaffoldStop":state["firstScaffoldStop"]})
-    report = {"inputs":inputs, "candidateCount":len(choices), "measuredCandidates":rows, "candidateLimit":8,
-              "firstScaffoldStop":None if choices else "no common public static encoder and decoder of a supported shape"}
+    report = {"inputs":inputs, "candidateCount":total, "measuredCandidates":rows, "candidateLimit":8,
+              "firstScaffoldStop":None if total else "no common public static encoder and decoder of a supported shape"}
     change_evidence.write_json(dest / "discovery.json", report)
     return report
 
