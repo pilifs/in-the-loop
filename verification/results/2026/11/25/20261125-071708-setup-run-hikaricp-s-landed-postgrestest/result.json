@@ -1,0 +1,261 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-071708-setup-run-hikaricp-s-landed-postgrestest",
+  "title": "Setup: run HikariCP's landed PostgresTest at both #2346 revisions and transplanted onto the parent",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 7m02s, peak 723.7 MiB (estimated 10m00s, 3.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-071708-setup-run-hikaricp-s-landed-postgrestest.json",
+    "sha256": "57a651b35dbdb63efad1ab019e2dc9b097985029794928c452b1235b2c882f34",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-071708-setup-run-hikaricp-s-landed-postgrestest",
+      "title": "Setup: run HikariCP's landed PostgresTest at both #2346 revisions and transplanted onto the parent",
+      "description": "Setup for case M11 (HikariCP #2346, schema reset between borrowers) of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links/worktrees (M11-HikariCP-fix = b81bbc9d, M11-HikariCP-parent = ee5328d2), runs Maven offline on JDK 17 against the cache's local repository: the whole PostgresTest class (Testcontainers 1.20.3, image postgres:16 already pulled, one container per test) on the fix, the parent's own copy on the parent, and the fix's PostgresTest plus its postgres_init_script.sql transplanted onto the parent, where only testSchema should fail (the setup saw it fail alone at line 162, expected:<test> but was:<null>). Testcontainers needs -Dapi.version=1.44 for Docker 29 (passed through the POM's sureFireOptions11 property; no upstream file changed). JUnit summaries go to .../logs; worktrees are restored and build trees removed. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: fix 7/7 pass, parent's own 6/6 pass, transplant fails exactly testSchema; no containers left",
+      "submitted": {
+        "at": "2026-11-25T07:17:08+00:00",
+        "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+        "by": "setup agent (Claude Opus 5.5), fork B"
+      },
+      "requires": [
+        "java",
+        "docker",
+        "mvn",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m"
+      },
+      "steps": [
+        {
+          "name": "M11-HikariCP-fix: the whole landed PostgresTest (7 tests) on the fix, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-fix; echo worktree=M11-HikariCP-fix commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'rm -rf target' EXIT; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-fix-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-fix-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+          "cwd": "."
+        },
+        {
+          "name": "M11-HikariCP-parent: the parent's own PostgresTest (6 tests), offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-parent; echo worktree=M11-HikariCP-parent commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'rm -rf target' EXIT; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-parent-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-parent-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+          "cwd": "."
+        },
+        {
+          "name": "M11-HikariCP-parent: the fix's PostgresTest and init script transplanted; only testSchema may fail",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-parent; echo worktree=M11-HikariCP-parent commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'git checkout -q -- . ; git clean -fdq src; rm -rf target' EXIT; git show b81bbc9d438ffac5ef7be4609121d76bb8a31564:src/test/java/com/zaxxer/hikari/pool/PostgresTest.java > src/test/java/com/zaxxer/hikari/pool/PostgresTest.java; git show b81bbc9d438ffac5ef7be4609121d76bb8a31564:src/test/resources/postgres_init_script.sql > src/test/resources/postgres_init_script.sql; git status --short; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-transplant-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-transplant-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-transplant-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -c '^junit failed' $O/logs/M11-transplant-PostgresTest.junit.txt) -eq 1; grep -q '^junit failed PostgresTest#testSchema$' $O/logs/M11-transplant-PostgresTest.junit.txt; test $(grep -o 'errors=[0-9]*' $O/logs/M11-transplant-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "ff6d65696db862c45937ab6049a1e8d834480bfb",
+  "startedAt": "2026-11-25T07:26:25+00:00",
+  "finishedAt": "2026-11-25T07:33:58+00:00",
+  "wallSeconds": 453.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2414074,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 758890496,
+    "wallSeconds": 422.3,
+    "cpuSeconds": 80.7,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.7
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "M11-HikariCP-fix: the whole landed PostgresTest (7 tests) on the fix, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-fix; echo worktree=M11-HikariCP-fix commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'rm -rf target' EXIT; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-fix-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-fix-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 141.642,
+      "cpuSeconds": 28.055,
+      "cpuThrottledSeconds": 8.61,
+      "peakMemoryBytes": 683724800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-m11-hikaricp-fix-the-whole-lan.log",
+        "lines": 5,
+        "bytes": 240,
+        "sha256": "c5c9712a6fc0629572fc5375d148861e5309945fb54b91445c410d264dac798c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[\"postgres@sha256:07abc3f43c9395b0bdbbab36bc25ddb0e8d83cd4fcafb5fb7d6abe14ff156dd8\"]",
+        "worktree=M11-HikariCP-fix commit=b81bbc9d438ffac5ef7be4609121d76bb8a31564",
+        "maven-exit=0",
+        "junit tests=7 failures=0 errors=0 skipped=0",
+        "no test containers left"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "M11-HikariCP-parent: the parent's own PostgresTest (6 tests), offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-parent; echo worktree=M11-HikariCP-parent commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'rm -rf target' EXIT; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-parent-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-parent-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 140.126,
+      "cpuSeconds": 26.738,
+      "cpuThrottledSeconds": 8.161,
+      "peakMemoryBytes": 658710528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-m11-hikaricp-parent-the-parent.log",
+        "lines": 5,
+        "bytes": 243,
+        "sha256": "8a7c500dd9e4e626fb8e2ce4180bfc137e6b1c18ac481d30ce0067b69a1f61c1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[\"postgres@sha256:07abc3f43c9395b0bdbbab36bc25ddb0e8d83cd4fcafb5fb7d6abe14ff156dd8\"]",
+        "worktree=M11-HikariCP-parent commit=ee5328d209e32d43365538db4d5a2f5ae1361967",
+        "maven-exit=0",
+        "junit tests=6 failures=0 errors=0 skipped=0",
+        "no test containers left"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "M11-HikariCP-parent: the fix's PostgresTest and init script transplanted; only testSchema may fail",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-parent; echo worktree=M11-HikariCP-parent commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'git checkout -q -- . ; git clean -fdq src; rm -rf target' EXIT; git show b81bbc9d438ffac5ef7be4609121d76bb8a31564:src/test/java/com/zaxxer/hikari/pool/PostgresTest.java > src/test/java/com/zaxxer/hikari/pool/PostgresTest.java; git show b81bbc9d438ffac5ef7be4609121d76bb8a31564:src/test/resources/postgres_init_script.sql > src/test/resources/postgres_init_script.sql; git status --short; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-transplant-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-transplant-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-transplant-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -c '^junit failed' $O/logs/M11-transplant-PostgresTest.junit.txt) -eq 1; grep -q '^junit failed PostgresTest#testSchema$' $O/logs/M11-transplant-PostgresTest.junit.txt; test $(grep -o 'errors=[0-9]*' $O/logs/M11-transplant-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 140.543,
+      "cpuSeconds": 25.893,
+      "cpuThrottledSeconds": 6.668,
+      "peakMemoryBytes": 758890496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-m11-hikaricp-parent-the-fix-s.log",
+        "lines": 8,
+        "bytes": 385,
+        "sha256": "b47b97c8b341e8fee5387bebe219f3ef4ff8113c3bf7ac806877d0b38b12b8ac",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[\"postgres@sha256:07abc3f43c9395b0bdbbab36bc25ddb0e8d83cd4fcafb5fb7d6abe14ff156dd8\"]",
+        "worktree=M11-HikariCP-parent commit=ee5328d209e32d43365538db4d5a2f5ae1361967",
+        " M src/test/java/com/zaxxer/hikari/pool/PostgresTest.java",
+        "?? src/test/resources/postgres_init_script.sql",
+        "maven-exit=1",
+        "junit tests=7 failures=1 errors=0 skipped=0",
+        "junit failed PostgresTest#testSchema",
+        "no test containers left"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T07:34:23+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T073358Z-495434dc36023025"
+    }
+  }
+}

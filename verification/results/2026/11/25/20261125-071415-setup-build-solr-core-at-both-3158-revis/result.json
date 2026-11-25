@@ -1,0 +1,371 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-071415-setup-build-solr-core-at-both-3158-revis",
+  "title": "Setup: build Solr core at both #3158 revisions and run the landed JSON facet tests",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 7m16s, peak 3.8 GiB (estimated 1h00m, 8.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-071415-setup-build-solr-core-at-both-3158-revis.json",
+    "sha256": "3f8d9fbae994f45290f6e910d68b5b04043bf5aabdd971fb42889937c39ddef6",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-071415-setup-build-solr-core-at-both-3158-revis",
+      "title": "Setup: build Solr core at both #3158 revisions and run the landed JSON facet tests",
+      "description": "Setup for case M05 (apache/solr#3158) of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links/worktrees (M05-solr-fix = f66aa9ed, M05-solr-parent = c367cb75; Solr 10.0.0-SNAPSHOT on Lucene 9.12.1), runs the upstream ./gradlew (Gradle 8.10, wrapper jar 8.10.2 checked against services.gradle.org) on JDK 21.0.13 (Solr's wrapper wants 21-23) with the cache's GRADLE_USER_HOME: builds solr-core and runs the whole TestJsonFacets class (tests.seed=DEADBEEF) on the fix online, on the parent (its own copy) offline, on the parent with the fix's TestJsonFacets.java and schema_latest.xml copied in (expected to fail testMultivalueEnumTypes), and on the fix again offline. The setup could not run this test over its 9.8.0 overlay (main's test config does not start a core under the 9.8.0 test framework), so this job is the landed test's only run. Jars to .../artifacts with sha256, JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: both sides' own TestJsonFacets pass, testMultivalueEnumTypes runs and passes on the fix and fails in the transplant",
+      "submitted": {
+        "at": "2026-11-25T07:14:15+00:00",
+        "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+        "by": "setup agent (Claude Opus 5.5), fork D"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "8G",
+        "duration": "60m"
+      },
+      "steps": [
+        {
+          "name": "M05-solr-fix: solr-core jar and the landed TestJsonFacets (online)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21; cd $W/M05-solr-fix; echo worktree=M05-solr-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/solr-gradle-wrapper-8.10.2.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf solr/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4  :solr:core:jar :solr:core:test --rerun --tests org.apache.solr.search.facet.TestJsonFacets > $O/logs/M05-fix.online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M05-fix.online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py solr/core/build/test-results/test | tee $O/logs/M05-fix.online.junit.txt; grep -o 'testcase name=\"testMultivalueEnumTypes[^\"]*\"' solr/core/build/test-results/test/*.xml | sort | uniq -c || echo no-testMultivalueEnumTypes; test $(grep -o 'tests=[0-9]*' $O/logs/M05-fix.online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M05-fix.online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M05-fix.online.junit.txt | cut -d= -f2) -eq 0; grep -q 'testcase name=\"testMultivalueEnumTypes' solr/core/build/test-results/test/*.xml; J=$(ls solr/core/build/libs/solr-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M05-solr-fix-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M05-solr-fix-core.jar; ",
+          "cwd": "."
+        },
+        {
+          "name": "M05-solr-parent: jar and its own TestJsonFacets (offline)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21; cd $W/M05-solr-parent; echo worktree=M05-solr-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/solr-gradle-wrapper-8.10.2.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf solr/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :solr:core:jar :solr:core:test --rerun --tests org.apache.solr.search.facet.TestJsonFacets > $O/logs/M05-parent.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M05-parent.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py solr/core/build/test-results/test | tee $O/logs/M05-parent.offline.junit.txt; grep -o 'testcase name=\"testMultivalueEnumTypes[^\"]*\"' solr/core/build/test-results/test/*.xml | sort | uniq -c || echo no-testMultivalueEnumTypes; test $(grep -o 'tests=[0-9]*' $O/logs/M05-parent.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M05-parent.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M05-parent.offline.junit.txt | cut -d= -f2) -eq 0; J=$(ls solr/core/build/libs/solr-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M05-solr-parent-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M05-solr-parent-core.jar; ",
+          "cwd": "."
+        },
+        {
+          "name": "M05-solr-parent with the fix's TestJsonFacets and schema_latest.xml: expected to fail testMultivalueEnumTypes (offline)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21; cd $W/M05-solr-parent; echo worktree=M05-solr-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/solr-gradle-wrapper-8.10.2.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); cp $W/M05-solr-fix/solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java; cp $W/M05-solr-fix/solr/core/src/test-files/solr/collection1/conf/schema_latest.xml solr/core/src/test-files/solr/collection1/conf/schema_latest.xml; sha256sum solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java solr/core/src/test-files/solr/collection1/conf/schema_latest.xml; rm -rf solr/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :solr:core:test --rerun --tests org.apache.solr.search.facet.TestJsonFacets > $O/logs/M05-transplant.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M05-transplant.offline.gradle-log.txt; git checkout -- solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java solr/core/src/test-files/solr/collection1/conf/schema_latest.xml; python3 -I $O/scripts/junit_summary.py solr/core/build/test-results/test | tee $O/logs/M05-transplant.offline.junit.txt; grep -o 'testcase name=\"testMultivalueEnumTypes[^\"]*\"' solr/core/build/test-results/test/*.xml | sort | uniq -c || echo no-testMultivalueEnumTypes; test $(grep -o 'tests=[0-9]*' $O/logs/M05-transplant.offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/M05-transplant.offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/M05-transplant.offline.junit.txt | cut -d= -f2) )) -gt 0; grep -q 'junit failed .*testMultivalueEnumTypes' $O/logs/M05-transplant.offline.junit.txt; echo expected-failure-seen=testMultivalueEnumTypes; ",
+          "cwd": "."
+        },
+        {
+          "name": "M05-solr-fix: TestJsonFacets again (offline)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21; cd $W/M05-solr-fix; echo worktree=M05-solr-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/solr-gradle-wrapper-8.10.2.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf solr/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :solr:core:test --rerun --tests org.apache.solr.search.facet.TestJsonFacets > $O/logs/M05-fix.rerun.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M05-fix.rerun.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py solr/core/build/test-results/test | tee $O/logs/M05-fix.rerun.offline.junit.txt; grep -o 'testcase name=\"testMultivalueEnumTypes[^\"]*\"' solr/core/build/test-results/test/*.xml | sort | uniq -c || echo no-testMultivalueEnumTypes; test $(grep -o 'tests=[0-9]*' $O/logs/M05-fix.rerun.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M05-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M05-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; grep -q 'testcase name=\"testMultivalueEnumTypes' solr/core/build/test-results/test/*.xml; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M05-solr-fix clean -fdxq; git -C $W/M05-solr-fix checkout -q -- .; git -C $W/M05-solr-fix status --short; git -C $W/M05-solr-parent clean -fdxq; git -C $W/M05-solr-parent checkout -q -- .; git -C $W/M05-solr-parent status --short; du -sh $W/M05-solr-fix $W/M05-solr-parent",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "ff6d65696db862c45937ab6049a1e8d834480bfb",
+  "startedAt": "2026-11-25T07:26:25+00:00",
+  "finishedAt": "2026-11-25T07:34:12+00:00",
+  "wallSeconds": 467.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2414074,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 12884901888,
+    "timeoutSeconds": 14400.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 8589934592,
+    "durationSeconds": 3600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 4056760320,
+    "wallSeconds": 436.6,
+    "cpuSeconds": 444.4,
+    "memoryOfEstimate": 0.47,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "M05-solr-fix: solr-core jar and the landed TestJsonFacets (online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21; cd $W/M05-solr-fix; echo worktree=M05-solr-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/solr-gradle-wrapper-8.10.2.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf solr/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4  :solr:core:jar :solr:core:test --rerun --tests org.apache.solr.search.facet.TestJsonFacets > $O/logs/M05-fix.online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M05-fix.online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py solr/core/build/test-results/test | tee $O/logs/M05-fix.online.junit.txt; grep -o 'testcase name=\"testMultivalueEnumTypes[^\"]*\"' solr/core/build/test-results/test/*.xml | sort | uniq -c || echo no-testMultivalueEnumTypes; test $(grep -o 'tests=[0-9]*' $O/logs/M05-fix.online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M05-fix.online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M05-fix.online.junit.txt | cut -d= -f2) -eq 0; grep -q 'testcase name=\"testMultivalueEnumTypes' solr/core/build/test-results/test/*.xml; J=$(ls solr/core/build/libs/solr-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M05-solr-fix-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M05-solr-fix-core.jar; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 266.164,
+      "cpuSeconds": 206.757,
+      "cpuThrottledSeconds": 0.113,
+      "peakMemoryBytes": 4056760320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-m05-solr-fix-solr-core-jar-and.log",
+        "lines": 11,
+        "bytes": 544,
+        "sha256": "59ade6c0bea35cac881ed8aca3e578c40bc18afb9de94dc5e128167b7047eb66",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=M05-solr-fix commit=f66aa9ed07fa76b5db45186073a9b2ac20c01fd4",
+        "gradle-exit=0",
+        "The slowest suites (exceeding 1s) during this run:",
+        "  21.84s TestJsonFacets (:solr:core)",
+        "",
+        "BUILD SUCCESSFUL in 4m 25s",
+        "34 actionable tasks: 34 executed",
+        "junit tests=30 failures=0 errors=0 skipped=0",
+        "      1 testcase name=\"testMultivalueEnumTypes {p0=STREAM}\"",
+        "built-jar=solr/core/build/libs/solr-core-10.0.0-SNAPSHOT.jar",
+        "90b5fe4838cfe66cafab2876970b34ada9c1a433d53ecbe56ad202517afa319a  /home/filip/.cache/in-the-loop/merged-pr-links/artifacts/M05-solr-fix-core.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "M05-solr-parent: jar and its own TestJsonFacets (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21; cd $W/M05-solr-parent; echo worktree=M05-solr-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/solr-gradle-wrapper-8.10.2.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf solr/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :solr:core:jar :solr:core:test --rerun --tests org.apache.solr.search.facet.TestJsonFacets > $O/logs/M05-parent.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M05-parent.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py solr/core/build/test-results/test | tee $O/logs/M05-parent.offline.junit.txt; grep -o 'testcase name=\"testMultivalueEnumTypes[^\"]*\"' solr/core/build/test-results/test/*.xml | sort | uniq -c || echo no-testMultivalueEnumTypes; test $(grep -o 'tests=[0-9]*' $O/logs/M05-parent.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M05-parent.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M05-parent.offline.junit.txt | cut -d= -f2) -eq 0; J=$(ls solr/core/build/libs/solr-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M05-solr-parent-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M05-solr-parent-core.jar; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 73.183,
+      "cpuSeconds": 99.74,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2645504000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-m05-solr-parent-jar-and-its-ow.log",
+        "lines": 11,
+        "bytes": 635,
+        "sha256": "ffba0aa4bda2f5c6abd530b38afc2a66085110e5eb7ad3f5f182c513c19b19f3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=M05-solr-parent commit=c367cb75ac453bb3cd642c46649455e2b4b018b3",
+        "gradle-exit=0",
+        "  23.17s TestJsonFacets (:solr:core)",
+        "",
+        "BUILD SUCCESSFUL in 1m 12s",
+        "34 actionable tasks: 34 executed",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "junit tests=29 failures=0 errors=0 skipped=0",
+        "no-testMultivalueEnumTypes",
+        "built-jar=solr/core/build/libs/solr-core-10.0.0-SNAPSHOT.jar",
+        "c1f562d68829d915ec8d3a7f9fd2349dc68ff15866b777d33c2923d15c30d528  /home/filip/.cache/in-the-loop/merged-pr-links/artifacts/M05-solr-parent-core.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "M05-solr-parent with the fix's TestJsonFacets and schema_latest.xml: expected to fail testMultivalueEnumTypes (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21; cd $W/M05-solr-parent; echo worktree=M05-solr-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/solr-gradle-wrapper-8.10.2.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); cp $W/M05-solr-fix/solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java; cp $W/M05-solr-fix/solr/core/src/test-files/solr/collection1/conf/schema_latest.xml solr/core/src/test-files/solr/collection1/conf/schema_latest.xml; sha256sum solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java solr/core/src/test-files/solr/collection1/conf/schema_latest.xml; rm -rf solr/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :solr:core:test --rerun --tests org.apache.solr.search.facet.TestJsonFacets > $O/logs/M05-transplant.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M05-transplant.offline.gradle-log.txt; git checkout -- solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java solr/core/src/test-files/solr/collection1/conf/schema_latest.xml; python3 -I $O/scripts/junit_summary.py solr/core/build/test-results/test | tee $O/logs/M05-transplant.offline.junit.txt; grep -o 'testcase name=\"testMultivalueEnumTypes[^\"]*\"' solr/core/build/test-results/test/*.xml | sort | uniq -c || echo no-testMultivalueEnumTypes; test $(grep -o 'tests=[0-9]*' $O/logs/M05-transplant.offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/M05-transplant.offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/M05-transplant.offline.junit.txt | cut -d= -f2) )) -gt 0; grep -q 'junit failed .*testMultivalueEnumTypes' $O/logs/M05-transplant.offline.junit.txt; echo expected-failure-seen=testMultivalueEnumTypes; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 50.5,
+      "cpuSeconds": 72.068,
+      "cpuThrottledSeconds": 0.023,
+      "peakMemoryBytes": 1960988672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-m05-solr-parent-with-the-fix-s.log",
+        "lines": 13,
+        "bytes": 968,
+        "sha256": "5d88f8cc517424f0fc33307acf8279bb22a3a3c86395ade5823a7f42e3041ea9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=M05-solr-parent commit=c367cb75ac453bb3cd642c46649455e2b4b018b3",
+        "2863738210bb606216935c0369f161098670994eddceb12245b3c4afa7e6bfdd  solr/core/src/test/org/apache/solr/search/facet/TestJsonFacets.java",
+        "5b4f1c90c6a809cda58a236575e07dd7286bc11e939f03ebdd890f73b07a985b  solr/core/src/test-files/solr/collection1/conf/schema_latest.xml",
+        "gradle-exit=1",
+        "> There were failing tests. See the results at: file:///home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M05-solr-parent/solr/core/build/test-results/test/",
+        "",
+        "BUILD FAILED in 49s",
+        "34 actionable tasks: 11 executed, 23 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "junit tests=30 failures=1 errors=0 skipped=0",
+        "junit failed TestJsonFacets#testMultivalueEnumTypes {p0=STREAM}",
+        "      1 testcase name=\"testMultivalueEnumTypes {p0=STREAM}\"",
+        "expected-failure-seen=testMultivalueEnumTypes"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "M05-solr-fix: TestJsonFacets again (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21; cd $W/M05-solr-fix; echo worktree=M05-solr-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/solr-gradle-wrapper-8.10.2.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf solr/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :solr:core:test --rerun --tests org.apache.solr.search.facet.TestJsonFacets > $O/logs/M05-fix.rerun.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M05-fix.rerun.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py solr/core/build/test-results/test | tee $O/logs/M05-fix.rerun.offline.junit.txt; grep -o 'testcase name=\"testMultivalueEnumTypes[^\"]*\"' solr/core/build/test-results/test/*.xml | sort | uniq -c || echo no-testMultivalueEnumTypes; test $(grep -o 'tests=[0-9]*' $O/logs/M05-fix.rerun.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M05-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M05-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; grep -q 'testcase name=\"testMultivalueEnumTypes' solr/core/build/test-results/test/*.xml; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 46.309,
+      "cpuSeconds": 65.388,
+      "cpuThrottledSeconds": 0.021,
+      "peakMemoryBytes": 1925193728,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-m05-solr-fix-testjsonfacets-ag.log",
+        "lines": 9,
+        "bytes": 467,
+        "sha256": "a53136ce00139c5fe91fbae016cb92ff0817b97031f4c9d6d7b6faa5f88e94e3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=M05-solr-fix commit=f66aa9ed07fa76b5db45186073a9b2ac20c01fd4",
+        "gradle-exit=0",
+        "  21.95s TestJsonFacets (:solr:core)",
+        "",
+        "BUILD SUCCESSFUL in 45s",
+        "34 actionable tasks: 9 executed, 25 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "junit tests=30 failures=0 errors=0 skipped=0",
+        "      1 testcase name=\"testMultivalueEnumTypes {p0=STREAM}\""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M05-solr-fix clean -fdxq; git -C $W/M05-solr-fix checkout -q -- .; git -C $W/M05-solr-fix status --short; git -C $W/M05-solr-parent clean -fdxq; git -C $W/M05-solr-parent checkout -q -- .; git -C $W/M05-solr-parent status --short; du -sh $W/M05-solr-fix $W/M05-solr-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.413,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13156352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-remove-the-build-trees.log",
+        "lines": 2,
+        "bytes": 153,
+        "sha256": "404edcd0846fdb1cfd57d3d47c8e25572590235811521d81aa6b66e2d60bc54c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "165M\t/home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M05-solr-fix",
+        "165M\t/home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M05-solr-parent"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T07:34:23+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T073412Z-53633621dfd2941e"
+    }
+  }
+}
