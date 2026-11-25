@@ -1,0 +1,212 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-184502-build-both-complete-gradle-pins-with-the",
+  "title": "Build both complete Gradle pins with the recovered verified JAR",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2m20s, peak 4.7 GiB (estimated 1h30m, 10.0 GiB)",
+  "attention": [
+    "declared output verification/merged-pr-links/l01-l20/full-gradle.json was not produced",
+    "step 1 (Resolve strictly, build and replay both distributions) exited 1, expected 0",
+    "step 1 (Resolve strictly, build and replay both distributions) was held back 1m38s by its 4-CPU quota in 2m20s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-184502-build-both-complete-gradle-pins-with-the.json",
+    "sha256": "df8f7b9a913aad29f39555061aecc3ad38a83a4fb2e7390e2e1499d185c56bee",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-184502-build-both-complete-gradle-pins-with-the",
+      "title": "Build both complete Gradle pins with the recovered verified JAR",
+      "description": "Resolve the previously missing grolifant 0.16.1 independently under both pins' strict Gradle policies, then build Gradle from the exact fix and parent in a disposable checkout. Execute the registered named doLast and doFirst filesystem histories on the installed distributions. The recovered public JCenter copy has the original SHA-256.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "examples": [
+          "437"
+        ],
+        "paths": [
+          "examples/437-gradle-named-actions/setup/full.py"
+        ]
+      },
+      "expected": "Both full distributions build under strict dependency verification. All six fresh histories record the executing AbstractTask, task outcomes and file contents and agree with the existing pinned-method comparison.",
+      "submitted": {
+        "at": "2026-11-25T18:45:02+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "10G",
+        "duration": "90m",
+        "memoryLimit": "16G",
+        "timeout": "240m"
+      },
+      "steps": [
+        {
+          "name": "Resolve strictly, build and replay both distributions",
+          "run": "python3 examples/437-gradle-named-actions/setup/full.py --fetch --output verification/merged-pr-links/l01-l20/full-gradle.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/l01-l20/full-gradle.json"
+      ]
+    }
+  },
+  "sourceCommit": "4c7f797406396d90b82cb0525d985c724e32b2be",
+  "startedAt": "2026-11-25T18:52:49+00:00",
+  "finishedAt": "2026-11-25T18:55:23+00:00",
+  "wallSeconds": 154.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2686447,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 14400.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 10737418240,
+    "durationSeconds": 5400.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 5057073152,
+    "wallSeconds": 140.2,
+    "cpuSeconds": 377.6,
+    "memoryOfEstimate": 0.47,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Resolve strictly, build and replay both distributions",
+      "run": "python3 examples/437-gradle-named-actions/setup/full.py --fetch --output verification/merged-pr-links/l01-l20/full-gradle.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 140.237,
+      "cpuSeconds": 377.56,
+      "cpuThrottledSeconds": 98.826,
+      "peakMemoryBytes": 5057073152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-resolve-strictly-build-and-rep.log",
+        "lines": 381,
+        "bytes": 23486,
+        "sha256": "49678c9089d1ab703d0da01ce4fe61222956d017a8078c87a9696d8bd04d74dd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "",
+        "* Try:",
+        "> Run with --stacktrace option to get the stack trace.",
+        "> Run with --info or --debug option to get more log output.",
+        "",
+        "* Get more help at https://help.gradle.org",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "See https://docs.gradle.org/7.5.1/userguide/command_line_interface.html#sec:command_line_warnings",
+        "",
+        "BUILD FAILED in 2m 9s",
+        "208 actionable tasks: 208 executed",
+        "Configuration cache entry stored.",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-184502-build-both-complete-gradle-pins-with-the/examples/437-gradle-named-actions/setup/full.py\", line 192, in <module>",
+        "    if a.output: full_build(a.cache,repo,pins,a.output)",
+        "                 ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-184502-build-both-complete-gradle-pins-with-the/examples/437-gradle-named-actions/setup/full.py\", line 167, in full_build",
+        "    dist = installed_distribution(cache,repo,tree,work,side,pin)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-184502-build-both-complete-gradle-pins-with-the/examples/437-gradle-named-actions/setup/full.py\", line 143, in installed_distribution",
+        "    gradle(cache,repo,tree,cache/\"gradle-home-L15\",[\"--max-workers=4\",\"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m\",",
+        "    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "           \"-Porg.gradle.java.installations.auto-download=false\",",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "           \"-Porg.gradle.java.installations.paths=\"+\",\".join(map(str,(JDKS/\"8.0.512.0+9-tem\",JAVA_11,JAVA_17))),",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "           \"-I\",cache/\"scripts/gradle-L15-openmbee-substitute.init.gradle\",\"install\",\"-Pgradle_installPath=\"+str(dist)],",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "           offline=side==\"parent\")",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-184502-build-both-complete-gradle-pins-with-the/examples/437-gradle-named-actions/setup/full.py\", line 67, in gradle",
+        "    subprocess.run([*cmd,*arguments],env=env,cwd=cwd,check=True)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/subprocess.py\", line 578, in run",
+        "    raise CalledProcessError(retcode, process.args,",
+        "                             output=stdout, stderr=stderr)",
+        "subprocess.CalledProcessError: Command '[PosixPath('/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/tools/gradle-7.5.1/bin/gradle'), '--no-daemon', '--no-scan', '--no-build-cache', '--console=plain', '--dependency-verification=strict', '-Dl15.verified.repository=/home/filip/.cache/in-the-loop"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T18:59:58+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T185523Z-178319ede07f5873",
+      "outputs": "20261125T185523Z-194754ce2504d198",
+      "workdir": "20261125T185526Z-7818325533c5c296"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261125-184502-build-both-complete-gradle-pins-with-the"
+}

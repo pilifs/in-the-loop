@@ -1,0 +1,338 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-183811-replay-60-l-series-java-questions-on-23",
+  "title": "Replay 60 L-series Java questions on 23 deployment pairs",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 2m14s, peak 445.3 MiB (estimated 5m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-183811-replay-60-l-series-java-questions-on-23.json",
+    "sha256": "0ca63e45e7ff1cc77f81e21eb068646217a355ded45f251768fd4d4edbf95c75",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-183811-replay-60-l-series-java-questions-on-23",
+      "title": "Replay 60 L-series Java questions on 23 deployment pairs",
+      "description": "Recompile the public callers and check the full before/after observations for twenty merged changes, including both Arrow allocators and Guava modules, Derby and PostgreSQL 16, a Maven shade goal and Gradle builds with the pinned named-action method. Rebuild the two Gradle inputs from verified sources and compare that build with the registered digests.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-results.md"
+        ]
+      },
+      "expected": "All 136 fresh JVM histories reproduce. The independently generated audit is byte-identical to the registered score and accounts for all 60 rows, including five refuted expectations.",
+      "submitted": {
+        "at": "2026-11-25T18:38:11+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "docker"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "Rebuild both pinned Kafka test drivers",
+          "run": "python3 examples/441-kafka-final-sessions/setup/prepare.py",
+          "cwd": "."
+        },
+        {
+          "name": "Rebuild the Gradle method on its verified distribution",
+          "run": "python3 examples/437-gradle-named-actions/setup/prepare.py",
+          "cwd": "."
+        },
+        {
+          "name": "Run every public history",
+          "run": "python3 verification/merged-pr-links/audit.py --campaign l01-l20 --replay --output verification/merged-pr-links/l01-l20/repeated-audit.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare complete audit",
+          "run": "cmp verification/merged-pr-links/l01-l20/audit.json verification/merged-pr-links/l01-l20/repeated-audit.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/l01-l20/repeated-audit.json"
+      ]
+    }
+  },
+  "sourceCommit": "4c7f797406396d90b82cb0525d985c724e32b2be",
+  "startedAt": "2026-11-25T18:52:49+00:00",
+  "finishedAt": "2026-11-25T18:55:17+00:00",
+  "wallSeconds": 148.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2686447,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 466935808,
+    "wallSeconds": 134.5,
+    "cpuSeconds": 233.4,
+    "memoryOfEstimate": 0.43,
+    "durationOfEstimate": 0.45
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Rebuild both pinned Kafka test drivers",
+      "run": "python3 examples/441-kafka-final-sessions/setup/prepare.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 2.405,
+      "cpuSeconds": 4.319,
+      "cpuThrottledSeconds": 0.795,
+      "peakMemoryBytes": 104026112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-rebuild-both-pinned-kafka-test.log",
+        "lines": 2,
+        "bytes": 286,
+        "sha256": "3c28d1028121a0a5e0471fbac254b96d417aefe123ec1d066705aa184841e0c4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent a4f7675db1a928e73c7a69eb906dd1e9ecd4a22a ae932a5f9e0a46c84619f6a5e67eff19ae478437a1e730be9e7902ccf3bee2a0 L19-kafka-parent-test-driver.jar",
+        "fix eab855541a4b776b150a849cecda9c758598cdca ae932a5f9e0a46c84619f6a5e67eff19ae478437a1e730be9e7902ccf3bee2a0 L19-kafka-fix-test-driver.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Rebuild the Gradle method on its verified distribution",
+      "run": "python3 examples/437-gradle-named-actions/setup/prepare.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 4.809,
+      "cpuSeconds": 8.157,
+      "cpuThrottledSeconds": 0.798,
+      "peakMemoryBytes": 184938496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-rebuild-the-gradle-method-on-i.log",
+        "lines": 2,
+        "bytes": 419,
+        "sha256": "6efb6512740a8d6aad5c1f199e7e01b101c865f3a1c516bf8275add89e7e1ebd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent fda88b3fb300707d2ec2d2839f94184dabf6852c whole compiled class b9b53c9078e26ac2e8671cf4cfeb279af2d912da4e2ee8d127e46ee6dba3e2e8 runtime jar 951f633c84a48a94eba4e2dfd13285a4f1291ffc2081dfbbf52216f558b40520",
+        "fix 9e244e0ace2e7698374f5199570e09295950683a whole compiled class bb0b1196b2897dfe09152d78d51adb2531914a9c6b1195d6542d5093de967ccf runtime jar 420f6c2fad8e8e905a5c7efc4d3a26b81141e3dc881fa46dc75e8d77b89a0533"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Run every public history",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign l01-l20 --replay --output verification/merged-pr-links/l01-l20/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 127.083,
+      "cpuSeconds": 220.891,
+      "cpuThrottledSeconds": 18.644,
+      "peakMemoryBytes": 466935808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-run-every-public-history.log",
+        "lines": 137,
+        "bytes": 18620,
+        "sha256": "19b2023d7ce239ed80c2bd848a1ba4f16627aa1362c32135ab78c4b10e1740f0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pinned-method-on-7.6 fix gradle/gradle#21084.1 {'return': '/A -> /B'}",
+        "pinned-method-on-7.6 fix gradle/gradle#21084.2 {'return': '/A -> UP-TO-DATE/A'}",
+        "pinned-method-on-7.6 fix gradle/gradle#21084.3 {'return': '/A -> /B clean=/B'}",
+        "jre parent google/guava#7277.1 {'return': 'registrations=1/1 initial=false afterB=true list=[a, b]'}",
+        "jre parent google/guava#7277.2 {'return': 'registrations=1/1 initial=false afterB=false list=[a, b]'}",
+        "jre parent google/guava#7277.3 {'return': 'list=[X, X] registrations=2'}",
+        "jre fix google/guava#7277.1 {'return': 'registrations=0/1 initial=false afterB=true list=[a, b]'}",
+        "jre fix google/guava#7277.2 {'return': 'registrations=1/1 initial=false afterB=false list=[a, b]'}",
+        "jre fix google/guava#7277.3 {'return': 'list=[X, X] registrations=1'}",
+        "android parent google/guava#7277.1 {'return': 'registrations=1/1 initial=false afterB=true list=[a, b]'}",
+        "android parent google/guava#7277.2 {'return': 'registrations=1/1 initial=false afterB=false list=[a, b]'}",
+        "android parent google/guava#7277.3 {'return': 'list=[X, X] registrations=2'}",
+        "android fix google/guava#7277.1 {'return': 'registrations=0/1 initial=false afterB=true list=[a, b]'}",
+        "android fix google/guava#7277.2 {'return': 'registrations=1/1 initial=false afterB=false list=[a, b]'}",
+        "android fix google/guava#7277.3 {'return': 'list=[X, X] registrations=1'}",
+        "pins parent ical4j/ical4j#947.1 {'return': '[2024-01-01T08:00:00Z/2024-01-01T09:00:00Z, 2024-01-02T08:00:00Z/2024-01-02T09:00:00Z, 2024-01-03T08:00:00Z/2024-01-03T09:00:00Z]'}",
+        "pins parent ical4j/ical4j#947.2 {'return': '[2024-01-01T08:00:00Z/2024-01-01T09:00:00Z, 2024-01-02T08:00:00Z/2024-01-02T09:00:00Z, 2024-01-03T08:00:00Z/2024-01-03T09:00:00Z]'}",
+        "pins parent ical4j/ical4j#947.3 {'return': '[2024-03-30T08:00:00Z/2024-03-30T09:00:00Z, 2024-03-31T07:00:00Z/2024-03-31T08:00:00Z, 2024-04-01T07:00:00Z/2024-04-01T08:00:00Z] | [2024-03-30T08:00:00Z/2024-03-30T09:00:00Z, 2024-03-31T07:00:00Z/2024-03-31T08:00:00Z, 2024-04-01T07:00:00Z/2024-04-01T08:00",
+        "pins fix ical4j/ical4j#947.1 {'return': '[2024-01-01T08:00:00Z/2024-01-01T09:00:00Z, 2024-01-03T08:00:00Z/2024-01-03T09:00:00Z]'}",
+        "pins fix ical4j/ical4j#947.2 {'return': '[2024-01-01T08:00:00Z/2024-01-01T09:00:00Z, 2024-01-02T08:00:00Z/2024-01-02T09:00:00Z, 2024-01-03T08:00:00Z/2024-01-03T09:00:00Z]'}",
+        "pins fix ical4j/ical4j#947.3 {'return': '[2024-03-30T08:00:00Z/2024-03-30T09:00:00Z, 2024-04-01T07:00:00Z/2024-04-01T08:00:00Z] | [2024-03-30T08:00:00Z/2024-03-30T09:00:00Z, 2024-03-31T07:00:00Z/2024-03-31T08:00:00Z, 2024-04-01T07:00:00Z/2024-04-01T08:00:00Z]'}",
+        "pins parent ReactiveX/RxJava#6895.1 {'return': 'initial=[4]/false/- afterCancel=[4]/false/- final=[4]/false/- firstGroup=[]/false/- outer=false/-'}",
+        "pins parent ReactiveX/RxJava#6895.2 {'return': 'initial=[4, 5, 6, 7, 8]/true/- afterCancel=[4, 5, 6, 7, 8]/true/- final=[4, 5, 6, 7, 8]/true/- firstGroup=[1, 2, 3]/true/- outer=true/-'}",
+        "pins parent ReactiveX/RxJava#6895.3 {'return': 'initial=[4]/false/- afterCancel=[4]/false/- final=[4]/false/- firstGroup=[]/false/- outer=false/-'}",
+        "pins fix ReactiveX/RxJava#6895.1 {'return': 'initial=[4]/false/- afterCancel=[4, 5, 6, 7, 8]/true/- final=[4, 5, 6, 7, 8]/true/- firstGroup=[]/false/- outer=true/-'}",
+        "pins fix ReactiveX/RxJava#6895.2 {'return': 'initial=[4, 5, 6, 7, 8]/true/- afterCancel=[4, 5, 6, 7, 8]/true/- final=[4, 5, 6, 7, 8]/true/- firstGroup=[1, 2, 3]/true/- outer=true/-'}",
+        "pins fix ReactiveX/RxJava#6895.3 {'return': 'initial=[4]/false/- afterCancel=[4]/false/- final=[4, 5, 6, 7, 8]/true/- firstGroup=[]/false/- outer=true/-'}",
+        "pins parent apache/kafka#6654.1 {'return': 'selected=[[], []] trace=[T@10:raw=[T@10-10=1],final=[], A@8:raw=[],final=[]]'}",
+        "pins parent apache/kafka#6654.2 {'return': 'older selected=[[], []] trace=[T@10:raw=[T@10-10=1],final=[], A@7:raw=[],final=[]] | newer selected=[[], [A@9-9=1]] trace=[T@10:raw=[T@10-10=1],final=[], A@9:raw=[A@9-9=1],final=[]]'}",
+        "pins parent apache/kafka#6654.3 {'return': 'selected=[[], [A@0-0=1], [], [A@0-5=2]] trace=[A@0:raw=[A@0-0=1],final=[], T@3:raw=[T@3-3=1],final=[A@0-0=1], A@5:raw=[A@0-0=null, A@0-5=2],final=[T@3-3=1], U@25:raw=[U@25-25=1],final=[A@0-5=2]]'}",
+        "pins fix apache/kafka#6654.1 {'return': 'selected=[[], [A@8-8=1]] trace=[T@10:raw=[T@10-10=1],final=[], A@8:raw=[A@8-8=1],final=[]]'}",
+        "pins fix apache/kafka#6654.2 {'return': 'older selected=[[], []] trace=[T@10:raw=[T@10-10=1],final=[], A@7:raw=[],final=[]] | newer selected=[[], [A@9-9=1]] trace=[T@10:raw=[T@10-10=1],final=[], A@9:raw=[A@9-9=1],final=[]]'}",
+        "pins fix apache/kafka#6654.3 {'return': 'selected=[[], [], [], [A@0-5=2]] trace=[A@0:raw=[A@0-0=1],final=[], T@3:raw=[T@3-3=1],final=[], A@5:raw=[A@0-0=null, A@0-5=2],final=[], U@25:raw=[U@25-25=1],final=[T@3-3=1, A@0-5=2]]'}",
+        "pins parent JSQLParser/JSqlParser#2770.1 {'return': 'toString=ALTER TABLE t ALTER COLUMN id RESTART stock=ALTER TABLE t ALTER COLUMN other SET DEFAULT 1 custom=ALTER TABLE t ALTER COLUMN other SET DEFAULT 101 visits=[1]'}",
+        "pins parent JSQLParser/JSqlParser#2770.2 {'return': 'toString=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) stock=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) custom=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (101 + 102) visits=[1, 2]'}",
+        "pins parent JSQLParser/JSqlParser#2770.3 {'return': 'toString=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE stock=ALTER TABLE t ALTER COLUMN other SET DEFAULT 1 CASCADE custom=ALTER TABLE t ALTER COLUMN other SET DEFAULT 101 CASCADE visits=[1] parsed=throws net.sf.jsqlparser.JSQLParser",
+        "pins fix JSQLParser/JSqlParser#2770.1 {'return': 'toString=ALTER TABLE t ALTER COLUMN id RESTART stock=ALTER TABLE t ALTER COLUMN id RESTART custom=ALTER TABLE t ALTER COLUMN id RESTART visits=[]'}",
+        "pins fix JSQLParser/JSqlParser#2770.2 {'return': 'toString=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) stock=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) custom=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (101 + 102) visits=[1, 2]'}",
+        "pins fix JSQLParser/JSqlParser#2770.3 {'return': 'toString=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE stock=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE custom=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102 CASCADE visits=[2] parsed=throws net.sf.jsqlparser.JSQ",
+        "{\"cases\": 20, \"deploymentPairs\": 23, \"fixedIntentsMatched\": 19, \"fixedPredictionsMatched\": 55, \"fixedRefutations\": 5, \"freshJvms\": 136, \"omittedParentHistories\": 2, \"pairedIntentChanges\": 19, \"questions\": 60, \"retainedMethodEntryTrials\": 4, \"unchangedControls\": 20}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Compare complete audit",
+      "run": "cmp verification/merged-pr-links/l01-l20/audit.json verification/merged-pr-links/l01-l20/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.01,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2322432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-compare-complete-audit.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/l01-l20/repeated-audit.json",
+      "change": "added",
+      "bytes": 6321,
+      "sha256": "52e3756109677788029f761c0f8a0f0dac2c929569c5676faa9584c0b7021313",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T18:59:58+00:00",
+    "applied": [
+      "verification/merged-pr-links/l01-l20/repeated-audit.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T185517Z-2651029d442b5a8b",
+      "outputs": "20261125T185517Z-292200c956f1d378",
+      "diff": "20261125T185517Z-314402864195c717"
+    }
+  }
+}
