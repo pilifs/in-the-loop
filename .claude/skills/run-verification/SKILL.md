@@ -58,6 +58,11 @@ commands by hand to see: the runner is how they run, under limits.
      `python3 verification/pipeline.py resubmit ID --memory ... --duration ...` and commit the new job (a runner
      still at work takes it into its run). If it needs
      more than this runner allows (`job_memory_max`), leave it deferred and say it needs a bigger machine.
+   - **Stopped for the machine's memory**: `memoryStop` in the result, or `attention` saying the kernel killed it
+     when the machine ran out, under its own limit. Not the job's fault and not a verdict: the machine was short.
+     Regroup rather than rerun it as it was: fewer workers (`run --workers N`), a higher `--memory` estimate so fewer
+     jobs run beside it, or a smaller job (fewer claims, lower bounds). Find what took the room (an agent's build, a
+     session) and say so. More `--memory` alone does not help: the job was under its limit.
    - **An error**: the pipeline could not run it (a tool missing, jvmcontract did not build, a step's command wrong).
      Fix what is the pipeline's; tell the submitter what is theirs.
    - **Outputs not applied** (`collected.conflicts`): the files changed since the job's commit, so the result is

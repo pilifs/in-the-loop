@@ -97,6 +97,14 @@ DEFAULTS = {
         # long. A step still working is left to finish, up to max_timeout, and its result says it overran.
         "stall_window": "10m",
         "build_memory": "3G",         # for building jvmcontract when a job needs it and it is not cached
+        # What the machine keeps free. No job starts that would take available memory under it, and when the machine
+        # falls under it anyway (an agent's build, a session growing), the runner stops its newest job, so the kernel
+        # never has to choose: a job goes before a terminal, an agent or a watcher. 0: no floor.
+        "memory_floor": "8G",
+        # Every process of a job starts with this oom_score_adj (-1000 to 1000), so that if the machine runs out all
+        # the same, the kernel's OOM killer takes a job's process before anything else's (those keep 0). An agent's
+        # inline tests and probes take 500 (lib/tools/test_costs.py): after the jobs, before the agents.
+        "job_oom_score_adj": 1000,
         "state_dir": f"{HERE}/.state",
         "keep_workdirs": "failed",    # always | failed | never
         "log_max_bytes": "2M",        # longer logs are kept in full locally and as head and tail in the result
@@ -251,13 +259,15 @@ def load_config(args=None):
             config = merge(config, tomllib.loads(f.read_text()))
             read.append(str(f))
     runner = dict(config["runner"])
-    for flag in ["workers", "cpus", "memory", "job_memory_max", "isolation", "max_timeout", "state_dir"]:
+    for flag in ["workers", "cpus", "memory", "job_memory_max", "memory_floor", "isolation", "max_timeout", "state_dir"]:
         value = getattr(args, flag, None) if args else None
         if value is not None:
             runner[flag] = value
     runner["memory"] = parse_bytes(runner["memory"])
     runner["job_memory_max"] = parse_bytes(runner["job_memory_max"])
     runner["build_memory"] = parse_bytes(runner["build_memory"])
+    runner["memory_floor"] = parse_bytes(str(runner["memory_floor"]))
+    runner["job_oom_score_adj"] = max(-1000, min(1000, int(runner["job_oom_score_adj"])))
     runner["log_max_bytes"] = parse_bytes(runner["log_max_bytes"])
     runner["max_timeout"] = parse_seconds(runner["max_timeout"])
     runner["stall_window"] = parse_seconds(runner["stall_window"])
@@ -515,6 +525,12 @@ def plan(job, config):
 
 
 def mem_available():
+    # A test stands in for the machine with a file holding a number of bytes (verification/test_pipeline.py).
+    if os.environ.get("VERIFY_MEMAVAILABLE_FILE"):
+        try:
+            return int(Path(os.environ["VERIFY_MEMAVAILABLE_FILE"]).read_text().split()[0])
+        except (OSError, ValueError, IndexError):
+            pass
     for line in Path("/proc/meminfo").read_text().splitlines():
         if line.startswith("MemAvailable:"):
             return int(line.split()[1]) * 1024
@@ -661,7 +677,12 @@ def keep_log(full, dest, max_bytes, host):
 
 WRAPPER = r"""#!/usr/bin/env bash
 # Runs one step in the work directory and, when the step is in a scope of its own, writes the scope's memory and CPU
-# counters before the scope goes away: memory.peak is lost once the last process in it exits.
+# counters before the scope goes away: memory.peak is lost once the last process in it exits. It first raises its own
+# oom_score_adj, which everything the step starts inherits: the kernel kills a job before anything else on the machine.
+# Raising needs no privilege; a value under the current one is refused, and the step runs as it is.
+if [ -n "${VERIFY_STEP_OOM_SCORE_ADJ:-}" ]; then
+  echo "$VERIFY_STEP_OOM_SCORE_ADJ" > /proc/self/oom_score_adj 2>/dev/null || true
+fi
 cd "$VERIFY_STEP_CWD" || exit 125
 bash -c "$VERIFY_STEP_RUN"
 rc=$?
@@ -720,11 +741,12 @@ class Step:
     the stall window), and at the hard ceiling whatever it is doing. The timeout is where a hang starts to be looked
     for, not a deadline: a long run that is still working is information, about the change and about the machine."""
 
-    def __init__(self, unit, isolation, cpus, memory_limit, stall_window=600, ceiling=float("inf")):
+    def __init__(self, unit, isolation, cpus, memory_limit, stall_window=600, ceiling=float("inf"), oom_score_adj=None):
         self.unit, self.isolation, self.cpus, self.memory_limit = unit, isolation, cpus, memory_limit
-        self.stall_window, self.ceiling = stall_window, ceiling
+        self.stall_window, self.ceiling, self.oom_score_adj = stall_window, ceiling, oom_score_adj
         self.pid = None
         self.cancelled = False
+        self.urgent = False      # cancelled for the machine's memory: killed at once, with no 15 s to wind down
 
     def command(self, wrapper):
         if self.isolation == "systemd":
@@ -762,7 +784,8 @@ class Step:
         if self.isolation == "systemd":
             run_quiet(["systemctl", "--user", "stop", f"{self.unit}.scope"])  # a leftover of the same name
         env = dict(env, VERIFY_STEP_CWD=str(cwd), VERIFY_STEP_RUN=run,
-                   VERIFY_STEP_STATS=str(stats_path) if self.isolation == "systemd" else "")
+                   VERIFY_STEP_STATS=str(stats_path) if self.isolation == "systemd" else "",
+                   VERIFY_STEP_OOM_SCORE_ADJ="" if self.oom_score_adj is None else str(self.oom_score_adj))
         started = time.monotonic()
         polled = {}
         timed_out, terminating, kill_at = False, False, float("inf")
@@ -806,7 +829,11 @@ class Step:
                             progress = (cpu or 0, size, now_)    # working: a new window starts
                         elif now_ - progress[2] >= self.stall_window:
                             stop = "stalled"
-                if stop:
+                if stop and self.urgent:
+                    timed_out, terminating, stopped_for = False, True, stop
+                    self.stop(signal.SIGKILL)
+                    kill_at = float("inf")
+                elif stop:
                     timed_out, terminating, stopped_for = stop != "cancelled", True, stop
                     self.stop(signal.SIGTERM)
                     kill_at = time.monotonic() + 15
@@ -841,6 +868,9 @@ class Step:
             "peakMemoryBytes": stats.get("memory.peak") or (rusage.ru_maxrss * 1024 if rusage else None),
             "peakMemoryMeasure": "cgroup memory.peak" if "memory.peak" in stats else "largest process's peak RSS",
             "oomKills": stats.get("memory.events.oom_kill", 0),
+            # Times the step's own limit ran out (memory.events oom). A kill with none of these came from the machine
+            # running out, not from the step's limit.
+            "limitOoms": stats.get("memory.events.oom", 0),
             "memoryHighEvents": stats.get("memory.events.max", 0),
         }
 
@@ -938,15 +968,56 @@ class Runner:
         if used_memory + memory > self.runner["memory"]:
             return f"{fmt_bytes(used_memory)} of {fmt_bytes(self.runner['memory'])} reserved"
         available = mem_available()
-        if available is not None and available < memory:
-            return f"only {fmt_bytes(available)} available on the machine"
+        floor = self.runner["memory_floor"]
+        if available is not None and available - floor < memory:
+            return (f"only {fmt_bytes(available)} available on the machine" +
+                    (f", which keeps {fmt_bytes(floor)} free" if floor else ""))
         return None
+
+    # The machine's memory comes first: a job goes before an agent, a watcher or a terminal.
+
+    def relieve(self, available):
+        """The machine has fallen under the memory floor: stop the job started last, at once. One at a time: the next
+        goes only once this one is gone and the machine is still short. Returns the id stopped, or None."""
+        with self.lock:
+            if not self.running or any(e.get("memoryStop") for e in self.running.values()):
+                return None
+            job_id, entry = max(self.running.items(), key=lambda kv: kv[1].get("started", 0))
+            entry["memoryStop"] = {"at": iso(now()), "availableBytes": available, "floorBytes": self.runner["memory_floor"],
+                                   "running": len(self.running)}
+            for step in entry["steps"]:
+                step.urgent = True
+                step.cancelled = True
+        print(f"{job_id}: stopped for the machine's memory: {fmt_bytes(available)} available, under the "
+              f"{fmt_bytes(self.runner['memory_floor'])} floor; the newest of {len(self.running)} running job(s)", flush=True)
+        return job_id
+
+    def memory_stopped(self, job_id, result, stop):
+        """The first time, the job is cancelled and runs again when there is room. The second time it is a result,
+        out-of-memory, for its submitter to regroup: the machine cannot hold it beside the rest as it was asked."""
+        try:  # the count goes on across runners: the last result of a job stopped this way says how often it was
+            before = json.loads((self.state / "results" / job_id / "result.json").read_text())
+        except (OSError, ValueError):
+            before = {}
+        n = ((before.get("memoryStop") or {}).get("count", 0) if before.get("status") == "cancelled" else 0) + 1
+        stop = dict(stop, count=n)
+        result["memoryStop"] = stop
+        why = (f"the runner stopped it because the machine had {fmt_bytes(stop['availableBytes'])} available, under its "
+               f"{fmt_bytes(stop['floorBytes'])} floor, with {stop['running']} job(s) running; not at the job's own limit")
+        if n == 1:
+            result["status"] = "cancelled"
+            result["attention"].append(f"{why}. It runs again when there is room")
+        else:
+            result["status"] = "out-of-memory"
+            result["attention"].append(f"{why}, {n} times now. Regroup: resubmit it with a higher --memory "
+                                       f"estimate (so fewer jobs run beside it), run fewer workers, or split it")
 
     def start(self, job, path, source, job_plan, memory):
         job_id = job["id"]
         if not self.claim(job_id):
             return False
-        entry = {"plan": job_plan, "cpus": job_plan["cpus"], "memory": memory, "steps": [], "job": job}
+        entry = {"plan": job_plan, "cpus": job_plan["cpus"], "memory": memory, "steps": [], "job": job,
+                 "started": time.monotonic()}
         self.running[job_id] = entry
         thread = threading.Thread(target=self.execute, args=(job, path, source, job_plan, entry), daemon=True)
         entry["thread"] = thread
@@ -1008,6 +1079,8 @@ class Runner:
         except Exception as e:  # anything the pipeline itself got wrong is an error, never a verdict
             result["status"] = "error"
             result["attention"].append(f"the pipeline failed: {type(e).__name__}: {e}")
+        if entry.get("memoryStop"):
+            self.memory_stopped(job_id, result, entry["memoryStop"])
         finished = now()
         result["finishedAt"] = iso(finished)
         result["wallSeconds"] = round((finished - started).total_seconds(), 1)
@@ -1088,7 +1161,7 @@ class Runner:
             log = self.state / "runs" / result["id"] / "logs" / "0-build-jvmcontract.log"
             step = Step(f"vjob-{scope_id(result['id'])}-build", self.isolation, max(entry["cpus"], 1),
                         max(entry["memory"], self.runner["build_memory"]), self.runner["stall_window"],
-                        self.runner["max_timeout"])
+                        self.runner["max_timeout"], self.runner["job_oom_score_adj"])
             entry["steps"].append(step)
             outcome = step.run(run, work, env, log, log.with_suffix(".stats"), self.wrapper, 3600)
             record = self.step_record({"name": "build jvmcontract", "run": run, "cwd": "."}, 0, outcome, log)
@@ -1145,15 +1218,20 @@ class Runner:
         for i, spec in enumerate(job["steps"], 1):
             name = spec.get("name") or f"step {i}"
             log = run_dir / "logs" / f"{i}-{slug(name, 30)}.log"
-            if (failed and job.get("stopOnFailure", True)) or self.stopping:
+            if (failed and job.get("stopOnFailure", True)) or self.stopping or entry.get("memoryStop"):
+                why = ("the runner stopped the job for the machine's memory" if entry.get("memoryStop") else
+                       "an earlier step failed" if failed else "the runner was stopped")
                 result["steps"].append({"index": i, "name": name, "run": spec["run"], "cwd": spec.get("cwd", "."),
-                                        "status": "skipped", "why": "an earlier step failed" if failed else "the runner was stopped"})
+                                        "status": "skipped", "why": why})
                 continue
             timeout = min(parse_seconds(spec["timeout"]) if spec.get("timeout") else result["limits"]["timeoutSeconds"],
                           result["limits"]["timeoutSeconds"])
             step = Step(f"vjob-{scope_id(job['id'])}-{i}", self.isolation, result["limits"]["cpus"],
-                        result["limits"]["memoryLimitBytes"], self.runner["stall_window"], self.runner["max_timeout"])
+                        result["limits"]["memoryLimitBytes"], self.runner["stall_window"], self.runner["max_timeout"],
+                        self.runner["job_oom_score_adj"])
             entry["steps"].append(step)
+            if entry.get("memoryStop"):  # stopped between the check above and now
+                step.urgent = step.cancelled = True
             outcome = step.run(spec["run"], work / spec.get("cwd", "."), env, log, log.with_suffix(".stats"),
                                self.wrapper, timeout)
             record = self.step_record(spec, i, outcome, log)
@@ -1238,6 +1316,10 @@ class Runner:
             if s["status"] not in ("timeout", "cancelled") and s.get("overranTimeout"):
                 attention.append(f"{where} ran past its {fmt_seconds(s.get('timeoutSeconds') or result['limits']['timeoutSeconds'])} timeout "
                                  f"while still working and was left to finish, in {fmt_seconds(s['wallSeconds'])}: the estimate is far off")
+            elif s["status"] == "out-of-memory" and s.get("oomKills") and not s.get("limitOoms", 1):
+                attention.append(f"{where} was killed by the kernel when the machine ran out of memory, under its own "
+                                 f"{fmt_bytes(result['limits']['memoryLimitBytes'])} limit: a job goes first. Rerun it when "
+                                 f"there is room, or with fewer workers; resubmitting with more memory does not help")
             elif s["status"] == "out-of-memory":
                 attention.append(f"{where} was killed at its {fmt_bytes(result['limits']['memoryLimitBytes'])} memory limit")
             counts = s.get("signalCounts", {})
@@ -1439,13 +1521,18 @@ def cmd_run(args):
 
     r = config["runner"]
     print(f"runner: {r['workers']} worker(s), {r['cpus']:g} CPUs, {fmt_bytes(r['memory'])} "
-          f"(at most {fmt_bytes(r['job_memory_max'])} a job), isolation {isolation}, state {runner.state}", flush=True)
+          f"(at most {fmt_bytes(r['job_memory_max'])} a job), isolation {isolation}, keeping {fmt_bytes(r['memory_floor'])} "
+          f"of the machine free, jobs at oom_score_adj {r['job_oom_score_adj']}, state {runner.state}", flush=True)
     wanted = set(args.ids) if args.ids else None
     told = set()
     # The queue is read at the start, at once after a nudge, and every poll_seconds for a change nobody announced:
     # a job committed while another runs starts beside it, within the budget, and does not wait for this run to end.
     last_scan, queue, blocked, nudged, last_look = None, [], None, nudge_time(runner.state), False
     while not runner.stopping:
+        if r["memory_floor"] and runner.running:
+            available = mem_available()
+            if available is not None and available < r["memory_floor"]:
+                runner.relieve(available)
         if last_scan is None or nudge_time(runner.state) != nudged or time.monotonic() - last_scan > r["poll_seconds"]:
             nudged = nudge_time(runner.state)
             revs = [resolve(args.rev)] if args.rev else queue_revs()
@@ -2105,6 +2192,8 @@ def main(argv=None):
         p.add_argument("--cpus", help="CPUs shared out among running jobs")
         p.add_argument("--memory", help="memory shared out among running jobs, such as 5G")
         p.add_argument("--job-memory-max", help="the most any one job may have, such as 4G")
+        p.add_argument("--memory-floor", help="what the machine keeps free: no job starts that would go under it, and "
+                       "under it the newest job is stopped, such as 8G (0: none)")
         p.add_argument("--isolation", choices=["auto", "systemd", "none"])
         p.add_argument("--max-timeout", help="no job runs longer, such as 6h")
         p.add_argument("--state-dir", help="where runs, logs and work directories live (default verification/.state)")

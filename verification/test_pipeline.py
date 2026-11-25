@@ -831,6 +831,115 @@ class MissingToolsTest(unittest.TestCase):
 
 
 @unittest.skipUnless(SYSTEMD, "systemd-run --user --scope is not available here")
+class MemoryOrderTest(unittest.TestCase):
+    """Should the machine run short of memory, a verification job goes first: before an agent, a watcher or a
+    terminal. Its processes are first in the kernel's kill order, and under the runner's memory floor the runner
+    stops its newest job itself."""
+
+    def setUp(self):
+        self.mem = Path(tempfile.mkdtemp(prefix="pipeline-mem-"))
+        self.addCleanup(shutil.rmtree, self.mem, True)
+        self.available = self.mem / "available"
+        self.set_available(100 << 30)
+        self.env = {"VERIFY_MEMAVAILABLE_FILE": str(self.available)}
+
+    def set_available(self, n):
+        tmp = self.available.with_suffix(".new")
+        tmp.write_text(f"{n}\n")
+        tmp.replace(self.available)
+
+    def test_every_process_of_a_job_starts_first_in_the_kernels_kill_order(self):
+        repo = Repo()
+        self.addCleanup(repo.close)
+        seen = self.mem / "adj"
+        job_id = repo.submit("Read its own oom score", "--run", f"bash -c 'cat /proc/self/oom_score_adj' > {seen}",
+                             "--memory", "64M")
+        repo.commit("job")
+        repo.pipeline("run", "--rev", "HEAD")
+        self.assertEqual(repo.result(job_id, False)["status"], "passed")
+        self.assertEqual(seen.read_text().strip(), "1000", "a child of the step inherits the job's place")
+
+    def test_no_job_starts_that_would_take_the_machine_under_its_floor(self):
+        repo = Repo(memory_floor="1G")
+        self.addCleanup(repo.close)
+        job_id = repo.submit("Wait for room", "--run", "true", "--memory", "256M")
+        repo.commit("job")
+        self.set_available((1 << 30) + (100 << 20))  # 1.1G: room for the floor, not for the job's 384M limit too
+        out = repo.pipeline("run", "--rev", "HEAD", env=self.env).stdout
+        self.assertIn(f"{job_id}: not started: only", out)
+        self.assertIn("which keeps 1.0 GiB free", out)
+        self.set_available(4 << 30)
+        self.assertIn(f"{job_id}: passed", repo.pipeline("run", "--rev", "HEAD", env=self.env).stdout)
+
+    def runner(self, repo):
+        proc = subprocess.Popen([sys.executable, "verification/pipeline.py", "run", "--rev", "HEAD"], cwd=repo.dir,
+                                env=dict(os.environ, VERIFY_REPO=str(repo.dir), **self.env), stdout=subprocess.PIPE, text=True)
+        self.addCleanup(lambda: proc.poll() is None and proc.kill())
+        return proc
+
+    def wait_for(self, what, test, seconds=30):
+        deadline = time.monotonic() + seconds
+        while not test():
+            if time.monotonic() > deadline:
+                self.fail(f"waited {seconds} s for {what}")
+            time.sleep(0.1)
+
+    @cost("tool")
+    def test_under_the_floor_the_newest_job_is_stopped_runs_again_and_the_second_time_is_a_result_to_regroup(self):
+        repo = Repo(memory_floor="1G", poll_seconds=1)
+        self.addCleanup(repo.close)
+        starts = self.mem / "starts"
+        older = repo.submit("An older job", "--run", "sleep 8", "--memory", "128M")
+        repo.commit("job")
+        proc = self.runner(repo)
+        claims = repo.dir / "verification/.state/claims"
+        self.wait_for("the older job to start", lambda: (claims / older).exists())
+        newer = repo.submit("A newer job", "--run", f"echo start >> {starts}; sleep 60", "--memory", "128M")
+        repo.commit("another job")
+        repo.pipeline("nudge")
+        self.wait_for("the newer job to start", lambda: starts.exists())
+        self.set_available(512 << 20)  # an agent's build takes the machine under the floor
+        stopped = repo.dir / "verification/.state/results" / newer / "result.json"
+        self.wait_for("the newer job to be stopped", stopped.exists)
+        # Freed, but not enough to start it again beside the older one: that one is left alone, and finishes.
+        self.set_available((1 << 30) + (100 << 20))
+        out = proc.communicate(timeout=60)[0]
+        self.assertIn(f"{newer}: stopped for the machine's memory: 512.0 MiB available, under the 1.0 GiB floor; "
+                      f"the newest of 2 running job(s)", out)
+        self.assertEqual(repo.result(older, False)["status"], "passed", "the older job was left to finish")
+        first = repo.result(newer, False)
+        self.assertEqual(first["status"], "cancelled", "the first time it is not run, and runs again")
+        self.assertEqual(first["memoryStop"]["count"], 1)
+        self.assertEqual(first["steps"][0]["status"], "cancelled")
+        self.assertLess(first["steps"][0]["wallSeconds"], 20, "killed at once, not left to wind down")
+        self.assertIn("not at the job's own limit. It runs again when there is room", " ".join(first["attention"]))
+        self.assertIn(f"{newer}: not started: only 1.1 GiB available", out, "and no job starts under the floor")
+
+        self.set_available(100 << 30)  # the room is back: it runs again
+        proc = self.runner(repo)
+        self.wait_for("the newer job to start again", lambda: starts.read_text().count("start") == 2)
+        self.set_available(512 << 20)
+        proc.communicate(timeout=60)
+        second = repo.result(newer, False)
+        self.assertEqual(second["status"], "out-of-memory", "the second time it is a result for its submitter")
+        self.assertEqual(second["memoryStop"]["count"], 2)
+        self.assertIn("2 times now. Regroup: resubmit it with a higher --memory", " ".join(second["attention"]))
+        self.assertNotIn("started at", repo.pipeline("run", "--rev", "HEAD", env=self.env).stdout, "it is done")
+
+    def test_a_kill_at_the_machines_end_is_told_apart_from_one_at_the_jobs_own_limit(self):
+        def attention(limit_ooms):
+            step = {"index": 1, "name": "prove", "status": "out-of-memory", "exitCode": None, "signal": "SIGKILL",
+                    "expectExit": [0], "wallSeconds": 3.0, "cpuSeconds": 2.0, "peakMemoryBytes": 1 << 30,
+                    "oomKills": 1, "limitOoms": limit_ooms, "signalCounts": {}, "signals": []}
+            result = {"status": None, "attention": [], "steps": [step], "outputs": [],
+                      "limits": {"cpus": 1, "memoryLimitBytes": 2 << 30, "timeoutSeconds": 600}, "runner": {}}
+            pipeline.Runner.finish(None, {}, result, {"memoryEstimate": 1 << 30, "durationEstimate": 60})
+            return " ".join(result["attention"])
+        self.assertIn("killed by the kernel when the machine ran out of memory, under its own 2.0 GiB limit", attention(0))
+        self.assertIn("resubmitting with more memory does not help", attention(0))
+        self.assertIn("was killed at its 2.0 GiB memory limit", attention(1))
+
+
 class SystemdTest(unittest.TestCase):
     def setUp(self):
         self.repo = Repo(isolation="systemd")

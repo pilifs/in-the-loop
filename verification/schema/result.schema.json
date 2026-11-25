@@ -12,7 +12,7 @@
     "id": {"type": "string"},
     "title": {"type": ["string", "null"]},
     "status": {
-      "description": "passed: every step exited as expected. failed: a step did not, which for a verifier usually means it found a problem, or the command was wrong. timeout and out-of-memory: a step was stopped at a limit and gave no verdict; rerun with more (resubmit). error: the pipeline could not run the job (a missing tool, a build failure). cancelled: the runner was stopped.",
+      "description": "passed: every step exited as expected. failed: a step did not, which for a verifier usually means it found a problem, or the command was wrong. timeout and out-of-memory: a step was stopped at a limit and gave no verdict; rerun with more (resubmit). error: the pipeline could not run the job (a missing tool, a build failure). cancelled: the runner was stopped, or stopped the job once for the machine's memory (memoryStop); it runs again. A job stopped that way a second time is out-of-memory.",
       "enum": ["passed", "failed", "timeout", "out-of-memory", "error", "cancelled"]
     },
     "summary": {"description": "One line: status, steps, time and memory against the estimate, changed outputs, and the verdict lines found in the logs.", "type": "string"},
@@ -44,6 +44,17 @@
         "workers": {"type": "integer"},
         "cpus": {"type": "number"},
         "memoryBudgetBytes": {"type": "integer"}
+      }
+    },
+    "memoryStop": {
+      "description": "The runner stopped the job because the machine's available memory fell under the runner's memory_floor; not the job's own limit. The first time the job is cancelled and runs again; the second it is out-of-memory, for its submitter to regroup.",
+      "type": "object",
+      "properties": {
+        "at": {"type": "string"},
+        "availableBytes": {"type": "integer"},
+        "floorBytes": {"type": "integer"},
+        "running": {"description": "Jobs running when it was stopped, itself included.", "type": "integer"},
+        "count": {"description": "Times this job has been stopped this way, across runners.", "type": "integer"}
       }
     },
     "limits": {
@@ -119,7 +130,8 @@
           "cpuThrottledSeconds": {"description": "Time held back by the CPU cap: high means the job wanted more CPUs than it asked for.", "type": ["number", "null"]},
           "peakMemoryBytes": {"type": ["integer", "null"]},
           "peakMemoryMeasure": {"type": "string"},
-          "oomKills": {"description": "Processes the kernel killed at the step's memory limit.", "type": "integer"},
+          "oomKills": {"description": "Processes the kernel killed in the step: at its memory limit, or when the machine ran out (then limitOoms is 0).", "type": "integer"},
+          "limitOoms": {"description": "Times the step's own memory limit ran out (memory.events oom). Kills with none of these came from the machine running out, not from the step's limit.", "type": "integer"},
           "memoryHighEvents": {"description": "Times the step reached its memory limit.", "type": "integer"},
           "log": {
             "type": "object",
