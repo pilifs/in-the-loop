@@ -109,3 +109,67 @@ Compare the same public calls immediately before and after each change. Check th
 **Technical notes.** Use the `spring-jdbc` Gradle module and a transactional sequence table. The reservation update and `select last_insert_id()` run on the same physical connection because MySQL tracks that value per connection. A JDBC test double can establish calls and returned IDs. Durable row and uniqueness claims require a transactional database and a separate reader.
 
 **Sources.** [PR #37322](https://github.com/spring-projects/spring-framework/pull/37322) · [landed comparison](https://github.com/spring-projects/spring-framework/compare/eb9928f993fc650ba92a833ecfd28194c28afd3e...f96403da2a821f9b8281161847e32a1c4e35e470) · [Parent allocator](https://github.com/spring-projects/spring-framework/blob/eb9928f993fc650ba92a833ecfd28194c28afd3e/spring-jdbc/src/main/java/org/springframework/jdbc/support/incrementer/MySQLMaxValueIncrementer.java) · [Merged allocator and table contract](https://github.com/spring-projects/spring-framework/blob/f96403da2a821f9b8281161847e32a1c4e35e470/spring-jdbc/src/main/java/org/springframework/jdbc/support/incrementer/MySQLMaxValueIncrementer.java) · [Public ID entry](https://github.com/spring-projects/spring-framework/blob/f96403da2a821f9b8281161847e32a1c4e35e470/spring-jdbc/src/main/java/org/springframework/jdbc/support/incrementer/AbstractDataFieldMaxValueIncrementer.java) · [Landed JDBC regression](https://github.com/spring-projects/spring-framework/blob/f96403da2a821f9b8281161847e32a1c4e35e470/spring-jdbc/src/test/java/org/springframework/jdbc/support/incrementer/DataFieldMaxValueIncrementerTests.java) · [Module build](https://github.com/spring-projects/spring-framework/blob/f96403da2a821f9b8281161847e32a1c4e35e470/spring-jdbc/spring-jdbc.gradle)
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- `source ~/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/env.sh` sets `$O`, `$W`, `$MVN`, `$J8` … `$J25`, `TMPDIR`, `GRADLE_USER_HOME`.
+  The default `java` on `PATH` is JDK 25: name the JDK by path.
+- Worktrees at both pins of every case: `$W/N01-commons-cli-{parent,fix}`, `$W/N02-HdrHistogram-{parent,fix}`, `$W/N03-threeten-extra-{parent,fix}`,
+  `$W/N04-geometry-api-java-{parent,fix}`, `$W/N05-spring-framework-{parent,fix}`; full commit ids in [Upstream revisions](#upstream-revisions).
+- Built jars, digests and classpaths: `$O/artifacts/CASE-ROLE/` (`SHA256SUMS`, `runtime-classpath.txt`, `test-classpath.txt`); full digests in
+  [Digests of the built artifacts](#digests-of-the-built-artifacts-n01n05). N01 and N02 have no runtime dependencies (the jar alone);
+  N03 needs `jspecify-1.0.1.jar` and `joda-convert-2.2.4.jar` only as optional deps; N04 needs `jackson-core-2.9.6.jar` (paths in `runtime-classpath.txt`).
+- Offline Maven commands per case (each a few seconds) in the case sections: N01 and N03 on `$J17`, N02 and N04 on `$J8` (their bytecode
+  targets are 1.6 and 1.7). Everything they need is in `$O/m2`.
+- N05: Gradle 9.8.0 at `$O/tools/gradle-9.8.0`, run through `$O/scripts/gradle_case.sh` (JDK 25 launcher, toolchains 17/25, no build cache, no scan);
+  dependencies are in `$O/gradle-home`. Built by job `20261125-225459-setup-build-spring-jdbc-at-both-37322-re` (passed):
+  `$O/artifacts/N05-{fix,parent}/spring-jdbc-7.0.10-SNAPSHOT.jar`, `runtimeClasspath.txt` (22 entries) and `testRuntimeClasspath.txt` (56 entries),
+  `:`-joined absolute paths that all exist (Spring project jars copied under `tree/`, third-party jars in `$O/gradle-home`), and `SHA256SUMS`.
+  The worktrees are clean again; a rebuild is the offline command in the N05 section.
+- For N05's durable claims: Docker image `mysql@sha256:0255b469f0135a0236d672d60e3154ae2f4538b146744966d96440318cc822c6` (`mysql:9.1.0`, the version the PR
+  tested), Connector/J `$O/releases/mysql-connector-j-9.1.0/mysql-connector-j-9.1.0.jar` (sha256 in [Released artifacts](#released-artifacts-and-signatures));
+  a connection smoke worked (InnoDB default, REPEATABLE-READ, autocommit on). Command in the N05 section.
+- Released jars with checked checksums and signatures in `$O/releases/` (commons-cli 1.11.0, HdrHistogram 2.1.10/2.1.11, threeten-extra 1.11.0,
+  esri-geometry-api 2.2.4, spring-jdbc 7.0.9/7.0.10).
+
+### What was verified on a JVM
+
+- Each landed regression passes on the fix and fails on the parent, as the brief says:
+  - N01: three new `DefaultParserTest` tests fail on the parent (`expected: <second> but was: <first>` in `testPropertiesReuseOptions`, and two more).
+  - N02: `testHistogramEqualsAfterResizing` errors on the parent with `ArrayIndexOutOfBoundsException: 54272` inside `AbstractHistogram.equals`.
+  - N03: 51 of the 1668 landed British/Julian tests fail on the parent (`test_prolepticYear_overflow`, `test_with_TemporalField_dayOverflow`,
+    `test_until_Period_plusIsInverse`, `test_until_CLD_backwardAcrossCutover`, …).
+  - N04: `testIssue328` errors on the parent with `GeometryException: internal error` in `TopologicalOperations.restorePolylineParts_`, on the
+    **forward** (A–T) call; the backward call is never reached on the parent.
+  - N05: `mySQLMaxValueIncrementerWithCommitFailure()` fails on the parent with `AssertionFailedError` at `DataFieldMaxValueIncrementerTests.java:258`,
+    the first `nextLongValue()` after the failed commit not returning 1; the other 11 tests of the class pass there (job
+    `20261125-225459-setup-build-spring-jdbc-at-both-37322-re`). This is the landed Mockito regression only; nothing ran against MySQL beyond
+    the connection smoke.
+- Each Maven case's full upstream `package` passes at both pins (N01 998/995, N02 150/149, N03 13857/13787, N04 506/505 tests).
+- N05's spring-jdbc test task passes at both pins, offline (972 / 971 tests, 6 skipped each).
+- N05's built `MySQLMaxValueIncrementer.class` at the fix equals the one in released spring-jdbc 7.0.10 byte for byte.
+
+### What to know before starting
+
+- All four Maven builds are `-SNAPSHOT` or unreleased versions of the pinned trees, not published artifacts: N04's builds say `2.3.0`, but no
+  2.3.0 is on Maven Central (2.2.4 is the newest, and its `TopologicalOperations.java` = the parent's). N02's fix landed in release 2.1.11, N05's in 7.0.10
+  (`MySQLMaxValueIncrementer.java` byte for byte); commons-cli and threeten-extra have no release with their fix yet.
+- N02 is a merge commit: diff against its first parent `89b0d5981bafb6b4b4ac624473a1771405d4da20`.
+- N03's build runs surefire twice (`default-test`, `test-without-modules`); the reports folder keeps one set.
+- N05: no MySQL driver is on spring-jdbc's classpaths; Connector/J 9.1.0 is in `$O/releases/`. The MySQL image's entrypoint restarts its server
+  once during init: wait for a TCP ping. Spring's build applies the Develocity conventions plugin; keep `--no-scan --no-build-cache` (as
+  `gradle_case.sh` does) so nothing is uploaded or fetched from ge.spring.io. The version is `7.0.10-SNAPSHOT`, so the build also lists
+  repo.spring.io's milestone and snapshot repositories; none of the resolved artifacts came from them.
+- HdrHistogram 2.1.10's signature could not be checked (signing key on no keyserver tried); its sha1 matched Central.
+- N05 rebuilds take about a minute per pin offline (58 s and 66 s in the job, the whole spring-jdbc test task included), at the limit above
+  which this repository queues a build as a verification job. `N05_job.sh` and `gradle_case.sh` are the commands to queue.
+- N05's `SHA256SUMS` line for `MySQLMaxValueIncrementer.class` is the entry inside the jar: `sha256sum -c` reports it missing (see the digests section).
+- N05's job result was recorded by the runner on the default line (commit `b3390c67f58f80e874a730080a36fba5b4bfe7c5`), not on this record's line; the merge brings it in.
+
+### What is left for the domain work on purpose
+
+- Every scenario and claim of the brief: harnesses against the built jars, the predictions (N01 failed-parse retry, N02 symmetry and the
+  interior-count challenge, N03 18 March → 1 September readback, N04 reversed and extended subtractors on both revisions), and N05's JDBC test
+  double or MySQL fixture (failing commit, failing `setAutoCommit(true)`, independent reader). No example folders, claims or sidecars exist.
