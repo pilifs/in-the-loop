@@ -18,6 +18,28 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-069: an agent's wait loop matches its own command line in pgrep and never ends; a hung run needs the user
+
+- **Status**: open. It needs a robust way to wait, a rule in the operating notes, and a sanctioned way for the watcher to clear a hung wait.
+- **Raised**: 2026-11-25 by the watcher, from the advisor's draft, at the user's request, after the m01-m10 setup run hung.
+- **What happened.**
+  - `sync.py commit` takes about 15 minutes in this checkout (its `check`), so setup agents run it in the background and then wait for it.
+  - They wait with `until ! pgrep -f 'python3 llm-dlc/tools/sync.py commit'; do sleep 10; done`. That loop's own command line contains the pattern, so `pgrep -f` always finds a match and the loop never ends.
+  - Occurrences on 2026-11-25:
+    1. **`organic-java-merged-pr-links-l01-l20-brief-setup`** (Claude Opus 5.5) noticed its loops "were matching their own command lines in `pgrep`" (16:15 UTC), stopped them and re-ran the commit. The cost: a killed commit left a description on `@`, plus extra time.
+    2. **`organic-java-merged-pr-links-m01-m10-brief-setup`** (Claude Opus 5.5, `claude -p` pid 3335079) did not notice. Its second commit landed at 20:55 (`sxkpqmww`). From 21:04 it sat in up to four such loops (9 to 40 minutes old) until about 21:40, with no other activity. Its two jobs had already run and were collected.
+    3. The advisor's own background monitor of a promotion used `pgrep -f 'sync.py promote'` to detect the end, and never reported it for the same reason.
+- **Why it needed the user.** The watcher found the loops at about 21:40 (four, 9 to 40 minutes old, all children of the setup agent; no real `sync.py commit` running), but auto mode's classifier denied its kill of them, and `single_run.py stop --now` is reserved for the user's word. So it was put to the user. By the watcher's next check (21:43) the loops had been ended outside the watcher's session; the agent went on in the same cycle, finished the record, and the watcher stopped the run as complete and landed the setup.
+- **What it costs.** A cycle's worth of wall-clock time per occurrence, a person's attention, and sometimes a half-made commit. It will recur while commits are slow and agents write their own waits.
+- **Fixes (to build; none chosen):**
+  1. **A wait that can't self-match:**
+     - `sync.py commit --background`, which writes a status or PID file under the run's folder plus a `sync.py wait` that reads it;
+     - or, for agents, waiting on the PID they started (`cmd & pid=$!; wait $pid`, or `while kill -0 $pid`), not on a pattern.
+  2. **An operating-notes rule (done 2026-11-25):** `llm-dlc/operating-notes.md`, *Waiting for a command to finish: not by `pgrep -f` on its text*. The rule: never wait with `pgrep -f PATTERN` where the loop's own text contains PATTERN. If pgrep is unavoidable, use the bracket form (`pgrep -f '[s]ync.py commit'`). Prefer the client's own background-task notification.
+  3. **A sanctioned unhang for the watcher:** a `single_run.py` command that lists and ends a run's idle child processes (sleep or `until` loops older than N minutes, with no live target) without stopping the turn, so the watcher can clear this without the user and without a broad kill.
+  4. **Make commits fast enough not to background.** The ~15-minute `check` is the root pressure (see the slow `review show` too).
+- **When it closes**: a setup or domain run can wait for its own long commit without hanging, and a hung wait can be cleared by the watcher with a sanctioned command.
+
 ### VF-068: merging a promotion's record back conflicts in the manifest of a session that kept working after the freeze
 
 - **Status**: open. The tooling needs fixing. Until then, each occurrence needs the user's decision, because agents may not edit `llm-dlc/traces/`. This occurrence is resolved: with the user's permission the watcher took the line's side whole and committed the merge (wzsnyuzr).
