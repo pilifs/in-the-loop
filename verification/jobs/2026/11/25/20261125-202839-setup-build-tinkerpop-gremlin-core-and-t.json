@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-202839-setup-build-tinkerpop-gremlin-core-and-t",
+  "title": "Setup: build TinkerPop gremlin-core and tinkergraph at both #3105 revisions and run the dedup regressions",
+  "description": "Setup for case M10 of llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-m01-m10/worktrees, Maven 3.10.0 on JDK 11, -pl gremlin-core,tinkergraph-gremlin -am (gremlin-language, gremlin-shaded, gremlin-core, gremlin-test, tinkergraph-gremlin; no .NET, Go, Python or JS modules): builds TinkerPop 3.8.0-SNAPSHOT at the fix pin a97db03618fa2fd7c17d24e331ff62adfe9c8df4 (online first, then offline) and the parent pin 007fd228a992f1dccba22e25a88e647168e5ba4f, running DedupGlobalStepTest and TinkerGraphFeatureTest with cucumber.features set to filter/Dedup.feature; keeps the five module jars, the DedupGlobalStep class digests and tinkergraph-gremlin's runtime classpath; then puts the fix's DedupGlobalStepTest and Dedup.feature on a copy of the parent (expected to fail). The module builds take several minutes, so the runs are a job. External dependencies were resolved inline first (dependency:go-offline on the same modules).",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "maven"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: fix and parent pass online and offline; the transplant prints TRANSPLANT-FAILS-AS-EXPECTED; the trees are removed",
+  "submitted": {
+    "at": "2026-11-25T20:28:39+00:00",
+    "session": "a5b4fdc9-3bf2-4c02-8a33-72bad19f6a2d",
+    "by": "setup agent (Claude Opus 5.5), fork B"
+  },
+  "requires": [
+    "java",
+    "mvn",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "5G",
+    "duration": "35m"
+  },
+  "steps": [
+    {
+      "name": "M10 fix: TinkerPop gremlin-core + tinkergraph-gremlin (-am) online, DedupGlobalStepTest and the Dedup.feature scenarios",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh fix-online",
+      "cwd": "."
+    },
+    {
+      "name": "M10 fix offline: the same; module jars, DedupGlobalStep class digest, tinkergraph-gremlin runtime classpath",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh fix-offline",
+      "cwd": "."
+    },
+    {
+      "name": "M10 parent offline: its own DedupGlobalStepTest and Dedup.feature; jars, digest, classpath",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh parent",
+      "cwd": "."
+    },
+    {
+      "name": "M10 the fix's DedupGlobalStepTest and Dedup.feature on the parent (expected to fail in both modules)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh transplant",
+      "cwd": "."
+    },
+    {
+      "name": "remove the M10 build trees",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh clean",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

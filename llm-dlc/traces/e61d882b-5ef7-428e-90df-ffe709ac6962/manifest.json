@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e61d882b-5ef7-428e-90df-ffe709ac6962",
-  "status": "ended",
+  "status": "open",
   "title": "/run-brief invocation options",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,8 +12,8 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-25T21:25:19.992Z",
-  "duration_seconds": 722857,
+  "ended": "2026-11-25T21:53:12.732Z",
+  "duration_seconds": 724529,
   "stats": {
     "turns": 272,
     "api_calls": 2263,
@@ -233,7 +233,7 @@
     {
       "index": 9,
       "started": "2026-11-25T07:39:03.186Z",
-      "ended": "2026-11-25T21:25:19.992Z",
+      "ended": "2026-11-25T21:53:12.732Z",
       "turns": 37,
       "api_calls": 295,
       "usage": {
@@ -246,11 +246,11 @@
     }
   ],
   "log": {
-    "sha256": "992dff01ed92dcc445a3322d802bd13dfa6a6c841ece5f343d4b755741e94a7e",
-    "bytes": 40610007,
-    "lines": 17998,
-    "gzip_bytes": 7048366,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/992dff01ed92dcc445a3322d802bd13dfa6a6c841ece5f343d4b755741e94a7e.jsonl.gz"
+    "sha256": "ae43c6a399bea6c71693af7ecfc49478b282f939d26c34357d982f5cd523ff9e",
+    "bytes": 40616038,
+    "lines": 18003,
+    "gzip_bytes": 7049447,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/ae43c6a399bea6c71693af7ecfc49478b282f939d26c34357d982f5cd523ff9e.jsonl.gz"
   },
   "subagents": [
     {
@@ -11875,6 +11875,46 @@
       "summary": "Note that pgrep -f on a command's text never ends a wait",
       "body": "The L01-L20 and M01-M10 setup agents both waited for sync.py commit with an until ! pgrep -f loop. The loop's own command line matches the pattern, so it spun long after the commit landed (the M setup had four such loops, up to 40 minutes old). The note gives the waits that do end: foreground, wait PID, kill -0, or a bracketed pattern.",
       "log_sha256": "992dff01ed92dcc445a3322d802bd13dfa6a6c841ece5f343d4b755741e94a7e"
+    },
+    {
+      "change_id": "uxxrqyvptzsmsrsxuywyloomqpsxorut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Start the M01-M10 setup record: pinned revisions fetched",
+      "body": "Setup agent for the merged Java PR links M01-M10 brief: all 20 pinned revisions fetched by SHA into shallow mirrors, one worktree each under ~/.cache/in-the-loop/merged-pr-links-m01-m10. Every PR's merge SHA equals the brief's after pin, every after pin's first parent is the before pin, and each landed diff names exactly the PR's files. Builds follow.",
+      "log_sha256": "ae43c6a399bea6c71693af7ecfc49478b282f939d26c34357d982f5cd523ff9e"
+    },
+    {
+      "change_id": "sxkpqmwwmlkopllmstwwzknssswlxolo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the M01-M10 setup: eight cases built and checked, two jobs queued (verification pending)",
+      "body": "Setup for the merged Java PR links M01-M10 brief, no claims. M01 RoaringBitmap, M02 jackson-databind, M03 vavr, M04 commons-compress, M05 commons-rng, M06 agrona, M07 spatial4j and M09 libgdx are built at both pins with their jars, class digests and runtime classpaths under ~/.cache/in-the-loop/merged-pr-links-m01-m10; for each the landed test passes on the fix and fails on the parent (M04's needs four fix-only accessor lines removed to compile there; M07 has no landed test, and issue #210's reproduction throws on the parent and succeeds on the fix). Offline builds checked. Released versions the brief names are resolved with strict checksums and signatures checked. M02's four 3.2.0/2.22 snapshot inputs are no longer served and were rebuilt from their own upstream commits before the parent pin.\n\nM08 Checkstyle and M10 TinkerPop build by job: 20261125-202838-setup-build-checkstyle-at-both-14128-rev (queued in the previous commit) and 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t.",
+      "log_sha256": "ae43c6a399bea6c71693af7ecfc49478b282f939d26c34357d982f5cd523ff9e"
+    },
+    {
+      "change_id": "nmvyrrtytovkvknzulwomwnnvsownmmy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the M08 and M10 setup jobs' results in the M01-M10 setup record",
+      "body": "Both setup jobs passed. Checkstyle #14128 (job 20261125-202838-setup-build-checkstyle-at-both-14128-rev): HiddenFieldCheckTest 19/19 on the fix online and offline, 17/17 on the parent, and the fix's test with its two new inputs fails twice on the parent; the CLI runs on both built jars. TinkerPop #3105 (job 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t): DedupGlobalStepTest and Dedup.feature pass at both pins, and the fix's versions fail once in each module on the parent. Jar and changed-class digests of both sides are now in the M08 and M10 sections and the Setup Agent Notes; setup is complete.",
+      "log_sha256": "ae43c6a399bea6c71693af7ecfc49478b282f939d26c34357d982f5cd523ff9e"
+    },
+    {
+      "change_id": "nxzrtlrnxwnzzzntrupkstvsnvyzqspz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on organic-java-merged-pr-links-m01-m10-brief-setup",
+      "body": "The watcher's verdicts on the single-agent run organic-java-merged-pr-links-m01-m10-brief-setup (llm-dlc/decisions/single-organic-java-merged-pr-links-m01-m10-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "ae43c6a399bea6c71693af7ecfc49478b282f939d26c34357d982f5cd523ff9e"
+    },
+    {
+      "change_id": "kulywyroltwkvllwzvxsnurrlrtvvpts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run organic-java-merged-pr-links-m01-m10-brief-setup into the line",
+      "body": "The single-agent run organic-java-merged-pr-links-m01-m10-brief-setup (session a5b4fdc9-3bf2-4c02-8a33-72bad19f6a2d) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "ae43c6a399bea6c71693af7ecfc49478b282f939d26c34357d982f5cd523ff9e"
     }
   ],
   "logs": {
@@ -13005,6 +13045,12 @@
       "lines": 4354,
       "gzip_bytes": 2146587,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/aa378f1fa1dce62a3afbec3c54386fd0a9a25cb5178c4aca505d86960450e289.jsonl.gz"
+    },
+    "ae43c6a399bea6c71693af7ecfc49478b282f939d26c34357d982f5cd523ff9e": {
+      "bytes": 40616038,
+      "lines": 18003,
+      "gzip_bytes": 7049447,
+      "url": null
     },
     "b02d1831385c47421981e9f26ed5ee817e9bc3c50fba492b91b58684d72d219a": {
       "bytes": 31581576,
