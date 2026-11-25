@@ -12,10 +12,10 @@ Read on 2026-11-25. The table follows submission order. The checks below compare
 | apache/arrow-java#1019 | written | Read #470, both submitted changes, the merged vector and its SmallIntVector fixtures. In the ordered fixture the parent’s slot-1 size is two while its end by arithmetic is five. The test’s element readback uses slot zero. Equal default hashes after relocating the [40,50] slice remain unexecuted. |
 | jgrapht/jgrapht#792 | written | Read issue #790, both public algorithms, the shared implementation and regression at 2663008. Enumerating the two feasible complete matchings gives totals 18 and 20. Changing the unused 5→7 edge to weight 1 creates a first-path tie, while 5→8 is still compulsory. Both public results remain unexecuted. |
 | apache/commons-statistics#140 | written | Read both Cauchy sources and the SciPy-based regression at 2535c20. The parent evaluates tan(0) at the median despite the PR’s drift claim. With p=2⁻¹⁰⁵⁰ and scale 2⁻¹⁰⁰ the real magnitude is about 2⁹⁵⁰/π, while the merged unscaled reciprocal can overflow. These public calls were not executed. |
-| eclipse-rdf4j/rdf4j#1989 | not yet | |
-| apache/calcite#5378 | not yet | |
-| apache/commons-imaging#335 | not yet | |
-| quartz-scheduler/quartz#1496 | not yet | |
+| eclipse-rdf4j/rdf4j#1989 | written | Read #1978, parent/merge GroupIterator, the two pinned SPARQL XML result fixtures and public tuple-query tests. The fixtures contain zero and one result element respectively. Embedding the explicit group in a join with two VALUES rows is an unexecuted cardinality challenge. |
+| apache/calcite#5378 | written | Read CALCITE-7909, the pinned rule and planner.iq at 5f48eec. The report supplies the old EXCEPT observation and the landed fixture expects 1/0 rows for EXCEPT/INTERSECT. Counting duplicates by full tuple yields 2/1 then 0/3 in the challenge, which remains unexecuted. |
+| apache/commons-imaging#335 | written | Read IMAGING-369, both JpegDecoder revisions and TiffJpegTest. The landed fixture metadata identifies the 3,833-byte compressed file and 48,652-byte reference. For the existing square crop at (11,11) the greatest tested coordinate is 125, short of the 126 edge. The rectangular 3×2 corner comparison remains unexecuted. |
+| quartz-scheduler/quartz#1496 | written | Read issue #920, public Scheduler, both delegate revisions and the Derby job-store regression at adeae66. The issue used Quartz 2.3.2/PostgreSQL; the landed test calls the store directly in both directions. Public scheduler snapshots, extension row counts and isolation by trigger group remain predictions. |
 | apache/maven-shade-plugin#150 | not yet | |
 | apache/iceberg#12855 | not yet | |
 | gradle/gradle#21084 | not yet | |
