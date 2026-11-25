@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "439",
+  "title": "ical4j resolves UTC exceptions across the Paris daylight-saving change",
+  "summary": "The parent retained January 2 despite a UTC exception at its Paris start. The fix removed just that occurrence, kept an exception at its end harmless and switched to the summer offset on March 31.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "ical4j",
+    "symbol": "VEvent.calculateRecurrenceSet"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Recurrence expansion compares an exception date with an occurrence start on the time line, so different zone representations can identify one occurrence."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/ical4j/ical4j",
+    "url": "https://github.com/ical4j/ical4j/pull/947"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-imaging/pull/335",
+  "revisions": {
+    "parent": "4881f0b503d39e210b4fed29e25b26cbbefd5cd8",
+    "fix": "cbdb978098a042cb5fd2a768f6d8575835c28278"
+  },
+  "entry": "Imaging.getBufferedImage",
+  "questions": [
+    {
+      "id": "apache/commons-imaging#335.1",
+      "role": "Intent",
+      "args": [
+        "full"
+      ],
+      "history": "Read the complete 127×127 RGB JPEG-in-TIFF and compare it with the paired reference TIFF.",
+      "prediction": "IMAGING-369 reports a bounds exception on affected images. On the merge expect 127×127 pixels. At every coordinate, alpha differs from the reference by at most 1 and rounded luminance by at most 4.",
+      "basis": "The independently encoded reference supplies corresponding image content. Use the landed fixture’s luminance formula floor(0.299R+0.587G+0.114B+0.5) and tolerances.",
+      "refutation": "Incomplete decode, wrong dimensions, or any pixel including the final row and column outside either tolerance.",
+      "expected": {
+        "fix": {
+          "contains": [
+            "127x127 reference=127x127 bad=0 "
+          ]
+        }
+      },
+      "omit": {
+        "parent": "The edge-image regression is exercised on the corrected decoder."
+      }
+    },
+    {
+      "id": "apache/commons-imaging#335.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use the existing 264×264 pair TestJpegTiles264x264.tiff and TestSample264x264.tiff.",
+      "prediction": "Both revisions should return 264×264 and meet the same per-pixel tolerances.",
+      "basis": "These files were already paired in the parent’s full-image regression. JPEG encoding can legitimately alter individual RGB components.",
+      "refutation": "Either revision changes dimensions, fails to return the image or exceeds the tolerance for any pixel.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "264x264 reference=264x264 bad=0 "
+          ]
+        },
+        "fix": {
+          "contains": [
+            "264x264 reference=264x264 bad=0 "
+          ]
+        }
+      }
+    },
+    {
+      "id": "apache/commons-imaging#335.3",
+      "role": "Challenge",
+      "args": [
+        "corner"
+      ],
+      "history": "On the merge use the same 127×127 compressed file. Compare a regional decode of (x=124,y=125,width=3,height=2) with the corresponding rectangle from its whole-image decode.",
+      "prediction": "The region must be exactly 3×2. All six ARGB integers must equal the full image at (124+i,125+j) for 0≤i<3 and 0≤j<2, including (126,126).",
+      "basis": "Both access paths decode identical source samples, so lossy-compression tolerance is unnecessary between these two views.",
+      "refutation": "Any omitted edge, shifted coordinate or channel mismatch, including at a pixel still within the reference luminance tolerance.",
+      "expected": {
+        "fix": {
+          "contains": [
+            "3x2 equal=true"
+          ]
+        }
+      },
+      "omit": {
+        "parent": "The corner is checked on the corrected decoder."
+      }
+    }
+  ]
+}

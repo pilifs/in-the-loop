@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "438",
+  "title": "Guava aggregates done and reentrant futures in input order",
+  "summary": "Both JRE and Android artifacts eliminated the callback registration on a completed future. The pending and reentrant repeated-input cases completed in input order on both pins.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "race-condition",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Guava",
+    "symbol": "Futures.allAsList"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The aggregate future reads a completed dependency directly, avoiding a listener registration while preserving the result of Futures.allAsList."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/pull/7277"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Both published artifact variants ran on the same desktop JDK 21.",
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

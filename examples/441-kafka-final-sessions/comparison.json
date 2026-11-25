@@ -1,0 +1,82 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/kafka/pull/6654",
+  "revisions": {
+    "parent": "a4f7675db1a928e73c7a69eb906dd1e9ecd4a22a",
+    "fix": "eab855541a4b776b150a849cecda9c758598cdca"
+  },
+  "entry": "TopologyTestDriver.pipeInput",
+  "questions": [
+    {
+      "id": "apache/kafka#6654.1",
+      "role": "Intent",
+      "args": [
+        "boundary"
+      ],
+      "history": "Send key T at 10 ms to establish stream time, then the first record for key A at 8 ms.",
+      "prediction": "The parent should emit no raw A. The merge should emit raw A@[8,8] with count 1.",
+      "basis": "The session end 8 equals the close-time boundary 10−2. The PR specifies an inclusive endpoint, and its processor test admits a delayed record exactly at that boundary.",
+      "refutation": "The merge drops A or forwards a different window or count.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "selected=[[], []]"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "selected=[[], [A@8-8=1]]"
+          ]
+        }
+      }
+    },
+    {
+      "id": "apache/kafka#6654.2",
+      "role": "Control",
+      "args": [
+        "neighbors"
+      ],
+      "history": "From separate clean starts after T@10, try the first A at 7 ms and at 9 ms.",
+      "prediction": "Both versions should drop A@7 and forward A@[9,9] with count 1 in the other history.",
+      "basis": "These values lie strictly below and above the same boundary of 8. T cannot merge with A.",
+      "refutation": "Either raw output admits the older record, drops the newer one, or attributes either to T.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "older selected=[[], []]",
+            "newer selected=[[], [A@9-9=1]]"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "older selected=[[], []]",
+            "newer selected=[[], [A@9-9=1]]"
+          ]
+        }
+      }
+    },
+    {
+      "id": "apache/kafka#6654.3",
+      "role": "Challenge",
+      "args": [
+        "suppress"
+      ],
+      "history": "Send A@0 then T@3, inspect suppressed output for A, send A@5, then a different key U@25 to flush. Track every suppressed A record.",
+      "prediction": "The parent is predicted to publish A@[0,0] prematurely. The merge should produce no A at 3 and exactly one final A@[0,5] with count 2 by 25, with no A tombstone.",
+      "basis": "The same-key events are one inactivity gap apart and merge. T advances stream time past grace alone while a valid extension is still possible. A final subscriber must see the merged result once.",
+      "refutation": "The merge exposes an early A, both a provisional and a final A, or final boundaries or count differ.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "selected=[[], [A@0-0=1]"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "selected=[[], [], [], [A@0-5=2]]"
+          ]
+        }
+      }
+    }
+  ]
+}

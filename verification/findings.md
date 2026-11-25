@@ -132,6 +132,12 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 **4. jOOλ, PR #418. Widening a full window changes the last value.** Confirmed for both `jool` and `jool-java-8` on the merge, released 0.9.16 and `main` at `9273e1f54356`. On the third row of [1,2,3], `window(-5,5)` gives endpoints (1,3). Raising the upper offset to `Long.MAX_VALUE - 1` gives (1,1). The ordinary and future-only controls agree. The user can file the three-row reproduction. [Report and related tickets](merged-pr-links/upstream/README.md#jooλ--widening-an-already-complete-window-changes-its-last-value) · [Both module receipts](merged-pr-links/upstream/419.json)
 
+**5. picocli, PR #1529. Clearing a redundant alias removes the child’s primary command name.** The merged caller accepted both edits, then returned exit 2 with zero child invocations. The fresh root dispatched the identical name. Confirmed on release 4.7.7 and `main` at `10509c0af89a`. The user can file the primary-name case with a link to #1528. [Report and reproduction](merged-pr-links/l01-l20/upstream/README.md#picocli-loses-its-primary-dispatch-entry) · [Current JVM receipts](merged-pr-links/l01-l20/upstream/425.json)
+
+**6. JGraphT, PR #792. A returned GraphPath contains an edge outside its graph.** Suurballe and Bhandari both returned the expected vertex sequences and weights. The input graph did not contain the returned 3→7 edge object. The one-route control passed. Confirmed on release 1.5.3 and `master` at `ee3a1084f737`. The user can file the shared reconstruction witness. [Report and reproduction](merged-pr-links/l01-l20/upstream/README.md#jgrapht-returns-an-edge-outside-the-paths-graph) · [Current JVM receipts](merged-pr-links/l01-l20/upstream/429.json)
+
+**7. Commons Statistics, PR #140. A small Cauchy scale with a subnormal probability gives infinite quantiles despite finite answers.** For scale 2⁻¹⁰⁰ and probability 2⁻¹⁰⁵⁰ the expected magnitudes are approximately 2⁹⁵⁰/π. The merge and `master` at `8381f56aa3ec` returned infinities. Release 1.3 predates the fix and returned incorrect, small finite values. The user can attach the scaled case to #140 or open a linked issue. [Report and reproduction](merged-pr-links/l01-l20/upstream/README.md#commons-statistics-overflows-a-representable-scaled-cauchy-tail) · [Current JVM receipts](merged-pr-links/l01-l20/upstream/430.json)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

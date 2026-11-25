@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/iceberg/pull/12855",
+  "revisions": {
+    "parent": "4ca3f10832907540eee798236fa401eb07c7e7df",
+    "fix": "a7f3dc79a2f42a4875ac35eec2137ecff15204fc"
+  },
+  "entry": "IcebergGenerics.read",
+  "questions": [
+    {
+      "id": "apache/iceberg#12855.1",
+      "role": "Intent",
+      "args": [
+        "delete"
+      ],
+      "history": "The four rows and three equal-width delete keys above.",
+      "prediction": "The parent may retain a deleted row if a reader reuses its buffer. The merge should return exactly one occurrence of 203.",
+      "basis": "Equality deletes remove every row whose key belongs to {A,B,C}. The reporter observed one of two distinct deletes being missed in Iceberg 1.6.1.",
+      "refutation": "On the merge, a deleted ID survives, 203 is absent or it appears more than once.",
+      "expected": {
+        "fix": {
+          "return": "[203]"
+        }
+      }
+    },
+    {
+      "id": "apache/iceberg#12855.2",
+      "role": "Control",
+      "args": [
+        "before"
+      ],
+      "history": "Read the same table immediately after appending the data file and before committing a delete.",
+      "prediction": "Both revisions should yield the multiset {200,201,202,203}, each once, in any order.",
+      "basis": "Each immutable input row contributes one ID to that snapshot.",
+      "refutation": "An ID is missing, duplicated or replaced.",
+      "expected": {
+        "parent": {
+          "return": "[200, 201, 202, 203]"
+        },
+        "fix": {
+          "return": "[200, 201, 202, 203]"
+        }
+      }
+    },
+    {
+      "id": "apache/iceberg#12855.3",
+      "role": "Challenge",
+      "args": [
+        "copy"
+      ],
+      "history": "Create a nested `GenericRecord` containing a binary field whose ByteBuffer spans [A,B] inside [X,A,B,Y] (position 1, limit 3). Set that nested record on an outer record, call `outer.copy()`, then overwrite the source A with Z by absolute index.",
+      "prediction": "The parent is predicted to expose [Z,B] in the copy. On the merge, reading the copied nested field’s remaining bytes should give [A,B], and the source position should still be 1.",
+      "basis": "The selected two bytes define the value at copy time. The mutation distinguishes independent storage from a distinct view backed by the original array.",
+      "refutation": "The merge exposes Z, copies either sentinel, or advances the input buffer’s position.",
+      "expected": {
+        "parent": {
+          "return": "ZB sourcePosition=1"
+        },
+        "fix": {
+          "return": "AB sourcePosition=1"
+        }
+      }
+    }
+  ]
+}

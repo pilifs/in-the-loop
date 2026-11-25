@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-183811-replay-60-l-series-java-questions-on-23",
+  "title": "Replay 60 L-series Java questions on 23 deployment pairs",
+  "description": "Recompile the public callers and check the full before/after observations for twenty merged changes, including both Arrow allocators and Guava modules, Derby and PostgreSQL 16, a Maven shade goal and Gradle builds with the pinned named-action method. Rebuild the two Gradle inputs from verified sources and compare that build with the registered digests.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-results.md"
+    ]
+  },
+  "expected": "All 136 fresh JVM histories reproduce. The independently generated audit is byte-identical to the registered score and accounts for all 60 rows, including five refuted expectations.",
+  "submitted": {
+    "at": "2026-11-25T18:38:11+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "docker"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "Rebuild both pinned Kafka test drivers",
+      "run": "python3 examples/441-kafka-final-sessions/setup/prepare.py",
+      "cwd": "."
+    },
+    {
+      "name": "Rebuild the Gradle method on its verified distribution",
+      "run": "python3 examples/437-gradle-named-actions/setup/prepare.py",
+      "cwd": "."
+    },
+    {
+      "name": "Run every public history",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign l01-l20 --replay --output verification/merged-pr-links/l01-l20/repeated-audit.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare complete audit",
+      "run": "cmp verification/merged-pr-links/l01-l20/audit.json verification/merged-pr-links/l01-l20/repeated-audit.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/l01-l20/repeated-audit.json"
+  ]
+}

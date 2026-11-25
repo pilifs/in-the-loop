@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-184502-build-both-complete-gradle-pins-with-the",
+  "title": "Build both complete Gradle pins with the recovered verified JAR",
+  "description": "Resolve the previously missing grolifant 0.16.1 independently under both pins' strict Gradle policies, then build Gradle from the exact fix and parent in a disposable checkout. Execute the registered named doLast and doFirst filesystem histories on the installed distributions. The recovered public JCenter copy has the original SHA-256.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "examples": [
+      "437"
+    ],
+    "paths": [
+      "examples/437-gradle-named-actions/setup/full.py"
+    ]
+  },
+  "expected": "Both full distributions build under strict dependency verification. All six fresh histories record the executing AbstractTask, task outcomes and file contents and agree with the existing pinned-method comparison.",
+  "submitted": {
+    "at": "2026-11-25T18:45:02+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "10G",
+    "duration": "90m",
+    "memoryLimit": "16G",
+    "timeout": "240m"
+  },
+  "steps": [
+    {
+      "name": "Resolve strictly, build and replay both distributions",
+      "run": "python3 examples/437-gradle-named-actions/setup/full.py --fetch --output verification/merged-pr-links/l01-l20/full-gradle.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/l01-l20/full-gradle.json"
+  ]
+}

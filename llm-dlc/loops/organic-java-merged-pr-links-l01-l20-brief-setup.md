@@ -1369,11 +1369,11 @@ in Gradle's published list of wrapper checksums (`wrapper-checksums.json`, sha25
 cleanup step passed). Logs: `$O/logs/attempt-1/`, `$O/logs/attempt-2/`, and the third's in `$O/logs/L15-*`. Not resubmitted.
 
 **For the domain agent**
-- **No pin distribution exists.** The brief's scenario runs a Gradle distribution; the pins' own build stops on `grolifant` (above). What is
+- **At setup completion, no pin distribution existed.** The later domain run recovered the checksum-matching artifact and verified it offline using both original Gradle policies. Its full-distribution job uses the recovered bytes. [Strict resolution and reproductions](../../examples/437-gradle-named-actions/README.md)
+- The brief's scenario runs a Gradle distribution; the pins' own build stopped on `grolifant` during setup (above). What was
   ready: both pins' sources (worktrees), the released 7.5.1 (no fix) and 7.6 (fix plus later changes) distributions, which are only
   approximate sides, and `$O/gradle-home-L15` with everything resolved up to `build-logic`.
-- To build the pins anyway, someone must first decide to accept Central's `grolifant-0.16.1.jar` in place of the pinned one, e.g. the job's
-  commands (`submit_D.py l15`) with `--dependency-verification lenient` added, which reports the mismatch and carries on. Setup did not.
+- Setup left the later Central JAR unused. The domain run’s checksum-matching JCenter copy preserves strict dependency verification.
 - If they are built, they are built by Gradle 7.5.1, not the gone nightly, from the pins' sources.
 - Use a fresh project dir and `--no-build-cache` per the brief; the daemon of each distribution keeps its own state under the `GRADLE_USER_HOME` you choose.
 

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "440",
+  "title": "RxJava restores discarded group demand and respects the survivor’s limit",
+  "summary": "Cancelling the stalled group now delivers 4 through 8 and completes the survivor and outer stream. With one unit of demand the survivor waited for its next four requests.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "RxJava",
+    "symbol": "Flowable.groupBy"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A group cancelled with unread items now initiates the drain that credits those items toward upstream requests."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/ReactiveX/RxJava",
+    "url": "https://github.com/ReactiveX/RxJava/pull/6895"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

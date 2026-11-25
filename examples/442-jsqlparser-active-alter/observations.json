@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "b12d5bd0b290372079b68ecef3aeb28cbb5767d5e9fcd0ce093086190bdbe657",
+  "runtimeSha256": "e01282ae6a8b84f6b6133aa36781e08c57120a70be878e7f111f19010a889162",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "33b2f97eda7f62e90cfa77c3e3918d67b4949b2f242d4e5af8ca4caa7f15cce3"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$1.class": "c405686e75558b4cd389f0b23a60513d1f58959347ce74dd4feb369cda63a64c",
+        "PublicCaller.class": "995253d8270db8bdac09d22d82f1f4e25506760d6bd7569af91541fd2e14c5d5",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "JSQLParser/JSqlParser#2770.1",
+          "outcome": {
+            "return": "toString=ALTER TABLE t ALTER COLUMN id RESTART stock=ALTER TABLE t ALTER COLUMN other SET DEFAULT 1 custom=ALTER TABLE t ALTER COLUMN other SET DEFAULT 101 visits=[1]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "JSQLParser/JSqlParser#2770.2",
+          "outcome": {
+            "return": "toString=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) stock=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) custom=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (101 + 102) visits=[1, 2]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "JSQLParser/JSqlParser#2770.3",
+          "outcome": {
+            "return": "toString=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE stock=ALTER TABLE t ALTER COLUMN other SET DEFAULT 1 CASCADE custom=ALTER TABLE t ALTER COLUMN other SET DEFAULT 101 CASCADE visits=[1] parsed=throws net.sf.jsqlparser.JSQLParserException | toString=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE stock=ALTER TABLE t ALTER COLUMN other SET DEFAULT 9 CASCADE custom=ALTER TABLE t ALTER COLUMN other SET DEFAULT 109 CASCADE visits=[9] parsed=throws net.sf.jsqlparser.JSQLParserException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "JSQLParser/JSqlParser#2770.1",
+          "outcome": {
+            "return": "toString=ALTER TABLE t ALTER COLUMN id RESTART stock=ALTER TABLE t ALTER COLUMN id RESTART custom=ALTER TABLE t ALTER COLUMN id RESTART visits=[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "JSQLParser/JSqlParser#2770.2",
+          "outcome": {
+            "return": "toString=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) stock=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) custom=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (101 + 102) visits=[1, 2]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "JSQLParser/JSqlParser#2770.3",
+          "outcome": {
+            "return": "toString=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE stock=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE custom=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102 CASCADE visits=[2] parsed=throws net.sf.jsqlparser.JSQLParserException | toString=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE stock=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE custom=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102 CASCADE visits=[2] parsed=throws net.sf.jsqlparser.JSQLParserException"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

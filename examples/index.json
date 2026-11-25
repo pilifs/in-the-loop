@@ -23908,7 +23908,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs.",
+        "The same primary-name failure reproduced on picocli 4.7.7 and main at 10509c0af89a. VF-065 holds the runnable report."
       ],
       "source": "https://github.com/remkop/picocli/pull/1529",
       "target": null
@@ -24064,7 +24065,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs.",
+        "Both algorithms also returned a foreign 3→7 edge on release 1.5.3 and master at ee3a1084f737. Two debugger trials per side reached the registered original method and repeated the historical challenge."
       ],
       "source": "https://github.com/jgrapht/jgrapht/pull/792",
       "target": null
@@ -24103,9 +24105,487 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs.",
+        "The finite scaled tail returned infinities on master at 8381f56aa3ec. Release 1.3 predates the repair and returns a different wrong finite result for the same input."
       ],
       "source": "https://github.com/apache/commons-statistics/pull/140",
+      "target": null
+    },
+    {
+      "id": "431",
+      "path": "examples/431-rdf4j-empty-groups",
+      "title": "RDF4J distinguishes an empty group relation from one unbound row",
+      "summary": "The parent returned one unbound row for an explicitly grouped empty graph. The fix returned zero. An implicit aggregate still returned one unbound row. Adding the first matching triple made the subquery join produce both markers once.",
+      "origin": "real-world",
+      "system": "Eclipse RDF4J",
+      "symbol": "RepositoryConnection.prepareTupleQuery",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "All RDF4J modules on each classpath came from that side’s setup build. Its independently recorded module hashes are in setup/artifacts.sha256.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/eclipse-rdf4j/rdf4j/pull/1989",
+      "target": null
+    },
+    {
+      "id": "432",
+      "path": "examples/432-calcite-set-multiplicities",
+      "title": "Calcite preserves bag multiplicity across projected set operations",
+      "summary": "The same planner hook as the upstream SQL fixture enabled the transpose rule on JDBC. EXCEPT and INTERSECT now compare the full rows. Changing only the right bag changed the fixed counts from 2/1 to 0/3.",
+      "origin": "real-world",
+      "system": "Apache Calcite",
+      "symbol": "Statement.executeQuery",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/apache/calcite/pull/5378",
+      "target": null
+    },
+    {
+      "id": "433",
+      "path": "examples/433-imaging-edge-pixels",
+      "title": "Commons Imaging reads the rectangular corner of a JPEG-compressed TIFF",
+      "summary": "The corrected decoder matched all 16,129 reference pixels within tolerance. The six bottom-right pixels were bit-identical through the whole-image and regional APIs. The original 264×264 control passed on both revisions.",
+      "origin": "real-world",
+      "system": "Apache Commons Imaging",
+      "symbol": "Imaging.getBufferedImage",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "deserialization"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The original 264×264 image control runs on both revisions. The small image and its rectangular edge comparison run on the fixed decoder.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/apache/commons-imaging/pull/335",
+      "target": null
+    },
+    {
+      "id": "434",
+      "path": "examples/434-quartz-trigger-replacement",
+      "title": "Quartz reloads a replaced schedule and its extension rows",
+      "summary": "On Derby and PostgreSQL the parent persisted CRON with one simple row and zero cron rows, then failed to reload the trigger. The fixed scheduler and fresh JDBC reads agreed after both replacements. The second group kept its own schedule.",
+      "origin": "real-world",
+      "system": "Quartz",
+      "symbol": "Scheduler.getTrigger",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "stale-messages"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The Derby driver uses a new in-memory database in every process. PostgreSQL 16.16 uses one private schema per history on a disposable loopback server.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/quartz-scheduler/quartz/pull/1496",
+      "target": null
+    },
+    {
+      "id": "435",
+      "path": "examples/435-shade-relocated-services",
+      "title": "Maven Shade packages two service providers under the relocated interface",
+      "summary": "The pinned Maven goal failed with duplicate service descriptors on the parent. The fix packaged one relocated interface descriptor in both input orders. An isolated ServiceLoader instantiated both providers from the artifact.",
+      "origin": "real-world",
+      "system": "Maven Shade Plugin",
+      "symbol": "ShadeMojo.execute",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "composition"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A fresh Maven project runs the plugin goal offline with a private fixture repository. Its child class-loading trace must identify the exact copied transformer JAR before a packaging outcome is accepted.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/apache/maven-shade-plugin/pull/150",
+      "target": null
+    },
+    {
+      "id": "436",
+      "path": "examples/436-iceberg-binary-delete-keys",
+      "title": "Iceberg reads binary equality deletes and snapshots a nested byte slice",
+      "summary": "A real Parquet equality delete left IDs 200 and 201 alongside 203 on the parent. The merged table scan returned only 203. A copied nested binary slice also retained AB after a source mutation and preserved the source position.",
+      "origin": "real-world",
+      "system": "Apache Iceberg",
+      "symbol": "IcebergGenerics.read",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The table format is v2, the physical data and delete files are Parquet, and the scan projects only the integer ID.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/apache/iceberg/pull/12855",
+      "target": null
+    },
+    {
+      "id": "437",
+      "path": "examples/437-gradle-named-actions",
+      "title": "Gradle fingerprints a named Groovy task action across incremental builds",
+      "summary": "Editing A to B left the named action up to date on the parent method. The merged method reran both action forms, and the incremental doFirst output matched a fresh B build. Both unchanged controls skipped correctly.",
+      "origin": "real-world",
+      "system": "Gradle",
+      "symbol": "Task.doLast",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "caching"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both sides run on one verified Gradle 7.6 distribution. The registered named-action method is compiled from each exact pin. The setup replaces this one method in the released AbstractTask class. A build init script checks the executing class bytes on every invocation. Both strict pin policies accepted the restored historical grolifant dependency. The full-distribution build has a separate verification job.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/gradle/gradle/pull/21084",
+      "target": null
+    },
+    {
+      "id": "438",
+      "path": "examples/438-guava-future-registration",
+      "title": "Guava aggregates done and reentrant futures in input order",
+      "summary": "Both JRE and Android artifacts eliminated the callback registration on a completed future. The pending and reentrant repeated-input cases completed in input order on both pins.",
+      "origin": "real-world",
+      "system": "Guava",
+      "symbol": "Futures.allAsList",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "race-condition"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both published artifact variants ran on the same desktop JDK 21.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/google/guava/pull/7277",
+      "target": null
+    },
+    {
+      "id": "439",
+      "path": "examples/439-ical4j-zoned-exdates",
+      "title": "ical4j resolves UTC exceptions across the Paris daylight-saving change",
+      "summary": "The parent retained January 2 despite a UTC exception at its Paris start. The fix removed just that occurrence, kept an exception at its end harmless and switched to the summer offset on March 31.",
+      "origin": "real-world",
+      "system": "ical4j",
+      "symbol": "VEvent.calculateRecurrenceSet",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/ical4j/ical4j/pull/947",
+      "target": null
+    },
+    {
+      "id": "440",
+      "path": "examples/440-rxjava-group-cancellation",
+      "title": "RxJava restores discarded group demand and respects the survivor’s limit",
+      "summary": "Cancelling the stalled group now delivers 4 through 8 and completes the survivor and outer stream. With one unit of demand the survivor waited for its next four requests.",
+      "origin": "real-world",
+      "system": "RxJava",
+      "symbol": "Flowable.groupBy",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/ReactiveX/RxJava/pull/6895",
+      "target": null
+    },
+    {
+      "id": "441",
+      "path": "examples/441-kafka-final-sessions",
+      "title": "Kafka Streams admits the session close boundary and publishes one final count",
+      "summary": "At the grace boundary the parent dropped A at time 8 and emitted a provisional final A at time 3. The merged Streams topology accepted the boundary record and published only A@[0,5] with count two.",
+      "origin": "real-world",
+      "system": "Kafka Streams",
+      "symbol": "TopologyTestDriver.pipeInput",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each comparison uses Kafka Streams, clients, Connect modules and the test driver from its exact pin. Rebuilding all seven test-driver sources independently on the two locked classpaths produced identical driver JARs.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/apache/kafka/pull/6654",
+      "target": null
+    },
+    {
+      "id": "442",
+      "path": "examples/442-jsqlparser-active-alter",
+      "title": "JSqlParser visits only the active ALTER body and retains its tail",
+      "summary": "The fixed renderer ignored the inactive default and visited only the active operand in both TYPE fixtures. Both emitted a trailing CASCADE and both PostgreSQL reparses rejected it. The independent database check identifies the invalid grammar assumption.",
+      "origin": "real-world",
+      "system": "JSqlParser",
+      "symbol": "Alter.accept",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The selectable TYPE body, visitor trace and single tail satisfy the deparser expectation. PostgreSQL 16.16 returns SQLSTATE 42601 with that tail and writes 103 without it. The original falsified prediction is retained.",
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/JSQLParser/JSqlParser/pull/2770",
       "target": null
     }
   ]

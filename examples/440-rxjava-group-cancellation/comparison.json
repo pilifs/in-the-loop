@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/ReactiveX/RxJava/pull/6895",
+  "revisions": {
+    "parent": "f1a795da0d4cdfb3133206ad8e3887bdb8ba948b",
+    "fix": "5f6aafcbaa97f330ad2007f4ad02c5e33db8914b"
+  },
+  "entry": "Flowable.groupBy",
+  "questions": [
+    {
+      "id": "ReactiveX/RxJava#6895.1",
+      "role": "Intent",
+      "args": [
+        "cancel"
+      ],
+      "history": "Cancel the stalled first group after the four-element prefetch.",
+      "prediction": "The 3.x parent is predicted to stall with group 1 at [4]. On the merge group 1 should receive [4,5,6,7,8] in order and complete, and the outer subscriber should complete.",
+      "basis": "The source has a finite ordered suffix wholly in the surviving group. The merged regression exercises cancellation after the request loop returns.",
+      "refutation": "On the merge the survivor stalls, skips or repeats a value, or either completion is missing after synchronous work returns.",
+      "expected": {
+        "parent": {
+          "return": "initial=[4]/false/- afterCancel=[4]/false/- final=[4]/false/- firstGroup=[]/false/- outer=false/-"
+        },
+        "fix": {
+          "return": "initial=[4]/false/- afterCancel=[4, 5, 6, 7, 8]/true/- final=[4, 5, 6, 7, 8]/true/- firstGroup=[]/false/- outer=true/-"
+        }
+      }
+    },
+    {
+      "id": "ReactiveX/RxJava#6895.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Give both groups unbounded demand from their first subscription. Perform no cancellation.",
+      "prediction": "Both revisions should complete both groups and the outer stream, delivering [1,2,3] to group 0 and [4,5,6,7,8] to group 1.",
+      "basis": "The two disjoint key ranges partition Flowable.range exactly.",
+      "refutation": "Either group has the wrong ordered contents, fails or fails to complete.",
+      "expected": {
+        "parent": {
+          "return": "initial=[4, 5, 6, 7, 8]/true/- afterCancel=[4, 5, 6, 7, 8]/true/- final=[4, 5, 6, 7, 8]/true/- firstGroup=[1, 2, 3]/true/- outer=true/-"
+        },
+        "fix": {
+          "return": "initial=[4, 5, 6, 7, 8]/true/- afterCancel=[4, 5, 6, 7, 8]/true/- final=[4, 5, 6, 7, 8]/true/- firstGroup=[1, 2, 3]/true/- outer=true/-"
+        }
+      }
+    },
+    {
+      "id": "ReactiveX/RxJava#6895.3",
+      "role": "Challenge",
+      "args": [
+        "limited"
+      ],
+      "history": "Keep the original zero demand on group 0, but grant group 1 only one item initially. Cancel group 0 outside callbacks, read group 1, then request four more from it.",
+      "prediction": "On the merge group 1 should still have only [4] before the new request. After it, group 1 should have [4,5,6,7,8] and complete.",
+      "basis": "Discarding another group’s buffered items restores upstream capacity. The survivor’s subscriber still controls how many items it can receive.",
+      "refutation": "A fifth source value reaches the survivor before it asks, or the survivor cannot obtain all four remaining items afterward.",
+      "expected": {
+        "fix": {
+          "return": "initial=[4]/false/- afterCancel=[4]/false/- final=[4, 5, 6, 7, 8]/true/- firstGroup=[]/false/- outer=true/-"
+        }
+      }
+    }
+  ]
+}

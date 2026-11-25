@@ -21,6 +21,12 @@ ENTRIES = {
     "412": ("M10-ical4j", "src/main/java",
             "net.fortuna.ical4j.model.ComponentGroup#calculateRecurrenceSet(Lnet/fortuna/ical4j/model/Period;)Ljava/util/List;"),
     "419": ("M17-jOOL", "jOOL/src/main/java", "org.jooq.lambda.WindowImpl#lastValue()Ljava/util/Optional;"),
+    "425": ("L03-picocli", "src/main/java",
+            "picocli.CommandLine$Model$CommandSpec#aliases([Ljava/lang/String;)Lpicocli/CommandLine$Model$CommandSpec;"),
+    "429": ("L07-jgrapht", "jgrapht-core/src/main/java",
+            "org.jgrapht.alg.shortestpath.BaseKDisjointShortestPathsAlgorithm#getPaths(Ljava/lang/Object;Ljava/lang/Object;I)Ljava/util/List;"),
+    "430": ("L08-commons-statistics", "commons-statistics-distribution/src/main/java",
+            "org.apache.commons.statistics.distribution.CauchyDistribution#inverseCumulativeProbability(D)D"),
 }
 
 

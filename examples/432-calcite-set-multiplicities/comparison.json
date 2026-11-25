@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/calcite/pull/5378",
+  "revisions": {
+    "parent": "b8ccec91b7670d8c62a5712e210bb25f396ade7e",
+    "fix": "5f48eec8d5e3f25df641393c9440e086646868b7"
+  },
+  "entry": "Statement.executeQuery",
+  "questions": [
+    {
+      "id": "apache/calcite#5378.1",
+      "role": "Intent",
+      "args": [
+        "singleton"
+      ],
+      "history": "Singleton inputs above, EXCEPT ALL and INTERSECT ALL.",
+      "prediction": "The issue reports empty EXCEPT output on the old planner. Premature projection predicts one 10 for INTERSECT. On the merge expect one 10 for EXCEPT and zero rows for INTERSECT.",
+      "basis": "The two full rows are (2,10) and (3,10). They are distinct even though both project to 10.",
+      "refutation": "With the affected rule enabled, either merged result has a different multiplicity or value.",
+      "expected": {
+        "parent": {
+          "return": "rule=true rows=[]/[10]"
+        },
+        "fix": {
+          "return": "rule=true rows=[10]/[]"
+        }
+      }
+    },
+    {
+      "id": "apache/calcite#5378.2",
+      "role": "Control",
+      "args": [
+        "union"
+      ],
+      "history": "Change only the operator to UNION ALL.",
+      "prediction": "Both revisions yield two occurrences of 10.",
+      "basis": "A bag union concatenates both inputs. Discarding x before or after concatenation preserves the multiplicity of y.",
+      "refutation": "Only one 10, an extra row or a different value on either revision.",
+      "expected": {
+        "parent": {
+          "return": "rule=true rows=[10, 10]"
+        },
+        "fix": {
+          "return": "rule=true rows=[10, 10]"
+        }
+      }
+    },
+    {
+      "id": "apache/calcite#5378.3",
+      "role": "Challenge",
+      "args": [
+        "duplicates"
+      ],
+      "history": "Keep every y at 10. Use left input VALUES (1,10),(1,10),(2,10) and right input VALUES (1,10),(3,10),(3,10). Then replace the right input by a copy of the left.",
+      "prediction": "On the merge the first EXCEPT result contains two tens and INTERSECT one. With identical inputs EXCEPT contains zero and INTERSECT three. Either result may arrive in any order.",
+      "basis": "Per full row, difference takes max(left−right,0) and intersection takes min(left,right). Only one occurrence matches in the first pair. Both right inputs have the same projected bag.",
+      "refutation": "Either operator returns the same count for the two right inputs or disagrees with any of the four counts.",
+      "expected": {
+        "fix": {
+          "return": "rule=true rows=[10, 10]/[10] | []/[10, 10, 10]"
+        }
+      }
+    }
+  ]
+}

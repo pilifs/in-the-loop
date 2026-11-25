@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/maven-shade-plugin/pull/150",
+  "revisions": {
+    "parent": "26b587384bb664daf59c30e72693ee1ae105fd71",
+    "fix": "ad2f6f8e7855860b69b950d14ca8ec627b099d6b"
+  },
+  "entry": "ShadeMojo.execute",
+  "questions": [
+    {
+      "id": "apache/maven-shade-plugin#150.1",
+      "role": "Intent",
+      "args": [
+        "both"
+      ],
+      "history": "Package A and B together with the stated relocation.",
+      "prediction": "MSHADE-425 reports a duplicate-entry build failure for converging service descriptors. The merge should produce one META-INF/services/borg.foo.Svc containing borg.foo.First and borg.foo.Second, each once, and no old descriptor.",
+      "basis": "Both inputs name the same output interface after relocation, while their provider names are distinct. The landed transformer regression checks one output descriptor with concatenated lines.",
+      "refutation": "A packaging exception, both paths surviving, more than one final descriptor or loss of either provider.",
+      "expected": {
+        "parent": {
+          "return": "duplicate descriptor"
+        },
+        "fix": {
+          "return": "[META-INF/services/borg.foo.Svc] [borg.foo.First, borg.foo.Second] [borg.foo.First/true, borg.foo.Second/true]"
+        }
+      }
+    },
+    {
+      "id": "apache/maven-shade-plugin#150.2",
+      "role": "Control",
+      "args": [
+        "single"
+      ],
+      "history": "Package A alone with the same transform.",
+      "prediction": "Both revisions should produce one relocated descriptor containing just borg.foo.First and a loadable borg.foo.First class.",
+      "basis": "A single descriptor cannot collide with another path. Relocation applies to both the provider class and its advertised binary name.",
+      "refutation": "Either revision leaves the old descriptor name or emits a provider name absent from the JAR.",
+      "expected": {
+        "parent": {
+          "return": "[META-INF/services/borg.foo.Svc] [borg.foo.First] [borg.foo.First/true]"
+        },
+        "fix": {
+          "return": "[META-INF/services/borg.foo.Svc] [borg.foo.First] [borg.foo.First/true]"
+        }
+      }
+    },
+    {
+      "id": "apache/maven-shade-plugin#150.3",
+      "role": "Challenge",
+      "args": [
+        "reverse"
+      ],
+      "history": "Load the merged artifact in a fresh class loader with no fixture classes supplied by its parent. Resolve borg.foo.Svc there and iterate ServiceLoader.load(serviceClass, loader). Repeat with the two input artifacts presented in the opposite order.",
+      "prediction": "On the merge both orders should instantiate exactly the providers with class names borg.foo.First and borg.foo.Second, both assignable to the service class resolved by that loader. Discovery order may differ.",
+      "basis": "The service loader consumes the final descriptor and resolves actual provider classes. Reversing distinct contributors leaves the provider set unchanged.",
+      "refutation": "One provider disappears when the artifact order changes, provider instantiation raises ServiceConfigurationError or the classes implement a different interface identity.",
+      "expected": {
+        "fix": {
+          "return": "[META-INF/services/borg.foo.Svc] [borg.foo.First, borg.foo.Second] [borg.foo.First/true, borg.foo.Second/true] | [META-INF/services/borg.foo.Svc] [borg.foo.First, borg.foo.Second] [borg.foo.First/true, borg.foo.Second/true]"
+        }
+      }
+    }
+  ]
+}

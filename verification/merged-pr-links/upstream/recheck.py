@@ -1,4 +1,4 @@
-"""Recheck the four contested public histories on Maven releases and frozen upstream branches."""
+"""Recheck contested public histories on Maven releases and frozen upstream branches."""
 import argparse
 import json
 import os
@@ -23,7 +23,9 @@ SETUP = Path.home() / ".cache/in-the-loop/merged-pr-links"
 sha = upgrade_replay.sha
 
 
-def jars_for(project, cache, fetch):
+def jars_for(project, cache, fetch, digests=None, setup=SETUP):
+    if digests is None:
+        digests = LOCK["sha256"]
     keys = {m["artifact"] for m in project["modules"]}
     for field in ("dependencies", "headDependencies", "compileOnly"):
         keys.update(project.get(field, []))
@@ -35,10 +37,10 @@ def jars_for(project, cache, fetch):
         name = "-".join([artifact, version, *classifier]) + ".jar"
         rel = Path(group.replace(".", "/")) / artifact / version / name
         dest = cache / "maven" / rel
-        gradle = SETUP / "gradle-home/caches/modules-2/files-2.1" / group / artifact / version
-        candidates = (dest, SETUP / "m2" / rel, Path.home() / ".m2/repository" / rel, *gradle.glob("*/" + name))
+        gradle = setup / "gradle-home/caches/modules-2/files-2.1" / group / artifact / version
+        candidates = (dest, setup / "m2" / rel, Path.home() / ".m2/repository" / rel, *gradle.glob("*/" + name))
         found = next((p for p in candidates if p.is_file()), None)
-        digest = LOCK["sha256"][key]
+        digest = digests[key]
         if found is None:
             if not fetch:
                 raise ValueError(f"missing {key}; --fetch retrieves the locked inputs")
@@ -138,8 +140,8 @@ def build_module(module, src, work, jdk, deps, generator):
     return jar
 
 
-def recheck(number, cache, fetch, original_wrapping=False):
-    project = LOCK["projects"][number]
+def recheck(number, cache, fetch, original_wrapping=False, *, lock=LOCK, setup=SETUP):
+    project = lock["projects"][number]
     folder, = public_comparison.EXAMPLES.glob(number + "-*")
     spec = public_comparison.read(folder / "comparison.json")
     registration = public_comparison.read(folder / "observations.json")
@@ -149,12 +151,12 @@ def recheck(number, cache, fetch, original_wrapping=False):
             or registration["runtimeSha256"] != sha(folder / "runtime.json")
             or registration["comparisonSha256"] != sha(folder / "comparison.json")):
         raise ValueError("historical registration, caller or launcher differs")
-    jdk = Path(os.environ.get("PUBLIC_COMPARISON_JDK", Path.home() / ".sdkman/candidates/java" / LOCK["jdk"]))
-    if sha(jdk / "release") != LOCK["jdkReleaseSha256"]:
+    jdk = Path(os.environ.get("PUBLIC_COMPARISON_JDK", Path.home() / ".sdkman/candidates/java" / lock["jdk"]))
+    if sha(jdk / "release") != lock["jdkReleaseSha256"]:
         raise ValueError("JDK differs from the registered build")
     if original_wrapping:
         return original_jackson(folder, jdk)
-    jars = jars_for(project, cache, fetch)
+    jars = jars_for(project, cache, fetch, lock["sha256"], setup)
     support = [jars[k] for k in project["dependencies"]]
     head_support = [jars[k] for k in project.get("headDependencies", project["dependencies"])]
     sources = [caller, upgrade_replay.LAUNCHER]
@@ -215,17 +217,24 @@ def original_jackson(folder, jdk):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("examples", nargs="+", choices=LOCK["projects"])
-    parser.add_argument("--cache", type=Path, default=Path.home() / ".cache/in-the-loop/merged-pr-links-followup")
+    parser.add_argument("examples", nargs="+")
+    parser.add_argument("--campaign", choices=("original", "l01-l20"), default="original")
+    parser.add_argument("--cache", type=Path)
     parser.add_argument("--fetch", action="store_true", help="retrieve missing locked sources and Maven artifacts")
     parser.add_argument("--record", action="store_true", help="write the complete fresh observations")
     parser.add_argument("--original-wrapping", action="store_true", help="run the two Jackson disambiguating controls on the historical setup")
     args = parser.parse_args()
+    evidence = HERE if args.campaign == "original" else HERE.parent / args.campaign / "upstream"
+    lock = public_comparison.read(evidence / "inputs.json")
+    setup = SETUP if args.campaign == "original" else SETUP.with_name(SETUP.name + "-" + args.campaign)
+    cache = (args.cache or setup.with_name(setup.name + "-followup")).resolve()
+    if set(args.examples) - lock["projects"].keys():
+        parser.error("unknown example for the selected campaign")
     if args.original_wrapping and args.examples != ["409"]:
         parser.error("--original-wrapping applies to example 409 alone")
     for number in args.examples:
-        result = recheck(number, args.cache.resolve(), args.fetch, args.original_wrapping)
-        path = HERE / (number + ("-wrapping" if args.original_wrapping else "") + ".json")
+        result = recheck(number, cache, args.fetch, args.original_wrapping, lock=lock, setup=setup)
+        path = evidence / (number + ("-wrapping" if args.original_wrapping else "") + ".json")
         if args.record:
             path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
         elif public_comparison.read(path) != result:

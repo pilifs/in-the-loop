@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/ical4j/ical4j/pull/947",
+  "revisions": {
+    "parent": "a0ba59c562e38ee4e0839069b58b1fec27d1e673",
+    "fix": "5e2c93fce7835ad9c951a4e6e6d4469464d63805"
+  },
+  "entry": "VEvent.calculateRecurrenceSet",
+  "questions": [
+    {
+      "id": "ical4j/ical4j#947.1",
+      "role": "Intent",
+      "args": [
+        "winter"
+      ],
+      "history": "Expand the January event with the UTC exception on the second day.",
+      "prediction": "The PR reports all three days on the parent. The merge should return January 1 and 3 only, each from 08:00 to 09:00 UTC.",
+      "basis": "Paris is one hour ahead of UTC on those dates. EXDATE removes the matching recurrence start.",
+      "refutation": "January 2 remains, either neighbor disappears, or a retained period has the wrong endpoints.",
+      "expected": {
+        "parent": {
+          "return": "[2024-01-01T08:00:00Z/2024-01-01T09:00:00Z, 2024-01-02T08:00:00Z/2024-01-02T09:00:00Z, 2024-01-03T08:00:00Z/2024-01-03T09:00:00Z]"
+        },
+        "fix": {
+          "return": "[2024-01-01T08:00:00Z/2024-01-01T09:00:00Z, 2024-01-03T08:00:00Z/2024-01-03T09:00:00Z]"
+        }
+      }
+    },
+    {
+      "id": "ical4j/ical4j#947.2",
+      "role": "Control",
+      "args": [
+        "end"
+      ],
+      "history": "Replace the exception with January 2 at 09:00 UTC, the end of that day’s event.",
+      "prediction": "Both versions should return all three 08:00–09:00 UTC periods.",
+      "basis": "EXDATE matches an occurrence start. The end of an event is a distinct instant.",
+      "refutation": "Either version removes January 2 or changes a surviving period.",
+      "expected": {
+        "parent": {
+          "return": "[2024-01-01T08:00:00Z/2024-01-01T09:00:00Z, 2024-01-02T08:00:00Z/2024-01-02T09:00:00Z, 2024-01-03T08:00:00Z/2024-01-03T09:00:00Z]"
+        },
+        "fix": {
+          "return": "[2024-01-01T08:00:00Z/2024-01-01T09:00:00Z, 2024-01-02T08:00:00Z/2024-01-02T09:00:00Z, 2024-01-03T08:00:00Z/2024-01-03T09:00:00Z]"
+        }
+      }
+    },
+    {
+      "id": "ical4j/ical4j#947.3",
+      "role": "Challenge",
+      "args": [
+        "spring"
+      ],
+      "history": "Move the first occurrence to March 30, 2024 at 09:00 Paris, retain the daily count and duration, and query March 30 through April 2 at UTC midnight. Compare March 31 exceptions at 07:00Z and at 08:00Z.",
+      "prediction": "On the merge, the 07:00Z exception leaves starts March 30 08:00Z and April 1 07:00Z. The 08:00Z exception leaves those plus March 31 07:00Z. Every period lasts one hour.",
+      "basis": "Paris switches from UTC+1 to UTC+2 on March 31. A fixed offset taken from DTSTART would select the wrong exception.",
+      "refutation": "The two exception values remove the same occurrence, the expected match survives, or the April start keeps the winter offset.",
+      "expected": {
+        "fix": {
+          "return": "[2024-03-30T08:00:00Z/2024-03-30T09:00:00Z, 2024-04-01T07:00:00Z/2024-04-01T08:00:00Z] | [2024-03-30T08:00:00Z/2024-03-30T09:00:00Z, 2024-03-31T07:00:00Z/2024-03-31T08:00:00Z, 2024-04-01T07:00:00Z/2024-04-01T08:00:00Z]"
+        }
+      }
+    }
+  ]
+}

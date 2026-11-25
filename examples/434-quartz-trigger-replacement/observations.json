@@ -1,0 +1,128 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "7b6a01d83841c0e62d8a7d70e337c0c9a5a56fde226fd9f6792e097dc14c5d69",
+  "runtimeSha256": "b879e3e65eeade935d7d53a873ef703fad94bb34ac89009c826fa1a3d83814fc",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "15c66ee5d3d2ba4c7ed449a84b32c8d5f0d76586cde47aa2ea6985d6d6185286"
+  },
+  "deployments": {
+    "derby": {
+      "callerClasses": {
+        "PublicCaller$Connections.class": "bf059319ba103e05e752f191f7060284b09a4c64e0cc1fb38c9d7a523c3836d5",
+        "PublicCaller$Noop.class": "7050f1864fe6c092555a73264c544b27c14fe7b2f2b21f162cba18578c2b9882",
+        "PublicCaller.class": "44c768c5113f33bceeeb85be43b4b3691a6fe7cca1d21e28998702068bdaa3c8",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "quartz-scheduler/quartz#1496.1",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> org.quartz.JobPersistenceException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "quartz-scheduler/quartz#1496.2",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> g.t/g.job/3/60000"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "quartz-scheduler/quartz#1496.3",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> org.quartz.JobPersistenceException CRON,1,0 | other.t/other.job/-1/400000 SIMPLE,1,0 -> g.t/g.job/3/60000 SIMPLE,1,0 | other.t/other.job/-1/400000 SIMPLE,1,0"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "quartz-scheduler/quartz#1496.1",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> g.t/g.job/0 0 12 * * ?/UTC"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "quartz-scheduler/quartz#1496.2",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> g.t/g.job/3/60000"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "quartz-scheduler/quartz#1496.3",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> g.t/g.job/0 0 12 * * ?/UTC CRON,0,1 | other.t/other.job/-1/400000 SIMPLE,1,0 -> g.t/g.job/3/60000 SIMPLE,1,0 | other.t/other.job/-1/400000 SIMPLE,1,0"
+          },
+          "prediction": "matched"
+        }
+      ]
+    },
+    "postgres16": {
+      "callerClasses": {
+        "PublicCaller$Connections.class": "bf059319ba103e05e752f191f7060284b09a4c64e0cc1fb38c9d7a523c3836d5",
+        "PublicCaller$Noop.class": "7050f1864fe6c092555a73264c544b27c14fe7b2f2b21f162cba18578c2b9882",
+        "PublicCaller.class": "44c768c5113f33bceeeb85be43b4b3691a6fe7cca1d21e28998702068bdaa3c8",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "quartz-scheduler/quartz#1496.1",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> org.quartz.JobPersistenceException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "quartz-scheduler/quartz#1496.2",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> g.t/g.job/3/60000"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "quartz-scheduler/quartz#1496.3",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> org.quartz.JobPersistenceException CRON,1,0 | other.t/other.job/-1/400000 SIMPLE,1,0 -> g.t/g.job/3/60000 SIMPLE,1,0 | other.t/other.job/-1/400000 SIMPLE,1,0"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "quartz-scheduler/quartz#1496.1",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> g.t/g.job/0 0 12 * * ?/UTC"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "quartz-scheduler/quartz#1496.2",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> g.t/g.job/3/60000"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "quartz-scheduler/quartz#1496.3",
+          "outcome": {
+            "return": "g.t/g.job/-1/400000 -> g.t/g.job/0 0 12 * * ?/UTC CRON,0,1 | other.t/other.job/-1/400000 SIMPLE,1,0 -> g.t/g.job/3/60000 SIMPLE,1,0 | other.t/other.job/-1/400000 SIMPLE,1,0"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "postgresVersionNumber": 160016
+    }
+  }
+}

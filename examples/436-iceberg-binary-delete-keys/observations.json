@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "847dd29b393894f4b419a93c0e4af41a89d661d866c2aee57553f1d397accf8c",
+  "runtimeSha256": "94b96b32d958d280a46144594765f4f97deef60250c0f46ce15d177749e68bd5",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "74201cf8dbf4151ec691cce871bf31aaab3f479462c9f9fdf8d5917a3d796f86"
+  },
+  "deployments": {
+    "parquet": {
+      "callerClasses": {
+        "PublicCaller.class": "ed5271afee9dffada790ffd43d35b3d2c22d9f31f9aaf0f2bdd3fe0612f09c02",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/iceberg#12855.1",
+          "outcome": {
+            "return": "[200, 201, 203]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "parent",
+          "id": "apache/iceberg#12855.2",
+          "outcome": {
+            "return": "[200, 201, 202, 203]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/iceberg#12855.3",
+          "outcome": {
+            "return": "ZB sourcePosition=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/iceberg#12855.1",
+          "outcome": {
+            "return": "[203]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/iceberg#12855.2",
+          "outcome": {
+            "return": "[200, 201, 202, 203]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/iceberg#12855.3",
+          "outcome": {
+            "return": "AB sourcePosition=1"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

@@ -16,8 +16,11 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def audit(replay=False):
-    brief = ROOT / "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+def audit(replay=False, campaign="original"):
+    series = {"original": ("organic-java-merged-pr-links-brief", "M"),
+              "l01-l20": ("organic-java-merged-pr-links-l01-l20-brief", "L")}
+    brief_name, case_prefix = series[campaign]
+    brief = ROOT / "llm-dlc/loops" / (brief_name + ".md")
     setup = brief.with_name(brief.stem + "-setup.md").read_text()
     references = {}
     for section in brief.read_text().split("\n## "):
@@ -66,7 +69,11 @@ def audit(replay=False):
         require(runtime["deployments"].keys() == recorded["deployments"].keys(), prefix + "deployment names")
         evidence = {q: {} for q in questions}
         used_files = set()
-        setup_section = setup.split(f"\n### M{number:02} · ", 1)[1].split("\n### M", 1)[0]
+        setup_section = setup.split(f"\n### {case_prefix}{number:02} · ", 1)[1].split("\n### " + case_prefix, 1)[0]
+        supplied = {}
+        inventory = folder / "setup/artifacts.sha256"
+        if inventory.is_file():
+            supplied = dict(line.split(None, 1)[::-1] for line in inventory.read_text().splitlines() if line.strip())
         for variant, deployment in runtime["deployments"].items():
             result_rows = recorded["deployments"][variant]
             require("PublicCaller.class" in result_rows["callerClasses"], prefix + "compiled caller absent")
@@ -77,8 +84,14 @@ def audit(replay=False):
                     digest = runtime["sha256"][f]
                     require(re.fullmatch("[0-9a-f]{64}", digest), prefix + "artifact digest")
                     if f.startswith("artifacts/"):
-                        require(digest in setup_section, prefix + f"{side} {f} absent from pin-build record")
-                require(any(files[i].startswith("artifacts/") for i in deployment["providers"].values()),
+                        if campaign == "l01-l20":
+                            label = re.match(rf"artifacts/L{number:02}[-/].*?\b(parent|fix)\b", f)
+                            require(label and label[1] == side, prefix + f"{f} belongs to a different revision")
+                        require(digest in setup_section or supplied.get(f) == digest,
+                                prefix + f"{side} {f} absent from pin-build record")
+                indices = [*deployment["providers"].values(), *deployment.get("childProviders", {}).values()]
+                require(all(type(i) is int and 0 <= i < len(files) for i in indices), prefix + "provider index")
+                require(any(files[i].startswith("artifacts/") for i in indices),
                         prefix + "no pin-built provider")
             expected_keys = [(s, q["id"]) for s in comparison.SIDES for q in spec["questions"]
                              if s not in q.get("omit", {})]
@@ -146,10 +159,11 @@ def audit(replay=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--campaign", choices=("original", "l01-l20"), default="original")
     parser.add_argument("--replay", action="store_true", help="also rebuild every caller and repeat the physical trials")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    result = audit(args.replay)
+    result = audit(args.replay, args.campaign)
     if args.output:
         args.output.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result["totals"], sort_keys=True))

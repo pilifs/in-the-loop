@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/eclipse-rdf4j/rdf4j/pull/1989",
+  "revisions": {
+    "parent": "c2c7a5265e6c40bc5dc2574260c96c3e10f9a87c",
+    "fix": "1767ceebe5d309238263bdca732b730cc47b3e45"
+  },
+  "entry": "RepositoryConnection.prepareTupleQuery",
+  "questions": [
+    {
+      "id": "eclipse-rdf4j/rdf4j#1989.1",
+      "role": "Intent",
+      "args": [
+        "group"
+      ],
+      "history": "Empty graph, explicit GROUP BY ?x.",
+      "prediction": "Issue #1978 reports one empty binding set on the old grouped MAX query. The merge should return zero rows on this fixed-predicate variant.",
+      "basis": "There are no solutions that supply a key. The landed explicit-group SPARQL results fixture contains no result elements.",
+      "refutation": "The first hasNext() is true on the merge, even if the row binds neither x nor m.",
+      "expected": {
+        "parent": {
+          "return": "[x=false,m=false] eof=true"
+        },
+        "fix": {
+          "return": "[] eof=true"
+        }
+      }
+    },
+    {
+      "id": "eclipse-rdf4j/rdf4j#1989.2",
+      "role": "Control",
+      "args": [
+        "implicit"
+      ],
+      "history": "Empty graph, SELECT (MAX(?v) AS ?m) with the same WHERE and no GROUP BY.",
+      "prediction": "Both revisions should yield exactly one row with m unbound, followed by exhaustion.",
+      "basis": "The implicit group aggregates all inputs once. MAX of an empty group has no value. The separate landed results fixture contains one empty result element.",
+      "refutation": "Zero or two rows, a bound m, or an exception escaping evaluation.",
+      "expected": {
+        "parent": {
+          "return": "[x=false,m=false] eof=true"
+        },
+        "fix": {
+          "return": "[x=false,m=false] eof=true"
+        }
+      }
+    },
+    {
+      "id": "eclipse-rdf4j/rdf4j#1989.3",
+      "role": "Challenge",
+      "args": [
+        "join"
+      ],
+      "history": "Place the explicit grouped query as a subquery in `SELECT ?marker WHERE { VALUES ?marker { \"a\" \"b\" } { SELECT ?x (MAX(?v) AS ?m) WHERE { ?x <urn:p> ?v } GROUP BY ?x } }`. Add a triple with a different predicate and query, then add `<urn:s> <urn:p> 7` and query again.",
+      "prediction": "On the merge the first outer result is empty. The second contains exactly the two marker literals once each in either order.",
+      "basis": "The grouped subquery has zero and then one solution. Joining that relation with two disjoint marker bindings gives cardinalities 0×2 and 1×2.",
+      "refutation": "A phantom group produces markers before a matching triple exists, or either marker is missing or repeated afterward.",
+      "expected": {
+        "fix": {
+          "return": "[] eof=true | [a, b] eof=true"
+        }
+      }
+    }
+  ]
+}

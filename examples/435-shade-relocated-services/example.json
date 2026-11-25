@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "435",
+  "title": "Maven Shade packages two service providers under the relocated interface",
+  "summary": "The pinned Maven goal failed with duplicate service descriptors on the parent. The fix packaged one relocated interface descriptor in both input orders. An isolated ServiceLoader instantiated both providers from the artifact.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "jvm-internals",
+    "composition",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Maven Shade Plugin",
+    "symbol": "ShadeMojo.execute"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "ServicesResourceTransformer now groups service descriptors by the name they will have in the output JAR."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/maven-shade-plugin",
+    "url": "https://github.com/apache/maven-shade-plugin/pull/150"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "A fresh Maven project runs the plugin goal offline with a private fixture repository. Its child class-loading trace must identify the exact copied transformer JAR before a packaging outcome is accepted.",
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

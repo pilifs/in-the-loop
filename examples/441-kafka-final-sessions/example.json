@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "441",
+  "title": "Kafka Streams admits the session close boundary and publishes one final count",
+  "summary": "At the grace boundary the parent dropped A at time 8 and emitted a provisional final A at time 3. The merged Streams topology accepted the boundary record and published only A@[0,5] with count two.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Kafka Streams",
+    "symbol": "TopologyTestDriver.pipeInput"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The aggregate accepts a session whose end equals stream time minus grace."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/kafka",
+    "url": "https://github.com/apache/kafka/pull/6654"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each comparison uses Kafka Streams, clients, Connect modules and the test driver from its exact pin. Rebuilding all seven test-driver sources independently on the two locked classpaths produced identical driver JARs.",
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}
