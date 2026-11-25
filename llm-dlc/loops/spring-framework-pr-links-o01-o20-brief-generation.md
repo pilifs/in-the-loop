@@ -16,11 +16,19 @@
 | spring-projects/spring-framework#37308 | written | Read the named two-row setter/count assertions and both JdbcClient one-row generated-key tests with scripted key 11. Real two-row key readback and driver support remain open. |
 | spring-projects/spring-framework#30530 | written | Read the added API, both MockRow suites and the linked class-mapping discussion. Complete-row strict mapping may reject a property consumed by the constructor: suppressProperty and the strict expected-name set differ. That public outcome and DatabaseClient readback remain unexecuted. |
 | spring-projects/spring-framework#25256 | written | Read the reported partial-commit history, the operator/annotation cancellation paths, counting-manager tests and 5.3 reference. Actual visibility after cancellation and after moving take(1) across the transaction boundary remains unexecuted. |
-| spring-projects/spring-framework#31133 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#31699 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37047 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#29116 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37403 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37600 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#31133 | written | Read the state-loss report, parent holder cleanup, landed savepoint release and nine-savepoint mock regression. The exact parent database symptom is provider-dependent. Sibling savepoints and outer rollback have not been checked against durable rows. |
+| spring-projects/spring-framework#31699 | written | Read the single-resource XML binding and both getter assertions beside the existing three-resource test. The same-file pattern and actual stream bytes remain unexecuted. |
+| spring-projects/spring-framework#37047 | written | Read the PR’s throwing named lookup and landed fixture declaring two generic factory return types and distinct @CachePut caches. The negative token and cache receipts remain unexecuted. |
+| spring-projects/spring-framework#29116 | written | Read the public createConnection proxy path, protected recovery regression and initConnection catch. Direct reinitialization can retain closed A after B fails according to the source; the provider-tagged retry remains unexecuted. |
+| spring-projects/spring-framework#37403 | written | Read the two upstream five-second waits, subscription counts and independent cache assertions. The error-after-one-item challenge, including subsequent cache replay, remains unexecuted. |
+| spring-projects/spring-framework#37600 | written | Read the reported [none] results, early/late cache configurations and put/evict assertions. Explicit eviction between two differently contextualized misses remains unexecuted; sync=true and the later follow-up are outside this comparison. |
 
 Authoring evidence consists of the saved PR metadata and revision-pinned source reads. Runtime results attributed to the PR or issue are upstream observations. The proposed controls and challenges have not been executed here.
+
+## Final check
+
+All 20 input PRs were accessible. Each appears once, in input order. The 63 claim rows identify a public observation, its independent basis and a refuting outcome. Historical observations are attributed to a PR, issue or test. The 90 revision-pinned Spring file links resolved against the saved trees. The 289 complete source reads matched their Git blob IDs and byte lengths (193 distinct Spring objects). The additional pgJDBC documentation link was checked at its own revision.
+
+Checked the submitted path list and added/removed line counts against the landed changes on all 78 paths. For #37218 and #36714 the comparison starts before the first of two landed commits. For #1366 it starts at the merge’s first parent. For #29116 the two landing files also contain target-branch changes. The submitted and landed patches add and remove the same lines in both files. All other submitted result blobs match their landed counterparts.
+
+The source receipts, issue and PR metadata, diffs and protocol references are saved under `~/.cache/in-the-loop/agent-tmp/ea63c5f6-1929-4c3f-9921-139ac43a8b86/o-brief/`, grouped by PR number, with specifications under `protocol/`. No project build, database run, verification job or runtime probe was performed.
