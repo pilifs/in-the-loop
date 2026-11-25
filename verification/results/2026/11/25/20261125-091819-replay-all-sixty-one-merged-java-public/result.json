@@ -1,0 +1,214 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-091819-replay-all-sixty-one-merged-java-public",
+  "title": "Replay all sixty-one merged Java public questions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m04s, peak 199.2 MiB (estimated 4m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (audit and replay) was held back 1m51s by its 1-CPU quota in 2m04s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-091819-replay-all-sixty-one-merged-java-public.json",
+    "sha256": "c1ab0f211151eb0547fe6b47e6fd893be794e2c0527e3d4eb91478db711975b1",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-091819-replay-all-sixty-one-merged-java-public",
+      "title": "Replay all sixty-one merged Java public questions",
+      "description": "Rebuild the twenty public callers and compare all 143 fresh JVM observations with their registered source, runtime and receipt digests. The matrix includes H2, disposable PostgreSQL 16.16 and 18.1 servers, signed Eclipse support, both jOOλ modules and both Guava editions.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md"
+        ]
+      },
+      "expected": "The audit accounts for all 61 brief rows and each replay reproduces its typed observation, including the four falsified merged predictions.",
+      "submitted": {
+        "at": "2026-11-25T09:18:19+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "docker"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "audit and replay",
+          "run": "python3 verification/merged-pr-links/audit.py --replay --output verification/merged-pr-links/repeated-audit.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/repeated-audit.json"
+      ]
+    }
+  },
+  "sourceCommit": "dff18b13cda2f81ec9ca43aa8a99361ddb8ed1d6",
+  "startedAt": "2026-11-25T09:26:14+00:00",
+  "finishedAt": "2026-11-25T09:28:33+00:00",
+  "wallSeconds": 139.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3566000,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 208920576,
+    "wallSeconds": 124.1,
+    "cpuSeconds": 120.4,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.52
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "audit and replay",
+      "run": "python3 verification/merged-pr-links/audit.py --replay --output verification/merged-pr-links/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 124.13,
+      "cpuSeconds": 120.371,
+      "cpuThrottledSeconds": 111.011,
+      "peakMemoryBytes": 208920576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-audit-and-replay.log",
+        "lines": 153,
+        "bytes": 15922,
+        "sha256": "26ad8f5c43233b1a6d27051460d8cdd1346821cb78f475ea58f5a909a5678494",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "postgres18.1 fix jOOQ/jOOQ#19875.1 {'return': 'errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]'}",
+        "postgres18.1 fix jOOQ/jOOQ#19875.2 {'return': 'errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]'}",
+        "postgres18.1 fix jOOQ/jOOQ#19875.3 {'return': 'errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]'}",
+        "jool parent jOOQ/jOOL#418.1 {'return': '[-:-, -:-, -:-]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]'}",
+        "jool parent jOOQ/jOOL#418.2 {'return': '[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]'}",
+        "jool parent jOOQ/jOOL#418.3 {'return': '5=-:-; max-1=-:-'}",
+        "jool fix jOOQ/jOOL#418.1 {'return': '[1:3, 1:3, 1:3]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]'}",
+        "jool fix jOOQ/jOOL#418.2 {'return': '[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]'}",
+        "jool fix jOOQ/jOOL#418.3 {'return': '5=1:3; max-1=1:1'}",
+        "jool-java-8 parent jOOQ/jOOL#418.1 {'return': '[-:-, -:-, -:-]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]'}",
+        "jool-java-8 parent jOOQ/jOOL#418.2 {'return': '[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]'}",
+        "jool-java-8 parent jOOQ/jOOL#418.3 {'return': '5=-:-; max-1=-:-'}",
+        "jool-java-8 fix jOOQ/jOOL#418.1 {'return': '[1:3, 1:3, 1:3]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]'}",
+        "jool-java-8 fix jOOQ/jOOL#418.2 {'return': '[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]'}",
+        "jool-java-8 fix jOOQ/jOOL#418.3 {'return': '5=1:3; max-1=1:1'}",
+        "pinned parent eclipse-jdt/eclipse.jdt.core#5380.1 {'throws': 'java.lang.StringIndexOutOfBoundsException'}",
+        "pinned parent eclipse-jdt/eclipse.jdt.core#5380.2 {'return': 'real=\\nclass A {\\n\\tvoid foo() {\\n\\t\\tint x = 1;\\n\\t}\\n}\\nempty=\\nclass A{void foo(){int x=1;}}\\n'}",
+        "pinned parent eclipse-jdt/eclipse.jdt.core#5380.3 {'throws': 'java.lang.StringIndexOutOfBoundsException'}",
+        "pinned fix eclipse-jdt/eclipse.jdt.core#5380.1 {'return': '\\nclass A {\\n\\tvoid foo() {\\n\\t\\tint x = 1;\\n\\t}\\n}\\n'}",
+        "pinned fix eclipse-jdt/eclipse.jdt.core#5380.2 {'return': 'real=\\nclass A {\\n\\tvoid foo() {\\n\\t\\tint x = 1;\\n\\t}\\n}\\nempty=\\nclass A{void foo(){int x=1;}}\\n'}",
+        "pinned fix eclipse-jdt/eclipse.jdt.core#5380.3 {'return': '\\r\\nclass A {\\r\\n\\tvoid foo() {\\r\\n\\t\\tint x = 1;\\r\\n\\t}\\r\\n}\\r\\n; idempotent=true'}",
+        "pinned parent junit-team/junit-framework#2646.1 {'return': 'OuterA | OuterA$Ready state | OuterA$Ready state -> accepts input'}",
+        "pinned parent junit-team/junit-framework#2646.2 {'return': 'accepts the sample'}",
+        "pinned parent junit-team/junit-framework#2646.3 {'return': 'OuterB | OuterB$Ready state | OuterB$Ready state -> accepts input / OuterB | OuterB -> Ready state | OuterB -> Ready state -> accepts input'}",
+        "pinned fix junit-team/junit-framework#2646.1 {'return': 'OuterA | Ready state | Ready state -> accepts input'}",
+        "pinned fix junit-team/junit-framework#2646.2 {'return': 'accepts the sample'}",
+        "pinned fix junit-team/junit-framework#2646.3 {'return': 'OuterB | Ready state | Ready state -> accepts input / OuterB | OuterB -> Ready state | OuterB -> Ready state -> accepts input'}",
+        "jre parent google/guava#7784.1 {'return': 'false; iterated (1)'}",
+        "jre parent google/guava#7784.2 {'return': 'true,true/false,false'}",
+        "jre parent google/guava#7784.3 {'return': 'false,false/true,true'}",
+        "jre fix google/guava#7784.1 {'return': 'false; no iteration (0)'}",
+        "jre fix google/guava#7784.2 {'return': 'true,true/false,false'}",
+        "jre fix google/guava#7784.3 {'return': 'false,false/true,true'}",
+        "android parent google/guava#7784.1 {'return': 'false; iterated (1)'}",
+        "android parent google/guava#7784.2 {'return': 'true,true/false,false'}",
+        "android parent google/guava#7784.3 {'return': 'false,false/true,true'}",
+        "android fix google/guava#7784.1 {'return': 'false; no iteration (0)'}",
+        "android fix google/guava#7784.2 {'return': 'true,true/false,false'}",
+        "android fix google/guava#7784.3 {'return': 'false,false/true,true'}",
+        "{\"cases\": 20, \"deploymentPairs\": 24, \"fixedIntentsMatched\": 20, \"fixedPredictionsMatched\": 57, \"fixedRefutations\": 4, \"freshJvms\": 143, \"omittedParentHistories\": 3, \"pairedIntentChanges\": 19, \"questions\": 61, \"retainedMethodEntryTrials\": 4, \"unchangedControls\": 20}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/repeated-audit.json",
+      "change": "added",
+      "bytes": 6305,
+      "sha256": "1cfdeb7ce9e628e16653ef71a3e496a56c47ff5457238dd59726fa2966bde703",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T09:32:43+00:00",
+    "applied": [
+      "verification/merged-pr-links/repeated-audit.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T092833Z-0498420f04366f08",
+      "outputs": "20261125T092833Z-08334525e8e604f0",
+      "diff": "20261125T092833Z-1020615192f1e0a6"
+    }
+  }
+}
