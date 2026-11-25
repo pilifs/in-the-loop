@@ -60,7 +60,15 @@ def codecs(collector):
         reg=read(child/"registration.json")
         scaffold=read(child/"scaffold.json")
         require(scaffold["firstScaffoldStop"] is None and digest(child/"IntegerCodec.java")==reg["callerSha256"],"failed registered caller")
+        loaders=compressed(CODECS/"original-loaders"/(case+".json.gz"))
+        require(loaders["callerClassSha256"]==scaffold["callerClassSha256"] and
+                loaders["registrationSha256"]==digest(child/"registration.json"),"different loader experiment")
         for side in ("old","new"):
+            trials=loaders["sides"][side]
+            require(all(trials[mode]["exit"]==0 and trials[mode]["rows"]==scaffold["sides"][side]["rows"]
+                        for mode in ("direct","record")) and
+                    all(trials["record"]["classProviders"].get(reg[k][0])==1 for k in ("encoder","decoder")),
+                    "original defining class or observation differs")
             directory=CODECS/"matched"/case/side/"candidate-1"
             data=compressed(directory/"results.json.gz")
             require(data["source"]==jobs[data["job"]] and digest(child/"registration.json")==data["registrationSha256"]==
@@ -79,6 +87,14 @@ def codecs(collector):
     wrong=read(CODECS/"discovery/wrong/candidate-1/scaffold.json")
     require(wrong["firstScaffoldStop"] and wrong["sides"]["old"]["rows"][0]==[0,0,0] and wrong["sides"]["new"]["rows"][0]==[0,0,1],"lost false control")
     require(len({r["checker"] for r in comparisons})==1,"different numeric checker binaries")
+    earlier=read(CODECS/"startup/registration.json")
+    for filename, entry in (("probe.json","PublishedWidths#roundTrip"),("size32-probe.json","PublishedWidths#size32")):
+        probe=read(CODECS/"startup"/filename)
+        require(probe["registrationSha256"]==digest(CODECS/"startup/registration.json") and probe["entry"]==entry and
+                not probe["stdout"] and "whose field UNSAFE holds" in probe["stderr"],"different startup probe")
+    require(all("com/google/protobuf/CodedOutputStream" in side["initializers"]
+            and len(side["observations"])==11 and all(v.endswith(" true true true false") for v in side["observations"])
+            for side in earlier["sides"].values()),"Protobuf startup evidence differs")
     save(CODECS/"comparison.json.gz",comparisons)
     md=["# Signed integer codec comparison","",
         "Each release received the generated consumer qualified on both original JVMs. Every nonnegative Java int is admitted by the primary and round-trip control. The full-bit hypothesis admits every Java int. The inverse and the stock post-call false assertion were used to qualify the results.","",
