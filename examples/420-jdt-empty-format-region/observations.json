@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "0bb84c5ffcb8916dce6d3ded5fef46ee7136eaba63bb0c6fc3904f30a4763d70",
+  "runtimeSha256": "cbeb3f06c46949997882e5d25ec6297f34bf42bfe54e8825a23c13b85fd43b1f",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "8fcbafddd463d648809203c7dab7fa13fbba592ceb10e7cdfbdd1f5beb51f683"
+  },
+  "deployments": {
+    "pinned": {
+      "callerClasses": {
+        "PublicCaller.class": "65ab6c1902dc1a7e46202e497b8594e72140724e22609c29da5356e5e2e2fe6a",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "eclipse-jdt/eclipse.jdt.core#5380.1",
+          "outcome": {
+            "throws": "java.lang.StringIndexOutOfBoundsException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "eclipse-jdt/eclipse.jdt.core#5380.2",
+          "outcome": {
+            "return": "real=\nclass A {\n\tvoid foo() {\n\t\tint x = 1;\n\t}\n}\nempty=\nclass A{void foo(){int x=1;}}\n"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "eclipse-jdt/eclipse.jdt.core#5380.3",
+          "outcome": {
+            "throws": "java.lang.StringIndexOutOfBoundsException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "eclipse-jdt/eclipse.jdt.core#5380.1",
+          "outcome": {
+            "return": "\nclass A {\n\tvoid foo() {\n\t\tint x = 1;\n\t}\n}\n"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "eclipse-jdt/eclipse.jdt.core#5380.2",
+          "outcome": {
+            "return": "real=\nclass A {\n\tvoid foo() {\n\t\tint x = 1;\n\t}\n}\nempty=\nclass A{void foo(){int x=1;}}\n"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "eclipse-jdt/eclipse.jdt.core#5380.3",
+          "outcome": {
+            "return": "\r\nclass A {\r\n\tvoid foo() {\r\n\t\tint x = 1;\r\n\t}\r\n}\r\n; idempotent=true"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

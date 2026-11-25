@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "417",
+  "title": "Logback writes an encoder header after every rotation",
+  "summary": "The active file after one rotation changed from BF to HBF. Two rotations on the fix produced HAF, HF and HBF from oldest to newest. Without rotation both pins wrote HABF.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Logback",
+    "symbol": "RollingFileAppender.rollover"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Before, expect archive 1 = `HAF` and current = `BF`, consistent with #857. After, expect archive 1 = `HAF` and current = `HBF`."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/qos-ch/logback",
+    "url": "https://github.com/qos-ch/logback/pull/862"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The active file after one rotation changed from BF to HBF. Two rotations on the fix produced HAF, HF and HBF from oldest to newest. Without rotation both pins wrote HABF."
+  ]
+}

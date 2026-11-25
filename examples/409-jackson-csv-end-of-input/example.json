@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "409",
+  "title": "Jackson CSV identifies the end of a quoted array row",
+  "summary": "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "deserialization",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Jackson CSV",
+    "symbol": "MappingIterator.hasNextValue"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The parent is reported to misdetect exhaustion after reading the first row. The merge should produce true, the one-element String[] {\"te,st\"}, false, false."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-dataformats-text",
+    "url": "https://github.com/FasterXML/jackson-dataformats-text/pull/625"
+  },
+  "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The CSV module comes from each source pin, built against released Jackson 3.2.0 dependencies because the snapshot graph is unavailable.",
+    "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides."
+  ]
+}

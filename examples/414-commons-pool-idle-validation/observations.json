@@ -1,0 +1,74 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "9e8aecf41a0ea5a0f0acf7cd0cd31522be66e1712308c3160feec462df0899d2",
+  "runtimeSha256": "52eb2b0b386e1790924830e478982d09c75ac94bd8c9c515101307ac13e89358",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "916eddb2a854a32a860605cd5d0e874ac7d3fc7680b39ca48aad480c8a81efd7"
+  },
+  "deployments": {
+    "pinned": {
+      "callerClasses": {
+        "PublicCaller$1.class": "791f79674c5e0b6653e3f99216676446716228a57a5376dad8a205905d6b73bc",
+        "PublicCaller$2.class": "b62aee47af737e9b8cd95b368592054380531c8ba8662673475e5579e9d0a3be",
+        "PublicCaller$3.class": "a1efc3f4aa2805170f312a8cdf27e89c99c113a413b941c38953916bfad2e52f",
+        "PublicCaller$4.class": "70146b8a4791109df6bf4865ae61a63572b087a8d596b7e0248570a2f977c953",
+        "PublicCaller$Log.class": "33f3640a3a5578a4e6ef3254205a75a587558181c1fb60a680c9c0359de94e1e",
+        "PublicCaller$Pool.class": "ec89f31a3c7107d4e0ce2a5556f3177410b86eecb35fd1c49e400759589b7ea5",
+        "PublicCaller$Token.class": "b17ce3c34e22a58e81774bef7669b4d2af7f248a8603767299d4a0db9ec0241f",
+        "PublicCaller.class": "15509a9c0364ef6e37f451413dbf80e71f872edd47946b104a7225b98cfbbd22",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/commons-pool#85.1",
+          "outcome": {
+            "return": "ordinary=same, destroyed=[], idle=1, active=0; keyed=same, destroyed=[], idle=1, active=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-pool#85.2",
+          "outcome": {
+            "return": "ordinary=normal, destroyed=[A], idle=0, active=0; keyed=normal, destroyed=[A], idle=0, active=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-pool#85.3",
+          "outcome": {
+            "return": "ordinary=same, destroyed=[], idle=1, active=0; exhausted; keyed=same, destroyed=[], idle=1, active=0; exhausted"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-pool#85.1",
+          "outcome": {
+            "return": "ordinary=same, destroyed=[A], idle=0, active=0; keyed=same, destroyed=[A], idle=0, active=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-pool#85.2",
+          "outcome": {
+            "return": "ordinary=normal, destroyed=[A], idle=0, active=0; keyed=normal, destroyed=[A], idle=0, active=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-pool#85.3",
+          "outcome": {
+            "return": "ordinary=same, destroyed=[A], idle=0, active=0; borrowed=B different=true, returned=1/0, destroyed=[A]; keyed=same, destroyed=[A], idle=0, active=0; borrowed=B different=true, returned=1/0, destroyed=[A]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

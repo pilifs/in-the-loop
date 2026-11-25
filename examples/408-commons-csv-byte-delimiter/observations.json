@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "a6f03a68baa5190bbaddd3de8150271fe8bc83ffc9e8fa482f26921578acc02f",
+  "runtimeSha256": "89d40c9231212fce12fe5da170194348d8c3960fe82f92946b12b40fce72a38d",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "af364e479aa941b4d25167c4ec9043485dd7c68c9f25610090fd0f29a68e8cc2"
+  },
+  "deployments": {
+    "pinned": {
+      "callerClasses": {
+        "PublicCaller.class": "501c3cac4697d70aea915ba355a84b9452980723d0e9106037fa6fddb25ebd89",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/commons-csv#613.1",
+          "outcome": {
+            "return": "UncheckedIOException caused by CharacterCodingException CharacterCodingException=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-csv#613.2",
+          "outcome": {
+            "return": "[a, b]@0; [c, d]@4"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-csv#613.3",
+          "outcome": {
+            "return": "UncheckedIOException caused by CharacterCodingException CharacterCodingException=true"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-csv#613.1",
+          "outcome": {
+            "return": "[a, b]@0; [c, d]@8"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-csv#613.2",
+          "outcome": {
+            "return": "[a, b]@0; [c, d]@4"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-csv#613.3",
+          "outcome": {
+            "return": "[a, b]@0; [c, d]@9; suffix=[c, d]@0"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

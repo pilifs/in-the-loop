@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/qos-ch/logback/pull/862",
+  "revisions": {
+    "parent": "91961ad72a1416185abe260c4d56a0762a452223",
+    "fix": "42caff87ae6eb553dcbf77e25ba87a9d340357ee"
+  },
+  "entry": "RollingFileAppender.rollover",
+  "questions": [
+    {
+      "id": "qos-ch/logback#862.1",
+      "role": "Intent",
+      "args": [
+        "rotate"
+      ],
+      "history": "One explicit rotation separates event A from B.",
+      "prediction": "Before, expect archive 1 = `HAF` and current = `BF`, consistent with #857. After, expect archive 1 = `HAF` and current = `HBF`.",
+      "basis": "Each file has its own opening and closing boundary and exactly one known event.",
+      "expected": {
+        "parent": {
+          "return": "archive1=HAF; active=BF"
+        },
+        "fix": {
+          "return": "archive1=HAF; active=HBF"
+        }
+      }
+    },
+    {
+      "id": "qos-ch/logback#862.2",
+      "role": "Control",
+      "args": [
+        "none"
+      ],
+      "history": "Same configuration, append A and B without rotating, then stop.",
+      "prediction": "Both pins should produce exactly `HABF` in the active file.",
+      "basis": "Normal startup and stop already wrote framing for the first stream.",
+      "expected": {
+        "parent": {
+          "return": "active=HABF"
+        },
+        "fix": {
+          "return": "active=HABF"
+        }
+      }
+    },
+    {
+      "id": "qos-ch/logback#862.3",
+      "role": "Challenge",
+      "args": [
+        "twice"
+      ],
+      "history": "On the merge rotate twice consecutively between A and B, leaving the middle file empty of events. Read all three files after stop.",
+      "prediction": "Archive 2 = `HAF`, archive 1 = `HF`, active = `HBF`.",
+      "basis": "The encoder supplies framing for a stream’s lifetime independently of whether it receives any events.",
+      "expected": {
+        "fix": {
+          "return": "archive2=HAF; archive1=HF; active=HBF"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/jOOQ/jOOQ/pull/19875",
+  "revisions": {
+    "parent": "fe798c2c9296d13d32e469f60b26778ebc1ac1c4",
+    "fix": "1a3575be9bf33f3e3f022226d7fd6869a8874e63"
+  },
+  "entry": "LoaderLoadStep.loadJSON",
+  "questions": [
+    {
+      "id": "jOOQ/jOOQ#19875.1",
+      "role": "Intent",
+      "args": [
+        "static"
+      ],
+      "history": "Empty table and one static batch of three distinct input rows",
+      "prediction": "The issue reports three copies of (1,Alice) on an affected release. The merge should store the three original pairs, each once, with no loader errors and counts 3/3.",
+      "basis": "The JSON-to-field mapping determines both columns per row. JDBC reads what the database accepted independently of Loader statistics.",
+      "expected": {
+        "parent": {
+          "return": "errors=0 processed=3 stored=3; [1/Alice, 1/Alice, 1/Alice]"
+        },
+        "fix": {
+          "return": "errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]"
+        }
+      }
+    },
+    {
+      "id": "jOOQ/jOOQ#19875.2",
+      "role": "Control",
+      "args": [
+        "prepared"
+      ],
+      "history": "Fresh empty table, same input and batching with PREPARED_STATEMENT",
+      "prediction": "Both revisions should yield the same three correct pairs, no errors and 3 processed/3 stored.",
+      "basis": "Parameter binding supplies a distinct value tuple per row. The report’s companion test exercises this mode.",
+      "expected": {
+        "parent": {
+          "return": "errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]"
+        },
+        "fix": {
+          "return": "errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]"
+        }
+      }
+    },
+    {
+      "id": "jOOQ/jOOQ#19875.3",
+      "role": "Challenge",
+      "args": [
+        "partial"
+      ],
+      "history": "On the merge, permute the JSON objects to (3,Charlie),(1,Alice),(2,Bob) and use batchAfter(2)",
+      "prediction": "The ordered JDBC readback still gives exactly the original three pairs, including the last partial batch.",
+      "basis": "Changing input order or the JDBC flush boundary cannot change table contents for independent inserts with this schema.",
+      "expected": {
+        "fix": {
+          "return": "errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]"
+        }
+      }
+    }
+  ]
+}

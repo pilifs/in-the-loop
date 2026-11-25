@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "b47e705a2ba0965bc2206173796c16c5c1772f402e20c1777bd8853061202ead",
+  "runtimeSha256": "cb0e8f4153b9f66bff6bd368bee04ae99f6577277beaea0fb6f17b92e9b7f226",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "ab630f8b87b361277b7ecb9b7fda5345ef6b5badc008cc26a6e5519b356e27fc"
+  },
+  "deployments": {
+    "pinned": {
+      "callerClasses": {
+        "PublicCaller.class": "b112e81435386e7a41266f386ffa94e42500dd26f7cc8432430afd257543b6cf",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/avro#3709.1",
+          "outcome": {
+            "return": "present=true; value=null; idl=null"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/avro#3709.2",
+          "outcome": {
+            "return": "present=true; value=Integer(1); idl=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/avro#3709.3",
+          "outcome": {
+            "return": "present=true; value=[Integer(1)]; idl=[1] / present=true; value=AvroRuntimeException; idl=AvroRuntimeException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#3709.1",
+          "outcome": {
+            "return": "present=true; value=Integer(1); idl=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#3709.2",
+          "outcome": {
+            "return": "present=true; value=Integer(1); idl=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#3709.3",
+          "outcome": {
+            "return": "present=true; value=[Integer(1)]; idl=[1] / present=true; value=AvroRuntimeException; idl=AvroRuntimeException"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

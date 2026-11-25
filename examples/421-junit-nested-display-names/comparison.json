@@ -1,0 +1,64 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/junit-team/junit-framework/pull/2646",
+  "revisions": {
+    "parent": "882bf488e228b1f55ed3b636838825dec31ec20d",
+    "fix": "694efb6dbd8506d623d5c117d1df39f9260f72df"
+  },
+  "entry": "Launcher.discover",
+  "questions": [
+    {
+      "id": "junit-team/junit-framework#2646.1",
+      "role": "Intent",
+      "args": [
+        "nested"
+      ],
+      "history": "Only Ready_state opts into indicative sentences",
+      "prediction": "On the parent the reported failure pattern predicts a nested label beginning OuterA$Ready state. On the merge the three labels should be OuterA, Ready state, and Ready state -> accepts input.",
+      "basis": "ReplaceUnderscores supplies the fragments. Sentence generation starts where the annotation applies. The release notes and the reporter’s ConsoleLauncher output distinguish the two scopes.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "OuterA$Ready state"
+          ]
+        },
+        "fix": {
+          "return": "OuterA | Ready state | Ready state -> accepts input"
+        }
+      }
+    },
+    {
+      "id": "junit-team/junit-framework#2646.2",
+      "role": "Control",
+      "args": [
+        "explicit"
+      ],
+      "history": "Add @DisplayName(\"accepts the sample\") to the leaf method",
+      "prediction": "On both pins, expect the leaf display name to be exactly accepts the sample.",
+      "basis": "Jupiter gives an explicit display name precedence over a generated method label. Check the leaf independently of the containers.",
+      "expected": {
+        "parent": {
+          "return": "accepts the sample"
+        },
+        "fix": {
+          "return": "accepts the sample"
+        }
+      }
+    },
+    {
+      "id": "junit-team/junit-framework#2646.3",
+      "role": "Challenge",
+      "args": [
+        "rename"
+      ],
+      "history": "Discover the same nested class and method inside a differently named unannotated top-level class OuterB. Then move the indicative annotation to OuterB alone.",
+      "prediction": "On the merge the outer rename alone leaves both inner labels intact. Moving the annotation outwards changes them to OuterB -> Ready state and OuterB -> Ready state -> accepts input.",
+      "basis": "Only an enclosing class that participates in the sentence contributes a fragment. This tests both suppressing an irrelevant name and retaining a relevant one. Use the original method without the explicit label.",
+      "expected": {
+        "fix": {
+          "return": "OuterB | Ready state | Ready state -> accepts input / OuterB | OuterB -> Ready state | OuterB -> Ready state -> accepts input"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/eclipse-jdt/eclipse.jdt.core/pull/5380",
+  "revisions": {
+    "parent": "1b3a126e2d26e53aeb79796ec1c881aff66424cd",
+    "fix": "2008a7280a5a72807ace4cba42c22211f58165b5"
+  },
+  "entry": "ToolFactory.createCodeFormatter",
+  "questions": [
+    {
+      "id": "eclipse-jdt/eclipse.jdt.core#5380.1",
+      "role": "Intent",
+      "args": [
+        "adjacent"
+      ],
+      "history": "Two ordered, nonoverlapping regions, `[new Region(0,0), R]`, and LF.",
+      "prediction": "The PR traces the parent failure to an index of −1. On the merge expect exactly `\\nclass A {\\n\\tvoid foo() {\\n\\t\\tint x = 1;\\n\\t}\\n}\\n` using Java escapes.",
+      "basis": "The empty region selects no characters and the second requests real edits. The landed expectation fixes spacing, brace placement, tabs and line endings for these settings.",
+      "expected": {
+        "parent": {
+          "throws": "java.lang.StringIndexOutOfBoundsException"
+        },
+        "fix": {
+          "return": "\nclass A {\n\tvoid foo() {\n\t\tint x = 1;\n\t}\n}\n"
+        }
+      }
+    },
+    {
+      "id": "eclipse-jdt/eclipse.jdt.core#5380.2",
+      "role": "Control",
+      "args": [
+        "separate"
+      ],
+      "history": "Format with only `R`, or with only `new Region(0,0)`.",
+      "prediction": "Both revisions should yield the formatted text above for `[R]` and the original source for the empty-only selection.",
+      "basis": "The first call selects the class and the second selects no source characters. Both controls appear in the landed test.",
+      "expected": {
+        "parent": {
+          "return": "real=\nclass A {\n\tvoid foo() {\n\t\tint x = 1;\n\t}\n}\nempty=\nclass A{void foo(){int x=1;}}\n"
+        },
+        "fix": {
+          "return": "real=\nclass A {\n\tvoid foo() {\n\t\tint x = 1;\n\t}\n}\nempty=\nclass A{void foo(){int x=1;}}\n"
+        }
+      }
+    },
+    {
+      "id": "eclipse-jdt/eclipse.jdt.core#5380.3",
+      "role": "Challenge",
+      "args": [
+        "crlf"
+      ],
+      "history": "Use CRLF, select both regions, apply the edit, then run the same two-region operation again with R’s length recomputed from the edited document.",
+      "prediction": "On the merge the first result has the expected class with CRLF at every break, including the preserved empty first line. Applying the second edit leaves that text byte-for-byte unchanged under UTF-8.",
+      "basis": "Requested separators have length two in the region coordinates. Formatting a document already in the selected style should be idempotent.",
+      "expected": {
+        "fix": {
+          "return": "\r\nclass A {\r\n\tvoid foo() {\r\n\t\tint x = 1;\r\n\t}\r\n}\r\n; idempotent=true"
+        }
+      }
+    }
+  ]
+}

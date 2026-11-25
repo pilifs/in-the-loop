@@ -1,9 +1,10 @@
 """Replay a finite public caller on byte-pinned deployments in separate JVMs."""
 import argparse
 import base64
-from contextlib import nullcontext
+from contextlib import ExitStack
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -31,6 +32,18 @@ def comparison_plan(folder):
     runtime = read(folder / "runtime.json")
     if spec["schema"] != "public-comparison/v1" or set(spec["revisions"]) != set(SIDES):
         raise ValueError("invalid public comparison")
+    if not runtime["deployments"]:
+        raise ValueError("no registered deployments")
+    for name in (runtime["cache"], runtime["jdk"], *runtime["deployments"]):
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+\-]*", name):
+            raise ValueError("a runtime name must be a single directory component")
+    for deploy in runtime["deployments"].values():
+        paths = deploy["classpath"]
+        if set(paths) != set(SIDES) or not deploy["providers"]:
+            raise ValueError("each deployment needs both classpaths and a provider")
+        for index in deploy["providers"].values():
+            if type(index) is not int or not 0 <= index < min(map(len, paths.values())):
+                raise ValueError("provider outside its original classpath")
     ids = [row["id"] for row in spec["questions"]]
     if not ids or len(set(ids)) != len(ids):
         raise ValueError("empty or duplicate public questions")
@@ -45,7 +58,8 @@ def comparison_plan(folder):
                 raise ValueError("partial return prediction requires nonempty fragments")
         if set(row.get("omit", {})) & row["expected"].keys():
             raise ValueError("cannot omit a registered side prediction")
-    required = ["javac", "java"] + (["docker"] if runtime.get("postgresImage") else [])
+    uses_postgres = any(d.get("service") == "postgres" for d in runtime["deployments"].values())
+    required = ["javac", "java"] + (["docker"] if uses_postgres else [])
     return {"example": folder.name[:3], "approach": "B8", "executable": True, "notExecuted": None,
             "runner": "public-comparison", "revisions": spec["revisions"], "questions": ids,
             "deployments": list(runtime["deployments"]), "tools": {"required": required, "optional": []}}
@@ -96,13 +110,15 @@ def replay(folder, record=False):
     result = {"schema": "public-observations/v1", "comparisonSha256": sha(folder / "comparison.json"),
               "runtimeSha256": sha(folder / "runtime.json"), "launcherSha256": sha(upgrade_replay.LAUNCHER),
               "inputs": {str(p.relative_to(folder)): sha(p) for p in sources + fixtures}, "deployments": {}}
-    service = nullcontext({})
-    if runtime.get("postgresImage"):
-        from targets.public_postgres import postgres
-        service = postgres(runtime["postgresImage"])
-    with tempfile.TemporaryDirectory(prefix="public-comparison-") as tmp, service as service_env:
+    with tempfile.TemporaryDirectory(prefix="public-comparison-") as tmp, ExitStack() as services:
         work = Path(tmp)
         for name, deploy in runtime["deployments"].items():
+            services.close()
+            service_env = {}
+            if deploy.get("service") == "postgres":
+                from targets.public_postgres import postgres
+                image = deploy.get("postgresImage") or runtime["postgresImage"]
+                service_env = services.enter_context(postgres(image))
             cp = {side: classpath(cache, runtime, deploy, side, work / "packages" / name) for side in SIDES}
             classes = work / name
             classes.mkdir(exist_ok=True)
@@ -126,8 +142,7 @@ def replay(folder, record=False):
                                "-cp", str(classes) + os.pathsep + cp[side], "UpgradeObservation", "PublicCaller", *args]
                         env = {"PATH": str(jdk / "bin") + ":/usr/bin:/bin", "HOME": trial_path,
                                "TMPDIR": trial_path, "TZ": "UTC", "LANG": "C.UTF-8"}
-                        if deploy.get("service") == "postgres":
-                            env.update(service_env)
+                        env.update(service_env)
                         proc = subprocess.run(cmd, cwd=trial, env=env, capture_output=True, text=True, timeout=40)
                         if proc.returncode or not obs.is_file():
                             raise ValueError(f"{folder.name} {side} {row['id']} failed to run: {proc.stderr[-1200:]}")
@@ -149,6 +164,8 @@ def replay(folder, record=False):
                                      ("matched" if agrees(expected, actual) else "refuted")})
             result["deployments"][name] = {"callerClasses": {p.relative_to(classes).as_posix(): sha(p)
                 for p in sorted(classes.rglob("*.class"))}, "observations": runs}
+            if service_env:
+                result["deployments"][name]["postgresVersionNumber"] = int(service_env["PUBLIC_COMPARISON_PG_VERSION"])
     receipt = folder / "observations.json"
     if record:
         receipt.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")

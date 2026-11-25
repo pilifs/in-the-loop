@@ -23143,6 +23143,493 @@
       "target": null
     },
     {
+      "id": "407",
+      "path": "examples/407-solr-enum-buckets",
+      "title": "Solr counts documents in multivalued enum facets",
+      "summary": "The six-document enum facet changed from empty buckets to Low 4, Medium 3, Not Available 3 and High 2. Duplicating Low on one document preserved the counts. The string-field control returned all four buckets on both sides.",
+      "origin": "real-world",
+      "system": "Apache Solr",
+      "symbol": "SolrClient.query",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Both pins supply their changed facet classes over Solr 9.8.0 with identical core configuration. The full pin-built core could not start on the release SolrJ support graph.",
+        "The six-document enum facet changed from empty buckets to Low 4, Medium 3, Not Available 3 and High 2. Duplicating Low on one document preserved the counts. The string-field control returned all four buckets on both sides."
+      ],
+      "source": "https://github.com/apache/solr/pull/3158",
+      "target": null
+    },
+    {
+      "id": "408",
+      "path": "examples/408-commons-csv-byte-delimiter",
+      "title": "Commons CSV reports restartable UTF-8 byte positions",
+      "summary": "The parent iterator wrapped a CharacterCodingException. The fix reported the second record at byte 8 with LF and byte 9 with CRLF. Reopening at byte 9 returned exactly the second record at local offset zero.",
+      "origin": "real-world",
+      "system": "Apache Commons CSV",
+      "symbol": "CSVRecord.getBytePosition",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The parent iterator wrapped a CharacterCodingException. The fix reported the second record at byte 8 with LF and byte 9 with CRLF. Reopening at byte 9 returned exactly the second record at local offset zero."
+      ],
+      "source": "https://github.com/apache/commons-csv/pull/613",
+      "target": null
+    },
+    {
+      "id": "409",
+      "path": "examples/409-jackson-csv-end-of-input",
+      "title": "Jackson CSV identifies the end of a quoted array row",
+      "summary": "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides.",
+      "origin": "real-world",
+      "system": "Jackson CSV",
+      "symbol": "MappingIterator.hasNextValue",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "deserialization"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The CSV module comes from each source pin, built against released Jackson 3.2.0 dependencies because the snapshot graph is unavailable.",
+        "The fix stopped advertising a phantom row at EOF. With two quoted rows it also reported EOF before the second real row. The parent advertised that row and then threw MismatchedInputException. The explicit bean schema worked on both sides."
+      ],
+      "source": "https://github.com/FasterXML/jackson-dataformats-text/pull/625",
+      "target": null
+    },
+    {
+      "id": "410",
+      "path": "examples/410-woodstox-cdata-slice",
+      "title": "Woodstox validates and repairs selected character slices",
+      "summary": "Both writers round-tripped the safe slice as OK. The fixed writer reported array index 5 in both rejection histories and round-tripped the selected text with two embedded delimiters when repair was enabled.",
+      "origin": "real-world",
+      "system": "Woodstox",
+      "symbol": "XMLStreamWriter2.writeCData",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "4/4 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The ordinary text slice runs on both writers. Delimiter recognition, repair and replacement diagnostics are measured on the corrected writer.",
+        "Both writers round-tripped the safe slice as OK. The fixed writer reported array index 5 in both rejection histories and round-tripped the selected text with two embedded delimiters when repair was enabled."
+      ],
+      "source": "https://github.com/FasterXML/woodstox/pull/335",
+      "target": null
+    },
+    {
+      "id": "411",
+      "path": "examples/411-avro-idl-union-default",
+      "title": "Avro reads and prints defaults across union branch orders",
+      "summary": "The integer after a null branch changed from Java null and an IDL null initializer to Integer(1) and the literal 1. With the array default [1], both pins threw AvroRuntimeException from the field getter and the IDL writer when the int branch came first.",
+      "origin": "real-world",
+      "system": "Apache Avro",
+      "symbol": "Schema.Field.defaultVal",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "deserialization"
+        ],
+        "defect": [
+          "schema-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The integer after a null branch changed from Java null and an IDL null initializer to Integer(1) and the literal 1. With the array default [1], both pins threw AvroRuntimeException from the field getter and the IDL writer when the int branch came first."
+      ],
+      "source": "https://github.com/apache/avro/pull/3709",
+      "target": null
+    },
+    {
+      "id": "412",
+      "path": "examples/412-ical4j-moved-occurrences",
+      "title": "ical4j associates moved occurrences with their recurrence IDs",
+      "summary": "The fix retained both the timed and all-day July 14 occurrences and removed the original timed July 15. With two moved events, the fix returned only B for input order A,B and both replacements for B,A.",
+      "origin": "real-world",
+      "system": "ical4j",
+      "symbol": "ComponentGroup.calculateRecurrenceSet",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The fix retained both the timed and all-day July 14 occurrences and removed the original timed July 15. With two moved events, the fix returned only B for input order A,B and both replacements for B,A."
+      ],
+      "source": "https://github.com/ical4j/ical4j/pull/931",
+      "target": null
+    },
+    {
+      "id": "413",
+      "path": "examples/413-hikari-schema-reset",
+      "title": "HikariCP restores the schema on the same PostgreSQL backend",
+      "summary": "Both borrows used the same PostgreSQL backend. After a nonexistent schema selection, the parent left its schema null and the marker lookup failed with SQLSTATE 42P01. The fix restored test and read exactly 37.",
+      "origin": "real-world",
+      "system": "HikariCP",
+      "symbol": "HikariDataSource.getConnection",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Each replay starts an isolated PostgreSQL 16 database. One application role owns its schema and marker.",
+        "Both borrows used the same PostgreSQL backend. After a nonexistent schema selection, the parent left its schema null and the marker lookup failed with SQLSTATE 42P01. The fix restored test and read exactly 37."
+      ],
+      "source": "https://github.com/brettwooldridge/HikariCP/pull/2346",
+      "target": null
+    },
+    {
+      "id": "414",
+      "path": "examples/414-commons-pool-idle-validation",
+      "title": "Commons Pool destroys an idle object when validation throws",
+      "summary": "Both pool variants rethrew the original exception object. The parent stranded A and exhausted its single slot. The fix destroyed A once, created a distinct B and accepted its return with one idle and zero active.",
+      "origin": "real-world",
+      "system": "Apache Commons Pool",
+      "symbol": "GenericObjectPool.evict",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "exceptions"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Both pool variants rethrew the original exception object. The parent stranded A and exhausted its single slot. The fix destroyed A once, created a distinct B and accepted its return with one idle and zero active."
+      ],
+      "source": "https://github.com/apache/commons-pool/pull/85",
+      "target": null
+    },
+    {
+      "id": "415",
+      "path": "examples/415-rxjava-stop-cancellation",
+      "title": "RxJava detaches the stop subscription on disposal",
+      "summary": "Disposing the single detached the main on both pins. The fix also detached the stop subscriber immediately. With two Maybe sources the fixed cancellation counters changed from (1,0) to (1,1), and only the second observer completed.",
+      "origin": "real-world",
+      "system": "RxJava",
+      "symbol": "Single.takeUntil",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Disposing the single detached the main on both pins. The fix also detached the stop subscriber immediately. With two Maybe sources the fixed cancellation counters changed from (1,0) to (1,1), and only the second observer completed."
+      ],
+      "source": "https://github.com/ReactiveX/RxJava/pull/6019",
+      "target": null
+    },
+    {
+      "id": "416",
+      "path": "examples/416-reactor-set-buffer",
+      "title": "Reactor fills a set buffer under bounded demand",
+      "summary": "The duplicate made the parent time out with no emitted set. The fix completed with {1,2} on one request. Two requests returned two distinct sets and the discard hook saw the duplicate 1 exactly once.",
+      "origin": "real-world",
+      "system": "Project Reactor",
+      "symbol": "Flux.buffer",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Both deployments use the same pin-built reactor-test subscriber. The reactor-core JAR changes with the revision.",
+        "The duplicate made the parent time out with no emitted set. The fix completed with {1,2} on one request. Two requests returned two distinct sets and the discard hook saw the duplicate 1 exactly once."
+      ],
+      "source": "https://github.com/reactor/reactor-core/pull/3822",
+      "target": null
+    },
+    {
+      "id": "417",
+      "path": "examples/417-logback-rotation-headers",
+      "title": "Logback writes an encoder header after every rotation",
+      "summary": "The active file after one rotation changed from BF to HBF. Two rotations on the fix produced HAF, HF and HBF from oldest to newest. Without rotation both pins wrote HABF.",
+      "origin": "real-world",
+      "system": "Logback",
+      "symbol": "RollingFileAppender.rollover",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The active file after one rotation changed from BF to HBF. Two rotations on the fix produced HAF, HF and HBF from oldest to newest. Without rotation both pins wrote HABF."
+      ],
+      "source": "https://github.com/qos-ch/logback/pull/862",
+      "target": null
+    },
+    {
+      "id": "418",
+      "path": "examples/418-jooq-static-batch-rows",
+      "title": "jOOQ preserves row identity across static JDBC batches",
+      "summary": "The parent reported three stored rows but wrote Alice three times. H2, PostgreSQL 16.16 and the reported PostgreSQL 18.1 returned the three original ID/name pairs on the fix, including across a two-row batch and its one-row tail. Prepared statements preserved all rows on both pins.",
+      "origin": "real-world",
+      "system": "jOOQ",
+      "symbol": "LoaderLoadStep.loadJSON",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Each pin runs on H2 2.4.240 and on disposable PostgreSQL 16.16 and 18.1 servers. Both PostgreSQL versions are read back from the server. Every trial reads both result columns over JDBC.",
+        "The parent reported three stored rows but wrote Alice three times. H2, PostgreSQL 16.16 and the reported PostgreSQL 18.1 returned the three original ID/name pairs on the fix, including across a two-row batch and its one-row tail. Prepared statements preserved all rows on both pins.",
+        "The additional official PostgreSQL 18.1 image digest is in runtime.json. The example page gives its one-time pull command."
+      ],
+      "source": "https://github.com/jOOQ/jOOQ/pull/19875",
+      "target": null
+    },
+    {
       "id": "419",
       "path": "examples/419-jool-window-endpoints",
       "title": "jOOλ finds window endpoints at finite frame bounds",
@@ -23181,6 +23668,87 @@
         "Both jOOλ modules repaired the ordinary wide window and preserved the future-only control. Widening the upper bound to Long.MAX_VALUE minus one changed the fixed third row’s last value from 3 to 1."
       ],
       "source": "https://github.com/jOOQ/jOOL/pull/418",
+      "target": null
+    },
+    {
+      "id": "420",
+      "path": "examples/420-jdt-empty-format-region",
+      "title": "Eclipse JDT formats a real region after an empty first line",
+      "summary": "The public formatter threw StringIndexOutOfBoundsException on the parent. The fixed edit produced the exact LF and CRLF texts, preserved the leading break and was idempotent on CRLF. Both single-region controls held.",
+      "origin": "real-world",
+      "system": "Eclipse JDT",
+      "symbol": "ToolFactory.createCodeFormatter",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Each pin supplies its formatter overlay. The rest of its linewrap package comes from JDT Core 3.47.0. The other packages retain their release signatures so the public factory can load ECJ on a plain classpath.",
+        "The public formatter threw StringIndexOutOfBoundsException on the parent. The fixed edit produced the exact LF and CRLF texts, preserved the leading break and was idempotent on CRLF. Both single-region controls held."
+      ],
+      "source": "https://github.com/eclipse-jdt/eclipse.jdt.core/pull/5380",
+      "target": null
+    },
+    {
+      "id": "421",
+      "path": "examples/421-junit-nested-display-names",
+      "title": "JUnit discovers nested indicative display names",
+      "summary": "Discovery on the parent included the unannotated outer class in the nested and test labels. The fix started the sentence at the nested class, preserved an explicit label and included the renamed outer class when it carried the annotation.",
+      "origin": "real-world",
+      "system": "JUnit Jupiter",
+      "symbol": "Launcher.discover",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Discovery on the parent included the unannotated outer class in the nested and test labels. The fix started the sentence at the nested class, preserved an explicit label and included the renamed outer class when it carried the annotation."
+      ],
+      "source": "https://github.com/junit-team/junit-framework/pull/2646",
       "target": null
     },
     {

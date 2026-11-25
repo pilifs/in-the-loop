@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/ReactiveX/RxJava/pull/6019",
+  "revisions": {
+    "parent": "b9f5ef81237b16cb3d30d404740fb3ebf0511ed3",
+    "fix": "07e126f030a34d25b23c476fdb24384deb028c63"
+  },
+  "entry": "Single.takeUntil",
+  "questions": [
+    {
+      "id": "ReactiveX/RxJava#6019.1",
+      "role": "Intent",
+      "args": [
+        "dispose"
+      ],
+      "history": "Dispose the pending Single subscription with one downstream observer",
+      "prediction": "Before, main is predicted to detach while stop remains subscribed. On the merge both flags become false immediately, with no downstream value, completion or error.",
+      "basis": "Both registrations were made for the same subscription and there are no other subscribers. Issue #6018 reports only the main disposal callback firing on RxJava 2.1.13.",
+      "expected": {
+        "parent": {
+          "return": "attached=true,true; now=false,true; values=[] complete=0 errors=0"
+        },
+        "fix": {
+          "return": "attached=true,true; now=false,false; values=[] complete=0 errors=0"
+        }
+      }
+    },
+    {
+      "id": "ReactiveX/RxJava#6019.2",
+      "role": "Control",
+      "args": [
+        "success"
+      ],
+      "history": "In a fresh pair call main.onSuccess(7) while stop is still silent",
+      "prediction": "Both revisions should deliver 7 once, complete normally and leave no subscriber at stop.",
+      "basis": "A successful Single has one terminal value. The existing success path already cancels the other subscription.",
+      "expected": {
+        "parent": {
+          "return": "attached=true,true; now=false,false; values=[7] complete=1 errors=0"
+        },
+        "fix": {
+          "return": "attached=true,true; now=false,false; values=[7] complete=1 errors=0"
+        }
+      }
+    },
+    {
+      "id": "ReactiveX/RxJava#6019.3",
+      "role": "Challenge",
+      "args": [
+        "shared"
+      ],
+      "history": "Subscribe two independent MaybeSubject<Integer> sources using takeUntil on the same PublishProcessor. Give each registration its own stop.doOnCancel callback incrementing a separate counter. Dispose the first observer twice, then call stop.onNext(1).",
+      "prediction": "On the merge the cancellation counts before the stop signal should be (1,0) and stop should still have a subscriber. After the signal the counts should be (1,1). Only the second observer should complete empty on the stop signal, both main subjects should be detached and stop should have no subscribers afterward.",
+      "basis": "Each observer owns exactly one registration. Idempotent disposal must spare the other registration, and this Maybe overload maps a stop signal to empty completion.",
+      "expected": {
+        "fix": {
+          "return": "early=1,0,true; late=1,1,false; mains=false,false; first=values=[] complete=0 errors=0; second=values=[] complete=1 errors=0"
+        }
+      }
+    }
+  ]
+}

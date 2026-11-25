@@ -1,0 +1,8 @@
+<schema name="severity" version="1.6">
+  <fieldType name="string" class="solr.StrField"/>
+  <fieldType name="severityType" class="solr.EnumFieldType" enumsConfig="enumsConfig.xml" enumName="severity"/>
+  <field name="id" type="string" indexed="true" stored="true" required="true"/>
+  <field name="severity_mv" type="severityType" indexed="true" stored="true" multiValued="true" docValues="true"/>
+  <dynamicField name="*_sds" type="string" indexed="true" stored="true" multiValued="true" docValues="true"/>
+  <uniqueKey>id</uniqueKey>
+</schema>

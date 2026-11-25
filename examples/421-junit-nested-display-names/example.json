@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "421",
+  "title": "JUnit discovers nested indicative display names",
+  "summary": "Discovery on the parent included the unannotated outer class in the nested and test labels. The fix started the sentence at the nested class, preserved an explicit label and included the renamed outer class when it carried the annotation.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JUnit Jupiter",
+    "symbol": "Launcher.discover"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "On the parent the reported failure pattern predicts a nested label beginning OuterA$Ready state. On the merge the three labels should be OuterA, Ready state, and Ready state -> accepts input."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/junit-team/junit-framework",
+    "url": "https://github.com/junit-team/junit-framework/pull/2646"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Discovery on the parent included the unannotated outer class in the nested and test labels. The fix started the sentence at the nested class, preserved an explicit label and included the renamed outer class when it carried the annotation."
+  ]
+}

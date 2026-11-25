@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "412",
+  "title": "ical4j associates moved occurrences with their recurrence IDs",
+  "summary": "The fix retained both the timed and all-day July 14 occurrences and removed the original timed July 15. With two moved events, the fix returned only B for input order A,B and both replacements for B,A.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "ical4j",
+    "symbol": "ComponentGroup.calculateRecurrenceSet"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The PR reports three unmodified timed instances before. After, expect the 30-minute UTC masters on July 14 and 16 plus one LocalDate July 14 with a one-day duration from the override. No timed July 15 remains."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/ical4j/ical4j",
+    "url": "https://github.com/ical4j/ical4j/pull/931"
+  },
+  "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The fix retained both the timed and all-day July 14 occurrences and removed the original timed July 15. With two moved events, the fix returned only B for input order A,B and both replacements for B,A."
+  ]
+}

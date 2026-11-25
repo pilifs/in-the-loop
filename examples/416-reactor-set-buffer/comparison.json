@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/reactor/reactor-core/pull/3822",
+  "revisions": {
+    "parent": "6b71ff09efba7acc06feffe7dca2d80f1538b024",
+    "fix": "e58658d16daa89f521a6b0b78f0d1ce6fbabd238"
+  },
+  "entry": "Flux.buffer",
+  "questions": [
+    {
+      "id": "reactor/reactor-core#3822.1",
+      "role": "Intent",
+      "args": [
+        "duplicate"
+      ],
+      "history": "Synchronous source [1,1,2], one requested set of size two.",
+      "prediction": "The report describes a stall with bounded demand. The merge should emit exactly {1,2} and complete without another downstream request.",
+      "basis": "The second 1 occupies no new slot, and the source has a second distinct value available.",
+      "expected": {
+        "parent": {
+          "return": "timeout; buffers=[]"
+        },
+        "fix": {
+          "return": "completed; buffers=[[1, 2]]"
+        }
+      }
+    },
+    {
+      "id": "reactor/reactor-core#3822.2",
+      "role": "Control",
+      "args": [
+        "distinct"
+      ],
+      "history": "Change only the input to [1,2], retain one unit of demand.",
+      "prediction": "Both revisions should emit {1,2} and complete.",
+      "basis": "Both inputs occupy distinct slots and exhaust the source.",
+      "expected": {
+        "parent": {
+          "return": "completed; buffers=[[1, 2]]"
+        },
+        "fix": {
+          "return": "completed; buffers=[[1, 2]]"
+        }
+      }
+    },
+    {
+      "id": "reactor/reactor-core#3822.3",
+      "role": "Challenge",
+      "args": [
+        "two-requests"
+      ],
+      "history": "On the merge subscribe to [1,1,2,1,3], with a fresh set for each buffer and a downstream `doOnDiscard(Integer.class, seen::add)` hook. Request one buffer, observe, then request one more.",
+      "prediction": "After the first request the only buffer should be {1,2}. The second request should deliver {1,3} followed by completion. The discard hook should have recorded exactly one 1 overall.",
+      "basis": "Equality is local to each newly supplied set. A duplicate can consume upstream demand without creating demand for another downstream buffer. The 1 after the first emission belongs in the newly empty buffer.",
+      "expected": {
+        "fix": {
+          "return": "completed; first=[[1, 2]]; buffers=[[1, 2], [1, 3]]; distinct=true; discards=[1]"
+        }
+      }
+    }
+  ]
+}

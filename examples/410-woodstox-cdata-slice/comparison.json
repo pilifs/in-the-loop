@@ -1,0 +1,83 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/FasterXML/woodstox/pull/335",
+  "revisions": {
+    "parent": "0b527e25180a7a8634bee3a3d923322a10a096ba",
+    "fix": "dbc439f112e45147e15954d9bbfc63c6fe1114b2"
+  },
+  "entry": "XMLStreamWriter2.writeCData",
+  "questions": [
+    {
+      "id": "FasterXML/woodstox#335.1",
+      "role": "Intent",
+      "args": [
+        "reject"
+      ],
+      "history": "Select `X]]>Y` from `PPPPX]]>YQQ` with offset 4 and length 5, checking enabled and fixing disabled.",
+      "prediction": "The old scan bounds predict that the call returns. The merge should throw `XMLStreamException` reporting index 5.",
+      "basis": "A CDATA section ends at the literal delimiter. Its first bracket is array entry 5, inside the selected slice.",
+      "expected": {
+        "fix": {
+          "return": "XMLStreamException index=5"
+        }
+      },
+      "omit": {
+        "parent": "The delimiter and diagnostic histories are scoped to the corrected writer."
+      }
+    },
+    {
+      "id": "FasterXML/woodstox#335.2",
+      "role": "Control",
+      "args": [
+        "safe"
+      ],
+      "history": "Select only `OK` from `PPPP OK]]>` with offset 5 and length 2. Finish and close the document.",
+      "prediction": "Both revisions should succeed. An XML reader positioned at the root start should return `OK` from `getElementText()`.",
+      "basis": "The suffix containing the delimiter is outside the selected interval.",
+      "expected": {
+        "parent": {
+          "return": "OK"
+        },
+        "fix": {
+          "return": "OK"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/woodstox#335.3",
+      "role": "Challenge",
+      "args": [
+        "repair"
+      ],
+      "history": "Set fixing true, keep validation enabled, and select the entire literal text `A]]>B]]>C` between unrelated prefix and suffix characters at offset 4. Finish and close the document.",
+      "prediction": "On the merge an independent StAX reader should recover exactly `A]]>B]]>C` as the root element text. The number of text events can vary.",
+      "basis": "Splitting the serialized CDATA at both terminators must preserve the nine selected characters contiguously.",
+      "expected": {
+        "fix": {
+          "return": "A]]>B]]>C"
+        }
+      },
+      "omit": {
+        "parent": "The delimiter and diagnostic histories are scoped to the corrected writer."
+      }
+    },
+    {
+      "id": "FasterXML/woodstox#335.4",
+      "role": "Diagnostic after replacement",
+      "args": [
+        "diagnostic"
+      ],
+      "history": "Repeat row 1, replacing X in the slice with U+0001 and configuring `P_OUTPUT_INVALID_CHAR_HANDLER` with `new InvalidCharHandler.ReplacingHandler('x')`. Keep fixing disabled.",
+      "prediction": "The parent source predicts index 1 in the replacement copy. The merge should still report array index 5.",
+      "basis": "The one-for-one replacement preserves the delimiter's position in the caller's array.",
+      "expected": {
+        "fix": {
+          "return": "XMLStreamException index=5"
+        }
+      },
+      "omit": {
+        "parent": "The delimiter and diagnostic histories are scoped to the corrected writer."
+      }
+    }
+  ]
+}

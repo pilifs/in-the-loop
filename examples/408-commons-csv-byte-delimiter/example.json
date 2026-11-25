@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "408",
+  "title": "Commons CSV reports restartable UTF-8 byte positions",
+  "summary": "The parent iterator wrapped a CharacterCodingException. The fix reported the second record at byte 8 with LF and byte 9 with CRLF. Reopening at byte 9 returned exactly the second record at local offset zero.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons CSV",
+    "symbol": "CSVRecord.getBytePosition"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "CSV-329 reports a coding failure during the parent-era lookahead. On the merge expect exactly `[a,b]` at 0 and `[c,d]` at 8."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-csv",
+    "url": "https://github.com/apache/commons-csv/pull/613"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The parent iterator wrapped a CharacterCodingException. The fix reported the second record at byte 8 with LF and byte 9 with CRLF. Reopening at byte 9 returned exactly the second record at local offset zero."
+  ]
+}

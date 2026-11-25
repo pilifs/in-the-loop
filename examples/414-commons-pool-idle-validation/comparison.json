@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-pool/pull/85",
+  "revisions": {
+    "parent": "e405182e6eaabc7422dfd6f65511b7883443b1e9",
+    "fix": "1fe14bbb2ea23c98abcfac3019d1daf34568d5ea"
+  },
+  "entry": "GenericObjectPool.evict",
+  "questions": [
+    {
+      "id": "apache/commons-pool#85.1",
+      "role": "Intent",
+      "args": [
+        "throw"
+      ],
+      "history": "One idle token, validator throws during the explicit pass, no concurrent borrowers.",
+      "prediction": "Before, expect the exception with A still counted idle and no destruction callback. On the merge, expect the same exception instance, A destroyed once and counts (idle, active) = (0, 0) in both pools.",
+      "basis": "POOL-396 reports the stranded idle object in the ordinary pool. The two landed tests check both counts after the exception. The fixture independently records A's disposition.",
+      "expected": {
+        "parent": {
+          "return": "ordinary=same, destroyed=[], idle=1, active=0; keyed=same, destroyed=[], idle=1, active=0"
+        },
+        "fix": {
+          "return": "ordinary=same, destroyed=[A], idle=0, active=0; keyed=same, destroyed=[A], idle=0, active=0"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-pool#85.2",
+      "role": "Control",
+      "args": [
+        "false"
+      ],
+      "history": "Return false from the validator on the same one-object history.",
+      "prediction": "Both pins should complete eviction normally, destroy A once and report (0, 0).",
+      "basis": "Returning false is the factory’s normal indication of an unusable object.",
+      "expected": {
+        "parent": {
+          "return": "ordinary=normal, destroyed=[A], idle=0, active=0; keyed=normal, destroyed=[A], idle=0, active=0"
+        },
+        "fix": {
+          "return": "ordinary=normal, destroyed=[A], idle=0, active=0; keyed=normal, destroyed=[A], idle=0, active=0"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-pool#85.3",
+      "role": "Challenge",
+      "args": [
+        "again"
+      ],
+      "history": "On the merge, after the throwing pass switch validation to success, borrow again with capacity still one, then return the borrowed object. In the keyed case use the same key throughout.",
+      "prediction": "A fresh token B is created, is distinct from A and can be returned. Counts after return are (1, 0), with one destruction of A.",
+      "basis": "A discarded object frees one slot. A nonblocking borrow witnesses both capacity recovery and the identity of the replacement.",
+      "expected": {
+        "fix": {
+          "return": "ordinary=same, destroyed=[A], idle=0, active=0; borrowed=B different=true, returned=1/0, destroyed=[A]; keyed=same, destroyed=[A], idle=0, active=0; borrowed=B different=true, returned=1/0, destroyed=[A]"
+        }
+      }
+    }
+  ]
+}
