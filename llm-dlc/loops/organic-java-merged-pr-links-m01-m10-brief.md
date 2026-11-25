@@ -203,3 +203,69 @@ Compare each landed change with the revision immediately preceding it. Follow a 
 **Technical notes.** Use gremlin-core and the matching tinkergraph-gremlin provider from the pinned revision. TinkerFactory supplies the Modern graph without a server. The exception timing here is for the embedded Java DSL. The feature suite also covers clients where evaluation is deferred.
 
 **Sources.** [Console observations](https://issues.apache.org/jira/browse/TINKERPOP-3148) · [Java traversal API](https://github.com/apache/tinkerpop/blob/a97db03618fa2fd7c17d24e331ff62adfe9c8df4/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/dsl/graph/GraphTraversal.java) · [Global dedup filtering and validation](https://github.com/apache/tinkerpop/blob/a97db03618fa2fd7c17d24e331ff62adfe9c8df4/gremlin-core/src/main/java/org/apache/tinkerpop/gremlin/process/traversal/step/filter/DedupGlobalStep.java) · [Java regression](https://github.com/apache/tinkerpop/blob/a97db03618fa2fd7c17d24e331ff62adfe9c8df4/gremlin-core/src/test/java/org/apache/tinkerpop/gremlin/process/traversal/step/filter/DedupGlobalStepTest.java) · [Language feature scenario](https://github.com/apache/tinkerpop/blob/a97db03618fa2fd7c17d24e331ff62adfe9c8df4/gremlin-test/src/main/resources/org/apache/tinkerpop/gremlin/test/features/filter/Dedup.feature) · [Modern graph fixture](https://github.com/apache/tinkerpop/blob/a97db03618fa2fd7c17d24e331ff62adfe9c8df4/tinkergraph-gremlin/src/main/java/org/apache/tinkerpop/gremlin/tinkergraph/structure/TinkerFactory.java)
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- Everything is under `~/.cache/in-the-loop/merged-pr-links-m01-m10` (`$O`); `source $O/scripts/env.sh` gives `$O`, `$M`, `$W`, `$MVN`,
+  `GRADLE_USER_HOME`, `TMPDIR` and the JDK homes `$J8` `$J11` `$J17` `$J21` `$J25`. **The default `java` is 25**: name a JDK by path.
+- Both revisions of every case at the brief's pins: `$W/MNN-MIRROR-parent` and `$W/MNN-MIRROR-fix` (full SHAs, trees and parents in
+  [Upstream revisions](#upstream-revisions)). Every PR's merge SHA is the brief's after pin, and every after pin's first parent is the before pin.
+- Built jars of both sides in `$O/artifacts/` (`MNN-MIRROR-ROLE.jar`), with full sha256s and the changed classes' digests in each case's
+  **Artifacts** table, and runtime classpath files beside them; each section ends its Artifacts part with a `java -cp` line. M01–M07 and M09 were
+  built inline, M08 and M10 by the two jobs in [Jobs](#jobs) (both passed).
+- The JDK per case: M01 17, M02 17, M03 21, M04 11, M05 8, M06 8, M07 11, M08 17, M09 17, M10 11 (TinkerPop's enforcer refuses 18+).
+- Exact build and test commands, online and checked offline, in each case's **Commands**. Gradle runs from `$O/tools/gradle-VERSION`, never
+  `gradlew`.
+- Release graphs with sources, resolved with strict checksums: `$O/releases/` (jackson-databind 3.0.4, 3.1.1, 3.1.2, 3.2.0; vavr 1.0.1, 1.1.0;
+  commons-compress 1.22, 1.23.0; commons-rng-core 1.2, 1.3; RoaringBitmap 1.6.24, 1.6.25; agrona 1.3.0, 1.4.0; spatial4j 0.8; checkstyle
+  10.12.4; gdx 1.11.0, 1.12.1, 1.13.0).
+- M04's fixture: `$W/M04-commons-compress-fix/src/test/resources/COMPRESS-621.zip`, 217 bytes, sha256
+  `198e954c1f2eaf9cf1cf8b7ce991d74ac3a0e2acfa7616dfbf7c8231ee6b20e0`.
+- M08's CLI configuration (`Checker → TreeWalker → HiddenField`, default properties): `$O/scripts/M08-cli-check/hidden.xml`; the CLI command is
+  in M08's **Commands**.
+- M07's issue #210 reproduction: `$O/repro/M07/Main.java` (the issue's `Main` verbatim).
+
+### What was verified on a JVM
+
+- Landed regressions, at both pins (each case's **Landed tests** table, [Summary by case](#summary-by-case)): the fix's tests pass on the fix,
+  the parent's own pass on the parent, and the fix's tests fail on the parent: M01 (6), M02 (4 of 5, child value `null`, no exception),
+  M03 (2, `expected: Some(null) but was: None`), M05 (1, `IllegalStateException: java.io.EOFException` on restore), M06 (12), M09 (1,
+  `IllegalArgumentException: polygons must contain at least 3 points.`). M04's landed test does not compile on the parent (it calls the new
+  accessors); with those four lines removed it fails on the parent (`getEntry("COMPRESS-621.txt")` returns null) and passes on the fix.
+- M07 has no landed test: the issue's own reproduction throws `JsonGenerationException: Current context not Array but Object` on the parent and
+  writes `[{"type":"MultiPoint","coordinates":[[100.0,100.0]]}]` on the fix; the existing GeoJSON/Jackson tests pass at both pins (90/90).
+- M08 (job): fix 19/19, parent 17/17, the fix's test on the parent fails 2 (`testHiddenFieldInnerRecordsImplicitlyStatic`,
+  `testHiddenFieldRecordsImplicitlyStaticClassComparison`); the CLI runs on both built jars and on 10.12.4. M10 (job): fix `DedupGlobalStepTest`
+  2/2 and Dedup.feature 28/28, parent 1/1 and 27/27; on the parent the fix's tests fail once in each module (`shouldThrowForMultipleByModulators`,
+  `Expected exception: java.lang.IllegalStateException`; the feature scenario `g_V_both_hasXlabel_softwareX_dedup_byXlangX_byXnameX_name`).
+- Offline builds (`mvn -o`, `gradle --offline`) checked for every case (M08 and M10 by their jobs).
+
+### What to know before starting
+
+- **M02's snapshot inputs are substitutes.** `jackson-base`/`jackson-bom`/`jackson-core` 3.2.0-SNAPSHOT and `jackson-annotations`/`jackson-parent`
+  2.22-SNAPSHOT are no longer served by any snapshot repository; they were rebuilt from their own upstreams at the last branch commit before
+  the parent pin (same inputs serve both sides; commits in M02's section's table, digests beside them). Released 3.2.0/2.22 came later and are
+  not the inputs. Nothing published equals either pin.
+- **Released versions are not the pins.** Byte-equal stand-ins: commons-rng-core 1.2 = parent `JDKRandom.java`; agrona 1.3.0 = parent's four
+  maps; gdx 1.12.1 = parent `Intersector.java`, 1.13.0 = fix's; spatial4j 0.8 = parent serializer; Checkstyle 10.12.4 = parent
+  `HiddenFieldCheck.java`, 10.12.7 = fix's (not resolved as a graph); jackson-databind 3.1.2 = parent `BeanPropertyMap.java` only. Every other
+  release carries other changes.
+- **M01:** the built jars say version 1.6.24, but the *released* 1.6.24 is older code; the build's `failFast = true` is turned off by
+  `$O/scripts/nofailfast_C.init.gradle` so a run reports every failure. M01's wrapper jar is 8.14.3's, not 9.6.1's (unused).
+- **M06:** the build generates `Long*` maps from the `Int*` sources, so the fix also changes `Long2LongHashMap`, `Long2ObjectHashMap` and
+  `Object2LongHashMap`.
+- **M09:** `:gdx` builds alone only with `--configure-on-demand` (the Android backend needs an SDK) and `-Dmaven.repo.local=$O/mavenlocal-empty`;
+  classes are Java 7 bytecode.
+- **M05:** the state format differs between pins (the fix adds a 4-byte length); surefire reruns a failing test twice.
+- **M08:** `dependency:go-offline` fails on a POM-only `axiom:1.2.15`; the job resolves the rest online first. The CLI exits with the number of
+  errors and prints a trailer after the XML: use `-o OUT.xml`. Message text depends on locale.
+- **M10:** the build is restricted to `-pl gremlin-core,tinkergraph-gremlin -am`; the classpath file's reactor paths are rewritten to the copied
+  jars by `$O/scripts/M10_cp.py`.
+
+### What is left for the domain work on purpose
+
+- Every claim, fixture and history in the brief: none of the brief's public scenarios was run (the brief's own records, bitmaps, iterators,
+  ZIP variants, RNG sequences, map arrays, nested GeoJSON, Checkstyle audit files, polygon reuse and Modern-graph traversals).
+- Example scaffolding, ids, sidecars, adapters and recipes; the choice of which jar (pin build or release) a claim runs against.
