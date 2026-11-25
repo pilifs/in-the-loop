@@ -17,11 +17,11 @@
 | spring-projects/spring-framework#34709 | written | Compared the three delivery loops with the 2-row limit and closure assertions. Each permits -1 specially. Whether setMaxRows(0) suppresses every row and whether exact ordered values agree remain unexecuted. Java SE 17 Statement.setMaxRows specifies zero as unlimited. |
 | spring-projects/spring-framework#37602 | written | Read the reported overwritten field, constructor suppression paths and H2 self-join. The independently varied duplicate plus a writable non-constructor column and setter counter remains open. |
 | spring-projects/spring-framework#37261 | written | Read both client-info paths, the timeout getter and physical replay, plus the mock driver rejection test. Effective state after overwrites and closing an unused second handle is open. |
-| spring-projects/spring-framework#37053 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#1251 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#1175 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#374 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#25656 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#37053 | written | Read the non-contiguous and contiguous matcher assertions and both decoder regressions. The per-byte split within UTF-8 followed by repeated CR and a true CRLF is open. |
+| spring-projects/spring-framework#1251 | written | Read migrated SPR-14899, both Jackson paths, the per-buffer assertions and the pinned build version. The reactive consumer decoding escaped LF and nested payloads across two complete events remains open. |
+| spring-projects/spring-framework#1175 | written | Read all four landed commits, the migrated issue, ten-byte file, handler paths and single-/multi-range regressions. Parsing multipart bytes and matching independent GETs remains unexecuted. |
+| spring-projects/spring-framework#374 | written | Read migrated SPR-10789, the decision about literal question marks, and both stub and standalone tests. The single-star versus nested path and double-star control remains open. |
+| spring-projects/spring-framework#25656 | written | Compared clone and decorator composition with the amended test, which only executes the original. Actual requests through diverging builders, marker order and the second clone remain open. |
 | spring-projects/spring-framework#36602 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#37096 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#37601 | not yet | Awaiting source review and claims. |
