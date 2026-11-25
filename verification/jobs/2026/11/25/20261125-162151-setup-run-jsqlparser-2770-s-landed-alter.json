@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-162151-setup-run-jsqlparser-2770-s-landed-alter",
+  "title": "Setup: run JSqlParser #2770's landed ALTER dispatch tests on the parent revision",
+  "description": "Setup for case L20 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees, with the Maven cache resolved there already, JDK 17, offline: builds JSqlParser at the parent pin cf6c83ce8f3fac6393356c57baeb1a4a3dee7913 and runs its own TablesNamesFinderTest, keeps the parent jar and the class digests of both sides, then moves the fix's (0a7436a10301e118802a4b7effba056de22ee7f8) AlterRendererDispatchTest and TablesNamesFinderTest onto the parent, once as landed (they call a fix-only method, so are expected not to compile) and once with the six lines that call that method deleted, which should leave some dispatch tests failing on the parent. Each Maven build of JSqlParser takes about 80 s (JavaCC and 694 sources), so the runs are a job. The fix side ran inline: 128 tests, 0 failures, online and offline.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "maven"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: the parent's own tests pass; the landed transplant prints TRANSPLANT-DOES-NOT-COMPILE (or compiles and some tests fail); the modified transplant prints MODIFIED-TRANSPLANT-FAILS-AS-EXPECTED; the trees are removed",
+  "submitted": {
+    "at": "2026-11-25T16:21:51+00:00",
+    "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+    "by": "setup agent (Claude Opus 5.5), fork A"
+  },
+  "requires": [
+    "java",
+    "mvn",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "8m"
+  },
+  "steps": [
+    {
+      "name": "L20 parent: its own TablesNamesFinderTest offline, parent jar, classpaths and class digests",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh parent",
+      "cwd": "."
+    },
+    {
+      "name": "L20 parent with the fix's two landed test files (expected not to compile: hasActiveColumnDefinitions() is fix-only)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh transplant",
+      "cwd": "."
+    },
+    {
+      "name": "L20 parent with a MODIFIED copy of the landed tests (the six hasActiveColumnDefinitions() lines deleted); some expected to fail",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh modified",
+      "cwd": "."
+    },
+    {
+      "name": "remove the L20 build trees",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh clean",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

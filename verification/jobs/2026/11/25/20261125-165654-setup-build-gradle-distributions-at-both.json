@@ -1,0 +1,67 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-165654-setup-build-gradle-distributions-at-both",
+  "title": "Setup: build Gradle distributions at both #21084 revisions and run IncrementalBuildIntegrationTest",
+  "description": "Setup for case L15 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. Second attempt: the first (job 20261125-161917-setup-build-gradle-distributions-at-both) failed configuring the root project, because org.openmbee.junit:junit-xml-parser:1.0.0 is no longer on the Gradle Plugin Portal (it came from jcenter); one init script ($O/scripts/gradle-L15-openmbee-substitute.init.gradle) now adds https://repo.gradle.org/gradle/public, which build-logic itself declares, for that group only, and the jar's sha256 is the one the pins' gradle/verification-metadata.xml pins. In the setup worktree ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L15-gradle-fix (gradle/gradle at the fix 9e244e0ace2e7698374f5199570e09295950683a; checked out detached at the parent fda88b3fb300707d2ec2d2839f94184dabf6852c for the parent's steps, so the parent build is incremental over the fix's, and back at the fix at the end), runs Gradle's own build. The pins' wrapper names the nightly gradle-7.6-20220513164305+0000, which services.gradle.org no longer serves (404), so the build runs on the released Gradle 7.5.1 (sha256 checked against services.gradle.org; the line's previous wrapper was 7.5-rc-1), on JDK 11.0.33 with toolchains 8, 11 and 17, its own GRADLE_USER_HOME ($O/gradle-home-L15), --no-scan and --no-build-cache (nothing to or from ge.gradle.org or its remote cache), dependency verification strict as the repository sets it. Steps: install the full distribution to $O/tools/gradle-pin-L15-fix and run :core:embeddedIntegTest for org.gradle.api.tasks.IncrementalBuildIntegrationTest (first build may go online); the same at the parent into $O/tools/gradle-pin-L15-parent, offline; the fix's test file on the parent (the two unrolled 'named #actionMethodName action' cases expected to fail); the fix again offline; then sizes recorded, the build tree and local build cache removed. The installed distributions stay for the domain work. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: both distributions installed and runnable (gradle --version prints 7.6), the fix's IncrementalBuildIntegrationTest passes, the parent's own passes, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED",
+  "submitted": {
+    "at": "2026-11-25T16:56:54+00:00",
+    "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+    "by": "setup agent (Claude Opus 5.5), fork D"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash",
+    "unzip"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "10G",
+    "duration": "150m",
+    "memoryLimit": "16G",
+    "timeout": "300m"
+  },
+  "steps": [
+    {
+      "name": "L15 fix: install the distribution and run IncrementalBuildIntegrationTest (embedded; first build, may resolve online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L15-gradle-fix; git checkout -q --detach 9e244e0ace2e7698374f5199570e09295950683a; echo worktree=L15-gradle-fix commit=$(git rev-parse HEAD); rm -rf $O/tools/gradle-pin-L15-fix; rm -rf subprojects/core/build/test-results/embeddedIntegTest; set +e; GRADLE_USER_HOME=$O/gradle-home-L15 JAVA_HOME=$J11 choom -n 500 -- $O/tools/gradle-7.5.1/bin/gradle --no-daemon --no-scan --no-build-cache --console=plain --max-workers=4 \"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m\" -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J8,$J11,$J17 -I $O/scripts/gradle-L15-openmbee-substitute.init.gradle --continue install -Pgradle_installPath=$O/tools/gradle-pin-L15-fix :core:embeddedIntegTest --tests org.gradle.api.tasks.IncrementalBuildIntegrationTest > $O/logs/L15-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L15-fix.test-online.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py subprojects/core/build/test-results/embeddedIntegTest | tee $O/logs/L15-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L15-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L15-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L15-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L15-fix.test-online.junit.txt; $O/tools/gradle-pin-L15-fix/bin/gradle --version | head -8; ls $O/tools/gradle-pin-L15-fix/lib | grep -c jar; j=$(ls $O/tools/gradle-pin-L15-fix/lib/gradle-core-[0-9]*.jar); echo \"$(sha256sum $j)\"; $O/scripts/classdigests_D.sh $j org/gradle/api/internal/AbstractTask | tee $O/artifacts/L15-gradle-fix-AbstractTask.class-digests.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "L15 parent (same worktree, detached at the parent): install and its own IncrementalBuildIntegrationTest, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L15-gradle-fix; git checkout -q --detach fda88b3fb300707d2ec2d2839f94184dabf6852c; echo worktree=L15-gradle-fix commit=$(git rev-parse HEAD); rm -rf $O/tools/gradle-pin-L15-parent; rm -rf subprojects/core/build/test-results/embeddedIntegTest; set +e; GRADLE_USER_HOME=$O/gradle-home-L15 JAVA_HOME=$J11 choom -n 500 -- $O/tools/gradle-7.5.1/bin/gradle --no-daemon --no-scan --no-build-cache --console=plain --max-workers=4 \"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m\" -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J8,$J11,$J17 -I $O/scripts/gradle-L15-openmbee-substitute.init.gradle --offline --continue install -Pgradle_installPath=$O/tools/gradle-pin-L15-parent :core:embeddedIntegTest --tests org.gradle.api.tasks.IncrementalBuildIntegrationTest > $O/logs/L15-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L15-parent.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py subprojects/core/build/test-results/embeddedIntegTest | tee $O/logs/L15-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L15-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L15-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L15-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L15-parent.test-offline.junit.txt; $O/tools/gradle-pin-L15-parent/bin/gradle --version | head -8; ls $O/tools/gradle-pin-L15-parent/lib | grep -c jar; j=$(ls $O/tools/gradle-pin-L15-parent/lib/gradle-core-[0-9]*.jar); echo \"$(sha256sum $j)\"; $O/scripts/classdigests_D.sh $j org/gradle/api/internal/AbstractTask | tee $O/artifacts/L15-gradle-parent-AbstractTask.class-digests.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "L15 parent with the fix's IncrementalBuildIntegrationTest, offline (the two new cases expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L15-gradle-fix; git checkout -q --detach fda88b3fb300707d2ec2d2839f94184dabf6852c; echo worktree=L15-gradle-fix commit=$(git rev-parse HEAD); git checkout 9e244e0ace2e7698374f5199570e09295950683a -- subprojects/core/src/integTest/groovy/org/gradle/api/tasks/IncrementalBuildIntegrationTest.groovy; git status --short; rm -rf subprojects/core/build/test-results/embeddedIntegTest; set +e; GRADLE_USER_HOME=$O/gradle-home-L15 JAVA_HOME=$J11 choom -n 500 -- $O/tools/gradle-7.5.1/bin/gradle --no-daemon --no-scan --no-build-cache --console=plain --max-workers=4 \"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m\" -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J8,$J11,$J17 -I $O/scripts/gradle-L15-openmbee-substitute.init.gradle --offline --continue :core:embeddedIntegTest --tests org.gradle.api.tasks.IncrementalBuildIntegrationTest > $O/logs/L15-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L15-parent.transplanted.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py subprojects/core/build/test-results/embeddedIntegTest | tee $O/logs/L15-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest[A-Za-z]* FAILED|compileIntegTest[A-Za-z]* FAILED' $O/logs/L15-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L15-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L15-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L15-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L15-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -q fda88b3fb300707d2ec2d2839f94184dabf6852c -- subprojects/core/src/integTest/groovy/org/gradle/api/tasks/IncrementalBuildIntegrationTest.groovy; git status --short; ",
+      "cwd": "."
+    },
+    {
+      "name": "L15 fix again, offline (worktree back at the fix)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L15-gradle-fix; git checkout -q --detach 9e244e0ace2e7698374f5199570e09295950683a; echo worktree=L15-gradle-fix commit=$(git rev-parse HEAD); rm -rf subprojects/core/build/test-results/embeddedIntegTest; set +e; GRADLE_USER_HOME=$O/gradle-home-L15 JAVA_HOME=$J11 choom -n 500 -- $O/tools/gradle-7.5.1/bin/gradle --no-daemon --no-scan --no-build-cache --console=plain --max-workers=4 \"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m\" -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J8,$J11,$J17 -I $O/scripts/gradle-L15-openmbee-substitute.init.gradle --offline --continue :core:embeddedIntegTest --tests org.gradle.api.tasks.IncrementalBuildIntegrationTest > $O/logs/L15-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L15-fix.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py subprojects/core/build/test-results/embeddedIntegTest | tee $O/logs/L15-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L15-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L15-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L15-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L15-fix.test-offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "record sizes and remove the build tree and the local build cache",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L15-gradle-fix; git checkout -q --detach 9e244e0ace2e7698374f5199570e09295950683a; git rev-parse HEAD; du -sh $W/L15-gradle-fix $O/gradle-home-L15 $O/gradle-home-L15/caches/* $O/tools/gradle-pin-L15-* 2>/dev/null || true; git clean -fdxq; git status --short; rm -rf $O/gradle-home-L15/caches/build-cache-1 $O/gradle-home-L15/daemon; du -sh $W/L15-gradle-fix $O/gradle-home-L15",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

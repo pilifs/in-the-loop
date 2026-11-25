@@ -11675,6 +11675,78 @@
       "summary": "Record the watcher's decisions on organic-java-merged-pr-links-l01-l20-brief-setup",
       "body": "The watcher's verdicts on the single-agent run organic-java-merged-pr-links-l01-l20-brief-setup (llm-dlc/decisions/single-organic-java-merged-pr-links-l01-l20-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "kswontnowpvnuqvtzmolvmznyqounxsq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Start the setup record of the merged Java PR links L01–L20 brief",
+      "body": "The setup agent of the L01–L20 brief fetched both pinned revisions of all 20 merged pull requests into the shared bare mirrors (40 of 40, by SHA at depth 1) and made one worktree per revision under ~/.cache/in-the-loop/merged-pr-links-l01-l20. Checked with gh api and the commit objects: every PR is merged with the brief's after pin as its merge commit, the after pin's first parent is the brief's before pin in 19 cases, and picocli's after pin reaches the before pin through the three rebased commits the brief describes. Each landed diff names exactly the PR's changed files. The record lists every revision with its tree and parents; builds and test runs follow.",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "oppqyqvozmmqwvpuyurwxnkppqoruznl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the per-case setup of the merged Java PR links L01–L20 brief (verification pending)",
+      "body": "Four forks of the setup session built both sides of every case outside the checkout (~/.cache/in-the-loop/merged-pr-links-l01-l20), resolved the published releases that match either side with strict checksums, and checked signatures with their own keyrings. In 13 cases (L01–L04, L06–L09, L11–L13, L17, L18) the landed regression was run inline on a JVM: it passes on the fix and fails when moved onto the parent, and the offline build commands were checked. The record gives, per case, the commands, full jar and class digests, classpath files, release sides, substitutions (L15's gone Gradle nightly replaced by released 7.5.1; jcenter-only build-script modules for L18 and L19 from public mirrors by SHA-1), and Setup Agent Notes for the domain agent. No claims, examples or adapters were written and no brief scenario was run.\n\nJobs (committed with the start of this record): 20261125-161916-setup-build-calcite-core-at-both-5378-re, 20261125-161917-setup-build-gradle-distributions-at-both, 20261125-161917-setup-build-iceberg-api-core-data-parque, 20261125-161917-setup-build-kafka-streams-at-both-6654-r, 20261125-162151-setup-run-jsqlparser-2770-s-landed-alter, 20261125-162448-setup-build-guava-7277-s-two-revisions-j, 20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou, 20261125-162622-setup-build-junit-6104-at-both-revisions.",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "wrkqxvvowvtmwkvxtnyzqmkpyovrzvsy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose two false positives from the L01–L20 setup session's log",
+      "body": "The setup session's log has a 40-character token that is the file name of a built rdf4j jar under the setup cache, and a four-part xstream version number in a build-script POM that the IP pattern matched. Both were checked with masked output and are proposed for the allow list; a person approves or refuses them. A third finding (public-ip a37ab135, context masked to an exit line) could not be traced to a file and is left for a person.",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "zspkwxwvvvlkmynzlwtrvoswporzurwr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the L01–L20 setup jobs' results and queue four follow-ups (verification pending)",
+      "body": "Merges the collected results of the eight setup jobs for the merged Java PR links L01–L20 brief and records them in llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md. Six passed: L10 Calcite, L16 Guava, L19 Kafka and L20 JSqlParser as intended (L10 and L19's landed tests fail on the parent, so 15 cases now show their regression separating the sides; L20's landed test does not compile on the parent and a copy without its six fix-only assertions has 16 failures there); L05 JUnit built both sides and passes there, but the fix's tests do not compile on the parent because the fixture uses constants the fix renames; and the L09 rdf4j job passed without running its compliance classes, since compliance/sparql runs them under failsafe in verify and the job stopped at package (the record says so instead of counting them). Two failed in their build set-up: L14 Iceberg because gradle-git-properties (JGit) finds no repository in a linked worktree, so its checkouts are now standalone depth-1 clones (checked inline: :generateGitProperties passes offline); L15 Gradle because org.openmbee.junit:junit-xml-parser:1.0.0 is gone from the Plugin Portal, so an init script adds repo.gradle.org/gradle/public, which the upstream build-logic itself declares, for that group only (the jar's sha256 matches both pins' verification-metadata.xml).\n\nJobs queued with this commit: 20261125-165654-setup-build-iceberg-api-core-data-parque (L14 on clones), 20261125-165654-setup-build-gradle-distributions-at-both (L15 with the init script), 20261125-165913-setup-run-rdf4j-1989-s-landed-compliance (L09 compliance classes under failsafe, each step failing if a named class did not run), 20261125-170100-setup-run-junit-6104-s-landed-nested-cla (L05: the fix's tests on the parent with only four constant references mapped to the parent's names or equal string values).",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "xprsppkxsmkszsklzqnwqtmnmqvxvuns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose ten false positives from the L01–L20 setup session's log",
+      "body": "Ten long-token findings (59e689d5, ac734618, 0a56ed2a, 8beabd21, 46f686eb, 33519384, 5bc07a3c, b183e09b, 1921dd08, cd051ab2) in the L01–L20 setup session's log are the file names of the setup's JUnit artifact jars, ~/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-{fix,parent}-MODULE.jar, checked with masked output (review show). Proposed for the allow list with sync.py allow propose; they stay open until a person approves them.",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "nntzppzvtnoqvqonryzxorptwtzlkslp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record L14, L09 and L05 setup results and queue a third L15 attempt (verification pending)",
+      "body": "Merges the verification results of the four follow-up setup jobs for the L01–L20 merged-PR brief and records them in llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md. L14 (Iceberg #12855, on standalone clones) passed: the landed tests pass on the fix (48 run, 1 skipped) and the parent's own (39), and 9 of the fix's tests fail on the parent; both sides' jars, class digests and classpaths are copied. L09 (rdf4j #1989) ran its compliance classes under failsafe: MemoryComplexSPARQLQueryTest 81/81 and SPARQL12QueryTest 2/2 on the fix, 78/78 on the parent, and 5 failures with the PR's test-side files on the parent; the setup script's per-class summary lines had wrongly said NOT RUN (its class pattern missed the digit in rdf4j, and the step guard did not take effect), so they were recomputed from the job's own Maven logs and the as-run summaries kept. L05 (JUnit #6104) with four constant references mapped: 3 of 56 fail on the parent, labelled as a mapped transplant. Sixteen cases now have a landed regression that passes on the fix and fails on the parent.\n\nL15 (Gradle #21084) failed a second time at configuration: junit-xml-parser 1.0.0, gone from Central and the Plugin Portal, is needed both by the root build-script classpath (fixed by the second attempt) and by build-logic's compile classpath, which resolves from build-logic's settings repositories. The setup init script now adds https://repo.gradle.org/gradle/public, for the group org.openmbee.junit only, to every build's settings repositories as well; an inline run resolved build-logic's :performance-testing compileClasspath with it in 26 s. Upstream build files are unchanged and the jar's sha256 is the one the pins' verification metadata pin.\n\nJob queued: 20261125-172547-setup-build-gradle-distributions-at-both (L15, third attempt; 4 CPUs, 10 GB, about 2.5 h).",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "lrqzslkxzzpnwuulukxsskzrlyozourp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose eight false positives from the L01–L20 setup session's log",
+      "body": "Proposes allow-list entries for long-token findings ae3e2255, 966f8f7e, 4bb2b25d, 0f0c274c, 011f48de, 64ebb297, bcabb21d and 9894cbaa in the L01–L20 setup session's log. Each is the file name of an Iceberg jar the setup built for case L14 (L14-iceberg-{fix,parent}-MODULE-SHORTREV[-tests].jar), listed in the setup record's artifacts table; checked with masked output against the files' lengths and ends. They stay open until a person approves them.",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "wlvlsnqnwptkomoxtovzzpotpsqukzxs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the third L15 attempt and stop L15 setup on a gone pinned jar",
+      "body": "Merges the results of job 20261125-172547-setup-build-gradle-distributions-at-both, the third attempt to build Gradle's own build at both #21084 revisions. The extended init script got past junit-xml-parser in every included build, but every Gradle step then failed in Gradle's strict dependency verification: Maven Central's org.ysb33r.gradle:grolifant:0.16.1 jar does not match the sha256 both revisions' gradle/verification-metadata.xml record. The Plugin Portal and jcenter redirect to Central, whose copy was signed on 2022-11-08, after the pins, and repo.gradle.org has no copy, so the pinned jar is not publicly available.\n\nSetup stops here for L15 and the job was not resubmitted. Building on would need lenient dependency verification or a different jar, which is a decision for a person or the domain work. The setup record's L15 section, its Jobs table and its Setup Agent Notes say so, with both digests and the URLs checked. No L15 pin distribution or landed test exists. Every other case is as recorded before, and no job is pending.",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
+    },
+    {
+      "change_id": "sxwuxvtwqtuntttqqozozrorxlvxkywq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run organic-java-merged-pr-links-l01-l20-brief-setup into the line",
+      "body": "The single-agent run organic-java-merged-pr-links-l01-l20-brief-setup (session e2f0a119-4519-41e4-95b9-ad93ae273162) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "fad861ff52660c928f463692f034bf8773d5a12d5d152b08f44529c029a070cd"
     }
   ],
   "logs": {

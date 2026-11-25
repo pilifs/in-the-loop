@@ -1,0 +1,68 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-162622-setup-build-junit-6104-at-both-revisions",
+  "title": "Setup: build JUnit #6104 at both revisions and run its landed nested-class tests",
+  "description": "Setup for case L05 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. In the setup checkouts under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees (L05-junit-framework-fix = 2b484caa962ad9b0d9a6af5d2c25100b6a8f4ef6, L05-junit-framework-parent = bbeb7900fa76b6fc00e36e0bea05747066b4a2ec; standalone depth-1 clones, because JUnit's build reads git metadata), runs the upstream Gradle build through $O/scripts/L05-gradle.sh: Gradle 9.8.0 (zip checked against services.gradle.org and the wrapper's distributionSha256Sum) on JDK 25.0.5, toolchains JDK 17, 21, 24.0.2 and 25 from the caches, --no-build-cache and --no-scan, retries 0 and predictive test selection off. It builds the platform and Jupiter jars and runs org.junit.jupiter.engine.NestedTestClassesTests and ClassTemplateInvocationTests in jupiter-tests: on the fix online (first resolution of the test dependencies) then offline, on the parent its own copies offline, then the fix's two test classes and the changed testFixtures JupiterUniqueIdBuilder transplanted onto the parent (expected to fail, or not to compile; the step says which). The fix's jars took 4m18s online inline, which is why this is a job. Jars to .../artifacts, JUnit summaries to .../logs, checkouts restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: the fix's tests pass online and offline, the parent's own pass, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE, and the jars of both sides are copied",
+  "submitted": {
+    "at": "2026-11-25T16:26:22+00:00",
+    "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+    "by": "setup agent (Claude Opus 5.5), fork C"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "30m"
+  },
+  "steps": [
+    {
+      "name": "L05 fix: jars, then jupiter-tests NestedTestClassesTests and ClassTemplateInvocationTests, online",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-fix; echo worktree=L05-junit-framework-fix commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh  -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false :junit-jupiter-api:jar :junit-jupiter-engine:jar :junit-platform-commons:jar :junit-platform-engine:jar :junit-platform-launcher:jar :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-fix.test-online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-fix.test-online.junit.txt; cp junit-jupiter-api/build/libs/junit-jupiter-api-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-api.jar; cp junit-jupiter-engine/build/libs/junit-jupiter-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-engine.jar; cp junit-platform-commons/build/libs/junit-platform-commons-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-commons.jar; cp junit-platform-engine/build/libs/junit-platform-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-engine.jar; cp junit-platform-launcher/build/libs/junit-platform-launcher-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-launcher.jar; sha256sum $O/artifacts/L05-junit-framework-fix-*.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "L05 fix: the same tests, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-fix; echo worktree=L05-junit-framework-fix commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false  :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-fix.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-fix.test-offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "L05 parent: jars and its own copies of the two test classes, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-parent; echo worktree=L05-junit-framework-parent commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false :junit-jupiter-api:jar :junit-jupiter-engine:jar :junit-platform-commons:jar :junit-platform-engine:jar :junit-platform-launcher:jar :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-parent.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-parent.test-offline.junit.txt; cp junit-jupiter-api/build/libs/junit-jupiter-api-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-jupiter-api.jar; cp junit-jupiter-engine/build/libs/junit-jupiter-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-jupiter-engine.jar; cp junit-platform-commons/build/libs/junit-platform-commons-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-commons.jar; cp junit-platform-engine/build/libs/junit-platform-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-engine.jar; cp junit-platform-launcher/build/libs/junit-platform-launcher-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-launcher.jar; sha256sum $O/artifacts/L05-junit-framework-parent-*.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "L05 parent with the fix's two test classes and JupiterUniqueIdBuilder transplanted, offline (expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-parent; echo worktree=L05-junit-framework-parent commit=$(git rev-parse HEAD); cp $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java; cp $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java; cp $W/L05-junit-framework-fix/junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java; git status --short; rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false  :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compile(Test|TestFixtures)(Java|Kotlin|Groovy) FAILED' $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+      "cwd": "."
+    },
+    {
+      "name": "L05: class digests that differ between the parent and fix jars",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-jupiter-engine.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-engine.jar | tee $O/logs/L05-classdiff-junit-jupiter-engine.md; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-platform-launcher.jar $O/artifacts/L05-junit-framework-fix-junit-platform-launcher.jar | tee $O/logs/L05-classdiff-junit-platform-launcher.md; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-jupiter-api.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-api.jar | tee $O/logs/L05-classdiff-junit-jupiter-api.md; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L05-junit-framework-fix checkout -- .; git -C $W/L05-junit-framework-fix clean -fdxq; git -C $W/L05-junit-framework-fix status --short; git -C $W/L05-junit-framework-parent checkout -- .; git -C $W/L05-junit-framework-parent clean -fdxq; git -C $W/L05-junit-framework-parent status --short; du -sh $W/L05-junit-framework-fix $W/L05-junit-framework-parent",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
