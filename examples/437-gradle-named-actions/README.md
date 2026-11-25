@@ -2,7 +2,7 @@
 
 Editing A to B left the named action up to date on the parent method. The merged method reran both action forms, and the incremental doFirst output matched a fresh B build. Both unchanged controls skipped correctly.
 
-Both sides run on one verified Gradle 7.6 distribution. The registered named-action method is compiled from each exact pin. The setup replaces this one method in the released AbstractTask class. A build init script checks the executing class bytes on every invocation. Each revision's original verification policy accepted all three archived build dependencies. A separate job builds both complete distributions.
+The registered replay runs each pin's named-action method on Gradle 7.6. A separate source build installed both complete original Gradle revisions. Each installation's embedded commit and 239 files were verified. Both complete distributions reproduced all three task and file histories, including the unchanged control.
 
 | Question | Input |
 |---|---|
@@ -18,4 +18,6 @@ Prepare the two derived JARs with `python3 examples/437-gradle-named-actions/set
 
 The first full build accepted grolifant and stopped while configuring the documentation project's plugin classpath. HTTP Builder 0.11.1 was missing from the Plugin Portal. A public JCenter mirror supplied its original JAR, POM and both detached signatures. The signatures were made in December 2016 by the key trusted by each Gradle revision. The original policies also pin the SHA-256 of the grolifant and JUnit XML Parser JARs. [Archive coordinates, sources and digests](setup/archive-inputs.json) · [Strict resolution on both pins](setup/strict-resolution.json)
 
-Run `python3 examples/437-gradle-named-actions/setup/full.py --fetch` to repeat the three dependency checks with a fresh offline Gradle cache for each pin. The full build uses the pins' own `:distributions-full:install` task and runs the same file and task-outcome observations on the installed binaries. Its receipt retains the stage and revision reached if a build stops. [Released distributions](setup/release-histories.json) · [Full pin-build job](../../verification/jobs/2026/11/25/20261125-190630-build-gradle-l15-with-three-verified-his.json)
+Run `python3 examples/437-gradle-named-actions/setup/full.py --fetch` to repeat the three dependency checks with a fresh offline Gradle cache for each pin. Both pins' own `:distributions-full:install` tasks passed. Each compiled Gradle embedded its expected Git commit in `gradle-base-services`. The job ran all six filesystem histories against the installed binaries. The editable and clean projects agreed on B on the merge. The parent's incremental build kept A and its clean build wrote B. [Released distributions](setup/release-histories.json) · [Full pin-build job](../../verification/jobs/2026/11/25/20261125-190630-build-gradle-l15-with-three-verified-his.json)
+
+Check the collected build output against both installed binaries with `python3 examples/437-gradle-named-actions/setup/full.py --confirm verification/merged-pr-links/l01-l20/full-gradle.json`. This verifies the installed files, embedded Git commits, executed class digests and all six returns. The recorded Gradle version includes its build time. [Full distribution identities and histories](setup/full-histories.json)

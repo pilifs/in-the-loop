@@ -17,6 +17,7 @@ HERE = Path(__file__).resolve().parent
 FOLDER = HERE.parent
 LOCK = HERE / "archive-inputs.json"
 ARCHIVES = json.loads(LOCK.read_text())
+INSTALL_MANIFEST = "l15-build.json"
 JDKS = Path.home()/".sdkman/candidates/java"
 JAVA_11 = JDKS/"11.0.33.0+10-tem"
 JAVA_17 = JDKS/"17.0.21.0+9-tem"
@@ -130,11 +131,16 @@ def preflight(cache, repo, pins):
             "jdkReleaseSha256": sha(JAVA_11 / "release"), "checks": checks}
 
 
-def histories(dist, work, side, classes):
+def binaries(dist):
     launcher, = (dist/"lib").glob("gradle-launcher-*.jar")
-    core, = (p for p in (dist/"lib").glob("gradle-core-*.jar") if p.name[len("gradle-core-"):][0].isdigit())
+    core, = (dist / "lib").glob("gradle-core-[0-9]*.jar")
     with ZipFile(core) as jar:
         class_hash = hashlib.sha256(jar.read("org/gradle/api/internal/AbstractTask.class")).hexdigest()
+    return launcher, {"launcherSha256": sha(launcher), "coreSha256": sha(core), "abstractTaskSha256": class_hash}
+
+
+def histories(dist, work, side, classes):
+    launcher, identity = binaries(dist)
     questions = json.loads((FOLDER/"comparison.json").read_text())["questions"]
     reference = json.loads((FOLDER/"observations.json").read_text())["deployments"]["pinned-method-on-7.6"]["observations"]
     rows = {}
@@ -142,11 +148,11 @@ def histories(dist, work, side, classes):
         trial = work/q["args"][0]
         trial.mkdir(parents=True)
         actual = subprocess.check_output([JAVA_17/"bin/java","-Xmx128m","-cp",str(classes)+os.pathsep+str(launcher),
-                    "FullHistory",q["args"][0],launcher,class_hash],cwd=trial,text=True,timeout=150).strip()
+                    "FullHistory",q["args"][0],launcher,identity["abstractTaskSha256"]],cwd=trial,text=True,timeout=150).strip()
         baseline = next(r["outcome"]["return"] for r in reference if r["id"] == q["id"] and r["side"] == side)
         rows[q["id"]] = {"return":actual,"agreesWithMethodReplay":actual==baseline}
         print(side, q["id"], actual, flush=True)
-    return {"launcherSha256":sha(launcher),"coreSha256":sha(core),"abstractTaskSha256":class_hash,"returns":rows}
+    return {**identity, "returns": rows}
 
 
 def callers(cache, work):
@@ -165,18 +171,37 @@ def release_histories(cache):
                 for side,version in (("parent","7.5.1"),("fix","7.6"))}
 
 
+def embedded_revision(dist, pin):
+    services, = (dist / "lib").glob("gradle-base-services-[0-9]*.jar")
+    with ZipFile(services) as jar:
+        receipt = jar.read("org/gradle/build-receipt.properties")
+    fields = dict(line.split("=", 1) for line in receipt.decode("ascii").splitlines() if "=" in line)
+    if fields.get("commitId") != pin:
+        raise ValueError(f"Gradle's embedded build receipt does not identify {pin}")
+    return {"embeddedCommit": fields["commitId"], "versionNumber": fields["versionNumber"],
+            "buildReceiptSha256": hashlib.sha256(receipt).hexdigest()}
+
+
+def inventory(dist):
+    return {p.relative_to(dist).as_posix(): sha(p) for p in sorted(dist.rglob("*"))
+            if p.is_file() and p != dist / INSTALL_MANIFEST}
+
+
+def check_installation(dist, pin):
+    files = inventory(dist)
+    manifest = json.loads((dist / INSTALL_MANIFEST).read_text())
+    if manifest != {"pin": pin, "files": files}:
+        raise ValueError(f"cached installation differs from its inventory for {pin}")
+    encoded = json.dumps(files, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return {**embedded_revision(dist, pin), "files": len(files), "inventorySha256": hashlib.sha256(encoded).hexdigest()}
+
+
 def installed_distribution(cache, repo, tree, work, side, pin):
     target = cache/"tools"/("gradle-full-L15-"+pin)
-    marker = "l15-build.json"
-    def inventory(dist):
-        return {p.relative_to(dist).as_posix():sha(p) for p in sorted(dist.rglob("*"))
-                if p.is_file() and p.relative_to(dist).as_posix()!=marker}
     with (target.parent/(target.name+".lock")).open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if target.exists():
-            manifest = json.loads((target/marker).read_text())
-            if manifest["pin"]!=pin or manifest["files"]!=inventory(target):
-                raise ValueError(f"previous installation no longer matches {pin}")
+            check_installation(target, pin)
             return target
         dist = work/("distribution-"+side)
         gradle(cache,repo,tree,cache/"gradle-home-L15",["--max-workers=4","-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=768m",
@@ -185,7 +210,8 @@ def installed_distribution(cache, repo, tree, work, side, pin):
                ":distributions-full:install","-Pgradle_installPath="+str(dist)],
                offline=side=="parent")
         if not (dist/"bin/gradle").is_file(): raise ValueError(f"no installed distribution for {pin}")
-        (dist/marker).write_text(json.dumps({"pin":pin,"files":inventory(dist)},sort_keys=True)+"\n")
+        embedded_revision(dist, pin)
+        (dist / INSTALL_MANIFEST).write_text(json.dumps({"pin":pin,"files":inventory(dist)},sort_keys=True)+"\n")
         dist.rename(target)
         return target
 
@@ -221,6 +247,38 @@ def full_build(cache, repo, pins, checks, output):
         save("verified both distributions", None)
 
 
+def confirm(cache, path):
+    """Check the finished job against the original registration and the two installed distributions."""
+    job = json.loads(path.read_text())
+    spec = json.loads((FOLDER / "comparison.json").read_text())
+    pins = spec["revisions"]
+    strict = json.loads((HERE / "strict-resolution.json").read_text())
+    if (job.get("stage") != "verified both distributions" or job.get("side") is not None
+            or job["pins"] != pins or set(job["distributions"]) != set(pins)
+            or job["strictResolution"] != strict or strict["archiveInputsSha256"] != sha(LOCK)):
+        raise ValueError("incomplete build, different revisions or different verified inputs")
+    physical = json.loads((FOLDER / "observations.json").read_text())
+    if (physical["comparisonSha256"] != sha(FOLDER / "comparison.json")
+            or physical["inputs"]["caller/PublicCaller.java"] != sha(FOLDER / "caller/PublicCaller.java")):
+        raise ValueError("the registered Gradle caller or questions changed")
+    baseline = physical["deployments"]["pinned-method-on-7.6"]["observations"]
+    report = {"buildOutputSha256": sha(path), "comparisonSha256": physical["comparisonSha256"],
+              "publicCallerSha256": physical["inputs"]["caller/PublicCaller.java"], "distributions": {}}
+    for side, pin in pins.items():
+        dist = cache / "tools" / ("gradle-full-L15-" + pin)
+        identity = check_installation(dist, pin)
+        _, executed = binaries(dist)
+        recorded = job["distributions"][side]
+        if any(recorded[key] != digest for key, digest in executed.items()):
+            raise ValueError(f"{side}: recorded launcher, core JAR or executing AbstractTask differs")
+        returns = {r["id"]: r["outcome"]["return"] for r in baseline if r["side"] == side}
+        expected = {key: {"return": value, "agreesWithMethodReplay": True} for key, value in returns.items()}
+        if set(returns) != {q["id"] for q in spec["questions"]} or recorded["returns"] != expected:
+            raise ValueError(f"{side}: recorded public histories differ")
+        report["distributions"][side] = {**identity, **executed, "returns": returns}
+    return report
+
+
 if __name__ == "__main__":
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--cache",type=Path,default=Path.home()/".cache/in-the-loop/merged-pr-links-l01-l20")
@@ -230,9 +288,12 @@ if __name__ == "__main__":
     group=ap.add_mutually_exclusive_group()
     group.add_argument("--releases",type=Path,help="run the same histories on released Gradle 7.5.1 and 7.6")
     group.add_argument("--output",type=Path,help="also build both complete distributions and record the six histories")
+    group.add_argument("--confirm", type=Path, help="check a completed build receipt against the installed files and six public returns")
     a=ap.parse_args()
     repo=(a.repository or a.cache/"dl/L15-exact-repository").resolve()
-    if a.releases:
+    if a.confirm:
+        print(json.dumps(confirm(a.cache, a.confirm), indent=2))
+    elif a.releases:
         a.releases.write_text(json.dumps(release_histories(a.cache),indent=2)+"\n")
     else:
         prepare_inputs(repo, a.fetch)
