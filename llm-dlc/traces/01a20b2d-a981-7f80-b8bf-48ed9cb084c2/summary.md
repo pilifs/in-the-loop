@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a20b2d-a981-7f80-b8bf-48ed9cb084c2` (open) |
+| Session | `01a20b2d-a981-7f80-b8bf-48ed9cb084c2` (ended) |
 | When | 2026-11-24 01:34 UTC to 2026-11-24 01:44 UTC (9 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -20,11 +20,17 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Bind independent Guava proofs to change-plan obligations
 
-change `lrvuoywssswv` · [log `80702d5710f3`](https://terminalvalue.net/raw-traces/01a20b2d-a981-7f80-b8bf-48ed9cb084c2/80702d5710f3a65f370ad1e7b6a88c497aac918311b9f63d41a468b7e18ad265.jsonl.gz)
+[`b54c296e2290`](https://github.com/pilifs/in-the-loop/commit/b54c296e2290e9dbfd14c3a843654681cb89e725) · [log `80702d5710f3`](https://terminalvalue.net/raw-traces/01a20b2d-a981-7f80-b8bf-48ed9cb084c2/80702d5710f3a65f370ad1e7b6a88c497aac918311b9f63d41a468b7e18ad265.jsonl.gz)
 
 Expose the full application-method theorems for Guava examples 336 and 346 and the eight independently checked CNF queries of 336’s bounded first-match task. Each entry binds the original artifact bytes, claim, evidence, checker and surviving assumptions. The historical experiment had already landed on this branch.
 
 Recounted all 111 frozen cases, checked the ten exported nodes against their evidence and ran the changed-test selection. All 59 Rust test binaries passed.
+
+### Freeze three Petclinic workflows before evaluating the Boot migration
+
+[`aeabea07e9c0`](https://github.com/pilifs/in-the-loop/commit/aeabea07e9c04ac70c2e0ddeb7889b4fca30a0aa) · [log `80702d5710f3`](https://terminalvalue.net/raw-traces/01a20b2d-a981-7f80-b8bf-48ed9cb084c2/80702d5710f3a65f370ad1e7b6a88c497aac918311b9f63d41a468b7e18ad265.jsonl.gz)
+
+Select the last pre-migration application and the upstream stable Boot 3.0.0 adaptation from POM history. Register the intended deployments, independent owner-form inputs, observable persistence and validation results, permitted differences, resource budgets and counting rules before inspecting the application or its tests. The registration parses as JSON and the changed-test selection passed.
 
 ## Conversation
 

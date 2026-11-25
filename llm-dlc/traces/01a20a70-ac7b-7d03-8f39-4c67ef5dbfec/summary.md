@@ -18,29 +18,29 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### Freeze the receiver campaign opening (verification pending)
-
-change `tppzxusqrqmz` · [log `6b992836970c`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/6b992836970c3d3fb7325228b47ee85d8f8c088315282d487ee487d4664013aa.jsonl.gz)
-
-Bind the 23 historical receiver-blocked upgrades and 34 paired overloads, the four ordinary CSV claims, the eight ordinary JavaParser statements and their eight supplied-startup companions. Preserve both original dependency classpaths and registered inputs for Configuration and XZ. The opening runner checks each fresh result against the frozen input and stores its original receipts in a pack.
-
-Validated the queue and inspected the ordinary 360/366 plans. Both selected test groups passed, including 59 Rust test binaries. Jobs 20261123-220814-recount-ordinary-csv-decisions-on-the-re, 20261123-220814-recount-ordinary-and-supplied-javaparser and 20261123-220815-repeat-json-and-yaml-public-callers-befo measure the three independent opening cohorts.
-
 ### Record verification results for 1 job(s)
 
-change `kuzzsqtvrtms` · [log `bc66b6936ad4`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/bc66b6936ad4dfb0051794da1cf7683ea7035987868ea736a319e0361699e7e3.jsonl.gz)
+[`88337f722747`](https://github.com/pilifs/in-the-loop/commit/88337f722747fdaca831d126bb2ea58fd2d925b9) · [log `bc66b6936ad4`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/bc66b6936ad4dfb0051794da1cf7683ea7035987868ea736a319e0361699e7e3.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261123-220814-recount-ordinary-csv-decisions-on-the-re: passed: 1 passed step(s) in 5.0s, peak 138.9 MiB (estimated 2m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `zuuupykpupst` · [log `bc66b6936ad4`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/bc66b6936ad4dfb0051794da1cf7683ea7035987868ea736a319e0361699e7e3.jsonl.gz)
+[`602a53429425`](https://github.com/pilifs/in-the-loop/commit/602a5342942506988100b0224c214cda2a2840e4) · [log `bc66b6936ad4`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/bc66b6936ad4dfb0051794da1cf7683ea7035987868ea736a319e0361699e7e3.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261123-220814-recount-ordinary-and-supplied-javaparser: passed: 1 passed step(s) in 3m05s, peak 430.8 MiB (estimated 4m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261123-220815-repeat-json-and-yaml-public-callers-befo: passed: 2 passed step(s) in 39.5s, peak 185.6 MiB (estimated 3m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
+### Freeze the receiver campaign opening (verification pending)
+
+[`3be1a95665bc`](https://github.com/pilifs/in-the-loop/commit/3be1a95665bcd924ea93e0dce744311a1b27bf2d) · [log `6b992836970c`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/6b992836970c3d3fb7325228b47ee85d8f8c088315282d487ee487d4664013aa.jsonl.gz)
+
+Bind the 23 historical receiver-blocked upgrades and 34 paired overloads, the four ordinary CSV claims, the eight ordinary JavaParser statements and their eight supplied-startup companions. Preserve both original dependency classpaths and registered inputs for Configuration and XZ. The opening runner checks each fresh result against the frozen input and stores its original receipts in a pack.
+
+Validated the queue and inspected the ordinary 360/366 plans. Both selected test groups passed, including 59 Rust test binaries. Jobs 20261123-220814-recount-ordinary-csv-decisions-on-the-re, 20261123-220814-recount-ordinary-and-supplied-javaparser and 20261123-220815-repeat-json-and-yaml-public-callers-befo measure the three independent opening cohorts.
+
 ### Discover public receiver histories and physical checks (verification pending)
 
-change `sxsoululuwwn` · [log `bc66b6936ad4`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/bc66b6936ad4dfb0051794da1cf7683ea7035987868ea736a319e0361699e7e3.jsonl.gz)
+[`02e7e35e1c53`](https://github.com/pilifs/in-the-loop/commit/02e7e35e1c53b203e19e4d3f7394af2b16af2eef) · [log `bc66b6936ad4`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/bc66b6936ad4dfb0051794da1cf7683ea7035987868ea736a319e0361699e7e3.jsonl.gz)
 
 Generate an executable observer entry for each compatible public producer and bind selected JVM checks by original class bytes, member, offset and kind. Examples 397 and 398 compare stock identities, caught and escaping exceptions, independent branch observations and short unwind obligations. The normal public CSV and JavaParser baselines and all four registered Configuration sides were remeasured. The strict engine now executes the dummy tree, its collection views, breadth-first queue and fresh listener storage. The JSON probe first reaches the later default-prefix lookup holder.
 
@@ -48,13 +48,13 @@ Both new examples passed validation and original JVM replay. All 63 affected tes
 
 ### Record verification results for 1 job(s)
 
-change `lssusspmtukp` · [log `793cfe91ba6c`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/793cfe91ba6c418fb36d0178f364786de83d2c3240fb83844873b81d35cda5e9.jsonl.gz)
+[`fd3c1bcfdd5e`](https://github.com/pilifs/in-the-loop/commit/fd3c1bcfdd5ed96043d12dfb382acc03339e1023) · [log `793cfe91ba6c`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/793cfe91ba6c418fb36d0178f364786de83d2c3240fb83844873b81d35cda5e9.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261123-223108-compare-raw-and-factory-inputs-and-both: passed: 1 passed step(s) in 2.2s, peak 83.4 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Freeze action discovery and register transfer cases (verification pending)
 
-change `qwtkvvswlppt` · [log `793cfe91ba6c`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/793cfe91ba6c418fb36d0178f364786de83d2c3240fb83844873b81d35cda5e9.jsonl.gz)
+[`36739f13b1b6`](https://github.com/pilifs/in-the-loop/commit/36739f13b1b6ce220f31459dba45d7085735229b) · [log `793cfe91ba6c`](https://terminalvalue.net/raw-traces/01a20a70-ac7b-7d03-8f39-4c67ef5dbfec/793cfe91ba6c418fb36d0178f364786de83d2c3240fb83844873b81d35cda5e9.jsonl.gz)
 
 Freeze the public action search on TrainingStock before the JGraphT holdout. Register Guava direct and composed hex parsing, independent MutableFloat operands and a three-worker shared monitor. Compare native, model checker and original JVM separately. The exact JVM hex censuses, 100081 float pairs, one mask-zero replay and all three example replays passed. All 59 changed test groups passed, with the performance group passing on retry.
 

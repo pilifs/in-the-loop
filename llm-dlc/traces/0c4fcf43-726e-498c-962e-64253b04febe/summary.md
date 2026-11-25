@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `0c4fcf43-726e-498c-962e-64253b04febe` (open) |
+| Session | `0c4fcf43-726e-498c-962e-64253b04febe` (ended) |
 | When | 2026-11-23 14:19 UTC to 2026-11-24 01:03 UTC (643 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.330 |
@@ -50,13 +50,13 @@ Outputs applied for 1 of the 1 job(s). 20261123-200519-reconcile-both-guava-solv
 
 ### Record the watcher's decision D001 on receiver-construction-setup (stop, complete)
 
-change `suwuxwmrlykn` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`727dda844fc1`](https://github.com/pilifs/in-the-loop/commit/727dda844fc10f356799289eb93dc4857ec7e9b5) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 The Opus setup phase for the receiver construction and property discovery brief finished in one cycle within setup's scope. Decision record only.
 
 ### Record the setup for the receiver construction and property discovery brief
 
-change `vvqmtvnvspyu` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`987fd98ed44a`](https://github.com/pilifs/in-the-loop/commit/987fd98ed44a6844ba82172e52cf827327d80a58) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 A setup session pinned and checked every input the brief and its cases name, before the domain work starts. The pinned revisions are JavaParser 360 and CSV 366 (parent and fix), Commons Configuration 565 and 601 and Commons Compress 767 (old and new sides), and JGraphT 1.5.2, XZ 1.11 and 1.12, Guava 33.4.8 and Lang 3.17.0. Each is a worktree from a bare mirror; the XZ tags are signature-checked. The released graphs were resolved from Maven Central with strict checksums, and all 20 signatures are valid (JGraphT's key has since expired). The JGraphT, Guava and Lang jars match the brief's SHA-256 values. The earlier receiver campaign's area and Maven cache were checked (586 classpath files, none changed) and hard-link snapshotted. JBMC 6.11.0 and the JDK Arrays.class match the brief's digests, and the checker's release binary is current at this head.
 
@@ -64,19 +64,19 @@ Every JVM observation the brief states for an existing library or fixture reprod
 
 ### Propose five receiver-construction setup values for the allow list
 
-change `lrkvkplppzmu` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`340b37aa93d0`](https://github.com/pilifs/in-the-loop/commit/340b37aa93d0bbe08dc385d19a8f71eb12938a7a) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 The receiver-construction setup agent proposed five false positives from its log: four base64 XZ test frames copied from the committed public receipt verification/domain-foundations/receiver-verified/04/callers/commons-compress-767.json, and one line of the public PGP signature on xz-java's v1.12 tag. Its own commit of the proposals was refused by the permission check, so the watcher commits them. Proposals only; no approval recorded.
 
 ### Merge the single-agent run receiver-construction-setup into the line
 
-change `moxkmwympoql` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`086bbb2caec5`](https://github.com/pilifs/in-the-loop/commit/086bbb2caec5ad7a6d05f598e6165d81107da9c4) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 The single-agent run receiver-construction-setup (session ed4bfe21-7bf2-42af-893c-e4d46cb1628a) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 
 ### Allow list: The watcher of spring-java-data approved 4ae8f2e3, 8f88c238, 96246dec, f85094d5
 
-change `xnptsmmpqpkl` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`aebaa5851a52`](https://github.com/pilifs/in-the-loop/commit/aebaa5851a5224535ae6ab510a41b8b1bde83dcd) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 The watcher of spring-java-data approved 4 value(s) under the delegation a person granted, each with evidence in the record; the command committed the decision itself.
 
@@ -87,25 +87,25 @@ f85094d5  long-token  /Td…la (80 chars): Base64 of registered XZ test frames (
 
 ### Add the setup agent's notes to the receiver construction and property discovery brief
 
-change `syvzxwrxnmlu` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`5de40e6860f4`](https://github.com/pilifs/in-the-loop/commit/5de40e6860f4a935395e71c7063fd0cdf6ae2ee3) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 single_run.py notes copied the '## Setup Agent Notes' section of the setup record into the brief's repository copy and the user's copy in ~/code/scripts/analysis (the original is backed up), so that the Astra run reads what setup prepared and found. Brief text only.
 
 ### Record verification results for 1 job(s)
 
-change `kuzzsqtvrtms` · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
+[`88337f722747`](https://github.com/pilifs/in-the-loop/commit/88337f722747fdaca831d126bb2ea58fd2d925b9) · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261123-220814-recount-ordinary-csv-decisions-on-the-re: passed: 1 passed step(s) in 5.0s, peak 138.9 MiB (estimated 2m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `zuuupykpupst` · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
+[`602a53429425`](https://github.com/pilifs/in-the-loop/commit/602a5342942506988100b0224c214cda2a2840e4) · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261123-220814-recount-ordinary-and-supplied-javaparser: passed: 1 passed step(s) in 3m05s, peak 430.8 MiB (estimated 4m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261123-220815-repeat-json-and-yaml-public-callers-befo: passed: 2 passed step(s) in 39.5s, peak 185.6 MiB (estimated 3m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Freeze the receiver campaign opening (verification pending)
 
-change `tppzxusqrqmz` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`3be1a95665bc`](https://github.com/pilifs/in-the-loop/commit/3be1a95665bcd924ea93e0dce744311a1b27bf2d) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Bind the 23 historical receiver-blocked upgrades and 34 paired overloads, the four ordinary CSV claims, the eight ordinary JavaParser statements and their eight supplied-startup companions. Preserve both original dependency classpaths and registered inputs for Configuration and XZ. The opening runner checks each fresh result against the frozen input and stores its original receipts in a pack.
 
@@ -113,7 +113,7 @@ Validated the queue and inspected the ordinary 360/366 plans. Both selected test
 
 ### Discover public receiver histories and physical checks (verification pending)
 
-change `sxsoululuwwn` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`02e7e35e1c53`](https://github.com/pilifs/in-the-loop/commit/02e7e35e1c53b203e19e4d3f7394af2b16af2eef) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Generate an executable observer entry for each compatible public producer and bind selected JVM checks by original class bytes, member, offset and kind. Examples 397 and 398 compare stock identities, caught and escaping exceptions, independent branch observations and short unwind obligations. The normal public CSV and JavaParser baselines and all four registered Configuration sides were remeasured. The strict engine now executes the dummy tree, its collection views, breadth-first queue and fresh listener storage. The JSON probe first reaches the later default-prefix lookup holder.
 
@@ -121,19 +121,19 @@ Both new examples passed validation and original JVM replay. All 63 affected tes
 
 ### Record verification results for 1 job(s)
 
-change `lssusspmtukp` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`fd3c1bcfdd5e`](https://github.com/pilifs/in-the-loop/commit/fd3c1bcfdd5ed96043d12dfb382acc03339e1023) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261123-223108-compare-raw-and-factory-inputs-and-both: passed: 1 passed step(s) in 2.2s, peak 83.4 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 5 job(s)
 
-change `nuzktsqrmoor` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`7d5782762420`](https://github.com/pilifs/in-the-loop/commit/7d5782762420e8ed7be594cb6add7eb42efbce48) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 5 of the 5 job(s). 20261123-223107-qualify-automatically-discovered-stock-c: passed: 1 passed step(s) in 4.4s, peak 98.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-223107-qualify-original-bytecode-site-occurrenc: passed: 1 passed step(s) in 16.2s, peak 99.2 MiB (estimated 2m00s, 2.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261123-223108-qualify-the-ordinary-stock-and-safety-si: passed: 2 passed step(s) in 10.6s, peak 143.1 MiB (estimated 2m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×4; example:task-as-expected×2 Applied 84 output(s). 20261123-223108-select-csv-count-contents-and-exhaustion: passed: 1 passed step(s) in 1m23s, peak 118.5 MiB (estimated 3m00s, 2.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261123-223631-qualify-json-then-yaml-lookup-and-live-r: passed: 2 passed step(s) in 1m43s, peak 213.0 MiB (estimated 3m00s, 3.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Freeze action discovery and register transfer cases (verification pending)
 
-change `qwtkvvswlppt` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`36739f13b1b6`](https://github.com/pilifs/in-the-loop/commit/36739f13b1b6ce220f31459dba45d7085735229b) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Freeze the public action search on TrainingStock before the JGraphT holdout. Register Guava direct and composed hex parsing, independent MutableFloat operands and a three-worker shared monitor. Compare native, model checker and original JVM separately. The exact JVM hex censuses, 100081 float pairs, one mask-zero replay and all three example replays passed. All 59 changed test groups passed, with the performance group passing on retry.
 
@@ -141,25 +141,25 @@ Jobs 20261123-225413-measure-guava-direct-null-boxed-and-comp, 20261123-225413-c
 
 ### Record verification results for 4 job(s)
 
-change `omuqnzwnzylw` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`f31e2d358a3a`](https://github.com/pilifs/in-the-loop/commit/f31e2d358a3a55bad93bd69962bbf69cedab5499) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 4 of the 4 job(s). 20261123-225413-compare-guava-parser-properties-under-bo: passed: 1 passed step(s) in 13.5s, peak 178.3 MiB (estimated 6m00s, 4.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261123-225414-check-the-full-paired-float-comparator-a: passed: 1 passed step(s) in 2.4s, peak 85.3 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261123-225415-check-atomic-split-and-terminal-assertio: passed: 1 passed step(s) in 6.4s, peak 89.0 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261123-225415-discover-and-replay-every-three-worker-m: passed: 1 passed step(s) in 2.4s, peak 82.1 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `tulrpuqrrvru` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`fd6ab1965d49`](https://github.com/pilifs/in-the-loop/commit/fd6ab1965d49edcdfb8678450cd49eb21893379f) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 3 of the 4 job(s); 1 declared or produced none. 20261123-225413-measure-guava-direct-null-boxed-and-comp: passed: 1 passed step(s) in 4.2s, peak 80.7 MiB (estimated 6m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-225414-measure-strict-native-entry-on-all-three: passed: 1 passed step(s) in 1.6s, peak 80.8 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-225414-measure-two-independent-mutablefloat-ope: passed: 1 passed step(s) in 1.6s, peak 83.3 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-230231-check-xz-frame-bytes-and-cache-identity: failed: 1 failed step(s) in 0.6s, peak 80.9 MiB (estimated 5m00s, 3.0 GiB) Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `kmsutkmouwto` · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
+[`cec09253d150`](https://github.com/pilifs/in-the-loop/commit/cec09253d150ee5be6e2c3ee66abfd17aaaf3bbe) · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261123-230231-check-javaparser-traversal-in-fresh-sepa: passed: 1 passed step(s) in 10m39s, peak 377.7 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Qualify receiver transfer and paired arithmetic (verification pending)
 
-change `lumssozszluk` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`6db1fbd497bf`](https://github.com/pilifs/in-the-loop/commit/6db1fbd497bfb60af578db7bc71085066fa2def7) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 The frozen public-history search reached 25 JGraphT graphs, matching all 150 independently audited transitions and their earlier edge and endpoint identities. Preserve failed producers and multi-edge settings. Extend the source-bound native checker to real JDK byte-array fill, boxed narrowing and widening, and member-class assertion startup. A guarded fixed-point circuit adds and subtracts independent binary32 and binary64 operands with rounding to nearest, ties to even. Strict native probes now establish Guava’s boxed boundary result and Commons Lang’s complete 2^46-pair subtraction property.
 
@@ -169,25 +169,25 @@ The following jobs measure fresh public callers, their negative controls, the si
 
 ### Record verification results for 5 job(s)
 
-change `qpnrvwxqywkk` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`b42ae64e5d04`](https://github.com/pilifs/in-the-loop/commit/b42ae64e5d0456b15fac75add16496ab061edee2) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 5 of the 5 job(s). 20261123-231038-audit-the-frozen-receiver-generator-on-r: passed: 1 passed step(s) in 4.1s, peak 96.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-231039-recheck-receiver-cohort-group-06-at-orig: passed: 1 passed step(s) in 15.9s, peak 178.4 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-231039-recheck-receiver-cohort-group-07-at-orig: passed: 1 passed step(s) in 19.8s, peak 897.8 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-231314-check-the-ordinary-entries-for-the-flat: passed: 1 passed step(s) in 1.6s, peak 88.9 MiB (estimated 2m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-231314-cross-check-fresh-jvm-histories-under-th: passed: 1 passed step(s) in 2.4s, peak 79.9 MiB (estimated 2m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 12 job(s)
 
-change `vtykuoktmmvl` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`3e7a1fab3a1c`](https://github.com/pilifs/in-the-loop/commit/3e7a1fab3a1c216af585f7de122619f3c957509e) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 12 of the 12 job(s). 20261123-231038-recheck-receiver-cohort-group-01-at-orig: passed: 1 passed step(s) in 32.2s, peak 300.3 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-231038-recheck-receiver-cohort-group-02-at-orig: passed: 1 passed step(s) in 1m00s, peak 380.4 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-231038-recheck-receiver-cohort-group-03-at-orig: passed: 1 passed step(s) in 50.6s, peak 296.4 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-231038-recheck-receiver-cohort-group-04-at-orig: passed: 1 passed step(s) in 1m20s, peak 268.0 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-231039-recheck-receiver-cohort-group-05-at-orig: passed: 1 passed step(s) in 1m11s, peak 312.2 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-231314-qualify-non-null-direct-guava-strings-un: passed: 1 passed step(s) in 17.0s, peak 142.9 MiB (estimated 2m00s, 3.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261123-231314-select-the-third-worker-check-with-a-sin: passed: 1 passed step(s) in 5.5s, peak 81.3 MiB (estimated 2m00s, 3.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261123-231925-recheck-guava-digit-table-byte-initializ: passed: 1 passed step(s) in 8.2s, peak 104.7 MiB (estimated 7m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-231925-recheck-independent-float-operands-with: passed: 1 passed step(s) in 3.2s, peak 82.7 MiB (estimated 3m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-231925-repeat-xz-cache-profiles-from-the-digest: passed: 1 passed step(s) in 47.7s, peak 165.3 MiB (estimated 5m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-231926-remeasure-the-sixty-previous-java-claims: passed: 1 passed step(s) in 3m29s, peak 667.1 MiB (estimated 5m00s, 4.0 GiB); 42 output file(s) changed Applied 42 output(s). 20261123-232702-seek-an-ordinary-xz-frame-counterexample: passed: 1 passed step(s) in 8.2s, peak 112.2 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `rmrltxllyqlt` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`dc10e0b0d05d`](https://github.com/pilifs/in-the-loop/commit/dc10e0b0d05d89a1f7b6f2d59760773dabdb928d) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261123-232702-replay-javaparser-native-witnesses-at-th: passed: 1 passed step(s) in 6m57s, peak 381.4 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Confirm original startup witnesses and boxed callers (verification pending)
 
-change `votpyzuunwxs` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`4565f4f6c885`](https://github.com/pilifs/in-the-loop/commit/4565f4f6c8856660108494a9c815521339d05cda) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Expose opt-in strict native startup witness search at the original prove entry. A refused literal property read supplies a disposable native candidate, and a fresh JVM must refute the unchanged property harness before the original verdict becomes a violation. A trial-only failure and a trial-only proof both leave the original refusal intact. The JavaParser parent postorder probe returned a confirmed ordinary code 0 witness. Bind the option in the proof cache, and keep the ordinary receipts separate from the explicit legal-prestate experiments.
 
@@ -197,7 +197,7 @@ All eleven selected test groups passed, including 59 Rust test binaries, after t
 
 ### Apply ordinary startup search to upgrade callers (verification pending)
 
-change `znnonsqvzxut` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`524ed5100d00`](https://github.com/pilifs/in-the-loop/commit/524ed5100d0013a882218a5f71f9088c458714ab) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Thread the optional JVM-confirmed native witness search through the existing two-version upgrade intake. Each result records whether the search was requested and whether it actually proposed a witness, while retaining the original checker binary, statements, bounds, input bindings and ordinary receiver evidence. The earlier frozen run remains independently reproducible. Clarify the local release build and scratch paths for the stock-site command.
 
@@ -205,37 +205,37 @@ Revalidated the 23 historical case receipts and all 34 overloads. All 48 changed
 
 ### Record verification results for 3 job(s)
 
-change `vmnzrrtkvzrv` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`4a36e0ddbdff`](https://github.com/pilifs/in-the-loop/commit/4a36e0ddbdff0bc7bcbcae0cc1c350d8c81f274d) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 3 of the 3 job(s). 20261123-234713-check-both-ordinary-xz-entries-against-f: passed: 1 passed step(s) in 3.8s, peak 122.4 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-235550-qualify-the-full-guava-parser-and-client: passed: 1 passed step(s) in 19.0s, peak 130.2 MiB (estimated 5m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261123-235734-replay-the-third-commit-assertion-at-its: passed: 1 passed step(s) in 16.2s, peak 103.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `svvvrnwkpspv` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`088cb335df4b`](https://github.com/pilifs/in-the-loop/commit/088cb335df4b1a8302b7fa685863e9ce5aaa07b3) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 2 of the 3 job(s); 1 declared or produced none. 20261123-233644-check-both-conformance-suites-after-rece: passed: 1 passed step(s) in 25m50s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 20261123-234713-confirm-the-sixty-predecessor-pairs-on-t: passed: 1 passed step(s) in 3m22s, peak 675.5 MiB (estimated 5m00s, 4.0 GiB); 42 output file(s) changed Applied 42 output(s). 20261123-234713-judge-all-eight-ordinary-javaparser-clai: passed: 1 passed step(s) in 3m50s, peak 379.5 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `kzlyzlmxxqqm` · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
+[`1c5289647dab`](https://github.com/pilifs/in-the-loop/commit/1c5289647daba95fab4e3e64901162cbf269d26c) · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261124-000949-check-confirmed-startup-witnesses-in-rec: passed: 1 passed step(s) in 1m29s, peak 375.7 MiB (estimated 3m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261124-001000-receiver-groups-04-07-on-final-ordinary: passed: 1 passed step(s) in 1m29s, peak 915.6 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `mmvmovkpnplu` · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
+[`ee01178f6ec1`](https://github.com/pilifs/in-the-loop/commit/ee01178f6ec1148a06300914330281ac36d6bf8d) · [log `ff405b92d4b9`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/ff405b92d4b9fcdb43776c4eed3d97ddd13982cf7bc1893b0fe088f0a07f2419.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261124-000959-receiver-groups-02-05-on-final-ordinary: passed: 1 passed step(s) in 1m55s, peak 391.0 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `tpwtymupnowo` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`56b2bb6e99d9`](https://github.com/pilifs/in-the-loop/commit/56b2bb6e99d9730e4a6225454737793d270447c7) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-235734-confirm-native-and-jbmc-corpus-conforman: passed: 1 passed step(s) in 25m20s, peak 2.3 GiB (estimated 20m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the receiver-construction run, which keeps the queue while the run is under way.
 
 ### Publish the receiver construction and property discovery results
 
-change `yossmzzovvyx` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`ee71fd561186`](https://github.com/pilifs/in-the-loop/commit/ee71fd5611866912f1cb89169413820adf4be550) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Publish the nine-case results and a reproducible recount that verifies the job specifications, source revisions and captured measurement digests. The ordinary JavaParser score moves from zero to two of eight through default-JVM-confirmed parent counterexamples. The blind graph generator reaches all 25 DAGs and matches 150 transitions. Strict native decides all eight Guava claims and all six floating-point measurements, including the full two-input Cartesian product. The original JVM confirms the split duty failure at the actual third-commit assertion.
 
@@ -245,42 +245,54 @@ The recount independently accounts for all 46 managed jobs: 45 passed, and the i
 
 ### Record the watcher's decision D001 on receiver-construction (continue)
 
-change `pyxzorkkoxxy` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`edd411d23bc5`](https://github.com/pilifs/in-the-loop/commit/edd411d23bc5d5e263771d030a1f794e0388c90c) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Cycle 1 worked through all nine cases of the receiver construction brief: JavaParser 0/8 -> 2/8, Guava 8/8, Commons Lang 6/6, JGraphT audited, scheduling enumerated, CSV 4/4. The watcher continued for one cycle on the named open frontiers (Configuration at System.getProperties(), 6 JavaParser claims, 34 unrestricted overloads), and will hand over to change-verification if it decides nothing new. Decision record only.
 
 ### Merge the single-agent run receiver-construction into the line
 
-change `oqmtltolznyy` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`4a6802f44b52`](https://github.com/pilifs/in-the-loop/commit/4a6802f44b520ae71d8fd57ea8b3a55ac334bc99) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 The single-agent run receiver-construction (session 3394e768-9d57-4a38-9c2b-54011210333d) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 
 ### Record two new OpenAI cyber-filter stops in VF-046
 
-change `uvtkzqppvvwp` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`0d3e17f29ef4`](https://github.com/pilifs/in-the-loop/commit/0d3e17f29ef47fd94f7d5d367caa504059ce68cb) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 receiver-construction's Astra session 3394e768 was refused twice on ordinary verification work: at 23:32 UTC, 88 minutes into cycle 1, and at 00:54 UTC, 3 minutes into cycle 2. After a restart, the same session continued and finished cycle 1. VF-046 now records that the filter is not limited to CVE work and that its flag is not consistently sticky, along with the rate since the Opus setup passes and the fallback order (restart once, then a fresh session). At the user's request, through the advisor. Documentation only.
 
 ### Record VF-046's fallback rule: a fresh Codex session after a filter stop
 
-change `lrsmvwnorwku` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`72cb63b1ac2c`](https://github.com/pilifs/in-the-loop/commit/72cb63b1ac2cb234804c58f03531eb876c71bea0) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 The user decided on 2026-11-24 (relayed by the advisor) that after an OpenAI cyber-filter stop, the next brief's Astra run starts in a fresh Codex session rather than continuing the flagged one, which tonight was refused twice in 80 minutes. Documentation only.
 
 ### Record VF-058: receiver-construction's frontiers, left open by a filter stop
 
-change `oszwypqxyspm` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`2191335b6d37`](https://github.com/pilifs/in-the-loop/commit/2191335b6d371e1df1fc985427246338b440662e) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 receiver-construction's second cycle was refused by OpenAI's cyber filter 2.8 minutes in, after the watcher had decided to continue on named frontiers. The run was handed over as finished after cycle 1. VF-058 records what cycle 1 decided, the four open frontiers with the next experiments the results page names, and that a follow-up run in a fresh Codex session needs no new setup. At the user's request, through the advisor. Documentation only.
 
 ### Allow list: Filip Stankovic approved bdc3a059, 8b5e0daf
 
-change `ztztnmmtwmtk` · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+[`6c4ae1faabf4`](https://github.com/pilifs/in-the-loop/commit/6c4ae1faabf4bee1f0ba1247954b137c6d05201a) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
 
 Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
 bdc3a059  long-token  ado…4B (49 chars): File name of the Adoptium public GPG key: 'adoptium-' plus the key's public fingerprint (3B04D753...F04B), listed from the previous setup's keys folder; a public key id, not a secret
 8b5e0daf  long-token  iQJ…Nv (64 chars): A line of the public PGP signature on the tukaani-project/xz-java v1.12 git tag, printed by git cat-file during setup; public signature data, not a secret
+
+### Add two setup lessons from 2026-11-23 to the setup agent template
+
+[`b82b551804e4`](https://github.com/pilifs/in-the-loop/commit/b82b551804e4a373f752aa213ddb612c355fb4c0) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+
+The setup agent template now says to resolve every plugin and dependency an offline command needs online first, before running it offline in a job, and to copy digests, revisions and paths into the Setup Agent Notes in full, or point to the record's row, never shortened. Both come from 2026-11-23's setup runs: jbmc-setup's Guava job failed on a late offline plugin resolution after its build had passed, and trusted-kernel-setup's notes gave Ints.class a shortened digest whose tail belonged to Ints$IntArrayAsList (the domain agent caught it against the full table). Verified with test_costs.py run --changed: test_single_run (21) and test_brief_queue (5) pass.
+
+### Let a loop recover a working copy another session left stale, instead of ending
+
+[`66a11552a2d0`](https://github.com/pilifs/in-the-loop/commit/66a11552a2d0f0e82714aa142956062bbf3cb652) · [log `6bf8c5b3fd44`](https://terminalvalue.net/raw-traces/0c4fcf43-726e-498c-962e-64253b04febe/6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe.jsonl.gz)
+
+feature-loop.sh reads @- (last_change) before and right after each turn, while its agent isn't working. When jj refuses there with "The working copy is stale", the loop now runs llm-dlc/tools/unstale.py, as CLAUDE.md tells an agent to, and says so in its log and summary. Then it reads @- again and goes on. If unstale.py can't recover (two copies with edits of their own), the loop stops with status 1 as before, and the log says a person is needed. Before this, the loop ended on the first refusal: on 2026-11-23 21:15 trusted-kernel's second cycle ended that way, before its verdict, after a turn that had gone well. The cause, in the operating notes' section on stale workspaces, is another workspace's sync.py rewriting commits this line is based on. The operating notes now say a loop recovers itself.
 
 ## Conversation
 

@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a20e85-b672-7ac1-9b20-1d3548ca9d39` (open) |
+| Session | `01a20e85-b672-7ac1-9b20-1d3548ca9d39` (ended) |
 | When | 2026-11-24 17:06 UTC to 2026-11-24 17:06 UTC |
 | Models | ? |
 | Client | codex 0.170.0 |
@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Register the nested iterator heap effect before replay
 
-change `vkmnqxmtxllu` · [log `7f91a7864392`](https://terminalvalue.net/raw-traces/01a20e85-b672-7ac1-9b20-1d3548ca9d39/7f91a7864392595aeec7e90419148e1f33ecafed75a41bc66734725328253606.jsonl.gz)
+[`9b07b9e90db4`](https://github.com/pilifs/in-the-loop/commit/9b07b9e90db49bc7119c324626991202dc8dd3c3) · [log `7f91a7864392`](https://terminalvalue.net/raw-traces/01a20e85-b672-7ac1-9b20-1d3548ca9d39/7f91a7864392595aeec7e90419148e1f33ecafed75a41bc66734725328253606.jsonl.gz)
 
 Extend the original Commons Collections advanced history with one finite heap claim at the first parent hasNext call. The registration binds four endpoints, both caller-owned lists, the retained child and fixed-size sibling, normal queue unlinking, the removal receiver, and independent omission and stale-state controls. The registration parses as JSON and the affected Rust test tier passed across 59 binaries.
 
