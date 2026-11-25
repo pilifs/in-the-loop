@@ -1,0 +1,34 @@
+{
+ "question": "How does the public Jackson Joda module handle an empty or whitespace-only quoted duration under default coercion?",
+ "control": "An integer JSON duration still denotes milliseconds.",
+ "domain": "Two blank JSON strings passed through a fresh ObjectMapper and JodaModule.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "-1",
+  "afterExpression": "0",
+  "controlExpression": "1234"
+ },
+ "entries": [
+  "com.fasterxml.jackson.datatype.joda.JodaModule",
+  "com.fasterxml.jackson.datatype.joda.deser.DurationDeserializer#deserialize"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/DurationDeserializer.java",
+   "text": "p.getText().trim()"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/DurationDeserializationTest.java",
+   "text": "assertNull(READER.readValue(quote(\"    \")))"
+  }
+ ]
+}

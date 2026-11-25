@@ -47,9 +47,15 @@ def manifests(slot, work, *, neutral):
 
 
 def discover(slot):
+    with scratch(prefix="registered-resource-packet-") as tmp:
+        packet = manifests(slot, Path(tmp), neutral=True)
+    discover_packet(packet, OUT / slot, TARGETS, tool_files())
+
+
+def discover_packet(packet, destination, targets, files):
+    spec = read(packet / "inputs.json")
     with scratch(prefix="resource-operator-") as tmp:
         work = Path(tmp)
-        packet = manifests(slot, work, neutral=True)
         out, temp = work / "out", work / "temp"
         out.mkdir()
         temp.mkdir()
@@ -64,20 +70,25 @@ def discover(slot):
         for side in ("old", "new"):
             # The discovery process receives only the ordered paths and digests, without the package label or registration.
             manifest = work / (side + ".json")
-            save(manifest, {"classpath": read(manifest)["classpath"]})
+            entries = []
+            for i, row in enumerate(spec[side]):
+                name = f"{side}/{i:03d}.jar"
+                if row != {"path": name, "sha256": digest(packet / name)}:
+                    raise ValueError("unbound neutral JAR")
+                entries.append({"file": "/inputs/" + name, "sha256": row["sha256"]})
+            save(manifest, {"classpath": entries})
             cmd += ["--ro-bind", str(manifest), "/" + side + ".json"]
-        files = tool_files()
         for file in files:
-            cmd += ["--ro-bind", str(file), "/tool/targets/" + str(file.relative_to(TARGETS))]
+            cmd += ["--ro-bind", str(file), "/tool/targets/" + str(file.relative_to(targets))]
         cmd += ["/usr/bin/python3", "-I", "-B", "-c",
                 "import sys; sys.path.insert(0,'/tool'); from targets.resource_workflows import main; sys.exit(main(sys.argv[1:]))",
                 "--before", "/old.json", "--after", "/new.json", "--jdk", "/opt/jdk", "--output", "/output/result"]
         subprocess.run(cmd, check=True)
         result = read(out / "result/discovery.json")
-        result.update(operatorFiles={str(f.relative_to(TARGETS)): digest(f) for f in files},
+        result.update(operatorFiles={str(f.relative_to(targets)): digest(f) for f in files},
                       inputPacketSha256=digest(packet / "inputs.json"), access="ordered JARs, JDK, generator; isolated network and home")
         save(out / "result/discovery.json", result)
-        shutil.copytree(out / "result", OUT / slot)
+        shutil.copytree(out / "result", destination)
 
 
 def solve(slot):

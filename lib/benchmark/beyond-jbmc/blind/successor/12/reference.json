@@ -1,0 +1,34 @@
+{
+ "question": "Does a precompiled caller still link when it reads the PDF metadata-update flag after setting it?",
+ "control": "Putting a metadata entry still exposes it through the public map.",
+ "domain": "Set the flag to false or true, then invoke the earlier getter descriptor in the same classfile.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "n",
+  "afterExpression": "-1",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "org.sejda.model.parameter.SetMetadataParameters#isUpdateProducerModifiedDate",
+  "org.sejda.model.parameter.SetMetadataParameters#setUpdateCreatorProducerModifiedDate"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/SetMetadataParameters.java",
+   "text": "public Boolean isUpdateProducerModifiedDate()"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/SetMetadataParameters.java",
+   "text": "public boolean isUpdateProducerModifiedDate()"
+  }
+ ]
+}

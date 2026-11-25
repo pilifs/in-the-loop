@@ -1,0 +1,34 @@
+{
+ "question": "Which calendar year does a JDBC reader return for an explicit proleptic-year timestamp pattern when the DateTimeFormatter option is requested?",
+ "control": "The first integer column from the same CSV row is unchanged.",
+ "domain": "Two named years in a two-column table, UTC. Each public connection owns its temporary table.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "1970",
+  "afterExpression": "2020 + n",
+  "controlExpression": "7"
+ },
+ "entries": [
+  "org.relique.jdbc.csv.CsvDriver#connect",
+  "org.relique.jdbc.csv.CsvResultSet#getTimestamp"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/StringConverter.java",
+   "text": "SimpleDateFormat"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/TestCsvDriver.java",
+   "text": "props.put(\"useDateTimeFormatter\", \"true\");"
+  }
+ ]
+}

@@ -1,0 +1,40 @@
+{
+ "question": "Do repeated selections report the prior state, notify listeners only on transitions, and update an already returned picked-set view?",
+ "control": "A second picked state stays empty throughout a mutation of the first.",
+ "domain": "Select the same vertex twice, then keep it or deselect it.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "(n == 0 ? 11 : 20)",
+  "afterExpression": "(n == 0 ? 11 : 20)",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "edu.uci.ics.jung.visualization.picking.MultiPickedState#pick",
+  "edu.uci.ics.jung.visualization.picking.MultiPickedState#getPicked"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "nestedArchiveSuffix": "visualization-2.0.1-sources.jar",
+   "memberSuffix": "/MultiPickedState.java",
+   "text": "return prior_state;"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/MultiPickedState.java",
+   "text": "return prior_state;"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/MultiPickedState.java",
+   "text": "Collections.unmodifiableSet(picked)"
+  }
+ ]
+}

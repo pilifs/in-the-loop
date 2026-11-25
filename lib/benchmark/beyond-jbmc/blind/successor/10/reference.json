@@ -1,0 +1,33 @@
+{
+ "question": "Does the default character-reference encoder preserve the euro character literally or emit its named entity?",
+ "control": "An ampersand always encodes as its named entity.",
+ "domain": "The euro character and ampersand in a fresh JVM under the release's default encoding configuration.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "(n == 0 ? 2 : 3)",
+  "afterExpression": "(n == 0 ? 1 : 3)",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "net.htmlparser.jericho.CharacterReference#encode"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/CharacterReference.java",
+   "text": "appendEncode(new StringBuilder(unencodedText.length()*2)"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/CharacterReferenceTest.java",
+   "text": "CharacterReference.encode(\"\\u20ac\",true)"
+  }
+ ]
+}

@@ -1,0 +1,40 @@
+{
+ "question": "Does signed decoding of each nonnegative natural produce the alternating sequence 0, -1, 1, -2 and so on?",
+ "control": "Encoding the decoded value restores the original natural.",
+ "domain": "Every nonnegative Java int. The JVM examples cover parity and the top two inputs.",
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  126,
+  127,
+  2147483646,
+  2147483647
+ ],
+ "bounds": [
+  0,
+  2147483647
+ ],
+ "expected": {
+  "beforeExpression": "(n % 2 == 0 ? n / 2 : -1 - n / 2)",
+  "afterExpression": "(n % 2 == 0 ? n / 2 : -1 - n / 2)",
+  "controlExpression": "n"
+ },
+ "entries": [
+  "it.unimi.dsi.bits.Fast#nat2int",
+  "it.unimi.dsi.bits.Fast#int2nat"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/Fast.java",
+   "text": "(x >> 1) ^ ~((x & 1) - 1)"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/Fast.java",
+   "text": "(x >> 1) ^ -(x & 1)"
+  }
+ ]
+}

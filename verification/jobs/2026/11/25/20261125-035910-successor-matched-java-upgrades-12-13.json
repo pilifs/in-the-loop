@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-035910-successor-matched-java-upgrades-12-13",
+  "title": "Successor matched Java upgrades 12, 13",
+  "description": "Compile the registered public consumer once on the old release. Measure the two conjuncts of each pair on their original classpaths with strict native, integrated JBMC and packaged stock JBMC, including physically checked primary, control, inverse and named post-call false assertions. Bind the result to the prior original-classloader scaffold and frozen tool.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/successor_measure.py"
+    ]
+  },
+  "expected": "Every listed slot has a source-bound measurement with the exact earlier deployment, registered caller and frozen checker. Open proof outcomes retain their first blocker.",
+  "submitted": {
+    "at": "2026-11-25T03:59:10+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc",
+    "bwrap",
+    "dpkg-deb"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "12m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure.py matched 12 13",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/successor/matched/12",
+    "verification/beyond-jbmc/successor/matched/13"
+  ]
+}

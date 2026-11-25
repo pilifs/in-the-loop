@@ -38,15 +38,20 @@ def bindings(slot):
 
 def automatic(slot):
     checker,lock,ref,pair=bindings(slot)
-    out=PUBLIC/slot/"automatic";out.mkdir(parents=True,exist_ok=True)
+    out=PUBLIC/slot/"automatic"
     store=BASE/slot/("automatic-"+lock["checkerSha256"])
+    measure_automatic(slot, checker, lock, ref, pair, out, store, DOCKET)
+
+
+def measure_automatic(slot, checker, lock, ref, pair, out, store, docket):
+    out.mkdir(parents=True,exist_ok=True)
     store.mkdir(exist_ok=True)
     with (store/"first-run.lock").open("a") as guard:
         fcntl.flock(guard,fcntl.LOCK_EX)
         fixed=store/"report.json.gz"
         if fixed.exists():
             bound=json.loads(gzip.decompress(fixed.read_bytes()))
-            if (bound["rawSha256"]!=digest(store/"executions.zip") or bound["docketSha256"]!=digest(DOCKET)
+            if (bound["rawSha256"]!=digest(store/"executions.zip") or bound["docketSha256"]!=digest(docket)
                     or bound["packetSha256"]!=ref["packetSha256"]):
                 raise ValueError("first automatic attempt has different bindings")
             for name in ("report.json.gz","executions.zip"):shutil.copyfile(store/name,out/name)
@@ -74,7 +79,7 @@ def automatic(slot):
                 if f.exists():r[label+"Cost"]=json.loads(f.read_bytes())
         warm=raw/"warm.json"
         if warm.is_file():report["warmAgreement"]=json.loads(warm.read_bytes())
-        report.update(slot=slot,packetSha256=ref["packetSha256"],docketSha256=digest(DOCKET),
+        report.update(slot=slot,packetSha256=ref["packetSha256"],docketSha256=digest(docket),
                       checkerSha256=digest(checker),rawSha256=digest(out/"executions.zip"),job=os.environ.get("VERIFY_JOB_ID"))
         (out/"report.json.gz").write_bytes(gzip.compress(encoded(report),mtime=0))
         shutil.copyfile(out/"executions.zip",store/"executions.zip")

@@ -1,0 +1,34 @@
+{
+ "question": "After an empty map has been swept, does its size include a subsequently inserted entry whose deadline has already passed?",
+ "control": "A long-lived map retains the inserted value.",
+ "domain": "One immediate-expiry and one live insertion after querying an empty map. The expired case uses a signed TTL of minus one day to avoid timing waits.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "n",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "com.twelvemonkeys.util.TimeoutMap#size",
+  "com.twelvemonkeys.util.TimeoutMap#put"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/TimeoutMap.java",
+   "text": "mTimestamp = System.currentTimeMillis();"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/TimeoutMap.java",
+   "text": "updateTimestamp();"
+  }
+ ]
+}

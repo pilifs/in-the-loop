@@ -1,0 +1,33 @@
+{
+ "question": "Can unchanged consumer bytecode still construct the public ApiStatus class after the annotation library upgrade?",
+ "control": "The Experimental annotation retains its CLASS retention policy.",
+ "domain": "One caller compiled against release 19 uses the previously implicit public constructor.",
+ "seeds": [
+  0
+ ],
+ "bounds": [
+  0,
+  0
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "-1",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "org.jetbrains.annotations.ApiStatus#<init>",
+  "org.jetbrains.annotations.ApiStatus$Experimental"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/ApiStatus.java",
+   "text": "public final class ApiStatus"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/ApiStatus.java",
+   "text": "private ApiStatus()"
+  }
+ ]
+}

@@ -11,7 +11,7 @@ import tarfile
 import zipfile
 
 import packets
-from scaffold_first import HERE, JDK, OUTPUT, compile_java, compressed, digest, javaenv, observe, read, save, scratch
+from scaffold_first import HERE, JDK, JVM_FLAGS, OUTPUT, compile_java, compressed, digest, javaenv, observe, read, save, scratch
 
 OUT = OUTPUT / "successor"
 AREA = Path.home() / ".cache/in-the-loop/beyond-jbmc/scaffold-first-successor-panel"
@@ -21,11 +21,18 @@ SLOTS = [f"{n:02}" for n in range(1, 17)]
 
 def draw():
     lock = read(OUT / "selection.json")
+    documents = {}
     for name, field in (("portable-population", "populationSha256"), ("screening", "screeningSha256"), ("sealed", "sealedSha256")):
         data = gzip.decompress((OUT / "draw" / (name + ".json.gz")).read_bytes())
         if hashlib.sha256(data).hexdigest() != lock[field]:
             raise ValueError("committed draw differs from the selection")
-    return json.loads(data)["pairs"]
+        documents[name] = json.loads(data)
+    sealed = documents["sealed"]
+    if (sealed["populationSha256"] != lock["populationSha256"] or sealed["screeningSha256"] != lock["screeningSha256"]
+            or hashlib.sha256(bytes.fromhex(sealed["seed"])).hexdigest() != lock["seedSha256"]
+            or sealed["selectionProgramSha256"] != lock["selectionProgramSha256"]):
+        raise ValueError("sealed selection does not bind the original seed, program or indexes")
+    return sealed["pairs"]
 
 
 def deployments(slots):
@@ -76,12 +83,164 @@ def packet(slot, dest):
     return inputs
 
 
+def source_evidence(row, spec):
+    evidence = []
+    for item in spec["basis"]:
+        archive_side = "before" if item["side"] == "old" else "after"
+        source = row[archive_side]["sourceEntry"]
+        matches = []
+        for h, size, filename in source["files"]:
+            if ".orig." not in filename:
+                continue
+            archive = AREA / (h + ".orig")
+            if digest(archive) != h or archive.stat().st_size != int(size):
+                raise ValueError("different released source archive")
+            with tarfile.open(archive, "r|*") as tar:
+                for member in tar:
+                    nested = item.get("nestedArchiveSuffix")
+                    if not member.isfile() or member.size > 2 ** 21 or not member.name.endswith(nested or item["memberSuffix"]):
+                        continue
+                    data = tar.extractfile(member).read()
+                    members = [(member.name, data)]
+                    if nested:
+                        with zipfile.ZipFile(io.BytesIO(data)) as z:
+                            members = [(member.name + "!/" + e.filename, z.read(e)) for e in z.infolist()
+                                       if e.filename.endswith(item["memberSuffix"]) and e.file_size <= 2 ** 21]
+                    for name, content in members:
+                        if item["text"].encode() in content:
+                            matches.append({**item, "member": name, "memberSha256": hashlib.sha256(content).hexdigest(),
+                                            "published": source["directory"] + "/" + filename, "archiveSha256": h})
+        if len(matches) != 1:
+            raise ValueError(f'{item["side"]} {item["memberSuffix"]} has {len(matches)} matching source members')
+        evidence.extend(matches)
+    return evidence
+
+
+def contract(spec):
+    lo, hi = spec["bounds"]
+    e = spec["expected"]
+    return f"""    public static boolean admitted(int n) {{ return n >= {lo} && n <= {hi}; }}
+    public static long oldExpected(int n) {{ return {e["beforeExpression"]}; }}
+    public static long newExpected(int n) {{ return {e["afterExpression"]}; }}
+    public static long controlExpected(int n) {{ return {e["controlExpression"]}; }}
+"""
+
+
+def pair_source(spec):
+    return "public final class ReferencePair {\n" + contract(spec) + """
+    public static boolean primary(int n) {
+        if (!admitted(n)) return true;
+        try {
+            long old = before.ReferenceAPI.primary(n), current = ReferenceAPI.primary(n);
+            return old == oldExpected(n) && current == newExpected(n);
+        } catch (Exception unexpected) { throw new IllegalStateException(unexpected); }
+    }
+    public static boolean control(int n) {
+        if (!admitted(n)) return true;
+        try {
+            long old = before.ReferenceAPI.control(n), current = ReferenceAPI.control(n);
+            return old == controlExpected(n) && current == controlExpected(n);
+        } catch (Exception unexpected) { throw new IllegalStateException(unexpected); }
+    }
+    public static boolean inverse(int n) { return !admitted(n) || !primary(n); }
+}
+"""
+
+
+def expected_rows(spec, work):
+    src = work / "Expected.java"
+    src.write_text("public class Expected {\n" + contract(spec) + """
+    public static void main(String[] args) {
+        for (String word : args) {
+            int n = Integer.parseInt(word);
+            if (!admitted(n)) throw new AssertionError("sample outside declaration");
+            System.out.println(n + " " + oldExpected(n) + " " + newExpected(n) + " " + controlExpected(n));
+        }
+    }
+}
+""")
+    classes = work / "oracle"
+    compile_java([src], classes, [], javaenv())
+    text = subprocess.check_output([JDK / "bin/java", *JVM_FLAGS, "-cp", classes, "Expected", *map(str, spec["seeds"])], text=True)
+    return [list(map(int, line.split())) for line in text.splitlines()]
+
+
+def scaffold(slot, row, work, launcher):
+    folder = REFS / slot
+    spec = read(folder / "reference.json")
+    src = folder / "ReferenceAPI.java"
+    work.mkdir()
+    cp = packet(slot, work / "packet")
+    receipt = {"slot": slot, "artifact": row["artifact"], "versions": row["versions"], "project": row["project"],
+               "stratum": row["stratum"], "question": digest(folder / "reference.json"), "callerSource": digest(src),
+               "deployment": digest(OUT / "deployments" / (slot + ".json.gz")), "jdkModulesSha256": digest(JDK / "lib/modules"),
+               "jvmFlags": JVM_FLAGS, "seeds": spec["seeds"], "sides": {}, "solverStarted": False}
+    pair = folder / "ReferencePair.java"
+    pair.write_text(pair_source(spec))
+    receipt["pairSource"] = digest(pair)
+    receipt["expectedRows"] = rows = expected_rows(spec, work)
+    receipt["basis"] = source_evidence(row, spec)
+    jars = {s: [work / "packet" / r["path"] for r in cp[s]] for s in ("old", "new")}
+    classes = work / "caller"
+    classes.mkdir()
+    javac = subprocess.run([JDK / "bin/javac", "-source", "8", "-target", "8", "-Xlint:-options", "-parameters", "-g",
+                            "-proc:none", "-cp", os.pathsep.join(map(str, jars["old"])), "-d", classes, src],
+                           env=javaenv(), text=True, capture_output=True, timeout=45)
+    if javac.returncode:
+        receipt["firstScaffoldStop"] = "compiling the caller against the original older release"
+        receipt["diagnostic"] = javac.stderr.replace(str(folder), "$REFERENCE").replace(str(work), "$WORK")[:2200]
+    else:
+        receipt["callerClasses"] = {p.relative_to(classes).as_posix(): digest(p) for p in sorted(classes.rglob("*.class"))}
+        receipt["firstScaffoldStop"] = None
+        for index, side in enumerate(("old", "new")):
+            receipt["sides"][side] = trials = {}
+            for mode in ("direct", "record"):
+                got = observe(work / (side + "-" + mode), launcher, classes, jars[side], mode, spec["seeds"])
+                trials[mode] = got
+                wanted = [[r[0], r[index+1], r[3]] for r in rows]
+                stop = None
+                if got["exit"] != 0:
+                    stop = "original JVM startup or public invocation"
+                    got["failure"] = got["failure"].replace(str(work), "$WORK")
+                elif got["rows"] != wanted:
+                    stop = "original observations disagree with the source-based expected result"
+                if stop and receipt["firstScaffoldStop"] is None:
+                    receipt["firstScaffoldStop"] = f"{side} {mode}: {stop}"
+    dest = OUT / "scaffolds" / (slot + ".json.gz")
+    if dest.is_file():
+        earlier = compressed(dest)
+        if earlier.get("firstScaffoldStop"):
+            # Keep the first real diagnostic when a signed provider or a corrected caller resolves it.
+            receipt["earlierStops"] = list(earlier.get("earlierStops", []))
+            record = {k: earlier[k] for k in ("firstScaffoldStop", "deployment", "callerSource", "question")}
+            record["diagnostic"] = earlier.get("diagnostic") or {s: {m: (q.get("failure") or q["rows"]) for m,q in v.items()} for s,v in earlier["sides"].items()}
+            if record not in receipt["earlierStops"]:
+                receipt["earlierStops"].append(record)
+        elif earlier.get("earlierStops"):
+            receipt["earlierStops"] = earlier["earlierStops"]
+    save(dest, receipt)
+    print(slot, receipt["firstScaffoldStop"] or "registered on both original releases", flush=True)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("action", choices=("deployments",))
-    ap.add_argument("slots", nargs="*", choices=SLOTS)
+    ap.add_argument("action", choices=("deployments", "scaffold"))
+    ap.add_argument("slots", nargs="*", metavar="SLOT")
     args = ap.parse_args()
-    deployments(args.slots or SLOTS)
+    slots = args.slots or SLOTS
+    if any(s not in SLOTS for s in slots):
+        ap.error("select slots 01 through 16")
+    if args.action == "deployments":
+        deployments(slots)
+        return
+    selected = draw()
+    with scratch(prefix="successor-originals-") as temp:
+        work = Path(temp)
+        launcher = work / "launcher"
+        launcher.mkdir()
+        subprocess.run([JDK / "bin/javac", "-proc:none", "-d", launcher, HERE / "LoaderObservations.java"], check=True)
+        for slot in slots:
+            scaffold(slot, selected[int(slot)-1], work / slot, launcher)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,35 @@
+{
+ "question": "Does class-level lookup expand an explicit container of two Resource annotations in declaration order?",
+ "control": "Reading the explicit container directly retains both names.",
+ "domain": "Two Resource declarations packed into a Resources container, plus an unannotated class.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "0",
+  "afterExpression": "(n == 0 ? 2 : 0)",
+  "controlExpression": "(n == 0 ? 2 : 0)"
+ },
+ "entries": [
+  "javax.annotation.Resource",
+  "javax.annotation.Resources#value",
+  "java.lang.reflect.AnnotatedElement#getAnnotationsByType"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/Resource.java",
+   "text": "@Retention(RetentionPolicy.RUNTIME)"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/Resource.java",
+   "text": "@Repeatable(Resources.class)"
+  }
+ ]
+}
