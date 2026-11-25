@@ -2,11 +2,12 @@
 import argparse
 from collections import Counter
 import json
+import math
 from pathlib import Path
 import zipfile
 
 from successor import OUT, REFS, SLOTS, compressed, digest, draw, read, save
-from blind_report import real_inputs
+from blind_report import real_inputs, wilson
 from history import ROOT
 from scaffold_audit import collect, require, source_digest
 from scores import qualified
@@ -133,8 +134,8 @@ def render(rows, ledger):
         jbmc=any(p[e] in ("proved","refuted") for e in ENGINES[1:])
         populations["both" if native and jbmc else "native only" if native else "JBMC only" if jbmc else "neither"]+=1
     lines=["# Frozen successor measurements","",
-           f"The artifact-only operators decided {solved} of the {len(automatic)} primary questions run. "
-           f"{len(rows)-len(automatic)} other selected projects have no first pass. With the 16-project denominator, "
+           f"The artifact-only operators decided {solved} of the {len(automatic)} primary questions run on the signed distribution graphs. "
+           f"{len(rows)-len(automatic)} other selected projects still need a distribution first pass. With the 16-project denominator, "
            f"the eventual automatic total lies between {solved} and {solved+len(rows)-len(automatic)}.",
            "",f"The impact selector tried {len(candidates)} callers and reached a selected public operation on both originals in "
            f"{sum(a['anyOriginalReach'] for a in automatic)} projects. The resource selector nominated "
@@ -154,10 +155,37 @@ def render(rows, ledger):
         values=r.get("matched",{}).get("pair",{}).get("primary",{})
         states=" / ".join(values[e] for e in ENGINES) if values else "Awaiting measurement" if not r["scaffoldStop"] else "Scaffolding incomplete"
         lines.append(f'| {r["slot"]} | {r["artifact"]} | {reason} | {states} |')
+    if automatic and measured:
+        low, high = wilson(solved, len(automatic))
+        lines += ["", f"Treating the {len(automatic)} measured projects as independent trials gives a descriptive 95% Wilson interval "
+                  f"of {100*low:.1f}% to {100*high:.1f}% for the automatic rate on this measured subset. The bounds for the full "
+                  "finite draw above also account for its missing deployments."]
+    wins, losses = populations["native only"], populations["JBMC only"]
+    discordant = wins + losses
+    if discordant:
+        exact = min(1.0, 2 * sum(math.comb(discordant, i) for i in range(min(wins, losses) + 1)) / 2**discordant)
+        project = "project" if discordant == 1 else "projects"
+        lines += ["", f"The native and strongest qualified JBMC comparison differed on {discordant} measured {project}. "
+                  f"The exact two-sided paired sign test gives p = {exact:.3f}."]
+    for engine in ("integrated","stock"):
+        together = [r for r in measured if all(r["matched"]["pair"]["primary"][e] in ("proved","refuted") for e in ("native",engine))]
+        if together:
+            totals = [sum(r["matched"]["originalConjuncts"][side]["primary"][e]["cost"]["seconds"]
+                          for r in together for side in ("old","new")) for e in ("native",engine)]
+            pairs = "primary pair" if len(together) == 1 else "primary pairs"
+            lines += ["",f"On {len(together)} {pairs} qualified by both native and {engine}, the old and new target calls "
+                      f"sum to {totals[0]:.2f} seconds for native and {totals[1]:.2f} seconds for {engine}. "
+                      "These target-only elapsed times exclude the post-call control. Timeouts and additional control costs remain in the full matrix and raw executions."]
     extra=[r for r in rows if r.get("alternative")]
     if extra:
+        alt_auto=[r["alternative"]["automatic"] for r in extra if "automatic" in r["alternative"]]
+        alt_matched=[r["alternative"]["matched"] for r in extra if "matched" in r["alternative"]]
+        alt_counts=[sum(r["pair"]["primary"][e] in ("proved","refuted") for r in alt_matched) for e in ENGINES]
         lines+=["","### Separately pinned Maven providers","",
-                "These original application JARs use the explicitly registered alternative dependencies. Each case has its own first-attempt and comparator receipts.",
+                f"On these original application JARs with the explicitly registered alternative dependencies, the frozen selectors decided "
+                f"{sum(a['primaryDecided'] for a in alt_auto)}/{len(alt_auto)} primary questions. On {len(alt_matched)} supplied questions, "
+                f"native, integrated and stock qualified {alt_counts[0]}, {alt_counts[1]} and {alt_counts[2]} primary decisions. "
+                "Each case has its own first-attempt and comparator receipts.",
                 "","| Slot | Frozen automatic workflow on the alternative | Supplied primary, native / integrated / stock |",
                 "|---|---|---|"]
         for r in extra:

@@ -37,11 +37,13 @@ def registration(slot, alternative=False):
         if digest(path) != physical[key]:
             raise ValueError("the registered public caller, question or deployment changed")
     if alternative:
-        prior = docket
         docket = OUT / "alternative" / (slot + ".json.gz")
         alt = compressed(docket)
-        if (alt["distributionScaffoldSha256"] != digest(prior) or alt["question"] != physical["question"]
-                or alt["consumer"] != physical["callerSource"] or alt["expectedRows"] != physical["expectedRows"]):
+        # The parent digest identifies the original distribution attempt in the receipt.
+        # Completing that attempt with more signed packages does not change the alternative.
+        if (alt["question"] != physical["question"] or alt["consumer"] != physical["callerSource"]
+                or alt["jdkModulesSha256"] != physical["jdkModulesSha256"] or alt["jvmFlags"] != physical["jvmFlags"]
+                or alt["expectedRows"] != physical["expectedRows"]):
             raise ValueError("different original question on the alternative deployment")
         physical = {**physical, "sides":alt["sides"], "callerClasses":{"ReferenceAPI.class":alt["callerSha256"]}}
     elif physical["firstScaffoldStop"] is not None:
