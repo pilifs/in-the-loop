@@ -1,0 +1,404 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-234007-01-04-remeasure-the-original-matched-nat",
+  "title": "01-04 remeasure the original matched native properties",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 26.9s, peak 170.6 MiB (estimated 5m00s, 3.0 GiB); 28 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor) was held back 26.5s by its 2-CPU quota in 26.9s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-234007-01-04-remeasure-the-original-matched-nat.json",
+    "sha256": "c60bf5774b25df72a7d54b0c443d38394786a588158126a9ccfb73e840122022",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-234007-01-04-remeasure-the-original-matched-nat",
+      "title": "01-04 remeasure the original matched native properties",
+      "description": "Recompile the locked supplied public reference; run its unchanged predicates, inverse and physical controls on the successor native binary. The two XML cases retain the original per-release conjuncts where the frozen namespace failed. All other pairs retain the exact two-copy scope. The recorded JBMC binaries and profiles are unchanged.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/matched_successor.py"
+        ]
+      },
+      "expected": "All original primary, control and inverse rows and their JVM-qualified scope are present together with the pre-repair native disposition.",
+      "submitted": {
+        "at": "2026-11-24T23:40:07+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "bwrap",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "37m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor.py 01 02 03 04",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/scaffold-first/matched-native/01",
+        "verification/beyond-jbmc/scaffold-first/matched-native/02",
+        "verification/beyond-jbmc/scaffold-first/matched-native/03",
+        "verification/beyond-jbmc/scaffold-first/matched-native/04"
+      ]
+    }
+  },
+  "sourceCommit": "c7f217fe2b19d15b10adbca32d6f983dc2eb568d",
+  "startedAt": "2026-11-24T23:58:49+00:00",
+  "finishedAt": "2026-11-25T00:03:54+00:00",
+  "wallSeconds": 305.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3533539,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2220.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 178876416,
+    "wallSeconds": 26.9,
+    "cpuSeconds": 48.7,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor.py 01 02 03 04",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2220.0,
+      "cancelled": false,
+      "wallSeconds": 26.868,
+      "cpuSeconds": 48.677,
+      "cpuThrottledSeconds": 26.521,
+      "peakMemoryBytes": 178876416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 4,
+        "bytes": 615,
+        "sha256": "50aaf7083149d57b3292383310778cb7ef5fb8b3fc12a2be5a26f37024e150e6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "01 [('comparison', 'primary', 'unverifiable'), ('comparison', 'control', 'verified'), ('comparison', 'inverse', 'unverifiable')]",
+        "02 [('comparison', 'primary', 'unverifiable'), ('comparison', 'control', 'unverifiable'), ('comparison', 'inverse', 'unverifiable')]",
+        "03 [('comparison', 'primary', 'unverifiable'), ('comparison', 'control', 'unverifiable'), ('comparison', 'inverse', 'unverifiable')]",
+        "04 [('old', 'primary', 'unverifiable'), ('old', 'control', 'unverifiable'), ('old', 'inverse', 'unverifiable'), ('new', 'primary', 'unverifiable'), ('new', 'control', 'unverifiable'), ('new', 'inverse', 'unverifiable')]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/01/comparison/executions.zip",
+      "change": "added",
+      "bytes": 7106,
+      "sha256": "1da2dfada43caedf3808dbb2fa0a401050bc1ba4906a253e99c7df6cc212e08b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/01/comparison/results.json.gz",
+      "change": "added",
+      "bytes": 1423,
+      "sha256": "a146902cb305f96a4880adc5ee43dddfdbc5c6f02404c5ebda94014d24808861",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/01/physical.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/01/physical.stdout",
+      "change": "added",
+      "bytes": 64,
+      "sha256": "af002332496d26247baaba475bf673bc2e68b3582c0abc45be98303eced39182",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/01/process.log",
+      "change": "added",
+      "bytes": 31,
+      "sha256": "80aee38ed59d264da9f6ad7205ad307a4bbf35f610e38a0a6c266e83f79e9d14",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/01/summary.json",
+      "change": "added",
+      "bytes": 4046,
+      "sha256": "c072a1f2deb78b6a9f10de22c891d0ba806d6419a916a5c8c43910081b51beb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/01/worker.json",
+      "change": "added",
+      "bytes": 2114,
+      "sha256": "234d20f83d71225a68351891ac93aa027b4f7195175317ec5de5a3d72de5cc7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/02/comparison/executions.zip",
+      "change": "added",
+      "bytes": 7322,
+      "sha256": "67b8f01ad36bfdae3ff25f017f87db68913b2625c720f664718637e064b01633",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/02/comparison/results.json.gz",
+      "change": "added",
+      "bytes": 1441,
+      "sha256": "44416f70f7e6c9298172dff5e472b5daf8a4de47897bdc212ca914afc146476f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/02/physical.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/02/physical.stdout",
+      "change": "added",
+      "bytes": 96,
+      "sha256": "9a76ad277ab4bc8e3b8fd18dbc0ce722a6835c01952f1eae745a210f6f069709",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/02/process.log",
+      "change": "added",
+      "bytes": 31,
+      "sha256": "31734393e01a04e2e50d9cfcdf4a2fc05105dab4776bd75904c1c99795952f6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/02/summary.json",
+      "change": "added",
+      "bytes": 4943,
+      "sha256": "92809a9f2f4902bbdc4918cac07b98f728cf8a060f4c1bb4ca3a8f745eebeed8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/02/worker.json",
+      "change": "added",
+      "bytes": 2583,
+      "sha256": "6e16d085bd8ed34976d701954d707994e523a31d48554ea4d648c8bd2f99c89d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/03/comparison/executions.zip",
+      "change": "added",
+      "bytes": 7531,
+      "sha256": "a6fca2646f4dd262e0ac18957ecb1b9092fafbb29d6704e9b691e6891dd58357",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/03/comparison/results.json.gz",
+      "change": "added",
+      "bytes": 3508,
+      "sha256": "0502e6f6d15017b9cf1b95266df9656eeb938d78c3e42fd8707d2f49908d9455",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/03/physical.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/03/physical.stdout",
+      "change": "added",
+      "bytes": 64,
+      "sha256": "af002332496d26247baaba475bf673bc2e68b3582c0abc45be98303eced39182",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/03/process.log",
+      "change": "added",
+      "bytes": 31,
+      "sha256": "80aee38ed59d264da9f6ad7205ad307a4bbf35f610e38a0a6c266e83f79e9d14",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/03/summary.json",
+      "change": "added",
+      "bytes": 5589,
+      "sha256": "b2349c462acf2adf368dc6c9362c1541834c9063b31f9d4f290111ca67b8da7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/03/worker.json",
+      "change": "added",
+      "bytes": 11060,
+      "sha256": "a68e8ccaa205d8232f6469413a7dae24fb52cc92be7eab2c9da20d12bf92aae0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/04/new/executions.zip",
+      "change": "added",
+      "bytes": 7111,
+      "sha256": "e968130fbb1e9f63b8b7ff25292b1b481c16b2d2bd8c759b5a58fed323458206",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/04/new/results.json.gz",
+      "change": "added",
+      "bytes": 2584,
+      "sha256": "28413d2fec42682c66190c985e04a38db34b61ed851d1cad5a393e9b10f6ed15",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/04/old/executions.zip",
+      "change": "added",
+      "bytes": 7213,
+      "sha256": "4ff9e38f09eb735ef6d6b530dec95b2ba6ad0f70687bb3688b4141dd78514ec0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/04/old/results.json.gz",
+      "change": "added",
+      "bytes": 3201,
+      "sha256": "f82b1e644e251896e2fbd446e9db9dedc3d636775978c17aee4e8aa1c8f09aef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/04/process.log",
+      "change": "added",
+      "bytes": 58,
+      "sha256": "02875a1fd5b18f984c6759df4bef8d50b6f77defe441e439e77fab6f60eb7fe0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/04/summary.json",
+      "change": "added",
+      "bytes": 7175,
+      "sha256": "fca9edc1d3cf24e60d8bbbe186f3dc3a69008fda124515eafeb2f6f436ff0ab8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/matched-native/04/worker.json",
+      "change": "added",
+      "bytes": 598,
+      "sha256": "0a4816077139519d8c267767c72db802bc382159d3db63d0694966fc247fe135",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T00:04:10+00:00",
+    "applied": [
+      "verification/beyond-jbmc/scaffold-first/matched-native/01/comparison/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/matched-native/01/comparison/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/matched-native/01/physical.stderr",
+      "verification/beyond-jbmc/scaffold-first/matched-native/01/physical.stdout",
+      "verification/beyond-jbmc/scaffold-first/matched-native/01/process.log",
+      "verification/beyond-jbmc/scaffold-first/matched-native/01/summary.json",
+      "verification/beyond-jbmc/scaffold-first/matched-native/01/worker.json",
+      "verification/beyond-jbmc/scaffold-first/matched-native/02/comparison/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/matched-native/02/comparison/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/matched-native/02/physical.stderr",
+      "verification/beyond-jbmc/scaffold-first/matched-native/02/physical.stdout",
+      "verification/beyond-jbmc/scaffold-first/matched-native/02/process.log",
+      "verification/beyond-jbmc/scaffold-first/matched-native/02/summary.json",
+      "verification/beyond-jbmc/scaffold-first/matched-native/02/worker.json",
+      "verification/beyond-jbmc/scaffold-first/matched-native/03/comparison/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/matched-native/03/comparison/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/matched-native/03/physical.stderr",
+      "verification/beyond-jbmc/scaffold-first/matched-native/03/physical.stdout",
+      "verification/beyond-jbmc/scaffold-first/matched-native/03/process.log",
+      "verification/beyond-jbmc/scaffold-first/matched-native/03/summary.json",
+      "verification/beyond-jbmc/scaffold-first/matched-native/03/worker.json",
+      "verification/beyond-jbmc/scaffold-first/matched-native/04/new/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/matched-native/04/new/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/matched-native/04/old/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/matched-native/04/old/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/matched-native/04/process.log",
+      "verification/beyond-jbmc/scaffold-first/matched-native/04/summary.json",
+      "verification/beyond-jbmc/scaffold-first/matched-native/04/worker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7b3d4ce6fa5567ca394c0c975629e083aab5ae25",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7b3d4ce6fa5567ca394c0c975629e083aab5ae25/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T000354Z-8607350ead552693",
+      "outputs": "20261125T000354Z-9129041062cb985b",
+      "diff": "20261125T000354Z-943587ff473cc9ba"
+    }
+  }
+}

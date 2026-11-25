@@ -1,0 +1,109 @@
+{
+ "job": "20261124-234007-05-08-remeasure-the-original-matched-nat",
+ "source": "c7f217fe2b19d15b10adbca32d6f983dc2eb568d",
+ "checkerSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
+ "basis": "original matched two-copy caller",
+ "physicalRegistration": "df5848eeadfb402a85fcf357205933a20785f402243bf459e39507f43a386433",
+ "rows": [
+  {
+   "deployment": "comparison",
+   "method": "primary",
+   "scope": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
+   "old": {
+    "verdict": "unverifiable",
+    "assumed": [],
+    "contracts": [],
+    "class": "unsupported",
+    "reason": "gap",
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.StringTokenizer.<init>(Ljava/lang/String;Ljava/lang/String;)V@jdk-21.0.13 (java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) at before.de.intarsys.cwt.font.afm.AFMChar.create:82). With --gaps assume it assumes instead that java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "seconds": 0.072,
+    "cpuSeconds": 0.065,
+    "peakMB": 50.4,
+    "exit": 1,
+    "killed": false
+   },
+   "new": {
+    "verdict": "verified",
+    "assumed": [],
+    "contracts": [],
+    "class": "correct",
+    "seconds": 1.345,
+    "cpuSeconds": 1.339,
+    "peakMB": 71.1,
+    "exit": 0,
+    "killed": false
+   }
+  },
+  {
+   "deployment": "comparison",
+   "method": "control",
+   "scope": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
+   "old": {
+    "verdict": "unverifiable",
+    "assumed": [],
+    "contracts": [],
+    "class": "unsupported",
+    "reason": "gap",
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.StringTokenizer.<init>(Ljava/lang/String;Ljava/lang/String;)V@jdk-21.0.13 (java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) at before.de.intarsys.cwt.font.afm.AFMChar.create:82). With --gaps assume it assumes instead that java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "seconds": 0.071,
+    "cpuSeconds": 0.062,
+    "peakMB": 50.7,
+    "exit": 1,
+    "killed": false
+   },
+   "new": {
+    "verdict": "verified",
+    "assumed": [],
+    "contracts": [],
+    "class": "correct",
+    "seconds": 0.89,
+    "cpuSeconds": 0.89,
+    "peakMB": 53.6,
+    "exit": 0,
+    "killed": false
+   }
+  },
+  {
+   "deployment": "comparison",
+   "method": "inverse",
+   "scope": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
+   "old": {
+    "verdict": "unverifiable",
+    "assumed": [],
+    "contracts": [],
+    "class": "unsupported",
+    "reason": "gap",
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.StringTokenizer.<init>(Ljava/lang/String;Ljava/lang/String;)V@jdk-21.0.13 (java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) at before.de.intarsys.cwt.font.afm.AFMChar.create:82). With --gaps assume it assumes instead that java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "seconds": 0.061,
+    "cpuSeconds": 0.06,
+    "peakMB": 50.2,
+    "exit": 1,
+    "killed": false
+   },
+   "new": {
+    "verdict": "violation",
+    "assumed": [],
+    "contracts": [],
+    "class": "correct",
+    "seconds": 0.658,
+    "cpuSeconds": 0.653,
+    "peakMB": 56.9,
+    "exit": 1,
+    "killed": false,
+    "jvmReplay": {
+     "outcome": "refuted",
+     "inputs": [
+      {
+       "name": "n",
+       "type": "int",
+       "value": 0
+      }
+     ],
+     "sourceSha256": "4f7b6af1612521582e703822780daddbe8a134dc907596364801ad7aa2cbe7a9",
+     "exit": 0,
+     "diagnostic": ""
+    }
+   }
+  }
+ ]
+}
