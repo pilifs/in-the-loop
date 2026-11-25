@@ -17,10 +17,10 @@ The pinned comparisons and primary sources are linked in [the brief](organic-jav
 | apache/avro#3709 | written | Read AVRO-4211, the 1.12.0 spec, Schema, IdlUtils, JacksonUtils and its landed scalar tests at 4c29cfb. The IDL writer serializes field.defaultVal(); nonempty array conversion on the primitive branch reaches getElementType(), which throws there. The proposed int-first array fixture and IDL output were not executed. |
 | ical4j/ical4j#931 | written | Read ComponentGroup’s two-parent landed range and its OpenSpec and parsed-calendar regression. The July 16 endpoint is included by that fixture, and the original and corrected lists both have three entries. The loop removes by start from a list containing earlier overrides. Order dependence when a moved occurrence lands on another original start is a source prediction. |
 | brettwooldridge/HikariCP#2346 | written | Read issue #2323, both ProxyConnection revisions, PoolBase and PostgresTest with postgres:16 and pgJDBC 42.7.7. The parent skips setting the dirty bit when the applied schema is null. The landed test expects test/null/test across the two borrows. Same-backend SQL lookup of the marker remains unexecuted. |
-| apache/commons-pool#85 | not yet | |
-| ReactiveX/RxJava#6019 | not yet | |
-| reactor/reactor-core#3822 | not yet | |
-| qos-ch/logback#862 | not yet | |
+| apache/commons-pool#85 | written | POOL-396 reports the stale idle object; both landed regression tests catch RuntimeException and assert active and idle counts are zero. The pinned destruction sites precede rethrow. Exact callback identity/order and the capacity-one replacement borrow are proposed public checks. |
+| ReactiveX/RxJava#6019 | written | Read issue #6018's 2.1.13 callback sequence and the two landed disposal methods and tests. The publisher and subject APIs expose detachments independently of downstream silence. Per-registration cancellation counts before the stop signal, plus repeated disposal, are a proposed challenge. |
+| reactor/reactor-core#3822 | written | Read issue #3821 and compared the landed three paths to the 11-commit submission. The final scope is exact buffers. The merged parameterized test checks finite demand, sets and discard counts. Whether the second set stays withheld until a second request remains open in the staged history. |
+| qos-ch/logback#862 | written | Read #857 and the landed encoder, rolling/file/stream appenders and test at 42caff8. Startup and stream replacement both call encoderInit, but writeBytes checks isStarted; the landed test reads distinct files. Exact bytes after two consecutive explicit rotations remain a prediction. |
 | jOOQ/jOOQ#19875 | not yet | |
 | jOOQ/jOOL#418 | not yet | |
 | eclipse-jdt/eclipse.jdt.core#5380 | not yet | |
