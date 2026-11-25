@@ -1,0 +1,224 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-042009-replay-context-and-released-index-resour",
+  "title": "Replay context and released-index resource predicates",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11.8s, peak 92.1 MiB (estimated 4m00s, 3.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-042009-replay-context-and-released-index-resour.json",
+    "sha256": "ee16fab5df341b4dd15f388667159f6c8fe3aa297105c9d9df3fc388b8859560",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-042009-replay-context-and-released-index-resour",
+      "title": "Replay context and released-index resource predicates",
+      "description": "Rebuild each preregistered caller with both original resource providers and compare its observations on separate unmodified JVMs. Strict native checks all six complete predicates, including the input assumption, intended-change guard and an explicit asymmetric return relation. Refutations must carry the actual before and after values on an admitted input. Include the compensation and missing-key controls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/pairing/replay.rs"
+        ]
+      },
+      "expected": "Every registered claim has a source-bound outcome, its original JVM qualification and archived evidence.",
+      "submitted": {
+        "at": "2026-11-25T04:20:09+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_postcond",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_postconditions.py measure context index dom4j",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/resource-postconditions/measured/context",
+        "verification/beyond-jbmc/resource-postconditions/measured/index",
+        "verification/beyond-jbmc/resource-postconditions/measured/dom4j"
+      ]
+    }
+  },
+  "sourceCommit": "d20b8d95a2e020159469fa6f7f1bde029ea4fc2a",
+  "startedAt": "2026-11-25T04:31:52+00:00",
+  "finishedAt": "2026-11-25T04:35:26+00:00",
+  "wallSeconds": 214.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 272695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 96555008,
+    "wallSeconds": 11.8,
+    "cpuSeconds": 19.4,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_postcond",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_postconditions.py measure context index dom4j",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 11.833,
+      "cpuSeconds": 19.368,
+      "cpuThrottledSeconds": 1.225,
+      "peakMemoryBytes": 96555008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 3,
+        "bytes": 50,
+        "sha256": "3dd224e15775cb8d5cfae32c30e3fd76d68b674bc3c7bd81cfc2354bad3cec4b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "context measure 6",
+        "index measure 6",
+        "dom4j measure 6"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/context/executions.zip",
+      "change": "added",
+      "bytes": 22993,
+      "sha256": "fb628a89a2ce2d77ef7a364dabfd38ab15103292aa5034acc5368911014f0c20",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/context/summary.json",
+      "change": "added",
+      "bytes": 17859,
+      "sha256": "b744a4f1ab8f0c29e9f9fb442c0cc8362cc5b2820f9a3810342f096315dc5f09",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/index/executions.zip",
+      "change": "added",
+      "bytes": 22645,
+      "sha256": "7f25e57d8a90ca3b92682521153869a1d36cc83cb43d750d7068d9967c0e67d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/index/summary.json",
+      "change": "added",
+      "bytes": 16268,
+      "sha256": "fe3f35ccb765b5bbfb849223efeed6bd22ecaa4660d991ddace90fdb2dee62b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/dom4j/executions.zip",
+      "change": "added",
+      "bytes": 21907,
+      "sha256": "9b7f582877effb73c7f323f50316b2743d71a03337e86ee359d3b20ff02c81cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/dom4j/summary.json",
+      "change": "added",
+      "bytes": 14900,
+      "sha256": "2137b85e0446d8a09df5692fdbc05596191c417bb710a54ff6d1f58de40c52cc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T04:35:30+00:00",
+    "applied": [
+      "verification/beyond-jbmc/resource-postconditions/measured/context/executions.zip",
+      "verification/beyond-jbmc/resource-postconditions/measured/context/summary.json",
+      "verification/beyond-jbmc/resource-postconditions/measured/index/executions.zip",
+      "verification/beyond-jbmc/resource-postconditions/measured/index/summary.json",
+      "verification/beyond-jbmc/resource-postconditions/measured/dom4j/executions.zip",
+      "verification/beyond-jbmc/resource-postconditions/measured/dom4j/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9c952bce050d13506bb961878edfc63b0511f72a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9c952bce050d13506bb961878edfc63b0511f72a/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T043526Z-576949c679546d34",
+      "outputs": "20261125T043526Z-601606a942a014f0",
+      "diff": "20261125T043526Z-6220935bf81cd9a9"
+    }
+  }
+}

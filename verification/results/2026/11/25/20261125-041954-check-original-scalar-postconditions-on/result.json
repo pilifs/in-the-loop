@@ -1,0 +1,206 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-041954-check-original-scalar-postconditions-on",
+  "title": "Check original scalar postconditions on plain and compensating",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.0s, peak 74.7 MiB (estimated 4m00s, 3.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-041954-check-original-scalar-postconditions-on.json",
+    "sha256": "468953ddae1b301e8fee0f8c74ca0d4dc56f93c2f8ee7a53393b9dfa77db34ac",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-041954-check-original-scalar-postconditions-on",
+      "title": "Check original scalar postconditions on plain and compensating",
+      "description": "Rebuild each preregistered caller with both original resource providers and compare its observations on separate unmodified JVMs. Strict native checks all six complete predicates, including the input assumption, intended-change guard and an explicit asymmetric return relation. Refutations must carry the actual before and after values on an admitted input. Include the compensation and missing-key controls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/pairing/replay.rs"
+        ]
+      },
+      "expected": "Every registered claim has a source-bound outcome, its original JVM qualification and archived evidence.",
+      "submitted": {
+        "at": "2026-11-25T04:19:54+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_postcond",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_postconditions.py measure plain compensating",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/resource-postconditions/measured/plain",
+        "verification/beyond-jbmc/resource-postconditions/measured/compensating"
+      ]
+    }
+  },
+  "sourceCommit": "d20b8d95a2e020159469fa6f7f1bde029ea4fc2a",
+  "startedAt": "2026-11-25T04:31:52+00:00",
+  "finishedAt": "2026-11-25T04:35:21+00:00",
+  "wallSeconds": 209.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 272695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 78344192,
+    "wallSeconds": 7.0,
+    "cpuSeconds": 11.8,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_postcond",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_postconditions.py measure plain compensating",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 7.016,
+      "cpuSeconds": 11.834,
+      "cpuThrottledSeconds": 0.739,
+      "peakMemoryBytes": 78344192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "4e4ce4d2cf7eedfb3ff0f5ffbbf7819d4b53ec20b12e90be51dfaae8956f73cf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "plain measure 6",
+        "compensating measure 6"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/plain/executions.zip",
+      "change": "added",
+      "bytes": 22379,
+      "sha256": "289c515492d51911124d98203379ef7cd46d0c369f17b05213b7ebc05a653bfb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/plain/summary.json",
+      "change": "added",
+      "bytes": 16099,
+      "sha256": "ce0d7cc83350fe0f155d4d4f0c5a54d01c27988501eb6e792026813a6e06b302",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/compensating/executions.zip",
+      "change": "added",
+      "bytes": 21933,
+      "sha256": "70ce9f20cc1fb668fcbd36f7d853bf1dddc676dfda304a3e144b876bb73a69a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/resource-postconditions/measured/compensating/summary.json",
+      "change": "added",
+      "bytes": 15067,
+      "sha256": "69b8efc48f2330538ffeb6af9fd257ce7ce8ff8168029611057d64600b794264",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T04:35:30+00:00",
+    "applied": [
+      "verification/beyond-jbmc/resource-postconditions/measured/plain/executions.zip",
+      "verification/beyond-jbmc/resource-postconditions/measured/plain/summary.json",
+      "verification/beyond-jbmc/resource-postconditions/measured/compensating/executions.zip",
+      "verification/beyond-jbmc/resource-postconditions/measured/compensating/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9c952bce050d13506bb961878edfc63b0511f72a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9c952bce050d13506bb961878edfc63b0511f72a/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T043521Z-756016a19b9ca5a3",
+      "outputs": "20261125T043521Z-7802101c9ff98baf",
+      "diff": "20261125T043521Z-800552741b310da6"
+    }
+  }
+}
