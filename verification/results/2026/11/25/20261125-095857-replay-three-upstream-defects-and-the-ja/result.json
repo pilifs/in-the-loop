@@ -1,0 +1,316 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-095857-replay-three-upstream-defects-and-the-ja",
+  "title": "Replay three upstream defects and the Jackson CSV correction",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 1m34s, peak 219.8 MiB (estimated 4m00s, 1.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-095857-replay-three-upstream-defects-and-the-ja.json",
+    "sha256": "e73698fa8cfe4e9c3fd7faba88c7e3c87b6ddffefcd31eae6e5207927efa7c44",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-095857-replay-three-upstream-defects-and-the-ja",
+      "title": "Replay three upstream defects and the Jackson CSV correction",
+      "description": "Build the four frozen upstream branches and run the exact historical public callers on those builds and the public release JARs. Confirm the two independent Jackson controls on the original pins as well. Repeat the original campaign after sharing its JVM launcher with these rechecks. The public setup caches on this host contain the locked inputs.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "paths": [
+          "verification/merged-pr-links/upstream/inputs.json",
+          "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md"
+        ]
+      },
+      "expected": "All 34 release and development observations and four historical Jackson controls reproduce their checked-in receipts. The historical matrix reproduces 143 original observations across 24 deployment pairs and reports 57 matched merged-revision predictions of 61.",
+      "submitted": {
+        "at": "2026-11-25T09:58:57+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "docker"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "4m",
+        "notes": "The previous 143-JVM run took 124 seconds at one CPU. The four new source builds and 38 JVMs are sequential in this job."
+      },
+      "steps": [
+        {
+          "name": "Release and development reproductions",
+          "run": "python3 verification/merged-pr-links/upstream/recheck.py 409 411 412 419",
+          "cwd": "."
+        },
+        {
+          "name": "Jackson controls on the original pins",
+          "run": "python3 verification/merged-pr-links/upstream/recheck.py 409 --original-wrapping",
+          "cwd": "."
+        },
+        {
+          "name": "All original public observations",
+          "run": "python3 verification/merged-pr-links/audit.py --replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "e4e6a752559e255018a8eb27a42ad9424045a819",
+  "startedAt": "2026-11-25T10:13:15+00:00",
+  "finishedAt": "2026-11-25T10:14:57+00:00",
+  "wallSeconds": 102.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3933541,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 240.0,
+    "notes": "The previous 143-JVM run took 124 seconds at one CPU. The four new source builds and 38 JVMs are sequential in this job."
+  },
+  "usage": {
+    "peakMemoryBytes": 230522880,
+    "wallSeconds": 94.3,
+    "cpuSeconds": 161.2,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Release and development reproductions",
+      "run": "python3 verification/merged-pr-links/upstream/recheck.py 409 411 412 419",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 28.483,
+      "cpuSeconds": 53.286,
+      "cpuThrottledSeconds": 5.727,
+      "peakMemoryBytes": 230522880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-release-and-development-reprod.log",
+        "lines": 32,
+        "bytes": 1802,
+        "sha256": "07e080478f25c72b42b05c0233178371f7c62de6ce0f73d8b8fce1b9ca0a76b8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "409 pinned release: 5 public histories",
+        "409 pinned development: 5 public histories",
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: Some input files use unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "Note: /tmp/merged-pr-head-g25348ve/source/lang/java/idl/src/main/java/org/apache/avro/idl/IdlUtils.java uses unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "411 pinned release: 3 public histories",
+        "411 pinned development: 3 public histories",
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: Some input files use unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "412 pinned release: 3 public histories",
+        "412 pinned development: 3 public histories",
+        "/tmp/merged-pr-head-0w923kxa/source/jOOL/src/main/java/org/jooq/lambda/tuple/Range.java:115: warning: [dep-ann] deprecated item is not annotated with @Deprecated",
+        "    public Optional<Range<T>> intersect(Tuple2<T, T> other) {",
+        "                              ^",
+        "Note: Some input files use unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "1 warning",
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "Note: Some input files use unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "3 warnings",
+        "419 jool release: 3 public histories",
+        "419 jool development: 3 public histories",
+        "419 jool-java-8 release: 3 public histories",
+        "419 jool-java-8 development: 3 public histories"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Jackson controls on the original pins",
+      "run": "python3 verification/merged-pr-links/upstream/recheck.py 409 --original-wrapping",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 1.604,
+      "cpuSeconds": 2.826,
+      "cpuThrottledSeconds": 0.157,
+      "peakMemoryBytes": 103518208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-jackson-controls-on-the-origin.log",
+        "lines": 2,
+        "bytes": 77,
+        "sha256": "8654a27bf2a38ade47192697f5a7da38056c084cffb1dcd9ce1477b7eb784d1c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "409 original parent: 2 public histories",
+        "409 original fix: 2 public histories"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "All original public observations",
+      "run": "python3 verification/merged-pr-links/audit.py --replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 64.171,
+      "cpuSeconds": 105.099,
+      "cpuThrottledSeconds": 4.689,
+      "peakMemoryBytes": 196124672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-all-original-public-observatio.log",
+        "lines": 153,
+        "bytes": 15922,
+        "sha256": "26ad8f5c43233b1a6d27051460d8cdd1346821cb78f475ea58f5a909a5678494",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "postgres18.1 fix jOOQ/jOOQ#19875.1 {'return': 'errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]'}",
+        "postgres18.1 fix jOOQ/jOOQ#19875.2 {'return': 'errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]'}",
+        "postgres18.1 fix jOOQ/jOOQ#19875.3 {'return': 'errors=0 processed=3 stored=3; [1/Alice, 2/Bob, 3/Charlie]'}",
+        "jool parent jOOQ/jOOL#418.1 {'return': '[-:-, -:-, -:-]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]'}",
+        "jool parent jOOQ/jOOL#418.2 {'return': '[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]'}",
+        "jool parent jOOQ/jOOL#418.3 {'return': '5=-:-; max-1=-:-'}",
+        "jool fix jOOQ/jOOL#418.1 {'return': '[1:3, 1:3, 1:3]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]'}",
+        "jool fix jOOQ/jOOL#418.2 {'return': '[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]'}",
+        "jool fix jOOQ/jOOL#418.3 {'return': '5=1:3; max-1=1:1'}",
+        "jool-java-8 parent jOOQ/jOOL#418.1 {'return': '[-:-, -:-, -:-]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]'}",
+        "jool-java-8 parent jOOQ/jOOL#418.2 {'return': '[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]'}",
+        "jool-java-8 parent jOOQ/jOOL#418.3 {'return': '5=-:-; max-1=-:-'}",
+        "jool-java-8 fix jOOQ/jOOL#418.1 {'return': '[1:3, 1:3, 1:3]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]'}",
+        "jool-java-8 fix jOOQ/jOOL#418.2 {'return': '[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]'}",
+        "jool-java-8 fix jOOQ/jOOL#418.3 {'return': '5=1:3; max-1=1:1'}",
+        "pinned parent eclipse-jdt/eclipse.jdt.core#5380.1 {'throws': 'java.lang.StringIndexOutOfBoundsException'}",
+        "pinned parent eclipse-jdt/eclipse.jdt.core#5380.2 {'return': 'real=\\nclass A {\\n\\tvoid foo() {\\n\\t\\tint x = 1;\\n\\t}\\n}\\nempty=\\nclass A{void foo(){int x=1;}}\\n'}",
+        "pinned parent eclipse-jdt/eclipse.jdt.core#5380.3 {'throws': 'java.lang.StringIndexOutOfBoundsException'}",
+        "pinned fix eclipse-jdt/eclipse.jdt.core#5380.1 {'return': '\\nclass A {\\n\\tvoid foo() {\\n\\t\\tint x = 1;\\n\\t}\\n}\\n'}",
+        "pinned fix eclipse-jdt/eclipse.jdt.core#5380.2 {'return': 'real=\\nclass A {\\n\\tvoid foo() {\\n\\t\\tint x = 1;\\n\\t}\\n}\\nempty=\\nclass A{void foo(){int x=1;}}\\n'}",
+        "pinned fix eclipse-jdt/eclipse.jdt.core#5380.3 {'return': '\\r\\nclass A {\\r\\n\\tvoid foo() {\\r\\n\\t\\tint x = 1;\\r\\n\\t}\\r\\n}\\r\\n; idempotent=true'}",
+        "pinned parent junit-team/junit-framework#2646.1 {'return': 'OuterA | OuterA$Ready state | OuterA$Ready state -> accepts input'}",
+        "pinned parent junit-team/junit-framework#2646.2 {'return': 'accepts the sample'}",
+        "pinned parent junit-team/junit-framework#2646.3 {'return': 'OuterB | OuterB$Ready state | OuterB$Ready state -> accepts input / OuterB | OuterB -> Ready state | OuterB -> Ready state -> accepts input'}",
+        "pinned fix junit-team/junit-framework#2646.1 {'return': 'OuterA | Ready state | Ready state -> accepts input'}",
+        "pinned fix junit-team/junit-framework#2646.2 {'return': 'accepts the sample'}",
+        "pinned fix junit-team/junit-framework#2646.3 {'return': 'OuterB | Ready state | Ready state -> accepts input / OuterB | OuterB -> Ready state | OuterB -> Ready state -> accepts input'}",
+        "jre parent google/guava#7784.1 {'return': 'false; iterated (1)'}",
+        "jre parent google/guava#7784.2 {'return': 'true,true/false,false'}",
+        "jre parent google/guava#7784.3 {'return': 'false,false/true,true'}",
+        "jre fix google/guava#7784.1 {'return': 'false; no iteration (0)'}",
+        "jre fix google/guava#7784.2 {'return': 'true,true/false,false'}",
+        "jre fix google/guava#7784.3 {'return': 'false,false/true,true'}",
+        "android parent google/guava#7784.1 {'return': 'false; iterated (1)'}",
+        "android parent google/guava#7784.2 {'return': 'true,true/false,false'}",
+        "android parent google/guava#7784.3 {'return': 'false,false/true,true'}",
+        "android fix google/guava#7784.1 {'return': 'false; no iteration (0)'}",
+        "android fix google/guava#7784.2 {'return': 'true,true/false,false'}",
+        "android fix google/guava#7784.3 {'return': 'false,false/true,true'}",
+        "{\"cases\": 20, \"deploymentPairs\": 24, \"fixedIntentsMatched\": 20, \"fixedPredictionsMatched\": 57, \"fixedRefutations\": 4, \"freshJvms\": 143, \"omittedParentHistories\": 3, \"pairedIntentChanges\": 19, \"questions\": 61, \"retainedMethodEntryTrials\": 4, \"unchangedControls\": 20}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T10:17:25+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T101457Z-722469cadd8beeb9"
+    }
+  }
+}
