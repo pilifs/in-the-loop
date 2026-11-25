@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "2eb07fb37105282ede0ad3ed860b1b9650a6f9f0f1e776c9d4a108ca07c06258",
+  "runtimeSha256": "2de1b79b2dea10acc3fa8ab7b2f091bd0c10f93d6b3e8f918ad159366e398544",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "a64ac925e4bd991614f72043a3eb7e53558f0b878fb89df6d38188654dabd49e"
+  },
+  "deployments": {
+    "pinned": {
+      "callerClasses": {
+        "PublicCaller$Sub.class": "cd6720cd71e825ab7d89e085563a84040b291a8e0766facc97aab37dd353f901",
+        "PublicCaller.class": "cd85bfeb45b51e61955fdc306faa84303b83d357f2556772eea42bb932e9bde4",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "RoaringBitmap/RoaringBitmap#914.1",
+          "outcome": {
+            "return": "heap=ArrayStoreException; buffer=ArrayStoreException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "RoaringBitmap/RoaringBitmap#914.2",
+          "outcome": {
+            "return": "heap=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; buffer=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "RoaringBitmap/RoaringBitmap#914.3",
+          "outcome": {
+            "return": "heap=ArrayStoreException; buffer=ArrayStoreException; heap inputs=true; buffer inputs=true"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "RoaringBitmap/RoaringBitmap#914.1",
+          "outcome": {
+            "return": "heap=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; buffer=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "RoaringBitmap/RoaringBitmap#914.2",
+          "outcome": {
+            "return": "heap=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; buffer=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "RoaringBitmap/RoaringBitmap#914.3",
+          "outcome": {
+            "return": "heap=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; buffer=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; heap inputs=true; buffer inputs=true"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

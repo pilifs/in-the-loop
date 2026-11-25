@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/lucene/pull/14732",
+  "revisions": {
+    "parent": "36ddc378eac62f931e98da0ed5cd3edbbddc920e",
+    "fix": "5c886602a8e8146203deb1a9c3c0121a4241108c"
+  },
+  "entry": "IndexSortSortedNumericDocValuesRangeQuery",
+  "questions": [
+    {
+      "id": "apache/lucene#14732.1",
+      "role": "Intent",
+      "args": [
+        "explicit"
+      ],
+      "history": "Ascending INT sort with explicit 7, range [7,8]",
+      "prediction": "The parent is expected to throw ClassCastException on the affected path. The merge returns only B and counts 1.",
+      "basis": "Only B has a numeric value in the closed interval. IntPoint.newRangeQuery(\"idx\", 7, 8) supplies an independent query.",
+      "expected": {
+        "parent": {
+          "return": "hits=ClassCastException,count=ClassCastException; points=[B]/1"
+        },
+        "fix": {
+          "return": "hits=[B],count=1; points=[B]/1"
+        }
+      }
+    },
+    {
+      "id": "apache/lucene#14732.2",
+      "role": "Control",
+      "args": [
+        "default"
+      ],
+      "history": "Leave the missing-value setting unset on the same INT sort",
+      "prediction": "Both revisions return B and count 1.",
+      "basis": "The default substitute is 0. The recorded values and the point-query oracle stay the same.",
+      "expected": {
+        "parent": {
+          "return": "hits=[B],count=1; points=[B]/1"
+        },
+        "fix": {
+          "return": "hits=[B],count=1; points=[B]/1"
+        }
+      }
+    },
+    {
+      "id": "apache/lucene#14732.3",
+      "role": "Challenge",
+      "args": [
+        "reverse"
+      ],
+      "history": "Rebuild with reverse sort and change D's substitute to Integer.MIN_VALUE, keeping all documents and query bounds fixed",
+      "prediction": "On the merge the stored IDs are still {B} and count is still 1. Varying physical order and moving the substitute outside the range must preserve membership.",
+      "basis": "The query asks for document values. Missing D has no point or doc value in either index.",
+      "expected": {
+        "fix": {
+          "return": "hits=[B],count=1; points=[B]/1"
+        }
+      }
+    }
+  ]
+}

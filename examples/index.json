@@ -22981,6 +22981,248 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 402 TASK"
       }
+    },
+    {
+      "id": "403",
+      "path": "examples/403-lucene-sorted-range",
+      "title": "Lucene matches a numeric range on a sorted index",
+      "summary": "The parent threw ClassCastException from both hit enumeration and count. The fix returned only document B and counted one, including in reverse order. An independent point query agreed on every index.",
+      "origin": "real-world",
+      "system": "Apache Lucene",
+      "symbol": "IndexSortSortedNumericDocValuesRangeQuery",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "exceptions"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The parent threw ClassCastException from both hit enumeration and count. The fix returned only document B and counted one, including in reverse order. An independent point query agreed on every index."
+      ],
+      "source": "https://github.com/apache/lucene/pull/14732",
+      "target": null
+    },
+    {
+      "id": "404",
+      "path": "examples/404-jts-endpoint-projection",
+      "title": "JTS retains an endpoint projection",
+      "summary": "The parent returned null at the endpoint. The fix returned (8,0) twice. Its app geometry had two coincident coordinates at contact and zero outside, although both lines had length zero. The parent lacks that app entry.",
+      "origin": "real-world",
+      "system": "LocationTech JTS",
+      "symbol": "LineSegment.project",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The parent returned null at the endpoint. The fix returned (8,0) twice. Its app geometry had two coincident coordinates at contact and zero outside, although both lines had length zero. The parent lacks that app entry."
+      ],
+      "source": "https://github.com/locationtech/jts/pull/1179",
+      "target": null
+    },
+    {
+      "id": "405",
+      "path": "examples/405-roaring-subtype-union",
+      "title": "RoaringBitmap unions subtype arrays",
+      "summary": "Heap and buffer aggregation both threw ArrayStoreException on subtype arrays before the fix. Both fixed paths returned the 16-member union and preserved every input reference and element after permutation.",
+      "origin": "real-world",
+      "system": "RoaringBitmap",
+      "symbol": "FastAggregation.priorityqueue_or",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Heap and buffer aggregation both threw ArrayStoreException on subtype arrays before the fix. Both fixed paths returned the 16-member union and preserved every input reference and element after permutation."
+      ],
+      "source": "https://github.com/RoaringBitmap/RoaringBitmap/pull/914",
+      "target": null
+    },
+    {
+      "id": "406",
+      "path": "examples/406-datasketches-quantile-image",
+      "title": "DataSketches restores the quantiles of a queried sketch",
+      "summary": "The parent changed the median from b to c and exposed six entries after a four-item round trip. The fixed heap and wrapped readers returned four ordered values, weights 1 through 4, median b and rank-0.55 value c.",
+      "origin": "real-world",
+      "system": "Apache DataSketches",
+      "symbol": "KllItemsSketch.heapify",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "deserialization"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The parent changed the median from b to c and exposed six entries after a four-item round trip. The fixed heap and wrapped readers returned four ordered values, weights 1 through 4, median b and rank-0.55 value c."
+      ],
+      "source": "https://github.com/apache/datasketches-java/pull/767",
+      "target": null
+    },
+    {
+      "id": "419",
+      "path": "examples/419-jool-window-endpoints",
+      "title": "jOOλ finds window endpoints at finite frame bounds",
+      "summary": "Both jOOλ modules repaired the ordinary wide window and preserved the future-only control. Widening the upper bound to Long.MAX_VALUE minus one changed the fixed third row’s last value from 3 to 1.",
+      "origin": "real-world",
+      "system": "jOOλ",
+      "symbol": "Window.firstValue",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "The two published module variants run separately on the same JDK.",
+        "Both jOOλ modules repaired the ordinary wide window and preserved the future-only control. Widening the upper bound to Long.MAX_VALUE minus one changed the fixed third row’s last value from 3 to 1."
+      ],
+      "source": "https://github.com/jOOQ/jOOL/pull/418",
+      "target": null
+    },
+    {
+      "id": "422",
+      "path": "examples/422-guava-live-set-equality",
+      "title": "Guava avoids traversal for impossible live-set equality",
+      "summary": "Both JRE and Android returned false with one backing iterator call on the parent and zero on the fix. Symmetry, same-size mismatches and live equality after backing-set mutation held on both pins.",
+      "origin": "real-world",
+      "system": "Guava",
+      "symbol": "Sets.difference",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+        "Both the JRE and Android library variants run on the same JVM.",
+        "Both JRE and Android returned false with one backing iterator call on the parent and zero on the fix. Symmetry, same-size mismatches and live equality after backing-set mutation held on both pins."
+      ],
+      "source": "https://github.com/google/guava/pull/7784",
+      "target": null
     }
   ]
 }

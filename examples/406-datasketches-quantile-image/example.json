@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "406",
+  "title": "DataSketches restores the quantiles of a queried sketch",
+  "summary": "The parent changed the median from b to c and exposed six entries after a four-item round trip. The fixed heap and wrapped readers returned four ordered values, weights 1 through 4, median b and rank-0.55 value c.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "deserialization",
+    "side-effecting-read",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache DataSketches",
+    "symbol": "KllItemsSketch.heapify"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Issue #756 reports median c after restoration versus b before restoration on the faulty code. On the merge expect [a,b,c,d], cumulative weights [1,2,3,4], median b and rank-0.55 quantile c."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/datasketches-java",
+    "url": "https://github.com/apache/datasketches-java/pull/767"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The parent changed the median from b to c and exposed six entries after a four-item round trip. The fixed heap and wrapped readers returned four ordered values, weights 1 through 4, median b and rank-0.55 value c."
+  ]
+}

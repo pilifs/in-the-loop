@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "404",
+  "title": "JTS retains an endpoint projection",
+  "summary": "The parent returned null at the endpoint. The fix returned (8,0) twice. Its app geometry had two coincident coordinates at contact and zero outside, although both lines had length zero. The parent lacks that app entry.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "LocationTech JTS",
+    "symbol": "LineSegment.project"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Reported null → a `LineSegment` with both endpoints at (8,0)."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/locationtech/jts",
+    "url": "https://github.com/locationtech/jts/pull/1179"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The parent returned null at the endpoint. The fix returned (8,0) twice. Its app geometry had two coincident coordinates at contact and zero outside, although both lines had length zero. The parent lacks that app entry."
+  ]
+}

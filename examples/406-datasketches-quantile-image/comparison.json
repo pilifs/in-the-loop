@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/datasketches-java/pull/767",
+  "revisions": {
+    "parent": "3857c0cca71a9f5bd462d92e6208d0e0a1c1ac52",
+    "fix": "7b4068860c3d50da28f3dd734e14f74cd6c5657d"
+  },
+  "entry": "KllItemsSketch.heapify",
+  "questions": [
+    {
+      "id": "apache/datasketches-java#767.1",
+      "role": "Intent",
+      "args": [
+        "queried"
+      ],
+      "history": "Serialize immediately after the median query, then heapify",
+      "prediction": "Issue #756 reports median c after restoration versus b before restoration on the faulty code. On the merge expect [a,b,c,d], cumulative weights [1,2,3,4], median b and rank-0.55 quantile c.",
+      "basis": "With four retained unit-weight observations, inclusive ranks select positions ceil(4r), counting from one.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "first=b;",
+            "median=c "
+          ]
+        },
+        "fix": {
+          "return": "first=b; [a, b, c, d] [1, 2, 3, 4] median=b q55=c"
+        }
+      }
+    },
+    {
+      "id": "apache/datasketches-java#767.2",
+      "role": "Control",
+      "args": [
+        "fresh"
+      ],
+      "history": "Serialize a fresh four-item sketch without first asking it a quantile, then heapify",
+      "prediction": "Both pins should produce the same four sorted items, weights and quantiles as the oracle.",
+      "basis": "The input multiset is unchanged and the issue reports this order of operations works.",
+      "expected": {
+        "parent": {
+          "return": "[a, b, c, d] [1, 2, 3, 4] median=b q55=c"
+        },
+        "fix": {
+          "return": "[a, b, c, d] [1, 2, 3, 4] median=b q55=c"
+        }
+      }
+    },
+    {
+      "id": "apache/datasketches-java#767.3",
+      "role": "Challenge",
+      "args": [
+        "reordered"
+      ],
+      "history": "Insert the same items as c,a,d,b, query rank 0.55, serialize once and independently call heapify and wrap on the same image",
+      "prediction": "On the merge both consumers should give the original four order statistics with the same cumulative weights. The bytes themselves may vary with insertion order.",
+      "basis": "In this four-item exact regime each value occurs once, and the comparator defines their order independently of insertion and storage.",
+      "expected": {
+        "fix": {
+          "return": "first=c; heap=[a, b, c, d] [1, 2, 3, 4] median=b q55=c; wrap=[a, b, c, d] [1, 2, 3, 4] median=b q55=c"
+        }
+      }
+    }
+  ]
+}

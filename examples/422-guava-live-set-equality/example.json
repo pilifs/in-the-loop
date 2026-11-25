@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "422",
+  "title": "Guava avoids traversal for impossible live-set equality",
+  "summary": "Both JRE and Android returned false with one backing iterator call on the parent and zero on the fix. Symmetry, same-size mismatches and live equality after backing-set mutation held on both pins.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "side-effecting-read",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Guava",
+    "symbol": "Sets.difference"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Both should return false. The parent implementation predicts at least one call to the wrapped set's iterator, the merge zero for this fixture."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/pull/7784"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Both the JRE and Android library variants run on the same JVM.",
+    "Both JRE and Android returned false with one backing iterator call on the parent and zero on the fix. Symmetry, same-size mismatches and live equality after backing-set mutation held on both pins."
+  ]
+}

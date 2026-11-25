@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/RoaringBitmap/RoaringBitmap/pull/914",
+  "revisions": {
+    "parent": "49e120dad9c21349c44f3aa3edfc9a6601e7a7b0",
+    "fix": "b4b0ba16e50d40688753a3cf057a47804773e233"
+  },
+  "entry": "FastAggregation.priorityqueue_or",
+  "questions": [
+    {
+      "id": "RoaringBitmap/RoaringBitmap#914.1",
+      "role": "Intent",
+      "args": [
+        "subtype"
+      ],
+      "history": "Call each varargs overload with its four-element subtype array.",
+      "prediction": "Upstream reports `ArrayStoreException` before. After, both calls return the integers 0 through 12 inclusive, then 100000, 200000 and 300000, in order.",
+      "basis": "The four half-open ranges overlap, and 0 is already in the first range. Those 16 integers are the complete set union.",
+      "expected": {
+        "parent": {
+          "return": "heap=ArrayStoreException; buffer=ArrayStoreException"
+        },
+        "fix": {
+          "return": "heap=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; buffer=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]"
+        }
+      }
+    },
+    {
+      "id": "RoaringBitmap/RoaringBitmap#914.2",
+      "role": "Control",
+      "args": [
+        "base"
+      ],
+      "history": "Copy the same four references into `new RoaringBitmap[4]` or `new ImmutableRoaringBitmap[4]` respectively.",
+      "prediction": "Both revisions should return the same 16 integers through each API.",
+      "basis": "Changing the runtime component type of the argument array preserves every operand.",
+      "expected": {
+        "parent": {
+          "return": "heap=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; buffer=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]"
+        },
+        "fix": {
+          "return": "heap=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; buffer=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]"
+        }
+      }
+    },
+    {
+      "id": "RoaringBitmap/RoaringBitmap#914.3",
+      "role": "Challenge",
+      "args": [
+        "permuted"
+      ],
+      "history": "On the merge permute the subtype array, replacing its order by indices 3, 1, 0, 2. After the call, read each input with `toArray()` as well as the result.",
+      "prediction": "The union remains the same 16 integers. Each slot still refers to its original bitmap with precisely its original range and extra integer.",
+      "basis": "Union is commutative. The aggregate returns a result and the implementation allocates its temporary storage separately from the input. Checking both boundaries exposes writes through shared operands.",
+      "expected": {
+        "fix": {
+          "return": "heap=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; buffer=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 100000, 200000, 300000]; heap inputs=true; buffer inputs=true"
+        }
+      }
+    }
+  ]
+}

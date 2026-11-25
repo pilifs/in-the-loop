@@ -74,6 +74,8 @@ def plans(number: str) -> tuple[bool, str, list[str]]:
     try:
         plan = json.loads(out)[0]
         if "tasks" not in plan:
+            if plan.get("runner") == "public-comparison":
+                return True, f"{len(plan['questions'])} public questions", ["public-comparison"]
             return plan["executable"], plan.get("notExecuted") or f"ordinary {plan['approach']} plan", []
         tasks = plan["tasks"]
     except (ValueError, LookupError, TypeError):
@@ -109,6 +111,9 @@ def validate(numbers: list[str], replay: bool) -> dict:
         if ok is not None:
             step("oracle self-test", ok, detail, number)
         if replay:
+            if "public-comparison" in tasks:
+                ok, out, took = run([sys.executable, "examples/tools/build.py", number])
+                step("public comparison on both JVM deployments", ok, f"{took:.0f} s; " + tail(out, 2), number)
             for task in (t for t in REPLAYS if t in tasks):
                 ok, out, took = run([sys.executable, "examples/tools/build.py", number, "--task", task], timeout=1800)
                 step(f"{task} on a JVM", ok, f"{took:.0f} s; " + tail(out, 3), number)

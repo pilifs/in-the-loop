@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "982f14aa193d800dbe86a80da924065c009b14403af1de031221321abfbecfab",
+  "runtimeSha256": "dd56082e226f8bdd3813123f1d6620a92f7e7b4ba56aaef8ffd1a517bc72733b",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "16443c22a0a1c4b025394b9a1963bd5723aa9a8ca0d820767ead1f924820b801"
+  },
+  "deployments": {
+    "pinned": {
+      "callerClasses": {
+        "PublicCaller.class": "da9682f5d9ff75fc5e3c691d2e4d0402419d59ee1cba1998319a601a318c2db9",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/datasketches-java#767.1",
+          "outcome": {
+            "return": "first=b; [a, d, c, b, a, d] [1, 1, 2, 3, 3, 4] median=c q55=b"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/datasketches-java#767.2",
+          "outcome": {
+            "return": "[a, b, c, d] [1, 2, 3, 4] median=b q55=c"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/datasketches-java#767.3",
+          "outcome": {
+            "return": "first=c; heap=[a, b, d, a, c, d] [1, 1, 2, 3, 3, 4] median=d q55=a; wrap=[a, b, d, a, c, d] [1, 1, 2, 3, 3, 4] median=d q55=a"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/datasketches-java#767.1",
+          "outcome": {
+            "return": "first=b; [a, b, c, d] [1, 2, 3, 4] median=b q55=c"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/datasketches-java#767.2",
+          "outcome": {
+            "return": "[a, b, c, d] [1, 2, 3, 4] median=b q55=c"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/datasketches-java#767.3",
+          "outcome": {
+            "return": "first=c; heap=[a, b, c, d] [1, 2, 3, 4] median=b q55=c; wrap=[a, b, c, d] [1, 2, 3, 4] median=b q55=c"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "405",
+  "title": "RoaringBitmap unions subtype arrays",
+  "summary": "Heap and buffer aggregation both threw ArrayStoreException on subtype arrays before the fix. Both fixed paths returned the 16-member union and preserved every input reference and element after permutation.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "array-utilities",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "RoaringBitmap",
+    "symbol": "FastAggregation.priorityqueue_or"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Upstream reports `ArrayStoreException` before. After, both calls return the integers 0 through 12 inclusive, then 100000, 200000 and 300000, in order."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/RoaringBitmap/RoaringBitmap",
+    "url": "https://github.com/RoaringBitmap/RoaringBitmap/pull/914"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Heap and buffer aggregation both threw ArrayStoreException on subtype arrays before the fix. Both fixed paths returned the 16-member union and preserved every input reference and element after permutation."
+  ]
+}
