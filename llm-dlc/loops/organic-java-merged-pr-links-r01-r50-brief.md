@@ -503,3 +503,103 @@ Determine what each merged change lets a Java caller observe, which results shou
 **Technical notes.** The records adapter lies under moshi/src/main/java16. The Gradle records-tests module exercises a record-capable JVM. Use reflective record adapters and the matching Moshi artifact.
 
 **Sources.** [RecordJsonAdapter.java](https://github.com/square/moshi/blob/cdcf0da4ee260b72d7e1ea2be691a568e03720b3/moshi/src/main/java16/com/squareup/moshi/RecordJsonAdapter.java) · [RecordsTest.java](https://github.com/square/moshi/blob/cdcf0da4ee260b72d7e1ea2be691a568e03720b3/moshi/records-tests/src/test/java/com/squareup/moshi/records/RecordsTest.java) · [build.gradle.kts](https://github.com/square/moshi/blob/cdcf0da4ee260b72d7e1ea2be691a568e03720b3/moshi/records-tests/build.gradle.kts).
+
+## google/gson#2998 · Gson tree numbers retain the requested integral wrapper type
+
+**Change and revisions.** [Merged PR #2998](https://github.com/google/gson/pull/2998). The byte, short and integer adapters now select a JsonWriter overload that preserves the narrowed Number class when the destination is a tree. Before `c616243d1d78c0466b53be39f893094ebb7c6918`, after `e83ef91dc7614e6f8fb5ea8dd3fd67530602f05c`. [Landed comparison](https://github.com/google/gson/compare/c616243d1d78c0466b53be39f893094ebb7c6918...e83ef91dc7614e6f8fb5ea8dd3fd67530602f05c).
+
+**Public scenario.** With new Gson(), call toJsonTree(value, declaredType) and inspect both getAsNumber().getClass() and the actual numeric value. Compare the corresponding stream serialization with gson.toJson on the same value and declared type.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| google/gson#2998.1 · Intent | Serialize the number 1 separately as byte, short and int, then repeat with their wrapper class tokens. | The PR reports Long on the parent. The merge should expose Byte, Short and Integer respectively for both forms, all holding the value 1. | The declared type selects a specific narrowing conversion. Distinct Number classes are observable even though each writes the same JSON digit. | The merged tree stores a Long, chooses a class based on primitive versus wrapper spelling, or changes the numeric value. |
+| google/gson#2998.2 · Control | Serialize 1L as long and Long. Inspect each tree and the ordinary JSON text. | Both revisions should expose Long and emit the numeric token 1. | The existing long adapter represents this value directly. Neither type nor spelling requires a conversion. | Either tree class differs from Long, or the scalar becomes a string or changes value. |
+| google/gson#2998.3 · Challenge | Use an Integer-valued Number 257 with declared Byte.class. Compare the result with a Byte-valued input 1 targeted at the same class, and serialize both trees to plain JSON. | On the merge both tree values must be Byte with value 1 and both texts the numeric token 1. On the parent the width can be wrong even if the JSON agrees. | Java Number.byteValue discards higher bits for an Integer; 257 and 1 have the same low eight bits. Text alone erases wrapper width. | The merged values have different classes or values, or a correct tree value reaches the stream with different text. |
+
+**Evidence and limits.** The pinned tests assert tree classes at value 1 and include other Number inputs for narrowing. The PR attributes the regression to primitive widening before writer overload resolution. A text-only assertion cannot distinguish Long(1) from Byte(1).
+
+**Technical notes.** The gson Maven module contains the TypeAdapters change and PrimitiveTest. Specify the explicit declared type when testing narrowing and use the default adapters.
+
+**Sources.** [TypeAdapters.java](https://github.com/google/gson/blob/e83ef91dc7614e6f8fb5ea8dd3fd67530602f05c/gson/src/main/java/com/google/gson/internal/bind/TypeAdapters.java) · [PrimitiveTest.java](https://github.com/google/gson/blob/e83ef91dc7614e6f8fb5ea8dd3fd67530602f05c/gson/src/test/java/com/google/gson/functional/PrimitiveTest.java) · [pom.xml](https://github.com/google/gson/blob/e83ef91dc7614e6f8fb5ea8dd3fd67530602f05c/gson/pom.xml) · [Issue #2680](https://github.com/google/gson/issues/2680) · [Related PR #2814](https://github.com/google/gson/pull/2814).
+
+## FasterXML/jackson-core#1816 · Numeric accessors return the current token at its requested precision
+
+**Change and revisions.** [Merged PR #1816](https://github.com/FasterXML/jackson-core/pull/1816). Jackson clears deferred numeric state across tokens and retains the text needed for later exact conversions on the same token. Before `682b4062b60d8317956ca80a28c3c92cf46d93ce`, after `b251524f3a857fd5960548ea12d4ba2dc92f8c43`. [Landed comparison](https://github.com/FasterXML/jackson-core/compare/682b4062b60d8317956ca80a28c3c92cf46d93ce...b251524f3a857fd5960548ea12d4ba2dc92f8c43).
+
+**Public scenario.** With JsonFactory.createParser, advance through [2.5,7.5]. Read the first value with getDecimalValue(). On the second call getNumberType(), getBigIntegerValue(), getDecimalValue(), then getDoubleValue(), before advancing again.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| FasterXML/jackson-core#1816.1 · Intent | Read 2.5 as decimal, then inspect 7.5 in the stated order. | Issue #1815 reports a stale conversion of the previous number. After, getNumberType() gives DOUBLE, then the accessors give 7, decimal 7.5, and double 7.5. | BigInteger conversion truncates the current token toward zero. Both displayed halves are exactly representable as doubles. | The integer is 2, the decimal comes from the earlier token, or a later accessor loses the value. |
+| FasterXML/jackson-core#1816.2 · Control | Parse [7] and read the only number first as BigInteger, then as double. | Both revisions should give 7 and 7.0 and then END_ARRAY. | The one-token input lacks a preceding numeric cache, and seven is exactly representable in both types. | Any different value, exception, or missing terminal token. |
+| FasterXML/jackson-core#1816.3 · Challenge | Hold 12345678901234567890123 fixed. In independent parses, request double before BigInteger and BigInteger before double. Compare the integer with one constructed from the original decimal digits. | On the merge both integer results must be exact and both double results may have normal IEEE rounding. The PR reports that double-first could previously round away the final digits of the integer. | BigInteger on the original decimal text is an independent exact oracle, unaffected by the consumer’s earlier request for a double. | Only the double-first order changes the exact result, or exact conversion after approximate access throws. |
+
+**Evidence and limits.** The pinned test exercises blocking parsers and both async feeder types. Its assertions check multiple accessors before advancing. A single getDoubleValue() per token cannot establish conversion independence. [Stale-value report](https://github.com/FasterXML/jackson-core/issues/1815).
+
+**Technical notes.** This is com.fasterxml.jackson.core 2.x. Standard JSON suffices for these histories. To compare async behavior, use UTF-8 with an appropriate feeder, supply input on NOT_AVAILABLE, and signal endOfInput after the final chunk.
+
+**Sources.** [ParserBase.java](https://github.com/FasterXML/jackson-core/blob/b251524f3a857fd5960548ea12d4ba2dc92f8c43/src/main/java/com/fasterxml/jackson/core/base/ParserBase.java) · [NonBlockingJsonParserBase.java](https://github.com/FasterXML/jackson-core/blob/b251524f3a857fd5960548ea12d4ba2dc92f8c43/src/main/java/com/fasterxml/jackson/core/json/async/NonBlockingJsonParserBase.java) · [NumberStaleValue1815Test.java](https://github.com/FasterXML/jackson-core/blob/b251524f3a857fd5960548ea12d4ba2dc92f8c43/src/test/java/com/fasterxml/jackson/core/read/NumberStaleValue1815Test.java) · [pom.xml](https://github.com/FasterXML/jackson-core/blob/b251524f3a857fd5960548ea12d4ba2dc92f8c43/pom.xml) · [Related issue #1813](https://github.com/FasterXML/jackson-core/issues/1813).
+
+## FasterXML/jackson-databind#6407 · Carry immutable builder replacements through buffered property assignment
+
+**Change and revisions.** [Merged PR #6407](https://github.com/FasterXML/jackson-databind/pull/6407). When a creator property arrives after regular properties, retain each new builder returned by applying the buffered values. Before `b02acce88765473e3d883c877f1e64e1c1d8910d`, after `0736200316cc75d98d38b73622aad09f28a1fc93`. [Landed comparison](https://github.com/FasterXML/jackson-databind/compare/b02acce88765473e3d883c877f1e64e1c1d8910d...0736200316cc75d98d38b73622aad09f28a1fc93).
+
+**Public scenario.** Use the pinned Value(a,b,c,d) record and its immutable builder. The creator accepts c. Each with-method allocates a replacement. Call JsonMapper.readValue with named properties a=5, b=6, c=7 and d=8 and inspect the built record.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| FasterXML/jackson-databind#6407.1 · Intent | Deserialize the object with a and b before c, and d last. | The PR reports lost buffered values on the parent. After the change, the four accessors should return (5,6,7,8). | Each independent property was supplied exactly once. The pinned builder carries untouched fields into each replacement. | Either pre-creator value becomes zero, or the post-creator d is lost on the merge. |
+| FasterXML/jackson-databind#6407.2 · Control | Use the ordinary MutableBean fixture. Read name=value before creator id=7. The setter mutates the bean and returns the String value. | Both should produce the same MutableBean with id 7 and name value. | An ordinary setter's return is immaterial to the identity of this bean. The pinned regression checks both fields. | A mapping failure, a String substituted for the target, or a bean lacking its supplied name. |
+| FasterXML/jackson-databind#6407.3 · Challenge | Compare creator-first and creator-last object encodings with the array [5,6,7,8]. For the array use the pinned a,b,c,d order and ARRAY format override. | On the merge all three should yield equal Value records. Changing only b to 16 in all three encodings should change only b in each result. | Distinct properties describe the same logical value. Comparing independent orderings and shapes exposes stale intermediate builder instances. | Only one ordering or shape succeeds, or changing b affects another accessor. |
+
+**Evidence and limits.** Issue #6397 reports silent loss for array-shaped input. The landed test exercises object, array, unwrapped and absent-creator branches and the ordinary-bean control. Successful deserialization alone misses default-valued fields.
+
+**Technical notes.** Use tools.jackson.databind from the pinned 3.x Maven project. The array shape override is on ImmutableBuilder. The creator is c. The PR reports a JDK 21 build. Distinguish builder-returning methods from setters on an ordinary bean.
+
+**Sources.** [BuilderBasedDeserializer.java](https://github.com/FasterXML/jackson-databind/blob/0736200316cc75d98d38b73622aad09f28a1fc93/src/main/java/tools/jackson/databind/deser/bean/BuilderBasedDeserializer.java) · [BeanAsArrayBuilderDeserializer.java](https://github.com/FasterXML/jackson-databind/blob/0736200316cc75d98d38b73622aad09f28a1fc93/src/main/java/tools/jackson/databind/deser/bean/BeanAsArrayBuilderDeserializer.java) · [PropertyBasedCreator.java](https://github.com/FasterXML/jackson-databind/blob/0736200316cc75d98d38b73622aad09f28a1fc93/src/main/java/tools/jackson/databind/deser/bean/PropertyBasedCreator.java) · [ImmutableBuilderWithCreator6397Test.java](https://github.com/FasterXML/jackson-databind/blob/0736200316cc75d98d38b73622aad09f28a1fc93/src/test/java/tools/jackson/databind/deser/builder/ImmutableBuilderWithCreator6397Test.java) · [pom.xml](https://github.com/FasterXML/jackson-databind/blob/0736200316cc75d98d38b73622aad09f28a1fc93/pom.xml) · [Issue #6397](https://github.com/FasterXML/jackson-databind/issues/6397).
+
+## FasterXML/jackson-databind#6473 · Updating an EnumMap merges the values already owned by the caller
+
+**Change and revisions.** [Merged PR #6473](https://github.com/FasterXML/jackson-databind/pull/6473). Updating an existing EnumMap now passes an existing value into deserialization when content merging is enabled. Fresh maps and explicitly nonmergeable values continue to use replacement semantics. Before `66ade176743438d3b8247348465aa31eb95e24f7`, after `949188f567b60b88851f4898eeb9bc82d098cfbe`. [Landed comparison](https://github.com/FasterXML/jackson-databind/compare/66ade176743438d3b8247348465aa31eb95e24f7...949188f567b60b88851f4898eeb9bc82d098cfbe).
+
+**Public scenario.** Use the regression’s bean with an @JsonMerge EnumMap keyed by enum constants A,B,C. Its constructor fills every slot with a mutable Value carrying an initial data string and no usable JSON creator. Retain a reference to the value at A, then call mapper.readerForUpdating(bean).readValue on a document that changes only its count.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| FasterXML/jackson-databind#6473.1 · Intent | Update A.count to 3 while omitting A.data and key C. | The PR and issue report InvalidDefinitionException while constructing the value before the fix. On the merge the returned bean must be the input, its A value must still be the saved object, its count 3 and data init-A, and C must retain init-C. | Updating an existing object needs no creator. The externally saved alias shows which instance actually received the write. | The merge attempts construction, loses an omitted field, replaces A, or changes C. |
+| FasterXML/jackson-databind#6473.2 · Control | Read a fresh EnumMap of creatable beans from one JSON object containing only key A with field a equal to x. | Both revisions should construct one entry A with a=x. | No old map value exists to merge. The new entry is determined entirely by this input. | Either revision fails, adds keys, or supplies a different field value. |
+| FasterXML/jackson-databind#6473.3 · Challenge | Keep the same existing A and count update. Run two fresh histories differing only in the initial data string and count of the untouched C. Serialize the updated bean and inspect its tree with an independent reader. | On the merge the serialized A has count 3 and initial data in both histories, and C serializes its own original data and count each time. The retained A alias observes the same 3. | An update scoped to A cannot depend on another key’s value. Writing and reading back distinguishes a visible mutation of the bean from a change only to a temporary result. | Changing C changes serialized A, the alias stays stale, or serialization loses C’s untouched data. |
+
+**Evidence and limits.** The regression checks saved identity, scalar replacement, content overrides and fresh-map duplicate keys. An assertion about resulting map size alone misses both omitted-field loss and replacement of an existing caller reference.
+
+**Technical notes.** The Jackson databind 3.x module contains EnumMapDeserializer and EnumMapMerge6445Test. The update claims use default content mergeability with @JsonMerge on the map, a mutable bean value and a mapper configured as in the regression.
+
+**Sources.** [EnumMapDeserializer.java](https://github.com/FasterXML/jackson-databind/blob/949188f567b60b88851f4898eeb9bc82d098cfbe/src/main/java/tools/jackson/databind/deser/jdk/EnumMapDeserializer.java) · [EnumMapMerge6445Test.java](https://github.com/FasterXML/jackson-databind/blob/949188f567b60b88851f4898eeb9bc82d098cfbe/src/test/java/tools/jackson/databind/deser/merge/EnumMapMerge6445Test.java) · [pom.xml](https://github.com/FasterXML/jackson-databind/blob/949188f567b60b88851f4898eeb9bc82d098cfbe/pom.xml) · [Issue #6445](https://github.com/FasterXML/jackson-databind/issues/6445).
+
+## FasterXML/jackson-dataformat-xml#895 · Always-on Base64 XML names remain parseable across encodings
+
+**Change and revisions.** [Merged PR #895](https://github.com/FasterXML/jackson-dataformat-xml/pull/895). The always-on name processor puts an underscore before base64url names whose initial encoded character cannot start an XML name and strips that marker during decoding. Before `f560daa9ecb75c50de084c5a57559f84134554b3`, after `c3584c7120d6a11e3d417a081d8600be47103fe9`. [Landed comparison](https://github.com/FasterXML/jackson-dataformat-xml/compare/f560daa9ecb75c50de084c5a57559f84134554b3...c3584c7120d6a11e3d417a081d8600be47103fe9).
+
+**Public scenario.** Build an XmlFactory with XmlNameProcessors.newAlwaysOnBase64Processor() via xmlNameProcessor, then XmlMapper.builder(factory).build(). Serialize the regression DTO with its string map and read it back. Use distinct values to identify its dynamic element names.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| FasterXML/jackson-dataformat-xml#895.1 · Intent | Set the map entry "中文" to "cjk". Serialize, parse the XML, then deserialize the DTO. | The PR reports Woodstox can write an invalid digit-leading XML name before, followed by parse failure. After, the child element is named _5Lit5paH and the recovered key is exactly 中文. | The UTF-8 base64url spelling starts with 5. An XML name may start with underscore, while a digit is allowed only later. | Writing succeeds but an XML parser rejects the document, or the recovered key/value differs. |
+| FasterXML/jackson-dataformat-xml#895.2 · Control | Use the key "abc" and value "ascii". | Both should use the existing wire name YWJj and recover the original pair. | YWJj is the base64 representation of those three bytes and begins with a letter. | An extra prefix changes the established wire name, or map readback changes. |
+| FasterXML/jackson-dataformat-xml#895.3 · Challenge | Write both U+03FF and U+0400 as separate keys with values "below" and "at". Also parse the document with JDK XMLStreamReader and collect the two dynamic local names and text values. | On the merge these associations must be z78→below and _0IA→at in either order. A separately built mapper with the same processor must recover both distinct keys. | Adjacent Unicode scalars produce base64url initials z and 0. An independent XML consumer checks legal element names and the serialized associations. | A parser rejects either element, the marker appears on the wrong name, or the keys collide on independent readback. |
+
+**Evidence and limits.** The regression checks complete mapper round trips for map keys and an attribute, including the exact boundary spellings. Serializing without parsing leaves the provider’s permissive write behavior unexamined. Independent StAX consumption remains a prediction.
+
+**Technical notes.** Use tools.jackson.dataformat.xml (Jackson 3.x) with the always-on processor. The Maven module declares the Woodstox StAX implementation. The control and boundary properties refer to nonempty, namespace-free map keys.
+
+**Sources.** [XmlNameProcessors.java](https://github.com/FasterXML/jackson-dataformat-xml/blob/c3584c7120d6a11e3d417a081d8600be47103fe9/src/main/java/tools/jackson/dataformat/xml/XmlNameProcessors.java) · [XmlNameEscapeTest.java](https://github.com/FasterXML/jackson-dataformat-xml/blob/c3584c7120d6a11e3d417a081d8600be47103fe9/src/test/java/tools/jackson/dataformat/xml/misc/XmlNameEscapeTest.java) · [pom.xml](https://github.com/FasterXML/jackson-dataformat-xml/blob/c3584c7120d6a11e3d417a081d8600be47103fe9/pom.xml).

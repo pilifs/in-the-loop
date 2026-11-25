@@ -27,11 +27,11 @@
 | javaparser/javaparser#5176 | written | Compared setString/setEscapedValue with the pinned observer and lexical printer assertions. The test records an LF as escaped source. Re-parsing combined LF/quote content next to an untouched comment remains open. |
 | javaparser/javaparser#5207 | written | Read both landed changes, mixed array parameter regressions, declarator token handling and the separate annotated-varargs test. Reparsing the field with an unchanged scalar sibling remains open. |
 | square/moshi#1442 | written | Read the indirect Long record's exact three shapes and the adapter's generic component resolution. Alternating Long and String wrappers in one Moshi remains unexecuted. |
-| google/gson#2998 | not yet |  |
-| FasterXML/jackson-core#1816 | not yet |  |
-| FasterXML/jackson-databind#6407 | not yet |  |
-| FasterXML/jackson-databind#6473 | not yet |  |
-| FasterXML/jackson-dataformat-xml#895 | not yet |  |
+| google/gson#2998 | written | Read the three narrowed write calls and baseline tree tests, including long controls. The proposed 257-to-1 alias case uses Java byteValue and independent JSON text. It remains unexecuted. |
+| FasterXML/jackson-core#1816 | written | Read issue #1815 and the pinned accessor sequence for [2.5,7.5]. The big-integer regression uses 12345678901234567890123. The independent accessor-order comparison remains unexecuted. |
+| FasterXML/jackson-databind#6407 | written | Read #6397 and the pinned immutable-builder and ordinary-bean fixtures. The public tests assert all four record fields. Cross-shape agreement after changing only b remains open. |
+| FasterXML/jackson-databind#6473 | written | Read the pre-existing-value update branch and #6445 fixture. The merged test retains the old A reference and missing data field while applying a new count. Serialization under variation of untouched C remains unexecuted. |
+| FasterXML/jackson-dataformat-xml#895 | written | Read the name marker predicate and boundary assertions. The pinned DTO test checks z78 and _0IA around U+0400. Independent StAX reading and a second mapper remain open. |
 | h2database/h2database#4034 | not yet |  |
 | h2database/h2database#2614 | not yet |  |
 | apache/calcite#5345 | not yet |  |
