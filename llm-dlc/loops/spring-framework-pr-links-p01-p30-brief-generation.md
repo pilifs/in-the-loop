@@ -17,11 +17,11 @@
 | spring-projects/spring-framework#37202 | written | Read #37200, both landed commits and both CRLF fixtures. The tests use key membership and anyMatch. Exact multiplicity and ordering for repeated field names remain predictions. |
 | spring-projects/spring-framework#37059 | written | Checked both encoder cleanup paths and the Jackson 3 counting-pool test. It balances a combined count after completion and error without capturing JSON bytes. Repeated NDJSON byte readback and per-call balances remain open. The caller fixture uses a record because the encoder declines String as the element type. |
 | spring-projects/spring-framework#37159 | written | Read the two stream implementations, public DataBufferUtils factory and the landed web tests. The public offset-one read, sentinel bytes and upstream cancellation remain unexecuted. |
-| spring-projects/spring-framework#22392 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37014 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#25305 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#23562 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#29703 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#22392 | written | Read the issue, SQL fixture, parser regression and both readScript signatures. The three-argument public reader is replaced at the landing. Persistent rows, sentinel exclusion and direct-client linkage remain unexecuted. |
+| spring-projects/spring-framework#37014 | written | Read the revised rejection policy, mocked overlap tests and public compile/recompile path. Driver key readback and recovery of the same object after implicit compilation fails are unexecuted. |
+| spring-projects/spring-framework#25305 | written | Compared the parent’s mandatory-query precondition with merged isValid(interval), the SQL fallback and close-in-finally. Distinct failed/successful connection ownership and the SQL-free retry remain unexecuted. |
+| spring-projects/spring-framework#23562 | written | Compared #23304’s Flux.next history with the two pinned operator paths and the Mono cancellation regression. Gated commit timing and fresh-connection visibility after transactional(Mono) remain unexecuted. |
+| spring-projects/spring-framework#29703 | written | Read both cleanup chains, the rollback/restore mock assertions, and the driver clarification about jasync 2.1.19 vs 2.1.20. Subscribed-close receipts and independent checkout after cleanup remain predictions. |
 | spring-projects/spring-framework#33533 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#35627 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#22260 | not yet | Awaiting source review and claims. |
