@@ -428,3 +428,68 @@ Before `882bf488e228b1f55ed3b636838825dec31ec20d` → after `694efb6dbd8506d623d
 **Technical notes.** The PR changes both the JRE and Android implementation and test trees. Use ordinary Java integer equality consistently in the backing sets. The instrumented set must delegate `size()` directly to its backing set so a size lookup cannot increment the iteration counter. [JRE POM](https://github.com/google/guava/blob/0232f388fbe4d45deea2f31a9c6e2f7283662fd5/guava/pom.xml) · [Android POM](https://github.com/google/guava/blob/0232f388fbe4d45deea2f31a9c6e2f7283662fd5/android/guava/pom.xml) · [ForwardingSet](https://github.com/google/guava/blob/0232f388fbe4d45deea2f31a9c6e2f7283662fd5/guava/src/com/google/common/collect/ForwardingSet.java)
 
 **Sources.** [Equality and bounds](https://github.com/google/guava/blob/0232f388fbe4d45deea2f31a9c6e2f7283662fd5/guava/src/com/google/common/collect/Sets.java#L739-L818) · [Difference view](https://github.com/google/guava/blob/0232f388fbe4d45deea2f31a9c6e2f7283662fd5/guava/src/com/google/common/collect/Sets.java#L1011-L1083) · [Android implementation](https://github.com/google/guava/blob/0232f388fbe4d45deea2f31a9c6e2f7283662fd5/android/guava/src/com/google/common/collect/Sets.java)
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- Everything is under `~/.cache/in-the-loop/merged-pr-links` (`$O`); `source $O/scripts/env.sh` gives `$O`, `$W`, `$MVN`, `GRADLE_USER_HOME`,
+  `TMPDIR` and the JDK homes `$J8` `$J9` `$J11` `$J16` `$J17` `$J21` `$J25` (JDK 24 is `$O/tools/jdk-24.0.2+12`). The default `java` is 25.
+- Both revisions of every case, at the brief's pins: `$W/MNN-MIRROR-parent` and `$W/MNN-MIRROR-fix` (full SHAs and trees in
+  [Upstream revisions](#upstream-revisions); M16 also has `$W/M16-jOOQ-reporter-test`). Every PR's merge SHA is the brief's after pin, and
+  every after pin's first parent is the brief's before pin.
+- Built jars of both sides for every case in `$O/artifacts/`, named in each case's section with full sha256 and the digests of the changed
+  classes. Built from the pins themselves: M02–M04, M06–M15, M17, M19. Overlays (each side's changed classes over a release, fixed entry
+  dates): M01 (lucene-core 10.3.0), M05 (Solr 9.8.0), M16 (jOOQ 3.21.2), M18 (JDT core 3.47.0, unsigned copy), M20 (Guava 33.4.8 JRE and
+  Android). Runtime classpaths are files named in each section (`$O/releases/NAME/classpath.txt` or `$O/artifacts/*classpath*.txt`).
+- Release sets resolved with strict checksums in `$O/releases/`, and which side each equals: the "Release side" column of
+  [Summary by case](#summary-by-case).
+- Dependencies for the builds are in `$O/m2` and `$O/gradle-home`; the offline form (`$MVN -o`, `--offline`) was checked for M02, M03, M04,
+  M01, M03, M05, M06, M08, M09, M10, M11, M12, M13, M14, M15, M16, M17, M19 and M20 (for M01, M03, M05, M16, M19 and M20 by the
+jobs, which passed). Exact commands are in each case's section.
+
+### What was verified on a JVM
+
+- The landed regression passes on the fix and fails on the parent (the fix's test moved onto the parent) for M01 (overlay run, the brief's
+  `ClassCastException`), M02, M04, M06, M07, M08, M09, M10, M11 (`testSchema`), M12, M13, M14, M15, M17 (both modules) and M18 (overlay run,
+  `StringIndexOutOfBoundsException: Index -1`); for M16, the reporter's H2 test from `5a98d74deb44ca78838d4b62e376dbc4a704cc0f` passes on
+  the fix overlay and fails on the parent's ("Expected Bob, got: [Alice, Alice, Alice]"). Counts per side are in the summary table.
+- M20: the landed `SetViewTest` passes at both pins, but the fix's copy does not compile on the parent (`minSize()`/`maxSize()` are
+  fix-only), so no landed test separates the sides.
+- By the seven jobs, all passed (see [Jobs](#jobs)): M03 (both `priorityQueueOrAcceptsSubtypeArray()` tests fail on the parent with
+  `ArrayStoreException`), M05 (`testMultivalueEnumTypes` fails on the parent: "List size mismatch @ facets/f/buckets"), M19
+  (`indicativeSentencesGeneratorOnNestedClass()` fails on the parent), and the upstream builds of M01, M16 and M20 and the whole M11
+  class, which agree with the overlay and inline runs above.
+- So the landed (or, for M16, the reporter's) regression separates the sides in **19 of 20 cases**; M20 is the exception.
+- **None of the brief's claim scenarios was run** in any case.
+
+### What to know before starting
+
+- **JDKs:** M01's pins build only on JDK 24 (its overlays run on 21 or 25); M04's jars need JDK 25 to run; M15 builds on 21; M12 and
+  M13 on 8; Jackson 3 (M07) needs 17+; `jool` needs 11+, `jool-java-8` runs on 8; M14 needs toolchains 9 and 21 (`$O/scripts/M14-gradle.sh`),
+  M19 JDK 11 plus 16 (`$O/scripts/M19-gradle.sh`).
+- **M07, unstable input:** the pins' `3.2.0-SNAPSHOT` parent and dependencies are gone from the snapshot repository; the built jars are
+  each pin's csv sources compiled over released jackson-core/databind 3.2.0, without `module-info` (`$O/scripts/m07_build.sh`).
+- **M11:** Testcontainers 1.20.3 needs `-Dapi.version=1.44` on this Docker 29; pin `postgres:16` by its digest ([Signatures](#signatures)).
+- **M05:** the parent's `schema_latest.xml` has no `severity_mv`; a parent-side run needs the field supplied. 9.8.0 = parent, 9.8.1 = fix.
+- **M15:** logback 1.5.9 is **not** the fix (its `setOutputStream` keeps an `isStarted()` guard). Its tests need `-Dsurefire.useModulePath=false`.
+- **M03:** Central's RoaringBitmap 1.6.30 has the pins' version label but is an older tree; use the built jars.
+- **M18:** use the unsigned copy `$O/artifacts/M18-org.eclipse.jdt.core-3.47.0-unsigned.jar` under an overlay. Whether `ToolFactory.createCodeFormatter`
+  (the brief's public route) works on a plain classpath was not tried.
+- **M20:** run Guava's Maven build only with `-Duser.home=$O/mvnhome`.
+- **M16:** jOOQ's upstream POM has no H2 dependency; the reporter's test runs outside Maven with H2 2.4.240 and checks names only.
+- **M02:** the transplanted landed test errors inside the fix's failure-printing helper (`MissingFormatArgumentException`), not with an assertion.
+- **M19:** `$W/M19-junit-framework-*` are standalone clones, not worktrees.
+- **Signatures:** RxJava 2.1.14/2.1.15 cannot be verified (signing key revoked as compromised); Solr 9.8.0 is signed by an expired key.
+  Plugin modules substituted for M13 and M19 rest on SHA-1 checks. See [Signatures](#signatures).
+- **M16:** the jOOQ jar is not byte-reproducible between two builds of one pin; compare the class digests in its section.
+- **M01, M05, M16, M20** have both overlay jars (over a release) and jars built from the pins in `$O/artifacts/`; the sections give both.
+  The Solr pin jars' runtime classpath was not exported.
+- The job results live on the default line (`verification/results/2026/11/25/`); this workspace's line does not contain them until it is merged.
+
+### What is left for the domain work on purpose
+
+- Every claim, example folder, example id, adapter, sidecar, observer and recipe; the brief's public scenarios and challenge histories
+  (none was run or probed).
+- Choosing, per case, whether the built pins, the overlays or a published release stand for each side.
+- The PostgreSQL-side results the brief leaves open (M16), a Tycho build of JDT (M18), and the brief's `ToolFactory` route on a plain classpath.
