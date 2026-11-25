@@ -20,8 +20,10 @@ Commands (python3 llm-dlc/tools/brief_queue.py COMMAND ...):
         (`---`, `queue.KEY: VALUE` lines, `---`). A list of pull requests instead of a brief (a file whose every
         line is a GitHub pull request's link, or any file with --generate) is a generation entry: a brief author
         writes its brief (single_run.py generate) into llm-dlc/loops/NAME-brief.md; once it is landed and names
-        every pull request, its copy goes beside the list (~/code/scripts/analysis/NAME-brief.md) and is queued at
-        the end as the brief NAME-brief, a brief of the user's like any other: setup phase, notes, domain run.
+        every pull request, its copy goes beside the list (~/code/scripts/analysis/NAME-brief.md) and is queued as
+        the brief NAME-brief, a brief of the user's like any other: setup phase, notes, domain run. It goes right
+        after its list (generatedBrief=next, the default), so each list is generated, set up and proved before the
+        next list starts; generatedBrief=end puts it at the end of the queue instead.
   inbox                         add every brief of the inbox that the queue does not have yet
   list | status                 the queue, the run under way, and what `next` would do; `status --json` as data
   move NAME (--first | --after NAME | --before NAME)
@@ -35,7 +37,7 @@ Commands (python3 llm-dlc/tools/brief_queue.py COMMAND ...):
   next [--finished]             the handover. It does every step that is due, in order, and records each, so that it
         can be run again after a failure or a crash and carries on where it stopped: bring the inbox in; for a list
         of pull requests at the head, start its generation run, and when that has finished, land it, check that the
-        brief accounts for every pull request, put its copy beside the list, queue that copy at the end and
+        brief accounts for every pull request, put its copy beside the list, queue that copy (next or at the end) and
         checkpoint develop; for the brief at the head, move the workspace onto the line and start its setup run; when that has finished, land it, put its
         notes into both copies of the brief and commit; move the workspace onto the line again and start the domain
         run; when that has finished, land it, checkpoint develop, clear what is safe to clear, and go on to the next
@@ -81,6 +83,10 @@ DEFAULTS = {
     "generateEffort": single_run.GENERATE_EFFORT,
     "generateSession": "previous",     # previous (the last generation run's session), new, or a session id
     "generateCompactAt": single_run.GENERATE_COMPACT,
+    # Where a generated brief is queued: `next`, right after its list, so that one list is generated, set up and
+    # proved before the next list is generated (the user, 2026-11-25: a run that executes the earlier entries first
+    # can learn from them); or `end`, the end of the queue, as every generated brief was queued until then.
+    "generatedBrief": "next",
     "setup": single_run.SETUP_MODEL,   # the setup agent's model, or `none` for no setup phase
     "setupEffort": single_run.SETUP_EFFORT,
     "client": "codex",
@@ -92,7 +98,7 @@ DEFAULTS = {
     "cycles": "0",
     "prompt": "aspirational",          # PROMPT_TEMPLATE's name
 }
-STEPS_GENERATE = ("generate-start", "generate-land", "brief")  # then the brief is queued at the end
+STEPS_GENERATE = ("generate-start", "generate-land", "brief")  # then the brief is queued (generatedBrief)
 STEPS_SETUP = ("setup-start", "setup-land", "notes")
 # A pull request as a list of them names it: a GitHub URL, which `add` reads to tell a list from a brief and the
 # `brief` step to check that the brief accounts for each one.
@@ -274,6 +280,8 @@ def checked(over: dict, allow_run: bool = False) -> dict:
         raise Problem(f"unknown setting(s) {', '.join(unknown)}: the keys are {', '.join(sorted(keys))}")
     if "cycles" in over and not str(over["cycles"]).isdigit():
         raise Problem("cycles is a count, 0 for no limit")
+    if "generatedBrief" in over and over["generatedBrief"] not in ("next", "end"):
+        raise Problem("generatedBrief is next (right after its list) or end (the end of the queue)")
     return over
 
 
@@ -408,7 +416,10 @@ def queued(root: Path, entry: dict, where: str | None = None, other: str | None 
                f"Queue a brief to be generated from {len(entry['pullRequests'])} pull requests: {entry['name']}",
                f"The list of pull requests {entry['source']} is copied unchanged to {entry['copy']} and put on the brief "
                f"queue (llm-dlc/tools/brief_queue.py), {at}. A brief author ({over['generate']}) writes its brief into "
-               f"{entry['brief']}, and that brief is then queued at the end, with a setup phase and a domain run as any other.")
+               f"{entry['brief']}, and that brief is then queued "
+               + ("right after the list" if over.get("generatedBrief", DEFAULTS["generatedBrief"]) == "next"
+                  else "at the end")
+               + ", with a setup phase and a domain run as any other.")
     else:
         commit(root, [entry["copy"], LOG], f"Queue the brief {entry['name']}",
                f"The brief {entry['source']} is copied unchanged to {entry['copy']} and put on the brief queue "
@@ -571,10 +582,17 @@ def step(root: Path, data: dict, entry: dict, s: dict, name: str, finished: bool
     raise Problem(f"no step {name}")
 
 
+def brief_place(s: dict, entry: dict) -> tuple[str | None, str | None]:
+    """Where a list's generated brief is queued, as `placed` takes it: right after the list (generatedBrief=next), so
+    that it is set up and proved before the next list starts, or at the end of the queue (generatedBrief=end)."""
+    return ("after", entry["name"]) if s["generatedBrief"] == "next" else (None, None)
+
+
 def written_brief(root: Path, data: dict, entry: dict) -> None:
     """The generated brief, landed: it is there, it is a brief, and it accounts for every pull request of the list.
-    Its copy then goes beside the list, and that copy is queued at the end as a brief of the user's, with the list's
-    own settings but the generation's: its setup notes go there, and from there on nothing differs."""
+    Its copy then goes beside the list, and that copy is queued as a brief of the user's, right after the list or at
+    the end (generatedBrief), with the list's own settings but the generation's: its setup notes go there, and from
+    there on nothing differs."""
     brief = root / entry["brief"]
     run = entry["runs"].get("generate")
 
@@ -605,10 +623,13 @@ def written_brief(root: Path, data: dict, entry: dict) -> None:
     # The list's own settings, but the generation's; and a brief, whatever it looks like (one that is only links
     # and headings would otherwise be taken for another list).
     own = {**{k: v for k, v in entry.get("settings", {}).items() if not k.startswith("generate")}, "generate": "none"}
-    made = make_entry(root, data, beside, f"{entry['name']}-brief", None, None, own)
+    where, other = brief_place(effective(data, entry), entry)
+    made = make_entry(root, data, beside, f"{entry['name']}-brief", where, other, own)
     made["generatedBy"] = entry["name"]
     entry["queued"] = made["name"]
-    queued(root, made, why=f"It was written by the generation run {run} from the pull requests of {entry['source']}")
+    entry["queuedAt"] = "next" if where else "end"
+    queued(root, made, where, other,
+           why=f"It was written by the generation run {run} from the pull requests of {entry['source']}")
     return None
 
 
@@ -655,6 +676,7 @@ def cmd_next(root: Path, finished: bool) -> dict:
                 entry["ended"] = now()
                 report["done"].append(name)
                 made = entry.get("queued")
+                made_at = "right after it" if entry.get("queuedAt") == "next" else "at the end"
         if stop == "failed":
             log(root, "failed", name, step=report["failedAt"], problem=report["problem"])
             break
@@ -663,7 +685,7 @@ def cmd_next(root: Path, finished: bool) -> dict:
             if made:
                 report.setdefault("queued", []).append(made)
                 report.setdefault("forTheUser", []).append(
-                    f"{name}'s brief is written and queued at the end as {made}; it is on develop: review it whenever "
+                    f"{name}'s brief is written and queued {made_at} as {made}; it is on develop: review it whenever "
                     f"you like, before its setup phase starts or while it runs")
             else:
                 report.setdefault("forTheUser", []).append(

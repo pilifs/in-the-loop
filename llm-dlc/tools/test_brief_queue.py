@@ -118,6 +118,18 @@ class TheQueuesRules(unittest.TestCase):
             with self.assertRaisesRegex(brief_queue.Problem, "would overwrite it"):
                 brief_queue.make_entry(root, data, analysis / "more.md")
 
+    def test_a_generated_brief_goes_right_after_its_list_unless_the_list_says_end(self):
+        entry = {"name": "prs"}
+        self.assertEqual(brief_queue.DEFAULTS["generatedBrief"], "next")
+        self.assertEqual(brief_queue.brief_place({**brief_queue.DEFAULTS}, entry), ("after", "prs"))
+        self.assertEqual(brief_queue.brief_place({**brief_queue.DEFAULTS, "generatedBrief": "end"}, entry), (None, None))
+        self.assertEqual(brief_queue.checked({"generatedBrief": "end"}), {"generatedBrief": "end"})
+        with self.assertRaisesRegex(brief_queue.Problem, "generatedBrief is next"):
+            brief_queue.checked({"generatedBrief": "soon"})
+        entries = [{"name": "prs", "state": "generate"}, {"name": "other", "state": "queued"}]
+        brief_queue.placed(entries, {"name": "prs-brief", "state": "queued"}, *brief_queue.brief_place(brief_queue.DEFAULTS, entry))
+        self.assertEqual([e["name"] for e in entries], ["prs", "prs-brief", "other"])
+
     def test_cleanup_clears_a_failed_jobs_folder_only_once_its_originals_are_in_the_archive(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {"HOME": tmp}):
             root, home = Path(tmp) / "checkout", Path(tmp) / ".cache/in-the-loop"
@@ -272,7 +284,7 @@ class TheHandover(unittest.TestCase):
         self.assertEqual(brief_queue.changed(self.root, [brief_queue.LOG]), [], "the log is committed with the queue's commits")
 
     @cost("tool")
-    def test_a_list_of_pull_requests_is_written_into_a_brief_in_a_session_of_its_own_and_the_brief_queued_at_the_end(self):
+    def test_a_list_of_pull_requests_is_written_into_a_brief_in_a_session_of_its_own_and_the_brief_proved_next(self):
         loops = self.root / "llm-dlc/loops"
         for name in ("brief-generation-template.md", "brief-generation-handoff.md"):
             shutil.copy(TOOLS.parent / "loops" / name, loops / name)
@@ -314,7 +326,8 @@ class TheHandover(unittest.TestCase):
         self.assertIn("single_run.py generate prs-generate", out["problem"])
         self.assertFalse((self.analysis / "prs-brief.md").exists())
 
-        # 3. Continued, it writes the rest; landed again and checked, the brief is queued at the end and runs as any.
+        # 3. Continued, it writes the rest; landed again and checked, the brief is queued right after its list, ahead
+        #    of the brief already waiting, and runs as any: the list is generated, set up and proved before the next.
         self.tool("generate", "prs-generate")
         self.finish("prs-generate")
         written.write_text(written.read_text() + "\n## other/thing#22\n\nhttps://github.com/other/thing/pull/22\n")
@@ -322,15 +335,12 @@ class TheHandover(unittest.TestCase):
         out = self.data("next", "--finished")
         self.assertEqual(out["steps"], ["prs: generate-land", "prs: brief", "prs: checkpoint"], out)
         self.assertEqual((out["done"], out["queued"]), (["prs"], ["prs-brief"]))
-        self.assertIn("queued at the end as prs-brief", out["forTheUser"][0])
+        self.assertIn("queued right after it as prs-brief", out["forTheUser"][0])
         self.assertEqual((self.analysis / "prs-brief.md").read_text(), (self.root / "llm-dlc/loops/prs-brief.md").read_text())
-        rows = self.data("status", "--json")["queue"]
-        self.assertEqual([(r["name"], r["state"]) for r in rows], [("prs", "done"), ("waiting", "domain"), ("prs-brief", "queued")])
-        self.assertEqual((rows[2]["source"], rows[2]["generatedBy"]), ("~/code/scripts/analysis/prs-brief.md", "prs"))
-        self.assertEqual(out["started"], "waiting", "the brief already waiting goes first")
-        self.finish("waiting")
-        out = self.data("next", "--finished")
         self.assertEqual(out.get("started"), "prs-brief-setup", f"then the generated brief's setup phase, as for any brief: {out}")
+        rows = self.data("status", "--json")["queue"]
+        self.assertEqual([(r["name"], r["state"]) for r in rows], [("prs", "done"), ("prs-brief", "setup"), ("waiting", "queued")])
+        self.assertEqual((rows[1]["source"], rows[1]["generatedBy"]), ("~/code/scripts/analysis/prs-brief.md", "prs"))
         setup = json.loads((self.run_dir("prs-brief-setup") / "watch.json").read_text())
         self.assertEqual(setup["setup"]["brief"], "llm-dlc/loops/prs-brief.md")
         actions = [json.loads(line)["action"] for line in (self.root / brief_queue.LOG).read_text().splitlines()]

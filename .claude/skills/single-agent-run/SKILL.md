@@ -218,7 +218,9 @@ python3 llm-dlc/tools/single_run.py setup NAME-setup --brief FILE [--workspace W
 ## A generation phase
 
 When the user gives a **list of pull requests** instead of a brief, a **brief author** writes the brief first. The
-brief is then queued at the end, and goes through a setup phase and a domain run exactly as any other. The three phases each keep a
+brief is then queued right after its list, and goes through a setup phase and a domain run exactly as any other, before
+the next list is generated (the user, 2026-11-25: a list proved before the next is written lets the later runs learn
+from the earlier ones; `generatedBrief=end` queues it at the end instead, as until then). The three phases each keep a
 session of their own, and you orchestrate all three:
 
 | Phase | Agent (default) | Session |
@@ -274,8 +276,8 @@ watcher's place reads `brief_queue.py status` and carries on.
   (see "A generation phase"):
   - The list's copy goes into `llm-dlc/loops/`.
   - The author writes the brief into `llm-dlc/loops/NAME-brief.md`.
-  - Once it is landed and checked, its copy goes beside the list as `NAME-brief.md` and is **queued at the end**
-    as the brief `NAME-brief`. That copy then counts as the user's original: the setup notes go there, and the
+  - Once it is landed and checked, its copy goes beside the list as `NAME-brief.md` and is **queued right after the
+    list** as the brief `NAME-brief` (`generatedBrief=next`, the default; `end` puts it at the end of the queue). That copy then counts as the user's original: the setup notes go there, and the
     domain run's texts name it. From the brief on, nothing differs from a brief the user wrote.
 
   Until the queue is further productized, you manage its order (the user, 2026-11-25): `move` a generated brief
@@ -289,7 +291,7 @@ watcher's place reads `brief_queue.py status` and carries on.
   - start the next brief's setup run. After the setup run: land it, put its notes into both copies of the brief,
     and start the domain run.
   - For a list of pull requests: start its generation run. After it: land it, check the brief (the `brief` step),
-    put its copy beside the list, queue that at the end, and checkpoint develop.
+    put its copy beside the list, queue that right after the list (or at the end), and checkpoint develop.
 
   A step that fails is named, and the next call carries on from it. It never promotes `main` and never runs the
   default tests: tell the user when a brief is done, and they decide both.
