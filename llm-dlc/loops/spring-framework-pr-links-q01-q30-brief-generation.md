@@ -27,10 +27,18 @@
 | spring-projects/spring-framework#37601 | written | Read the copy at build(), factory client customization, and the test that installs both late hooks. An isolated processor’s transport header across three clients remains unexecuted. |
 | spring-projects/spring-framework#36162 | written | Checked the mock reply tests and the actual consumer-before-send order on the landed SHA against the later RabbitMQ report. Broker delivery and reuse of the caller-owned queue remain unexecuted. |
 | spring-projects/spring-framework#23784 | written | Read the null-returning @Bean, optional injection check and direct multicast regression. A second ordered subscriber and repeated context.publishEvent remain unexecuted. |
-| spring-projects/spring-framework#22881 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37525 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#35140 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37465 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#35732 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#22881 | written | Read both landed changes, the manager’s cold cleanup, four-value operator test and Reactor issue #1687. Lease reuse, sequencing of a gated rollback cleanup and exact exception identity remain unexecuted. |
+| spring-projects/spring-framework#37525 | written | Read numeric and string conversion paths, the three return-value assertions and the policy maximum. The fail-once call and comparison with an equivalent millisecond policy remain unexecuted. |
+| spring-projects/spring-framework#35140 | written | Compared both jitter formulas with zero delay, 20 ms against 5 ms, and 107000 days against the signed nanosecond limit. MethodRetrySpec accepts the Duration directly. Immediate-success readback for the oversized Duration and parent Reactor error behavior remain unexecuted. |
+| spring-projects/spring-framework#37465 | written | Compared actual count increments and the composite’s old forwarding overrides with the merge’s inherited no-op reduced forms. Exact state snapshots and legacy direct-composite behavior remain unexecuted. |
+| spring-projects/spring-framework#35732 | written | Read the manifest parser and both child-JVM fixtures. The absolute-path regression checks printed URL text. Unique-byte readback after changing only the named dependency remains unexecuted. |
 
 Authoring evidence consists of the saved PR metadata and revision-pinned source reads. Runtime results attributed to the PR or issue are upstream observations. The proposed controls and challenges have not been executed here.
+
+## Final check
+
+On 2026-11-25 the input, section headings, comparison links and generation rows accounted for the same 30 distinct PRs in order. All 92 claims specify a public result, exception, callback, byte sequence or state change that could refute the prediction. Historical observations are attributed to the PR, migrated issue, documentation or pinned regression. No Spring build, database or broker run, runtime probe or verification job was performed during authoring.
+
+For all 104 changed paths, the before/after Git diff line counts agreed with the submitted PR. Across 379 complete source reads, each file matched its Git blob ID and byte length (257 distinct blobs). All 148 Spring file links resolved to those pinned files. For #27735 and #37601, submitted and landed file blobs differed in three paths in total. Comparing the added and removed lines on their respective bases found identical edits in all three.
+
+Four GitHub aggregate comparisons confirmed the complete landed ranges. #1175 spans four consecutive commits and #22881 spans two rebased commits. #37053 and #374 use the merge commit and its first parent. #2060, #27735 and #37261 have one landed commit for two, eleven and four submitted commits respectively. Read the migrated reports for #1251, #1175 and #374 and the linked Reactor and RabbitMQ records for #22881 and #36162. For #34709, the Java SE 17 Statement.setMaxRows documentation says that zero removes the limit. The official page read at authoring had SHA-256 d7ae1aac5eab2957e73513fb0d9d96acd9da28659ec29a79db167be190be8d12. The per-PR rows above identify which public observations still need to be made.
