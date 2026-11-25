@@ -1,0 +1,344 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-225459-setup-build-spring-jdbc-at-both-37322-re",
+  "title": "Setup: build spring-jdbc at both #37322 revisions and run the incrementer regression",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 3m44s, peak 127.7 MiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-225459-setup-build-spring-jdbc-at-both-37322-re.json",
+    "sha256": "440ecf3bf0620c68d5bf1d6f59255eb6ebb02ff4c587fe532849ed4d192c708c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-225459-setup-build-spring-jdbc-at-both-37322-re",
+      "title": "Setup: build spring-jdbc at both #37322 revisions and run the incrementer regression",
+      "description": "Setup for case N05 of llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-n01-n05/worktrees, offline Gradle 9.8.0 (verified distribution, JDK 25 launcher, toolchains Temurin 17 and 25 only, no build cache or scan): builds spring-jdbc 7.0.10-SNAPSHOT and the modules it needs at the fix pin f96403da2a821f9b8281161847e32a1c4e35e470 and the parent pin eb9928f993fc650ba92a833ecfd28194c28afd3e, runs spring-jdbc's whole test task at each, keeps the jar, the MySQLMaxValueIncrementer class digest and the runtime and test runtime classpaths (project outputs copied to the setup's artifacts folder); then runs the fix's DataFieldMaxValueIncrementerTests on a copy of the parent (expected to fail), and removes the build trees. Spring's buildSrc and spring-core/beans/tx/context compile for several minutes, so this is a job. Dependencies were resolved online inline first (every resolvable configuration of the modules involved).",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md"
+        ]
+      },
+      "expected": "steps 1, 2 and 4 exit 0 (spring-jdbc tests pass at both pins, artifacts kept); step 3 prints TRANSPLANT-FAILS-AS-EXPECTED",
+      "submitted": {
+        "at": "2026-11-25T22:54:59+00:00",
+        "session": "641068ac-42ac-4f23-bdac-7628dd0dc780",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash",
+        "systemd-run"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m"
+      },
+      "steps": [
+        {
+          "name": "N05 fix offline: spring-jdbc jar and its whole test task; jar, class digest, runtime and test runtime classpaths",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh fix",
+          "cwd": "."
+        },
+        {
+          "name": "N05 parent offline: the same at the parent",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh parent",
+          "cwd": "."
+        },
+        {
+          "name": "N05 the fix's DataFieldMaxValueIncrementerTests on a copy of the parent (expected to fail)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh transplant",
+          "cwd": "."
+        },
+        {
+          "name": "remove the N05 build trees",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "041147556fa136dbf35ebf6f0ec97c349e3b6739",
+  "startedAt": "2026-11-25T23:04:37+00:00",
+  "finishedAt": "2026-11-25T23:08:29+00:00",
+  "wallSeconds": 232.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 533357,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 133898240,
+    "wallSeconds": 224.5,
+    "cpuSeconds": 1.2,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "N05 fix offline: spring-jdbc jar and its whole test task; jar, class digest, runtime and test runtime classpaths",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 78.783,
+      "cpuSeconds": 0.095,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 14422016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-n05-fix-offline-spring-jdbc-ja.log",
+        "lines": 24,
+        "bytes": 3167,
+        "sha256": "9508212ec947071318c344581cc04e35cf98dbb4f96c5a12bb3df58749e6b869",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/worktrees/N05-spring-framework-fix gradle-exit=0 seconds=59 args=--offline :spring-jdbc:jar :spring-jdbc:test",
+        "junit tests=972 failures=0 errors=0 skipped=6",
+        "BUILD SUCCESSFUL in 58s",
+        "class junit tests=12 failures=0 errors=0 skipped=0",
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/worktrees/N05-spring-framework-fix gradle-exit=0 seconds=10 args=--offline -I /home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/resolve-all.init.gradle :spring-jdbc:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut",
+        "BUILD SUCCESSFUL in 9s",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/artifacts/N05-fix/runtimeClasspath.txt 22 entries",
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/worktrees/N05-spring-framework-fix gradle-exit=0 seconds=9 args=--offline -I /home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/resolve-all.init.gradle :spring-jdbc:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCp",
+        "BUILD SUCCESSFUL in 9s",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/artifacts/N05-fix/testRuntimeClasspath.txt 56 entries",
+        "1dec37927a52af49674ff1c5d96322ae0efbc3c779371598bf7c821bd22ea96b  spring-jdbc-7.0.10-SNAPSHOT.jar",
+        "0ce2d2d008306c61bf665d40010b94e69ac134e5c50ceecd0fa1da8afe7970d7  tree/spring-aop/build/libs/spring-aop-7.0.10-SNAPSHOT.jar",
+        "52037fa238e705c81e6581774cf475024e7ff2e1624a3dc98553045d34d5a7e8  tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT.jar",
+        "7c1189776729b5f94d765f9f7dcb25e901a5da54d4f85b1e2e60b1ea95005903  tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "367ff7947943f73452c34399bac30500f03c7d7e2309f1d50af445d6d37c544c  tree/spring-context/build/libs/spring-context-7.0.10-SNAPSHOT.jar",
+        "a2b1e4efba11de5116b4937783bfeda2574261c11947a03da65dc751d69f9905  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT.jar",
+        "ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "79544fbebdd8c00b4d4fcc5f774f7e2cd82bbbbce1bb474c33616f8811b60bb8  tree/spring-expression/build/libs/spring-expression-7.0.10-SNAPSHOT.jar",
+        "1dec37927a52af49674ff1c5d96322ae0efbc3c779371598bf7c821bd22ea96b  tree/spring-jdbc/build/libs/spring-jdbc-7.0.10-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-jdbc/build/libs/spring-jdbc-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "b5413dd4d2490f3e21d73fbcb1c2113ad1c1bde563d95a135e0a48245f8e4406  tree/spring-tx/build/libs/spring-tx-7.0.10-SNAPSHOT.jar",
+        "dba95d593f6d207bbeb3dd74d3faf0f709047daa389b3cbac0d61f7fdfd83e56  org/springframework/jdbc/support/incrementer/MySQLMaxValueIncrementer.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "N05 parent offline: the same at the parent",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 88.181,
+      "cpuSeconds": 0.101,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 14323712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-n05-parent-offline-the-same-at.log",
+        "lines": 24,
+        "bytes": 3192,
+        "sha256": "6d96b241ebd0c60ca7a117ebe2a9b9eb46c37c64a108869482b0b67be7694f1d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/worktrees/N05-spring-framework-parent gradle-exit=0 seconds=68 args=--offline :spring-jdbc:jar :spring-jdbc:test",
+        "junit tests=971 failures=0 errors=0 skipped=6",
+        "BUILD SUCCESSFUL in 1m 6s",
+        "class junit tests=11 failures=0 errors=0 skipped=0",
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/worktrees/N05-spring-framework-parent gradle-exit=0 seconds=10 args=--offline -I /home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/resolve-all.init.gradle :spring-jdbc:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCp",
+        "BUILD SUCCESSFUL in 10s",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/artifacts/N05-parent/runtimeClasspath.txt 22 entries",
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/worktrees/N05-spring-framework-parent gradle-exit=0 seconds=10 args=--offline -I /home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/resolve-all.init.gradle :spring-jdbc:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -Pset",
+        "BUILD SUCCESSFUL in 9s",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/artifacts/N05-parent/testRuntimeClasspath.txt 56 entries",
+        "cf8f597b258ae68e0e898c44df0f2095edbd15e497c674f3f92aa4c220f7adb4  spring-jdbc-7.0.10-SNAPSHOT.jar",
+        "0ce2d2d008306c61bf665d40010b94e69ac134e5c50ceecd0fa1da8afe7970d7  tree/spring-aop/build/libs/spring-aop-7.0.10-SNAPSHOT.jar",
+        "52037fa238e705c81e6581774cf475024e7ff2e1624a3dc98553045d34d5a7e8  tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT.jar",
+        "7c1189776729b5f94d765f9f7dcb25e901a5da54d4f85b1e2e60b1ea95005903  tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "367ff7947943f73452c34399bac30500f03c7d7e2309f1d50af445d6d37c544c  tree/spring-context/build/libs/spring-context-7.0.10-SNAPSHOT.jar",
+        "a2b1e4efba11de5116b4937783bfeda2574261c11947a03da65dc751d69f9905  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT.jar",
+        "ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "79544fbebdd8c00b4d4fcc5f774f7e2cd82bbbbce1bb474c33616f8811b60bb8  tree/spring-expression/build/libs/spring-expression-7.0.10-SNAPSHOT.jar",
+        "cf8f597b258ae68e0e898c44df0f2095edbd15e497c674f3f92aa4c220f7adb4  tree/spring-jdbc/build/libs/spring-jdbc-7.0.10-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-jdbc/build/libs/spring-jdbc-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "b5413dd4d2490f3e21d73fbcb1c2113ad1c1bde563d95a135e0a48245f8e4406  tree/spring-tx/build/libs/spring-tx-7.0.10-SNAPSHOT.jar",
+        "61041df1599b74cf598a5dc7dfde2811bcd4df3fd7c04f84d2db075ad2d64233  org/springframework/jdbc/support/incrementer/MySQLMaxValueIncrementer.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "N05 the fix's DataFieldMaxValueIncrementerTests on a copy of the parent (expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 56.929,
+      "cpuSeconds": 0.449,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 133898240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-n05-the-fix-s-datafieldmaxvalu.log",
+        "lines": 9,
+        "bytes": 680,
+        "sha256": "54e6de7416e37fd2050ff5357107196cdf41009f6a746e3c4fc0b3713dfd2ee0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-n01-n05/build/N05-parent-landed gradle-exit=1 seconds=56 args=--offline :spring-jdbc:test --tests org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementerTests",
+        "junit tests=12 failures=1 errors=0 skipped=0",
+        "junit failed DataFieldMaxValueIncrementerTests#mySQLMaxValueIncrementerWithCommitFailure()",
+        "> Task :spring-jdbc:test FAILED",
+        "DataFieldMaxValueIncrementerTests > mySQLMaxValueIncrementerWithCommitFailure() FAILED",
+        "BUILD FAILED in 55s",
+        "class junit tests=12 failures=1 errors=0 skipped=0",
+        "class junit failed DataFieldMaxValueIncrementerTests#mySQLMaxValueIncrementerWithCommitFailure()",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "remove the N05 build trees",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.55,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6750208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-remove-the-n05-build-trees.log",
+        "lines": 1,
+        "bytes": 8,
+        "sha256": "37c3dee866bc87fc3d52b6b053805dfbe5df3d394fdad9ec535f162a4e695941",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T23:08:55+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T230829Z-639735e8add6aaaf"
+    }
+  }
+}
