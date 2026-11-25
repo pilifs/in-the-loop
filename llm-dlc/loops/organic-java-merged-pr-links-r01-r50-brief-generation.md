@@ -47,10 +47,18 @@
 | reactor/reactor-core#3783 | written | Read issue #3777, the old shortcut and the merged StepVerifier fixture. The report saw a first where c was expected. The complete parent sequence and error identity/tail counter are predictions. |
 | ReactiveX/RxJava#6664 | written | Read the newly reordered first-item enqueue and Flowable’s new-group error branch. The two pinned error tests observe both subscribers but only assert the exception class. Delayed single-item readback and exception identity remain open. |
 | resilience4j/resilience4j#2067 | written | Read #1565, the exceptional retry regressions and AsyncContext.onResult. The latter still publishes a retry event for its returned negative interval. Its event/call-count pairing is a source prediction, unexecuted. |
-| resilience4j/resilience4j#1999 | not yet |  |
-| remkop/picocli#2036 | not yet |  |
-| assertj/assertj#3710 | not yet |  |
-| junit-team/junit-framework#5839 | not yet |  |
-| junit-team/junit-framework#4466 | not yet |  |
+| resilience4j/resilience4j#1999 | written | Read #560/#2000, the class-path lambda fixture, the factory invocation paths and the WireMock request check. Per-failure markers across two calls and the success bypass remain unexecuted. |
+| remkop/picocli#2036 | written | Compared ArgSpec’s fallback copy with inherited option and positional tests. The issue reports KEY=VALUE rejection. Presence and contents under paired root/subcommand invocations for both fallback settings remain unexecuted. |
+| assertj/assertj#3710 | written | Read issue #3539, the two-record regression and findGetter. At the merge, getX still precedes a record’s bare X, which precedes isX. The additional constant-getter comparison is unexecuted. |
+| junit-team/junit-framework#5839 | written | Compared the 6.1.1 report, suite annotation default, dynamic registration predicate and the landed empty/nonempty engine tests. The two distinct child IDs, enclosing Launcher outcome and an empty nested container remain unexecuted. |
+| junit-team/junit-framework#4466 | written | Read the context-specific child-failure store and post-execution path assertions for ordered passing/failing tests. Reversing method order while comparing actual marker contents by owner remains unexecuted. |
 
 The cases distinguish upstream reports and pinned test assertions from predicted caller observations. No upstream build, runtime probe or verification job was run during authoring.
+
+## Final check
+
+On 2026-11-25 the input, case headings and generation rows identified the same 50 distinct merged PRs in order. All 150 claim rows specify a public observation that can refute the prediction. The cases cite the upstream report, landed test or code for historical behavior and identify the observations still to make. In particular Commons IO #860's stated mark limit differs from its skip implementation, Commons CSV #412 tests a format whose Javadoc disclaims parsing, and Avro #2282's array-backed decoder raises a question about a nonzero ByteBuffer slice.
+
+The changed paths and their added/deleted line counts matched all 221 PR file entries. For 48 single-commit landing ranges the first-parent comparison also matched the landed commit's file count. For JavaParser #5207 and JUnit #4466, GitHub's full comparisons each confirmed two consecutive landed commits and the complete path set. Rehashing all 533 complete file reads, including implementation, tests and build descriptors at the stated revisions, matched their Git blob IDs and lengths (487 distinct blobs). The absent source sides corresponded to upstream additions or deletions. All 196 revision-pinned file links in the brief resolved to the checked source. Nine named Apache Jira reports were also read. The before/after and per-claim checks are source evidence. The runtime outcomes proposed in the brief remain open.
+
+The first commit check reported seven missing trace snapshots from earlier work. The repository’s adopt-logs command recovered six. The remaining snapshot, `31e7338f8fac` in session `e61d882b-5ef7-428e-90df-ffe709ac6962`, was already referenced at the pre-brief revision `89543734`. Its manifest has no upload URL, the local workspace search found no redacted copy, and a HEAD request to its canonical public snapshot URL returned HTTP 404. This is a separate repository publication issue.
