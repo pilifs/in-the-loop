@@ -222,12 +222,59 @@ def scaffold(slot, row, work, launcher):
     print(slot, receipt["firstScaffoldStop"] or "registered on both original releases", flush=True)
 
 
+def alternative_graphs(slot, work, repos):
+    record = compressed(OUT / "alternative" / (slot + ".json.gz"))
+    base = OUT / "scaffolds" / (slot + ".json.gz")
+    # A later complete distribution launch can replace the preliminary scaffold. Match the
+    # shared question and consumer independently of that launch's dependency receipt.
+    src = REFS / slot / "ReferenceAPI.java"
+    if (record["question"] != digest(REFS / slot / "reference.json") or record["consumer"] != digest(src)
+            or record["jdkModulesSha256"] != digest(JDK / "lib/modules")
+            or record["expectedRows"] != compressed(base)["expectedRows"] or record["jvmFlags"] != JVM_FLAGS):
+        raise ValueError("alternative launch has a different question, runtime or caller")
+    inputs = packet(slot, work / "distribution")
+    cp = {}
+    for side in ("old", "new"):
+        cp[side] = []
+        for row in record["sides"][side]["orderedClasspath"]:
+            if "maven" in row:
+                group, name, version = row["maven"].split(":")
+                rel = Path(group.replace(".", "/")) / name / version / f"{name}-{version}.jar"
+                file = next((r / rel for r in repos if (r / rel).is_file() and digest(r / rel) == row["sha256"]), None)
+                if file is None:
+                    raise ValueError("supply the pinned Maven artifact with --maven-repo: " + row["maven"])
+            else:
+                provider = next((p for p in inputs[side] if p["sha256"] == row["sha256"]), None)
+                if provider is None:
+                    raise ValueError("recorded release JAR absent from the package")
+                file = work / "distribution" / provider["path"]
+            cp[side].append(file)
+    return record, cp
+
+
+def check_alternative(slot, work, launcher, repos):
+    record, cp = alternative_graphs(slot, work, repos)
+    src = REFS / slot / "ReferenceAPI.java"
+    spec = read(REFS / slot / "reference.json")
+    classes = work / "caller"
+    compile_java([src], classes, cp["old"], javaenv())
+    if digest(classes / "ReferenceAPI.class") != record["callerSha256"]:
+        raise ValueError("compiled consumer differs")
+    for side in ("old", "new"):
+        for mode in ("direct", "record"):
+            actual = observe(work / (side + mode), launcher, classes, cp[side], mode, spec["seeds"])
+            if actual != record["sides"][side][mode]:
+                raise ValueError(f"{slot} {side} {mode}: different original JVM observations or loader bindings")
+    print(slot, "all four alternative launches reproduced", flush=True)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("action", choices=("deployments", "scaffold"))
+    ap.add_argument("action", choices=("deployments", "scaffold", "check-alternative"))
     ap.add_argument("slots", nargs="*", metavar="SLOT")
+    ap.add_argument("--maven-repo", type=Path, action="append", default=[], help="local Maven repository used for alternative launches")
     args = ap.parse_args()
-    slots = args.slots or SLOTS
+    slots = args.slots or (["03", "08", "16"] if args.action == "check-alternative" else SLOTS)
     if any(s not in SLOTS for s in slots):
         ap.error("select slots 01 through 16")
     if args.action == "deployments":
@@ -240,7 +287,10 @@ def main():
         launcher.mkdir()
         subprocess.run([JDK / "bin/javac", "-proc:none", "-d", launcher, HERE / "LoaderObservations.java"], check=True)
         for slot in slots:
-            scaffold(slot, selected[int(slot)-1], work / slot, launcher)
+            if args.action == "check-alternative":
+                check_alternative(slot, work / slot, launcher, args.maven_repo)
+            else:
+                scaffold(slot, selected[int(slot)-1], work / slot, launcher)
 
 
 if __name__ == "__main__":

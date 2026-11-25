@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-044522-maven-supplement-03-matched-original-upg",
+  "title": "Maven supplement 03 matched original-upgrade comparison",
+  "description": "Use the registered original release JARs with the explicitly pinned local Maven alternative providers on slots 03. All callers passed normal and recording JVM launches twice first. Run the frozen native, integrated and packaged-stock original-release conjuncts and retain separate outcomes. These data receive no credit in the signed-distribution score.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/successor_measure.py"
+    ]
+  },
+  "expected": "A source-bound measurement of each named alternative with the original primary and control and recorded provider digests. The signed-distribution records stay separate.",
+  "submitted": {
+    "at": "2026-11-25T04:45:22+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc",
+    "dpkg-deb",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "8m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure.py matched 03 --maven-repo ~/.cache/in-the-loop/change-verification/m2 --maven-repo ~/.cache/in-the-loop/external-upgrades/maven",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/successor/alternative-measurements/matched/03"
+  ]
+}

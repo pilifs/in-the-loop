@@ -2,13 +2,14 @@
 import argparse
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import zipfile
 
 from evaluate_panel import matched_namespace, measure_automatic
 from history import JBMC, MODELS, ROOT
 from resource_transfer import discover_packet
-from successor import AREA, JDK, OUT, REFS, SLOTS, compressed, digest, draw, packet, read, save, scratch
+from successor import AREA, JDK, OUT, REFS, SLOTS, alternative_graphs, compressed, digest, draw, packet, read, save, scratch
 
 
 def frozen():
@@ -27,7 +28,7 @@ def frozen():
     return checker, policy
 
 
-def registration(slot):
+def registration(slot, alternative=False):
     ref = REFS / slot
     docket = OUT / "scaffolds" / (slot + ".json.gz")
     physical = compressed(docket)
@@ -35,7 +36,15 @@ def registration(slot):
                       ("pairSource", ref / "ReferencePair.java"), ("deployment", OUT / "deployments" / (slot + ".json.gz"))):
         if digest(path) != physical[key]:
             raise ValueError("the registered public caller, question or deployment changed")
-    if physical["firstScaffoldStop"] is not None:
+    if alternative:
+        prior = docket
+        docket = OUT / "alternative" / (slot + ".json.gz")
+        alt = compressed(docket)
+        if (alt["distributionScaffoldSha256"] != digest(prior) or alt["question"] != physical["question"]
+                or alt["consumer"] != physical["callerSource"] or alt["expectedRows"] != physical["expectedRows"]):
+            raise ValueError("different original question on the alternative deployment")
+        physical = {**physical, "sides":alt["sides"], "callerClasses":{"ReferenceAPI.class":alt["callerSha256"]}}
+    elif physical["firstScaffoldStop"] is not None:
         raise ValueError(slot + " still has an open scaffolding stop")
     for index, side in enumerate(("old", "new")):
         expected = [[r[0], r[index+1], r[3]] for r in physical["expectedRows"]]
@@ -62,20 +71,34 @@ def resource_files(work, policy):
     return targets, files
 
 
-def run(lane, slot, checker, policy):
-    ref, docket, physical = registration(slot)
-    out = OUT / lane / slot
+def run(lane, slot, checker, policy, maven_repos):
+    alternative = bool(maven_repos)
+    ref, docket, physical = registration(slot, alternative)
+    study = OUT / "alternative-measurements" if alternative else OUT
+    out = study / lane / slot
     out.mkdir(parents=True, exist_ok=True)
     with scratch(prefix="successor-measure-") as temp:
         work = Path(temp)
         inputs = work / "packet"
-        packet(slot, inputs)
+        if alternative:
+            _, graphs = alternative_graphs(slot, work, maven_repos)
+            neutral = {}
+            for side, paths in graphs.items():
+                (inputs / side).mkdir(parents=True)
+                neutral[side] = []
+                for i, path in enumerate(paths):
+                    name = f"{side}/{i:03}.jar"
+                    shutil.copyfile(path, inputs / name)
+                    neutral[side].append({"path":name, "sha256":digest(path)})
+            save(inputs / "inputs.json", neutral)
+        else:
+            packet(slot, inputs)
         packet_hash = digest(inputs / "inputs.json")
         record = {"slot": slot, "source": os.environ.get("VERIFY_SOURCE_COMMIT"), "job": os.environ.get("VERIFY_JOB_ID"),
                   "scaffoldSha256": digest(docket), "packetSha256": packet_hash, "checkerSha256": digest(checker)}
         if lane == "automatic":
             lock = {**policy, "operatorFiles": policy["originalSelector"]}
-            store = AREA / "evaluation" / slot / ("automatic-" + lock["checkerSha256"])
+            store = AREA / ("alternative-evaluation" if alternative else "evaluation") / slot / ("automatic-" + lock["checkerSha256"])
             measure_automatic(slot, checker, lock, {"packetSha256": packet_hash}, inputs, out, store, docket)
             report = compressed(out / "report.json.gz")
             if (report.get("status") == "operator failure" or report["inputs"] != read(inputs / "inputs.json")
@@ -120,8 +143,10 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("lane", choices=("automatic", "matched"))
     p.add_argument("slots", nargs="+", choices=SLOTS)
+    p.add_argument("--maven-repo", type=Path, action="append", default=[],
+                   help="measure the separately registered alternative deployment using these local Maven bytes")
     args = p.parse_args()
     draw()
     exe, policy = frozen()
     for slot in args.slots:
-        run(args.lane, slot, exe, policy)
+        run(args.lane, slot, exe, policy, args.maven_repo)

@@ -187,9 +187,9 @@ def native_resources():
     return result
 
 
-def collect(collector):
+def collect(collector, campaign=DEST, ledger_name="jobs.json"):
     specs = ROOT / "verification/jobs"
-    prefix = DEST.relative_to(ROOT)
+    prefix = campaign.relative_to(ROOT)
     ledger = []
     for spec in sorted(specs.rglob("*.json")):
         job = read(spec)
@@ -221,7 +221,7 @@ def collect(collector):
         ledger.append({"id": job["id"], "status": result["status"], "resultSha256": digest(result_file),
                        "source": source, "usage": result.get("usage"), "outputs": outputs,
                        "failure": result["summary"] if result["status"] != "passed" else None})
-    save(DEST / "jobs.json", ledger)
+    save(campaign / ledger_name, ledger)
 
 
 def audit(complete=False):
