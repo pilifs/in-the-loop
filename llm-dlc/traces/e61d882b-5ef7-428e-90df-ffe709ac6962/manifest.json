@@ -10367,8 +10367,8 @@
     },
     {
       "change_id": "oytomkyptqprxskzluuqqmnkyyxvptnp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6a95057202be8817fdeb3f77e1de5cfa85555825",
+      "immutable": true,
       "summary": "Put verification jobs first in the machine's kill order, keep 8G free, and say when a job died of the machine's memory",
       "body": "The user's rule (2026-11-24): should the machine run short of memory, no open tmux window, session, watcher or agent goes first; verification jobs do, and the agents then regroup. Every process had oom_score_adj 0, so a global OOM took the biggest process, whoever's (the watcher's window on 2026-11-22). An ordinary user can raise oom_score_adj but not lower it, and scopes refuse OOMScoreAdjust= on this systemd, so the order is made by raising: the step wrapper writes job_oom_score_adj (default 1000) to /proc/self/oom_score_adj, inherited by everything a step starts; test_costs.py run (and so default_run.py) joins at 500 (join_kill_order), as does the probe command in CLAUDE.md and the READMEs (choom -n 500); the rest keeps 0.\n\nThe runner also keeps memory_floor (default 8G, --memory-floor) free: no job starts that would take available memory under it, and when the machine falls under it anyway the runner SIGKILLs its newest job at once, one at a time. Such a job is cancelled (memoryStop in its result) and runs again when there is room; stopped a second time, counted across runners, it is out-of-memory for its submitter to regroup. A step's limitOoms (memory.events oom) tells a kill at the machine's end (0) from one at its own limit, and attention says which: more memory does not help the first. Documented in the result schema, verification/README.md, pipeline.toml, the run-verification skill and a new operating-notes section, The kill order when memory runs out, with how to regroup.",
       "log_sha256": "7be304859405faf298192320c4307da2e79c6815c9419c1bd38c86a6c9347579"

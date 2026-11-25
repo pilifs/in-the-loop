@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-25T01:47:00.171Z",
-  "duration_seconds": 807573,
+  "ended": "2026-11-25T01:52:09.430Z",
+  "duration_seconds": 807883,
   "stats": {
     "turns": 1330,
-    "api_calls": 5716,
-    "tool_calls": 5128,
+    "api_calls": 5718,
+    "tool_calls": 5130,
     "tool_errors": 59,
     "compactions": 14,
     "peak_context_tokens": 666720,
     "usage": {
-      "input_tokens": 14126,
-      "output_tokens": 2454295,
-      "cache_read_input_tokens": 1807574340,
-      "cache_creation_input_tokens": 7948206
+      "input_tokens": 14130,
+      "output_tokens": 2455144,
+      "cache_read_input_tokens": 1808632674,
+      "cache_creation_input_tokens": 7949488
     }
   },
   "tools": {
-    "Bash": 4926,
+    "Bash": 4928,
     "SendMessage": 67,
     "Edit": 33,
     "ToolSearch": 23,
@@ -277,24 +277,24 @@
     {
       "index": 14,
       "started": "2026-11-24T09:54:30.041Z",
-      "ended": "2026-11-25T01:47:00.171Z",
+      "ended": "2026-11-25T01:52:09.430Z",
       "turns": 145,
-      "api_calls": 564,
+      "api_calls": 566,
       "usage": {
-        "input_tokens": 1438,
-        "output_tokens": 185620,
-        "cache_read_input_tokens": 194101286,
-        "cache_creation_input_tokens": 495264
+        "input_tokens": 1442,
+        "output_tokens": 186469,
+        "cache_read_input_tokens": 195159620,
+        "cache_creation_input_tokens": 496546
       },
-      "peak_context_tokens": 528795
+      "peak_context_tokens": 530077
     }
   ],
   "log": {
-    "sha256": "7a06980e99e0e479a5b73e617e770038a5d37786e1130f839f0407fb21313790",
-    "bytes": 88844010,
-    "lines": 49551,
-    "gzip_bytes": 13744191,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7a06980e99e0e479a5b73e617e770038a5d37786e1130f839f0407fb21313790.jsonl.gz"
+    "sha256": "7c5abbf2afea612a83efb9288ea82e974a0e137d883ed1e57ee53096bdececd2",
+    "bytes": 88904963,
+    "lines": 49570,
+    "gzip_bytes": 13757411,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7c5abbf2afea612a83efb9288ea82e974a0e137d883ed1e57ee53096bdececd2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -12268,19 +12268,27 @@
     },
     {
       "change_id": "oytomkyptqprxskzluuqqmnkyyxvptnp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6a95057202be8817fdeb3f77e1de5cfa85555825",
+      "immutable": true,
       "summary": "Put verification jobs first in the machine's kill order, keep 8G free, and say when a job died of the machine's memory",
       "body": "The user's rule (2026-11-24): should the machine run short of memory, no open tmux window, session, watcher or agent goes first; verification jobs do, and the agents then regroup. Every process had oom_score_adj 0, so a global OOM took the biggest process, whoever's (the watcher's window on 2026-11-22). An ordinary user can raise oom_score_adj but not lower it, and scopes refuse OOMScoreAdjust= on this systemd, so the order is made by raising: the step wrapper writes job_oom_score_adj (default 1000) to /proc/self/oom_score_adj, inherited by everything a step starts; test_costs.py run (and so default_run.py) joins at 500 (join_kill_order), as does the probe command in CLAUDE.md and the READMEs (choom -n 500); the rest keeps 0.\n\nThe runner also keeps memory_floor (default 8G, --memory-floor) free: no job starts that would take available memory under it, and when the machine falls under it anyway the runner SIGKILLs its newest job at once, one at a time. Such a job is cancelled (memoryStop in its result) and runs again when there is room; stopped a second time, counted across runners, it is out-of-memory for its submitter to regroup. A step's limitOoms (memory.events oom) tells a kill at the machine's end (0) from one at its own limit, and attention says which: more memory does not help the first. Documented in the result schema, verification/README.md, pipeline.toml, the run-verification skill and a new operating-notes section, The kill order when memory runs out, with how to regroup.",
       "log_sha256": "7a06980e99e0e479a5b73e617e770038a5d37786e1130f839f0407fb21313790"
     },
     {
       "change_id": "oloysukqywvkpyszqywrrkwxlxzllsvu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0407daf7df360f3c16a58bae92a45355f5818261",
+      "immutable": true,
       "summary": "Merge oom-order: jobs first in the kill order, 8G kept free",
       "body": "Merges the advisor's oom-order workspace (oytomkyp, at the user's request): verification jobs run at oom_score_adj 1000, so the kernel kills them before tests and sessions. The runner keeps 8G of the machine free, stopping and requeuing once its newest job when the machine falls below that. Results now say when a job died of the machine's memory rather than its own cap. CLAUDE.md's probe command gains choom, and the operating notes gain 'The kill order when memory runs out'. The one conflict was lib/tests/costs.json, where both sides changed the per-file test counts: resolved by keeping the brief-generation side's rows with oom-order's test_pipeline counts, then regenerating with test_costs.py estimate; lint agrees. The 41 test files the merge changed passed under an 8G cap (test_costs.py run --changed --from ktpoosql). No runner was up, so the new kill order applies from the runner's next start.",
       "log_sha256": "7a06980e99e0e479a5b73e617e770038a5d37786e1130f839f0407fb21313790"
+    },
+    {
+      "change_id": "msxzyywxmzmkwqnslzlrprxuoxoszolv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue a brief to be generated from 20 pull requests: organic-java-merged-pr-links",
+      "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
+      "log_sha256": "7c5abbf2afea612a83efb9288ea82e974a0e137d883ed1e57ee53096bdececd2"
     }
   ],
   "logs": {
@@ -14611,6 +14619,12 @@
       "lines": 16855,
       "gzip_bytes": 6466234,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/7c198109efb86f5e179b9ee2a863473d1eb888e818f15283d544f973789e5b0b.jsonl.gz"
+    },
+    "7c5abbf2afea612a83efb9288ea82e974a0e137d883ed1e57ee53096bdececd2": {
+      "bytes": 88904963,
+      "lines": 49570,
+      "gzip_bytes": 13757411,
+      "url": null
     },
     "7c60d22477546fe3986dc8e30ab1071580f0c740c809e0621cbc47d207694813": {
       "bytes": 50517375,
