@@ -117,9 +117,9 @@ parent's own on the parent / fix's tests on the parent.
 | M05 commons-rng #65 | source build `-pl commons-rng-core -am`, JDK 8 | 1.2 = parent's `JDKRandom.java` byte for byte; 1.3 = fix logic | 2/2, 1/1, 1 error (`testRestoreToNewInstance`: `IllegalStateException: java.io.EOFException`) | inline |
 | M06 agrona #202 | Gradle 6.1.1, JDK 8, `:agrona` at both pins | 1.3.0 = parent (all four files byte for byte); 1.4.0 equals neither | 108/108, 96/96, 12 fail (all three new tests in each of four classes) | inline |
 | M07 spatial4j #212 | source build, JDK 11 | 0.8 (last release) = parent's serializer; no release has the fix | no landed test; existing GeoJSON/Jackson tests 90/90 at both pins; issue #210's `Main`: parent throws `JsonGenerationException: Current context not Array but Object`, fix prints the MultiPoint list | inline |
-| M08 checkstyle #14128 | upstream Maven build, JDK 17 (job) | 10.12.4 (named) and 10.12.6 = parent's `HiddenFieldCheck.java`; 10.12.7 = fix's | see [Jobs](#jobs) | job `20261125-202838-setup-build-checkstyle-at-both-14128-rev` |
+| M08 checkstyle #14128 | upstream Maven build, JDK 17 (job) | 10.12.4 (named) and 10.12.6 = parent's `HiddenFieldCheck.java`; 10.12.7 = fix's | 19/19, 17/17, 2 fail (`testHiddenFieldInnerRecordsImplicitlyStatic`, `testHiddenFieldRecordsImplicitlyStaticClassComparison`) | job `20261125-202838-setup-build-checkstyle-at-both-14128-rev` (passed) |
 | M09 libgdx #7278 | Gradle 8.4, JDK 17, `:gdx` only | 1.11.0 = parent's method; 1.12.1 = parent's file; 1.13.0 = fix's file (byte for byte) | 6/6, 5/5, 1 fails (`IllegalArgumentException: polygons must contain at least 3 points.`) | inline |
-| M10 tinkerpop #3105 | upstream Maven build `-pl gremlin-core,tinkergraph-gremlin -am`, JDK 11 (job) | 3.7.3, 3.7.4 lack the check; 3.8.0 has it (+ a later change) | see [Jobs](#jobs) | job `20261125-202839-setup-build-tinkerpop-gremlin-core-and-t` |
+| M10 tinkerpop #3105 | upstream Maven build `-pl gremlin-core,tinkergraph-gremlin -am`, JDK 11 (job) | 3.7.3, 3.7.4 lack the check; 3.8.0 has it (+ a later change) | core 2/2 + Dedup.feature 28/28, core 1/1 + 27/27, 2 fail (`shouldThrowForMultipleByModulators`; the feature's `g_V_both_hasXlabel_softwareX_dedup_byXlangX_byXnameX_name`) | job `20261125-202839-setup-build-tinkerpop-gremlin-core-and-t` (passed) |
 
 ## Cases
 
@@ -586,23 +586,30 @@ at `exec:java`, as expected), and the job's first step is the online build, whic
 
 **Artifacts** (`$O/artifacts/`, written by the job): `M08-checkstyle-ROLE.jar`, `M08-checkstyle-ROLE.sha256` (jar and
 `com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.class` digests), `M08-checkstyle-ROLE.runtime-classpath.txt`.
-**Pending job `20261125-202838-setup-build-checkstyle-at-both-14128-rev`**: digests to be copied here when it is back.
+Written by job `20261125-202838-setup-build-checkstyle-at-both-14128-rev` (passed):
+
+| File | sha256 |
+|---|---|
+| `M08-checkstyle-parent.jar` | `148cc2176d27d52e08002083d43ce5f7d93dbbfcf952f54501a0bf09f8a10639` |
+| `M08-checkstyle-fix.jar` | `0e1928b13ed70530a20e335093534fd4757c5082ab071ef039f367b4e0057716` |
+| `com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.class` (parent) | `3c1fe57d1426649e4567490f22d637132c266022a0ce47da6e37b5cb0f6f7aa0` |
+| `com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.class` (fix) | `4bfdcf6dc984f38364910fd54aba3e86a8851e3296920c52fa39d0a0064e62e9` |
 Use: `$J17/bin/java -cp $O/artifacts/M08-checkstyle-ROLE.jar:$(cat $O/artifacts/M08-checkstyle-ROLE.runtime-classpath.txt) com.puppycrawl.tools.checkstyle.Main ...`.
 
-**Landed tests** (`HiddenFieldCheckTest`, upstream Maven build, JDK 17; logs `$O/logs/M08-*.log`, summaries `*.junit.txt`): **pending the job**.
+**Landed tests** (`HiddenFieldCheckTest`, upstream Maven build, JDK 17; logs `$O/logs/M08-*.log`, summaries `*.junit.txt`; job `20261125-202838-setup-build-checkstyle-at-both-14128-rev`, passed):
 
 | Run | Result |
 |---|---|
-| fix, its own test (online, then offline) | pending |
-| parent, its own test (offline) | pending |
-| fix's test file and its two new inputs on a copy of the parent (offline) | pending (expected to fail) |
+| fix, its own test (online, then offline) | tests=19 failures=0 errors=0 skipped=0 both times (20 s, 17 s) |
+| parent, its own test (offline) | tests=17 failures=0 errors=0 skipped=0 |
+| fix's test file and its two new inputs on a copy of the parent (offline) | tests=19 failures=2 errors=0 skipped=0: `HiddenFieldCheckTest#testHiddenFieldInnerRecordsImplicitlyStatic` (expected `[35]`, unexpected (3): lines 31, 47, 50) and `HiddenFieldCheckTest#testHiddenFieldRecordsImplicitlyStaticClassComparison` (expected `[49]`, unexpected (1): line 35) |
 
 **Release side.** The brief names **10.12.4** (issue #14028). Its `HiddenFieldCheck.java` (sources jar) equals the **parent's** byte for byte;
 so does 10.12.6's. **10.12.7** is the first release whose file equals the **fix's**; 10.13.0's differs from both (later changes). 10.12.4 was
 resolved with strict checksums with its runtime graph: `$O/releases/checkstyle-10.12.4/` (`lib/` 37 jars, `sources/`, `tree.txt`,
 `classpath.txt` sha256 `de5e44bf32e29e16cc9a0e0057373def344895ef756a1db5db98c3c674b6dd79`), jar sha256
 `1ea984bd2772caade3867e797297c9ee16044c5f5d7b9a2d49faff1d5ab7123a`. The 10.12.6, 10.12.7 and 10.13.0 sources jars (`$O/dl/sources-B/`) were
-checked by Central's `.sha1` only. **The 10.12.4 CLI runs**: the smoke file `$O/scripts/M08-cli-check/Trivial.java` (a setup file, not a brief
+checked by Central's `.sha1` only. **The CLI runs** on both built jars (job step 5: the same one `HiddenFieldCheck` error, `'n' hides a field.` at 2:37, `$O/logs/M08-cli-parent.xml`, `$O/logs/M08-cli-fix.xml`) and on 10.12.4: the smoke file `$O/scripts/M08-cli-check/Trivial.java` (a setup file, not a brief
 fixture) gives one `HiddenFieldCheck` error, `'n' hides a field.` at 2:37 (`$O/logs/M08-cli-10.12.4.xml`).
 
 **Signatures** (keyring `$O/gnupg-B`, `.asc` from Central in `$O/dl/sigs-B/`; key from keyserver.ubuntu.com, `$O/keys-B/`, nothing further vouching for it):
@@ -616,8 +623,8 @@ fixture) gives one `HiddenFieldCheck` error, `'n' hides a field.` at 2:37 (`$O/l
 the test fails), CLI on both jars, clean. A Checkstyle build compiles its 439 main sources, runs its generators and compiles over 750 test-side sources (`src/test/java`, `src/it/java`, `src/xdocs-examples/java`), so none of it ran inline.
 
 **For the domain agent**
-- Until the job is back, the 10.12.4 release (= parent's `HiddenFieldCheck`) is the only runnable Checkstyle here; 10.12.7 from Central would
-  stand for the fix's file but was not resolved as a graph.
+- Both pins' jars run as a CLI with their runtime classpath files. 10.12.4 (= parent's `HiddenFieldCheck`) is also resolved; 10.12.7 from
+  Central would stand for the fix's file but was not resolved as a graph.
 - The XML message text depends on locale; `source` and line/column do not.
 
 ### M09 · libGDX #7278 — `intersectPolygons` needs three clipped vertices (upstream Gradle 8.4 build of `:gdx` only, at both pins, inline; releases 1.11.0, 1.12.1 = parent, 1.13.0 = fix)
@@ -725,17 +732,29 @@ External dependencies resolved inline first: `$MVN -Daether.connector.basic.thre
 `gremlin-test-` and `tinkergraph-gremlin-3.8.0-SNAPSHOT.jar`; `M10-tinkerpop-ROLE.sha256` (those jars and
 `org/apache/tinkerpop/gremlin/process/traversal/step/filter/DedupGlobalStep.class`); `M10-tinkerpop-ROLE.runtime-classpath.txt`
 (tinkergraph-gremlin's runtime classpath, pointing at the copied jars and `$O/m2`).
-**Pending job `20261125-202839-setup-build-tinkerpop-gremlin-core-and-t`**: digests to be copied here when it is back.
-Use: `$J11/bin/java -cp $O/artifacts/M10-tinkerpop-ROLE/tinkergraph-gremlin-3.8.0-SNAPSHOT.jar:$(cat $O/artifacts/M10-tinkerpop-ROLE.runtime-classpath.txt) ...`
-(check that the classpath file already lists the tinkergraph jar before adding it).
+Written by job `20261125-202839-setup-build-tinkerpop-gremlin-core-and-t` (passed):
 
-**Landed tests** (upstream Maven build, JDK 11; logs `$O/logs/M10-*.log`, per-module summaries `*.junit.txt`): **pending the job**.
+| File | parent sha256 | fix sha256 |
+|---|---|---|
+| `gremlin-language-3.8.0-SNAPSHOT.jar` | `b629ab7c25301f09fb6b5ffcaa8ff19cee914153f360e5c44c1f96f72d09d652` | `1471f8ae3b783d235f27931b1216574734a180ad205171de40f2bb989156ac94` |
+| `gremlin-shaded-3.8.0-SNAPSHOT.jar` | `12f67e966b964edf61568a7ec2d7a9b700f288fccec3b481535af971e16e8e06` | `a7d9a8f5c736266c4e7b0ed947eb639155d6aaac6b3f39dbe478ea402123585a` |
+| `gremlin-core-3.8.0-SNAPSHOT.jar` | `8c56b4c4bd4ff2c2d85dcf6cb20050e8b7dfb004c21b0c989146e10cfe93bee2` | `aeb699149a44a1479adb1a6daca65425d4a18f99985f18cd3d4b00f5eaf8d6f0` |
+| `gremlin-test-3.8.0-SNAPSHOT.jar` | `aac577e9921134dce63f5d901e4b62c9768181d656b27934dc2214b7c411f6ac` | `c4ce13811dc9a2c07089f7b4aa920bf0538539e3aa29f40f23cec60c4ac2cde9` |
+| `tinkergraph-gremlin-3.8.0-SNAPSHOT.jar` | `acc9e52e21a5178abc260a5fbd9a826cdace6e93200278ffabbf6f8d3209c88e` | `336709ddf808b1689f7dfcb59024936fd99bf8a170a30932b2b5cbdaeb2eb282` |
+| `org/apache/tinkerpop/gremlin/process/traversal/step/filter/DedupGlobalStep.class` | `4d33edd86633ea849f6d703b6d34afdfb782fc6ce69aa3d5faa596222c0f6b17` | `270af1b13f0200577280a69245bfa5f6529af93ff6249682fd5af42db46c621d` |
+
+The runtime classpath file (17 entries) lists gremlin-core, gremlin-shaded and gremlin-language from the copied jars and the rest from
+`$O/m2`; it does **not** list the tinkergraph jar itself, so add it as the use line does.
+Use: `$J11/bin/java -cp $O/artifacts/M10-tinkerpop-ROLE/tinkergraph-gremlin-3.8.0-SNAPSHOT.jar:$(cat $O/artifacts/M10-tinkerpop-ROLE.runtime-classpath.txt) ...`
+(the classpath file does not list the tinkergraph jar, so it is added here).
+
+**Landed tests** (upstream Maven build, JDK 11; logs `$O/logs/M10-*.log`, per-module summaries `*.junit.txt`; job `20261125-202839-setup-build-tinkerpop-gremlin-core-and-t`, passed):
 
 | Run | Result |
 |---|---|
-| fix: `DedupGlobalStepTest` and Dedup.feature (online, then offline) | pending |
-| parent: its own `DedupGlobalStepTest` and Dedup.feature (offline) | pending |
-| fix's `DedupGlobalStepTest` and Dedup.feature on a copy of the parent (offline) | pending (expected to fail in both modules) |
+| fix: `DedupGlobalStepTest` and Dedup.feature (online, then offline) | gremlin-core tests=2 failures=0; tinkergraph-gremlin tests=28 failures=0, both times (31 s, 18 s) |
+| parent: its own `DedupGlobalStepTest` and Dedup.feature (offline) | gremlin-core tests=1 failures=0; tinkergraph-gremlin tests=27 failures=0 |
+| fix's `DedupGlobalStepTest` and Dedup.feature on a copy of the parent (offline) | gremlin-core tests=2 failures=1: `DedupGlobalStepTest#shouldThrowForMultipleByModulators` (`Expected exception: java.lang.IllegalStateException`); tinkergraph-gremlin tests=28 failures=1: `TinkerGraphFeatureTest#g_V_both_hasXlabel_softwareX_dedup_byXlangX_byXnameX_name` (`java.lang.AssertionError`: the scenario expects an error) |
 
 **Release side.** gremlin-core sources jars from Central (checked by `.sha1` only, `$O/dl/sources-B/`): **3.8.0** has the fix's check in
 `DedupGlobalStep.java` (its file differs from the fix's only by a later `getPopInstructions()` override); **3.7.3 and 3.7.4 lack it** (older
@@ -754,14 +773,14 @@ when both modules show a failure), clean.
 
 ## Jobs
 
-Two jobs, queued by fork B with `$O/scripts/submit_B.py m08` and `m10`. Each resolves online first (one connector thread), runs its later
+Two jobs, queued by fork B with `$O/scripts/submit_B.py m08` and `m10`; both passed (results under `verification/results/2026/11/25/`, logs and JUnit summaries also in `$O/logs/M08-*`, `$O/logs/M10-*`). Each resolves online first (one connector thread), runs its later
 steps offline, copies its jars, digests and classpaths to `$O/artifacts/`, and ends by removing its build trees (`$O/build/`). A transplant
 step passes only when the named tests fail. Every other case ran inline (each run under a minute).
 
 | Job | Case | What it runs | Estimate | Result |
 |---|---|---|---|---|
-| `20261125-202838-setup-build-checkstyle-at-both-14128-rev` | M08 | `HiddenFieldCheckTest` on the fix (online, then offline) and on the parent, with jars, class digests and runtime classpaths; the fix's test and its two new inputs on a `git archive` copy of the parent; the CLI on both built jars | 3 CPU, 4G, 30m | pending |
-| `20261125-202839-setup-build-tinkerpop-gremlin-core-and-t` | M10 | `DedupGlobalStepTest` and `TinkerGraphFeatureTest` limited to `filter/Dedup.feature` on the fix (online, then offline) and on the parent, with the five module jars, digests and tinkergraph's runtime classpath; the fix's test and feature file on a copy of the parent | 3 CPU, 5G, 35m | pending |
+| `20261125-202838-setup-build-checkstyle-at-both-14128-rev` | M08 | `HiddenFieldCheckTest` on the fix (online, then offline) and on the parent, with jars, class digests and runtime classpaths; the fix's test and its two new inputs on a `git archive` copy of the parent; the CLI on both built jars | 3 CPU, 4G, 30m | **passed**: fix 19/19 online (20 s) and offline (17 s); parent 17/17; transplant 2 failures (M08's section names them); CLI on both jars gives the smoke file's one error; trees removed |
+| `20261125-202839-setup-build-tinkerpop-gremlin-core-and-t` | M10 | `DedupGlobalStepTest` and `TinkerGraphFeatureTest` limited to `filter/Dedup.feature` on the fix (online, then offline) and on the parent, with the five module jars, digests and tinkergraph's runtime classpath; the fix's test and feature file on a copy of the parent | 3 CPU, 5G, 35m | **passed**: fix core 2/2 and feature 28/28 online and offline; parent 1/1 and 27/27; transplant 1 failure in each module (M10's section names them); trees removed |
 
 ## Signatures
 
@@ -794,8 +813,8 @@ hold only the pins (plus earlier setups' pins in the four shared mirrors, and M0
 - Both revisions of every case at the brief's pins: `$W/MNN-MIRROR-parent` and `$W/MNN-MIRROR-fix` (full SHAs, trees and parents in
   [Upstream revisions](#upstream-revisions)). Every PR's merge SHA is the brief's after pin, and every after pin's first parent is the before pin.
 - Built jars of both sides in `$O/artifacts/` (`MNN-MIRROR-ROLE.jar`), with full sha256s and the changed classes' digests in each case's
-  **Artifacts** table, and runtime classpath files beside them; each section ends its Artifacts part with a `java -cp` line. M01–M07 and M09 are
-  built; M08 and M10 are built by the two jobs in [Jobs](#jobs), which write the same files.
+  **Artifacts** table, and runtime classpath files beside them; each section ends its Artifacts part with a `java -cp` line. M01–M07 and M09 were
+  built inline, M08 and M10 by the two jobs in [Jobs](#jobs) (both passed).
 - The JDK per case: M01 17, M02 17, M03 21, M04 11, M05 8, M06 8, M07 11, M08 17, M09 17, M10 11 (TinkerPop's enforcer refuses 18+).
 - Exact build and test commands, online and checked offline, in each case's **Commands**. Gradle runs from `$O/tools/gradle-VERSION`, never
   `gradlew`.
@@ -817,8 +836,11 @@ hold only the pins (plus earlier setups' pins in the four shared mirrors, and M0
   accessors); with those four lines removed it fails on the parent (`getEntry("COMPRESS-621.txt")` returns null) and passes on the fix.
 - M07 has no landed test: the issue's own reproduction throws `JsonGenerationException: Current context not Array but Object` on the parent and
   writes `[{"type":"MultiPoint","coordinates":[[100.0,100.0]]}]` on the fix; the existing GeoJSON/Jackson tests pass at both pins (90/90).
-- M08 and M10: pending the jobs. Checkstyle 10.12.4's CLI (= the parent's `HiddenFieldCheck.java`) runs on a setup smoke file.
-- Offline builds (`mvn -o`, `gradle --offline`) checked for every inline case.
+- M08 (job): fix 19/19, parent 17/17, the fix's test on the parent fails 2 (`testHiddenFieldInnerRecordsImplicitlyStatic`,
+  `testHiddenFieldRecordsImplicitlyStaticClassComparison`); the CLI runs on both built jars and on 10.12.4. M10 (job): fix `DedupGlobalStepTest`
+  2/2 and Dedup.feature 28/28, parent 1/1 and 27/27; on the parent the fix's tests fail once in each module (`shouldThrowForMultipleByModulators`,
+  `Expected exception: java.lang.IllegalStateException`; the feature scenario `g_V_both_hasXlabel_softwareX_dedup_byXlangX_byXnameX_name`).
+- Offline builds (`mvn -o`, `gradle --offline`) checked for every case (M08 and M10 by their jobs).
 
 ### What to know before starting
 
