@@ -1,0 +1,227 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-233153-trace-calendar-period-readback-and-esri",
+  "title": "Trace calendar period readback and Esri segment restoration",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 11.8s, peak 93.9 MiB (estimated 1m00s, 768.0 MiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-233153-trace-calendar-period-readback-and-esri.json",
+    "sha256": "069b18ac62ace6c8393f9dc07a51ac90bbd9a098dd9dc8e18938527b4be1acd9",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-233153-trace-calendar-period-readback-and-esri",
+      "title": "Trace calendar period readback and Esri segment restoration",
+      "description": "Verify the negative British period at the original until method and all three public line differences at the original polyline restoration method. Repeat each history twice on each side and compare the debugger observations with the public JVM receipts.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-results.md"
+        ]
+      },
+      "expected": "All 16 fresh debugger JVM trials enter the registered original methods and produce the recorded public returns. Both saved reports pass offline validation.",
+      "submitted": {
+        "at": "2026-11-25T23:31:53+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Trace and validate example 455",
+          "run": "python3 verification/merged-pr-links/qualify.py 455 --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 455 --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+          "cwd": "."
+        },
+        {
+          "name": "Trace and validate example 456",
+          "run": "python3 verification/merged-pr-links/qualify.py 456 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 456 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/merged-pr-links/n01-n05/qualified/455-pins.json.gz",
+        "verification/merged-pr-links/n01-n05/qualified/456-pins.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "46cacc303f88305bf594d68046f9a4249915c7db",
+  "startedAt": "2026-11-25T23:33:41+00:00",
+  "finishedAt": "2026-11-25T23:34:04+00:00",
+  "wallSeconds": 23.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 803082,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 98471936,
+    "wallSeconds": 11.8,
+    "cpuSeconds": 12.4,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Trace and validate example 455",
+      "run": "python3 verification/merged-pr-links/qualify.py 455 --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 455 --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 3.405,
+      "cpuSeconds": 3.815,
+      "cpuThrottledSeconds": 0.579,
+      "peakMemoryBytes": 98471936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-trace-and-validate-example-455.log",
+        "lines": 2,
+        "bytes": 305,
+        "sha256": "98501ff3f93bcb60c8fc8b8ce85b1b859dfc2f430ea78630f770bf2413a6a2a4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "455 pins org.threeten.extra.chrono.BritishCutoverDate#until(Ljava/time/chrono/ChronoLocalDate;)Ljava/time/chrono/ChronoPeriod; 4 qualified JVM trials",
+        "455 pins org.threeten.extra.chrono.BritishCutoverDate#until(Ljava/time/chrono/ChronoLocalDate;)Ljava/time/chrono/ChronoPeriod; 4 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Trace and validate example 456",
+      "run": "python3 verification/merged-pr-links/qualify.py 456 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 456 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 8.412,
+      "cpuSeconds": 8.549,
+      "cpuThrottledSeconds": 0.674,
+      "peakMemoryBytes": 74600448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-trace-and-validate-example-456.log",
+        "lines": 2,
+        "bytes": 221,
+        "sha256": "c5593eeedc19d419765474f8d8ebde7f22ea83eb9951e5f1de76ce936e805513",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "456 pins com.esri.core.geometry.TopologicalOperations#restorePolylineParts_(IIIII)V 12 qualified JVM trials",
+        "456 pins com.esri.core.geometry.TopologicalOperations#restorePolylineParts_(IIIII)V 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/n01-n05/qualified/455-pins.json.gz",
+      "change": "added",
+      "bytes": 1995,
+      "sha256": "a211f207dbcb38d95a9f76843112424c26d1e33dea1936465f5b0796767b8dc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/n01-n05/qualified/456-pins.json.gz",
+      "change": "added",
+      "bytes": 3374,
+      "sha256": "a15d925c37440b21eb28ccbd6dc4ba5dfbc263feae7c23578f09f1760ed14b75",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T23:34:22+00:00",
+    "applied": [
+      "verification/merged-pr-links/n01-n05/qualified/455-pins.json.gz",
+      "verification/merged-pr-links/n01-n05/qualified/456-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T233404Z-382212993a9126a0",
+      "outputs": "20261125T233404Z-4086061a235e3e61",
+      "diff": "20261125T233404Z-429435a57badd4ff"
+    }
+  }
+}

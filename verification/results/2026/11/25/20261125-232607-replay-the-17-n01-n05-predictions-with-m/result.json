@@ -1,0 +1,248 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-232607-replay-the-17-n01-n05-predictions-with-m",
+  "title": "Replay the 17 N01–N05 predictions with MySQL transaction readback",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 18.6s, peak 92.9 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-232607-replay-the-17-n01-n05-predictions-with-m.json",
+    "sha256": "2b6cd9fa699fc6b9c0ce4f929d07368064acee117f8835fd3edcae5aa038f7db",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-232607-replay-the-17-n01-n05-predictions-with-m",
+      "title": "Replay the 17 N01–N05 predictions with MySQL transaction readback",
+      "description": "Recompile the five public callers against their historical JDKs and compare all 34 fresh JVM histories with the recorded typed outcomes. Start the pinned MySQL 9.1.0 image for the Spring histories and check both the rolled-back and committed failure using independent InnoDB reads and primary-key inserts.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay",
+        "jdbc:durable-transaction-readback"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-results.md"
+        ]
+      },
+      "expected": "All 17 merged predictions and five unchanged controls repeat, the seven intent observations differ between revisions, and the complete audit is byte-identical.",
+      "submitted": {
+        "at": "2026-11-25T23:26:07+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "docker"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Repeat the five comparisons",
+          "run": "python3 verification/merged-pr-links/audit.py --campaign n01-n05 --replay --output verification/merged-pr-links/n01-n05/repeated-audit.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the complete audit",
+          "run": "cmp verification/merged-pr-links/n01-n05/audit.json verification/merged-pr-links/n01-n05/repeated-audit.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/n01-n05/repeated-audit.json"
+      ]
+    }
+  },
+  "sourceCommit": "46cacc303f88305bf594d68046f9a4249915c7db",
+  "startedAt": "2026-11-25T23:33:41+00:00",
+  "finishedAt": "2026-11-25T23:34:11+00:00",
+  "wallSeconds": 30.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 803082,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 97464320,
+    "wallSeconds": 18.6,
+    "cpuSeconds": 15.2,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat the five comparisons",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign n01-n05 --replay --output verification/merged-pr-links/n01-n05/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 18.438,
+      "cpuSeconds": 15.243,
+      "cpuThrottledSeconds": 1.185,
+      "peakMemoryBytes": 97464320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-the-five-comparisons.log",
+        "lines": 35,
+        "bytes": 5482,
+        "sha256": "a4c96edb3fbcbc67041dac24c0afa997b134840b9cc100f478ba66994140a691",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins parent apache/commons-cli#450.1 {'return': 'first=first stored1=[first] second=first retained=first stored2=[first]'}",
+        "pins parent apache/commons-cli#450.2 {'return': 'value=preset stored=[preset]'}",
+        "pins parent apache/commons-cli#450.3 {'return': 'first=MissingOptionException[r] retry=discarded/true/[] fresh=retry/true/[]'}",
+        "pins fix apache/commons-cli#450.1 {'return': 'first=first stored1=null second=second retained=first stored2=null'}",
+        "pins fix apache/commons-cli#450.2 {'return': 'value=preset stored=[preset]'}",
+        "pins fix apache/commons-cli#450.3 {'return': 'first=MissingOptionException[r] retry=retry/true/[] fresh=retry/true/[]'}",
+        "pins parent HdrHistogram/HdrHistogram#145.1 {'return': 'totals=1/1 atX=1/1 equals=ArrayIndexOutOfBoundsException/true'}",
+        "pins parent HdrHistogram/HdrHistogram#145.2 {'return': 'ordered=true/true extra=false/false totals=3/4 at20=1/2'}",
+        "pins parent HdrHistogram/HdrHistogram#145.3 {'return': 'totals=4/4 extrema=10:40/10:40 at20=2/0 at30=0/2 equals=false/false'}",
+        "pins fix HdrHistogram/HdrHistogram#145.1 {'return': 'totals=1/1 atX=1/1 equals=true/true'}",
+        "pins fix HdrHistogram/HdrHistogram#145.2 {'return': 'ordered=true/true extra=false/false totals=3/4 at20=1/2'}",
+        "pins fix HdrHistogram/HdrHistogram#145.3 {'return': 'totals=4/4 extrema=10:40/10:40 at20=2/0 at30=0/2 equals=false/false'}",
+        "pins parent ThreeTen/threeten-extra#463.1 {'return': 'month=1752-09-23 year=1752-09-23'}",
+        "pins parent ThreeTen/threeten-extra#463.2 {'return': 'forward=1752-09-14 delta=1 back=1752-09-02 select12=1752-09-23'}",
+        "pins parent ThreeTen/threeten-extra#463.3 {'return': 'period=0,-6,-17 back=1752-08-21 epoch=-79379 end=-79368 iso=-79368'}",
+        "pins parent ThreeTen/threeten-extra#463.4 {'return': 'at30=2011-02-28 at32=DateTimeException'}",
+        "pins parent ThreeTen/threeten-extra#463.5 {'return': 'julian=-2147483647/-2147483646 british=-2147483647/-2147483646'}",
+        "pins fix ThreeTen/threeten-extra#463.1 {'return': 'month=1752-09-02 year=1752-09-02'}",
+        "pins fix ThreeTen/threeten-extra#463.2 {'return': 'forward=1752-09-14 delta=1 back=1752-09-02 select12=1752-09-23'}",
+        "pins fix ThreeTen/threeten-extra#463.3 {'return': 'period=0,-6,-6 back=1752-09-01 epoch=-79368 end=-79368 iso=-79368'}",
+        "pins fix ThreeTen/threeten-extra#463.4 {'return': 'at30=2011-03-02 at32=DateTimeException'}",
+        "pins fix ThreeTen/threeten-extra#463.5 {'return': 'julian=DateTimeException/-2147483646 british=DateTimeException/-2147483646'}",
+        "pins parent Esri/geometry-api-java#329.1 {'return': 'forward=throws:com.esri.core.geometry.GeometryException | reverse=throws:com.esri.core.geometry.GeometryException'}",
+        "pins parent Esri/geometry-api-java#329.2 {'return': 'first=[1, 1, 1, 1, 1, 0] remote=[0, 0, 0, 0, 0] extra=0 lengthOK=true length=7794.600029974981 expected=7794.600029974981'}",
+        "pins parent Esri/geometry-api-java#329.3 {'return': 'first=[0, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true length=13326.118751140732 expected=13326.118751140732'}",
+        "pins fix Esri/geometry-api-java#329.1 {'return': 'forward=first=[1, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true length=15261.368605810665 expected=15261.368605810665 | reverse=first=[1, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true length=15261.368605810665 expected=152",
+        "pins fix Esri/geometry-api-java#329.2 {'return': 'first=[1, 1, 1, 1, 1, 0] remote=[0, 0, 0, 0, 0] extra=0 lengthOK=true length=7794.600029974981 expected=7794.600029974981'}",
+        "pins fix Esri/geometry-api-java#329.3 {'return': 'first=[0, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true length=13326.118751140732 expected=13326.118751140732'}",
+        "pins parent spring-projects/spring-framework#37322.1 {'return': 'initial=98/[] first=DataAccessResourceFailureException afterFirst=98/[] steps=[100:inserted:98/[100], 99:inserted:100/[99, 100], 100:duplicate(1062,23000):100/[99, 100]] reservations=[100, 100] fault=rollback'}",
+        "pins parent spring-projects/spring-framework#37322.2 {'return': 'initial=98/[] first=none afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 102] fault=none'}",
+        "pins parent spring-projects/spring-framework#37322.3 {'return': 'initial=98/[] first=DataAccessResourceFailureException afterFirst=100/[] steps=[100:inserted:100/[100], 101:inserted:102/[100, 101], 102:inserted:102/[100, 101, 102]] reservations=[100, 102] fault=restore'}",
+        "pins fix spring-projects/spring-framework#37322.1 {'return': 'initial=98/[] first=DataAccessResourceFailureException afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 100, 102] fault=rollback'}",
+        "pins fix spring-projects/spring-framework#37322.2 {'return': 'initial=98/[] first=none afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 102] fault=none'}",
+        "pins fix spring-projects/spring-framework#37322.3 {'return': 'initial=98/[] first=DataAccessResourceFailureException afterFirst=100/[] steps=[101:inserted:102/[101], 102:inserted:102/[101, 102], 103:inserted:104/[101, 102, 103]] reservations=[100, 102, 104] fault=restore'}",
+        "{\"cases\": 5, \"controlsMatchedOnBoth\": 5, \"deploymentPairs\": 5, \"fixedIntentsMatched\": 7, \"fixedPredictionsMatched\": 17, \"fixedRefutations\": 0, \"freshJvms\": 34, \"omittedParentHistories\": 0, \"pairedIntentChanges\": 7, \"parentHistoriesWithoutPrediction\": 1, \"parentRefutations\": 0, \"questions\": 17, \"unch"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Compare the complete audit",
+      "run": "cmp verification/merged-pr-links/n01-n05/audit.json verification/merged-pr-links/n01-n05/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.007,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1986560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compare-the-complete-audit.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/n01-n05/repeated-audit.json",
+      "change": "added",
+      "bytes": 2010,
+      "sha256": "996604de9eb601c0dc6b936caf3df82d160fc8b253cb18be377334dfd1a0dbab",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T23:34:22+00:00",
+    "applied": [
+      "verification/merged-pr-links/n01-n05/repeated-audit.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T233411Z-1940475f990e5d4b",
+      "outputs": "20261125T233411Z-2158834dfca6782b",
+      "diff": "20261125T233411Z-235166b1be047ab1"
+    }
+  }
+}

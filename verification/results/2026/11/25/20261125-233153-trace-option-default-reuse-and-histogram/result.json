@@ -1,0 +1,227 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-233153-trace-option-default-reuse-and-histogram",
+  "title": "Trace option-default reuse and histogram equality on both revisions",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 14.4s, peak 93.4 MiB (estimated 1m00s, 768.0 MiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-233153-trace-option-default-reuse-and-histogram.json",
+    "sha256": "6a5e86b1e85adee9706b6ce103801d4c71d6387b4a62b736957bdfcd0e834847",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-233153-trace-option-default-reuse-and-histogram",
+      "title": "Trace option-default reuse and histogram equality on both revisions",
+      "description": "Independently enter the pinned DefaultParser property handler and AbstractHistogram equality implementation. Run all three public histories twice on each revision and compare caller bytecode, live invocation sites and the measured returns.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-results.md"
+        ]
+      },
+      "expected": "All 24 fresh debugger JVM trials enter the registered original methods and produce the recorded public returns. Both saved reports pass offline validation.",
+      "submitted": {
+        "at": "2026-11-25T23:31:53+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Trace and validate example 453",
+          "run": "python3 verification/merged-pr-links/qualify.py 453 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 453 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+          "cwd": "."
+        },
+        {
+          "name": "Trace and validate example 454",
+          "run": "python3 verification/merged-pr-links/qualify.py 454 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 454 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/merged-pr-links/n01-n05/qualified/453-pins.json.gz",
+        "verification/merged-pr-links/n01-n05/qualified/454-pins.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "46cacc303f88305bf594d68046f9a4249915c7db",
+  "startedAt": "2026-11-25T23:33:41+00:00",
+  "finishedAt": "2026-11-25T23:34:06+00:00",
+  "wallSeconds": 25.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 803082,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 97980416,
+    "wallSeconds": 14.4,
+    "cpuSeconds": 12.7,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Trace and validate example 453",
+      "run": "python3 verification/merged-pr-links/qualify.py 453 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 453 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 7.413,
+      "cpuSeconds": 7.094,
+      "cpuThrottledSeconds": 0.662,
+      "peakMemoryBytes": 97980416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-trace-and-validate-example-453.log",
+        "lines": 2,
+        "bytes": 229,
+        "sha256": "771869c4217d3d09bdab2db08091b3b2675b6db1860ad756588b89693630acfe",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "453 pins org.apache.commons.cli.DefaultParser#handleProperties(Ljava/util/Properties;)V 12 qualified JVM trials",
+        "453 pins org.apache.commons.cli.DefaultParser#handleProperties(Ljava/util/Properties;)V 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Trace and validate example 454",
+      "run": "python3 verification/merged-pr-links/qualify.py 454 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 454 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 7.01,
+      "cpuSeconds": 5.643,
+      "cpuThrottledSeconds": 0.194,
+      "peakMemoryBytes": 73404416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-trace-and-validate-example-454.log",
+        "lines": 2,
+        "bytes": 197,
+        "sha256": "1b05de3a7f9ada0e591413ff24510c0bc37210ec43c96490bdae4a93e6495c0a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "454 pins org.HdrHistogram.AbstractHistogram#equals(Ljava/lang/Object;)Z 12 qualified JVM trials",
+        "454 pins org.HdrHistogram.AbstractHistogram#equals(Ljava/lang/Object;)Z 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/n01-n05/qualified/453-pins.json.gz",
+      "change": "added",
+      "bytes": 2104,
+      "sha256": "147dfea3acfcb740958fa85c491b3169ffeee9855192e35200f0def68084ce2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/n01-n05/qualified/454-pins.json.gz",
+      "change": "added",
+      "bytes": 2024,
+      "sha256": "78d86fdce6a03c8ab7096738966a068561b66aa15dcad09496e927a92285b47a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T23:34:22+00:00",
+    "applied": [
+      "verification/merged-pr-links/n01-n05/qualified/453-pins.json.gz",
+      "verification/merged-pr-links/n01-n05/qualified/454-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T233406Z-781447f5a7f1b4b2",
+      "outputs": "20261125T233406Z-8000063db741949d",
+      "diff": "20261125T233406Z-818516684255a772"
+    }
+  }
+}
