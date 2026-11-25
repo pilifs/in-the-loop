@@ -1,0 +1,193 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-044013-dsi-utilities-old-generated-integer-code",
+  "title": "DSI Utilities old generated integer codec predicates",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m37s, peak 3.2 GiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-044013-dsi-utilities-old-generated-integer-code.json",
+    "sha256": "c9cf41ac265e577ba407e66c216658ea595aae895d77911135778e8a8da43b70",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-044013-dsi-utilities-old-generated-integer-code",
+      "title": "DSI Utilities old generated integer codec predicates",
+      "description": "The artifact-only integer selector nominated a signed decoder and inverse encoder. The generated consumer is locked and passed original JVM positive and control observations in both releases before this job. Use the same generated class bytes and complete registered domain to compare strict native, staged JBMC and stock JBMC, including the wrong inverse and the unsigned full-bit hypothesis.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/integer_codecs.py"
+        ]
+      },
+      "expected": "Four comparator rows for the observed release with the original class digest, its registration and raw results. An assertion or inverse that fails to reach its real target gets no credit.",
+      "submitted": {
+        "at": "2026-11-25T04:40:13+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc",
+        "dpkg-deb"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows.py measure 02 --side old",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/integer-codecs/matched/02/old"
+      ]
+    }
+  },
+  "sourceCommit": "d12799fdc9ce9ff22ca18a812b2eaf6eec14b068",
+  "startedAt": "2026-11-25T04:57:27+00:00",
+  "finishedAt": "2026-11-25T05:04:17+00:00",
+  "wallSeconds": 410.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 930182,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3451056128,
+    "wallSeconds": 157.4,
+    "cpuSeconds": 161.1,
+    "memoryOfEstimate": 1.07,
+    "durationOfEstimate": 0.52
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows.py measure 02 --side old",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 157.398,
+      "cpuSeconds": 161.143,
+      "cpuThrottledSeconds": 0.497,
+      "peakMemoryBytes": 3451056128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 5,
+        "bytes": 222,
+        "sha256": "15dd44a688e2211d8036f68121770e9438a9512b8d455268c5d828e46532bd36",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "02 48 original checks passed",
+        "02 primary verified unverifiable SUCCESS FAILURE",
+        "02 control verified unverifiable SUCCESS FAILURE",
+        "02 inverse violation violation FAILURE FAILURE",
+        "02 unsigned violation violation FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/integer-codecs/matched/02/old/candidate-1/executions.zip",
+      "change": "added",
+      "bytes": 387474,
+      "sha256": "f34773be16c1a61c304d00c09843019d2b6e9b25fc94f0975e11aa6d6a66417a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/integer-codecs/matched/02/old/candidate-1/results.json.gz",
+      "change": "added",
+      "bytes": 2816,
+      "sha256": "9401dbfa9952ffd7ddbe1827bd7ca3b5202dc389b32e1c2cbf1a958f7d6facd4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T05:07:13+00:00",
+    "applied": [
+      "verification/beyond-jbmc/integer-codecs/matched/02/old/candidate-1/executions.zip",
+      "verification/beyond-jbmc/integer-codecs/matched/02/old/candidate-1/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3e9d5388eea19338ec9beba5014071f5e37b8f7",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3e9d5388eea19338ec9beba5014071f5e37b8f7/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T050417Z-3443588673927141",
+      "outputs": "20261125T050417Z-379677e567e31230",
+      "diff": "20261125T050417Z-4054337b79e3b473"
+    }
+  }
+}
