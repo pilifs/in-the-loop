@@ -12,11 +12,11 @@
 | jgrapht/jgrapht#1379 | written | Read the cache invalidation paths and directed/undirected listener fixtures. An edge joining a,b to c forces a three-vertex weak component. A partial query followed by reversed directed-edge insertion and fresh-inspector comparison remains a prediction. |
 | google/guava#8801 | written | Read the duplicated graph change, regression and shortcut. Three triangle edges plus one isolate force traversal. Parent behavior may depend on neighbor order. The unrelated-component variation remains unexecuted. |
 | jgrapht/jgrapht#1376 | written | Read both −1 sentinel changes and the supplied triangle and K4 weights. Triangle sums are −6 and 9 after translation. Path-to-weight readback remains unexecuted. |
-| apache/commons-io#931 | not yet |  |
-| apache/commons-io#860 | not yet |  |
-| google/jimfs#435 | not yet |  |
-| vigna/fastutil#384 | not yet |  |
-| apache/commons-codec#437 | not yet |  |
+| apache/commons-io#931 | written | Compared the pinned all-filtered chunk and filtered-skip code with xxa and xaxb fixtures. The PR reports zero and a for the respective parent observations. Holding filtered output fixed while adding discarded prefixes remains unexecuted. |
+| apache/commons-io#860 | written | Read IO-891, skip, read and mark plus the three added tests. The landed skip method consults only the global maximum, contrary to the PR description about marks. The separate read and skip histories at mark(2) remain unexecuted. |
+| google/jimfs#435 | written | Read the order of bounds, closure, zero-length and finished checks and the stream regression. Endpoint empty-slice reads through Files.newInputStream remain open. |
+| vigna/fastutil#384 | written | Read the repositioned overwrite regression and both write overloads. The source now advances by len before testing extension. A subsequent write after split versus bulk overwrite remains unexecuted. |
+| apache/commons-codec#437 | written | Read CODEC-340, the former static alphabet paths, the landed table lookup, and swapped-alphabet assertions. Independent base-58 division gives "212" for [0,58] with digits zero/one exchanged. Fresh-codec readback remains open. |
 | apache/commons-compress#725 | not yet |  |
 | apache/commons-compress#775 | not yet |  |
 | FasterXML/jackson-core#1716 | not yet |  |

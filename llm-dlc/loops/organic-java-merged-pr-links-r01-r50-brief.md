@@ -203,3 +203,103 @@ Determine what each merged change lets a Java caller observe, which results shou
 **Technical notes.** Use the jgrapht-core Maven module, finite integral double weights and complete undirected graphs. The default constructor exercises initial-edge selection as well as insertion.
 
 **Sources.** [FarthestInsertionHeuristicTSP.java](https://github.com/jgrapht/jgrapht/blob/9fc7edbcc3d1e753bc1863bda0cf1c2f652e083a/jgrapht-core/src/main/java/org/jgrapht/alg/tour/FarthestInsertionHeuristicTSP.java) · [FarthestInsertionHeuristicTSPTest.java](https://github.com/jgrapht/jgrapht/blob/9fc7edbcc3d1e753bc1863bda0cf1c2f652e083a/jgrapht-core/src/test/java/org/jgrapht/alg/tour/FarthestInsertionHeuristicTSPTest.java) · [pom.xml](https://github.com/jgrapht/jgrapht/blob/9fc7edbcc3d1e753bc1863bda0cf1c2f652e083a/jgrapht-core/pom.xml).
+
+## apache/commons-io#931 · Bulk reads and skip count the characters that survive a filter
+
+**Change and revisions.** [Merged PR #931](https://github.com/apache/commons-io/pull/931). The reader now continues past an entirely discarded chunk during a positive-length read. Skipping traverses the filtered stream so discarded characters do not consume the caller’s skip budget. Before `31cc5e824df9726d08cf5ee8154c1721abc2668d`, after `1af75d36371fb56603cccca8bfd8083f5c97d6f2`. [Landed comparison](https://github.com/apache/commons-io/compare/31cc5e824df9726d08cf5ee8154c1721abc2668d...1af75d36371fb56603cccca8bfd8083f5c97d6f2).
+
+**Public scenario.** Construct a CharacterFilterReader over a fresh StringReader with x as the character to remove. Record each read count, the slice actually written, the count returned by skip and the next character. Use a new reader for each history.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| apache/commons-io#931.1 · Intent | Bulk-read xx a (the three characters `xxa`) into a two-character array, then read again. | The PR reports an initial zero before the change. On the merge the first read must return 1 with a at index 0, then −1. | Filtering the entire input leaves exactly the one-character stream a. A positive-length read at its beginning must make progress. | The merged reader returns zero, exposes x, or signals end before delivering a. |
+| apache/commons-io#931.2 · Control | Filter x from `abc`. Skip 1, call read(), then read the remaining characters. | Both revisions should report 1 skipped followed by b, then c, then EOF. | No input character is removed. This is the ordinary StringReader sequence after consuming its first character. | Either revision leaks a skipped character, drops c or misreports the count. |
+| apache/commons-io#931.3 · Challenge | Filter x from `xaxb`, skip 1 and call read(). Compare with the same history over an independent StringReader on `ab`. Repeat with extra leading x characters. | The PR reports a on the parent for `xaxb`. On the merge each filtered variant must return skip count 1, then b, then EOF. | Deleting x first leaves ab in every case. Skipping its first retained character can only leave b. | Adding discarded input changes the successor, or the reported count is correct while read() still yields a. |
+
+**Evidence and limits.** The PR gives the parent outputs and reports the concrete-reader regressions under JDK 17, including failures with the earlier released artifact. Checking the skip return alone misses a skip that consumes raw input instead of a retained character.
+
+**Technical notes.** Commons IO’s root Maven module contains AbstractCharacterFilterReader and tests of both concrete filters. Use in-memory ASCII input and positive read sizes for the progress claim.
+
+**Sources.** [AbstractCharacterFilterReader.java](https://github.com/apache/commons-io/blob/1af75d36371fb56603cccca8bfd8083f5c97d6f2/src/main/java/org/apache/commons/io/input/AbstractCharacterFilterReader.java) · [AbstractCharacterFilterReaderTest.java](https://github.com/apache/commons-io/blob/1af75d36371fb56603cccca8bfd8083f5c97d6f2/src/test/java/org/apache/commons/io/input/AbstractCharacterFilterReaderTest.java) · [pom.xml](https://github.com/apache/commons-io/blob/1af75d36371fb56603cccca8bfd8083f5c97d6f2/pom.xml).
+
+## apache/commons-io#860 · Skipped characters, bounds, and the underlying reader position
+
+**Change and revisions.** [Merged PR #860](https://github.com/apache/commons-io/pull/860). Positive skip requests are capped by the remaining global bound and the position advances by the count the delegate actually skipped. Before `cfe19ad9dcc9d0c7308e2dc187b2f8b57de21af0`, after `e806e6b5926993ec6348a78542b1e1377a765e88`. [Landed comparison](https://github.com/apache/commons-io/compare/cfe19ad9dcc9d0c7308e2dc187b2f8b57de21af0...e806e6b5926993ec6348a78542b1e1377a765e88).
+
+**Public scenario.** Wrap a StringReader over "012345" in BoundedReader with a maximum of 3. Retain the delegate. For the short-skip control use a FilterReader whose skip(n) forwards at most one character, while read() behaves normally.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| apache/commons-io#860.1 · Intent | On a fresh wrapper, call skip(5), read() on the wrapper, then read() directly from the retained delegate. | Before, expect 5, EOF, and the character 5. After, expect 3, EOF, and the character 3. | Positions in the six distinct input characters identify exactly how many were consumed. The bound leaves the suffix starting at 3. | The wrapper reports 3 yet the delegate now starts at 5, or the wrapper reads past the limit. |
+| apache/commons-io#860.2 · Control | Ask the one-character skip delegate to skip(1), then read() twice and once more. | Both revisions should return skip count 1, characters 1 and 2, then EOF. Asking it to skip(3) instead should still leave 1 and 2 on the merge. | Only one character was actually skipped. The bound admits exactly two more. | An early EOF, a repeated character, or an extra fourth character. |
+| apache/commons-io#860.3 · Challenge | With a new maximum of 5, mark(2) at position zero. Compare three single-character reads against skip(4) on a separately marked identical reader. | The read path on both should yield 0, 1, EOF. The PR describes a matching read-ahead cap for skip, but landed source predicts a skip count of 4 and a delegate positioned at character 4. | The read predicate checks markedAt and readAheadLimit. The landed skip predicate uses only the global remaining count. Direct delegate read distinguishes positions 2 and 4. | A merged skip count of 2 with delegate readback 2 refutes the predicted discrepancy. A count of 4 contradicts the PR’s stated mark guarantee. |
+
+**Evidence and limits.** The landed tests cover large requests, the hard bound and a short delegate skip. The PR description also says skip respects the mark limit. The landed method and tests leave the marked-path discrepancy visible. A wrapper EOF alone cannot reveal consuming an extra delegate character.
+
+**Technical notes.** The Commons IO org.apache.commons.io.input wrapper uses character counts. Use StringReader, which permits marking and supports independent position readback on its retained reference. The PR links [IO-891](https://issues.apache.org/jira/browse/IO-891).
+
+**Sources.** [BoundedReader.java](https://github.com/apache/commons-io/blob/e806e6b5926993ec6348a78542b1e1377a765e88/src/main/java/org/apache/commons/io/input/BoundedReader.java) · [BoundedReaderTest.java](https://github.com/apache/commons-io/blob/e806e6b5926993ec6348a78542b1e1377a765e88/src/test/java/org/apache/commons/io/input/BoundedReaderTest.java) · [pom.xml](https://github.com/apache/commons-io/blob/e806e6b5926993ec6348a78542b1e1377a765e88/pom.xml).
+
+## google/jimfs#435 · A zero-length file read still returns zero after observed EOF
+
+**Change and revisions.** [Merged PR #435](https://github.com/google/jimfs/pull/435). Honor a zero-length bulk read after a Jimfs stream has already recorded end of file. Before `f0dcab50faa6626b9275d6604a89d7debfff3677`, after `0e5725b4d44ec51d54fba15336aa23147c1bedc7`. [Landed comparison](https://github.com/google/jimfs/compare/f0dcab50faa6626b9275d6604a89d7debfff3677...0e5725b4d44ec51d54fba15336aa23147c1bedc7).
+
+**Public scenario.** Create a Unix Jimfs file system with Jimfs.newFileSystem(Configuration.unix()). Write bytes [1,2,3] through Files.write, open Files.newInputStream, consume the three bytes and make a positive-length read that returns −1. Call read(buffer,2,0) on an open stream and examine the sentinel-filled buffer.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| google/jimfs#435.1 · Intent | After confirmed EOF call read on an eight-byte buffer at offset 2 and length 0. | The parent returns −1 after remembering EOF. The merge returns 0 with all eight cells unchanged. | The InputStream contract cited in #434 specifies zero for a zero-length request. The request covers no cells. | A nonzero return, exception or changed buffer cell on the merge. |
+| google/jimfs#435.2 · Control | Before consuming the file, issue the same zero-length read and then read one byte. | Both should return 0 then 1, with all sentinel cells preserved. | Reading zero bytes cannot consume the first byte. | A changed array, a nonzero count or a different first byte. |
+| google/jimfs#435.3 · Challenge | On a fresh empty file confirm EOF with read(), then alternate read(buffer,buffer.length,0), read() and another identical empty slice. | The merge should return 0, −1, 0 in order, with unchanged storage. | The endpoint is a valid empty slice. No call can create data in an empty file. | A legal endpoint is rejected, an empty slice reports EOF, or a positive request returns data. |
+
+**Evidence and limits.** The changed JimfsInputStreamTest explicitly reaches EOF before its empty read. The file-system regression adjusts a consumer loop to terminate on a zero count. An empty read only at stream creation misses the remembered EOF branch.
+
+**Technical notes.** The Maven jimfs module supplies the file-system provider. Keep the stream open and offsets valid since the implementation checks bounds and closure separately.
+
+**Sources.** [JimfsInputStream.java](https://github.com/google/jimfs/blob/0e5725b4d44ec51d54fba15336aa23147c1bedc7/jimfs/src/main/java/com/google/common/jimfs/JimfsInputStream.java) · [JimfsInputStreamTest.java](https://github.com/google/jimfs/blob/0e5725b4d44ec51d54fba15336aa23147c1bedc7/jimfs/src/test/java/com/google/common/jimfs/JimfsInputStreamTest.java) · [JimfsUnixLikeFileSystemTest.java](https://github.com/google/jimfs/blob/0e5725b4d44ec51d54fba15336aa23147c1bedc7/jimfs/src/test/java/com/google/common/jimfs/JimfsUnixLikeFileSystemTest.java) · [pom.xml](https://github.com/google/jimfs/blob/0e5725b4d44ec51d54fba15336aa23147c1bedc7/jimfs/pom.xml) · [Issue #434](https://github.com/google/jimfs/issues/434).
+
+## vigna/fastutil#384 · Bulk overwrite advances a repositioned output stream
+
+**Change and revisions.** [Merged PR #384](https://github.com/vigna/fastutil/pull/384). The byte-array write now moves the position by the number of bytes copied even when the write fits entirely within the existing output. Before `a3d44187dca3deb185455274bb877703f2f541fe`, after `cbf3c2ec706d16c56e6896b13ef0b5361be981c8`. [Landed comparison](https://github.com/vigna/fastutil/compare/a3d44187dca3deb185455274bb877703f2f541fe...cbf3c2ec706d16c56e6896b13ef0b5361be981c8).
+
+**Public scenario.** Create a FastByteArrayOutputStream, write bytes [1,2,3,4,5], call position(0), then write [7,8,9] with offset 0 and length 3. Observe position(), length(), and the first length() bytes of the public backing array. Continue with a single-byte write on the same stream.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| vigna/fastutil#384.1 · Intent | Observe immediately after the three-byte overwrite. | Issue #367 reports position 0 for a three-byte overwrite at zero on the parent. The merge should give position 3, length 5 and bytes [7,8,9,4,5]. | An overwrite consumes three positions and stops before the last two bytes. The high-water mark remains five. | Merged bytes look correct but the cursor is zero, or the logical length is truncated. |
+| vigna/fastutil#384.2 · Control | From position 5 in a fresh five-byte stream, append two bytes [6,7]. | Both revisions should give position 7, length 7 and contents [1,2,3,4,5,6,7]. | Appending starts at the previous end and extends the stream by precisely two. | Wrong end, missing bytes or corruption of the old prefix. |
+| vigna/fastutil#384.3 · Challenge | Follow the three-byte overwrite immediately with write(6). Compare against a fresh stream receiving the same three overwritten bytes via three individual write(int) calls and then write(6). | On the merge both histories should leave [7,8,9,6,5], position 4 and length 5. The parent's stale cursor predicts the last write overwrites index 0 in the bulk history. | Splitting the same bytes across calls should leave their destination and the following write position unchanged. | The two merged streams differ in any logical byte, position or length. |
+
+**Evidence and limits.** The issue reports the position discrepancy. The PR cites a passing FastByteArrayOutputStreamTest after the fix. Inspecting just the three copied bytes would miss the cursor error until a later write overwrites them.
+
+**Technical notes.** The fastutil source lives under src/it/unimi/dsi/fastutil/io with a corresponding JUnit test under test/. Compare only the logical prefix of the exposed array because its capacity is independent of length.
+
+**Sources.** [FastByteArrayOutputStream.java](https://github.com/vigna/fastutil/blob/cbf3c2ec706d16c56e6896b13ef0b5361be981c8/src/it/unimi/dsi/fastutil/io/FastByteArrayOutputStream.java) · [FastByteArrayOutputStreamTest.java](https://github.com/vigna/fastutil/blob/cbf3c2ec706d16c56e6896b13ef0b5361be981c8/test/it/unimi/dsi/fastutil/io/FastByteArrayOutputStreamTest.java) · [build.xml](https://github.com/vigna/fastutil/blob/cbf3c2ec706d16c56e6896b13ef0b5361be981c8/build.xml) · [Issue #367](https://github.com/vigna/fastutil/issues/367).
+
+## apache/commons-codec#437 · The configured Base58 alphabet determines the wire bytes
+
+**Change and revisions.** [Merged PR #437](https://github.com/apache/commons-codec/pull/437). The builder derives its inverse alphabet from the configured 58 distinct bytes. The encoder and decoder also use that alphabet’s zero digit. Before `ac982579962c32ee28be1e80cdb514a829e3366f`, after `98986558dc1c0e2013b76bea92d75bde80568a00`. [Landed comparison](https://github.com/apache/commons-codec/compare/ac982579962c32ee28be1e80cdb514a829e3366f...98986558dc1c0e2013b76bea92d75bde80568a00).
+
+**Public scenario.** Make a codec with Base58.builder().setEncodeTable(table).get(). Start from the ASCII Bitcoin alphabet in Base58Test and exchange its first two entries, so digit zero is "2" and digit one is "1". Encode a byte array, inspect the ASCII output, then decode known ASCII from a distinct codec configured the same way.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| apache/commons-codec#437.1 · Intent | Encode [0,0,1] and independently decode the literal "221". | The parent uses the default digits on the affected paths. The merge should emit "221" and decode that literal to [0,0,1]. | Each leading zero byte gets one zero symbol. The remaining magnitude 1 gets one symbol for digit one. | Either exact sequence differs, even if an encoder/decoder round trip succeeds. |
+| apache/commons-codec#437.2 · Control | Use an unconfigured Base58 for [0,0,1]. | Both should encode to "112" and reconstruct [0,0,1] from those ASCII bytes. | The default alphabet begins with "12". | The default representation or recovered leading-zero count changes. |
+| apache/commons-codec#437.3 · Challenge | Hold the swapped table fixed. Encode [0,58] and let a newly constructed codec decode the independently predicted text. | On the merge the ASCII must be "212", and decoding that literal must yield [0,58]. | 58 is one times 58 plus zero. The leading zero byte adds a separate zero digit before those two positional digits. | The prefix is correct but the internal zero digit is wrong, or the second codec reads a different magnitude. |
+
+**Evidence and limits.** Base58Test covers a swapped alphabet and a replacement zero symbol. A round trip using two default tables by mistake could pass even when both custom operations ignore their settings. The value 58 checks a zero digit in a different position.
+
+**Technical notes.** Use the byte-array API in Commons Codec’s binary package. Compare bytes as US-ASCII. The builder validates the custom alphabet’s length and uniqueness. The PR identifies the report as [CODEC-340](https://issues.apache.org/jira/browse/CODEC-340).
+
+**Sources.** [Base58.java](https://github.com/apache/commons-codec/blob/98986558dc1c0e2013b76bea92d75bde80568a00/src/main/java/org/apache/commons/codec/binary/Base58.java) · [Base58Test.java](https://github.com/apache/commons-codec/blob/98986558dc1c0e2013b76bea92d75bde80568a00/src/test/java/org/apache/commons/codec/binary/Base58Test.java) · [pom.xml](https://github.com/apache/commons-codec/blob/98986558dc1c0e2013b76bea92d75bde80568a00/pom.xml).
