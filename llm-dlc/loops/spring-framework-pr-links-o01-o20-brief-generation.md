@@ -6,11 +6,11 @@
 | spring-projects/spring-framework#37576 | written | Read the Friday witness and the two pinned regressions. Checked the named dates against the seven-day interval. Exact-midnight equivalence of SUN-SUN, 7-7 and SUN is a prediction. |
 | spring-projects/spring-framework#30238 | written | Read #30220, both submitted commits and the landed overloads. The reporter's explicit String type witness restored header matching. The paired header/query tail mutation is unexecuted. |
 | spring-projects/spring-framework#36913 | written | Read the PR example, typed and wildcard tests, and the element-type lookup. The custom converter and epoch-day readback have not been executed. |
-| spring-projects/spring-framework#30045 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37325 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37378 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37218 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37193 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#30045 | written | Read #27099, the function evaluator, registration overload, docs and landed examples. Common-entry evaluation and rebinding the already parsed expression to blue- are predictions. |
+| spring-projects/spring-framework#37325 | written | Read all three builder changes and tests. The published example shows the second RestClient mutate seeing id=[one,two]. Header append and sibling/built-client request readback remain predictions here. |
+| spring-projects/spring-framework#37378 | written | Read both copy paths and both regression observation points. Two same-name cookies with different paths carried through writeTo remain unexecuted. |
+| spring-projects/spring-framework#37218 | written | Read #27952, both landed commits, route regressions and RFC 9110. Verified the range is resolved before parsing on a stale validator. The body/status matrix across the four public routes remains unexecuted. |
+| spring-projects/spring-framework#37193 | written | Read the PR's malformed-field observations and the SSE field grammar. Pinned source calls trim() before parseRetry, predicting a surviving trailing-space discrepancy. No HTTP stream was executed. The dated W3C EventSource text and current WHATWG section agree on the one leading space and ASCII-digit rules. |
 | spring-projects/spring-framework#36714 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#1366 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#37308 | not yet | Awaiting source review and claims. |
