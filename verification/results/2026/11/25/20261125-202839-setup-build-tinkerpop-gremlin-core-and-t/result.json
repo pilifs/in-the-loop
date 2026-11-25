@@ -1,0 +1,381 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-202839-setup-build-tinkerpop-gremlin-core-and-t",
+  "title": "Setup: build TinkerPop gremlin-core and tinkergraph at both #3105 revisions and run the dedup regressions",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 1m31s, peak 1.4 GiB (estimated 35m00s, 5.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-202839-setup-build-tinkerpop-gremlin-core-and-t.json",
+    "sha256": "6ea0c7f8c3136ccc61e676c4a6b2d99a88dfe23dc904fe2ba8bd23f4f906ee76",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-202839-setup-build-tinkerpop-gremlin-core-and-t",
+      "title": "Setup: build TinkerPop gremlin-core and tinkergraph at both #3105 revisions and run the dedup regressions",
+      "description": "Setup for case M10 of llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-m01-m10/worktrees, Maven 3.10.0 on JDK 11, -pl gremlin-core,tinkergraph-gremlin -am (gremlin-language, gremlin-shaded, gremlin-core, gremlin-test, tinkergraph-gremlin; no .NET, Go, Python or JS modules): builds TinkerPop 3.8.0-SNAPSHOT at the fix pin a97db03618fa2fd7c17d24e331ff62adfe9c8df4 (online first, then offline) and the parent pin 007fd228a992f1dccba22e25a88e647168e5ba4f, running DedupGlobalStepTest and TinkerGraphFeatureTest with cucumber.features set to filter/Dedup.feature; keeps the five module jars, the DedupGlobalStep class digests and tinkergraph-gremlin's runtime classpath; then puts the fix's DedupGlobalStepTest and Dedup.feature on a copy of the parent (expected to fail). The module builds take several minutes, so the runs are a job. External dependencies were resolved inline first (dependency:go-offline on the same modules).",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent pass online and offline; the transplant prints TRANSPLANT-FAILS-AS-EXPECTED; the trees are removed",
+      "submitted": {
+        "at": "2026-11-25T20:28:39+00:00",
+        "session": "a5b4fdc9-3bf2-4c02-8a33-72bad19f6a2d",
+        "by": "setup agent (Claude Opus 5.5), fork B"
+      },
+      "requires": [
+        "java",
+        "mvn",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "35m"
+      },
+      "steps": [
+        {
+          "name": "M10 fix: TinkerPop gremlin-core + tinkergraph-gremlin (-am) online, DedupGlobalStepTest and the Dedup.feature scenarios",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh fix-online",
+          "cwd": "."
+        },
+        {
+          "name": "M10 fix offline: the same; module jars, DedupGlobalStep class digest, tinkergraph-gremlin runtime classpath",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh fix-offline",
+          "cwd": "."
+        },
+        {
+          "name": "M10 parent offline: its own DedupGlobalStepTest and Dedup.feature; jars, digest, classpath",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh parent",
+          "cwd": "."
+        },
+        {
+          "name": "M10 the fix's DedupGlobalStepTest and Dedup.feature on the parent (expected to fail in both modules)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh transplant",
+          "cwd": "."
+        },
+        {
+          "name": "remove the M10 build trees",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh clean",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7d9a3885b0324936f50ad845aab24a413b363a14",
+  "startedAt": "2026-11-25T20:56:08+00:00",
+  "finishedAt": "2026-11-25T20:57:46+00:00",
+  "wallSeconds": 98.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3579567,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 8400.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 2100.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1478516736,
+    "wallSeconds": 91.2,
+    "cpuSeconds": 185.0,
+    "memoryOfEstimate": 0.28,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "M10 fix: TinkerPop gremlin-core + tinkergraph-gremlin (-am) online, DedupGlobalStepTest and the Dedup.feature scenarios",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh fix-online",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 8400.0,
+      "cancelled": false,
+      "wallSeconds": 31.477,
+      "cpuSeconds": 49.379,
+      "cpuThrottledSeconds": 0.754,
+      "peakMemoryBytes": 1314537472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-m10-fix-tinkerpop-gremlin-core.log",
+        "lines": 8,
+        "bytes": 386,
+        "sha256": "f570eb637cba97dd4b8a37e18629ee941467c8bc410f79ebae0a6947539fa6ba",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=31",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS",
+        "gremlin-language junit tests=0 failures=0 errors=0 skipped=0",
+        "gremlin-shaded junit tests=0 failures=0 errors=0 skipped=0",
+        "gremlin-core junit tests=2 failures=0 errors=0 skipped=0",
+        "gremlin-test junit tests=0 failures=0 errors=0 skipped=0",
+        "tinkergraph-gremlin junit tests=28 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "M10 fix offline: the same; module jars, DedupGlobalStep class digest, tinkergraph-gremlin runtime classpath",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh fix-offline",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 8400.0,
+      "cancelled": false,
+      "wallSeconds": 18.039,
+      "cpuSeconds": 41.623,
+      "cpuThrottledSeconds": 0.84,
+      "peakMemoryBytes": 1404862464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-m10-fix-offline-the-same-modul.log",
+        "lines": 14,
+        "bytes": 1036,
+        "sha256": "05a0f1e85aea25b26702a3027f375ea7ac470e1522b368ba092bb31e8b5bbe8b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=18",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS",
+        "gremlin-language junit tests=0 failures=0 errors=0 skipped=0",
+        "gremlin-shaded junit tests=0 failures=0 errors=0 skipped=0",
+        "gremlin-core junit tests=2 failures=0 errors=0 skipped=0",
+        "gremlin-test junit tests=0 failures=0 errors=0 skipped=0",
+        "tinkergraph-gremlin junit tests=28 failures=0 errors=0 skipped=0",
+        "aeb699149a44a1479adb1a6daca65425d4a18f99985f18cd3d4b00f5eaf8d6f0  gremlin-core-3.8.0-SNAPSHOT.jar",
+        "1471f8ae3b783d235f27931b1216574734a180ad205171de40f2bb989156ac94  gremlin-language-3.8.0-SNAPSHOT.jar",
+        "a7d9a8f5c736266c4e7b0ed947eb639155d6aaac6b3f39dbe478ea402123585a  gremlin-shaded-3.8.0-SNAPSHOT.jar",
+        "c4ce13811dc9a2c07089f7b4aa920bf0538539e3aa29f40f23cec60c4ac2cde9  gremlin-test-3.8.0-SNAPSHOT.jar",
+        "336709ddf808b1689f7dfcb59024936fd99bf8a170a30932b2b5cbdaeb2eb282  tinkergraph-gremlin-3.8.0-SNAPSHOT.jar",
+        "270af1b13f0200577280a69245bfa5f6529af93ff6249682fd5af42db46c621d  org/apache/tinkerpop/gremlin/process/traversal/step/filter/DedupGlobalStep.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "M10 parent offline: its own DedupGlobalStepTest and Dedup.feature; jars, digest, classpath",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 8400.0,
+      "cancelled": false,
+      "wallSeconds": 20.269,
+      "cpuSeconds": 46.511,
+      "cpuThrottledSeconds": 1.182,
+      "peakMemoryBytes": 1292894208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-m10-parent-offline-its-own-ded.log",
+        "lines": 14,
+        "bytes": 1036,
+        "sha256": "130852b1b501773faf499a864fa9cb6f8d27953ee13059169a186cb485f18170",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=20",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS",
+        "gremlin-language junit tests=0 failures=0 errors=0 skipped=0",
+        "gremlin-shaded junit tests=0 failures=0 errors=0 skipped=0",
+        "gremlin-core junit tests=1 failures=0 errors=0 skipped=0",
+        "gremlin-test junit tests=0 failures=0 errors=0 skipped=0",
+        "tinkergraph-gremlin junit tests=27 failures=0 errors=0 skipped=0",
+        "8c56b4c4bd4ff2c2d85dcf6cb20050e8b7dfb004c21b0c989146e10cfe93bee2  gremlin-core-3.8.0-SNAPSHOT.jar",
+        "b629ab7c25301f09fb6b5ffcaa8ff19cee914153f360e5c44c1f96f72d09d652  gremlin-language-3.8.0-SNAPSHOT.jar",
+        "12f67e966b964edf61568a7ec2d7a9b700f288fccec3b481535af971e16e8e06  gremlin-shaded-3.8.0-SNAPSHOT.jar",
+        "aac577e9921134dce63f5d901e4b62c9768181d656b27934dc2214b7c411f6ac  gremlin-test-3.8.0-SNAPSHOT.jar",
+        "acc9e52e21a5178abc260a5fbd9a826cdace6e93200278ffabbf6f8d3209c88e  tinkergraph-gremlin-3.8.0-SNAPSHOT.jar",
+        "4d33edd86633ea849f6d703b6d34afdfb782fc6ce69aa3d5faa596222c0f6b17  org/apache/tinkerpop/gremlin/process/traversal/step/filter/DedupGlobalStep.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "M10 the fix's DedupGlobalStepTest and Dedup.feature on the parent (expected to fail in both modules)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 8400.0,
+      "cancelled": false,
+      "wallSeconds": 21.044,
+      "cpuSeconds": 47.26,
+      "cpuThrottledSeconds": 1.024,
+      "peakMemoryBytes": 1478516736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-m10-the-fix-s-dedupglobalstept.log",
+        "lines": 18,
+        "bytes": 1447,
+        "sha256": "6ebf5f92190eaa7d7c4d11e3b652b6a2fe18f6989368ae371f1a89e6d8c3e5f1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=21",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.159 s <<< FAILURE! - in org.apache.tinkerpop.gremlin.process.traversal.step.filter.DedupGlobalStepTest",
+        "[ERROR] shouldThrowForMultipleByModulators(org.apache.tinkerpop.gremlin.process.traversal.step.filter.DedupGlobalStepTest)  Time elapsed: 0.131 s  <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   DedupGlobalStepTest.shouldThrowForMultipleByModulators Expected exception: java.lang.IllegalStateException",
+        "[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0",
+        "[ERROR] There are test failures.",
+        "[ERROR] Tests run: 28, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.319 s <<< FAILURE! - in org.apache.tinkerpop.gremlin.tinkergraph.TinkerGraphFeatureTest",
+        "[ERROR] g_V_both_hasXlabel_softwareX_dedup_byXlangX_byXnameX_name(Step - dedup())  Time elapsed: 0.007 s  <<< FAILURE!",
+        "gremlin-language junit tests=0 failures=0 errors=0 skipped=0",
+        "gremlin-shaded junit tests=0 failures=0 errors=0 skipped=0",
+        "gremlin-core junit tests=2 failures=1 errors=0 skipped=0",
+        "gremlin-core junit failed DedupGlobalStepTest#shouldThrowForMultipleByModulators",
+        "gremlin-test junit tests=0 failures=0 errors=0 skipped=0",
+        "tinkergraph-gremlin junit tests=28 failures=1 errors=0 skipped=0",
+        "tinkergraph-gremlin junit failed TinkerGraphFeatureTest#g_V_both_hasXlabel_softwareX_dedup_byXlangX_byXnameX_name(Step - dedup",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "remove the M10 build trees",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M10_job.sh clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 8400.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.2,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 3272704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-remove-the-m10-build-trees.log",
+        "lines": 1,
+        "bytes": 8,
+        "sha256": "37c3dee866bc87fc3d52b6b053805dfbe5df3d394fdad9ec535f162a4e695941",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T21:02:58+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T205746Z-9520499959971ce7"
+    }
+  }
+}
