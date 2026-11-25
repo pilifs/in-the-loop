@@ -8,10 +8,10 @@ Read on 2026-11-25. The table follows submission order. The checks below compare
 | apache/commons-collections#701 | written | Compared the two submitted commits with the squash and read the multiset contract, both iterator removals and the landed shared test. The PR supplies the parent’s three-null example. The reinsert-and-remove history across views is a source-based prediction. |
 | remkop/picocli#1529 | written | Compared all four submitted commit subjects with the target history. The contiguous three landed commits start after 4090e3d; the final one adds only the test. Both CommandLine previews truncate beyond the changed methods. Clearing a redundant primary-name alias should preserve dispatch by contract, but map removal predicts failure; execution remains open. |
 | java-diff-utils/java-diff-utils#233 | written | Read the two-parent merge, DiffUtils, the generator’s explicit and implicit paths and the two new tests. Both landed paths match the submission. The PR reports 149 passing tests. Both-column equality formatting with explicit versus implicit leading and trailing equal parts is unexecuted. |
-| junit-team/junit-framework#6104 | not yet | |
-| apache/arrow-java#1019 | not yet | |
-| jgrapht/jgrapht#792 | not yet | |
-| apache/commons-statistics#140 | not yet | |
+| junit-team/junit-framework#6104 | written | Read the four-commit submission, squashed resolver changes, release note, Launcher API and execution assertions. The regression separately rediscovers IDs and executes the whole class. Executing each saved leaf with identical method names and inspecting body markers is open. |
+| apache/arrow-java#1019 | written | Read #470, both submitted changes, the merged vector and its SmallIntVector fixtures. In the ordered fixture the parent’s slot-1 size is two while its end by arithmetic is five. The test’s element readback uses slot zero. Equal default hashes after relocating the [40,50] slice remain unexecuted. |
+| jgrapht/jgrapht#792 | written | Read issue #790, both public algorithms, the shared implementation and regression at 2663008. Enumerating the two feasible complete matchings gives totals 18 and 20. Changing the unused 5→7 edge to weight 1 creates a first-path tie, while 5→8 is still compulsory. Both public results remain unexecuted. |
+| apache/commons-statistics#140 | written | Read both Cauchy sources and the SciPy-based regression at 2535c20. The parent evaluates tan(0) at the median despite the PR’s drift claim. With p=2⁻¹⁰⁵⁰ and scale 2⁻¹⁰⁰ the real magnitude is about 2⁹⁵⁰/π, while the merged unscaled reciprocal can overflow. These public calls were not executed. |
 | eclipse-rdf4j/rdf4j#1989 | not yet | |
 | apache/calcite#5378 | not yet | |
 | apache/commons-imaging#335 | not yet | |
