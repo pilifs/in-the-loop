@@ -16,10 +16,10 @@ Read on 2026-11-25. The table follows submission order. The checks below compare
 | apache/calcite#5378 | written | Read CALCITE-7909, the pinned rule and planner.iq at 5f48eec. The report supplies the old EXCEPT observation and the landed fixture expects 1/0 rows for EXCEPT/INTERSECT. Counting duplicates by full tuple yields 2/1 then 0/3 in the challenge, which remains unexecuted. |
 | apache/commons-imaging#335 | written | Read IMAGING-369, both JpegDecoder revisions and TiffJpegTest. The landed fixture metadata identifies the 3,833-byte compressed file and 48,652-byte reference. For the existing square crop at (11,11) the greatest tested coordinate is 125, short of the 126 edge. The rectangular 3×2 corner comparison remains unexecuted. |
 | quartz-scheduler/quartz#1496 | written | Read issue #920, public Scheduler, both delegate revisions and the Derby job-store regression at adeae66. The issue used Quartz 2.3.2/PostgreSQL; the landed test calls the store directly in both directions. Public scheduler snapshots, extension row counts and isolation by trigger group remain predictions. |
-| apache/maven-shade-plugin#150 | not yet | |
-| apache/iceberg#12855 | not yet | |
-| gradle/gradle#21084 | not yet | |
-| google/guava#7277 | not yet | |
+| apache/maven-shade-plugin#150 | written | Read MSHADE-425, both transformer versions, DefaultShader and the landed transformer test. The regression supplies identical provider lines under two names and expects both copies in one output descriptor. Discovery of two distinct loadable providers under both input orders remains unexecuted. |
+| apache/iceberg#12855 | written | Read issue #11239, both GenericRecord copy constructors and the landed table and identity tests. The regression expects IDs 200–202 removed. ByteBuffers.copy reads remaining() through an independent view. The four-row Parquet scan and nested slice mutation have not been run. |
+| gradle/gradle#21084 | written | Read #7923, the Groovy task-action implementation and the merged integration test. The test appends an unrelated registration and checks console output for both doFirst and doLast. The A→B file and clean-build comparison are open public checks. |
+| google/guava#7277 | written | Compared both AggregateFuture implementations with Futures.allAsList’s input-order contract and existing FuturesTest cases. A done input bypasses addListener on the merge. The counted mixed case and the duplicate future completing inside listener registration remain unexecuted. |
 | ical4j/ical4j#947 | not yet | |
 | ReactiveX/RxJava#6895 | not yet | |
 | apache/kafka#6654 | not yet | |
