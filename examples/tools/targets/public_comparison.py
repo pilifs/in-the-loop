@@ -61,8 +61,10 @@ def comparison_plan(folder):
                 raise ValueError("partial return prediction requires nonempty fragments")
         if set(row.get("omit", {})) & row["expected"].keys():
             raise ValueError("cannot omit a registered side prediction")
-    uses_postgres = any(d.get("service") == "postgres" for d in runtime["deployments"].values())
-    required = ["javac", "java"] + (["docker"] if uses_postgres else [])
+    services = {d["service"] for d in runtime["deployments"].values() if "service" in d}
+    if services - {"postgres", "mysql"}:
+        raise ValueError("unknown public comparison service")
+    required = ["javac", "java"] + (["docker"] if services else [])
     return {"example": folder.name[:3], "approach": "B8", "executable": True, "notExecuted": None,
             "runner": "public-comparison", "revisions": spec["revisions"], "questions": ids,
             "deployments": list(runtime["deployments"]), "tools": {"required": required, "optional": []}}
@@ -122,8 +124,9 @@ def observe(jdk, classpath, trial, caller, args, providers, *, label, service_en
         if loaded.get(cls) != {required.resolve()}:
             details = next((s.split(" ", 1)[1] for s in records if s.startswith("UPGRADE-DETAIL ")), "")
             detail = base64.b64decode(details).decode("utf-16-be", "replace")
-            if service_env and "PUBLIC_COMPARISON_PG_PASSWORD" in service_env:
-                detail = detail.replace(service_env["PUBLIC_COMPARISON_PG_PASSWORD"], "<fixture credential>")
+            for key, value in (service_env or {}).items():
+                if key.endswith("_PASSWORD"):
+                    detail = detail.replace(value, "<fixture credential>")
             raise ValueError(f"{label}: {cls} did not load from {required.name}. {detail}")
     return outcome
 
@@ -153,6 +156,9 @@ def replay(folder, record=False):
                 from targets.public_postgres import postgres
                 image = deploy.get("postgresImage") or runtime["postgresImage"]
                 service_env = services.enter_context(postgres(image))
+            elif deploy.get("service") == "mysql":
+                from targets.public_mysql import mysql
+                service_env = services.enter_context(mysql(deploy["mysqlImage"]))
             cp = {side: classpath(cache, runtime, deploy, side, work / "packages" / name) for side in SIDES}
             classes = work / name
             classes.mkdir(exist_ok=True)
@@ -178,8 +184,10 @@ def replay(folder, record=False):
                                      ("matched" if agrees(expected, actual) else "refuted")})
             result["deployments"][name] = {"callerClasses": {p.relative_to(classes).as_posix(): sha(p)
                 for p in sorted(classes.rglob("*.class"))}, "observations": runs}
-            if service_env:
+            if deploy.get("service") == "postgres":
                 result["deployments"][name]["postgresVersionNumber"] = int(service_env["PUBLIC_COMPARISON_PG_VERSION"])
+            elif deploy.get("service") == "mysql":
+                result["deployments"][name]["mysqlVersion"] = service_env["PUBLIC_COMPARISON_MYSQL_VERSION"]
     receipt = folder / "observations.json"
     if record:
         receipt.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")

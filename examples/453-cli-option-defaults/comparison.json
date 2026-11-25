@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-cli/pull/450",
+  "revisions": {
+    "parent": "d959de8fb66f8aee8964dd3080920dfb9cdfcdc3",
+    "fix": "e04b9bc29d1a2c3c203b7cd81235fcac9c4ec516"
+  },
+  "entry": "DefaultParser.parse(Options,String[],Properties)",
+  "questions": [
+    {
+      "id": "apache/commons-cli#450.1",
+      "role": "Intent",
+      "args": [
+        "reuse"
+      ],
+      "history": "With an initially empty option and the same parser, parse `o=first`, then `o=second`, each with empty argv.",
+      "prediction": "Before, expect results `first, first` and stored values `[\"first\"]`. After, expect `first, second`, the first result still reading `first`, and stored values `null` after either call.",
+      "basis": "Each invocation supplies exactly one default. A fresh definition would yield the current one. The merged parse contract expressly preserves the registered values.",
+      "refutation": "The second merged result reads `first`, the retained result changes, or a registered value appears.",
+      "expected": {
+        "parent": {
+          "return": "first=first stored1=[first] second=first retained=first stored2=[first]"
+        },
+        "fix": {
+          "return": "first=first stored1=null second=second retained=first stored2=null"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-cli#450.2",
+      "role": "Control",
+      "args": [
+        "preset"
+      ],
+      "history": "On a fresh definition set `option.getValuesList().add(\"preset\")` before registration. Parse empty argv with `o=fallback`.",
+      "prediction": "Both revisions should return `preset` and the definition should still contain exactly `[\"preset\"]`.",
+      "basis": "A property fills an absent value. The parent already contains a regression for a caller-supplied value.",
+      "refutation": "Either call returns the fallback, or drops or appends to the preset.",
+      "expected": {
+        "parent": {
+          "return": "value=preset stored=[preset]"
+        },
+        "fix": {
+          "return": "value=preset stored=[preset]"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-cli#450.3",
+      "role": "Challenge",
+      "args": [
+        "retry"
+      ],
+      "history": "Add a required flag `Option.builder(\"r\").required().get()`. First parse empty argv with `o=discarded`. Catch `MissingOptionException`; then use a fresh parser, the same options, argv `[\"-r\"]` and `o=retry`. Compare with the retry alone on fresh definitions.",
+      "prediction": "Both should reject the first call for missing `r`. Before, predict the retried result reads `discarded` while the fresh result reads `retry`. After, both should read `retry`, contain flag `r`, and have an empty argument list.",
+      "basis": "The error prevents a command line from reaching the caller. Its default should not outlive the failed invocation. The source processes properties before the required-option check.",
+      "refutation": "The merged retry differs from the fresh invocation, or the first call succeeds.",
+      "expected": {
+        "parent": {
+          "return": "first=MissingOptionException[r] retry=discarded/true/[] fresh=retry/true/[]"
+        },
+        "fix": {
+          "return": "first=MissingOptionException[r] retry=retry/true/[] fresh=retry/true/[]"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/Esri/geometry-api-java/pull/329",
+  "revisions": {
+    "parent": "0318320724ef2b94d4d11e056cd18c04eeb23661",
+    "fix": "1ac0c090047076329cb8c3906286086f313ac9de"
+  },
+  "entry": "GeometryEngine.difference(Geometry,Geometry,SpatialReference)",
+  "questions": [
+    {
+      "id": "Esri/geometry-api-java#329.1",
+      "role": "Intent",
+      "args": [
+        "touch"
+      ],
+      "history": "Subtract A–T from the two paths. Repeat with T–A.",
+      "prediction": "The issue discussion reports a Java exception for A–T. Predict that the pinned parent throws on A–T. The reversed Java parent outcome is open. On the merge, expect a polyline covering all six first-loop edges and all five second-loop edges exactly once in either direction of the subtractor.",
+      "basis": "The inputs share A and no positive-length interval. The landed Java test spells out both original paths as its expected JSON for both orientations.",
+      "refutation": "A merged call throws, omits either closing segment or the remote loop, or includes a positive-length piece of A–T.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "forward=throws:com.esri.core.geometry.GeometryException | reverse="
+          ]
+        },
+        "fix": {
+          "contains": [
+            "forward=first=[1, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true ",
+            " | reverse=first=[1, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true "
+          ]
+        }
+      }
+    },
+    {
+      "id": "Esri/geometry-api-java#329.2",
+      "role": "Control",
+      "args": [
+        "open"
+      ],
+      "history": "Use just the open first path A–B–C–D–E–F and subtract A–T.",
+      "prediction": "Both Java revisions should return exactly the five input edges with no F–A closure.",
+      "basis": "Removing the final A removes one real edge. The reported open-path control succeeded in the C# port.",
+      "refutation": "Either Java result drops a segment, closes the line, includes the subtractor, or throws.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "first=[1, 1, 1, 1, 1, 0] remote=[0, 0, 0, 0, 0] extra=0 lengthOK=true "
+          ]
+        },
+        "fix": {
+          "contains": [
+            "first=[1, 1, 1, 1, 1, 0] remote=[0, 0, 0, 0, 0] extra=0 lengthOK=true "
+          ]
+        }
+      }
+    },
+    {
+      "id": "Esri/geometry-api-java#329.3",
+      "role": "Challenge",
+      "args": [
+        "overlap"
+      ],
+      "history": "Hold both original loops fixed. Extend the reversed subtractor T–A by one segment to B. Read the returned segments and their lengths.",
+      "prediction": "On the merge, A–B should disappear. The five other first-loop edges and all five remote edges should remain exactly once. Total length should be the input length less the Euclidean distance A–B, with absolute error at most 1e−7 coordinate units using `calculateLength2D()` and `Math.hypot(1914, -286)`. Parent behavior for this mixed contact and overlap is open.",
+      "basis": "T–A contributes only point contact. A–B is the only full edge shared with either loop. Its removal gives an independent edge-by-edge oracle.",
+      "refutation": "The result is nonempty but still covers any interior of A–B, loses a remote edge, adds a positive-length piece of T–A, or counts an edge twice.",
+      "expected": {
+        "fix": {
+          "contains": [
+            "first=[0, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true "
+          ]
+        }
+      }
+    }
+  ]
+}

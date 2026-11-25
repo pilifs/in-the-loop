@@ -24981,6 +24981,203 @@
       ],
       "source": "https://github.com/apache/tinkerpop/pull/3105",
       "target": null
+    },
+    {
+      "id": "453",
+      "path": "examples/453-cli-option-defaults",
+      "title": "Apache Commons CLI preserves option defaults across parses",
+      "summary": "On the parent, a second parse returned the first default, including after a missing required option. On the merge the second parse used its own default. A caller-supplied preset survived on both revisions.",
+      "origin": "real-world",
+      "system": "Apache Commons CLI",
+      "symbol": "DefaultParser.parse(Options,String[],Properties)",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The successful sequence retains its first CommandLine and reads the definition after each call. The failed sequence switches to a fresh parser and compares its retry with separate fresh definitions."
+      ],
+      "source": "https://github.com/apache/commons-cli/pull/450",
+      "target": null
+    },
+    {
+      "id": "454",
+      "path": "examples/454-hdrhistogram-resized-equality",
+      "title": "HdrHistogram compares samples after growth and reset",
+      "summary": "A grown-and-reset histogram threw when it received the comparison on the parent. The reverse comparison succeeded. Both merged comparisons returned true. Both revisions distinguished four samples with equal totals and extrema but different interior counts.",
+      "origin": "real-world",
+      "system": "HdrHistogram",
+      "symbol": "Histogram.equals(Object)",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both histograms use the auto-resizing three-digit constructor. Each equality call is observed independently, so an exception on the larger receiver cannot hide the reverse result."
+      ],
+      "source": "https://github.com/HdrHistogram/HdrHistogram/pull/145",
+      "target": null
+    },
+    {
+      "id": "455",
+      "path": "examples/455-threeten-british-cutover",
+      "title": "ThreeTen-Extra resolves cutover fields and reads a British period back",
+      "summary": "Adding a month or a year into the calendar gap moved from 23 to 2 September. The merged negative period read back to the ISO epoch day for its end. Julian day selection and overflow checks also changed as predicted.",
+      "origin": "real-world",
+      "system": "ThreeTen-Extra",
+      "symbol": "BritishCutoverDate.plus/until, JulianDate.with, Chronology.prolepticYear",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "integer-overflow",
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "5/5 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The period is a ChronoPeriod added back to 18 March 1753. The caller reads all date and period fields and independently converts ISO 12 September 1752 to an epoch day. Both chronology singletons receive JulianEra.BC."
+      ],
+      "source": "https://github.com/ThreeTen/threeten-extra/pull/463",
+      "target": null
+    },
+    {
+      "id": "456",
+      "path": "examples/456-esri-polyline-difference",
+      "title": "Esri Geometry restores the surviving segments of a closed polyline",
+      "summary": "The parent threw on both orientations of point contact. The merge preserved all eleven edges exactly once. Extending the reversed subtractor to overlap A–B removed just that edge on both revisions.",
+      "origin": "real-world",
+      "system": "Esri Geometry API",
+      "symbol": "GeometryEngine.difference(Geometry,Geometry,SpatialReference)",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The oracle sweeps each original edge against the actual returned segments and checks the converse for foreign geometry. It counts nonzero intervals, handles split or reversed edges and implicit closure, and checks absolute length error within 1e−7 coordinate units. Collinearity uses perpendicular distance at most 1e−8."
+      ],
+      "source": "https://github.com/Esri/geometry-api-java/pull/329",
+      "target": null
+    },
+    {
+      "id": "457",
+      "path": "examples/457-spring-mysql-id-reservations",
+      "title": "Spring JDBC reserves fresh IDs after a MySQL transaction failure",
+      "summary": "After a confirmed rollback, the parent issued 100, 99, 100 and the third insert hit the primary key. The merge issued 99, 100, 101. After a real commit followed by a restoration failure, the merged retries began at 101 and ended with durable maximum 104.",
+      "origin": "real-world",
+      "system": "Spring JDBC",
+      "symbol": "MySQLMaxValueIncrementer.nextLongValue()",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions",
+          "caching"
+        ],
+        "defect": [
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A fresh MySQL 9.1.0 container runs the two InnoDB tables. Connector/J executes every query. A JDBC wrapper records the actual last_insert_id() read and injects one failure at the first commit or the first post-commit restoration. Each insert commits separately and every readback opens a new physical connection."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37322",
+      "target": null
     }
   ]
 }

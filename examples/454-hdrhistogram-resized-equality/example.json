@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "454",
+  "title": "HdrHistogram compares samples after growth and reset",
+  "summary": "A grown-and-reset histogram threw when it received the comparison on the parent. The reverse comparison succeeded. Both merged comparisons returned true. Both revisions distinguished four samples with equal totals and extrema but different interior counts.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "HdrHistogram",
+    "symbol": "Histogram.equals(Object)"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Equality now compares recorded values when the backing arrays have different lengths."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/HdrHistogram/HdrHistogram",
+    "url": "https://github.com/HdrHistogram/HdrHistogram/pull/145"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Both histograms use the auto-resizing three-digit constructor. Each equality call is observed independently, so an exception on the larger receiver cannot hide the reverse result."
+  ]
+}

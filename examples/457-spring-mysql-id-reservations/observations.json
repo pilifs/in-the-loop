@@ -1,0 +1,70 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "cba55537e6248a307dd3d44e6f8e611b9d76a99a2b1d5183e09d2f0d48f54de3",
+  "runtimeSha256": "f383b8344d684bef270f460e78e8f3a84036694da85bb6ddbe365cc42d32922f",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "3c96cf78f8c81016182a980cebe3adf54722b46f1caf3e782f03e1c6889b9bbd"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Reservations$1.class": "3ec671ba3889dcfdfb0f8c050ea4f3ca9ccff4e2256c2520306f23f48069c742",
+        "PublicCaller$Reservations.class": "6854a5169c254a0386cf7f009007340c7f852bfacc8f66d4ac841c8c75f1de86",
+        "PublicCaller.class": "c8df8bf28cadf8196af1984579f44a358302aadaae266fe222e757992d13b72c",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37322.1",
+          "outcome": {
+            "return": "initial=98/[] first=DataAccessResourceFailureException afterFirst=98/[] steps=[100:inserted:98/[100], 99:inserted:100/[99, 100], 100:duplicate(1062,23000):100/[99, 100]] reservations=[100, 100] fault=rollback"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37322.2",
+          "outcome": {
+            "return": "initial=98/[] first=none afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 102] fault=none"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37322.3",
+          "outcome": {
+            "return": "initial=98/[] first=DataAccessResourceFailureException afterFirst=100/[] steps=[100:inserted:100/[100], 101:inserted:102/[100, 101], 102:inserted:102/[100, 101, 102]] reservations=[100, 102] fault=restore"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37322.1",
+          "outcome": {
+            "return": "initial=98/[] first=DataAccessResourceFailureException afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 100, 102] fault=rollback"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37322.2",
+          "outcome": {
+            "return": "initial=98/[] first=none afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 102] fault=none"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37322.3",
+          "outcome": {
+            "return": "initial=98/[] first=DataAccessResourceFailureException afterFirst=100/[] steps=[101:inserted:102/[101], 102:inserted:102/[101, 102], 103:inserted:104/[101, 102, 103]] reservations=[100, 102, 104] fault=restore"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "mysqlVersion": "9.1.0"
+    }
+  }
+}

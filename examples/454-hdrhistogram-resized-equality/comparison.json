@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/HdrHistogram/HdrHistogram/pull/145",
+  "revisions": {
+    "parent": "89b0d5981bafb6b4b4ac624473a1771405d4da20",
+    "fix": "1b51671cf06062671af931f98a8af2a53d335a70"
+  },
+  "entry": "Histogram.equals(Object)",
+  "questions": [
+    {
+      "id": "HdrHistogram/HdrHistogram#145.1",
+      "role": "Intent",
+      "args": [
+        "growth"
+      ],
+      "history": "Compare the grown-and-reset A and the smaller B above.",
+      "prediction": "Both should report one sample at `x`. Before, predict `A.equals(B)` throws `ArrayIndexOutOfBoundsException` and `B.equals(A)` returns true. After, both directions should return true.",
+      "basis": "Reset discards observations. The two remaining one-element samples coincide. Issue #144 explains the receiver-sized loop, and the landed regression compares A to B.",
+      "refutation": "Either merged comparison throws or returns false despite the matching samples, or the predicted direction of the parent failure is reversed.",
+      "expected": {
+        "parent": {
+          "return": "totals=1/1 atX=1/1 equals=ArrayIndexOutOfBoundsException/true"
+        },
+        "fix": {
+          "return": "totals=1/1 atX=1/1 equals=true/true"
+        }
+      }
+    },
+    {
+      "id": "HdrHistogram/HdrHistogram#145.2",
+      "role": "Control",
+      "args": [
+        "order"
+      ],
+      "history": "Start two fresh three-digit histograms. Record 10, 20, 30 in A and 30, 10, 20 in B. Then record another 20 in B.",
+      "prediction": "On both revisions the first comparison should be true both ways. After the extra sample it should be false both ways, with total counts 3 and 4.",
+      "basis": "A histogram counts occurrences independently of insertion order. The extra observation changes exactly one count.",
+      "refutation": "Reordering alone makes the pair unequal, or the extra occurrence leaves it equal.",
+      "expected": {
+        "parent": {
+          "return": "ordered=true/true extra=false/false totals=3/4 at20=1/2"
+        },
+        "fix": {
+          "return": "ordered=true/true extra=false/false totals=3/4 at20=1/2"
+        }
+      }
+    },
+    {
+      "id": "HdrHistogram/HdrHistogram#145.3",
+      "role": "Challenge",
+      "args": [
+        "interior"
+      ],
+      "history": "Give A the growth/reset history above through the reset, then record 10, 20, 20, 40. In fresh B record 10, 30, 30, 40. Compare in both directions.",
+      "prediction": "On both revisions expect false both ways. Each has four samples and the same extrema, but the counts at 20 and 30 are respectively (2, 0) and (0, 2).",
+      "basis": "These small integers occupy distinct bins at three-digit precision. The unequal interior counts occur within both storage ranges, before the old loop could reach an unavailable index.",
+      "refutation": "Both public count profiles match the fixture but either comparison accepts the pair or throws.",
+      "expected": {
+        "parent": {
+          "return": "totals=4/4 extrema=10:40/10:40 at20=2/0 at30=0/2 equals=false/false"
+        },
+        "fix": {
+          "return": "totals=4/4 extrema=10:40/10:40 at20=2/0 at30=0/2 equals=false/false"
+        }
+      }
+    }
+  ]
+}

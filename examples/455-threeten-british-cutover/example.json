@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "455",
+  "title": "ThreeTen-Extra resolves cutover fields and reads a British period back",
+  "summary": "Adding a month or a year into the calendar gap moved from 23 to 2 September. The merged negative period read back to the ISO epoch day for its end. Julian day selection and overflow checks also changed as predicted.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "integer-overflow",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "ThreeTen-Extra",
+    "symbol": "BritishCutoverDate.plus/until, JulianDate.with, Chronology.prolepticYear"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Calendar units now resolve missing smaller fields separately from direct field selection. British periods count elapsed residual days and BC conversion detects overflow."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/ThreeTen/threeten-extra",
+    "url": "https://github.com/ThreeTen/threeten-extra/pull/463"
+  },
+  "verdictLabel": "5/5 merged-revision predictions matched",
+  "notes": [
+    "The period is a ChronoPeriod added back to 18 March 1753. The caller reads all date and period fields and independently converts ISO 12 September 1752 to an epoch day. Both chronology singletons receive JulianEra.BC."
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "453",
+  "title": "Apache Commons CLI preserves option defaults across parses",
+  "summary": "On the parent, a second parse returned the first default, including after a missing required option. On the merge the second parse used its own default. A caller-supplied preset survived on both revisions.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons CLI",
+    "symbol": "DefaultParser.parse(Options,String[],Properties)"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The parser now copies a registered option before applying a property value."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-cli",
+    "url": "https://github.com/apache/commons-cli/pull/450"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "The successful sequence retains its first CommandLine and reads the definition after each call. The failed sequence switches to a fresh parser and compares its retry with separate fresh definitions."
+  ]
+}

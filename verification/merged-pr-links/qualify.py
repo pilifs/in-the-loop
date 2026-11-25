@@ -63,6 +63,11 @@ ENTRIES = {
     "452": ("M10-tinkerpop", "gremlin-core/src/main/java",
             "org.apache.tinkerpop.gremlin.process.traversal.step.filter.DedupGlobalStep#modulateBy"
             "(Lorg/apache/tinkerpop/gremlin/process/traversal/Traversal$Admin;)V"),
+    "453": ("N01-commons-cli", "src/main/java", "org.apache.commons.cli.DefaultParser#handleProperties(Ljava/util/Properties;)V"),
+    "454": ("N02-HdrHistogram", "src/main/java", "org.HdrHistogram.AbstractHistogram#equals(Ljava/lang/Object;)Z"),
+    "455": ("N03-threeten-extra", "src/main/java",
+            "org.threeten.extra.chrono.BritishCutoverDate#until(Ljava/time/chrono/ChronoLocalDate;)Ljava/time/chrono/ChronoPeriod;"),
+    "456": ("N04-geometry-api-java", "src/main/java", "com.esri.core.geometry.TopologicalOperations#restorePolylineParts_(IIIII)V"),
 }
 
 

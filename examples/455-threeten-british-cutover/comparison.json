@@ -1,0 +1,106 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/ThreeTen/threeten-extra/pull/463",
+  "revisions": {
+    "parent": "ded297257577f8dba1aa06f4ddd879a9b2d0d486",
+    "fix": "c5f44114d357c1dc25d0e6f00dec5a126cae5cc6"
+  },
+  "entry": "BritishCutoverDate.plus/until, JulianDate.with, Chronology.prolepticYear",
+  "questions": [
+    {
+      "id": "ThreeTen/threeten-extra#463.1",
+      "role": "Intent",
+      "args": [
+        "month-year"
+      ],
+      "history": "Add one `MONTHS` unit to British 12 August 1752. Separately add one `YEARS` unit to British 12 September 1751.",
+      "prediction": "Both reach the same nominal 12 September. Before, predict 23 September 1752. After, expect 2 September 1752.",
+      "basis": "The parent interprets the missing date as Julian, eleven days ahead in Gregorian labels. The new package rules resolve the smaller field to the previous valid day when adding months or years.",
+      "refutation": "The two operations disagree, or either merged operation lands on 23 September.",
+      "expected": {
+        "parent": {
+          "return": "month=1752-09-23 year=1752-09-23"
+        },
+        "fix": {
+          "return": "month=1752-09-02 year=1752-09-02"
+        }
+      }
+    },
+    {
+      "id": "ThreeTen/threeten-extra#463.2",
+      "role": "Control",
+      "args": [
+        "day"
+      ],
+      "history": "From British 2 September 1752 add one `DAYS` unit, then subtract one day. Separately select `with(DAY_OF_MONTH, 12)` on that start.",
+      "prediction": "On both revisions, the day step should yield 14 September with epoch delta +1, then recover 2 September. Directly selecting day 12 should yield 23 September.",
+      "basis": "A day step advances elapsed time. Direct selection of an interior missing day uses its Julian interpretation. This exercises the same nominal day as claim 1.",
+      "refutation": "A missing label appears, the day step advances twelve elapsed days, or selecting day 12 clamps it to 2.",
+      "expected": {
+        "parent": {
+          "return": "forward=1752-09-14 delta=1 back=1752-09-02 select12=1752-09-23"
+        },
+        "fix": {
+          "return": "forward=1752-09-14 delta=1 back=1752-09-02 select12=1752-09-23"
+        }
+      }
+    },
+    {
+      "id": "ThreeTen/threeten-extra#463.3",
+      "role": "Challenge",
+      "args": [
+        "period"
+      ],
+      "history": "Let S be British 18 March 1753 and E be British 1 September 1752. Read `p = S.until(E)`, then `S.plus(p)` and its epoch day.",
+      "prediction": "Before, predict (0 years, −6 months, −17 days) and a readback eleven days before E. After, expect (0, −6, −6) and exact readback at E.",
+      "basis": "Subtracting six months lands on 18 September. Going back four days reaches the 14th, one more reaches the 2nd and one more the 1st. The ISO epoch-day oracle for E is `LocalDate.of(1752, 9, 12).toEpochDay()`.",
+      "refutation": "A merged period has the expected components but reads back to a different epoch day, or the merged residual differs from −6.",
+      "expected": {
+        "parent": {
+          "return": "period=0,-6,-17 back=1752-08-21 epoch=-79379 end=-79368 iso=-79368"
+        },
+        "fix": {
+          "return": "period=0,-6,-6 back=1752-09-01 epoch=-79368 end=-79368 iso=-79368"
+        }
+      }
+    },
+    {
+      "id": "ThreeTen/threeten-extra#463.4",
+      "role": "Intent",
+      "args": [
+        "julian-day"
+      ],
+      "history": "On `JulianDate.of(2011,2,26)`, set `DAY_OF_MONTH` to 30. Repeat at 32.",
+      "prediction": "At 30, expect 28 February before and 2 March after. At 32 both should throw `DateTimeException`.",
+      "basis": "The year is common. Adding four elapsed days to 26 February reaches 2 March. The outer day field admits 1 through 31.",
+      "refutation": "The merged date stays in February at 30 or accepts 32.",
+      "expected": {
+        "parent": {
+          "return": "at30=2011-02-28 at32=DateTimeException"
+        },
+        "fix": {
+          "return": "at30=2011-03-02 at32=DateTimeException"
+        }
+      }
+    },
+    {
+      "id": "ThreeTen/threeten-extra#463.5",
+      "role": "Intent",
+      "args": [
+        "era"
+      ],
+      "history": "Call `prolepticYear(JulianEra.BC, Integer.MIN_VALUE)` on both singleton chronologies. Also pass `Integer.MAX_VALUE` as the BC year.",
+      "prediction": "Minimum input: predict −2147483647 before, `DateTimeException` after. Maximum input: both should return −2147483646.",
+      "basis": "The formula is 1 minus year-of-era. The first mathematical result is 2147483649, outside signed int. The second fits.",
+      "refutation": "Either merged converter wraps the first result or rejects the representable second result.",
+      "expected": {
+        "parent": {
+          "return": "julian=-2147483647/-2147483646 british=-2147483647/-2147483646"
+        },
+        "fix": {
+          "return": "julian=DateTimeException/-2147483646 british=DateTimeException/-2147483646"
+        }
+      }
+    }
+  ]
+}

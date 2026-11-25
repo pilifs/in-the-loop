@@ -21,10 +21,14 @@ def require(condition, message):
 def audit(replay=False, campaign="original"):
     series = {"original": ("organic-java-merged-pr-links-brief", "M", None),
               "l01-l20": ("organic-java-merged-pr-links-l01-l20-brief", "L", 20),
-              "m01-m10": ("organic-java-merged-pr-links-m01-m10-brief", "M", 10)}
+              "m01-m10": ("organic-java-merged-pr-links-m01-m10-brief", "M", 10),
+              "n01-n05": ("organic-java-merged-pr-links-n01-n05-brief", "N", 5)}
     brief_name, case_prefix, case_count = series[campaign]
     brief = ROOT / "llm-dlc/loops" / (brief_name + ".md")
     setup = brief.with_name(brief.stem + "-setup.md").read_text()
+    # N01–N05's build record puts every module in one table, including the nested Spring JARs.
+    build_table = {f"artifacts/{case}-{side}/{path}": digest for case, side, path, digest in re.findall(
+        r"^\| (N\d\d) \| (parent|fix) \| `([^`]+)` \| `([0-9a-f]{64})` \|$", setup, re.MULTILINE)}
     references = {}
     for section in brief.read_text().split("\n## "):
         link = re.search(r"https://github.com/([\w.-]+/[\w.-]+)/compare/([0-9a-f]{40})\.{3}([0-9a-f]{40})", section)
@@ -46,7 +50,10 @@ def audit(replay=False, campaign="original"):
     if case_count:
         require(len(references) == case_count, f"expected all {case_count} comparisons in {campaign}")
         for case, (_, rows) in references.items():
-            require([row[0] for row in rows.values()] == ["Intent", "Control", "Challenge"],
+            roles = ["Intent", "Control", "Challenge"]
+            if campaign == "n01-n05" and case == "ThreeTen/threeten-extra#463":
+                roles += ["Intent", "Intent"]
+            require([row[0] for row in rows.values()] == roles,
                     f"{case}: incomplete or reordered questions")
     fields = ("role", "history", "prediction", "basis")
     if case_count:
@@ -90,6 +97,11 @@ def audit(replay=False, campaign="original"):
             supplied = dict(line.split(None, 1)[::-1] for line in inventory.read_text().splitlines() if line.strip())
         for variant, deployment in runtime["deployments"].items():
             result_rows = recorded["deployments"][variant]
+            if campaign == "n01-n05" and case == "spring-projects/spring-framework#37322":
+                require(deployment.get("service") == "mysql" and
+                        re.fullmatch(r"mysql@sha256:[0-9a-f]{64}", deployment.get("mysqlImage", "")) and
+                        deployment["mysqlImage"] in setup_section and result_rows.get("mysqlVersion") == "9.1.0",
+                        prefix + "durable histories require the registered MySQL deployment")
             require("PublicCaller.class" in result_rows["callerClasses"], prefix + "compiled caller absent")
             for side, files in deployment["classpath"].items():
                 used_files.update(files)
@@ -101,8 +113,11 @@ def audit(replay=False, campaign="original"):
                         if case_count:
                             label = re.match(rf"artifacts/{case_prefix}{number:02}[-/].*?\b(parent|fix)\b", f)
                             require(label and label[1] == side, prefix + f"{f} belongs to a different revision")
-                        require(digest in setup_section or supplied.get(f) == digest,
-                                prefix + f"{side} {f} absent from pin-build record")
+                        if campaign == "n01-n05":
+                            require(build_table.get(f) == digest, prefix + f"{side} {f} differs from pin-build table")
+                        else:
+                            require(digest in setup_section or supplied.get(f) == digest,
+                                    prefix + f"{side} {f} absent from pin-build record")
                         if campaign == "m01-m10":
                             # Setup lists individual build JARs by name and reactor JARs in parent/fix columns.
                             row, = (line for line in setup_section.splitlines()
@@ -138,9 +153,10 @@ def audit(replay=False, campaign="original"):
         refuted = [key for key, variants in evidence.items()
                    if any(sides["fix"]["prediction"] == "refuted" for sides in variants.values())]
         paired = all(all("parent" in sides for sides in evidence[key].values()) for key in questions)
-        intent = next(key for key, desc in questions.items() if desc[0] == "Intent")
-        different = all("parent" in sides and sides["parent"]["outcome"] != sides["fix"]["outcome"]
-                        for sides in evidence[intent].values())
+        intents = [key for key, desc in questions.items() if desc[0] == "Intent"]
+        def different(key):
+            return all("parent" in sides and sides["parent"]["outcome"] != sides["fix"]["outcome"]
+                       for sides in evidence[key].values())
         controls = [key for key, desc in questions.items() if desc[0] == "Control"]
         def matched_on_fix(key):
             return all(sides["fix"]["prediction"] == "matched" for sides in evidence[key].values())
@@ -149,12 +165,12 @@ def audit(replay=False, campaign="original"):
                             all(r["prediction"] == "matched" for r in sides.values())
                             for sides in evidence[key].values()) for key in controls)
         counters.update(cases=1, questions=len(questions), fixedRefutations=len(refuted),
-                        fixedPredictionsMatched=sum(map(matched_on_fix, questions)), fixedIntentsMatched=int(matched_on_fix(intent)),
-                        pairedIntentChanges=int(different), unchangedControls=unchanged,
+                        fixedPredictionsMatched=sum(map(matched_on_fix, questions)), fixedIntentsMatched=sum(map(matched_on_fix, intents)),
+                        pairedIntentChanges=sum(map(different, intents)), unchangedControls=unchanged,
                         omittedParentHistories=sum("parent" in q.get("omit", {}) for q in spec["questions"]))
         result["cases"].append({"example": ex["id"], "case": case, "observationsSha256": comparison.upgrade_replay.sha(folder / "observations.json"),
                                 "deployments": list(runtime["deployments"]), "allHistoriesPaired": paired, "fixedRefutations": refuted})
-        if campaign == "m01-m10":
+        if campaign in ("m01-m10", "n01-n05"):
             require(paired, prefix + "expected both original revisions for every history")
             for key, desc in questions.items():
                 if desc[0] in ("Intent", "Control"):
@@ -167,6 +183,11 @@ def audit(replay=False, campaign="original"):
             counters["controlsMatchedOnBoth"] += sum(all(
                 all(side["prediction"] == "matched" for side in sides.values()) for sides in evidence[key].values()
             ) for key in controls)
+        if campaign == "n01-n05":
+            for q in spec["questions"]:
+                open_parent = q["id"] == "Esri/geometry-api-java#329.3"
+                require(("parent" not in q["expected"]) == open_parent, prefix + q["id"] + " parent prediction")
+                counters["parentHistoriesWithoutPrediction"] += int(open_parent)
         for receipt in sorted(Path(__file__).with_name("entry-receipts").glob(ex["id"] + "-*.json")):
             qualified = comparison.read(receipt)
             variant = receipt.stem.split("-", 1)[1]
@@ -183,7 +204,7 @@ def audit(replay=False, campaign="original"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10"), default="original")
+    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10", "n01-n05"), default="original")
     parser.add_argument("--replay", action="store_true", help="also rebuild every caller and repeat the physical trials")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()

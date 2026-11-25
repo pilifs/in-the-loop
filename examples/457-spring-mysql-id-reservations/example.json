@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "457",
+  "title": "Spring JDBC reserves fresh IDs after a MySQL transaction failure",
+  "summary": "After a confirmed rollback, the parent issued 100, 99, 100 and the third insert hit the primary key. The merge issued 99, 100, 101. After a real commit followed by a restoration failure, the merged retries began at 101 and ended with durable maximum 104.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "tags": [
+    "transactions",
+    "duplicate-delivery",
+    "caching",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring JDBC",
+    "symbol": "MySQLMaxValueIncrementer.nextLongValue()"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The incrementer now discards the remaining cached IDs when commit or auto-commit restoration fails."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37322"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "A fresh MySQL 9.1.0 container runs the two InnoDB tables. Connector/J executes every query. A JDBC wrapper records the actual last_insert_id() read and injects one failure at the first commit or the first post-commit restoration. Each insert commits separately and every readback opens a new physical connection."
+  ]
+}

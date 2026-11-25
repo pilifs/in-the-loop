@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-232607-replay-the-17-n01-n05-predictions-with-m",
+  "title": "Replay the 17 N01–N05 predictions with MySQL transaction readback",
+  "description": "Recompile the five public callers against their historical JDKs and compare all 34 fresh JVM histories with the recorded typed outcomes. Start the pinned MySQL 9.1.0 image for the Spring histories and check both the rolled-back and committed failure using independent InnoDB reads and primary-key inserts.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay",
+    "jdbc:durable-transaction-readback"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-results.md"
+    ]
+  },
+  "expected": "All 17 merged predictions and five unchanged controls repeat, the seven intent observations differ between revisions, and the complete audit is byte-identical.",
+  "submitted": {
+    "at": "2026-11-25T23:26:07+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "docker"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Repeat the five comparisons",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign n01-n05 --replay --output verification/merged-pr-links/n01-n05/repeated-audit.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the complete audit",
+      "run": "cmp verification/merged-pr-links/n01-n05/audit.json verification/merged-pr-links/n01-n05/repeated-audit.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/n01-n05/repeated-audit.json"
+  ]
+}
