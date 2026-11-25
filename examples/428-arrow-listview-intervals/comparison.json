@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/arrow-java/pull/1019",
+  "revisions": {
+    "parent": "46211fccf642d6dcfcebc31081817da1529d6a35",
+    "fix": "9fd4973d12abbd9e9d14098c2acd41d97a6c4407"
+  },
+  "entry": "ListViewVector.getElementEndIndex",
+  "questions": [
+    {
+      "id": "apache/arrow-java#1019.1",
+      "role": "Intent",
+      "args": [
+        "offset"
+      ],
+      "history": "Inspect slot 1 and read the child values at all indices in its reported half-open interval.",
+      "prediction": "The parent returns end 2 for start 3 even though the object contains [40,50]. The merge should return [3,5) and child readback [40,50], equal to the object.",
+      "basis": "A view of length two beginning at index three ends at five. Issue #470 and the regression identify the old size-as-end behavior.",
+      "refutation": "End precedes start, end minus start differs from two, or the child slice disagrees with the object.",
+      "expected": {
+        "parent": {
+          "return": "3..2 child=[] object=[40, 50]"
+        },
+        "fix": {
+          "return": "3..5 child=[40, 50] object=[40, 50]"
+        }
+      }
+    },
+    {
+      "id": "apache/arrow-java#1019.2",
+      "role": "Control",
+      "args": [
+        "zero"
+      ],
+      "history": "Inspect slot 0 at offset zero, length three.",
+      "prediction": "Both revisions should report [0,3) and expose [10,20,30] through both read paths.",
+      "basis": "At zero offset, size and exclusive end coincide.",
+      "refutation": "The reported interval, object or child readback differs on either revision.",
+      "expected": {
+        "parent": {
+          "return": "0..3 child=[10, 20, 30] object=[10, 20, 30]"
+        },
+        "fix": {
+          "return": "0..3 child=[10, 20, 30] object=[10, 20, 30]"
+        }
+      }
+    },
+    {
+      "id": "apache/arrow-java#1019.3",
+      "role": "Challenge",
+      "args": [
+        "hash"
+      ],
+      "history": "On the merge compare slot 1 with a slot in a separate vector whose child is [40,50] and whose valid view starts at zero with size two. Compare their objects and `hashCode(slot)` values using the default hasher.",
+      "prediction": "Equal ordered element values should yield equal slot hashes regardless of their physical position. On the parent the nonzero-offset loop can visit no elements. No particular numeric hash is required.",
+      "basis": "Both slots denote the same typed sequence. Relocating the physical slice while preserving its contents tests the consumer that hashes the view.",
+      "refutation": "The objects compare equal but the hashes differ depending on the child offset.",
+      "expected": {
+        "fix": {
+          "contains": [
+            "objects=[40, 50]/[40, 50] equalHash=true"
+          ]
+        }
+      }
+    }
+  ]
+}

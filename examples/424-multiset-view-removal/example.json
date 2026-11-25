@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "424",
+  "title": "Commons Collections keeps occurrence counts across view removals",
+  "summary": "Both distinct views lost the selected key on the parent while retaining its old size. The fixed views agree with the surviving occurrences after removal, reinsertion and removal through the other view.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Commons Collections",
+    "symbol": "HashMultiSet.uniqueSet"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Removing through either distinct-element view now subtracts every occurrence of the removed key from the backing multiset's total size."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-collections",
+    "url": "https://github.com/apache/commons-collections/pull/701"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

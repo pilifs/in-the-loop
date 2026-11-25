@@ -44,6 +44,9 @@ def comparison_plan(folder):
         for index in deploy["providers"].values():
             if type(index) is not int or not 0 <= index < min(map(len, paths.values())):
                 raise ValueError("provider outside its original classpath")
+        for package in deploy.get("openModules", []):
+            if not re.fullmatch(r"[a-zA-Z][\w.]*/[a-zA-Z][\w.]*", package):
+                raise ValueError("invalid JVM module/package to open")
     ids = [row["id"] for row in spec["questions"]]
     if not ids or len(set(ids)) != len(ids):
         raise ValueError("empty or duplicate public questions")
@@ -94,12 +97,13 @@ def classpath(cache, runtime, deployment, side, work):
     return os.pathsep.join(map(str, files))
 
 
-def observe(jdk, classpath, trial, caller, args, providers, *, label, service_env=None):
+def observe(jdk, classpath, trial, caller, args, providers, *, label, service_env=None, open_modules=()):
     """Run one public history and check which artifact actually supplied each original class."""
     obs = trial / "observed"
     log = trial / "loaded"
     encoded = [base64.b64encode(s.encode("utf-16-be")).decode() for s in args]
-    cmd = [jdk / "bin/java", "-XX:-UsePerfData", "-Xmx256m", f"-Djava.io.tmpdir={trial}",
+    cmd = [jdk / "bin/java", "-XX:-UsePerfData", "-Xmx256m",
+           *(f"--add-opens={package}=ALL-UNNAMED" for package in open_modules), f"-Djava.io.tmpdir={trial}",
            f"-Duser.home={trial}", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8",
            f"-Dupgrade.observation.file={obs}", f"-Xlog:class+load=info:file={log}",
            "-cp", classpath, "UpgradeObservation", caller, *encoded]
@@ -163,7 +167,7 @@ def replay(folder, record=False):
                             shutil.copytree(folder / "fixtures", trial / "fixtures")
                         actual = observe(jdk, str(classes) + os.pathsep + cp[side], trial, "PublicCaller",
                                          row["args"], providers, label=f"{folder.name} {side} {row['id']}",
-                                         service_env=service_env)
+                                         service_env=service_env, open_modules=deploy.get("openModules", ()))
                         print(f"{name} {side} {row['id']} {actual}", flush=True)
                         expected = row["expected"].get(side)
                         runs.append({"side": side, "id": row["id"], "outcome": actual,

@@ -1,0 +1,69 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/google/gson/pull/3059",
+  "revisions": {
+    "parent": "961517decce0aa907c285c19d8b93d5c746ecdcb",
+    "fix": "5e277e42786ab6441b7dd6b1a8c34d545d132307"
+  },
+  "entry": "JsonParser.parseString",
+  "questions": [
+    {
+      "id": "google/gson#3059.1",
+      "role": "Intent",
+      "args": [
+        "parsed"
+      ],
+      "history": "Insert integer 42 and look up parsed JSON number 42.",
+      "prediction": "Both compare equal. The parent hashes the two representations differently and lookup is predicted to miss. The merge must give equal hashes and return `\"saved\"`.",
+      "basis": "Issue #992 and the landed round-trip assertion establish the pair. Java’s equal-key hash contract gives the lookup oracle.",
+      "refutation": "On the merge either equality direction fails, the hashes differ, or the parsed lookup misses.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "equals=true/true sameHash=false lookup=null"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "equals=true/true sameHash=true lookup=saved"
+          ]
+        }
+      }
+    },
+    {
+      "id": "google/gson#3059.2",
+      "role": "Control",
+      "args": [
+        "types"
+      ],
+      "history": "Insert numeric 42 and seek `new JsonPrimitive(\"42\")`, then seek another integer 42.",
+      "prediction": "Both revisions must miss the JSON string and return the saved value for the integer. No constraint on collisions between unequal keys.",
+      "basis": "JSON strings and numbers have distinct types. The equal integer denotes the inserted key.",
+      "refutation": "The string retrieves the value or the equal integer misses on either revision.",
+      "expected": {
+        "parent": {
+          "return": "null/saved"
+        },
+        "fix": {
+          "return": "null/saved"
+        }
+      }
+    },
+    {
+      "id": "google/gson#3059.3",
+      "role": "Challenge",
+      "args": [
+        "zero"
+      ],
+      "history": "On the merge insert `new JsonPrimitive(-0.0)`, replace its value using parsed JSON `0`, and remove via `new JsonPrimitive(0L)`.",
+      "prediction": "Replacement must return the original value with size one. Removal must return the replacement and leave the map empty.",
+      "basis": "The regression asserts equality and equal hashes for signed zero and integer zero. Replacement and removal exercise that equivalence across three producers and two map operations.",
+      "refutation": "A second entry appears, either operation returns the wrong prior value, or a zero key survives removal.",
+      "expected": {
+        "fix": {
+          "return": "first/1/next/0"
+        }
+      }
+    }
+  ]
+}

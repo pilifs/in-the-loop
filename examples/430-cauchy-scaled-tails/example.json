@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "430",
+  "title": "Commons Statistics computes representable scaled Cauchy tail quantiles",
+  "summary": "The two ordinary tails became distinct and accurate. A small scale with a subnormal probability still returned two infinities despite finite, representable reference answers.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "rounding",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons Statistics",
+    "symbol": "CauchyDistribution.inverseCumulativeProbability"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The distribution now evaluates the two inverse tails without subtracting one half from a tiny probability."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-statistics",
+    "url": "https://github.com/apache/commons-statistics/pull/140"
+  },
+  "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

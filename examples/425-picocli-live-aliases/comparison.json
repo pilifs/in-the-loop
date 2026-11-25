@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/remkop/picocli/pull/1529",
+  "revisions": {
+    "parent": "4090e3dd30f9a046a72a1450972848d55e656160",
+    "fix": "edd902c0348d3548afac12096b0b16ab69f52a79"
+  },
+  "entry": "CommandLine.execute",
+  "questions": [
+    {
+      "id": "remkop/picocli#1529.1",
+      "role": "Intent",
+      "args": [
+        "replace"
+      ],
+      "history": "After registration set `aliases(\"first\")`, execute first, replace it with `aliases(\"second\")`, then execute first and second.",
+      "prediction": "The parent is reported to leave registered aliases unchanged. On the merge first should execute once before replacement, then fail with a nonzero exit and no invocation. Second should then execute successfully.",
+      "basis": "Issue #1528 describes the stale parent. The landed test exercises successive additions and removals via execute.",
+      "refutation": "The spec lists second yet the parent still executes first or rejects second.",
+      "expected": {
+        "parent": {
+          "return": "2/0,2/0,2/0"
+        },
+        "fix": {
+          "return": "0/1,2/1,0/2"
+        }
+      }
+    },
+    {
+      "id": "remkop/picocli#1529.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "With no aliases, execute sub and then an unknown token. Repeat after attaching an ordinary distinct alias.",
+      "prediction": "Both revisions should dispatch the primary name exactly once per successful call and reject the unknown token without invoking the child.",
+      "basis": "The primary name was supplied at registration and remains unchanged throughout.",
+      "refutation": "Changing only aliases breaks sub or invokes the child on the unknown token.",
+      "expected": {
+        "parent": {
+          "return": "0/1,2/1,0/2,2/2"
+        },
+        "fix": {
+          "return": "0/1,2/1,0/2,2/2"
+        }
+      }
+    },
+    {
+      "id": "remkop/picocli#1529.3",
+      "role": "Challenge",
+      "args": [
+        "primary"
+      ],
+      "history": "On the merge add the primary name itself as an alias with `aliases(\"sub\")`, then clear aliases using an empty string array. Compare to a fresh root that never had aliases.",
+      "prediction": "If the redundant alias is accepted, both roots should still dispatch sub. The landed source predicts the edited root instead loses its primary mapping when the alias is removed.",
+      "basis": "A registered primary name is independently sufficient for dispatch. Adding an alias for the same receiver passes the implementation’s duplicate check.",
+      "refutation": "After the accepted edits, sub is absent from the parent lookup or returns a nonzero exit only on the edited root.",
+      "expected": {
+        "fix": {
+          "return": "edited=true/0/1 fresh=true/0/1"
+        }
+      }
+    }
+  ]
+}

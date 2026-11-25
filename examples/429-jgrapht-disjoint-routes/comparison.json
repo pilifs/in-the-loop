@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/jgrapht/jgrapht/pull/792",
+  "revisions": {
+    "parent": "e7ae7a506ca4c2943878247a6e02bf71abc9b2d4",
+    "fix": "26630083eda568be7099c408638ce31c4d94b4a4"
+  },
+  "entry": "SuurballeKDisjointShortestPaths.getPaths",
+  "questions": [
+    {
+      "id": "jgrapht/jgrapht#792.1",
+      "role": "Intent",
+      "args": [
+        "three"
+      ],
+      "history": "Original graph, k=3.",
+      "prediction": "The PR attributes a NullPointerException to both parent algorithms. On the merge expect vertex sequences [1,3,7,2], [1,4,6,2], [1,5,8,2], in increasing weights 3, 7, 8.",
+      "basis": "Three disjoint paths must use 5→8. The two assignments of 3 and 4 to 6 and 7 cost 6 or 8 on their middle edges. The lower assignment gives total weight 18.",
+      "refutation": "Either algorithm throws, returns fewer than three, shares an edge, or returns a sequence or weight outside that solution.",
+      "expected": {
+        "parent": {
+          "return": "java.lang.NullPointerException | java.lang.NullPointerException"
+        },
+        "fix": {
+          "return": "[[1, 3, 7, 2]@3.0/true, [1, 4, 6, 2]@7.0/true, [1, 5, 8, 2]@8.0/true] | [[1, 3, 7, 2]@3.0/true, [1, 4, 6, 2]@7.0/true, [1, 5, 8, 2]@8.0/true]"
+        }
+      }
+    },
+    {
+      "id": "jgrapht/jgrapht#792.2",
+      "role": "Control",
+      "args": [
+        "one"
+      ],
+      "history": "Same original graph, k=1.",
+      "prediction": "Both revisions return just [1,3,7,2] with weight 3.",
+      "basis": "All routes use two unit boundary arcs, and 3→7 is the unique cheapest middle arc.",
+      "refutation": "An exception, another sequence, or a weight unequal to the sum of its edges.",
+      "expected": {
+        "parent": {
+          "return": "[[1, 3, 7, 2]@3.0/true] | [[1, 3, 7, 2]@3.0/true]"
+        },
+        "fix": {
+          "return": "[[1, 3, 7, 2]@3.0/true] | [[1, 3, 7, 2]@3.0/true]"
+        }
+      }
+    },
+    {
+      "id": "jgrapht/jgrapht#792.3",
+      "role": "Challenge",
+      "args": [
+        "tie"
+      ],
+      "history": "On the merge lower only 5→7 from 3 to 1 and request k=3 again.",
+      "prediction": "The same three paths with weights [3,7,8] remain optimal, even though the first shortest-path search now has a tie. Each path traverses original forward edges with no shared edge.",
+      "basis": "To reach 8 one must still enter from 5. Using 5→7 in any final solution leaves at most two disjoint exits to 2.",
+      "refutation": "The extra tie changes the final solution, exposes a reversed edge, or makes a path’s weight disagree with its original edges.",
+      "expected": {
+        "fix": {
+          "return": "[[1, 3, 7, 2]@3.0/true, [1, 4, 6, 2]@7.0/true, [1, 5, 8, 2]@8.0/true] | [[1, 3, 7, 2]@3.0/true, [1, 4, 6, 2]@7.0/true, [1, 5, 8, 2]@8.0/true]"
+        }
+      }
+    }
+  ]
+}

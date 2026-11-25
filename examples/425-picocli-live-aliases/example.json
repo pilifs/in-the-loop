@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "425",
+  "title": "picocli dispatches through a registered child’s edited aliases",
+  "summary": "Ordinary aliases now dispatch and retire correctly. Registering the primary name itself as an alias and then clearing the alias removes the primary dispatch entry on the merge.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "picocli",
+    "symbol": "CommandLine.execute"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Updating an attached child’s aliases now updates the parent’s dispatch table."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/remkop/picocli",
+    "url": "https://github.com/remkop/picocli/pull/1529"
+  },
+  "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

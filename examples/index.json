@@ -23795,6 +23795,318 @@
       ],
       "source": "https://github.com/google/guava/pull/7784",
       "target": null
+    },
+    {
+      "id": "423",
+      "path": "examples/423-gson-roundtrip-keys",
+      "title": "Gson finds parsed numeric keys in a map",
+      "summary": "Equal boxed and parsed numbers missed a HashMap lookup on the parent and retrieved the saved value on the merge. Signed-zero replacement and removal used a single entry.",
+      "origin": "real-world",
+      "system": "Gson",
+      "symbol": "JsonParser.parseString",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "agreement"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/google/gson/pull/3059",
+      "target": null
+    },
+    {
+      "id": "424",
+      "path": "examples/424-multiset-view-removal",
+      "title": "Commons Collections keeps occurrence counts across view removals",
+      "summary": "Both distinct views lost the selected key on the parent while retaining its old size. The fixed views agree with the surviving occurrences after removal, reinsertion and removal through the other view.",
+      "origin": "real-world",
+      "system": "Commons Collections",
+      "symbol": "HashMultiSet.uniqueSet",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/apache/commons-collections/pull/701",
+      "target": null
+    },
+    {
+      "id": "425",
+      "path": "examples/425-picocli-live-aliases",
+      "title": "picocli dispatches through a registered child’s edited aliases",
+      "summary": "Ordinary aliases now dispatch and retire correctly. Registering the primary name itself as an alias and then clearing the alias removes the primary dispatch entry on the merge.",
+      "origin": "real-world",
+      "system": "picocli",
+      "symbol": "CommandLine.execute",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/remkop/picocli/pull/1529",
+      "target": null
+    },
+    {
+      "id": "426",
+      "path": "examples/426-diff-utils-equal-lines",
+      "title": "java-diff-utils renders explicit and implicit equal rows",
+      "summary": "Explicit equal lines changed from CHANGE to EQUAL. The customized prefix and suffix were each decorated once in both representations.",
+      "origin": "real-world",
+      "system": "java-diff-utils",
+      "symbol": "DiffRowGenerator.generateDiffRows",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/java-diff-utils/java-diff-utils/pull/233",
+      "target": null
+    },
+    {
+      "id": "427",
+      "path": "examples/427-jupiter-nested-reselection",
+      "title": "Jupiter reselects inherited nested tests by unique ID",
+      "summary": "Class selection now executed the two distinct bodies once. Separate public Launcher requests using the saved unique IDs reran exactly their respective declaring classes.",
+      "origin": "real-world",
+      "system": "JUnit Jupiter",
+      "symbol": "Launcher.execute",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/junit-team/junit-framework/pull/6104",
+      "target": null
+    },
+    {
+      "id": "428",
+      "path": "examples/428-arrow-listview-intervals",
+      "title": "Arrow reports the child interval and hash of a relocated list view",
+      "summary": "The nonzero-offset view changed from an empty reported child interval to [3,5). Relocating its two children now preserves the slot hash on both allocator backends.",
+      "origin": "real-world",
+      "system": "Apache Arrow",
+      "symbol": "ListViewVector.getElementEndIndex",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/apache/arrow-java/pull/1019",
+      "target": null
+    },
+    {
+      "id": "429",
+      "path": "examples/429-jgrapht-disjoint-routes",
+      "title": "JGraphT reconstructs three edge-disjoint routes in the original graph",
+      "summary": "Both algorithms recovered the expected three vertex sequences and weights. Both returned a 3→7 edge object absent from the input graph. The single-route control used only the original edges.",
+      "origin": "real-world",
+      "system": "JGraphT",
+      "symbol": "SuurballeKDisjointShortestPaths.getPaths",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "1/3 merged-revision predictions matched, 2 refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/jgrapht/jgrapht/pull/792",
+      "target": null
+    },
+    {
+      "id": "430",
+      "path": "examples/430-cauchy-scaled-tails",
+      "title": "Commons Statistics computes representable scaled Cauchy tail quantiles",
+      "summary": "The two ordinary tails became distinct and accurate. A small scale with a subnormal probability still returned two infinities despite finite, representable reference answers.",
+      "origin": "real-world",
+      "system": "Apache Commons Statistics",
+      "symbol": "CauchyDistribution.inverseCumulativeProbability",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+      ],
+      "source": "https://github.com/apache/commons-statistics/pull/140",
+      "target": null
     }
   ]
 }

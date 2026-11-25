@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "428",
+  "title": "Arrow reports the child interval and hash of a relocated list view",
+  "summary": "The nonzero-offset view changed from an empty reported child interval to [3,5). Relocating its two children now preserves the slot hash on both allocator backends.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "array-utilities",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Arrow",
+    "symbol": "ListViewVector.getElementEndIndex"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Arrow’s list-view end index becomes the exclusive child index."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/arrow-java",
+    "url": "https://github.com/apache/arrow-java/pull/1019"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}
