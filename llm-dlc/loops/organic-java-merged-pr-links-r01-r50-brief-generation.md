@@ -32,11 +32,11 @@
 | FasterXML/jackson-databind#6407 | written | Read #6397 and the pinned immutable-builder and ordinary-bean fixtures. The public tests assert all four record fields. Cross-shape agreement after changing only b remains open. |
 | FasterXML/jackson-databind#6473 | written | Read the pre-existing-value update branch and #6445 fixture. The merged test retains the old A reference and missing data field while applying a new count. Serialization under variation of untouched C remains unexecuted. |
 | FasterXML/jackson-dataformat-xml#895 | written | Read the name marker predicate and boundary assertions. The pinned DTO test checks z78 and _0IA around U+0400. Independent StAX reading and a second mapper remain open. |
-| h2database/h2database#4034 | not yet |  |
-| h2database/h2database#2614 | not yet |  |
-| apache/calcite#5345 | not yet |  |
-| apache/calcite#4942 | not yet |  |
-| apache/arrow-java#1518 | not yet |  |
+| h2database/h2database#4034 | written | Read #4033's H2 2.2.224 output and the landed JDBC assertion [1,2]. Rebinding one prepared statement and independently reading the unaggregated rows remain unexecuted. |
+| h2database/h2database#2614 | written | Read the alias and typed JDBC conversion code plus TestFunctions’ ragged string/BIGINT fixtures. It asserts Integer[][] and Short[][] with row lengths 2 and 1. Scalar readback through a second alias remains open. |
+| apache/calcite#5345 | written | Read CALCITE-7870 and cast.iq’s EMPNO 7369 transcript. It records 20.0 versus 20, fixed decimal scale, and the truncated 6.6 result. Separate-statement JDBC readback remains open. |
+| apache/calcite#4942 | written | Read the Jira report, TIME/TIMESTAMP casts at precision 1–9 and the custom factory's cap of 9. Reduced strings for inputs separated by one microsecond remain unexecuted. |
+| apache/arrow-java#1518 | written | Compared the holder template and vector reads with the signed scale-2 test at two nonzero byte offsets. The parent reads bytes at start already but passes native-order bytes directly to BigInteger. Cross-width neighbor perturbation remains open. |
 | apache/arrow-java#1342 | not yet |  |
 | apache/avro#2282 | not yet |  |
 | apache/avro#2520 | not yet |  |
