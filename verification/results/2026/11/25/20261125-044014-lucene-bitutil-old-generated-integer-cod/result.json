@@ -1,0 +1,193 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-044014-lucene-bitutil-old-generated-integer-cod",
+  "title": "Lucene BitUtil old generated integer codec predicates",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.2s, peak 73.4 MiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-044014-lucene-bitutil-old-generated-integer-cod.json",
+    "sha256": "d6263c97363c5efc49fdbf5b1e21f8e9a4a5da6906a46acc39f8501893815c2b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-044014-lucene-bitutil-old-generated-integer-cod",
+      "title": "Lucene BitUtil old generated integer codec predicates",
+      "description": "The artifact-only integer selector nominated a signed decoder and inverse encoder. The generated consumer is locked and passed original JVM positive and control observations in both releases before this job. Use the same generated class bytes and complete registered domain to compare strict native, staged JBMC and stock JBMC, including the wrong inverse and the unsigned full-bit hypothesis.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/integer_codecs.py"
+        ]
+      },
+      "expected": "Four comparator rows for the observed release with the original class digest, its registration and raw results. An assertion or inverse that fails to reach its real target gets no credit.",
+      "submitted": {
+        "at": "2026-11-25T04:40:14+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc",
+        "dpkg-deb"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows.py measure lucene --side old",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/integer-codecs/matched/lucene/old"
+      ]
+    }
+  },
+  "sourceCommit": "d12799fdc9ce9ff22ca18a812b2eaf6eec14b068",
+  "startedAt": "2026-11-25T04:57:27+00:00",
+  "finishedAt": "2026-11-25T05:01:45+00:00",
+  "wallSeconds": 258.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 930182,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 76992512,
+    "wallSeconds": 5.2,
+    "cpuSeconds": 6.9,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows.py measure lucene --side old",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 5.207,
+      "cpuSeconds": 6.944,
+      "cpuThrottledSeconds": 0.349,
+      "peakMemoryBytes": 76992512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 5,
+        "bytes": 232,
+        "sha256": "1432a530a9bf799d7e8ea1f474faa7fd0c0a6de3ebc8dbd29bb051ecd48323a7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "lucene 48 original checks passed",
+        "lucene primary verified verified SUCCESS FAILURE",
+        "lucene control verified verified SUCCESS FAILURE",
+        "lucene inverse violation violation FAILURE FAILURE",
+        "lucene unsigned verified verified SUCCESS FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/integer-codecs/matched/lucene/old/candidate-1/executions.zip",
+      "change": "added",
+      "bytes": 56023,
+      "sha256": "8ff7db5fd77774d85c8258eacd3b3371e2927b8e197fd0f1cb71b1624429095c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/integer-codecs/matched/lucene/old/candidate-1/results.json.gz",
+      "change": "added",
+      "bytes": 1639,
+      "sha256": "8645ea31f661025d0ee86b96881cc5d56b4d99b2dce89d8eaadc92426ad7c01d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T05:01:59+00:00",
+    "applied": [
+      "verification/beyond-jbmc/integer-codecs/matched/lucene/old/candidate-1/executions.zip",
+      "verification/beyond-jbmc/integer-codecs/matched/lucene/old/candidate-1/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3e9d5388eea19338ec9beba5014071f5e37b8f7",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3e9d5388eea19338ec9beba5014071f5e37b8f7/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T050145Z-1610874c4c7b2b36",
+      "outputs": "20261125T050145Z-1846112725a61581",
+      "diff": "20261125T050145Z-203458b5181e4ee0"
+    }
+  }
+}

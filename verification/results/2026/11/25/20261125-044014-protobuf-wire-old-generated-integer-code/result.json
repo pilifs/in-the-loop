@@ -1,0 +1,228 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-044014-protobuf-wire-old-generated-integer-code",
+  "title": "Protobuf wire old generated integer codec predicates",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 12.0s, peak 147.7 MiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-044014-protobuf-wire-old-generated-integer-code.json",
+    "sha256": "eff5775e0e2d727e115c897bc69ab96931befa9aa97121196b911893eecf2722",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-044014-protobuf-wire-old-generated-integer-code",
+      "title": "Protobuf wire old generated integer codec predicates",
+      "description": "The artifact-only integer selector nominated a signed decoder and inverse encoder. The generated consumer is locked and passed original JVM positive and control observations in both releases before this job. Use the same generated class bytes and complete registered domain to compare strict native, staged JBMC and stock JBMC, including the wrong inverse and the unsigned full-bit hypothesis.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/targets/integer_codecs.py"
+        ]
+      },
+      "expected": "Four comparator rows for the observed release with the original class digest, its registration and raw results. An assertion or inverse that fails to reach its real target gets no credit.",
+      "submitted": {
+        "at": "2026-11-25T04:40:14+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc",
+        "dpkg-deb"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows.py measure protobuf --side old",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/integer-codecs/matched/protobuf/old"
+      ]
+    }
+  },
+  "sourceCommit": "d12799fdc9ce9ff22ca18a812b2eaf6eec14b068",
+  "startedAt": "2026-11-25T04:57:27+00:00",
+  "finishedAt": "2026-11-25T05:01:51+00:00",
+  "wallSeconds": 264.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 930182,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 154824704,
+    "wallSeconds": 12.0,
+    "cpuSeconds": 13.5,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 235.666,
+      "cpuSeconds": 235.809,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2310725632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "647c75009d5eb3461bebdb3f98a4fc7d67919dfd7e932c9de2498f523c6aa04e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261125-044014-protobuf-wire-old-generated-integer-code/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 55s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/integer_workflows.py measure protobuf --side old",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 12.024,
+      "cpuSeconds": 13.548,
+      "cpuThrottledSeconds": 0.229,
+      "peakMemoryBytes": 154824704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 5,
+        "bytes": 250,
+        "sha256": "0c44e2a423d048e3298a1ea770156b92a21172a56fab774b718a71c8975f5069",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "protobuf 48 original checks passed",
+        "protobuf primary verified verified SUCCESS FAILURE",
+        "protobuf control unverifiable unverifiable SUCCESS FAILURE",
+        "protobuf inverse violation violation FAILURE FAILURE",
+        "protobuf unsigned verified verified SUCCESS FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/integer-codecs/matched/protobuf/old/candidate-1/executions.zip",
+      "change": "added",
+      "bytes": 106086,
+      "sha256": "4cd1422fb4f45e65e47d712258105f23bea8fc68d1e2320167098b002ec593d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/integer-codecs/matched/protobuf/old/candidate-1/results.json.gz",
+      "change": "added",
+      "bytes": 2377,
+      "sha256": "fcd24be141f6c7af3ba934ce288a21b07886d65d68523fb701fa979dedee360e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T05:01:59+00:00",
+    "applied": [
+      "verification/beyond-jbmc/integer-codecs/matched/protobuf/old/candidate-1/executions.zip",
+      "verification/beyond-jbmc/integer-codecs/matched/protobuf/old/candidate-1/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3e9d5388eea19338ec9beba5014071f5e37b8f7",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3e9d5388eea19338ec9beba5014071f5e37b8f7/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T050151Z-9640080c423b043b",
+      "outputs": "20261125T050151Z-99037070bc0d7ffe",
+      "diff": "20261125T050152Z-009109adec7be136"
+    }
+  }
+}
