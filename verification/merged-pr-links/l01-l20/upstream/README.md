@@ -2,7 +2,7 @@
 
 The public callers that exercised the merges also ran on the Maven releases and upstream branches checked on 2026-11-25. Each release and development run checks the original class provider and repeats the three registered histories with the historical caller bytecode. The receipts contain every return value and the hashes of the exact sources, classes and runtime dependencies. [Frozen inputs](inputs.json)
 
-Run the following from the repository root after the campaign setup. On a fresh machine, add `--fetch` to retrieve missing public inputs. The development Cauchy distribution uses the timestamped Commons RNG snapshot from the historical setup.
+Run the Java recheck from the repository root with the JDK recorded in the input lock. Set `PUBLIC_COMPARISON_JDK` to its installation if it is outside the default SDKMAN location. On a fresh machine, add `--fetch` to retrieve the frozen Git revisions and JVM dependencies. The two Commons RNG 1.8 artifacts for the development Cauchy build come from Apache's timestamped snapshot of 2026-11-25. The lock fixes both URLs and both SHA-256 digests. Subsequent runs reuse those exact bytes offline. The PostgreSQL command uses the campaign's database setup. [Input lock](inputs.json)
 
 ```sh
 python3 verification/merged-pr-links/upstream/recheck.py --campaign l01-l20 425 429 430

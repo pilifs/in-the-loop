@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-25T19:21:14.839Z",
-  "duration_seconds": 133824,
+  "ended": "2026-11-25T19:27:59.634Z",
+  "duration_seconds": 134229,
   "stats": {
     "turns": 20,
-    "api_calls": 4261,
-    "tool_calls": 10740,
+    "api_calls": 4290,
+    "tool_calls": 10800,
     "tool_errors": 230,
     "compactions": 16,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 5694816,
-      "output_tokens": 2349880,
-      "cache_read_input_tokens": 1205962112,
+      "input_tokens": 5707392,
+      "output_tokens": 2362613,
+      "cache_read_input_tokens": 1213354496,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5997,
-    "exec": 4072,
-    "apply_patch": 516,
+    "Bash": 6024,
+    "exec": 4101,
+    "apply_patch": 520,
     "wait": 76,
     "sleep": 73,
     "send_message_to_user_async": 5,
@@ -296,6 +296,7 @@
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/l20-domain/test_first_slice.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/l20-domain/tracker.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/l20-follow/qualify.py",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/l20-follow/test_merged_pr_qualification.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/UpgradeProbe.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/WeekFrames.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/WeekReference.java",
@@ -635,24 +636,24 @@
     {
       "index": 16,
       "started": "2026-11-25T18:55:26.882Z",
-      "ended": "2026-11-25T19:21:14.839Z",
+      "ended": "2026-11-25T19:27:59.634Z",
       "turns": 2,
-      "api_calls": 88,
+      "api_calls": 117,
       "usage": {
-        "input_tokens": 183557,
-        "output_tokens": 51786,
-        "cache_read_input_tokens": 14416512,
+        "input_tokens": 196133,
+        "output_tokens": 64519,
+        "cache_read_input_tokens": 21808896,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 241388
+      "peak_context_tokens": 265406
     }
   ],
   "log": {
-    "sha256": "f26f241365404b0c3a059001719418464adb55616dc70b354190c92b75949589",
-    "bytes": 63935822,
-    "lines": 33653,
-    "gzip_bytes": 11658916,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/f26f241365404b0c3a059001719418464adb55616dc70b354190c92b75949589.jsonl.gz"
+    "sha256": "46c112f39f0e01d276358069bab1c16fbe4d173d3e5ff4ea9b10f5529c657d22",
+    "bytes": 64233522,
+    "lines": 33864,
+    "gzip_bytes": 11710470,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/46c112f39f0e01d276358069bab1c16fbe4d173d3e5ff4ea9b10f5529c657d22.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1793,20 +1794,20 @@
       "log_sha256": "284a5a61110f0337401222b206b8c28ba6773467436813bb9e9cd863c1b04a11"
     },
     {
-      "change_id": "zvourrmnykpzxosruysoxmmutprxnryq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "f26f241365404b0c3a059001719418464adb55616dc70b354190c92b75949589"
-    },
-    {
       "change_id": "pzmtmoqmxlynoykxmkunsszzskoorkys",
       "commit_id": null,
       "immutable": false,
       "summary": "Restore signed Gradle build dependencies (verification pending)",
       "body": "Recover HTTP Builder 0.11.1 and its detached JAR and POM signatures after the full L15 build stopped at the documentation plugin. Both 2016 signatures match the key scoped to this component in each historical revision. Lock all three archived coordinates in one local Maven repository and resolve them under the exact upstream policies on both sides. The complete binary install now retains its side and stage if it stops.\n\nBoth empty-cache, offline Gradle preflight resolutions passed. A modified JAR was rejected by its digest and by both signing policies. Example 437 reproduced all six public histories, the 29 selected suites passed, and the pipeline layout validated. Job 20261125-190630-build-gradle-l15-with-three-verified-his repeats both full installations and compares the six filesystem histories.",
       "log_sha256": "f26f241365404b0c3a059001719418464adb55616dc70b354190c92b75949589"
+    },
+    {
+      "change_id": "ooolymylvlvxkwyqmoqmuqtltvszwtzk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Fetch the exact Commons RNG snapshots for the Cauchy replay",
+      "body": "The release and development reproducer used to ask the Maven Central release repository for a mutable SNAPSHOT name. Lock the original timestamped Apache URLs for both RNG JARs, qualify their SHA-256, and retain a digest-keyed copy with the historical classpath filename. A newer Maven alias can coexist with the frozen input.\n\nDownloaded both artifacts into an empty snapshot cache and reused them offline. All 18 picocli, JGraphT and Commons Statistics histories matched their committed receipts, as did the original campaign's 12 jOOλ histories. An offline fixture recovered the correct timestamp behind a moved alias and rejected a damaged replay cache. The changed-test selector had no additional suites.",
+      "log_sha256": "46c112f39f0e01d276358069bab1c16fbe4d173d3e5ff4ea9b10f5529c657d22"
     }
   ],
   "logs": {
@@ -1935,6 +1936,12 @@
       "lines": 6299,
       "gzip_bytes": 2013092,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/44ddc5a74b25e66cf97de34e4fee32a0d55e90cb68158384b21a2b4b08398a15.jsonl.gz"
+    },
+    "46c112f39f0e01d276358069bab1c16fbe4d173d3e5ff4ea9b10f5529c657d22": {
+      "bytes": 64233522,
+      "lines": 33864,
+      "gzip_bytes": 11710470,
+      "url": null
     },
     "46e7b3ba6d115b64c9e45c4c4bf09b962c677f7dd7abe8ec6d3978e65c349652": {
       "bytes": 34624823,

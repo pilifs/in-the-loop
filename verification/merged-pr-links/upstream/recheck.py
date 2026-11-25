@@ -10,6 +10,7 @@ import tarfile
 import tempfile
 import time
 import urllib.request
+from urllib.parse import urlsplit
 import xml.etree.ElementTree as ET
 import zipfile
 
@@ -23,7 +24,7 @@ SETUP = Path.home() / ".cache/in-the-loop/merged-pr-links"
 sha = upgrade_replay.sha
 
 
-def jars_for(project, cache, fetch, digests=None, setup=SETUP):
+def jars_for(project, cache, fetch, digests=None, setup=SETUP, snapshot_urls=None):
     if digests is None:
         digests = LOCK["sha256"]
     keys = {m["artifact"] for m in project["modules"]}
@@ -36,24 +37,43 @@ def jars_for(project, cache, fetch, digests=None, setup=SETUP):
         group, artifact, version, *classifier = key.split(":")
         name = "-".join([artifact, version, *classifier]) + ".jar"
         rel = Path(group.replace(".", "/")) / artifact / version / name
-        dest = cache / "maven" / rel
+        local = cache / "maven" / rel
         gradle = setup / "gradle-home/caches/modules-2/files-2.1" / group / artifact / version
-        candidates = (dest, setup / "m2" / rel, Path.home() / ".m2/repository" / rel, *gradle.glob("*/" + name))
-        found = next((p for p in candidates if p.is_file()), None)
+        candidates = [local, setup / "m2" / rel, Path.home() / ".m2/repository" / rel, *gradle.glob("*/" + name)]
         digest = digests[key]
+        snapshot_url = (snapshot_urls or {}).get(key)
+        dest = cache / "snapshots" / digest / name if snapshot_url else local
+        if dest.exists():
+            if sha(dest) != digest:
+                raise ValueError(f"{key} differs from its recorded SHA-256 in the replay cache")
+            jars[key] = dest
+            continue
+        if snapshot_url:
+            # Maven can move the SNAPSHOT alias while retaining the exact timestamped artifact.
+            timestamped = Path(urlsplit(snapshot_url).path).name
+            candidates = [*(p.with_name(timestamped) for p in candidates), *candidates]
+            found = next((p for p in candidates if p.is_file() and sha(p) == digest), None)
+        else:
+            found = next((p for p in candidates if p.is_file()), None)
         if found is None:
             if not fetch:
                 raise ValueError(f"missing {key}; --fetch retrieves the locked inputs")
+            if version.endswith("-SNAPSHOT") and not snapshot_url:
+                raise ValueError(f"{key} needs a timestamped URL in the input lock")
+        if found is None or snapshot_url:
             dest.parent.mkdir(parents=True, exist_ok=True)
             with tempfile.TemporaryDirectory(dir=dest.parent) as tmp:
-                download = Path(tmp) / name
-                with urllib.request.urlopen(runtime_maven.CENTRAL + rel.as_posix(), timeout=40) as response:
-                    with download.open("wb") as out:
-                        shutil.copyfileobj(response, out)
-                if sha(download) != digest:
-                    raise ValueError(f"download differs from the lock: {key}")
-                download.replace(dest)
-            time.sleep(1)
+                saved = Path(tmp) / name
+                if found is None:
+                    with urllib.request.urlopen(snapshot_url or runtime_maven.CENTRAL + rel.as_posix(), timeout=40) as response:
+                        with saved.open("wb") as out:
+                            shutil.copyfileobj(response, out)
+                    time.sleep(1)
+                else:
+                    shutil.copyfile(found, saved)
+                if sha(saved) != digest:
+                    raise ValueError(f"artifact differs from the lock: {key}")
+                saved.replace(dest)
             found = dest
         if sha(found) != digest:
             raise ValueError(f"{key} differs from its recorded SHA-256")
@@ -156,7 +176,7 @@ def recheck(number, cache, fetch, original_wrapping=False, *, lock=LOCK, setup=S
         raise ValueError("JDK differs from the registered build")
     if original_wrapping:
         return original_jackson(folder, jdk)
-    jars = jars_for(project, cache, fetch, lock["sha256"], setup)
+    jars = jars_for(project, cache, fetch, lock["sha256"], setup, lock.get("snapshotUrls"))
     support = [jars[k] for k in project["dependencies"]]
     head_support = [jars[k] for k in project.get("headDependencies", project["dependencies"])]
     sources = [caller, upgrade_replay.LAUNCHER]
