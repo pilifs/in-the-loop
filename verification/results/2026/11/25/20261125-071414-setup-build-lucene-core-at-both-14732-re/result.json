@@ -1,0 +1,366 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-071414-setup-build-lucene-core-at-both-14732-re",
+  "title": "Setup: build Lucene core at both #14732 revisions and run the landed index-sort range-query test",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 3m55s, peak 1.6 GiB (estimated 25m00s, 5.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-071414-setup-build-lucene-core-at-both-14732-re.json",
+    "sha256": "cbf88735b2d1a4913b8de018f190d6466cf72ca5bea1ad195a0b0d877642d998",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-071414-setup-build-lucene-core-at-both-14732-re",
+      "title": "Setup: build Lucene core at both #14732 revisions and run the landed index-sort range-query test",
+      "description": "Setup for case M01 (apache/lucene#14732) of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links/worktrees (M01-lucene-fix = 5c886602, M01-lucene-parent = 36ddc378; Lucene 11.0.0-SNAPSHOT, minJava 24), runs the upstream ./gradlew (Gradle 8.14 and its wrapper jar checked against services.gradle.org by the setup session) on Temurin 24.0.2 (signature checked) with the cache's GRADLE_USER_HOME: builds lucene-core and runs TestIndexSortSortedNumericDocValuesRangeQuery with tests.seed=DEADBEEF, first on the fix online, then on the parent (its own copy) offline, then the parent with the fix's test class copied in (expected to fail testSameHitsAsPointRangeQueryIntSort, as the setup's overlay run did), then the fix again offline. Jars to .../artifacts with sha256, JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: both sides' own tests pass, the transplant fails testSameHitsAsPointRangeQueryIntSort, the fix's offline rerun passes",
+      "submitted": {
+        "at": "2026-11-25T07:14:14+00:00",
+        "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+        "by": "setup agent (Claude Opus 5.5), fork D"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "5G",
+        "duration": "25m"
+      },
+      "steps": [
+        {
+          "name": "M01-lucene-fix: lucene-core jar and the landed TestIndexSortSortedNumericDocValuesRangeQuery (online)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-fix; echo worktree=M01-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4  :lucene:core:jar :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-fix.online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-fix.online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-fix.online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M01-lucene-fix-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M01-lucene-fix-core.jar; ",
+          "cwd": "."
+        },
+        {
+          "name": "M01-lucene-parent: jar and its own copy of the test class (offline)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-parent; echo worktree=M01-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:jar :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-parent.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-parent.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-parent.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M01-lucene-parent-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M01-lucene-parent-core.jar; ",
+          "cwd": "."
+        },
+        {
+          "name": "M01-lucene-parent with the fix's test class transplanted: expected to fail testSameHitsAsPointRangeQueryIntSort (offline)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-parent; echo worktree=M01-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); cp $W/M01-lucene-fix/lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; sha256sum lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-transplant.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-transplant.offline.gradle-log.txt; git checkout -- lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-transplant.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) )) -gt 0; grep -q 'junit failed .*testSameHitsAsPointRangeQueryIntSort' $O/logs/M01-transplant.offline.junit.txt; echo expected-failure-seen=testSameHitsAsPointRangeQueryIntSort; ",
+          "cwd": "."
+        },
+        {
+          "name": "M01-lucene-fix: the landed test again (offline)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-fix; echo worktree=M01-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-fix.rerun.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-fix.rerun.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-fix.rerun.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M01-lucene-fix clean -fdxq; git -C $W/M01-lucene-fix checkout -q -- .; git -C $W/M01-lucene-fix status --short; git -C $W/M01-lucene-parent clean -fdxq; git -C $W/M01-lucene-parent checkout -q -- .; git -C $W/M01-lucene-parent status --short; du -sh $W/M01-lucene-fix $W/M01-lucene-parent",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "ff6d65696db862c45937ab6049a1e8d834480bfb",
+  "startedAt": "2026-11-25T07:26:25+00:00",
+  "finishedAt": "2026-11-25T07:30:51+00:00",
+  "wallSeconds": 266.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2414074,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1500.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1714098176,
+    "wallSeconds": 235.0,
+    "cpuSeconds": 173.2,
+    "memoryOfEstimate": 0.32,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "M01-lucene-fix: lucene-core jar and the landed TestIndexSortSortedNumericDocValuesRangeQuery (online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-fix; echo worktree=M01-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4  :lucene:core:jar :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-fix.online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-fix.online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-fix.online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M01-lucene-fix-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M01-lucene-fix-core.jar; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 67.19,
+      "cpuSeconds": 55.248,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1649098752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-m01-lucene-fix-lucene-core-jar.log",
+        "lines": 10,
+        "bytes": 587,
+        "sha256": "4bd1542576cd62ef86f6411c1d9b6e2fbb57fb807d2929688b749e5c93f1ea36",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=M01-lucene-fix commit=5c886602a8e8146203deb1a9c3c0121a4241108c",
+        "gradle-exit=0",
+        "",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M01-lucene-fix/build/reports/problems/problems-report.html",
+        "",
+        "BUILD SUCCESSFUL in 1m 6s",
+        "21 actionable tasks: 17 executed, 4 up-to-date",
+        "junit tests=22 failures=0 errors=0 skipped=0",
+        "built-jar=lucene/core/build/libs/lucene-core-11.0.0-SNAPSHOT.jar",
+        "03a44560aea07027fb942544b3b824fab50703c3125ff517017a796850862e29  /home/filip/.cache/in-the-loop/merged-pr-links/artifacts/M01-lucene-fix-core.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "M01-lucene-parent: jar and its own copy of the test class (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-parent; echo worktree=M01-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:jar :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-parent.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-parent.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-parent.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M01-lucene-parent-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M01-lucene-parent-core.jar; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 115.715,
+      "cpuSeconds": 55.704,
+      "cpuThrottledSeconds": 0.019,
+      "peakMemoryBytes": 1714098176,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-m01-lucene-parent-jar-and-its.log",
+        "lines": 10,
+        "bytes": 751,
+        "sha256": "a6070325f82ea09f5e2b63f88cff6544355980eb740264cc61477f48f391df83",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=M01-lucene-parent commit=36ddc378eac62f931e98da0ed5cd3edbbddc920e",
+        "gradle-exit=0",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M01-lucene-parent/build/reports/problems/problems-report.html",
+        "",
+        "BUILD SUCCESSFUL in 1m 54s",
+        "21 actionable tasks: 21 executed",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "junit tests=21 failures=0 errors=0 skipped=0",
+        "built-jar=lucene/core/build/libs/lucene-core-11.0.0-SNAPSHOT.jar",
+        "c2b1f411e2ed235fe82238ceba2994b28d650ac00a5de1ea165a0f8ea991440e  /home/filip/.cache/in-the-loop/merged-pr-links/artifacts/M01-lucene-parent-core.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "M01-lucene-parent with the fix's test class transplanted: expected to fail testSameHitsAsPointRangeQueryIntSort (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-parent; echo worktree=M01-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); cp $W/M01-lucene-fix/lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; sha256sum lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-transplant.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-transplant.offline.gradle-log.txt; git checkout -- lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-transplant.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) )) -gt 0; grep -q 'junit failed .*testSameHitsAsPointRangeQueryIntSort' $O/logs/M01-transplant.offline.junit.txt; echo expected-failure-seen=testSameHitsAsPointRangeQueryIntSort; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 30.057,
+      "cpuSeconds": 34.969,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1337266176,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-m01-lucene-parent-with-the-fix.log",
+        "lines": 11,
+        "bytes": 856,
+        "sha256": "c911830ae51355dedff400bbe4aff152ab3850387ada775279d25e16e25642aa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=M01-lucene-parent commit=36ddc378eac62f931e98da0ed5cd3edbbddc920e",
+        "c7396c15e193a0dd5694a7db487ca80e0c2ad558d4a3d11e2680e9d02d6ccbbb  lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java",
+        "gradle-exit=1",
+        "> There were failing tests. See the results at: file:///home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M01-lucene-parent/lucene/core/build/test-results/test/",
+        "",
+        "BUILD FAILED in 29s",
+        "21 actionable tasks: 6 executed, 15 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "junit tests=22 failures=1 errors=0 skipped=0",
+        "junit failed TestIndexSortSortedNumericDocValuesRangeQuery#testSameHitsAsPointRangeQueryIntSort",
+        "expected-failure-seen=testSameHitsAsPointRangeQueryIntSort"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "M01-lucene-fix: the landed test again (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-fix; echo worktree=M01-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-fix.rerun.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-fix.rerun.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-fix.rerun.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 21.644,
+      "cpuSeconds": 26.96,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1149497344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-m01-lucene-fix-the-landed-test.log",
+        "lines": 8,
+        "bytes": 541,
+        "sha256": "aead4bb9de7fd153da202c558f91e776fbabcda1cec2ccd0b2d977a3ab03ed85",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=M01-lucene-fix commit=5c886602a8e8146203deb1a9c3c0121a4241108c",
+        "gradle-exit=0",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M01-lucene-fix/build/reports/problems/problems-report.html",
+        "",
+        "BUILD SUCCESSFUL in 21s",
+        "21 actionable tasks: 5 executed, 16 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "junit tests=22 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M01-lucene-fix clean -fdxq; git -C $W/M01-lucene-fix checkout -q -- .; git -C $W/M01-lucene-fix status --short; git -C $W/M01-lucene-parent clean -fdxq; git -C $W/M01-lucene-parent checkout -q -- .; git -C $W/M01-lucene-parent status --short; du -sh $W/M01-lucene-fix $W/M01-lucene-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.365,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 12378112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-remove-the-build-trees.log",
+        "lines": 2,
+        "bytes": 157,
+        "sha256": "d650f0034497ea13e17a1171ecdc3c49a041200a8a7d617576874f702f4227de",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "147M\t/home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M01-lucene-fix",
+        "147M\t/home/filip/.cache/in-the-loop/merged-pr-links/worktrees/M01-lucene-parent"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T07:33:53+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T073051Z-549267a751770b55"
+    }
+  }
+}
