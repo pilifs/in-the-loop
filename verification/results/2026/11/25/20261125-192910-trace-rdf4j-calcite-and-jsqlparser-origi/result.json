@@ -1,0 +1,284 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-192910-trace-rdf4j-calcite-and-jsqlparser-origi",
+  "title": "Trace RDF4J, Calcite and JSqlParser original SQL and query methods",
+  "status": "failed",
+  "summary": "failed: 2 passed, 1 failed step(s) in 30.1s, peak 257.2 MiB (estimated 6m00s, 1.5 GiB); 2 output file(s) changed",
+  "attention": [
+    "declared output verification/merged-pr-links/l01-l20/qualified/432-pins.json.gz was not produced",
+    "step 2 (Check original method and public readback for 432) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-192910-trace-rdf4j-calcite-and-jsqlparser-origi.json",
+    "sha256": "54cd98eff3bd939b7ad8f33736edaad7631d30f7c0a9daffacd56a78b3b48034",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-192910-trace-rdf4j-calcite-and-jsqlparser-origi",
+      "title": "Trace RDF4J, Calcite and JSqlParser original SQL and query methods",
+      "description": "Follow each registered public query or SQL visitor through the original RDF4J grouping implementation, Calcite projection rule or JSqlParser ALTER dispatch. Both original JVMs repeat the intent, unchanged control and challenge twice; preserve the complete debugger outputs.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "examples": [
+          "431",
+          "432",
+          "442"
+        ]
+      },
+      "expected": "All 36 fresh debugger trials bind the requested method, input, code provider, caller call site and public outcome. Each compressed receipt can be re-audited offline.",
+      "submitted": {
+        "at": "2026-11-25T19:29:10+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1500M",
+        "duration": "6m"
+      },
+      "steps": [
+        {
+          "name": "Check original method and public readback for 431",
+          "run": "python3 -B verification/merged-pr-links/qualify.py 431 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+          "cwd": "."
+        },
+        {
+          "name": "Check original method and public readback for 432",
+          "run": "python3 -B verification/merged-pr-links/qualify.py 432 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+          "cwd": "."
+        },
+        {
+          "name": "Check original method and public readback for 442",
+          "run": "python3 -B verification/merged-pr-links/qualify.py 442 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/merged-pr-links/l01-l20/qualified/431-pins.json.gz",
+        "verification/merged-pr-links/l01-l20/qualified/432-pins.json.gz",
+        "verification/merged-pr-links/l01-l20/qualified/442-pins.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "cb29821e790a2302dbc68377fd0c54e065040805",
+  "startedAt": "2026-11-25T19:31:58+00:00",
+  "finishedAt": "2026-11-25T19:32:40+00:00",
+  "wallSeconds": 42.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2945103,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 2359296000,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1572864000,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 269701120,
+    "wallSeconds": 30.1,
+    "cpuSeconds": 41.0,
+    "memoryOfEstimate": 0.17,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check original method and public readback for 431",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 431 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 11.626,
+      "cpuSeconds": 14.8,
+      "cpuThrottledSeconds": 2.85,
+      "peakMemoryBytes": 126758912,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-original-method-and-publ.log",
+        "lines": 1,
+        "bytes": 136,
+        "sha256": "94e32fec9feb78a0b337f62bae8ddd0066cf810e3e6fa5a5b3cae68fa627f7ab",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "431 pins org.eclipse.rdf4j.query.algebra.evaluation.iterator.GroupIterator#buildEntries()Ljava/util/Collection; 12 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check original method and public readback for 432",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 432 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 9.216,
+      "cpuSeconds": 15.811,
+      "cpuThrottledSeconds": 3.84,
+      "peakMemoryBytes": 269701120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-original-method-and-publ.log",
+        "lines": 10,
+        "bytes": 1079,
+        "sha256": "092efbabfa5443f71bd2186a06f9f8d3507c748eebc5be219cd1d5507c5dc06f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-192910-trace-rdf4j-calcite-and-jsqlparser-origi/verification/merged-pr-links/qualify.py\", line 171, in <module>",
+        "    qualify(example, args.output, args.only, args.check, args.gzip)",
+        "    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-192910-trace-rdf4j-calcite-and-jsqlparser-origi/verification/merged-pr-links/qualify.py\", line 152, in qualify",
+        "    report = upgrade_replay.evaluate(scope_path, *manifests, Path(__file__).with_name(\"UpgradeProbe.java\"),",
+        "            jdk, deps, 180, fixtures=source.parent, application_change=True)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-192910-trace-rdf4j-calcite-and-jsqlparser-origi/examples/tools/targets/upgrade_replay.py\", line 442, in evaluate",
+        "    raise ValueError(f\"{side} input {index}: the original caller method was never entered. {detail}\")",
+        "ValueError: old input 1: the original caller method was never entered. "
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check original method and public readback for 442",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 442 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 9.215,
+      "cpuSeconds": 10.406,
+      "cpuThrottledSeconds": 1.338,
+      "peakMemoryBytes": 137269248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-original-method-and-publ.log",
+        "lines": 1,
+        "bytes": 147,
+        "sha256": "1e7fa8b904e80177555afb5b9b45163455b2c42f0e47dd1981b0f72c1a3ad899",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "442 pins net.sf.jsqlparser.util.deparser.AlterDeParser#deParseAction(Lnet/sf/jsqlparser/statement/alter/AlterExpression;)V 12 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/431-pins.json.gz",
+      "change": "added",
+      "bytes": 4988,
+      "sha256": "ef790275b9636cb2682ebb39ea785c14b795e65a1102b795051166dea51803eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/442-pins.json.gz",
+      "change": "added",
+      "bytes": 3907,
+      "sha256": "00d226a5a249b2013f994471868db838e99ec1500f86769d99492417e5df5e8a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T19:32:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/merged-pr-links/l01-l20/qualified/431-pins.json.gz",
+      "verification/merged-pr-links/l01-l20/qualified/442-pins.json.gz"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T193240Z-389996528b67657d",
+      "outputs": "20261125T193240Z-416136c7194afd25",
+      "diff": "20261125T193240Z-4386108b5a2b5917",
+      "workdir": "20261125T193244Z-664412cf41b7b176"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261125-192910-trace-rdf4j-calcite-and-jsqlparser-origi"
+}

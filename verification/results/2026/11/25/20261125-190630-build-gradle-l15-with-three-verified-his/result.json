@@ -1,0 +1,222 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-190630-build-gradle-l15-with-three-verified-his",
+  "title": "Build Gradle L15 with three verified historical dependencies",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m18s, peak 8.0 GiB (estimated 1h00m, 10.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Build both pins and replay all six histories) was held back 3m24s by its 6-CPU quota in 5m18s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-190630-build-gradle-l15-with-three-verified-his.json",
+    "sha256": "3070f65e5fbdc78a1a4d232ad608c0614117455a897613e91e8d509eba225897",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-190630-build-gradle-l15-with-three-verified-his",
+      "title": "Build Gradle L15 with three verified historical dependencies",
+      "description": "Build and install the complete binary distribution from both exact Gradle PR 21084 revisions. Resolve all three retired build inputs offline under each original verification policy first, including signed HTTP Builder 0.11.1 from JCenter. Replay the three public incremental-build histories on each installation and check the executing class, task outcome and stamp bytes.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "examples": [
+          "437"
+        ],
+        "paths": [
+          "examples/437-gradle-named-actions/setup/full.py"
+        ]
+      },
+      "expected": "Both installations complete with the original dependency policies. All six public histories use the installed AbstractTask and equal the registered filesystem observations. A failed build retains the side and stage reached.",
+      "submitted": {
+        "at": "2026-11-25T19:06:30+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "gpg",
+        "gpgv"
+      ],
+      "resources": {
+        "cpus": 6.0,
+        "memory": "10G",
+        "duration": "60m",
+        "memoryLimit": "16G",
+        "timeout": "180m"
+      },
+      "steps": [
+        {
+          "name": "Build both pins and replay all six histories",
+          "run": "python3 -B examples/437-gradle-named-actions/setup/full.py --fetch --output verification/merged-pr-links/l01-l20/full-gradle.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/l01-l20/full-gradle.json"
+      ]
+    }
+  },
+  "sourceCommit": "c6b33862d03ad18e22b8d09e5b23d833aa3ef886",
+  "startedAt": "2026-11-25T19:27:17+00:00",
+  "finishedAt": "2026-11-25T19:32:43+00:00",
+  "wallSeconds": 326.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2945103,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 6.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 6.0,
+    "memoryBytes": 10737418240,
+    "durationSeconds": 3600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 8542461952,
+    "wallSeconds": 318.2,
+    "cpuSeconds": 896.4,
+    "memoryOfEstimate": 0.8,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build both pins and replay all six histories",
+      "run": "python3 -B examples/437-gradle-named-actions/setup/full.py --fetch --output verification/merged-pr-links/l01-l20/full-gradle.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 318.188,
+      "cpuSeconds": 896.406,
+      "cpuThrottledSeconds": 204.847,
+      "peakMemoryBytes": 8542461952,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-both-pins-and-replay-all.log",
+        "lines": 2084,
+        "bytes": 97938,
+        "sha256": "f566044b31d50aac282af7ea7406f43d54fae48b906eba8e4b4df5ee708505ff",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :kotlin-dsl-tooling-builders:compileJava NO-SOURCE",
+        "> Task :kotlin-dsl-tooling-builders:compileGroovy NO-SOURCE",
+        "> Task :kotlin-dsl-tooling-builders:parameterNamesIndex",
+        "> Task :kotlin-dsl-tooling-builders:classes",
+        "> Task :kotlin-dsl-tooling-builders:inspectClassesForKotlinIC UP-TO-DATE",
+        "> Task :kotlin-dsl-tooling-builders:jar UP-TO-DATE",
+        "> Task :ide-native:compileGroovy",
+        "> Task :ide-native:parameterNamesIndex",
+        "> Task :ide-native:classes",
+        "> Task :ide-native:jar UP-TO-DATE",
+        "> Task :distributions-full:pluginsManifest UP-TO-DATE",
+        "> Task :kotlin-dsl-provider-plugins:compileKotlin",
+        "> Task :kotlin-dsl-provider-plugins:compileJava NO-SOURCE",
+        "> Task :kotlin-dsl-provider-plugins:compileGroovy NO-SOURCE",
+        "> Task :kotlin-dsl-provider-plugins:parameterNamesIndex",
+        "> Task :kotlin-dsl-provider-plugins:classes",
+        "> Task :kotlin-dsl-provider-plugins:inspectClassesForKotlinIC UP-TO-DATE",
+        "> Task :kotlin-dsl-provider-plugins:jar UP-TO-DATE",
+        "> Task :distributions-full:generateRelocatedPackageList",
+        "> Task :distributions-full:implementationPluginsManifest UP-TO-DATE",
+        "> Task :distributions-full:runtimeApiInfoJar UP-TO-DATE",
+        "> Task :distributions-full:install",
+        "",
+        "0 problems were found storing the configuration cache.",
+        "",
+        "See the complete report at file:///home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/tmp/gradle-full-pins-nrn37gmw/source/build/reports/configuration-cache/doptz68gqkzarggfrhy1c1q9i/6e68zfm4cyctn0jfm4dfv6v1w/configuration-cache-report.html",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "See https://docs.gradle.org/7.5.1/userguide/command_line_interface.html#sec:command_line_warnings",
+        "",
+        "BUILD SUCCESSFUL in 42s",
+        "667 actionable tasks: 91 executed, 576 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the buildScanPublishPrevious task in the next build.",
+        "Configuration cache entry stored.",
+        "parent gradle/gradle#21084.1 /A -> UP-TO-DATE/A",
+        "parent gradle/gradle#21084.2 /A -> UP-TO-DATE/A",
+        "parent gradle/gradle#21084.3 /A -> UP-TO-DATE/A clean=/B"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/l01-l20/full-gradle.json",
+      "change": "added",
+      "bytes": 3581,
+      "sha256": "3dea325a9a968606ab2c0e86683c415683febaa496d95c36a128cf9eae0f8d6d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T19:32:54+00:00",
+    "applied": [
+      "verification/merged-pr-links/l01-l20/full-gradle.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T193243Z-620214ae12d21ade",
+      "outputs": "20261125T193243Z-645517d3b2a00499",
+      "diff": "20261125T193243Z-667340130c01b6cb"
+    }
+  }
+}

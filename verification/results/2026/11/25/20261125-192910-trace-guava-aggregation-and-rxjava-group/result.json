@@ -1,0 +1,236 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-192910-trace-guava-aggregation-and-rxjava-group",
+  "title": "Trace Guava aggregation and RxJava group cancellation on both pins",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 22.6s, peak 97.0 MiB (estimated 4m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-192910-trace-guava-aggregation-and-rxjava-group.json",
+    "sha256": "7165cdaeff449278003b633e44092982f8e7b07b62a4a6de3f145632cf72c93b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-192910-trace-guava-aggregation-and-rxjava-group",
+      "title": "Trace Guava aggregation and RxJava group cancellation on both pins",
+      "description": "Run all three public allAsList histories in the JRE and Android artifacts on the registered JDK, and both histories that cancel the stalled RxJava group. Verify the live AggregateFuture.init and group State.cancel invocations and every public return on both revisions.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "examples": [
+          "438",
+          "440"
+        ]
+      },
+      "expected": "All 32 fresh debugger trials bind the requested method, input, code provider, caller call site and public outcome. Each compressed receipt can be re-audited offline.",
+      "submitted": {
+        "at": "2026-11-25T19:29:10+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Check original method and public readback for 438",
+          "run": "python3 -B verification/merged-pr-links/qualify.py 438 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+          "cwd": "."
+        },
+        {
+          "name": "Check original method and public readback for 440",
+          "run": "python3 -B verification/merged-pr-links/qualify.py 440 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Challenge",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/merged-pr-links/l01-l20/qualified/438-jre.json.gz",
+        "verification/merged-pr-links/l01-l20/qualified/438-android.json.gz",
+        "verification/merged-pr-links/l01-l20/qualified/440-pins.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "cb29821e790a2302dbc68377fd0c54e065040805",
+  "startedAt": "2026-11-25T19:31:58+00:00",
+  "finishedAt": "2026-11-25T19:32:32+00:00",
+  "wallSeconds": 34.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2945103,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 101662720,
+    "wallSeconds": 22.6,
+    "cpuSeconds": 23.8,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check original method and public readback for 438",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 438 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 16.432,
+      "cpuSeconds": 16.932,
+      "cpuThrottledSeconds": 2.139,
+      "peakMemoryBytes": 101662720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-original-method-and-publ.log",
+        "lines": 2,
+        "bytes": 184,
+        "sha256": "dce9d5eef3019ba05841a653f4c0e4b1e4d423da9c5a9f9980e32f94c2a6ad89",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "438 jre com.google.common.util.concurrent.AggregateFuture#init()V 12 qualified JVM trials",
+        "438 android com.google.common.util.concurrent.AggregateFuture#init()V 12 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check original method and public readback for 440",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 440 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Challenge",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 6.218,
+      "cpuSeconds": 6.843,
+      "cpuThrottledSeconds": 0.754,
+      "peakMemoryBytes": 96632832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-original-method-and-publ.log",
+        "lines": 1,
+        "bytes": 113,
+        "sha256": "d6a1212e804b5431b6eced2ab943b6e560ed67bc75e6e1aacd5d803695fbbf24",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "440 pins io.reactivex.rxjava3.internal.operators.flowable.FlowableGroupBy$State#cancel()V 8 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/438-jre.json.gz",
+      "change": "added",
+      "bytes": 2798,
+      "sha256": "d1c21dc1b68d81801156104875827c3e3cae1361683f7244eccfe43e0f387d86",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/438-android.json.gz",
+      "change": "added",
+      "bytes": 2721,
+      "sha256": "4d3e483a772ac0b251fe3cb6af3e4bc7eb318c1c3218cb93e06e13c323bb4bf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/440-pins.json.gz",
+      "change": "added",
+      "bytes": 3705,
+      "sha256": "7b2acea34ae4c73f28ff8b9b2447de6348963ea0b00851e056242391142ea94d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T19:32:54+00:00",
+    "applied": [
+      "verification/merged-pr-links/l01-l20/qualified/438-jre.json.gz",
+      "verification/merged-pr-links/l01-l20/qualified/438-android.json.gz",
+      "verification/merged-pr-links/l01-l20/qualified/440-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T193232Z-9727612967fff28e",
+      "outputs": "20261125T193232Z-995732130879c667",
+      "diff": "20261125T193233Z-018555a6010ff36f"
+    }
+  }
+}

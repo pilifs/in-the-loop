@@ -1,0 +1,174 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-192910-trace-iceberg-record-copying-during-equa",
+  "title": "Trace Iceberg record copying during equality deletes and nested copies",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.0s, peak 324.1 MiB (estimated 4m00s, 1.5 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-192910-trace-iceberg-record-copying-during-equa.json",
+    "sha256": "72dcbdb3b58f98b6679d5a579f0fa214538ec577328d2c81e353f5e23b77f1d1",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-192910-trace-iceberg-record-copying-during-equa",
+      "title": "Trace Iceberg record copying during equality deletes and nested copies",
+      "description": "Follow the real Parquet delete scan and the nested binary mutation through the original GenericRecord copy constructor. Require each exact before and after installation to repeat the public observation twice with the changed constructor in the live call stack.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "examples": [
+          "436"
+        ]
+      },
+      "expected": "All 8 fresh debugger trials bind the requested method, input, code provider, caller call site and public outcome. Each compressed receipt can be re-audited offline.",
+      "submitted": {
+        "at": "2026-11-25T19:29:10+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1500M",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Check original method and public readback for 436",
+          "run": "python3 -B verification/merged-pr-links/qualify.py 436 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Challenge",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/merged-pr-links/l01-l20/qualified/436-parquet.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "cb29821e790a2302dbc68377fd0c54e065040805",
+  "startedAt": "2026-11-25T19:31:58+00:00",
+  "finishedAt": "2026-11-25T19:32:27+00:00",
+  "wallSeconds": 29.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2945103,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 2359296000,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1572864000,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 339881984,
+    "wallSeconds": 17.0,
+    "cpuSeconds": 26.5,
+    "memoryOfEstimate": 0.22,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check original method and public readback for 436",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 436 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Challenge",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 17.032,
+      "cpuSeconds": 26.539,
+      "cpuThrottledSeconds": 5.146,
+      "peakMemoryBytes": 339881984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-original-method-and-publ.log",
+        "lines": 1,
+        "bytes": 122,
+        "sha256": "7a52b2f6e45ec882c639c44f0025481a6a469b4dcb7d20132d1495d1c19a216a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "436 parquet org.apache.iceberg.data.GenericRecord#<init>(Lorg/apache/iceberg/data/GenericRecord;)V 8 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/436-parquet.json.gz",
+      "change": "added",
+      "bytes": 11249,
+      "sha256": "09d57b063699599d78ee7de472fbf67790d61f9cd61f4b62297d0e039312a591",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T19:32:54+00:00",
+    "applied": [
+      "verification/merged-pr-links/l01-l20/qualified/436-parquet.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T193227Z-342582ce95f590da",
+      "outputs": "20261125T193227Z-3725307db0d0e43b",
+      "diff": "20261125T193227Z-395428c2e83b58b1"
+    }
+  }
+}
