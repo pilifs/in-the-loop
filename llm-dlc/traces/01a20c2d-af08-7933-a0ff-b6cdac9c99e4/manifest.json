@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize q",
   "client": {
@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-25T22:40:49.144Z",
-  "duration_seconds": 145798,
+  "ended": "2026-11-25T23:35:23.613Z",
+  "duration_seconds": 149073,
   "stats": {
-    "turns": 23,
-    "api_calls": 4559,
-    "tool_calls": 11393,
-    "tool_errors": 239,
+    "turns": 24,
+    "api_calls": 4620,
+    "tool_calls": 11556,
+    "tool_errors": 243,
     "compactions": 18,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 5951699,
-      "output_tokens": 2519358,
-      "cache_read_input_tokens": 1275118720,
+      "input_tokens": 6049977,
+      "output_tokens": 2564041,
+      "cache_read_input_tokens": 1284157056,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 6332,
-    "exec": 4350,
-    "apply_patch": 542,
+    "Bash": 6425,
+    "exec": 4411,
+    "apply_patch": 551,
     "wait": 88,
     "sleep": 75,
     "send_message_to_user_async": 5,
@@ -85,6 +85,11 @@
     "examples/450-checkstyle-record-fields/caller/PublicCaller.java",
     "examples/451-libgdx-clipped-bounds/caller/PublicCaller.java",
     "examples/452-tinkerpop-dedup-projections/caller/PublicCaller.java",
+    "examples/453-cli-option-defaults/caller/PublicCaller.java",
+    "examples/454-hdrhistogram-resized-equality/caller/PublicCaller.java",
+    "examples/455-threeten-british-cutover/caller/PublicCaller.java",
+    "examples/456-esri-polyline-difference/caller/PublicCaller.java",
+    "examples/457-spring-mysql-id-reservations/caller/PublicCaller.java",
     "examples/schema/example.schema.json",
     "examples/tools/build.py",
     "examples/tools/targets/change_evidence.py",
@@ -92,6 +97,7 @@
     "examples/tools/targets/change_plan.py",
     "examples/tools/targets/java/ResourceObserver.java.template",
     "examples/tools/targets/public_comparison.py",
+    "examples/tools/targets/public_mysql.py",
     "examples/tools/targets/public_postgres.py",
     "examples/tools/targets/resource_workflows.py",
     "examples/tools/targets/test_change_plan.py",
@@ -237,6 +243,7 @@
     "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-results.md",
     "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
     "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-results.md",
+    "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-results.md",
     "llm-dlc/loops/organic-java-pr-capability-composition-fast-follow-results.md",
     "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-results.md",
     "verification/beyond-jbmc/integer-codecs/RESULTS.md",
@@ -680,24 +687,24 @@
     {
       "index": 18,
       "started": "2026-11-25T22:38:46.041Z",
-      "ended": "2026-11-25T22:40:49.144Z",
-      "turns": 1,
-      "api_calls": 7,
+      "ended": "2026-11-25T23:35:23.613Z",
+      "turns": 2,
+      "api_calls": 68,
       "usage": {
-        "input_tokens": 34216,
-        "output_tokens": 5212,
-        "cache_read_input_tokens": 267264,
+        "input_tokens": 132494,
+        "output_tokens": 49895,
+        "cache_read_input_tokens": 9305600,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 50843
+      "peak_context_tokens": 190909
     }
   ],
   "log": {
-    "sha256": "a464b7438feef3fd679e41d69f7c65858d3e1504ba28f10bd419bb5722f7b4c5",
-    "bytes": 68282212,
-    "lines": 35944,
-    "gzip_bytes": 12463328,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/a464b7438feef3fd679e41d69f7c65858d3e1504ba28f10bd419bb5722f7b4c5.jsonl.gz"
+    "sha256": "f99281e578a0292235651034280345bb5f11253b4769914ba0af5a906956135d",
+    "bytes": 69623051,
+    "lines": 36451,
+    "gzip_bytes": 12742354,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/f99281e578a0292235651034280345bb5f11253b4769914ba0af5a906956135d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1980,6 +1987,78 @@
       "summary": "Record all five completed M01–M10 verification jobs",
       "body": "The full 60-JVM audit, six-release replay, and three original-method jobs all passed. Rechecked each of the nine collected debugger reports against the registered physical returns, fixture bytes, caller classes and invocation sites. They contain 108 qualifying trials. The separate Checkstyle CLI evidence and the two reports awaiting the user's filing decision are linked from the campaign results.\n\nCompared the independent matrix audit byte for byte, checked all results-page links, and confirmed that the documentation-only change selects no additional test suites.",
       "log_sha256": "613b2e9accbd3aca332961458ecbb1f909e76b69316106ee31a78219926acef9"
+    },
+    {
+      "change_id": "xtttxznpyswryrtlossyusyoyqtvrxzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4"
+    },
+    {
+      "change_id": "xtkskmmvkpsytrnkqkzrrtzsqnsmvktl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-225459-setup-build-spring-jdbc-at-both-37322-re: passed: 4 passed step(s) in 3m44s, peak 127.7 MiB (estimated 30m00s, 6.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-n01-n05-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4"
+    },
+    {
+      "change_id": "ymqxuuvommxsuvxowsywwwntrpsptxvx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on organic-java-merged-pr-links-n01-n05-brief-setup",
+      "body": "The watcher's verdicts on the single-agent run organic-java-merged-pr-links-n01-n05-brief-setup (llm-dlc/decisions/single-organic-java-merged-pr-links-n01-n05-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4"
+    },
+    {
+      "change_id": "zpuxopovrmuuvsuzltqzqqwlxqlpxnpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up the N01-N05 merged Java PR brief (verification pending)",
+      "body": "Mechanical setup for llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md, recorded in its -setup.md: the ten pinned upstream revisions fetched into shallow mirrors and checked against the PRs' merge commits and parents; Commons CLI, HdrHistogram, ThreeTen-Extra and Esri Geometry built with Maven at both pins (full upstream test runs pass), jars, class digests and classpaths kept, and each landed regression shown to pass on the fix and fail on the parent; Gradle 9.8.0 verified and Spring's dependencies resolved for an offline build; MySQL 9.1.0 image and Connector/J fetched, checked and smoke-tested; released jars checked against Central checksums and signatures. No claims, examples or checker code.\n\nJob 20261125-225459-setup-build-spring-jdbc-at-both-37322-re builds spring-jdbc at both #37322 revisions offline, runs its tests, keeps the artifacts and runs the landed incrementer test on the parent (expected to fail).",
+      "log_sha256": "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4"
+    },
+    {
+      "change_id": "xyruktrmkyrtvspuwkmouzotvwsprolv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the N05 setup job and finish the N01-N05 setup",
+      "body": "Job 20261125-225459-setup-build-spring-jdbc-at-both-37322-re passed (4 steps, 3m44s): spring-jdbc builds offline with Gradle 9.8.0 at both #37322 pins and its whole test task passes (972 tests at the fix, 971 at the parent, 6 skipped each). The fix's DataFieldMaxValueIncrementerTests on a copy of the parent fails exactly mySQLMaxValueIncrementerWithCommitFailure (AssertionFailedError at line 258), as the brief says. The setup record now holds the N05 jar, class and classpath digests in full; the fix's built MySQLMaxValueIncrementer.class equals the one in released spring-jdbc 7.0.10 byte for byte, and every kept classpath entry exists. The Setup Agent Notes are complete: every case is built at both pins and every landed regression passes on the fix and fails on the parent. The job's result commit (b3390c67f58f80e874a730080a36fba5b4bfe7c5) is on the default line and was not merged here.",
+      "log_sha256": "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4"
+    },
+    {
+      "change_id": "zskqvwvxpwykstxtmyxpowpwwyortluy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run organic-java-merged-pr-links-n01-n05-brief-setup into the line",
+      "body": "The single-agent run organic-java-merged-pr-links-n01-n05-brief-setup (session 641068ac-42ac-4f23-bdac-7628dd0dc780) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4"
+    },
+    {
+      "change_id": "ullznwuvlrprrpyvrlvmxylovxqssuvk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of organic-java-merged-pr-links-n01-n05-brief into its brief",
+      "body": "The setup run organic-java-merged-pr-links-n01-n05-brief-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md and ~/code/scripts/analysis/organic-java-merged-pr-links-n01-n05-brief.md, for the domain agent.",
+      "log_sha256": "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4"
+    },
+    {
+      "change_id": "swuwrzpuwpymxqnrswonvorsyrkputsy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Replay five merged Java changes with durable MySQL readback (verification pending)",
+      "body": "Add examples 453–457 for the 17 registered N01–N05 questions. All 34 fresh public JVM histories ran against the original parent or merge JARs. All seven intents changed as predicted, all five controls were identical, and every merged prediction held. Both Esri parent touch directions threw, while extending the reversed subtractor removed precisely A–B on both revisions.\n\nExercise Spring JDBC on a disposable MySQL 9.1.0 InnoDB database. Each allocation reads its real connection-local maximum. A separate connection sees 98 after rollback or 100 after commit followed by a restoration failure. The parent produced a duplicate insert after rollback. The merged allocator returned 99, 100, 101 after rollback and 101, 102, 103 after the committed failure.\n\nAll five ordinary example validators replayed their histories. All 55 selected suites passed, as did the three previous campaign audits. Negative checks rejected swapped artifacts, an omitted calendar intent, a false durable state, and an incorrect server version. The geometry oracle detected duplicate, missing and foreign intervals, and accepted reversed and split edges. Four local debugger trials confirmed the changed British period method.\n\nJob 20261125-232607-replay-the-17-n01-n05-predictions-with-m independently repeats all 34 histories and compares the audit byte for byte. Jobs 20261125-233153-trace-option-default-reuse-and-histogram and 20261125-233153-trace-calendar-period-readback-and-esri check 40 original-method JVM trials.",
+      "log_sha256": "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4"
+    },
+    {
+      "change_id": "ylmkznvrxvzlnrspusqnqzsqutqwksnz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record all three completed N01–N05 verification jobs",
+      "body": "The independent comparison reran all 34 public histories, including both failure boundaries and the ordinary control on a fresh MySQL 9.1.0 server. Its audit was byte-identical to the registered results. Two debugger jobs qualified 40 additional JVM trials through the four registered original methods.\n\nReopened all four collected debugger reports and checked every selected input, invocation site, caller class, dependency and original return against the campaign. All 14 results-page links resolve. The documentation-only change selects no additional test suites.",
+      "log_sha256": "f99281e578a0292235651034280345bb5f11253b4769914ba0af5a906956135d"
     }
   ],
   "logs": {
@@ -2337,12 +2416,6 @@
       "gzip_bytes": 6241206,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/a39d6ebe7f40b75554a1482cef71c195bfa837a40d11eb800601feae7aa0554f.jsonl.gz"
     },
-    "a464b7438feef3fd679e41d69f7c65858d3e1504ba28f10bd419bb5722f7b4c5": {
-      "bytes": 68282212,
-      "lines": 35944,
-      "gzip_bytes": 12463328,
-      "url": null
-    },
     "acca976df5f1a5d28244790c46b91017d072bb22396a30d839d6563159e15fda": {
       "bytes": 67358050,
       "lines": 35440,
@@ -2445,6 +2518,12 @@
       "gzip_bytes": 8515751,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/e8c0d66133dd6e87f006a7ac8e590704add4deda321d35cdf689626b100c3933.jsonl.gz"
     },
+    "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4": {
+      "bytes": 69481736,
+      "lines": 36352,
+      "gzip_bytes": 12723352,
+      "url": null
+    },
     "ef011116bfc665ea66f6aaf78850ac8a2607698fcfca9fcbca6067c15c381c7a": {
       "bytes": 52717664,
       "lines": 28409,
@@ -2491,6 +2570,12 @@
       "bytes": 67670925,
       "lines": 35713,
       "gzip_bytes": 12342094,
+      "url": null
+    },
+    "f99281e578a0292235651034280345bb5f11253b4769914ba0af5a906956135d": {
+      "bytes": 69623051,
+      "lines": 36451,
+      "gzip_bytes": 12742354,
       "url": null
     },
     "fb9a71691e91e6a3cc08ffb1078ad9b06fb49dde7b4827e662b254fb505e18be": {

@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-233153-trace-calendar-period-readback-and-esri",
+  "title": "Trace calendar period readback and Esri segment restoration",
+  "description": "Verify the negative British period at the original until method and all three public line differences at the original polyline restoration method. Repeat each history twice on each side and compare the debugger observations with the public JVM receipts.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-results.md"
+    ]
+  },
+  "expected": "All 16 fresh debugger JVM trials enter the registered original methods and produce the recorded public returns. Both saved reports pass offline validation.",
+  "submitted": {
+    "at": "2026-11-25T23:31:53+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Trace and validate example 455",
+      "run": "python3 verification/merged-pr-links/qualify.py 455 --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 455 --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+      "cwd": "."
+    },
+    {
+      "name": "Trace and validate example 456",
+      "run": "python3 verification/merged-pr-links/qualify.py 456 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 456 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/merged-pr-links/n01-n05/qualified/455-pins.json.gz",
+    "verification/merged-pr-links/n01-n05/qualified/456-pins.json.gz"
+  ]
+}

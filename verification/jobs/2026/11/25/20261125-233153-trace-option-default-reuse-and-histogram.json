@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-233153-trace-option-default-reuse-and-histogram",
+  "title": "Trace option-default reuse and histogram equality on both revisions",
+  "description": "Independently enter the pinned DefaultParser property handler and AbstractHistogram equality implementation. Run all three public histories twice on each revision and compare caller bytecode, live invocation sites and the measured returns.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-results.md"
+    ]
+  },
+  "expected": "All 24 fresh debugger JVM trials enter the registered original methods and produce the recorded public returns. Both saved reports pass offline validation.",
+  "submitted": {
+    "at": "2026-11-25T23:31:53+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Trace and validate example 453",
+      "run": "python3 verification/merged-pr-links/qualify.py 453 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 453 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+      "cwd": "."
+    },
+    {
+      "name": "Trace and validate example 454",
+      "run": "python3 verification/merged-pr-links/qualify.py 454 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified && python3 verification/merged-pr-links/qualify.py 454 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/n01-n05/qualified --check",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/merged-pr-links/n01-n05/qualified/453-pins.json.gz",
+    "verification/merged-pr-links/n01-n05/qualified/454-pins.json.gz"
+  ]
+}

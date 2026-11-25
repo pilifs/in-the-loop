@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37322",
+  "revisions": {
+    "parent": "eb9928f993fc650ba92a833ecfd28194c28afd3e",
+    "fix": "f96403da2a821f9b8281161847e32a1c4e35e470"
+  },
+  "entry": "MySQLMaxValueIncrementer.nextLongValue()",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37322.1",
+      "role": "Intent",
+      "args": [
+        "rollback"
+      ],
+      "history": "Fail the first allocation at commit after the connection has read 100. Establish by an independent read that the transaction rolled back to 98. On the same incrementer request and insert three IDs.",
+      "prediction": "Both initially throw `DataAccessResourceFailureException` and return no ID. Before, the PR reports 100, 99, 100 and a duplicate-key failure on the third insert. After, it reports 99, 100, 101, all inserts successful. Expect final sequence 102 on the merge.",
+      "basis": "With durable value 98, the next confirmed two-ID reservation covers 99–100. The following one covers 101–102. The primary key independently exposes reuse.",
+      "refutation": "With rollback confirmed, the merged allocator serves 100 before 99, issues a duplicate, or returns 101 while the sequence still reads 100.",
+      "expected": {
+        "parent": {
+          "return": "initial=98/[] first=DataAccessResourceFailureException afterFirst=98/[] steps=[100:inserted:98/[100], 99:inserted:100/[99, 100], 100:duplicate(1062,23000):100/[99, 100]] reservations=[100, 100] fault=rollback"
+        },
+        "fix": {
+          "return": "initial=98/[] first=DataAccessResourceFailureException afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 100, 102] fault=rollback"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37322.2",
+      "role": "Control",
+      "args": [
+        "normal"
+      ],
+      "history": "On a fresh fixture let every reservation commit normally. Read the sequence after each of three requests.",
+      "prediction": "Both revisions should return 99, 100, 101 with durable maxima 100, 100, 102. All three inserts should succeed.",
+      "basis": "A reservation of two advances the durable row once. Its second use consumes the cached ID without raising the maximum.",
+      "refutation": "An ID repeats, a second reservation occurs before returning 100, or the durable row fails to cover an issued ID.",
+      "expected": {
+        "parent": {
+          "return": "initial=98/[] first=none afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 102] fault=none"
+        },
+        "fix": {
+          "return": "initial=98/[] first=none afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 102] fault=none"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37322.3",
+      "role": "Challenge",
+      "args": [
+        "restore"
+      ],
+      "history": "Keep the first public call exceptional, but let the real commit succeed. Start its connection in auto-commit mode, then have only the first post-commit `setAutoCommit(true)` throw `SQLException`. Independently confirm the row is 100. Allow all subsequent calls to succeed.",
+      "prediction": "Both should report `DataAccessResourceFailureException` initially. Before, predict subsequent IDs 100, 101, 102, ending at durable maximum 102. After, predict 101, 102, 103, ending at 104. Expect three successful inserts on both revisions. On the merge 99–100 remain unused.",
+      "basis": "Commit and restoring auto-commit share a catch block. Here 99–100 really were reserved, so discarding them leaves a gap. An exception alone cannot identify which range the database will grant next.",
+      "refutation": "Given the confirmed first commit and no concurrent writer, the merged retry serves any ID ≤100, reports success without the corresponding reservation, or inserts a duplicate.",
+      "expected": {
+        "parent": {
+          "return": "initial=98/[] first=DataAccessResourceFailureException afterFirst=100/[] steps=[100:inserted:100/[100], 101:inserted:102/[100, 101], 102:inserted:102/[100, 101, 102]] reservations=[100, 102] fault=restore"
+        },
+        "fix": {
+          "return": "initial=98/[] first=DataAccessResourceFailureException afterFirst=100/[] steps=[101:inserted:102/[101], 102:inserted:102/[101, 102], 103:inserted:104/[101, 102, 103]] reservations=[100, 102, 104] fault=restore"
+        }
+      }
+    }
+  ]
+}

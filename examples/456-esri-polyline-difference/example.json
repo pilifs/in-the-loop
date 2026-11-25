@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "456",
+  "title": "Esri Geometry restores the surviving segments of a closed polyline",
+  "summary": "The parent threw on both orientations of point contact. The merge preserved all eleven edges exactly once. Extending the reversed subtractor to overlap A–B removed just that edge on both revisions.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Esri Geometry API",
+    "symbol": "GeometryEngine.difference(Geometry,Geometry,SpatialReference)"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Restoring a closed polyline after difference now starts from an incident edge owned by the retained path."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/Esri/geometry-api-java",
+    "url": "https://github.com/Esri/geometry-api-java/pull/329"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "The oracle sweeps each original edge against the actual returned segments and checks the converse for foreign geometry. It counts nonzero intervals, handles split or reversed edges and implicit closure, and checks absolute length error within 1e−7 coordinate units. Collinearity uses perpendicular distance at most 1e−8."
+  ]
+}
