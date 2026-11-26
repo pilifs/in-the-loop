@@ -1,0 +1,458 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-015908-recheck-three-spring-counterexamples-on",
+  "title": "Recheck three Spring counterexamples on published 7.0.10",
+  "status": "passed",
+  "summary": "passed: 7 passed step(s) in 31.9s, peak 128.4 MiB (estimated 1m00s, 512.0 MiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (Run the released modules) was held back 7.7s by its 1-CPU quota in 9.2s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (Repeat the retained builder histories) was held back 4.7s by its 1-CPU quota in 5.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 4 (Repeat the released builder histories) was held back 3.0s by its 1-CPU quota in 4.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 6 (Replay all four range routes through the mapped controller) was held back 11.9s by its 1-CPU quota in 12.3s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-015908-recheck-three-spring-counterexamples-on.json",
+    "sha256": "6c1859189e611cb4e382b80646da0b5c10c5950389c87993e3f5e678c72283d0",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-015908-recheck-three-spring-counterexamples-on",
+      "title": "Recheck three Spring counterexamples on published 7.0.10",
+      "description": "Use the historical caller bytecode for the SSE field, R2DBC constructor mapper and JMS recovery cases against published Spring 7.0.10. Run all nine histories with hash-locked artifacts and compare every event, mapped object, exception and provider action with the release receipt. Record compiled-class hashes in canonical order. Also repeat the retained WebTestClient builder follow-up on both historical pins and on the same published release. Repeat the four HTTP routes with the annotated controller dispatched by a real DispatcherServlet, and check the final campaign audit.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "paths": [
+          "verification/merged-pr-links/o01-o20/upstream.md"
+        ]
+      },
+      "expected": "The release receipts match byte for byte. SSE accepts the trailing space, the strict R2DBC API is absent, and direct JMS reinitialization returns to closed A. The six additional pinned histories and three release histories distinguish both header initialization methods and the two builder lifecycles.",
+      "submitted": {
+        "at": "2026-11-26T01:59:08+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "512M",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Run the released modules",
+          "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/o01-o20/release-inputs.json --fetch --output verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the release receipts",
+          "run": "cmp verification/merged-pr-links/o01-o20/release-observations.json verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat the retained builder histories",
+          "run": "python3 examples/463-spring-client-defaults/retained-builder/check_builder.py",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat the released builder histories",
+          "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs examples/463-spring-client-defaults/retained-builder/release-inputs.json --fetch --output verification/merged-pr-links/o01-o20/repeated-builder-release.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the released builder receipts",
+          "run": "cmp examples/463-spring-client-defaults/retained-builder/release-observations.json verification/merged-pr-links/o01-o20/repeated-builder-release.json",
+          "cwd": "."
+        },
+        {
+          "name": "Replay all four range routes through the mapped controller",
+          "run": "python3 examples/tools/build.py 465",
+          "cwd": "."
+        },
+        {
+          "name": "Record and compare the final campaign audit",
+          "run": "python3 verification/merged-pr-links/audit.py --campaign o01-o20 --output verification/merged-pr-links/o01-o20/final-audit.json && cmp verification/merged-pr-links/o01-o20/audit.json verification/merged-pr-links/o01-o20/final-audit.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+        "verification/merged-pr-links/o01-o20/repeated-builder-release.json",
+        "verification/merged-pr-links/o01-o20/final-audit.json"
+      ],
+      "supersedes": "20261126-015446-recheck-three-spring-counterexamples-on"
+    }
+  },
+  "sourceCommit": "be6ce5be76a4eb54920740b71bd6684272c076dd",
+  "startedAt": "2026-11-26T02:09:19+00:00",
+  "finishedAt": "2026-11-26T02:10:00+00:00",
+  "wallSeconds": 41.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1869273,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 805306368,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 536870912,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 134680576,
+    "wallSeconds": 31.9,
+    "cpuSeconds": 28.8,
+    "memoryOfEstimate": 0.25,
+    "durationOfEstimate": 0.53
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the released modules",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/o01-o20/release-inputs.json --fetch --output verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 9.222,
+      "cpuSeconds": 8.207,
+      "cpuThrottledSeconds": 7.715,
+      "peakMemoryBytes": 102928384,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-released-modules.log",
+        "lines": 3,
+        "bytes": 94,
+        "sha256": "178207cd519c5b0a7a499e9f58d0b5a5c2fa38101437f255b03e63d4083009ec",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "466 7.0.10 [False, True, False]",
+        "470 7.0.10 [True, True, False]",
+        "475 7.0.10 [True, True, False]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Compare the release receipts",
+      "run": "cmp verification/merged-pr-links/o01-o20/release-observations.json verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.008,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2035712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compare-the-release-receipts.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Repeat the retained builder histories",
+      "run": "python3 examples/463-spring-client-defaults/retained-builder/check_builder.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 5.414,
+      "cpuSeconds": 5.3,
+      "cpuThrottledSeconds": 4.695,
+      "peakMemoryBytes": 98222080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-repeat-the-retained-builder-hi.log",
+        "lines": 6,
+        "bytes": 830,
+        "sha256": "5403321bbd79ba7c1f30792367b398ff20783fcc4418361cba27f79857d80867",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins parent spring-projects/spring-framework#37325.followup.retained-convenience {'return': 'append=UnsupportedOperationException A=[one]/[one]'}",
+        "pins parent spring-projects/spring-framework#37325.followup.retained-consumer {'return': 'B=[one, two]/[one, two] A=[one, two]/[one, two]'}",
+        "pins parent spring-projects/spring-framework#37325.followup.derived-convenience {'return': 'append=UnsupportedOperationException A=[one]/[one]'}",
+        "pins fix spring-projects/spring-framework#37325.followup.retained-convenience {'return': 'append=UnsupportedOperationException A=[one]/[one]'}",
+        "pins fix spring-projects/spring-framework#37325.followup.retained-consumer {'return': 'B=[one, two]/[one, two] A=[one]/[one]'}",
+        "pins fix spring-projects/spring-framework#37325.followup.derived-convenience {'return': 'B=[one, two]/[one, two] A=[one]/[one]'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Repeat the released builder histories",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs examples/463-spring-client-defaults/retained-builder/release-inputs.json --fetch --output verification/merged-pr-links/o01-o20/repeated-builder-release.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 4.41,
+      "cpuSeconds": 3.101,
+      "cpuThrottledSeconds": 2.997,
+      "peakMemoryBytes": 106917888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-repeat-the-released-builder-hi.log",
+        "lines": 1,
+        "bytes": 32,
+        "sha256": "2c4ad13d7b14bc0b34914fbb470ceda9274dc9117a2677f4b94f90a4ab61ade3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "463 7.0.10 [True, False, False]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Compare the released builder receipts",
+      "run": "cmp examples/463-spring-client-defaults/retained-builder/release-observations.json verification/merged-pr-links/o01-o20/repeated-builder-release.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.009,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2105344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-compare-the-released-builder-r.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "Replay all four range routes through the mapped controller",
+      "run": "python3 examples/tools/build.py 465",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 12.255,
+      "cpuSeconds": 12.079,
+      "cpuThrottledSeconds": 11.916,
+      "peakMemoryBytes": 134680576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-replay-all-four-range-routes-t.log",
+        "lines": 8,
+        "bytes": 1812,
+        "sha256": "ddd3b3a9ea3b5567fa6dfa9c18e697e5939e9c5a126754e29701272733291c3d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins parent spring-projects/spring-framework#37218.1 {'return': 'static=206|bytes 1-3/6|bcd controller=206|bytes 1-3/6|bcd functional=206|bytes 1-3/6|bcd webflux=206|bytes 1-3/6|bcd'}",
+        "pins parent spring-projects/spring-framework#37218.2 {'return': 'static=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd controller=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd functional=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd webflux=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd'}",
+        "pins parent spring-projects/spring-framework#37218.3 {'return': 'static=416|bytes */6|;206|bytes 1-3/6|bcd controller=416|bytes */6|abcdef;206|bytes 1-3/6|bcd functional=416|bytes */6|abcdef;206|bytes 1-3/6|bcd webflux=416|-|;206|bytes 1-3/6|bcd'}",
+        "pins parent spring-projects/spring-framework#37218.4 {'return': 'static=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd controller=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd functional=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd webflux=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd'}",
+        "pins fix spring-projects/spring-framework#37218.1 {'return': 'static=200|-|abcdef controller=200|-|abcdef functional=200|-|abcdef webflux=200|-|abcdef'}",
+        "pins fix spring-projects/spring-framework#37218.2 {'return': 'static=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd controller=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd functional=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd webflux=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd'}",
+        "pins fix spring-projects/spring-framework#37218.3 {'return': 'static=200|-|abcdef;200|-|abcdef controller=200|-|abcdef;200|-|abcdef functional=200|-|abcdef;200|-|abcdef webflux=200|-|abcdef;200|-|abcdef'}",
+        "pins fix spring-projects/spring-framework#37218.4 {'return': 'static=206|bytes 1-3/6|bcd;200|-|abcdef controller=206|bytes 1-3/6|bcd;200|-|abcdef functional=206|bytes 1-3/6|bcd;200|-|abcdef webflux=206|bytes 1-3/6|bcd;200|-|abcdef'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "Record and compare the final campaign audit",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign o01-o20 --output verification/merged-pr-links/o01-o20/final-audit.json && cmp verification/merged-pr-links/o01-o20/audit.json verification/merged-pr-links/o01-o20/final-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.099,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 14876672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-record-and-compare-the-final-c.log",
+        "lines": 1,
+        "bytes": 333,
+        "sha256": "5cab4bb6348503cce28659c3523f4929531971903b8443b884794a24c3a10398",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"cases\": 20, \"controlsMatchedOnBoth\": 20, \"deploymentPairs\": 20, \"fixedIntentsMatched\": 20, \"fixedPredictionsMatched\": 60, \"fixedRefutations\": 3, \"freshJvms\": 126, \"fullBuildPairs\": 18, \"omittedParentHistories\": 0, \"pairedIntentChanges\": 20, \"parentRefutations\": 1, \"pinnedSourcePairs\": 2, \"question"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+      "change": "added",
+      "bytes": 11220,
+      "sha256": "5ad442352ac1b79a07d2bb34e444c37330eb4dd97b22b04a945ffcdae4fea6f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/o01-o20/repeated-builder-release.json",
+      "change": "added",
+      "bytes": 4066,
+      "sha256": "23548455e03834a1826341e12be3cbcf1b4b8b8bdb01319a0425575a37939fbd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/o01-o20/final-audit.json",
+      "change": "added",
+      "bytes": 7275,
+      "sha256": "533a19e3ca4a218c99f89540ecdfc33a8244ca60ff726a7eee90c76c1264cf82",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T02:10:03+00:00",
+    "applied": [
+      "verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+      "verification/merged-pr-links/o01-o20/repeated-builder-release.json",
+      "verification/merged-pr-links/o01-o20/final-audit.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T021000Z-20615104e2b27596",
+      "outputs": "20261126T021000Z-228433f0d7d96020",
+      "diff": "20261126T021000Z-248209f8fa10005a"
+    }
+  }
+}
