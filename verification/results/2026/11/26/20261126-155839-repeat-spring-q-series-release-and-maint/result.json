@@ -1,0 +1,359 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-155839-repeat-spring-q-series-release-and-maint",
+  "title": "Repeat Spring Q-series release and maintainer comparisons",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 42.3s, peak 125.5 MiB (estimated 2m00s, 768.0 MiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-155839-repeat-spring-q-series-release-and-maint.json",
+    "sha256": "a75214fbe1d16a7e9924a0a865836e776082ddac953d0e455b83b763f7607050",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-155839-repeat-spring-q-series-release-and-maint",
+      "title": "Repeat Spring Q-series release and maintainer comparisons",
+      "description": "Repeat 32 original-caller histories on published Spring releases. Check the direct legacy retry listener, JDBC zero limit, composite map, reactive SSE, reported release baselines and the JMS reply selector. Recompile the relocated retry and autowiring clients, try two correlated Artemis responders, exercise SseEmitter through MockMvc, and compile the original and later HTTP service factories.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:released-runtime",
+        "java:source-overload-resolution",
+        "jms:broker-reply"
+      ],
+      "links": {},
+      "expected": "The 32 original-caller release observations, 16 separate published controls and 6 later-revision histories must reproduce. The result files must agree byte for byte, including source, bytecode, classpaths and the two JDBC/JMS provider controls in their respective fixtures.",
+      "submitted": {
+        "at": "2026-11-26T15:58:39+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Replay original clients on published releases",
+          "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/q01-q30/release-inputs.json --output verification/merged-pr-links/q01-q30/repeated-releases.json",
+          "cwd": "."
+        },
+        {
+          "name": "Check release digests and observed behaviors",
+          "run": "python3 verification/merged-pr-links/q01-q30/check_releases.py --results verification/merged-pr-links/q01-q30/repeated-releases.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the published-release observations",
+          "run": "cmp verification/merged-pr-links/q01-q30/release-observations.json verification/merged-pr-links/q01-q30/repeated-releases.json",
+          "cwd": "."
+        },
+        {
+          "name": "Run the later factory and release-specific responder and API variants",
+          "run": "python3 verification/merged-pr-links/q01-q30/followups.py --output verification/merged-pr-links/q01-q30/repeated-followups.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare exact results and class digests",
+          "run": "cmp verification/merged-pr-links/q01-q30/followup-observations.json verification/merged-pr-links/q01-q30/repeated-followups.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/q01-q30/repeated-releases.json",
+        "verification/merged-pr-links/q01-q30/repeated-followups.json"
+      ]
+    }
+  },
+  "sourceCommit": "e33341013cf5b09d4a0da96459f3428aeb08f9ec",
+  "startedAt": "2026-11-26T16:04:32+00:00",
+  "finishedAt": "2026-11-26T16:05:23+00:00",
+  "wallSeconds": 51.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2325670,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 131633152,
+    "wallSeconds": 42.3,
+    "cpuSeconds": 49.4,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.35
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay original clients on published releases",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/q01-q30/release-inputs.json --output verification/merged-pr-links/q01-q30/repeated-releases.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 26.861,
+      "cpuSeconds": 21.717,
+      "cpuThrottledSeconds": 1.286,
+      "peakMemoryBytes": 125255680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-original-clients-on-pub.log",
+        "lines": 10,
+        "bytes": 320,
+        "sha256": "6033b5c6b0dfc954503a229ed0de2dddbed0d3d9157b824287626ec70cab613b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "513 7.1.0 [True, True, True, False]",
+        "514 6.2.13 [False, True, False]",
+        "514 7.1.0 [True, True, True]",
+        "520 7.1.0 [True, True, False]",
+        "524 5.0.0.M3 [False, True, False]",
+        "524 5.0.0.M4 [True, True, True]",
+        "531 7.0.4 [False, True, False]",
+        "534 7.0.9 [False, True, False]",
+        "534 7.1.0 [True, True, True]",
+        "536 7.1.0 [True, True, True, False]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check release digests and observed behaviors",
+      "run": "python3 verification/merged-pr-links/q01-q30/check_releases.py --results verification/merged-pr-links/q01-q30/repeated-releases.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.065,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 15400960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-release-digests-and-obse.log",
+        "lines": 1,
+        "bytes": 81,
+        "sha256": "0a2470ebbeaa08c0d14d4a59e509ea22e3082718312584382350d85119c5bb8e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "32 release observations verified, including the two changed JMS reply histories."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Compare the published-release observations",
+      "run": "cmp verification/merged-pr-links/q01-q30/release-observations.json verification/merged-pr-links/q01-q30/repeated-releases.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.008,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2076672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-compare-the-published-release.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Run the later factory and release-specific responder and API variants",
+      "run": "python3 verification/merged-pr-links/q01-q30/followups.py --output verification/merged-pr-links/q01-q30/repeated-followups.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 14.832,
+      "cpuSeconds": 27.589,
+      "cpuThrottledSeconds": 1.67,
+      "peakMemoryBytes": 131633152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-run-the-later-factory-and-rele.log",
+        "lines": 6,
+        "bytes": 804,
+        "sha256": "e33b7bf7b3ae8522412da9de152c14b2b5de0b9b1947fe3a7293771cd31e7961",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "public-parameter-delegate {'qualified': {'return': 'true/west'}, 'extension': {'return': 'west'}, 'containing': {'return': 'west/east'}}",
+        "relocated-jitter {'oversized': {'return': 'ok:2'}, 'small': {'return': 'ok:1'}, 'duration': {'return': 'ok:1/ArithmeticException:0'}}",
+        "message-id-replies {'owned': {'return': 'replies:ack-A'}, 'temporary': {'return': 'temporary:ack-A'}, 'repeat': {'return': 'replies:ack-A/replies:ack-B/C'}}",
+        "application-id-replies {'owned': {'return': 'replies:ack-A'}, 'temporary': {'return': 'temporary:ack-A'}, 'repeat': {'return': 'replies:ack-A/replies:ack-B/C'}}",
+        "reported-servlet {'pretty': {'return': '200:[invalid, invalid]'}, 'compact': {'return': '200:[A/one, B/two]'}}",
+        "fixed-servlet {'pretty': {'return': '200:[A/one, B/two]'}, 'compact': {'return': '200:[A/one, B/two]'}}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Compare exact results and class digests",
+      "run": "cmp verification/merged-pr-links/q01-q30/followup-observations.json verification/merged-pr-links/q01-q30/repeated-followups.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.007,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1998848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-compare-exact-results-and-clas.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/q01-q30/repeated-releases.json",
+      "change": "added",
+      "bytes": 34026,
+      "sha256": "4e445100838e6ae7c71d72854ddb25fb61725597ea4904b1eded2999070f3fb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/q01-q30/repeated-followups.json",
+      "change": "added",
+      "bytes": 8861,
+      "sha256": "fb236fa4f3ff19194a289cfb6ebe968bb019814385dd4bccc4e11acfbbe2a777",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T16:05:46+00:00",
+    "applied": [
+      "verification/merged-pr-links/q01-q30/repeated-releases.json",
+      "verification/merged-pr-links/q01-q30/repeated-followups.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T160523Z-1354657d7e60ee0e",
+      "outputs": "20261126T160523Z-158290957165b95b",
+      "diff": "20261126T160523Z-1787414dd79ccd0e"
+    }
+  }
+}
