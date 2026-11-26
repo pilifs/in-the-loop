@@ -292,7 +292,7 @@ class UpgradeReviewTest(unittest.TestCase):
                                                      entry, client, library), ({"return": value}, ["dep.Reader"]))
         self.assertEqual(upgrade_replay.parse_output(origins + "UPGRADE-OBSERVATION return -", entry, client, library)[0],
                          {"return": None})
-        with self.assertRaisesRegex(ValueError, "original client"):
+        with self.assertRaisesRegex(ValueError, "bound entry provider"):
             upgrade_replay.parse_output(origins.replace("client.jar", "shadow.jar"), entry, client, library)
         failed = origins + "UPGRADE-OBSERVATION throw java.lang.IllegalStateException\n"
         with self.assertRaisesRegex(ValueError, "outside"):

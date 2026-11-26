@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 import zipfile
 
-from targets import runtime_jar, runtime_jdk, upgrade_replay
+from targets import deployment_graph, runtime_jar, runtime_jdk, upgrade_replay
 
 
 def digest(value):
@@ -36,59 +36,10 @@ def jdk_binding(jdk):
 
 
 def manifest_classpath(files, feature):
-    """A manifest may revisit a bound provider or introduce the very next declared one without changing search order."""
-    providers = []
-    missing = set()
-    bound = []
-    unresolved = []
-    positions = {f: i for i, f in reversed(list(enumerate(files)))}
-    for position, file in enumerate(files):
-        if file.is_dir():
-            continue
-        with zipfile.ZipFile(file) as archive:
-            members = archive.namelist()
-            if feature < 21 and any(name.upper() == "META-INF/INDEX.LIST" for name in members):
-                unresolved.append({"provider": position, "reason": "JAR index can name additional providers"})
-            manifests = [name for name in members if name.upper() == "META-INF/MANIFEST.MF"]
-            if not manifests:
-                continue
-            if len(manifests) != 1:
-                unresolved.append({"provider": position, "reason": "ambiguous manifest member"})
-                continue
-            data = archive.read(manifests[0])
-        # java.util.jar.Manifest joins continuation lines in the main section.
-        main = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
-        declarations = [line.partition(b":")[2].strip(b" \t\f") for line in main.split(b"\n")
-                        if line.lower().startswith(b"class-path:")]
-        if not declarations:
-            continue
-        if len(declarations) != 1 or not re.fullmatch(rb"[\x20-\x7e\t\f]*", declarations[0]):
-            unresolved.append({"provider": position, "reason": "ambiguous or unsupported manifest Class-Path"})
-            continue
-        tokens = declarations[0].decode("ascii").split()
-        if not tokens:
-            continue
-        providers.append({"provider": position, "entries": tokens})
-        for token in tokens:
-            if (not re.fullmatch(r"/?(?:[A-Za-z0-9_+.-]+/)*[A-Za-z0-9_+.-]+\.jar", token)
-                    or any(part in (".", "..") for part in token.split("/"))):
-                unresolved.append({"provider": position, "entry": token, "reason": "unclassified manifest URL"})
-                continue
-            target = file.parent / token
-            try:
-                target.stat()
-            except (FileNotFoundError, NotADirectoryError):
-                missing.add(str(target))
-            except OSError:
-                unresolved.append({"provider": position, "entry": token, "reason": "cannot establish file absence"})
-            else:
-                index = positions.get(target)
-                if index is not None and index <= position + 1:
-                    bound.append({"provider": position, "entry": token, "classpathIndex": index})
-                else:
-                    reason = "present implicit provider" if index is None else "manifest can change declared search order"
-                    unresolved.append({"provider": position, "entry": token, "reason": reason})
-    return {"declarations": providers, "absent": sorted(missing), "bound": bound, "unresolved": unresolved}
+    """Compatibility view for a launch whose declared files already occupy their deployment locations."""
+    document = {"classpath": [{"file": str(file.absolute()), "sha256": file_digest(file)} for file in files]}
+    _, _, graph = deployment_graph.resolve(document, Path.cwd(), feature, file_digest)
+    return graph["manifestClassPath"]
 
 
 def absences_hold(paths):
@@ -103,18 +54,10 @@ def absences_hold(paths):
     return True
 
 
-def resolve(path, jdk, image, environment, *, kind):
+def resolve(path, jdk, image, environment, *, kind, layout_cache=None):
     document = json.loads(path.read_text())
-    files, entries = [], []
-    for entry in document["classpath"]:
-        file = (path.parent / entry["file"]).resolve()
-        actual = file_digest(file)
-        if actual != entry["sha256"]:
-            raise ValueError(f"{kind} classpath differs at {file.name}")
-        files.append(file)
-        entries.append({"name": file.name, "sha256": actual})
-    if not files:
-        raise ValueError(f"empty {kind} classpath")
+    feature = int(runtime_jdk.identity(jdk)["feature"])
+    files, entries, graph = deployment_graph.resolve(document, path.parent, feature, file_digest, layout_cache=layout_cache)
     if pin := document.get("jdkReleaseSha256"):
         if upgrade_replay.sha(jdk / "release") != pin:
             raise ValueError(f"the JDK differs from the prepared {kind} launch")
@@ -125,10 +68,7 @@ def resolve(path, jdk, image, environment, *, kind):
         if actual != item["sha256"]:
             raise ValueError(f"{kind} environment file differs at {file.name}")
         external.append({"file": str(file), "sha256": actual})
-    binding = {"kind": kind, "jdk": image, "classpath": entries, "environment": environment}
-    manifest_paths = manifest_classpath(files, int(runtime_jdk.identity(jdk)["feature"]))
-    if manifest_paths["declarations"] or manifest_paths["unresolved"]:
-        binding["manifestClassPath"] = manifest_paths
+    binding = {"kind": kind, "jdk": image, "classpath": entries, "environment": environment, **graph}
     if external:
         binding["environmentFiles"] = external
     return files, {**binding, "key": digest(binding), "commit": document.get("commit"),
@@ -203,31 +143,16 @@ for width, opcodes in (
 
 
 def deployment(files, jdk):
-    feature = int(runtime_jdk.identity(jdk)["feature"])
-    classes, resources, methods = {}, {}, {}
-    implicit = []
-    for position, file in enumerate(files):
-        for name, data in entries(file, feature):
-            sha = hashlib.sha256(data).hexdigest()
-            if name.upper() == "META-INF/MANIFEST.MF" and not file.is_dir():
-                main = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
-                if any(line.lower().startswith(b"class-path:") and line.partition(b":")[2].strip()
-                       for line in main.splitlines()):
-                    implicit.append(file.name)
-            if not name.endswith(".class"):
-                # getResources and ServiceLoader can observe all providers in order.
-                resources.setdefault(name, []).append(sha)
-                continue
-            if name.endswith("module-info.class") or name.startswith("META-INF/"):
-                continue
-            owner = name[:-6]
-            classes.setdefault(owner, sha)
-            if position:
-                continue
-            for method, descriptor, flags, calls in invocation_inventory(data):
-                methods[owner, method, descriptor] = {
-                    "calls": calls, "public": bool(flags & (0x0001 | 0x0004)), "classSha256": sha}
-    return classes, resources, methods, implicit
+    from targets import entry_discovery
+    index = entry_discovery.Index()
+    view = index.view(files, [file_digest(f) for f in files], int(runtime_jdk.identity(jdk)["feature"]))
+    classes, methods = {}, {}
+    for owner, (_, definition) in view.winners.items():
+        classes[owner] = definition.sha
+        for (name, desc), (flags, calls) in definition.methods().items():
+            methods[owner, name, desc] = {"calls": calls, "public": bool(flags & 5), "classSha256": definition.sha}
+    implicit = [file.name for file in files if deployment_graph.manifest(file, int(runtime_jdk.identity(jdk)["feature"]))[0]]
+    return classes, view.resources, methods, implicit
 
 
 def entry_name(member):

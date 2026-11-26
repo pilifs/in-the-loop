@@ -72,7 +72,16 @@ class ChangePlanTest(unittest.TestCase):
             gap = base / "other.jar"
             gap.write_bytes(extra.read_bytes())
             reordered = change_inventory.manifest_classpath([jar, gap, extra], 21)
-            self.assertEqual(reordered["unresolved"][0]["reason"], "manifest can change declared search order")
+            self.assertEqual(reordered["unresolved"], [])
+            self.assertEqual([r["classpathIndex"] for r in reordered["bound"]], [1, 1])
+            from targets import deployment_graph
+            implicit = {"classpath": [{"file": str(jar), "sha256": change_inventory.file_digest(jar)}],
+                        "manifestProviders": [{"file": str(extra), "sha256": change_inventory.file_digest(extra)}]}
+            files, _, graph = deployment_graph.resolve(implicit, base, 21, change_inventory.file_digest)
+            self.assertEqual(files, [jar, extra])
+            self.assertFalse(graph["manifestClassPath"]["unresolved"])
+            _, _, unknown = deployment_graph.resolve({**implicit, "layoutKnown": False}, base, 21, change_inventory.file_digest)
+            self.assertEqual(unknown["manifestClassPath"]["unresolved"][0]["reason"], "original deployment location required")
             manifest("Class-Path: https://example.invalid/extra.jar a%20b.jar //host/share.jar")
             self.assertEqual(len(change_inventory.manifest_classpath([jar], 21)["unresolved"]), 3)
             with zipfile.ZipFile(jar, "w") as archive:

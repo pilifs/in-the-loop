@@ -365,6 +365,12 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    its notes hold what the plan learned and why the change sits where it does in the order.
 3. The revisions prepared: their JARs fetched or built, pinned and locked (`build.py --plan NNN`), as the plan's
    preparation recipe says.
+   When ordered manifests exist, set `preparedDeployments` in the setup plan. The normal scaffold writes
+   `records/entry-bindings.json` and reports each open lookup. If the builds became available after scaffolding,
+   run `python3 examples/tools/scaffold_example.py bind --before OLD --after NEW --jdk JDK --workflows WORKFLOWS --output RECORD`.
+   Both forms check each pinned deployment on its own JVM and ask the native resolver for the exact descriptor.
+   Stage 2 can omit workflows to discover public callers from the compiled change. Review competing observations
+   with the claim owner. During replay, pass the saved record as `--previous` to `build.py --change-plan application --run`.
 4. The change run once on a JVM (the replay task), with the plan's controls, and the mutant's replay.
 5. **How each proof task is invoked,** confirmed without attempting the proof and recorded on the task as
    `invocation` ([`target.schema.json`](../examples/schema/target.schema.json)), with the date and what showed it:

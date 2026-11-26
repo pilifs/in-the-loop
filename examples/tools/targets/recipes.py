@@ -53,7 +53,8 @@ class ProofRecipe:
             upstream = prepared.source["target"]
             original = upstream["loadedFrom"]
             digest = upstream.get("classSha256")
-            selected = [a for a in artifacts if a.path == original or a.role in ("dependency", "stub")]
+            selected = [a for a in artifacts if a.path == original or a.role in ("original", "dependency", "stub")
+                        or (self.correspondence and a.role == "adapter")]
             if self.correspondence:
                 adapter = next((a for a in artifacts if a.role == "adapter"), None)
                 if adapter is None or not prepared.source["target"].get("adapterCallsTarget"):
@@ -64,11 +65,17 @@ class ProofRecipe:
                     raise runtime.Refused("claim", "the prepared adapter has no declared checked entry")
                 digest = hashlib.sha256(data).hexdigest()
                 original = adapter.path
-                selected.insert(0, adapter)
+
             entries[revision] = {"entry": self.entry, "classSha256": digest, "loadedFrom": original,
                                  "subject": self.subject, "subjectClassSha256": upstream.get("classSha256")}
-            originals[revision] = original
-            dependencies[revision] = [a for a in selected if a.path != original]
+            first = selected[0].path
+            if self.command != "prove" and first != original:
+                raise runtime.Refused("verifier", f"{revision}: equivalence needs the entry in its extracted subject directory; "
+                                      f"extracting {original} before {first} changes the deployment order")
+            originals[revision] = first
+            dependencies[revision] = selected[1:]
+            if upstream.get("entryBinding"):
+                entries[revision]["entryBinding"] = upstream["entryBinding"]
             paths[revision] = [dict(path=a.path, sha256=a.sha256, role=a.role) for a in selected]
             if self.observed_initializers:
                 entries[revision]["initializerClasses"] = initializer_classes(self.observed_initializers, sides[revision][0], paths[revision])

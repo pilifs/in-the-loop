@@ -34,6 +34,17 @@ import java.util.Set;
 public final class UpgradeTrace {
     private static final boolean receivers = Boolean.getBoolean("upgrade.trace.receivers");
 
+    private static final List<String> changed = Arrays.asList(System.getProperty("upgrade.trace.changed", "").split("\\|"));
+
+    private static void changedBreakpoints(VirtualMachine vm, ReferenceType type) {
+        for (String target : changed) {
+            int hash = target.indexOf('#');
+            if (hash < 0 || !type.name().equals(target.substring(0, hash))) continue;
+            int desc = target.indexOf('(', hash);
+            breakpoint(vm, type, target.substring(hash + 1, desc), target.substring(desc), "changed");
+        }
+    }
+
     // Emit metadata and within-frame aliases only. JDI reads slots without calling methods in the child.
     private static String shape(Value value, Map<Long, Integer> aliases) {
         if (value == null) return "null";
@@ -302,6 +313,7 @@ public final class UpgradeTrace {
         try {
             Set<String> watched = new LinkedHashSet<>(exceptions);
             watched.add(owner);
+            for (String target : changed) if (target.contains("#")) watched.add(target.substring(0, target.indexOf('#')));
             if (checked != null) {
                 watched.add(checked.helper.split("#")[0]);
                 watched.add(checked.startup.split("#")[0]);
@@ -312,6 +324,7 @@ public final class UpgradeTrace {
                 for (ReferenceType type : vm.classesByName(name))
                     if (type.isPrepared()) {
                         install(vm, type, owner, method, descriptor, exceptions);
+                        changedBreakpoints(vm, type);
                         if (checked != null) checked.bind(vm, type);
                     }
             }
@@ -321,6 +334,7 @@ public final class UpgradeTrace {
                     if (event instanceof ClassPrepareEvent) {
                         ReferenceType type = ((ClassPrepareEvent) event).referenceType();
                         install(vm, type, owner, method, descriptor, exceptions);
+                        changedBreakpoints(vm, type);
                         if (checked != null) checked.bind(vm, type);
                     } else if (event instanceof ExceptionEvent) {
                         ExceptionEvent raised = (ExceptionEvent) event;
@@ -346,6 +360,19 @@ public final class UpgradeTrace {
                         String purpose = (String) point.request().getProperty("purpose");
                         if (purpose.equals("checked") || purpose.equals("startup")) {
                             checked.apply(point, purpose.equals("startup"), observer);
+                        } else if (purpose.equals("changed")) {
+                            if (invocation(point, observer, sites) == null) continue;
+                            List<String> chain = new ArrayList<>();
+                            for (StackFrame frame : point.thread().frames()) {
+                                String declaration = CheckedReplay.entry(frame.location());
+                                chain.add(declaration);
+                                if (declaration.equals(entry)) break;
+                            }
+                            if (chain.get(chain.size() - 1).equals(entry)
+                                    && vm.classesByName(point.location().declaringType().name()).size() == 1) {
+                                System.err.println("UPGRADE-CHANGED " + encoded(String.join("\n", chain)));
+                                point.request().disable();
+                            }
                         } else if (purpose.equals("constructor")) {
                             if (entryInvocation != null) continue;
                             StackFrame frame = point.thread().frame(0);
@@ -374,6 +401,9 @@ public final class UpgradeTrace {
                             String site = invocation(point, observer, sites);
                             if (site != null) {
                                 entryInvocation = site;
+                                ObjectReference instance = point.thread().frame(0).thisObject();
+                                System.err.println("UPGRADE-IMPLEMENTATION " + CheckedReplay.entry(point.location()) + "\t"
+                                        + (instance == null ? "static" : instance.referenceType().name()));
                                 if (receivers) {
                                     StackFrame frame = point.thread().frame(0);
                                     ObjectReference object = frame.thisObject();

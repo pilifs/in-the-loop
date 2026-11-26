@@ -11,7 +11,7 @@ import sys
 import tempfile
 import time
 
-from targets import change_evidence, change_inventory, class_binding, runtime_jar, runtime_jdk, upgrade_replay
+from targets import change_evidence, change_inventory, entry_binding, entry_discovery, runtime_jar, runtime_jdk, upgrade_replay
 from targets.change_inventory import digest
 
 HERE = Path(__file__).resolve().parent
@@ -79,71 +79,82 @@ def frozen_workflows(path):
 def runner_identity():
     # Includes the evidence parser and bytecode readers as well as the Java adapters.
     modules = ("change_plan", "change_inventory", "change_evidence", "change_helpers", "upgrade_replay", "upgrade_claims",
-               "upgrade_linkage", "upgrade_jdbc", "runtime_jar", "class_binding", "runtime_jdk")
+               "entry_binding", "entry_discovery", "deployment_graph", "upgrade_linkage", "upgrade_jdbc", "runtime_jar", "class_binding", "runtime_jdk")
     files = [*(HERE / (name + ".py") for name in modules), upgrade_replay.LAUNCHER, upgrade_replay.TRACER, upgrade_replay.LOOKUP]
     return digest({"files": {p.name: upgrade_replay.sha(p) for p in files},
                    "python": sys.version, "host": list(platform.uname())})
 
 
-def compare(args, *, original_binary=True):
+def compare(args, *, original_binary=True, archive_index=None):
     started = time.monotonic()
-    doc, workflows = frozen_workflows(args.workflows)
+    doc, workflows = frozen_workflows(args.workflows) if args.workflows else ({"change": "compiled deployment comparison"}, {})
+    archive_index = archive_index or entry_discovery.Index()
     jdks = {"old": args.jdk.resolve(), "new": (args.after_jdk or args.jdk).resolve()}
     images = {p: change_inventory.jdk_binding(p) for p in set(jdks.values())}
-    paths, launches, snapshots = {}, {}, {}
+    paths, launches, snapshots, tests = {}, {}, {}, {}
     environment = {"locale": "C.UTF-8", "timezone": "UTC", "home": "fresh trial",
                    "inputs": doc.get("environment", [])}
+    layout_cache = (args.cache or args.output.parent) / "deployment-layouts"
     for side, manifest, test in (("old", args.before, args.before_test), ("new", args.after, args.after_test)):
         jdk = jdks[side]
         image = images[jdk]
-        paths[side], production = change_inventory.resolve(manifest, jdk, image, environment, kind="production")
+        paths[side], production = change_inventory.resolve(manifest, jdk, image, environment, kind="production" if original_binary or side == "old" else "original-client", layout_cache=layout_cache)
         launches[side] = {"production": production}
         if test:
-            _, launches[side]["test"] = change_inventory.resolve(test, jdk, image, environment, kind="test")
-        snapshots[side] = change_inventory.deployment(paths[side], jdk)
-    declared = {spec["entry"] for _, _, _, spec in workflows.values()}
-    inventory = change_inventory.inventory(snapshots["old"], snapshots["new"], declared)
+            test_files, launches[side]["test"] = change_inventory.resolve(test, jdk, image, environment, kind="test", layout_cache=layout_cache)
+            tests[side + "/test"] = (test_files, launches[side]["test"], jdk)
+        snapshots[side] = archive_index.view(paths[side], [r["sha256"] for r in production["classpath"]],
+                                             int(runtime_jdk.identity(jdk)["feature"]))
+    declared = {spec["entry"] for _, _, _, spec in workflows.values()} | set(getattr(args, "entry", []))
+    if getattr(args, "supplied_only", False):
+        if not declared:
+            raise ValueError("supplied-only qualification needs an approved entry or frozen workflows")
+        inventory = {"inputMode": "supplied only", "candidateCount": len(declared),
+                     "candidates": [{"entry": e, "independentlyDiscovered": False} for e in sorted(declared)]}
+    else:
+        inventory = entry_discovery.discover(snapshots, declared, getattr(args, "changed_selector", []))
+    inventory["coverage"] = archive_index.coverage()
     checker = args.checker.resolve()
-    inventory["applicationEntries"] = change_inventory.framework_inventory(checker, paths, jdks)
-    asked = []
-    for entry in sorted(declared):
-        owner, method, descriptor = runtime_jar.parse_target(entry)
-        if not descriptor:
-            raise ValueError(f"missing exact method descriptor for {entry}")
-        asked.append({"class": owner, "method": method, "descriptor": descriptor})
-    bound = {}
-    for jdk in images:
-        env = {**os.environ, "JAVA_HOME": str(jdk), "JVMCONTRACT_JAR_RELEASE": runtime_jdk.identity(jdk)["feature"]}
-        group, _ = class_binding.ask(checker, env, Path.cwd(), {
-            side: {"classpath": list(map(str, files)), "classes": asked} for side, files in paths.items() if jdks[side] == jdk})
-        bound.update(group)
+    if workflows and not getattr(args, "supplied_only", False):
+        inventory["applicationEntries"] = change_inventory.framework_inventory(checker, paths, jdks)
+    graphs = {s: (paths[s], launches[s]["production"], jdks[s]) for s in paths}
+    selected_entries = declared
+    if not declared:
+        selected_entries = {row["entry"] for row in inventory["candidates"][:getattr(args, "probe_limit", 8)]}
+    all_graphs = {**graphs, **tests}
+    bindings = entry_binding.qualify(checker, all_graphs, {side: selected_entries for side in all_graphs})
     problems = {}
-    for side, bindings in bound.items():
-        for entry, selected in zip(sorted(declared), bindings["bindings"], strict=True):
-            owner, _, _ = runtime_jar.parse_target(entry)
-            original = snapshots[side][0].get(runtime_jar.internal(owner))
-            if issue := class_binding.disagreement(owner, selected, paths[side][0], original):
-                problems.setdefault(entry, []).append(issue)
-            elif not selected["method"]["declared"]:
-                problems.setdefault(entry, []).append(f"{side} client does not declare this descriptor")
-            elif len(class_binding.candidates(paths[side][0], runtime_jar.internal(owner))) != 1:
-                problems.setdefault(entry, []).append(f"{side} original caller requires a measured multi-release JVM class binding")
-        launches[side]["classes"] = bindings["bindings"]
-
+    for side, records in bindings.items():
+        if side in tests:
+            continue
+        launches[side]["classes"] = [r["checker"] for r in records.values() if "checker" in r]
+        for entry, record in records.items():
+            if record["status"] != "bound":
+                problems.setdefault(entry, []).append({"side": side, "reason": record["firstOpenDependency"]})
+    binding_records = {digest(record): record for records in bindings.values() for record in records.values()}
     old, new = (launches[k]["production"] for k in ("old", "new"))
-    operands = (args.old_dependency or old["classpath"][0]["sha256"], args.new_dependency or new["classpath"][0]["sha256"])
+    clients = {side: launch["classpath"][launch["clientIndex"]]["sha256"] for side, launch in (("old", old), ("new", new))}
+    operands = (args.old_dependency or clients["old"], args.new_dependency or clients["new"])
     runner = runner_identity()
     plan = {"schema": SCHEMA, "change": doc["change"], "launches": launches, "inventory": inventory,
-            "tools": {"comparator": upgrade_replay.sha(checker), "jvmRunner": runner},
+            "entryBindings": binding_records, "bindingWitnesses": {},
+            "graphs": {g["key"]: g for _, g, _ in all_graphs.values()}, "tools": {"comparator": upgrade_replay.sha(checker), "jvmRunner": runner},
             "deploymentQuestions": {
-                "originalBinary": "same client JAR on both deployments" if old["classpath"][0]["sha256"] == new["classpath"][0]["sha256"]
+                "originalBinary": "same client JAR on both deployments" if clients["old"] == clients["new"]
                                   else "open for the original client on the new runtime",
                 "unchangedSourceBuild": "both supplied preparations record matching source digests"
                                         if old["sourceSha256"] and old["sourceSha256"] == new["sourceSha256"]
                                         else "open for unchanged source",
                 "adaptedApplication": "compare the supplied client and runtime on each side"},
             "claims": [], "preparationSeconds": round(time.monotonic() - started, 4)}
+    plan["discovery"] = {"mode": "supplied entry" if declared else inventory["inputMode"], "probed": sorted(selected_entries),
+                         "totalCandidates": inventory["candidateCount"], "manualProviderIndices": 0}
     previous = json.loads(args.previous.read_text()) if args.previous else None
+    if previous is not None:
+        plan["resumedBindings"] = {key: "requalified" if previous.get("entryBindings", {}).get(key) == value else "new binding"
+                                   for key, value in binding_records.items()}
+        if "entryBindings" not in previous:
+            plan["previousBindingStatus"] = "historical receipt requires requalification"
     if previous is not None and (previous.get("schema") != SCHEMA or previous.get("change") != plan["change"]):
         raise ValueError("previous report belongs to a different change")
     pending = []
@@ -153,6 +164,10 @@ def compare(args, *, original_binary=True):
         basis = {"sourceClaim": claim_key, "runner": runner, "comparator": plan["tools"]["comparator"],
                  "probe": upgrade_replay.sha(probe), "environment": environment,
                  "seconds": args.seconds, "kind": "production"}
+        candidate = next((c for c in inventory["candidates"] if c["entry"] == spec["entry"]), {})
+        trace_changes = sorted({s["chain"][-1] for s in candidate.get("sides", {}).values() if s.get("chain")})
+        if trace_changes:
+            basis["traceChangedEntries"] = trace_changes
         helper = row.get("checkedHelper")
         if helper is not None:
             basis["checkedHelper"] = digest(helper)
@@ -163,6 +178,7 @@ def compare(args, *, original_binary=True):
                 "status": "open", "firstOpenDependency": "original caller executions"}
         if helper is not None:
             node["derivation"] = "finite public history with a checked, pure helper substituted on both deployments"
+        node["entryBindings"] = {s: digest(bindings[s][spec["entry"]]) for s in graphs}
         plan["claims"].append(node)
         if spec["entry"] in problems:
             node["firstOpenDependency"] = problems[spec["entry"]]
@@ -184,12 +200,17 @@ def compare(args, *, original_binary=True):
         for side, manifest in manifests.items():
             if manifest:
                 side_inputs[side]["manifestClassPath"] = manifest
-        cache = change_evidence.SideCache(args.cache, basis, side_inputs, defer_writes=bool(missing)) if use_cache else None
+        new_expected = {c["input"]: c["expectedNew"] for c in row["intent"]["allowedChanges"]} if isinstance(row["intent"], dict) else {}
+        cache = change_evidence.SideCache(args.cache, basis, side_inputs, defer_writes=bool(missing),
+                                          new_expected=new_expected) if use_cache else None
         evidence = {}
         try:
             upgrade_replay.evaluate(scope, args.before, args.after, probe, jdks["old"], operands, args.seconds,
                                     fixtures=args.fixtures, progress=evidence, side_cache=cache,
                                     after_jdk=jdks["new"], application_change=True,
+                                    trace_changes=basis.get("traceChangedEntries", ()),
+                                    entry_bindings={s: bindings[s][spec["entry"]] for s in graphs},
+                                    effective_files={s: (paths[s], launches[s]["production"]) for s in graphs},
                                     checked_helper=(row["checkedHelper"], checker, images, args.cache) if "checkedHelper" in row else None)
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             evidence.update(status="open", reason=str(error))
@@ -220,28 +241,42 @@ def compare(args, *, original_binary=True):
         receipt = args.output.parent / "receipts" / (receipt_hash + ".json")
         change_evidence.write_json(receipt, evidence)
         node["receipt"] = {"path": os.path.relpath(receipt, args.output.parent), "sha256": upgrade_replay.sha(receipt)}
+        for side, ref in node["entryBindings"].items():
+            trials = evidence.get("sides", {}).get(side, {}).get("trials", [])
+            plan["bindingWitnesses"].setdefault(ref, []).append({"claim": name, "receipt": node["receipt"],
+                "qualifiedMethodEntries": sum(t.get("qualifiedMethodEntries", 0) for t in trials),
+                "changedBodyChains": sorted({tuple(chain) for t in trials for rep in t.get("changedBodyChains", []) for chain in rep}),
+                "dispatchedTo": sorted({i["dispatchedTo"] for t in trials for i in t.get("entryInvocations", [])})})
         node["observerAndReplaySeconds"] = evidence.get("elapsedSeconds")
         if original_binary:
             change_evidence.write_json(args.output, plan)
     plan["counts"] = {cohort: dict(Counter(n["status"] for n in plan["claims"] if n["cohort"] == cohort))
                       for cohort in ("registered", "additional", "control")}
-    if original_binary and old["classpath"][0]["sha256"] != new["classpath"][0]["sha256"]:
+    if workflows and original_binary and clients["old"] != clients["new"]:
         # Keep every new deploy-time provider in its original position. The client alone comes from the old build.
         manifest = json.loads(args.after.read_text())
-        for item in manifest.get("environmentFiles", []):
-            item["file"] = str((args.after.parent / item["file"]).resolve())
-        files = [paths["old"][0], *paths["new"][1:]]
-        hashes = [old["classpath"][0]["sha256"], *(r["sha256"] for r in new["classpath"][1:])]
-        manifest.update(sourceSha256=old["sourceSha256"], scope="original binary on the new runtime",
-                        classpath=[{"file": str(f), "sha256": h} for f, h in zip(files, hashes, strict=True)])
+        for item in [*manifest["classpath"], *manifest.get("manifestProviders", []), *manifest.get("environmentFiles", [])]:
+            item["file"] = str((args.after.parent / item["file"]).absolute())
+        if manifest.get("deploymentRoot"):
+            manifest["deploymentRoot"] = str((args.after.parent / manifest["deploymentRoot"]).resolve())
+        root_index = next((i for i,r in enumerate(manifest["classpath"]) if r.get("role") == "client"), 0)
+        changed_client = manifest["classpath"][root_index]
+        changed_client.update(file=str(paths["old"][old["clientIndex"]]), sha256=clients["old"])
+        if "deploymentPath" in changed_client:
+            # A different client needs its own verified layout; do not claim it occupied the captured new URL.
+            manifest["layoutKnown"] = False
+            changed_client.pop("deploymentPath")
+        manifest.update(sourceSha256=old["sourceSha256"], scope="original binary on the new runtime")
         with tempfile.TemporaryDirectory(prefix="change-binary-") as work:
             path = Path(work) / "prepared.json"
             change_evidence.write_json(path, manifest)
             alternate = argparse.Namespace(**vars(args))
             alternate.after, alternate.after_test, alternate.previous = path, None, None
-            if args.new_dependency == new["classpath"][0]["sha256"]:
-                alternate.new_dependency = hashes[0]
-            binary = compare(alternate, original_binary=False)
+            if args.new_dependency == clients["new"]:
+                alternate.new_dependency = clients["old"]
+            binary = compare(alternate, original_binary=False, archive_index=archive_index)
+            plan["entryBindings"].update(binary["entryBindings"])
+            plan["graphs"].update(binary["graphs"])
         plan["deploymentQuestions"]["originalBinary"] = {"launch": binary["launches"]["new"]["production"],
                                                         "claims": binary["claims"], "counts": binary["counts"]}
     plan["wallSeconds"] = round(time.monotonic() - started, 4)
@@ -283,6 +318,11 @@ def example_plan(number):
                                               else "declared prerequisite of the frozen task"} for p in task.get("requires", [])]})
     report = {"schema": SCHEMA, "example": number, "change": target["identity"]["case"], "claims": claims,
               "coverage": history["coverage"], "replays": [r["task"] for r in history["replays"]]}
+    binding_path = folder / "records" / "entry-bindings.json"
+    if binding_path.is_file():
+        recorded = json.loads(binding_path.read_text())
+        report["entryBindings"] = recorded.get("entryBindings", {})
+        report["bindingGraphs"] = recorded.get("graphs", {})
     if number in (336, 346):
         reader = ROOT / "lib/benchmark/trusted-kernel/change_nodes.py"
         checked = subprocess.run([sys.executable, "-B", reader, "--for-plan", folder], input=json.dumps(claims),
@@ -303,8 +343,13 @@ def main(argv=None):
     example = sub.add_parser("example", help="project the target runner's frozen claims, routes and dependencies")
     example.add_argument("number", type=int)
     upgrade = sub.add_parser("upgrade", aliases=["application"], help="compare prepared JVM applications with their ordered classpaths")
-    for name in ("before", "after", "jdk", "workflows"):
+    for name in ("before", "after", "jdk"):
         upgrade.add_argument("--" + name, type=Path, required=True)
+    upgrade.add_argument("--workflows", type=Path, help="frozen public questions; omit for binary-only entry discovery")
+    upgrade.add_argument("--supplied-only", action="store_true", help="qualify approved callers without a cold discovery measurement")
+    upgrade.add_argument("--entry", action="append", default=[], help="approved public selector to qualify")
+    upgrade.add_argument("--changed-selector", action="append", default=[], help="exact changed selector to discover public callers for")
+    upgrade.add_argument("--probe-limit", type=int, default=8, help="maximum cold candidates to look up, without selecting intent")
     for name in ("before-test", "after-test", "after-jdk", "fixtures", "cache", "previous"):
         upgrade.add_argument("--" + name, type=Path)
     for name in ("old-dependency", "new-dependency"):

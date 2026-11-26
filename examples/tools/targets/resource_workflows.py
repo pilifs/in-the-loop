@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 import zipfile
 
-from targets import change_evidence, change_inventory, runtime_jar, runtime_jdk, upgrade_replay
+from targets import change_evidence, change_inventory, entry_discovery, runtime_jar, runtime_jdk, upgrade_replay
 
 TEMPLATE = Path(__file__).with_name("java") / "ResourceObserver.java.template"
 ENUMERATE = ("java/lang/ClassLoader", "getResources", "(Ljava/lang/String;)Ljava/util/Enumeration;")
@@ -160,22 +160,40 @@ def discover_entry(entry, target, graphs, jdk, dest):
 
 
 def discover(before, after, jdk, dest):
-    paths, packet = {}, {}
-    for side, file in (("old", before), ("new", after)):
-        doc = json.loads(file.read_bytes())
-        files, _, hashes = upgrade_replay.checked_classpath(file, doc, doc["classpath"][0]["sha256"])
-        paths[side], packet[side] = files, hashes
+    paths, packet, views, graphs = {}, {}, {}, {}
     feature = int(runtime_jdk.identity(jdk)["feature"])
-    old, new = (candidates(paths[s][0], feature) for s in ("old", "new"))
     dest.mkdir(parents=True, exist_ok=False)
+    index = entry_discovery.Index()
+    image = change_inventory.jdk_binding(jdk)
+    selected = {}
+    for side, file in (("old", before), ("new", after)):
+        files, launch = change_inventory.resolve(file, jdk, image, {}, kind="production", layout_cache=dest / "deployment-layouts")
+        hashes = [p["sha256"] for p in launch["classpath"]]
+        paths[side], packet[side], graphs[side] = files, hashes, launch
+        views[side] = view = index.view(files, hashes, feature)
+        found = selected[side] = {}
+        for owner, (_, definition) in view.winners.items():
+            if b"getResources" not in definition.data or not runtime_jar.class_flags(definition.data) & 1:
+                continue
+            for (method, descriptor), (flags, calls) in definition.methods().items():
+                if flags & 9 == 9 and descriptor in SHAPES and ENUMERATE in calls:
+                    dotted = owner.replace("/", ".")
+                    found[dotted + "#" + method + descriptor] = (dotted, method, SHAPES[descriptor])
     rows = []
-    for i, name in enumerate(sorted(old.keys() & new.keys())):
-        child = f"candidate-{i + 1}"
-        row = discover_entry(name, old[name], paths, jdk, dest / child)
-        rows.append({"directory": child, "entry": name, "stage": row["stage"], "firstScaffoldStop": row.get("firstScaffoldStop")})
-    report = {"inputs": packet, "jdkRelease": upgrade_replay.sha(jdk / "release"),
-              "jdkImage": change_inventory.jdk_binding(jdk), "candidates": rows,
-              "firstScaffoldStop": None if rows else "no common public static resource-enumerating method of a supported shape"}
+    for i, name in enumerate(sorted(selected["old"].keys() | selected["new"].keys())):
+        sides = [s for s in selected if name in selected[s]]
+        row = {"entry": name, "origins": {s: views[s].origins(name.split("#")[0].replace(".", "/")) for s in sides}}
+        unresolved = {s: graphs[s]["manifestClassPath"]["unresolved"] for s in sides if graphs[s]["manifestClassPath"]["unresolved"]}
+        if len(sides) == 1 or unresolved:
+            row.update(stage="open", firstScaffoldStop=unresolved or f"exact descriptor present only on {sides[0]}")
+        else:
+            child = f"candidate-{i + 1}"
+            result = discover_entry(name, selected["old"][name], paths, jdk, dest / child)
+            row.update(directory=child, stage=result["stage"], firstScaffoldStop=result.get("firstScaffoldStop"))
+        rows.append(row)
+    report = {"inputs": packet, "graphs": graphs, "coverage": index.coverage(), "jdkRelease": upgrade_replay.sha(jdk / "release"),
+              "jdkImage": image, "candidates": rows, "firstScaffoldStop": None if rows else
+              "no common public static resource-enumerating method of a supported shape"}
     change_evidence.write_json(dest / "discovery.json", report)
     return report
 

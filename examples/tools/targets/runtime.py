@@ -800,9 +800,24 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
 def _ordered_target(plan, build, source, classpath, original, adapter, dependencies, *, compiled_slice=()):
     """Verify explicitly named collisions between dependency JARs against each subject JVM."""
     workdir = build.workdir
+    supplied_original = original
+    owner = runtime_jar.parse_target(plan.target)[0]
+    providers = [p for p in classpath if p == original or p in dependencies]
+    holders = [p for p in providers if class_binding.candidates(workdir / p, runtime_jar.internal(owner))]
+    if holders and original not in holders:
+        original = holders[0]
     target = _check_classpath(plan, workdir, classpath, original, adapter,
                               ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies, compiled_slice=compiled_slice,
                               observe=_observer(build, source, workdir, classpath))
+    if original != supplied_original:
+        seen, releases = _loaded_classes(build, source, workdir, classpath, [owner], step="entry-origin")
+        if any(by_name[owner] != (original, target["classSha256"]) for by_name in seen.values()):
+            raise Refused("classpath", f"{owner}: original JVM and prepared entry provider disagree")
+        target["entryBinding"] = {"schema": "java-entry-binding/v1", "entry": plan.target,
+                                  "profile": "production", "status": "bound", "provider": original,
+                                  "providerIndex": providers.index(original), "classSha256": target["classSha256"],
+                                  "physicalEntry": target.get("jarEntry", runtime_jar.internal(owner) + ".class"),
+                                  "orderedRoots": providers, "originalClient": supplied_original, "jdkReleases": releases}
     selected = target.get("orderedClasses")
     if not selected:
         return target

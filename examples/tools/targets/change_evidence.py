@@ -49,10 +49,11 @@ def outcome(trial, entry, client, required_helper=None):
 class SideCache:
     """Only deterministic, qualified, positive sides can bypass new original-entry replays."""
 
-    def __init__(self, directory, basis, images, *, defer_writes=False):
+    def __init__(self, directory, basis, images, *, defer_writes=False, new_expected=None):
         self.directory = directory
         self.basis = basis
         self.images = images
+        self.new_expected = new_expected or {}
         self.actions = {}
         self.pending = {} if defer_writes else None
 
@@ -70,6 +71,11 @@ class SideCache:
         return all(t["input"] == i and outcome(t, entry, client, required_helper) == case["expected"]
                    and "return" in case["expected"] for i, (case, t) in enumerate(zip(domain, trials)))
 
+    def domain(self, side, report):
+        if side == "new" and self.new_expected:
+            return [{**case, "expected": self.new_expected.get(i, case["expected"])} for i,case in enumerate(report["cases"])]
+        return report["cases"]
+
     def lookup(self, side, files, binding, report):
         key = self.key(side, files, binding, report)
         self.actions[side] = {"action": "executed", "key": key}
@@ -79,7 +85,7 @@ class SideCache:
                 record = json.loads(path.read_text())
                 payload = record["evidence"]
                 if (record["key"] == key and digest(payload) == record["evidenceSha256"]
-                        and self.valid(payload, report["cases"], report["entry"], binding["classpath"][0], binding.get("requiredHelperProof"))):
+                        and self.valid(payload, self.domain(side, report), report["entry"], binding.get("entryArtifactSha256", binding["classpath"][0]), binding.get("requiredHelperProof"))):
                     self.actions[side]["action"] = "exact reuse"
                     return payload
             except (KeyError, TypeError, ValueError):
@@ -89,7 +95,7 @@ class SideCache:
     def remember(self, side, binding, report, loaded_per_input):
         payload = {"trials": binding["trials"], "loadedDependencyClasses": binding["loadedDependencyClasses"],
                    "loadedPerInput": {str(i): sorted(v) for i, v in loaded_per_input.items()}}
-        if self.valid(payload, report["cases"], report["entry"], binding["classpath"][0], binding.get("requiredHelperProof")):
+        if self.valid(payload, self.domain(side, report), report["entry"], binding.get("entryArtifactSha256", binding["classpath"][0]), binding.get("requiredHelperProof")):
             key = self.actions[side]["key"]
             path = self.directory / (key + ".json")
             record = {"key": key, "evidenceSha256": digest(payload), "evidence": payload}
@@ -126,7 +132,7 @@ def compose(spec, report, intent="preserve"):
         for side in ("old", "new"):
             trial = indexed[side].get(i, {})
             cp = sides.get(side, {}).get("classpath", [])
-            values[side] = outcome(trial, spec["entry"], cp[0], sides[side].get("requiredHelperProof")) if cp else None
+            values[side] = outcome(trial, spec["entry"], sides[side].get("entryArtifactSha256", cp[0]), sides[side].get("requiredHelperProof")) if cp else None
             if trial.get("beforeEntry"):
                 startup[side] = trial["beforeEntry"]
         old, new = values["old"], values["new"]
