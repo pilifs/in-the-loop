@@ -406,3 +406,65 @@ Determine what changes for applications using these Spring APIs and which existi
 **Technical notes.** Use spring-context with reactor-core, default sync=false and the ordinary reactive caching mode. The PR discussion identifies sync=true as a separate path with a known limitation and names a subsequent revision, 53783127de602eb41679cf6fdb6b1ff95e07dbad. The comparison ends at the PR landing.
 
 **Sources.** [Context propagation](https://github.com/spring-projects/spring-framework/blob/67467f48fa4aef1a3bd227b8b45b11bb7925369b/spring-context/src/main/java/org/springframework/cache/interceptor/CacheAspectSupport.java) · [Reactive cache fixtures](https://github.com/spring-projects/spring-framework/blob/67467f48fa4aef1a3bd227b8b45b11bb7925369b/spring-context/src/test/java/org/springframework/cache/annotation/ReactiveCachingTests.java) · [Public cache annotation](https://github.com/spring-projects/spring-framework/blob/67467f48fa4aef1a3bd227b8b45b11bb7925369b/spring-context/src/main/java/org/springframework/cache/annotation/Cacheable.java) · [Context build](https://github.com/spring-projects/spring-framework/blob/67467f48fa4aef1a3bd227b8b45b11bb7925369b/spring-context/spring-context.gradle)
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Sources.** All 40 pins, plus the three `later` revisions the brief names, as worktrees `~/.cache/in-the-loop/spring-pr-links-o01-o20/worktrees/CASE-ROLE`
+  (ROLE `parent` = before pin, `fix` = after pin, `later`), from the shared mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git`.
+  Every PR's merge commit equals the after pin; every landed diff names exactly the PR's files; signed pins verify
+  ([Upstream revisions](#upstream-revisions), full ids in its table).
+- **Offline builds for 18 cases** (all but O11 and O14). Every configuration of every project is resolved into
+  `$O/gradle-home`; `source $O/scripts/env.sh` then `$O/scripts/gradle_case.sh WORKTREE TAG "" --offline TASKS` picks the right
+  Gradle (verified distributions in `$O/tools/`) and JDK ([Build facts](#build-facts-by-era), [Commands](#commands-for-a-rerun-by-hand)).
+  `$O/scripts/case_job.sh CASE STEP` reruns a case's job steps.
+- **Built jars, class digests and classpaths** per case and pin in `$O/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
+  `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`). Digests: the table in
+  [Digests of the built artifacts](#digests-of-the-built-artifacts), all 18 cases.
+- **Released artifacts** in `$O/releases/SET/` (`jars/`, `classpath.txt`): spring-test 5.3.26 (the reporter's version for O03);
+  spring-jdbc 5.0.0.M5 and 5.0.0.RC1 (O11); spring-tx 5.2.7.RELEASE and 5.3.0-M1 with their Reactor, and spring-r2dbc 5.3.0-M1 with
+  r2dbc-h2 and H2 (O14); pgJDBC 42.7.15 ([Released artifacts](#released-artifacts)).
+- **PostgreSQL** for O11's driver read: `postgres@sha256:0d938e975177bef9f1f61f3f9dbcf2e0aa0a139568f66d3415ed8892eb97f6ac` (17.12) is
+  in local Docker; the smoke command is in [Released artifacts](#released-artifacts).
+
+### What was verified on a JVM
+
+- 6.x cases, by their jobs (all steps passed): each landed test class passes at the fix and its parent version passes at the
+  parent; the fix's test files on the parent **fail** for O15 (`testPropagationNestedWithExistingTransaction`), O16 (11 of 20
+  `ClassPathXmlApplicationContextTests`, context creation fails) and O18
+  (`testWithConnectionFactoryAndExceptionListenerAndReconnectOnExceptionWithJMSException`), and **do not compile** for O03, O05 and
+  O13 (the API they use is new in the landing). Row by row in [Job results](#job-results).
+- 7.x cases, by their jobs (all steps passed): the same holds for O01, O02, O04, O06, O07, O09, O10, O12, O17, O19 and O20,
+  whose transplanted tests all compile and **fail** on the parent; for O08 the spring-web tests **do not compile** (they call the new
+  `HttpRange.resolveRanges(HttpHeaders,HttpHeaders)`) and the webmvc and webflux If-Range tests **fail**. In O10 only the
+  synchronous joined-buffer test fails on the parent, the asynchronous one passes; in O20 the Flux context tests fail, `cacheableMonoPropagatesContextOnCacheMiss` passes. Row by row, with every failing test named, in [Job results](#job-results).
+- O11, O14: no build, no test run. Only the source comparison with releases (below).
+- pgJDBC 42.7.15 connects to the PostgreSQL 17.12 image. No query from the brief was run anywhere.
+
+### What to know before starting
+
+- **O11 (#1366) and O14 (#25256) have no historical build** ([why](#o11-and-o14-the-historical-builds-cannot-be-configured)). The
+  released files that equal the pins: O11 parent's `NamedParameterUtils.java` is byte-identical in spring-jdbc 5.0.0.M5; the fix's
+  differs from 5.0.0.RC1's only in the copyright line. O14 parent's `TransactionalOperatorImpl.java` and
+  `TransactionalOperatorExtensions.kt` are identical in spring-tx 5.2.7.RELEASE and 5.2.8.RELEASE, the fix's in 5.3.0-M1;
+  `TransactionAspectSupport.java` differs from both releases (outside the reactive path; diffs described in that section). The rest
+  of each release moved; whether to use a release, a source slice or neither is yours. The O14 pins have no spring-r2dbc module.
+- **Snapshots.** The 7.1.0-SNAPSHOT builds take Reactor 3.9.0-SNAPSHOT, reactor-netty 1.4.0-SNAPSHOT and Micrometer 1.18.0-SNAPSHOT
+  as cached on 2026-11-25 (digests in [Snapshot artifacts](#snapshot-artifacts)), the same bytes for both pins of a case, not the
+  bytes of each pin's date. Build `--offline` to keep them.
+- **O16 needs the Liberica JDK** (`$JL17`): the build demands toolchain vendor BELLSOFT; `gradle_case.sh` passes it.
+- Default `java` on `PATH` is 25.0.5. The 7.x builds compile on toolchain 25 with `release` 17; the 6.x builds on JDK 17.
+- The brief's database choices are open: O11 names no pgJDBC version (42.7.15 here is this setup's pick, the current release);
+  O12's readback, O14's and O15's transaction-aware R2DBC writes need a driver the brief leaves open. On the kept test runtime
+  classpaths: spring-jdbc has H2, HSQLDB and Derby (optional dependencies); spring-r2dbc has r2dbc-h2 (check
+  `$O/artifacts/CASE-ROLE/M.testRuntimeClasspath.txt`).
+- O08 and O10 land as two commits (intermediate commits `8ab533263994e92f9660c9917a07cd3d8f8e769b`, `d8bc54d2e7d09d115dfb78381fbbac1ac0c90ab0`
+  in the mirror); the brief compares the outer pins.
+
+### What is left for the domain work on purpose
+
+All claims, scenarios, fixtures and examples; choosing a stand-in (or none) for O11 and O14; choosing databases and drivers beyond
+what is fetched; any run of the brief's own scenarios or predictions (the trailing-space SSE case, the strict-mode R2DBC mapper, the
+`initConnection` JMS path, the `take(1)` placement, the cross-route If-Range matrix and the rest); the `later` revisions; and
+example ids and folders.
