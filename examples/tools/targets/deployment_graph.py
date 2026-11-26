@@ -8,17 +8,24 @@ import tempfile
 import zipfile
 
 
-def manifest(file, feature):
+def manifest(file, feature, deployment_name=None):
     if file.is_dir():
         return [], []
     with zipfile.ZipFile(file) as jar:
-        names = jar.namelist()
         members = [jar.read(info) for info in jar.infolist() if info.filename.upper() == "META-INF/MANIFEST.MF"]
-        return manifest_entries(members, any(n.upper() == "META-INF/INDEX.LIST" for n in names), feature)
+        indexes = [jar.read(info) for info in jar.infolist() if info.filename.upper() == "META-INF/INDEX.LIST"]
+        return manifest_entries(members, indexes, feature, deployment_name or file.name)
 
 
-def manifest_entries(members, has_index, feature):
-    issues = ["JAR index can name additional providers"] if has_index and feature < 21 else []
+def manifest_entries(members, indexes, feature, deployment_name):
+    # The legacy JarIndex parser treats every .jar line as a provider, including
+    # ones after a package. Admit only the canonical one-provider, self-naming form.
+    self_only = False
+    if len(indexes) == 1 and re.fullmatch(r"[A-Za-z0-9_.+-]+\.jar", deployment_name):
+        lines = indexes[0].replace(b"\r\n", b"\n").rstrip(b"\n").split(b"\n")
+        self_only = (lines[:3] == [b"JarIndex-Version: 1.0", b"", deployment_name.encode("ascii")]
+                     and all(re.fullmatch(rb"[A-Za-z0-9_$/-]+", line) for line in lines[3:]))
+    issues = ["JAR index can name additional providers"] if indexes and not self_only and feature < 21 else []
     if len(members) > 1:
         return [], [*issues, "ambiguous manifest member"]
     if not members:
@@ -82,14 +89,15 @@ def resolve(document, base, feature, file_digest, *, layout_cache=None, index=No
         issues.append({"reason": "loader search or delegation is not established for this launch", "loader": loader})
     order, positions, via = [], {}, []
     manifests = {}
-    def tokens(file, sha):
-        if sha not in manifests:
+    def tokens(file, sha, name):
+        key = sha, name
+        if key not in manifests:
             if index is None:
-                manifests[sha] = manifest(file, feature)
+                manifests[key] = manifest(file, feature, name)
             else:
                 artifact = index.artifact(file, sha)
-                manifests[sha] = manifest_entries(artifact.manifests, artifact.has_jar_index, feature)
-        return manifests[sha]
+                manifests[key] = manifest_entries(artifact.manifests, artifact.jar_indexes, feature, name)
+        return manifests[key]
     def visit(url, source):
         if url in positions:
             return
@@ -97,7 +105,7 @@ def resolve(document, base, feature, file_digest, *, layout_cache=None, index=No
         i = positions[url] = len(order)
         order.append(url)
         via.append(source)
-        items, faults = tokens(file, sha)
+        items, faults = tokens(file, sha, url.name)
         issues.extend({"provider": i, "reason": reason} for reason in faults)
         if items:
             declarations.append({"provider": i, "entries": items})

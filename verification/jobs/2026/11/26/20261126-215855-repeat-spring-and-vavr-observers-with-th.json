@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-215855-repeat-spring-and-vavr-observers-with-th",
+  "title": "Repeat Spring and Vavr observers with the verification runner checker",
+  "description": "The first remote run stopped before opening any JVM observations because its isolated checkout had no local release binary. Use the checker built for this job. Repeat all six questions with old-API bytes, Landlock isolation, JDI correspondence and warm controls.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T21:58:55+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Spring original JVM returns",
+      "run": "python3 verification/generated-observers/campaign.py 458",
+      "cwd": "."
+    },
+    {
+      "name": "Vavr nullable selection",
+      "run": "python3 verification/generated-observers/campaign.py 445",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/458.zip",
+    "verification/generated-observers/receipts/445.zip"
+  ]
+}

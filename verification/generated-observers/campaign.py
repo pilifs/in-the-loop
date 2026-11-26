@@ -111,13 +111,16 @@ def exercise(number, work, *, resume=True):
     if resume:
         run([*base, "--previous", work / "scaffold.json", "--run", "--output", work / "cold.json"])
         run([*base, "--previous", work / "cold.json", "--run", "--output", work / "warm.json"])
+    if resume and number == "J17":
+        from controls import map_oracle
+        map_oracle(work, jdk)
     results = [*bundle.glob("*"), *work.glob("*.json"), *(work / "receipts").glob("*.json")]
-    pack(work, results, HERE / "receipts" / (number + ".zip"))
+    pack(work, results, (HERE / "receipts" / (number + ".zip")) if resume else work / "scaffold-bundle.zip")
     if resume:
         summary = {p["id"]: p["status"] for p in read(work / "cold.json")["claims"]}
         print(number, summary, flush=True)
-        if number in {"458", "445"} and (len(summary) != 3 or set(summary.values()) != {"established"}):
-            raise ValueError("a frozen numeric or selection prediction did not qualify")
+        if number in {"458", "445", "J06", "J10", "J16", "J17", "J19", "io"} and set(summary.values()) != {"established"}:
+            raise ValueError("one or more frozen development predictions did not qualify: " + str(summary))
         cold, warm = [read(work / name)["claims"] for name in ("cold.json", "warm.json")]
         for a, b in zip(cold, warm, strict=True):
             if (a["claimKey"], a["status"], a.get("children")) != (b["claimKey"], b["status"], b.get("children")):
@@ -129,7 +132,14 @@ if __name__ == "__main__":
     parser.add_argument("numbers", nargs="+")
     parser.add_argument("--work", type=Path)
     parser.add_argument("--scaffold-only", action="store_true")
+    parser.add_argument("--checked-helper", action="store_true")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="generated-observers-") as tmp:
         for number in args.numbers:
-            exercise(number, (args.work or Path(tmp)) / number, resume=not args.scaffold_only)
+            work = (args.work or Path(tmp)) / number
+            exercise(number, work, resume=not args.scaffold_only)
+            if args.checked_helper:
+                from controls import helper
+                helper(work, work / "bundle", prepare(number, work))
+                pack(work, [*work.glob("*.json"), *(work / "bundle").glob("*"), *(work / "receipts").glob("*.json")],
+                     HERE / "receipts" / (number + "-helper.zip"))

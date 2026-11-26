@@ -1,0 +1,63 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "Resilience4j — Repeat a circuit-breaker command without creating another transition",
+  "entry": "io.github.resilience4j.circuitbreaker.internal.CircuitBreakerStateMachine#transitionToHalfOpenState()V",
+  "changed": [
+    "io.github.resilience4j.circuitbreaker.internal.CircuitBreakerStateMachine#transitionToHalfOpenState()V"
+  ],
+  "fields": [
+    "command.outcome",
+    "state",
+    "listener.count",
+    "listener.events"
+  ],
+  "assumptions": [
+    "One synchronous public listener, original default state machine, one fresh breaker per history. No automatic transitions or external calls."
+  ],
+  "questions": [
+    {
+      "id": "repeated-commands",
+      "history": "Report return or exception, state and cumulative listener count after each of six commands, followed by the full transition sequence.",
+      "cohort": "registered",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "states": [
+            "OPEN",
+            "OPEN",
+            "HALF_OPEN",
+            "HALF_OPEN",
+            "CLOSED",
+            "CLOSED"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "genuine-and-invalid",
+      "history": "Read state and events around a genuinely invalid CLOSED to HALF_OPEN and an ordinary three-transition cycle.",
+      "cohort": "control",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "states": [
+            "HALF_OPEN"
+          ]
+        },
+        {
+          "states": [
+            "OPEN",
+            "HALF_OPEN",
+            "CLOSED"
+          ]
+        }
+      ]
+    }
+  ]
+}

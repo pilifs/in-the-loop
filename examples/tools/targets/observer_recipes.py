@@ -26,6 +26,8 @@ class API:
         self.feature = feature
         self.classes = {}
         self.used = {}
+        self.inspected = set()
+        self.rejected = []
 
     def definition(self, owner):
         if not IDENTIFIER.fullmatch(owner):
@@ -51,8 +53,18 @@ class API:
         if not runtime_jar.class_flags(data) & 1:
             raise Unsupported("type is inaccessible from a public caller: " + owner)
         methods = runtime_jar.methods(data)
-        candidates = sorted((n, d) for n, d in methods if n in names and re.fullmatch(descriptor, d)
-                            and runtime_jar.method_flags(data, n, d) & 9 == (9 if static else 1))
+        candidates = []
+        for n, d in sorted(methods):
+            if n not in names:
+                continue
+            key = owner + "#" + n + d
+            if key not in self.inspected and len(self.inspected) >= CANDIDATE_BUDGET:
+                raise Unsupported("public signature candidate budget exhausted at " + key)
+            self.inspected.add(key)
+            if re.fullmatch(descriptor, d) and runtime_jar.method_flags(data, n, d) & 9 == (9 if static else 1):
+                candidates.append((n, d))
+            elif key not in self.rejected:
+                self.rejected.append(key)
         if len(candidates) != 1:
             raise Unsupported(f"{owner} needs one public {'/'.join(names)} matching {descriptor}, found {candidates}")
         name, desc = candidates[0]

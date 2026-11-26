@@ -444,6 +444,9 @@ def main(argv=None):
     rescore = sub.add_parser("rescore", help="evaluate new predictions against qualified frozen public observations")
     for name in ("report", "bundle", "predictions", "output"):
         rescore.add_argument("--" + name, required=True, type=Path)
+    helper = sub.add_parser("helper-table", help="derive a checked minimum table from live public call sites")
+    for name in ("report", "bundle", "jdk", "output"):
+        helper.add_argument("--" + name, required=True, type=Path)
     example = sub.add_parser("example", help="project the target runner's frozen claims, routes and dependencies")
     example.add_argument("number", type=int)
     upgrade = sub.add_parser("upgrade", aliases=["application"], help="compare prepared JVM applications with their ordered classpaths")
@@ -458,7 +461,7 @@ def main(argv=None):
         upgrade.add_argument("--" + name, type=Path)
     for name in ("old-dependency", "new-dependency"):
         upgrade.add_argument("--" + name, help="tracked runtime artifact digest (default: the client JAR)")
-    upgrade.add_argument("--checker", type=Path, default=ROOT / "lib/target/release/jvmcontract")
+    upgrade.add_argument("--checker", type=Path, default=Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")))
     upgrade.add_argument("--seconds", type=int, default=60, help="per-workflow replay budget")
     upgrade.add_argument("--run", action="store_true", help="execute the finite obligations on the original JVM")
     for command in (example, upgrade):
@@ -467,6 +470,10 @@ def main(argv=None):
     if getattr(args, "probe_limit", 0) < 0:
         parser.error("--probe-limit must be nonnegative")
     try:
+        if args.command == "helper-table":
+            from targets import observer_generation
+            change_evidence.write_json(args.output, observer_generation.helper_table(args.report, args.bundle, args.jdk))
+            return 0
         if args.command == "rescore":
             from targets import observer_generation
             change_evidence.write_json(args.output, observer_generation.rescore(args.report, args.bundle, args.predictions))

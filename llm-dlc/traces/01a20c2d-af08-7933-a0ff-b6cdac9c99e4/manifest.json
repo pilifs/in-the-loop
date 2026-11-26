@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T21:50:51.601Z",
-  "duration_seconds": 229201,
+  "ended": "2026-11-26T22:02:56.248Z",
+  "duration_seconds": 229925,
   "stats": {
     "turns": 36,
-    "api_calls": 5624,
-    "tool_calls": 14086,
-    "tool_errors": 304,
+    "api_calls": 5656,
+    "tool_calls": 14161,
+    "tool_errors": 306,
     "compactions": 24,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 7586006,
-      "output_tokens": 3225898,
-      "cache_read_input_tokens": 1526825728,
+      "input_tokens": 7601130,
+      "output_tokens": 3256047,
+      "cache_read_input_tokens": 1533591808,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 7879,
-    "exec": 5370,
-    "apply_patch": 641,
+    "Bash": 7914,
+    "exec": 5402,
+    "apply_patch": 649,
     "wait": 108,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -165,12 +165,17 @@
     "examples/tools/build.py",
     "examples/tools/scaffold_example.py",
     "examples/tools/targets/change_evidence.py",
+    "examples/tools/targets/change_helpers.py",
     "examples/tools/targets/change_inventory.py",
     "examples/tools/targets/change_plan.py",
+    "examples/tools/targets/deployment_graph.py",
+    "examples/tools/targets/entry_discovery.py",
     "examples/tools/targets/java/ResourceObserver.java.template",
     "examples/tools/targets/java/UpgradeClassLookup.java",
     "examples/tools/targets/java/UpgradeTrace.java",
     "examples/tools/targets/observer_generation.py",
+    "examples/tools/targets/observer_recipes.py",
+    "examples/tools/targets/observer_state.py",
     "examples/tools/targets/public_comparison.py",
     "examples/tools/targets/public_mysql.py",
     "examples/tools/targets/public_postgres.py",
@@ -872,24 +877,24 @@
     {
       "index": 24,
       "started": "2026-11-26T21:14:32.029Z",
-      "ended": "2026-11-26T21:50:51.601Z",
+      "ended": "2026-11-26T22:02:56.248Z",
       "turns": 2,
-      "api_calls": 58,
+      "api_calls": 90,
       "usage": {
-        "input_tokens": 136574,
-        "output_tokens": 44801,
-        "cache_read_input_tokens": 7700480,
+        "input_tokens": 151698,
+        "output_tokens": 74950,
+        "cache_read_input_tokens": 14466560,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 190129
+      "peak_context_tokens": 232958
     }
   ],
   "log": {
-    "sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8",
-    "bytes": 89581675,
-    "lines": 44400,
-    "gzip_bytes": 16514134,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8.jsonl.gz"
+    "sha256": "3bc507a09631b939f4fe489071b311759715af10935873e4d74325e8903e8619",
+    "bytes": 90137148,
+    "lines": 44657,
+    "gzip_bytes": 16593135,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/3bc507a09631b939f4fe489071b311759715af10935873e4d74325e8903e8619.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2638,14 +2643,6 @@
       "log_sha256": "d5477a83b3cf942b2d87aa9f4acf88b2fb00cec8de44af0ea65da617588161b4"
     },
     {
-      "change_id": "mxwtmrrzlslskmynlmlkpumqulwvrrxo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the setup for the generated callers and observers brief",
-      "body": "Every one of the brief's 13 campaign cases (examples 445, 458, 466, 484; product-behaviour cases J06, J10, J14, J16, J17, J19; Commons IO #520; successor slots 06 and 09) was already prepared by earlier campaigns, so nothing was fetched. The setup checked every deployment artifact against its recorded digest at the path its reader resolves, checked every source worktree against its pinned commit and tree, and listed each pair's changed production files with blob ids. It re-ran each case's registered public observation on its original JVMs, read-only: every fresh result equals the committed receipt and agrees with the outcome the brief states. It extracted the successor slots' original jars from their signed packages and rebuilt jvmcontract, which predated the last lib/src change. No claims, examples, callers or library code were written, and no verification job was needed.",
-      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
-    },
-    {
       "change_id": "oomotuuosoopyyqmtnmzxrownquuqvyv",
       "commit_id": null,
       "immutable": false,
@@ -2659,6 +2656,14 @@
       "immutable": false,
       "summary": "Record the watcher's decisions on generated-observers-and-callers-setup",
       "body": "The watcher's verdicts on the single-agent run generated-observers-and-callers-setup (llm-dlc/decisions/single-generated-observers-and-callers-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
+    },
+    {
+      "change_id": "mxwtmrrzlslskmynlmlkpumqulwvrrxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup for the generated callers and observers brief",
+      "body": "Every one of the brief's 13 campaign cases (examples 445, 458, 466, 484; product-behaviour cases J06, J10, J14, J16, J17, J19; Commons IO #520; successor slots 06 and 09) was already prepared by earlier campaigns, so nothing was fetched. The setup checked every deployment artifact against its recorded digest at the path its reader resolves, checked every source worktree against its pinned commit and tree, and listed each pair's changed production files with blob ids. It re-ran each case's registered public observation on its original JVMs, read-only: every fresh result equals the committed receipt and agrees with the outcome the brief states. It extracted the successor slots' original jars from their signed packages and rebuilt jvmcontract, which predated the last lib/src change. No claims, examples, callers or library code were written, and no verification job was needed.",
       "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
     },
     {
@@ -2678,20 +2683,28 @@
       "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
     },
     {
-      "change_id": "zmsnluqvosyxvuuulwvwmkulovzopuop",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
-    },
-    {
       "change_id": "vxolklvyxoykorkvlozkusuroxnwsskq",
       "commit_id": null,
       "immutable": false,
       "summary": "Generate and replay typed public observers (verification pending)",
       "body": "Stage 3 now consumes reviewed input meanings and separate evaluator predictions. It discovers the required public signatures, emits Java, compiles once against the older API, and freezes its class archive. The application planner resumes that archive, preserves fix-only predictions and can rescore qualified raw observations. Numeric measurements are independently compared with JDI returns and exceptions.\n\nSpring 458 and Vavr 445 compiled with production JARs and a Landlock-enforced evaluator boundary. The primary original Spring run saw both parent exceptions and both fixed 127 returns in the declared runtime types on two repetitions. All 53 selected test suites passed. Job 20261126-214343-qualify-generated-numeric-and-lazy-publi repeats the six frozen questions and their cache controls.",
       "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
+    },
+    {
+      "change_id": "vnnskpvspnrsoowzuuqovorptlyskuyy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "3bc507a09631b939f4fe489071b311759715af10935873e4d74325e8903e8619"
+    },
+    {
+      "change_id": "xkyksqqpqxqywnyrptorwlysnyuymomv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Generate stateful callers and live helper tables (verification pending)",
+      "body": "The product now emits an original-classpath caller for retained graph and map views, ordered commands and listener events, marked byte streams, archive rewrites with independent JDK reopen, and class-token writers and readers. It can discover actual minimum arguments and returns at the public consumer, derive the independent table, and reject uncovered applications or a mismatched helper class. Generated numeric and alias projections have live debugger controls. A self-only legacy JAR index is qualified only at its real deployment name.\n\nAll eight development callers compiled in the restricted operator workspace, including Kryo on JDK 8. All 53 selected suites passed. The first pipeline run stopped before measurement because its build lived outside the checkout. The planner now honors the runner-supplied checker. Jobs 20261126-215855-repeat-spring-and-vavr-observers-with-th, 20261126-215632-replay-generated-archives-streams-and-in, 20261126-215633-qualify-generated-retained-graph-map-and, 20261126-215633-generate-the-live-commons-io-minimum-tab and 20261126-220022-challenge-generated-callers-with-false-g cover the independent JVM checks and mechanism falsifiers.",
+      "log_sha256": "3bc507a09631b939f4fe489071b311759715af10935873e4d74325e8903e8619"
     }
   ],
   "logs": {
@@ -2838,6 +2851,12 @@
       "lines": 15257,
       "gzip_bytes": 4911507,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/36d58481ab1962167756084410457abe57225531cf2b69bcf7f4426964490964.jsonl.gz"
+    },
+    "3bc507a09631b939f4fe489071b311759715af10935873e4d74325e8903e8619": {
+      "bytes": 90137148,
+      "lines": 44657,
+      "gzip_bytes": 16593135,
+      "url": null
     },
     "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391": {
       "bytes": 72133707,

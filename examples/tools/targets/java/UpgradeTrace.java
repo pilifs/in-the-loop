@@ -246,7 +246,10 @@ public final class UpgradeTrace {
             List<String> args = new ArrayList<>();
             for (Value v : values) args.add(Long.toString(((com.sun.jdi.PrimitiveValue)v).longValue()));
             String key = String.join(",", args);
-            if (!table.containsKey(key)) return;
+            if (!table.containsKey(key)) {
+                System.err.println("UPGRADE-UNCOVERED " + key);
+                return;
+            }
             long result = table.get(key);
             VirtualMachine vm = hit.virtualMachine();
             Value returned;
@@ -299,6 +302,29 @@ public final class UpgradeTrace {
         return type.name() + "\t" + number;
     }
 
+    private static void observeHelper(BreakpointEvent hit, String consumer, String observer) throws Exception {
+        List<StackFrame> frames = hit.thread().frames();
+        if (frames.size() < 2 || !CheckedReplay.entry(frames.get(1).location()).equals(consumer)) return;
+        if (frames.stream().noneMatch(f -> CheckedReplay.entry(f.location()).equals(
+                observer + "#observe([Ljava/lang/String;)Ljava/lang/String;"))) return;
+        List<String> args = new ArrayList<>();
+        for (Value v : frames.get(0).getArgumentValues()) args.add(Long.toString(((com.sun.jdi.PrimitiveValue)v).longValue()));
+        MethodExitRequest exit = hit.virtualMachine().eventRequestManager().createMethodExitRequest();
+        exit.addClassFilter(hit.location().declaringType());
+        exit.addThreadFilter(hit.thread());
+        exit.addCountFilter(1);
+        exit.putProperty("tuple", frames.get(1).location().codeIndex() + "\t" + String.join(",", args));
+        exit.putProperty("target", CheckedReplay.entry(hit.location()));
+        exit.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+        exit.enable();
+    }
+
+    private static void selectedBreakpoint(VirtualMachine vm, ReferenceType type, String target, String purpose) {
+        if (target == null || !target.startsWith(type.name() + "#")) return;
+        int paren = target.indexOf('(');
+        breakpoint(vm, type, target.substring(target.indexOf('#') + 1, paren), target.substring(paren), purpose);
+    }
+
     public static void main(String[] args) throws Exception {
         String substitution = System.getProperty("upgrade.checked.table");
         CheckedReplay checked = substitution == null ? null : new CheckedReplay(substitution);
@@ -330,6 +356,8 @@ public final class UpgradeTrace {
         String entryInvocation = null;
         boolean history = Boolean.getBoolean("upgrade.observe.history");
         boolean numeric = Boolean.getBoolean("upgrade.observe.numeric");
+        String candidateHelper = System.getProperty("upgrade.observe.helper");
+        String publicReader = System.getProperty("upgrade.observe.reader");
         Map<Long,Integer> historyReceivers = new LinkedHashMap<>();
         Map<Long, List<String>> constructors = new LinkedHashMap<>();
         boolean finished = false;
@@ -347,6 +375,8 @@ public final class UpgradeTrace {
             }
             Set<String> watched = new LinkedHashSet<>(exceptions);
             watched.add(owner);
+            if (candidateHelper != null) watched.add(candidateHelper.split("#")[0]);
+            if (publicReader != null) watched.add(publicReader.split("#")[0]);
             for (String target : changed) if (target.contains("#")) watched.add(target.substring(0, target.indexOf('#')));
             if (checked != null) {
                 watched.add(checked.helper.split("#")[0]);
@@ -359,6 +389,8 @@ public final class UpgradeTrace {
                     if (type.isPrepared()) {
                         install(vm, type, owner, method, descriptor, exceptions);
                         changedBreakpoints(vm, type);
+                        selectedBreakpoint(vm, type, candidateHelper, "candidate");
+                        selectedBreakpoint(vm, type, publicReader, "readback");
                         if (checked != null) checked.bind(vm, type);
                     }
             }
@@ -369,9 +401,19 @@ public final class UpgradeTrace {
                         ReferenceType type = ((ClassPrepareEvent) event).referenceType();
                         install(vm, type, owner, method, descriptor, exceptions);
                         changedBreakpoints(vm, type);
+                        selectedBreakpoint(vm, type, candidateHelper, "candidate");
+                        selectedBreakpoint(vm, type, publicReader, "readback");
                         if (checked != null) checked.bind(vm, type);
                     } else if (event instanceof MethodExitEvent) {
                         MethodExitEvent exit = (MethodExitEvent)event;
+                        Object tuple = exit.request().getProperty("tuple");
+                        if (tuple != null) {
+                            if (!CheckedReplay.entry(exit.location()).equals(exit.request().getProperty("target")))
+                                throw new IllegalStateException("helper exit differs from its marked invocation");
+                            System.err.println("UPGRADE-HELPER-VALUE " + tuple + "\t" + exit.returnValue());
+                            vm.eventRequestManager().deleteEventRequest(exit.request());
+                            continue;
+                        }
                         if (CheckedReplay.entry(exit.location()).equals(entry) && invocation(exit, observer, sites) != null)
                             System.err.println("UPGRADE-NUMBER " + numericReturn(exit.returnValue()));
                     } else if (event instanceof ExceptionEvent) {
@@ -409,7 +451,17 @@ public final class UpgradeTrace {
                     } else if (event instanceof BreakpointEvent) {
                         BreakpointEvent point = (BreakpointEvent) event;
                         String purpose = (String) point.request().getProperty("purpose");
-                        if (purpose.equals("checked") || purpose.equals("startup")) {
+                        if (purpose.equals("readback")) {
+                            List<StackFrame> frames = point.thread().frames();
+                            if (frames.size() > 1 && CheckedReplay.entry(frames.get(1).location()).equals(
+                                    observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) {
+                                ObjectReference object = frames.get(0).thisObject();
+                                if (object != null) System.err.println("UPGRADE-PUBLIC-READ "
+                                        + historyReceivers.computeIfAbsent(object.uniqueID(), unused -> historyReceivers.size()));
+                            }
+                        } else if (purpose.equals("candidate")) {
+                            observeHelper(point, entry, observer);
+                        } else if (purpose.equals("checked") || purpose.equals("startup")) {
                             checked.apply(point, purpose.equals("startup"), observer);
                         } else if (purpose.equals("changed")) {
                             if (invocation(point, observer, sites) == null) continue;

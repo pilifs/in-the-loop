@@ -434,6 +434,10 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                 launch.insert(1, "-Dupgrade.observe.history=true")
                 if frozen["recipe"]["family"] == "typed numeric conversions":
                     launch.insert(1, "-Dupgrade.observe.numeric=true")
+                if not checked_helper and "helperCandidate" in frozen:
+                    launch.insert(1, "-Dupgrade.observe.helper=" + frozen["helperCandidate"]["entry"])
+                if "publicReader" in frozen["recipe"]:
+                    launch.insert(1, "-Dupgrade.observe.reader=" + frozen["recipe"]["publicReader"])
             if inspect_receiver or native_caller:
                 launch.insert(1, "-Dupgrade.trace.receivers=true")
             trial_env = {**env, "PATH": str(subject_jdk/"bin")+":/usr/bin:/bin"}

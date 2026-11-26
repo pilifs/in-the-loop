@@ -17,7 +17,8 @@ HERE = Path(__file__).resolve().parent
 
 
 def identity():
-    files = [Path(__file__), HERE / "observer_recipes.py", HERE / "observer_histories.py", observer_recipes.TEMPLATE]
+    files = [Path(__file__), HERE / "observer_recipes.py", HERE / "observer_histories.py", HERE / "observer_state.py",
+             HERE / "observer_io.py", observer_recipes.TEMPLATE]
     return {p.name: sha(p) for p in files}
 
 
@@ -100,13 +101,14 @@ def generate(reg, before, after, jdk, work):
               "candidateBudget": observer_recipes.CANDIDATE_BUDGET, "compilePolicy": "once against old",
               "jdkReleaseSha256": sha(jdk / "release"), "status": "open", "rejected": [], "declarations": {}}
     cp = {}
+    manifests = {s: portable_manifest(p) for s, p in (("old", before), ("new", after))}
+    for side, manifest in manifests.items():
+        change_evidence.write_json(work / (side + ".json"), manifest)
     try:
         feature = int(runtime_jdk.identity(jdk)["feature"])
-        for side, path in (("old", before), ("new", after)):
-            manifest = portable_manifest(path)
+        for side, manifest in manifests.items():
             if manifest.get("jdkReleaseSha256", record["jdkReleaseSha256"]) != record["jdkReleaseSha256"]:
                 raise Unsupported(f"{side} preparation needs its registered JDK")
-            change_evidence.write_json(work / (side + ".json"), manifest)
             files, _, graph = deployment_graph.resolve(manifest, work, feature, change_inventory.file_digest)
             if graph.get("manifestClassPath", {}).get("unresolved"):
                 raise Unsupported(f"{side} needs its original manifest deployment locations")
@@ -117,7 +119,17 @@ def generate(reg, before, after, jdk, work):
             recipe = observer_recipes.select(reg["entry"], reg["fields"], inputs, api)
         finally:
             record["declarations"]["old"] = api.used
+            record["signatureSearch"] = {"inspected": len(api.inspected), "rejectedOverloads": api.rejected}
         record["recipe"] = recipe
+        if recipe["family"] == "marked stream and retained destination":
+            from targets import entry_discovery, runtime_jar
+            owner, name, desc = runtime_jar.parse_target(reg["entry"])
+            data = api.definition(owner)
+            declaration = entry_discovery.Definition(owner, hashlib.sha256(data).hexdigest(), 0, data)
+            calls = declaration.methods()[name, desc][1]
+            if ("java/lang/Math", "min", "(II)I") in calls:
+                record["helperCandidate"] = {"entry": "java.lang.Math#min(II)I", "consumer": reg["entry"],
+                                             "independentOperation": "minimum"}
         # A removed declaration stays measurable on the original-client path; record the gap separately.
         new_api = observer_recipes.API(cp["new"], feature)
         try:
@@ -143,6 +155,7 @@ def workflows(reg, predictions, work):
     """Evaluator phase. Its only generated files are scopes and workflow declarations."""
     if set(predictions) != {q["id"] for q in reg["questions"]}:
         raise ValueError("expected predicates must identify exactly the frozen questions")
+    recipe = json.loads((work / "generation.json").read_bytes())["recipe"]
     rows = []
     for index, q in enumerate(reg["questions"]):
         expected = predictions[q["id"]]
@@ -156,6 +169,9 @@ def workflows(reg, predictions, work):
         spec = {"entry": reg["entry"], "probeClass": "UpgradeProbe", "observer": ", ".join(reg["fields"]),
                 "basis": q["history"], "cases": cases, "assertedSides": q["sides"],
                 "generatedObserver": {"file": "generation.json", "sha256": sha(work / "generation.json"), "question": q["id"]}}
+        if "invocationVia" in recipe:
+            spec["invocationVia"] = recipe["invocationVia"]
+        spec["predictionEncoding"] = "typed-public-fields/v1"
         change_evidence.write_json(work / name, spec)
         rows.append({"id": q["id"], "scope": name, "probe": "UpgradeProbe.java", "cohort": q["cohort"],
                      "assumptions": reg["assumptions"], "deterministicUnderAssumptions": True,
@@ -265,7 +281,39 @@ def correspondence(recipe, inputs, marks, observation):
         if (len(aliases) != len(inputs["selections"]) or len(values) != len(aliases)
                 or any(len(row) != 3 or type(row[0]) is not bool or type(row[2]) is not int for row in values)):
             raise ValueError("incomplete nullable selection or lazy callback observation")
-    return {"entryCalls": len(aliases), "receiverAliases": aliases, "observationSha256": digest(values)}
+    elif family == "marked stream and retained destination":
+        windows = inputs["readWindowsByEpoch"]
+        if (len(aliases) != sum(map(len, windows)) or len(set(aliases)) != 1 or
+                len(values) != len(aliases) + len(windows)):
+            raise ValueError("read history did not retain the registered stream or all sampling points")
+    elif family == "persistent archive rename and reopen":
+        if len(aliases) != len(inputs["names"])-1 or len(values) != len(aliases):
+            raise ValueError("reopened archive missing after a rename")
+    elif family == "weight view and backing graph":
+        readers = [int(m.split()[1]) for m in marks if m.startswith("UPGRADE-PUBLIC-READ ")]
+        if (len(set(aliases)) != 1 or len(aliases) != len(inputs["writes"]) or len(values) != len(aliases)
+                or readers != aliases):
+            raise ValueError("writes did not target one retained view throughout the registered history")
+    elif family == "commands on one listener-backed state machine":
+        if len(set(aliases)) != 1 or len(values) != len(inputs["states"]) + 1:
+            raise ValueError("incomplete listener and state history")
+    elif family == "class-token write and read":
+        if len(values) != 1 or not values[0] or len(aliases) != (
+                values[0][1] + 1 if values[0][0] == "write" else len(inputs["classTokens"])):
+            raise ValueError("writer did not reach the reported token")
+    elif family == "collision subsets on a live map view":
+        if len(values) != 2**(inputs["maximumSize"] + 1) - 1 or len(aliases) != 2*len(values) or any(
+                a != b for a,b in zip(aliases[::2], aliases[1::2])):
+            raise ValueError("missing paired removal on a retained map")
+    result = {"entryCalls": len(aliases), "receiverAliases": aliases, "observationSha256": digest(values)}
+    tuples = []
+    for line in marks:
+        if line.startswith("UPGRADE-HELPER-VALUE "):
+            pc, args, returned = line.partition(" ")[2].split("\t")
+            tuples.append({"bci": int(pc), "args": list(map(int, args.split(","))), "returned": int(returned)})
+    if tuples:
+        result["helperObservations"] = tuples
+    return result
 
 
 def rescore(report_path, bundle, predictions):
@@ -310,3 +358,64 @@ def rescore(report_path, bundle, predictions):
             observations = {s: [t["observations"] for t in record["trials"]] for s, record in evidence["sides"].items()}
             result["claims"].append({"id": name, **scored, "receipt": ref, "observationsSha256": digest(observations)})
     return result
+
+
+def matches(actual, expected):
+    """An approved integer bound can leave the precise stream cursor to the measurement."""
+    if set(actual) != {"return"} or set(expected) != {"return"}:
+        return actual == expected
+    def compare(value, predicate):
+        if isinstance(predicate, dict):
+            if set(predicate) != {"integerAtLeast"} or type(predicate["integerAtLeast"]) != int:
+                raise ValueError("unknown typed public-field predicate")
+            return type(value) == int and value >= predicate["integerAtLeast"]
+        if isinstance(predicate, list):
+            return isinstance(value, list) and len(value) == len(predicate) and all(
+                compare(v, p) for v, p in zip(value, predicate))
+        return type(value) == type(predicate) and value == predicate
+    return compare(json.loads(actual["return"]), json.loads(expected["return"]))
+
+
+def helper_table(plan_file, bundle, jdk):
+    from targets import change_helpers, change_plan
+    record = json.loads((bundle / "generation.json").read_bytes())
+    candidate = record.get("helperCandidate")
+    if not candidate or candidate["independentOperation"] != "minimum":
+        raise Unsupported("no directly consumed integral minimum in the frozen observer")
+    plan = json.loads(plan_file.read_bytes())
+    if plan.get("executionState") != "complete":
+        raise Unsupported("helper discovery needs completed ordinary JVM replays")
+    change_plan.saved_bindings(plan, plan_file.parent)
+    seen = set()
+    sources = []
+    for node in plan["claims"]:
+        if node["entry"] != candidate["consumer"] or node.get("status") not in {"established", "refuted"}:
+            raise Unsupported("unqualified public consumer: " + node["id"])
+        receipt = node["receipt"]
+        path = (plan_file.parent / receipt["path"]).resolve()
+        if not path.is_relative_to(plan_file.parent.resolve()) or sha(path) != receipt["sha256"]:
+            raise ValueError("public helper-discovery receipt differs")
+        evidence = json.loads(path.read_bytes())
+        if evidence.get("generatedObserver", {}).get("bundle") != sha(bundle / "generation.json"):
+            raise ValueError("other generated consumer")
+        for side in ("old", "new"):
+            for trial in evidence["sides"][side]["trials"]:
+                reps = trial.get("publicProjections", [])
+                if len(reps) != 2 or not reps[0].get("helperObservations") or reps[0] != reps[1]:
+                    raise Unsupported("no repeatable marked helper applications on " + node["id"] + "/" + side)
+                for live in reps[0]["helperObservations"]:
+                    args = tuple(live["args"])
+                    if len(args) != 2 or live["bci"] < 0 or live["returned"] != min(args):
+                        raise Unsupported("helper return disagrees with independent minimum at the recorded site")
+                    seen.add(args)
+        sources.append({"question": node["id"], "receiptSha256": receipt["sha256"]})
+    if not seen or sha(jdk / "release") != record["jdkReleaseSha256"]:
+        raise Unsupported("no measured tuples on the registered JDK")
+    owner = candidate["entry"].split("#")[0]
+    data, _ = change_helpers.original_class(owner, [], jdk)
+    consumer = candidate["consumer"]
+    return {"entry": candidate["entry"], "callFrom": consumer, "startupEntry": consumer, "startupWithin": consumer,
+            "requireAllApplications": True, "boundClassSha256": hashlib.sha256(data).hexdigest(),
+            "rows": [{"args": list(args), "result": min(args)} for args in sorted(seen)],
+            "provenance": {"operation": "minimum of the two independently observed arguments",
+                           "premise": "entry of the original public consumer", "receipts": sources}}

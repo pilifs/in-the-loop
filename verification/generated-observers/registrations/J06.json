@@ -1,0 +1,107 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "Zip4j #541, reopen names and payloads after file and directory renames",
+  "entry": "net.lingala.zip4j.ZipFile#renameFile(Ljava/lang/String;Ljava/lang/String;)V",
+  "changed": [
+    "net.lingala.zip4j.tasks.RenameFilesTask#getCorrespondingEntryFromMap(Lnet/lingala/zip4j/model/FileHeader;Ljava/util/Map;)Ljava/util/Map$Entry;"
+  ],
+  "fields": [
+    "archive.name",
+    "archive.directory",
+    "archive.payload"
+  ],
+  "assumptions": [
+    "Fresh relative archive per JVM, unique ASCII names, fixed timestamps and distinct two-byte payloads. Both renames use the public API, and fresh JDK readers compare every name, directory flag and byte."
+  ],
+  "questions": [
+    {
+      "id": "file-neighbor",
+      "history": "Read names and bytes through the JDK after each of two successive file renames.",
+      "cohort": "registered",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "entries": [
+            {
+              "name": "cat",
+              "payload": "0121"
+            },
+            {
+              "name": "catalog",
+              "payload": "0222"
+            },
+            {
+              "name": "other",
+              "payload": "0323"
+            }
+          ],
+          "names": [
+            "cat",
+            "dog",
+            "hound"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "directory-and-isolated",
+      "history": "Check the entire JDK enumeration twice after a directory rename and an isolated exact file rename.",
+      "cohort": "control",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "entries": [
+            {
+              "name": "cat/",
+              "payload": ""
+            },
+            {
+              "name": "cat/a",
+              "payload": "0121"
+            },
+            {
+              "name": "catalog",
+              "payload": "0222"
+            },
+            {
+              "name": "other",
+              "payload": "0323"
+            }
+          ],
+          "names": [
+            "cat/",
+            "dog/",
+            "hound/"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "name": "cat",
+              "payload": "0121"
+            },
+            {
+              "name": "catalog",
+              "payload": "0222"
+            },
+            {
+              "name": "other",
+              "payload": "0323"
+            }
+          ],
+          "names": [
+            "catalog",
+            "dog",
+            "hound"
+          ]
+        }
+      ]
+    }
+  ]
+}

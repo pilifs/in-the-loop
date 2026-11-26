@@ -140,14 +140,19 @@ def compose(spec, report, intent="preserve"):
                 startup[side] = trial["beforeEntry"]
         old, new = values["old"], values["new"]
         target = changes.get(i, case["expected"])
+        def agrees(actual, expected):
+            if spec.get("predictionEncoding") == "typed-public-fields/v1":
+                from targets.observer_generation import matches
+                return matches(actual, expected)
+            return actual == expected
         if len(asserted) == 1:
             measured = values[asserted[0]]
             status = ("open" if measured is None or intent == "undecided" else
-                      "established" if measured == case["expected"] else "refuted")
-        elif old is None or new is None or old != case["expected"] or intent == "undecided":
+                      "established" if agrees(measured, case["expected"]) else "refuted")
+        elif old is None or new is None or not agrees(old, case["expected"]) or intent == "undecided":
             status = "open"
         else:
-            status = "established" if target == new else "refuted"
+            status = "established" if agrees(new, target) else "refuted"
         children.append({"input": i, "arguments": case["args"], "expected": case["expected"], **values,
                          **({"intendedChange": target} if i in changes else {}),
                          "status": status, **({"beforeEntry": startup} if startup else {})})
