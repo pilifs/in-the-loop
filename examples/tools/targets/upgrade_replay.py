@@ -49,6 +49,24 @@ def checked_classpath(path, doc, dependency):
     return files, files[hashes.index(dependency)], hashes
 
 
+def dispatch_binding(symbolic, target, files, feature):
+    """Bind an explicitly nominated implementation behind its accessible public interface."""
+    interface, method, descriptor = runtime_jar.parse_target(symbolic)
+    owner, name, desc = runtime_jar.parse_target(target)
+    if (name, desc) != (method, descriptor):
+        raise ValueError("nominated dispatch has a different public signature")
+    internal = runtime_jar.internal(owner)
+    for index, file in enumerate(files):
+        data = (class_binding.read(file, internal) if file.is_dir() else runtime_jar.effective_class(file, internal, feature))
+        if data is None:
+            continue
+        flags = runtime_jar.method_flags(data, name, desc)
+        if not flags or not flags & 1 or flags & (0x400 | 8) or runtime_jar.internal(interface) not in runtime_jar.interfaces(data):
+            raise ValueError("winning class lacks the nominated public interface implementation")
+        return {"entry":target,"providerIndex":index,"classSha256":hashlib.sha256(data).hexdigest()}
+    raise ValueError("nominated concrete implementation is absent")
+
+
 def check_input(path, entry, dependency, *, qualified=None, effective=None):
     doc = json.loads(path.read_text())
     files, operand, hashes = checked_classpath(path, doc, dependency)
@@ -425,6 +443,13 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             live_entry = side_record.get("resolvedEntry", caller)
             subject_jdk = jdk if side == "old" else after_jdk
             subject_feature = int(runtime_jdk.identity(subject_jdk)["feature"])
+            executed_index = side_record["entryProviderIndex"]
+            if spec.get("requiredDispatch"):
+                dispatch = dispatch_binding(caller,spec["requiredDispatch"],files,subject_feature)
+                live_entry = dispatch["entry"]
+                executed_index = dispatch["providerIndex"]
+                side_record.update(dispatchBinding=dispatch, resolvedEntry=live_entry,
+                                   dispatchArtifactSha256=side_record["classpath"][executed_index])
             if after_jdk != jdk:
                 side_record["jdk"] = runtime_jdk.identity(subject_jdk)["release"]
             subject_tools = [subject_jdk/"lib/tools.jar"] if (subject_jdk/"lib/tools.jar").is_file() else []
@@ -497,6 +522,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if detail:
                         detail = base64.b64decode(detail, validate=True).decode("utf-16-be", "surrogatepass")
                         report["stoppedAt"]["exception"] = detail[:750]
+                    if spec.get("requiredDispatch") and class_origins(child_output).get(owner) != {files[side_record["entryProviderIndex"]]}:
+                        raise ValueError("the public dispatch interface came from a different provider")
                     if "UPGRADE-HIT " + live_entry not in marks:
                         outcome = typed_outcome(observation_text.splitlines())
                         if "throws" not in outcome:
@@ -517,7 +544,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         loaded_each_time = loaded_each_time and bool(classes)
                         evidence = throw_evidence(marks, loaded, files, side_record["classpath"],
                                                   dependency, observation_text.splitlines(),
-                                                  client_index=side_record["clientIndex"], entry_index=side_record["entryProviderIndex"])
+                                                  client_index=side_record["clientIndex"], entry_index=executed_index)
                         upgrade_linkage.observed_member(evidence, loaded, files, side_record, subject_feature)
                         early.append({**outcome, **evidence})
                         trial_record["beforeEntry"] = early
@@ -533,7 +560,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                             raise ValueError(f"{side} input {index}: inconsistent exception across original caller replays")
                         evidence = throw_evidence(marks, class_origins(child_output), files, side_record["classpath"],
                                                   dependency, observation_text.splitlines(),
-                                                  client_index=side_record["clientIndex"], entry_index=side_record["entryProviderIndex"])
+                                                  client_index=side_record["clientIndex"], entry_index=executed_index)
                         escape = evidence.get("escapingInvocation")
                         if escape:
                             escape["throws"] = outcome["throws"]
@@ -559,7 +586,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                                   for line in marks if line.startswith("UPGRADE-CHANGED ")]
                         trial_record.setdefault("changedBodyChains", []).append(chains)
                     trial_record["qualifiedMethodEntries"] += 1
-                    observation,classes=parse_output(child_output,live_entry,files[side_record["entryProviderIndex"]],dependency,observation_text,escape=escape)
+                    observation,classes=parse_output(child_output,live_entry,files[executed_index],dependency,observation_text,escape=escape)
                     if "generatedObserver" in spec:
                         question = next(q for q in _registration["questions"] if q["id"] == spec["generatedObserver"]["question"])
                         projection = observer_generation.correspondence(frozen["recipe"], question["inputs"][index], marks, observation)

@@ -20,7 +20,7 @@ def write_json(path, value):
             Path(out.name).unlink(missing_ok=True)
 
 
-def outcome(trial, entry, client, required_helper=None):
+def outcome(trial, entry, client, required_helper=None, require_projection=False):
     """A returned value or an exception actually escaping the selected original invocation."""
     if required_helper:
         applications = trial.get("checkedApplications", [])
@@ -36,6 +36,16 @@ def outcome(trial, entry, client, required_helper=None):
             or not trial.get("loadedUpgradeOnEachReplay") or trial.get("beforeEntry")):
         return None
     value = observations[0]
+    if require_projection:
+        projections = trial.get("publicProjections", [])
+        if len(projections) != 2 or projections[0] != projections[1] or set(value) != {"return"}:
+            return None
+        try:
+            measured = digest(json.loads(value["return"]))
+        except (ValueError, TypeError):
+            return None
+        if projections[0].get("observationSha256") != measured or not projections[0].get("entryCalls"):
+            return None
     if set(value) == {"throws"}:
         escapes = trial.get("escapingExceptions", [])
         if len(escapes) != 2 or any(e.get("entry") != entry or e.get("jarSha256") != client
@@ -44,6 +54,10 @@ def outcome(trial, entry, client, required_helper=None):
     elif set(value) != {"return"}:
         return None
     return value
+
+
+def entry_artifact(binding):
+    return binding.get("dispatchArtifactSha256") or binding.get("entryArtifactSha256") or binding["classpath"][0]
 
 
 class SideCache:
@@ -63,12 +77,12 @@ class SideCache:
                        "observerClasses": report["probeClasses"], "call": report["observerInvocation"]})
 
     @staticmethod
-    def valid(payload, domain, entry, client, required_helper=None):
+    def valid(payload, domain, entry, client, required_helper=None, require_projection=False):
         trials = payload["trials"]
         if (len(trials) != len(domain) or not payload["loadedDependencyClasses"]
                 or set(payload["loadedPerInput"]) != {str(i) for i in range(len(domain))}):
             return False
-        return all(t["input"] == i and outcome(t, entry, client, required_helper) == case["expected"]
+        return all(t["input"] == i and outcome(t, entry, client, required_helper, require_projection) == case["expected"]
                    and "return" in case["expected"] for i, (case, t) in enumerate(zip(domain, trials)))
 
     def domain(self, side, report):
@@ -85,7 +99,7 @@ class SideCache:
                 record = json.loads(path.read_text())
                 payload = record["evidence"]
                 if (record["key"] == key and digest(payload) == record["evidenceSha256"]
-                        and self.valid(payload, self.domain(side, report), binding.get("resolvedEntry", report["entry"]), binding.get("entryArtifactSha256", binding["classpath"][0]), binding.get("requiredHelperProof"))):
+                        and self.valid(payload, self.domain(side, report), binding.get("resolvedEntry", report["entry"]), entry_artifact(binding), binding.get("requiredHelperProof"), "generatedObserver" in report)):
                     self.actions[side]["action"] = "exact reuse"
                     return payload
             except (KeyError, TypeError, ValueError):
@@ -95,7 +109,7 @@ class SideCache:
     def remember(self, side, binding, report, loaded_per_input):
         payload = {"trials": binding["trials"], "loadedDependencyClasses": binding["loadedDependencyClasses"],
                    "loadedPerInput": {str(i): sorted(v) for i, v in loaded_per_input.items()}}
-        if self.valid(payload, self.domain(side, report), binding.get("resolvedEntry", report["entry"]), binding.get("entryArtifactSha256", binding["classpath"][0]), binding.get("requiredHelperProof")):
+        if self.valid(payload, self.domain(side, report), binding.get("resolvedEntry", report["entry"]), entry_artifact(binding), binding.get("requiredHelperProof"), "generatedObserver" in report):
             key = self.actions[side]["key"]
             path = self.directory / (key + ".json")
             record = {"key": key, "evidenceSha256": digest(payload), "evidence": payload}
@@ -135,7 +149,7 @@ def compose(spec, report, intent="preserve"):
         for side in ("old", "new"):
             trial = indexed[side].get(i, {})
             cp = sides.get(side, {}).get("classpath", [])
-            values[side] = outcome(trial, sides[side].get("resolvedEntry", spec["entry"]), sides[side].get("entryArtifactSha256", cp[0]), sides[side].get("requiredHelperProof")) if cp else None
+            values[side] = outcome(trial, sides[side].get("resolvedEntry", spec["entry"]), entry_artifact(sides[side]), sides[side].get("requiredHelperProof"), "generatedObserver" in spec) if cp else None
             if trial.get("beforeEntry"):
                 startup[side] = trial["beforeEntry"]
         old, new = values["old"], values["new"]

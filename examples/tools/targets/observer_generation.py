@@ -1,6 +1,7 @@
 """Materialize a reviewed public history and persist the exact older-API caller for replay."""
-import json
+import errno
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -8,7 +9,7 @@ import subprocess
 import tempfile
 import zipfile
 
-from targets import change_evidence, change_inventory, deployment_graph, observer_recipes, runtime_jdk, upgrade_replay
+from targets import change_evidence, change_inventory, deployment_graph, observer_fields, observer_fixtures, observer_recipes, runtime_jdk, upgrade_replay
 from targets.change_inventory import digest
 from targets.observer_recipes import Unsupported
 from targets.upgrade_replay import sha
@@ -18,7 +19,8 @@ HERE = Path(__file__).resolve().parent
 
 def identity():
     files = [Path(__file__), HERE / "observer_recipes.py", HERE / "observer_histories.py", HERE / "observer_state.py",
-             HERE / "observer_io.py", HERE / "observer_public_data.py", observer_recipes.TEMPLATE]
+             HERE / "observer_io.py", HERE / "observer_public_data.py", HERE / "observer_structures.py",
+             HERE / "observer_fields.py", HERE / "observer_fixtures.py", observer_recipes.TEMPLATE]
     return {p.name: sha(p) for p in files}
 
 
@@ -92,14 +94,20 @@ def compile_caller(work, src, files, jdk):
     return members
 
 
-def generate(reg, before, after, jdk, work):
+def generate(reg, before, after, jdk, work, *, fixture_root=None):
     """Operator phase. Receives only reviewed input meanings, classpaths and the pinned JDK."""
+    jdk, work = jdk.resolve(), work.resolve()
+    packet = reg
+    reg, fixtures = observer_fixtures.resolve(packet, work, from_source=fixture_root)
     validate(reg)
+    if fixtures:
+        change_evidence.write_json(work/"reviewed-packet.json",packet)
     change_evidence.write_json(work / "registration.json", reg)
     record = {"schema": "generated-public-observer/v1", "registration": digest(reg), "generator": identity(),
               "inputPolicy": "reviewed semantic data and public production declarations", "model": None,
               "candidateBudget": observer_recipes.CANDIDATE_BUDGET, "compilePolicy": "once against old",
-              "jdkReleaseSha256": sha(jdk / "release"), "status": "open", "rejected": [], "declarations": {}}
+              "jdkReleaseSha256": sha(jdk / "release"), "status": "open", "rejected": [], "declarations": {},
+              "reviewedPacket": digest(packet), "fixtures":fixtures}
     cp = {}
     manifests = {s: portable_manifest(p) for s, p in (("old", before), ("new", after))}
     for side, manifest in manifests.items():
@@ -140,7 +148,7 @@ def generate(reg, before, after, jdk, work):
         src = work / "UpgradeProbe.java"
         src.write_text(observer_recipes.source(recipe))
         record["sourceSha256"] = sha(src)
-        record["fieldSources"] = reg["fields"]
+        record["fieldSources"] = observer_fields.mapping(reg["fields"],recipe,reg["entry"])
         record["compiled"] = compile_caller(work, src, cp["old"], jdk)
         record["archiveSha256"] = sha(work / "caller.zip")
         record["status"] = "compiled"
@@ -153,6 +161,7 @@ def generate(reg, before, after, jdk, work):
 
 def workflows(reg, predictions, work):
     """Evaluator phase. Its only generated files are scopes and workflow declarations."""
+    from targets import change_plan
     if set(predictions) != {q["id"] for q in reg["questions"]}:
         raise ValueError("expected predicates must identify exactly the frozen questions")
     recipe = json.loads((work / "generation.json").read_bytes())["recipe"]
@@ -166,16 +175,17 @@ def workflows(reg, predictions, work):
         changes = [{"input": i, "expectedNew": wire(v)} for i, v in enumerate(expected.get("new", []))
                    if len(q["sides"]) == 2 and wire(v) != cases[i]["expected"]]
         name = f"scope-{index + 1}.json"
-        spec = {"entry": reg["entry"], "probeClass": "UpgradeProbe", "observer": ", ".join(reg["fields"]),
+        spec = {"entry": recipe.get("bindingEntry",reg["entry"]), "probeClass": "UpgradeProbe", "observer": ", ".join(reg["fields"]),
                 "basis": q["history"], "cases": cases, "assertedSides": q["sides"],
                 "generatedObserver": {"file": "generation.json", "sha256": sha(work / "generation.json"), "question": q["id"]}}
         if "invocationVia" in recipe:
             spec["invocationVia"] = recipe["invocationVia"]
+        if "requiredDispatch" in recipe:
+            spec["requiredDispatch"] = recipe["requiredDispatch"]
         spec["predictionEncoding"] = "typed-public-fields/v1"
         change_evidence.write_json(work / name, spec)
-        rows.append({"id": q["id"], "scope": name, "probe": "UpgradeProbe.java", "cohort": q["cohort"],
-                     "assumptions": reg["assumptions"], "deterministicUnderAssumptions": True,
-                     "intent": {"allowedChanges": changes} if changes else "preserve"})
+        rows.append(change_plan.workflow_row(q["id"], name, "UpgradeProbe.java", reg["assumptions"], changes,
+                                             cohort=q["cohort"]))
     change_evidence.write_json(work / "workflows.json", {"schema": "caller-workflows/v1", "change": reg["change"], "workflows": rows})
 
 
@@ -184,9 +194,11 @@ def materialize(registration, predictions, before, after, jdk, output):
     output = output.absolute()
     output.parent.mkdir(parents=True, exist_ok=True)
     reg = json.loads(registration.read_bytes())
-    if output.is_dir():
+    if (output / "generation.json").is_file():
         record = json.loads((output / "generation.json").read_bytes())
-        if (digest(reg) != record["registration"] or json.loads((output / "registration.json").read_bytes()) != reg
+        expanded, _ = observer_fixtures.resolve(reg, output)
+        if (digest(reg) != record.get("reviewedPacket",record["registration"]) or
+                json.loads((output / "registration.json").read_bytes()) != expanded
                 or any(json.loads((output / (s + ".json")).read_bytes()) != portable_manifest(p)
                        for s, p in (("old", before), ("new", after)))
                 or sha(jdk / "release") != record["jdkReleaseSha256"]):
@@ -196,7 +208,7 @@ def materialize(registration, predictions, before, after, jdk, output):
             with tempfile.TemporaryDirectory(dir=output.parent) as tmp:
                 proposed = Path(tmp)
                 (proposed / "generation.json").write_bytes((output / "generation.json").read_bytes())
-                workflows(reg, expected, proposed)
+                workflows(expanded, expected, proposed)
                 for p in sorted(proposed.glob("*.json")):
                     existing = output / p.name
                     if existing.exists() and existing.read_bytes() != p.read_bytes():
@@ -210,10 +222,15 @@ def materialize(registration, predictions, before, after, jdk, output):
     with tempfile.TemporaryDirectory(dir=output.parent, prefix=".public-observer-") as scratch:
         work = Path(scratch) / "bundle"
         work.mkdir()
-        record = generate(reg, before, after, jdk, work)
+        record = generate(reg, before, after, jdk, work, fixture_root=registration.parent)
         if record["status"] == "compiled":
-            workflows(reg, json.loads(predictions.read_bytes()), work)
-        work.rename(output)
+            workflows(json.loads((work/"registration.json").read_bytes()), json.loads(predictions.read_bytes()), work)
+        try:
+            work.rename(output)
+        except OSError as error:
+            if error.errno not in (errno.EEXIST, errno.ENOTEMPTY) or not (output/"generation.json").is_file():
+                raise
+            return materialize(registration, predictions, before, after, jdk, output)
     return record
 
 
@@ -225,6 +242,11 @@ def checked_bundle(scope, spec, probe):
         raise ValueError("generated observer manifest changed")
     record = json.loads((root / "generation.json").read_bytes())
     reg = json.loads((root / "registration.json").read_bytes())
+    if record.get("fixtures"):
+        packet = json.loads((root/"reviewed-packet.json").read_bytes())
+        expanded, fixtures = observer_fixtures.resolve(packet, root)
+        if digest(packet) != record["reviewedPacket"] or expanded != reg or record["fixtures"] != fixtures:
+            raise ValueError("saved fixture differs from the frozen input meanings")
     if (record.get("schema") != "generated-public-observer/v1" or record.get("status") != "compiled"
             or digest(reg) != record["registration"] or sha(probe) != record["sourceSha256"]
             or sha(root / "caller.zip") != record["archiveSha256"]):
@@ -233,8 +255,10 @@ def checked_bundle(scope, spec, probe):
         raise ValueError("the caller does not implement the generated public projection")
     q = next((q for q in reg["questions"] if q["id"] == ref["question"]), None)
     if (not q or [arguments(x) for x in q["inputs"]] != [c["args"] for c in spec["cases"]]
-            or spec["entry"] != reg["entry"] or q["sides"] != spec["assertedSides"]
-            or spec["observer"] != ", ".join(reg["fields"]) or q["history"] != spec["basis"]):
+            or spec["entry"] != record["recipe"].get("bindingEntry",reg["entry"]) or q["sides"] != spec["assertedSides"]
+            or spec["observer"] != ", ".join(reg["fields"]) or q["history"] != spec["basis"]
+            or spec.get("invocationVia") != record["recipe"].get("invocationVia")
+            or spec.get("requiredDispatch") != record["recipe"].get("requiredDispatch")):
         raise ValueError("generated observer scope differs from the reviewed question")
     return record, reg
 
@@ -305,6 +329,18 @@ def correspondence(recipe, inputs, marks, observation):
         if len(values) != 2**(inputs["maximumSize"] + 1) - 1 or len(aliases) != 2*len(values) or any(
                 a != b for a,b in zip(aliases[::2], aliases[1::2])):
             raise ValueError("missing paired removal on a retained map")
+    elif family == "paired mutable-property samples":
+        arity = [2,2,2] if inputs["mode"] == "paired mutations" else [3]
+        if len(aliases) != 1 or [len(v) for v in values] != arity:
+            raise ValueError("missing public samples of the original, copy or recording target")
+    elif family == "consume an event-stream response":
+        if len(aliases) != len(inputs["streams"]) or len(values) != len(aliases) or any(
+                len(v) != 4 or not isinstance(v[0], list) or v[1] not in {"error","complete"} for v in values):
+            raise ValueError("missing a subscribed public stream or terminal signal")
+    elif family == "reopened block index and sorted hits":
+        if len(aliases) < 1 or not values or any(len(v) != 2 or type(v[0]) != int or len(v[1]) != v[0]
+                for v in values if v != ["overload-absent"]):
+            raise ValueError("missing sorted public hits or total after reopening the index")
     result = {"entryCalls": len(aliases), "receiverAliases": aliases, "observationSha256": digest(values)}
     tuples = []
     for line in marks:

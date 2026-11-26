@@ -41,6 +41,13 @@ def delta(previous, current):
                         if old[k] != new[k]}}
 
 
+def workflow_row(name, scope, probe, assumptions, changes, *, cohort="registered"):
+    """Shared portable registration for an authored or generated finite public observer."""
+    return {"id": name, "scope": scope, "probe": str(probe), "cohort": cohort,
+            "deterministicUnderAssumptions": True, "assumptions": assumptions,
+            "intent": {"allowedChanges": changes} if changes else "preserve"}
+
+
 def frozen_workflows(path):
     doc = json.loads(path.read_text())
     if doc["schema"] != "caller-workflows/v1":

@@ -108,17 +108,17 @@ def isolated(reg, work, jdk, bundle, *, source_root=None):
 def pack(root, extra, target):
     target.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(target, "w") as archive:
-        for p in sorted(extra):
+        for p in sorted({f for path in extra for f in (path.rglob("*") if path.is_dir() else [path]) if f.is_file()}):
             archive.writestr(zipfile.ZipInfo(p.relative_to(root).as_posix()), p.read_bytes(), zipfile.ZIP_DEFLATED)
 
 
-def exercise(number, work, *, resume=True, frozen=False):
+def exercise(number, work, *, resume=True, frozen=False, clean=False):
     work.mkdir(parents=True, exist_ok=True)
     jdk = prepare(number, work)
     bundle = work / "bundle"
     reg = HERE / "registrations" / (number + ".json")
     predictions = HERE / "predictions" / (number + ".json")
-    archive_name = number + ("-first" if frozen else "") + ".zip"
+    archive_name = number + ("-first" if frozen else "-clean" if clean else "") + ".zip"
     source = None
     if frozen:
         seal = read(HERE/"freeze.json")
@@ -135,6 +135,8 @@ def exercise(number, work, *, resume=True, frozen=False):
     if generation["status"] == "open":
         pack(work, [*bundle.glob("*"), *work.glob("*.json")], HERE/"receipts"/archive_name)
         print(number, generation["firstOpenDependency"], flush=True)
+        if clean:
+            raise ValueError("final measurement stopped before compilation")
         return
     cmd = [sys.executable, ROOT / "examples/tools/scaffold_example.py", "generate",
            "--before", work / "old.json", "--after", work / "new.json", "--jdk", jdk,
@@ -147,6 +149,8 @@ def exercise(number, work, *, resume=True, frozen=False):
     if resume:
         run([*base, "--previous", work / "scaffold.json", "--run", "--output", work / "cold.json"])
         run([*base, "--previous", work / "cold.json", "--run", "--output", work / "warm.json"])
+        if clean:
+            run([*base, "--cache", work / "empty-cache", "--run", "--output", work / "empty.json"])
     if resume and number == "J17":
         from controls import map_oracle
         map_oracle(work, jdk)
@@ -157,10 +161,33 @@ def exercise(number, work, *, resume=True, frozen=False):
         print(number, summary, flush=True)
         if number in {"458", "445", "J06", "J10", "J16", "J17", "J19", "io"} and set(summary.values()) != {"established"}:
             raise ValueError("one or more frozen development predictions did not qualify: " + str(summary))
-        cold, warm = [read(work / name)["claims"] for name in ("cold.json", "warm.json")]
-        for a, b in zip(cold, warm, strict=True):
-            if (a["claimKey"], a["status"], a.get("children")) != (b["claimKey"], b["status"], b.get("children")):
-                raise ValueError("warm and cold finite evidence differs")
+        cold = read(work/"cold.json")["claims"]
+        for repeat in ["warm", *(["empty"] if clean else [])]:
+            for a, b in zip(cold, read(work/(repeat+".json"))["claims"], strict=True):
+                if (a["claimKey"], a["status"], a.get("children")) != (b["claimKey"], b["status"], b.get("children")):
+                    raise ValueError(repeat + " and cold finite evidence differs")
+        if clean:
+            audit_finished(number, cold, work)
+
+
+def audit_finished(number, nodes, work):
+    exceptions = {"filtered-child-hypothesis":"refuted", "earlier-change":"open",
+                  "spring-projects/spring-framework#37193.1":"open","spring-projects/spring-framework#37193.3":"refuted",
+                  "spring-projects/spring-framework#36626.3":"refuted"}
+    for node in nodes:
+        if node["status"] != exceptions.get(node["id"],"established"):
+            raise ValueError(number+" "+node["id"]+" disagrees with the independent adjudication: "+str(node.get("reason",node["status"])))
+        evidence = read(work/node["receipt"]["path"])
+        for side in ("old","new"):
+            trials = evidence["sides"][side]["trials"]
+            if len(trials) != len(node["domain"]) or any(len(t.get("publicProjections",[]))!=2 or
+                    t["publicProjections"][0] != t["publicProjections"][1] for t in trials):
+                raise ValueError("incomplete repeatable public field coverage: "+node["id"]+"/"+side)
+        if node["id"] == "spring-projects/spring-framework#37193.1":
+            prior = json.loads(node["children"][0]["old"]["return"])
+            if prior != [[[], "error", "org.springframework.web.reactive.function.client.WebClientResponseException",
+                           "java.lang.NumberFormatException"]]:
+                raise ValueError("reactive baseline lost its actual outer exception or cause")
 
 
 if __name__ == "__main__":
@@ -170,11 +197,12 @@ if __name__ == "__main__":
     parser.add_argument("--scaffold-only", action="store_true")
     parser.add_argument("--checked-helper", action="store_true")
     parser.add_argument("--frozen", action="store_true", help="use the immutable pre-transfer producer")
+    parser.add_argument("--empty-cache", action="store_true", help="also repeat all qualified fields independently with an empty cache")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="generated-observers-") as tmp:
         for number in args.numbers:
             work = (args.work or Path(tmp)) / number
-            exercise(number, work, resume=not args.scaffold_only, frozen=args.frozen)
+            exercise(number, work, resume=not args.scaffold_only, frozen=args.frozen, clean=args.empty_cache)
             if args.checked_helper:
                 from controls import helper
                 helper(work, work / "bundle", prepare(number, work))

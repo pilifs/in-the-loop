@@ -374,6 +374,10 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    run `python3 examples/tools/scaffold_example.py bind --before OLD --after NEW --jdk JDK --workflows WORKFLOWS --output RECORD`.
    Both forms check each pinned deployment on its own JVM and ask the native resolver for the exact descriptor.
    For a reviewed behavioral prediction, give `preparedDeployments` its `registration` and `predictions` files.
+   For an existing numbered numeric or nullable-selection registration, set `publicComparison` to
+   `{"deployment":"pins"}` instead. Stage 3 reads its `comparison.json` and `runtime.json`, resolves the public
+   signature on the pinned JARs, and derives the inputs from the registered history. A counting supplier also
+   needs its approved return value in `inputDefaults.fallback` when the history omits it.
    The registration supplies the public selector, changed selectors, public fields, deterministic assumptions,
    and each question's ID, semantic input data, observed history and side scope. Stage 3 generates one Java
    caller for the related questions, compiles against the older API and keeps the class bytes and their

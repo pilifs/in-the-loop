@@ -96,17 +96,19 @@ def numbered(study, number, work, jdk, bundle):
     source = next((campaign.ROOT/"examples").glob(number+"-*"))
     example = root/"examples"/source.name
     example.mkdir(parents=True)
-    shutil.copyfile(source/"example.json",example/"example.json")
+    for name in ("example.json","comparison.json","runtime.json"):
+        shutil.copyfile(source/name,example/name)
     plan = work/"reviewed-plan.json"
     write(plan,{"schema":"prove-plan/v1","examples":[{"id":number,"review":"designed","tasks":[],"claimFiles":{},
-        "preparedDeployments":{"before":str(work/"old.json"),"after":str(work/"new.json"),"jdk":str(jdk),
-             "registration":str(campaign.HERE/"registrations"/(number+".json")),
-             "predictions":str(campaign.HERE/"predictions"/(number+".json"))}}]})
+        "publicComparison":{"deployment":"pins","inputDefaults":{"fallback":99} if number=="445" else {}}}]})
     result = scaffold_example.scaffold(number,plan,True,root=root)
     if result["refused"] or result["leftForSetup"]:
         raise ValueError(str(result))
     built = example/"records/public-observer"
-    identical = all(upgrade_replay.sha(built/name)==upgrade_replay.sha(bundle/name) for name in ("UpgradeProbe.java","caller.zip","registration.json","workflows.json"))
+    identical = all(upgrade_replay.sha(built/name)==upgrade_replay.sha(bundle/name) for name in ("UpgradeProbe.java","caller.zip"))
+    reviewed = read(built/"registration.json")
+    if reviewed["questions"] != read(bundle/"registration.json")["questions"]:
+        raise ValueError("numbered histories did not recover all registered inputs and side bounds")
     if not identical:
         raise ValueError("numbered and isolated Stage 3 generated different callers")
     plan_report = example/"records/entry-bindings.json"
@@ -120,6 +122,43 @@ def numbered(study, number, work, jdk, bundle):
         raise ValueError("numbered resume did not qualify the frozen questions")
 
 
+def fixture_control(work, jdk, bundle):
+    root = work/"fixture-input"
+    root.mkdir()
+    reg = read(bundle/"registration.json")
+    selected = reg["questions"][0]["inputs"][0]["conversions"][0]
+    text = root/"input.txt"
+    text.write_text(selected["text"])
+    pin = upgrade_replay.sha(text)
+    selected["text"] = {"fixture":"registered spelling"}
+    reg["fixtures"] = [{"id":"registered spelling","file":text.name,"encoding":"text","sha256":pin}]
+    registration = root/"packet.json"
+    write(registration,reg)
+    args = [registration,campaign.HERE/"predictions/458.json",bundle/"old.json",bundle/"new.json",jdk]
+    saved = root/"bundle"
+    candidate = observer_generation.materialize(*args,saved)
+    if candidate["compiled"] != read(bundle/"generation.json")["compiled"]:
+        raise ValueError("externalizing a spelling changed the compiled caller")
+    text.write_text("changed after registration")
+    try:
+        observer_generation.materialize(*args,root/"changed")
+    except ValueError as e:
+        changed_source = str(e)
+    else:
+        raise ValueError("changed external fixture was admitted")
+    spec = read(saved/"scope-1.json")
+    observer_generation.checked_bundle(saved/"scope-1.json",spec,saved/"UpgradeProbe.java")
+    (saved/"fixtures"/pin).write_text("changed frozen bytes")
+    try:
+        observer_generation.checked_bundle(saved/"scope-1.json",spec,saved/"UpgradeProbe.java")
+    except ValueError as e:
+        changed_saved = str(e)
+    else:
+        raise ValueError("changed saved fixture was admitted")
+    return {"fixtureSha256":pin,"sameCompiledBytes":True,"freshSourceRefusal":changed_source,
+            "offlineBeforeTamper":"validated","frozenBytesRefusal":changed_saved}
+
+
 def controls(number, work):
     campaign.exercise(number,work)
     bundle=work/"bundle"
@@ -131,6 +170,7 @@ def controls(number, work):
         numbered(out,number,work,jdk,bundle)
     q=reg["questions"][0]
     if number=="458":
+        out["pinnedFixture"] = fixture_control(work,jdk,bundle)
         correct=campaign.HERE/"predictions/458.json"
         expected=read(correct)
         for value in expected[q["id"]]["new"][0]:

@@ -65,7 +65,11 @@ def scaffold(number: str, plan_path: Path, write: bool, root: Path = REPO) -> di
     example = json.loads((folder / "example.json").read_text())
     target_path = sidecar.path_of(folder, example) or folder / "target.json"
     deployments = entry.get("preparedDeployments") or {}
-    public_bundle_only = bool(deployments.get("registration")) and not target_path.exists() and not entry.get("tasks")
+    numbered = entry.get("publicComparison")
+    if numbered is not None and deployments:
+        out["refused"].append("choose either the numbered public comparison or prepared manifests")
+        return out
+    public_bundle_only = (bool(deployments.get("registration")) or numbered is not None) and not target_path.exists() and not entry.get("tasks")
     target = {} if public_bundle_only else json.loads(target_path.read_text())
     claims = entry.get("claimFiles") or {}
     for name, doc in claims.items():
@@ -112,11 +116,19 @@ def scaffold(number: str, plan_path: Path, write: bool, root: Path = REPO) -> di
             (folder / name).write_text(json.dumps(claims[name], indent=1, ensure_ascii=False) + "\n")
         if out["added"]:
             target_path.write_text(json.dumps(candidate, indent=2, ensure_ascii=False) + "\n")
-    if deployments:
+    if deployments or numbered is not None:
         record = folder / "records" / "entry-bindings.json"
         out["entryBindings"] = str(record)
         if write:
-            paths = {k: plan_path.parent / value for k, value in deployments.items()}
+            if numbered is not None:
+                from targets import observer_review, observer_recipes
+                try:
+                    paths = observer_review.prepare(folder, numbered, folder/"records/reviewed-public-inputs")
+                except observer_recipes.Unsupported as error:
+                    out["leftForSetup"].append(str(error))
+                    return out
+            else:
+                paths = {k: plan_path.parent / value for k, value in deployments.items()}
             if "registration" in paths:
                 from targets import observer_generation
                 bundle = folder / "records" / "public-observer"
@@ -169,7 +181,7 @@ def main(argv: list[str] | None = None) -> int:
             if argv[0] == "emit":
                 args.output.mkdir(parents=True)
                 record = observer_generation.generate(json.loads(args.registration.read_bytes()), args.before,
-                                                      args.after, args.jdk, args.output)
+                                                      args.after, args.jdk, args.output, fixture_root=args.registration.parent)
             else:
                 record = observer_generation.materialize(**vars(args))
         except (ValueError, OSError) as error:

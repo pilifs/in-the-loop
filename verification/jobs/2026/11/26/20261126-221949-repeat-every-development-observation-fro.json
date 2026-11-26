@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-221949-repeat-every-development-observation-fro",
+  "title": "Repeat every development observation from cold warm and empty caches",
+  "description": "Run all eight original development releases with the final shared producer. Require matching per-side observations, input coverage and adjudication across cold, warm and a separate empty cache. Recompute the independent JDK map for both insertion orders.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T22:19:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "10m"
+  },
+  "steps": [
+    {
+      "name": "Numeric and nullable values",
+      "run": "python3 verification/generated-observers/campaign.py --empty-cache 458 445",
+      "cwd": "."
+    },
+    {
+      "name": "Graph and state-machine updates",
+      "run": "python3 verification/generated-observers/campaign.py --empty-cache J16 J19",
+      "cwd": "."
+    },
+    {
+      "name": "Stream destination, archive reopen, class decoder and JDK map",
+      "run": "python3 verification/generated-observers/campaign.py --empty-cache io J06 J10 J17",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/*-clean.zip"
+  ]
+}
