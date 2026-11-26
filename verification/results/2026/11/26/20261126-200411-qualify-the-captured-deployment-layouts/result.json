@@ -1,0 +1,209 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-200411-qualify-the-captured-deployment-layouts",
+  "title": "Qualify the captured deployment layouts of the six release-panel pairs",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 13.2s, peak 154.0 MiB (estimated 8m00s, 3.0 GiB)",
+  "attention": [
+    "declared output verification/classpath-entry-discovery/panel-*.json was not produced",
+    "step 1 (Six paired launches) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-200411-qualify-the-captured-deployment-layouts.json",
+    "sha256": "6007fd021ac7be34918842819da0247f12d14726e98c744c11747104a2ff4ef2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-200411-qualify-the-captured-deployment-layouts",
+      "title": "Qualify the captured deployment layouts of the six release-panel pairs",
+      "description": "Run the previously frozen primary and control callers for Sisu Plexus, Batik, ISCWT, HtmlCleaner, OpenCensus and dom4j on both signed package layouts. Require original JVM method hits, checker agreement and the registered finite outcomes. Withhold deployment names in a second input and require explicit refusals for manifest-dependent profiles.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T20:04:11+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "8m"
+      },
+      "steps": [
+        {
+          "name": "Six paired launches",
+          "run": "for slot in 03 04 08 10 13 16; do python3 lib/benchmark/classpath-entry-discovery/panel.py \"$slot\" \"verification/classpath-entry-discovery/panel-$slot.json\" || exit 1; done",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/classpath-entry-discovery/panel-*.json"
+      ]
+    }
+  },
+  "sourceCommit": "ad8a6aa06c3ebd720513c8a9bf7c832f733567d3",
+  "startedAt": "2026-11-26T20:11:44+00:00",
+  "finishedAt": "2026-11-26T20:15:13+00:00",
+  "wallSeconds": 209.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4071688,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 161464320,
+    "wallSeconds": 13.2,
+    "cpuSeconds": 14.7,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 184.306,
+      "cpuSeconds": 184.465,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2387877888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "d54dc155590d8f841954099273689565c0139ada0ae4adf34fadad358e85dfb9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261126-200411-qualify-the-captured-deployment-layouts/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 04s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Six paired launches",
+      "run": "for slot in 03 04 08 10 13 16; do python3 lib/benchmark/classpath-entry-discovery/panel.py \"$slot\" \"verification/classpath-entry-discovery/panel-$slot.json\" || exit 1; done",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 13.228,
+      "cpuSeconds": 14.702,
+      "cpuThrottledSeconds": 1.713,
+      "peakMemoryBytes": 161464320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-six-paired-launches.log",
+        "lines": 9,
+        "bytes": 857,
+        "sha256": "8963cd70f312d07bd0bbca3d847ff03be3d2e315c37f102f2ae7c34a9afef7eb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/qualified-release-03-ab5secf6/captured.json",
+        "2 claims in /tmp/qualified-release-03-ab5secf6/withheld.json",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261126-200411-qualify-the-captured-deployment-layouts/lib/benchmark/classpath-entry-discovery/panel.py\", line 86, in <module>",
+        "    run(args.slot, args.output)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261126-200411-qualify-the-captured-deployment-layouts/lib/benchmark/classpath-entry-discovery/panel.py\", line 75, in run",
+        "    raise ValueError(\"captured public result disagrees: \" + str([(r[\"question\"], r[\"revision\"], r[\"firstOpenDependency\"]) for r in answers if r[\"profile\"] == \"captured\" and r[\"status\"] != \"established\"])[:1200])",
+        "ValueError: captured public result disagrees: []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T20:15:37+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "142b75def4901bf0134e8269534b5a50c458376c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/142b75def4901bf0134e8269534b5a50c458376c/jvmcontract",
+    "built": true
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T201513Z-318964c09eecf810",
+      "outputs": "20261126T201513Z-3313838d354eadcf",
+      "workdir": "20261126T201517Z-241893478e4ee30f"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261126-200411-qualify-the-captured-deployment-layouts"
+}

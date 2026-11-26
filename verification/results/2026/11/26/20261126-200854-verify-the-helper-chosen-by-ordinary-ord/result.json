@@ -1,0 +1,175 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-200854-verify-the-helper-chosen-by-ordinary-ord",
+  "title": "Verify the helper chosen by ordinary ordered proof recipes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.2s, peak 99.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-200854-verify-the-helper-chosen-by-ordinary-ord.json",
+    "sha256": "d7be22d03f56906e52443e2ad195a7a98a9cb4a780cc67bd90e8d0be568c8227",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-200854-verify-the-helper-chosen-by-ordinary-ord",
+      "title": "Verify the helper chosen by ordinary ordered proof recipes",
+      "description": "On unmodified two-JAR fixtures, use the product proof recipe with the entry in the second JAR. Run native and stock JBMC on A,B, the reversed order, and B alone. Check both the matching sentinel and a deliberately false one against an independent JVM and resource enumeration.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T20:08:54+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Exercise both backend invocations",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/backend.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/classpath-entry-discovery/backend.json"
+      ]
+    }
+  },
+  "sourceCommit": "ad8a6aa06c3ebd720513c8a9bf7c832f733567d3",
+  "startedAt": "2026-11-26T20:11:44+00:00",
+  "finishedAt": "2026-11-26T20:15:03+00:00",
+  "wallSeconds": 199.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4071688,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 104235008,
+    "wallSeconds": 3.2,
+    "cpuSeconds": 4.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise both backend invocations",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/backend.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 3.206,
+      "cpuSeconds": 4.073,
+      "cpuThrottledSeconds": 0.209,
+      "peakMemoryBytes": 104235008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-both-backend-invocati.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "d7b29c4b3f01a716a498cccb23fbd2a67cc7d21ce350409a064e989162a806ee",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "backend: 3 qualified deployment controls"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/classpath-entry-discovery/backend.json",
+      "change": "added",
+      "bytes": 15112,
+      "sha256": "74e6813c42814a3ffb4998b6a639989193e9ea276ed0345596e92fa73df1a192",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T20:15:37+00:00",
+    "applied": [
+      "verification/classpath-entry-discovery/backend.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "142b75def4901bf0134e8269534b5a50c458376c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/142b75def4901bf0134e8269534b5a50c458376c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T201503Z-2979137a8857e350",
+      "outputs": "20261126T201503Z-319134713565bb30",
+      "diff": "20261126T201503Z-3374348ac005735c"
+    }
+  }
+}
