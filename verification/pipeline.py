@@ -299,6 +299,13 @@ def isolation_of(runner):
 # Git and jj
 
 
+def conflicted(source: str, root: Path | None = None) -> bool:
+    """Whether a git commit is jj's representation of a conflicted change: its tree holds JJ-CONFLICT-README at the
+    top, beside the .jjconflict-* copies of each side."""
+    r = subprocess.run(["git", "cat-file", "-e", f"{source}:JJ-CONFLICT-README"], cwd=root or ROOT, capture_output=True)
+    return r.returncode == 0
+
+
 def git(*args, check=True, binary=False):
     proc = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=not binary)
     if check and proc.returncode != 0:
@@ -1121,6 +1128,13 @@ class Runner:
         if work.exists():
             shutil.rmtree(work)
         work.mkdir(parents=True)
+        if conflicted(source):
+            # jj writes a conflicted commit to git as its conflict layout: the README and a whole-tree copy of the
+            # base and of each side. A job exported from one ran on that, three or four trees at once (VF-060).
+            result["status"] = "error"
+            result["attention"].append(f"its source revision {source[:12]} is a conflicted jj commit, so its tree is jj's "
+                                       f"conflict layout, not the sources: resolve the conflict and submit the job again")
+            return
         archive = subprocess.run(["git", "archive", "--format=tar", source], cwd=ROOT, capture_output=True)
         if archive.returncode != 0:
             raise RuntimeError(f"git archive {source}: {archive.stderr.decode().strip()}")
@@ -1499,6 +1513,43 @@ def cmd_wait(args):
         time.sleep(1)
 
 
+def repo_store(root: Path = None) -> Path | None:
+    """jj's store of this repository, which all of its workspaces share (.jj/repo in the default workspace, and a file
+    naming it, relative to .jj, in each other one); None outside jj."""
+    j = (root or ROOT) / ".jj" / "repo"
+    try:
+        if j.is_dir():
+            return j.resolve()
+        if j.is_file():
+            store = (j.parent / j.read_text().strip()).resolve()
+            return store if store.is_dir() else None
+    except OSError:
+        pass
+    return None
+
+
+def take_repo_lock(state: Path):
+    """The runner's lock across every workspace of this repository (VF-051). Each workspace has its own .state and so
+    its own runner.lock; on 2026-11-21 a run's agent started a second runner in its workspace, which started the jobs
+    the watcher's runner was running, under the same scope names, so systemd stopped the first ones. Returns the open
+    lock (kept for the runner's life), or exits naming the workspace whose runner holds it."""
+    store = repo_store()
+    if store is None:
+        return None
+    lock = open(store / "verification-runner.lock", "a+")
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        lock.seek(0)
+        holder = lock.read().strip() or "another workspace"
+        sys.exit(f"another workspace's runner is at work in this repository ({holder}): run the queue from there, "
+                 f"or stop that runner first; a runner per repository, since two run the same jobs")
+    lock.truncate(0)
+    lock.write(f"pid {os.getpid()}, {ROOT}\n")
+    lock.flush()
+    return lock
+
+
 def cmd_run(args):
     config = load_config(args)
     isolation = isolation_of(config["runner"])
@@ -1508,6 +1559,7 @@ def cmd_run(args):
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
         sys.exit(f"another runner is using {runner.state}")
+    shared = take_repo_lock(runner.state)  # noqa: F841  (held until the runner exits)
     lock.truncate(0)
     lock.write(f"{os.getpid()}\n")  # for runner_pid: who is at work here
     lock.flush()

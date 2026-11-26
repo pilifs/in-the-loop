@@ -651,6 +651,19 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(r["status"], "error")
         self.assertIn("no-such-tool-anywhere", r["attention"][0])
 
+    def test_a_job_from_a_conflicted_jj_commit_is_an_error_and_runs_nothing(self):
+        # VF-060: jj writes a conflicted change to git as JJ-CONFLICT-README beside a whole-tree copy of each side.
+        marks = self.repo.dir.parent / f"{self.repo.dir.name}-conflicted-ran"
+        self.addCleanup(lambda: marks.unlink(missing_ok=True))
+        job_id = self.repo.submit("From a conflict", "--run", f"echo ran >> {marks}")
+        (self.repo.dir / "JJ-CONFLICT-README").write_text("made-up conflict layout\n")
+        self.repo.commit("job, in a conflicted change")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        r = self.repo.result(job_id, False)
+        self.assertEqual(r["status"], "error")
+        self.assertIn("conflicted jj commit", r["attention"][0])
+        self.assertFalse(marks.exists(), "no step ran")
+
 
     def test_a_real_world_example_is_not_submitted_as_a_build_py_run(self):
         folder = self.repo.dir / "examples/108-a-real-world-change"
@@ -767,6 +780,30 @@ class PipelineTest(unittest.TestCase):
                                   "--capability", "B9", "--example", "150", check=False)
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("no app builds it", proc.stderr)
+
+
+class OneRunnerPerRepositoryTest(unittest.TestCase):
+    """VF-051: a runner in one jj workspace turns away a runner in another workspace of the same repository."""
+
+    def test_a_second_workspaces_runner_is_refused_while_the_first_holds_the_repositorys_lock(self):
+        with tempfile.TemporaryDirectory() as d:
+            default, other = Path(d) / "default", Path(d) / "other"
+            (default / ".jj" / "repo").mkdir(parents=True)
+            (other / ".jj").mkdir(parents=True)
+            (other / ".jj" / "repo").write_text("../../default/.jj/repo")  # as jj writes it in a second workspace
+            with mock.patch.object(pipeline, "ROOT", default):
+                self.assertEqual(pipeline.repo_store(), (default / ".jj" / "repo").resolve())
+                held = pipeline.take_repo_lock(default / "verification" / ".state")
+            self.addCleanup(held.close)
+            with mock.patch.object(pipeline, "ROOT", other), self.assertRaises(SystemExit) as refused:
+                pipeline.take_repo_lock(other / "verification" / ".state")
+            self.assertIn("another workspace's runner is at work", str(refused.exception))
+            self.assertIn(str(default), str(refused.exception))
+            held.close()
+            with mock.patch.object(pipeline, "ROOT", other):
+                pipeline.take_repo_lock(other / "verification" / ".state").close()  # free again once the first ends
+            with mock.patch.object(pipeline, "ROOT", Path(d) / "no-jj-here"):
+                self.assertIsNone(pipeline.take_repo_lock(Path(d)))
 
 
 class SignalsTest(unittest.TestCase):
