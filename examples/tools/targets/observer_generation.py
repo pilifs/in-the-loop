@@ -381,47 +381,9 @@ def correspondence(recipe, inputs, marks, observation):
 
 
 def rescore(report_path, bundle, predictions):
-    """A new oracle can challenge an already qualified finite experiment without changing measured bytes."""
-    from targets import change_plan
-    plan = json.loads(report_path.read_bytes())
-    if plan.get("executionState") != "complete":
-        raise ValueError("re-scoring requires completed original JVM observations")
-    change_plan.saved_bindings(plan, report_path.parent)
-    reg = json.loads((bundle / "registration.json").read_bytes())
-    checks = json.loads(predictions.read_bytes())
-    _, originals = change_plan.frozen_workflows(bundle / "workflows.json")
-    nodes = {n["id"]: n for n in plan["claims"]}
-    if set(nodes) != set(originals) or set(nodes) != set(checks):
-        raise ValueError("predictions or report belong to other registered questions")
-    result = {"schema": "rescored-public-observations/v1", "reportSha256": sha(report_path),
-              "predictionsSha256": sha(predictions), "claims": []}
-    with tempfile.TemporaryDirectory(prefix="public-rescore-") as temp:
-        dest = Path(temp)
-        (dest / "generation.json").write_bytes((bundle / "generation.json").read_bytes())
-        workflows(reg, checks, dest)
-        rescored = json.loads((dest / "workflows.json").read_bytes())
-        for row in rescored["workflows"]:
-            name = row["id"]
-            node = nodes[name]
-            orig, _, _, spec = originals[name]
-            if node.get("claimKey") != digest({"scope": spec, "intent": orig["intent"], "assumptions": orig["assumptions"]}):
-                raise ValueError("saved claim differs from the frozen bundle")
-            ref = node.get("receipt")
-            if not ref or node["status"] not in {"established", "refuted"}:
-                result["claims"].append({"id": name, "status": "open", "firstOpenDependency": node["firstOpenDependency"]})
-                continue
-            path = (report_path.parent / ref["path"]).resolve()
-            if not path.is_relative_to(report_path.parent.resolve()) or sha(path) != ref["sha256"]:
-                raise ValueError("original JVM receipt differs")
-            evidence = json.loads(path.read_bytes())
-            if (evidence.get("generatedObserver", {}).get("bundle") != spec["generatedObserver"]["sha256"]
-                    or evidence["cases"] != spec["cases"]):
-                raise ValueError("measurement belongs to another observer or input domain")
-            new_spec = json.loads((dest / row["scope"]).read_bytes())
-            scored = change_evidence.compose(new_spec, {**evidence, "cases": new_spec["cases"]}, row["intent"])
-            observations = {s: [t["observations"] for t in record["trials"]] for s, record in evidence["sides"].items()}
-            result["claims"].append({"id": name, **scored, "receipt": ref, "observationsSha256": digest(observations)})
-    return result
+    """Compatibility entry point for callers of the independent offline evaluator."""
+    from targets import observer_rescore
+    return observer_rescore.score(report_path, bundle, predictions)
 
 
 def matches(actual, expected):

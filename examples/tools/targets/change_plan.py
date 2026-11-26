@@ -264,6 +264,8 @@ def compare(args, *, original_binary=True, archive_index=None):
             evidence.update(status="open", reason=str(error))
         stable = initially_absent and change_inventory.absences_hold(missing)
         changed_files = change_inventory.changed_inputs((old, new))
+        if "generatedObserver" in spec:
+            node["rescoreDomainClosed"] = bool(closed and stable and not changed_files)
         if cache and stable and not changed_files and evidence.get("status") != "open":
             cache.publish_pending()
         if evidence.get("cases") == spec["cases"]:
@@ -339,8 +341,11 @@ def compare(args, *, original_binary=True, archive_index=None):
     # A provider can appear or be replaced after an earlier claim. Check again before publishing the plan.
     if args.run:
         changed_final = change_inventory.changed_inputs((old, new))
+        stable_final = not changed_final and change_inventory.absences_hold(missing)
         for node in plan["claims"]:
-            if node["status"] != "open" and (not change_inventory.absences_hold(missing) or changed_final):
+            if not stable_final and "rescoreDomainClosed" in node:
+                node["rescoreDomainClosed"] = False
+            if node["status"] != "open" and not stable_final:
                 node.update(status="open", firstOpenDependency="deployment changed before plan publication")
         plan["counts"] = {cohort: dict(Counter(n["status"] for n in plan["claims"] if n["cohort"] == cohort))
                           for cohort in ("registered", "additional", "control")}
@@ -482,8 +487,8 @@ def main(argv=None):
             change_evidence.write_json(args.output, observer_generation.helper_table(args.report, args.bundle, args.jdk))
             return 0
         if args.command == "rescore":
-            from targets import observer_generation
-            change_evidence.write_json(args.output, observer_generation.rescore(args.report, args.bundle, args.predictions))
+            from targets import observer_rescore
+            change_evidence.write_json(args.output, observer_rescore.score(args.report, args.bundle, args.predictions))
             return 0
         if args.command == "bindings":
             account = saved_bindings(json.loads(args.report.read_bytes()), args.report.parent if args.verify_receipts else None)

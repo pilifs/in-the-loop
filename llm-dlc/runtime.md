@@ -396,6 +396,9 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    Preflight derives its answers from the referenced JVM receipts. The authored comparison remains accessible
    through `python3 -m targets.public_comparison NNN --authored` with `PYTHONPATH=examples/tools`.
    Re-score a frozen run with `build.py --change-plan rescore --bundle DIR --report REPORT --predictions PRED --output NEW`.
+   An incorrect parent prediction can leave a fully measured question open. A separate evaluation can correct
+   that prediction using its original JVM receipt. The command checks the frozen input domain, repeated
+   observations, entry bindings and runtime stability before it issues a new adjudication.
    For a marked minimum, `build.py --change-plan helper-table --bundle DIR --report REPORT --jdk JDK --output HELPER`
    derives its finite rows. Reference that declaration with `checkedHelper` in a separate workflow.
    Stage 2 can omit workflows to discover public callers from the compiled change. Review competing observations

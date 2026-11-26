@@ -5,7 +5,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from targets import observer_generation, observer_recipes
+from targets import observer_generation, observer_recipes, observer_rescore
 
 
 class NumericInputsTest(unittest.TestCase):
@@ -39,6 +39,22 @@ class NumericInputsTest(unittest.TestCase):
             select(entry, {**call, "format": {**fmt, "parseBigDecimal": 1}})
         with self.assertRaisesRegex(observer_recipes.Unsupported, "exactly text, type"):
             select(owner + observer_recipes.NUMBER_ENTRY, {**call, "format": fmt})
+
+
+class RescoreTest(unittest.TestCase):
+    def test_publication_guard_applies_to_originally_open_claims_and_legacy_receipts(self):
+        registration = {"deterministicUnderAssumptions": True, "assumptions": ["fixed inputs"]}
+        question = {"status": "open", "entryBindings": {"old": "before", "new": "after"}}
+        plan = {"claims": [question]}
+        stable = observer_rescore.stable_domain
+        self.assertFalse(stable(question, plan, registration))
+        self.assertTrue(stable({**question, "rescoreDomainClosed": True}, plan, registration))
+        plan["claims"].append({**question, "status": "established", "entryBindings": {"new": "other"}})
+        self.assertFalse(stable(question, plan, registration))
+        plan["claims"].append({**question, "status": "refuted"})
+        self.assertTrue(stable(question, plan, registration))
+        self.assertFalse(stable({**question, "rescoreDomainClosed": False}, plan, registration))
+        self.assertFalse(stable(question, plan, {**registration, "deterministicUnderAssumptions": False}))
 
 
 if __name__ == "__main__":
