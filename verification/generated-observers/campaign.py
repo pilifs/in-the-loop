@@ -21,8 +21,7 @@ JDKS = Path.home() / ".sdkman/candidates/java"
 
 
 def prepare(number, work):
-    if number == "09-retained":
-        number = "09"
+    number = {"09-retained": "09", "458-format": "458"}.get(number, number)
     if number in {"06", "09"}:
         packet = CACHE / "generated-observers-and-callers/probes/successor/packets" / number
         graph = json.loads(gzip.decompress((ROOT / "verification/beyond-jbmc/successor/deployments" / (number + ".json.gz")).read_bytes()))

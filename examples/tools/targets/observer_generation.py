@@ -1,4 +1,5 @@
 """Materialize a reviewed public history and persist the exact older-API caller for replay."""
+import base64
 import errno
 import hashlib
 import json
@@ -281,6 +282,25 @@ def install(root, record, output):
             (output / name).write_bytes(data)
 
 
+def numeric_input(mark):
+    def text(value):
+        return base64.b64decode(value, validate=True).decode("utf-16-be", "surrogatepass")
+
+    spelling, target, *fixture = mark.split("\t")
+    kind = target.rsplit(".", 1)[-1]
+    package = "java.math." if kind in {"BigInteger", "BigDecimal"} else "java.lang."
+    if kind not in observer_recipes.NUMBERS or target != package + kind:
+        raise ValueError("unrecognized numeric class at public entry")
+    value = {"text": text(spelling), "type": kind}
+    if fixture == ["null"]:
+        value["format"] = None
+    elif fixture:
+        if len(fixture) != 4 or fixture[0] != "decimal" or fixture[3] not in ("true", "false"):
+            raise ValueError("missing DecimalFormat construction or parsing mode at public entry")
+        value["format"] = {"locale": text(fixture[1]), "pattern": text(fixture[2]), "parseBigDecimal": fixture[3] == "true"}
+    return value
+
+
 def correspondence(recipe, inputs, marks, observation):
     """Independent JVM call counts and receiver identities; the scalar projection also reads each return or throw."""
     aliases = [int(m.split()[1]) for m in marks if m.startswith("UPGRADE-PUBLIC-CALL ")]
@@ -290,7 +310,12 @@ def correspondence(recipe, inputs, marks, observation):
     if not isinstance(values, list):
         raise ValueError("public observation requires an ordered sequence")
     family = recipe["family"]
+    result = {"entryCalls": len(aliases), "receiverAliases": aliases, "observationSha256": digest(values)}
     if family == "typed numeric conversions":
+        actual_inputs = [numeric_input(m.partition(" ")[2]) for m in marks if m.startswith("UPGRADE-NUMERIC-INPUT ")]
+        if actual_inputs != inputs["conversions"]:
+            raise ValueError("actual numeric arguments at public entry differ from the reviewed conversions")
+        result["numericArguments"] = actual_inputs
         events = [m.partition(" ")[2] for m in marks if m.startswith("UPGRADE-NUMBER ")]
         reads = []
         for event in events:
@@ -345,7 +370,6 @@ def correspondence(recipe, inputs, marks, observation):
         if len(aliases) < 1 or not values or any(len(v) != 2 or type(v[0]) != int or len(v[1]) != v[0]
                 for v in values if v != ["overload-absent"]):
             raise ValueError("missing sorted public hits or total after reopening the index")
-    result = {"entryCalls": len(aliases), "receiverAliases": aliases, "observationSha256": digest(values)}
     tuples = []
     for line in marks:
         if line.startswith("UPGRADE-HELPER-VALUE "):

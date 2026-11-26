@@ -1,0 +1,101 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "spring-projects/spring-framework#37434",
+  "entry": "org.springframework.util.NumberUtils#parseNumber(Ljava/lang/String;Ljava/lang/Class;Ljava/text/NumberFormat;)Ljava/lang/Number;",
+  "changed": [
+    "org.springframework.util.NumberUtils#isHexNumber(Ljava/lang/String;)Z",
+    "org.springframework.util.NumberUtils#decodeBigInteger(Ljava/lang/String;)Ljava/math/BigInteger;"
+  ],
+  "fields": [
+    "call.outcome",
+    "return.type",
+    "return.value"
+  ],
+  "assumptions": [
+    "Fresh JVM, recorded release and ordered deployment; only the registered deterministic inputs and synchronous public calls."
+  ],
+  "questions": [
+    {
+      "id": "formatted-number",
+      "history": "Parse 1,5 as BigDecimal with DecimalFormat pattern 0.0 and German decimal symbols.",
+      "cohort": "additional",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "conversions": [
+            {
+              "text": "1,5",
+              "type": "BigDecimal",
+              "format": {
+                "pattern": "0.0",
+                "locale": "de-DE",
+                "parseBigDecimal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "decimal-grouping",
+      "history": "Parse the same 1,500 as BigDecimal with German then US symbols and pattern #,##0.000. Start the German formatter in BigDecimal mode and the US formatter outside it.",
+      "cohort": "control",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "conversions": [
+            {
+              "text": "1,500",
+              "type": "BigDecimal",
+              "format": {
+                "locale": "de-DE",
+                "pattern": "#,##0.000",
+                "parseBigDecimal": true
+              }
+            },
+            {
+              "text": "1,500",
+              "type": "BigDecimal",
+              "format": {
+                "locale": "en-US",
+                "pattern": "#,##0.000",
+                "parseBigDecimal": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "null-format-delegation",
+      "history": "Pass an explicit null NumberFormat when parsing +0x7f as Integer and BigInteger.",
+      "cohort": "additional",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "conversions": [
+            {
+              "text": "+0x7f",
+              "type": "Integer",
+              "format": null
+            },
+            {
+              "text": "+0x7f",
+              "type": "BigInteger",
+              "format": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

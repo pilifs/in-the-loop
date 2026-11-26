@@ -1,10 +1,12 @@
 import com.sun.jdi.Bootstrap;
+import com.sun.jdi.ClassObjectReference;
 import com.sun.jdi.Field;
 import com.sun.jdi.Location;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
+import com.sun.jdi.StringReference;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.Value;
 import com.sun.jdi.VMDisconnectedException;
@@ -314,6 +316,80 @@ public final class UpgradeTrace {
         return type.name() + "\t" + number;
     }
 
+    // Preserve Java String code units exactly, even isolated surrogates or an empty argument.
+    private static String textArgument(Value value) {
+        String s = ((StringReference)value).value();
+        java.nio.ByteBuffer bytes = java.nio.ByteBuffer.allocate(s.length() * 2);
+        for (int i = 0; i < s.length(); i++) bytes.putChar(s.charAt(i));
+        return Base64.getEncoder().encodeToString(bytes.array());
+    }
+
+    // Follow the JDK objects actually returned to or constructed by the caller. A formatter with the
+    // same output can still have received a different pattern, locale or initial parsing mode.
+    private static final class NumericInputs {
+        final Map<Long,String> builders = new LinkedHashMap<>(), locales = new LinkedHashMap<>();
+        final Map<Long,String> symbols = new LinkedHashMap<>(), formats = new LinkedHashMap<>();
+
+        void watchFormats(VirtualMachine vm) {
+            for (String type : Arrays.asList("java.util.Locale$Builder", "java.text.DecimalFormatSymbols", "java.text.DecimalFormat")) {
+                MethodExitRequest request = vm.eventRequestManager().createMethodExitRequest();
+                request.addClassFilter(type);
+                request.putProperty("formatConstruction", true);
+                request.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+                request.enable();
+            }
+        }
+
+        void observeConstruction(MethodExitEvent event, String observer) throws Exception {
+            if (event.location().declaringType().classLoader() != null || event.thread().frameCount() < 2
+                    || !event.thread().frame(1).location().declaringType().name().equals(observer)) return;
+            StackFrame frame = event.thread().frame(0);
+            ObjectReference receiver = frame.thisObject();
+            if (receiver == null) return;
+            long id = receiver.uniqueID();
+            List<Value> args = frame.getArgumentValues();
+            String member = CheckedReplay.entry(event.location());
+            switch (member) {
+                case "java.util.Locale$Builder#setLanguageTag(Ljava/lang/String;)Ljava/util/Locale$Builder;":
+                    builders.put(id, textArgument(args.get(0)));
+                    break;
+                case "java.util.Locale$Builder#build()Ljava/util/Locale;":
+                    locales.put(((ObjectReference)event.returnValue()).uniqueID(), builders.get(id));
+                    break;
+                case "java.text.DecimalFormatSymbols#<init>(Ljava/util/Locale;)V":
+                    symbols.put(id, locales.get(((ObjectReference)args.get(0)).uniqueID()));
+                    break;
+                case "java.text.DecimalFormat#<init>(Ljava/lang/String;Ljava/text/DecimalFormatSymbols;)V":
+                    String language = symbols.get(((ObjectReference)args.get(1)).uniqueID());
+                    if (language != null) formats.put(id, language + "\t" + textArgument(args.get(0)));
+                    break;
+                case "java.text.DecimalFormat#setParseBigDecimal(Z)V":
+                    break; // Read the object's current flag at the public parser entry.
+                default:
+                    // Other direct configuration invalidates the recorded construction.
+                    if (event.method().name().startsWith("set") || event.method().name().startsWith("apply")
+                            || event.method().name().startsWith("clear")) {
+                        builders.remove(id);
+                        symbols.remove(id);
+                        formats.remove(id);
+                    }
+            }
+        }
+
+        String atEntry(StackFrame frame) {
+            List<Value> args = frame.getArgumentValues();
+            String fields = textArgument(args.get(0)) + "\t" + ((ClassObjectReference)args.get(1)).reflectedType().name();
+            if (args.size() == 2) return fields;
+            ObjectReference format = (ObjectReference)args.get(2);
+            if (format == null) return fields + "\tnull";
+            String fixture = formats.get(format.uniqueID());
+            Field mode = format.referenceType().fieldByName("parseBigDecimal");
+            if (fixture == null || mode == null || !format.referenceType().name().equals("java.text.DecimalFormat"))
+                return fields + "\tunobserved";
+            return fields + "\tdecimal\t" + fixture + "\t" + format.getValue(mode);
+        }
+    }
+
     private static void observeHelper(BreakpointEvent hit, String consumer, String observer) throws Exception {
         List<StackFrame> frames = hit.thread().frames();
         if (frames.size() < 2 || !CheckedReplay.entry(frames.get(1).location()).equals(consumer)) return;
@@ -369,6 +445,7 @@ public final class UpgradeTrace {
         String entryInvocation = null;
         boolean history = Boolean.getBoolean("upgrade.observe.history");
         boolean numeric = Boolean.getBoolean("upgrade.observe.numeric");
+        NumericInputs numericInputs = new NumericInputs();
         String candidateHelper = System.getProperty("upgrade.observe.helper");
         String publicReader = System.getProperty("upgrade.observe.reader");
         Map<Long,Integer> historyReceivers = new LinkedHashMap<>();
@@ -378,6 +455,7 @@ public final class UpgradeTrace {
         Map<String, List<String>> thrown = new LinkedHashMap<>();
         try {
             if (numeric) {
+                if (descriptor.contains("Ljava/text/NumberFormat;")) numericInputs.watchFormats(vm);
                 MethodExitRequest exits = vm.eventRequestManager().createMethodExitRequest();
                 exits.addClassFilter(owner);
                 exits.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
@@ -420,6 +498,10 @@ public final class UpgradeTrace {
                         if (checked != null) checked.bind(vm, type);
                     } else if (event instanceof MethodExitEvent) {
                         MethodExitEvent exit = (MethodExitEvent)event;
+                        if (Boolean.TRUE.equals(exit.request().getProperty("formatConstruction"))) {
+                            numericInputs.observeConstruction(exit, observer);
+                            continue;
+                        }
                         Object tuple = exit.request().getProperty("tuple");
                         if (tuple != null) {
                             if (!CheckedReplay.entry(exit.location()).equals(exit.request().getProperty("target")))
@@ -524,6 +606,7 @@ public final class UpgradeTrace {
                             if (site != null) {
                                 entryInvocation = site;
                                 ObjectReference instance = point.thread().frame(0).thisObject();
+                                if (numeric) System.err.println("UPGRADE-NUMERIC-INPUT " + numericInputs.atEntry(point.thread().frame(0)));
                                 if (history) {
                                     int alias = instance == null ? -1 : historyReceivers.computeIfAbsent(
                                             instance.uniqueID(), unused -> historyReceivers.size());

@@ -54,7 +54,7 @@ def dynamic(bundle, jdk, directory, source, question, index, side):
         [], time.monotonic()+35, ".")
     value = upgrade_replay.typed_outcome(obs.splitlines())
     result = {"sourceSha256":upgrade_replay.sha(candidate),"staticSites":sites,"raw":value,
-              "marks":[m for m in marks if m.startswith(("UPGRADE-NUMBER ", "UPGRADE-PUBLIC-"))]}
+              "marks":[m for m in marks if m.startswith(("UPGRADE-NUMBER ", "UPGRADE-NUMERIC-INPUT ", "UPGRADE-PUBLIC-"))]}
     try:
         result["projection"] = observer_generation.correspondence(recipe, inputs, marks, value)
     except ValueError as e:
@@ -211,6 +211,57 @@ def controls(number, work):
                   campaign.HERE/"receipts"/(number+"-controls.zip"))
 
 
+def format_controls(work):
+    work.mkdir()
+    jdk = campaign.prepare("458-format", work)
+    bundle = work / "bundle"
+    reg = campaign.HERE / "registrations/458-format.json"
+    campaign.isolated(reg, work, jdk, bundle)
+    with zipfile.ZipFile(campaign.HERE / "receipts/number-format-open.zip") as archive:
+        first = json.loads(archive.read("bundle/registration.json"))
+    questions = read(reg)["questions"]
+    if questions[0] != first["questions"][0] or read(bundle/"generation.json")["status"] != "compiled":
+        raise ValueError("the originally unsupported decimal-format question changed or failed to compile")
+    source = (bundle / "UpgradeProbe.java").read_text()
+    false_inputs = {
+        "text": ('String text = (String)pair.get("text");', 'String text = "01,5";'),
+        "locale": ('(String)spec.get("locale")', '"fr-FR"'),
+        "pattern": ('(String)spec.get("pattern")', '"#0.0"'),
+        "parsing-mode": ('(Boolean)spec.get("parseBigDecimal")', 'false'),
+        "target-class": ("(text, target, format);", "(text, Long.class, format);"),
+    }
+    controls = {}
+    for label, question in (("formatted", questions[0]), ("null-format", questions[2])):
+        controls[label] = dynamic(bundle, jdk, work / label, source, question, 0, "old")
+        if controls[label].get("projection", {}).get("numericArguments") != question["inputs"][0]["conversions"]:
+            raise ValueError("the genuine caller lost its actual numeric inputs")
+    for label, (needle, replacement) in false_inputs.items():
+        if source.count(needle) != 1:
+            raise ValueError("numeric input control needs one substitution site for " + label)
+        null_format = label == "target-class"
+        question = questions[2] if null_format else questions[0]
+        control = dynamic(bundle, jdk, work / label, source.replace(needle, replacement), question, 0, "old")
+        genuine = controls["null-format" if null_format else "formatted"]
+        if control["raw"] != genuine["raw"] or "actual numeric arguments" not in control.get("refusal", ""):
+            raise ValueError("equal-valued " + label + " substitution passed or changed the raw public result")
+        controls[label] = control
+    legacy = work / "two-argument"
+    with zipfile.ZipFile(campaign.HERE / "receipts/458-clean.zip") as archive:
+        for name in archive.namelist():
+            if name.startswith("bundle/"):
+                archive.extract(name, legacy)
+    plain = legacy / "bundle"
+    original = read(plain / "registration.json")["questions"][0]
+    for side in ("old", "new"):
+        check = dynamic(plain, jdk, legacy / side, (plain / "UpgradeProbe.java").read_text(), original, 0, side)
+        if check.get("projection", {}).get("numericArguments") != original["inputs"][0]["conversions"]:
+            raise ValueError("the saved two-argument caller lost its public input correspondence")
+        controls["two-argument-" + side] = check
+    write(work / "controls.json", controls)
+    campaign.pack(work, [bundle, work / "operator-policy.json", work / "controls.json"],
+                  campaign.HERE / "receipts/458-format-controls.zip")
+
+
 def wrong_prediction_at_setup(work):
     work.mkdir()
     jdk=campaign.prepare("458",work)
@@ -250,12 +301,14 @@ def wrong_prediction_at_setup(work):
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("number",choices=["458","445","J16"])
+    parser.add_argument("number",choices=["458","445","J16","458-format"])
     parser.add_argument("--wrong-at-setup",action="store_true",help="seed a wrong Spring prediction before ordinary materialization")
     a=parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="generated-controls-") as tmp:
         if a.wrong_at_setup:
             if a.number!="458": parser.error("the seeded numeric challenge uses example 458")
             wrong_prediction_at_setup(Path(tmp)/a.number)
+        elif a.number == "458-format":
+            format_controls(Path(tmp) / a.number)
         else:
             controls(a.number,Path(tmp)/a.number)

@@ -7,6 +7,7 @@ import hashlib
 from pathlib import Path
 import re
 import zipfile
+from string import Template
 from textwrap import dedent, indent
 
 from targets import runtime_jar
@@ -15,6 +16,8 @@ TEMPLATE = Path(__file__).with_name("java") / "GeneratedObservation.java.templat
 IDENTIFIER = re.compile(r"[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*")
 CANDIDATE_BUDGET = 64
 NUMBERS = {"Byte", "Short", "Integer", "Long", "Float", "Double", "BigInteger", "BigDecimal"}
+NUMBER_ENTRY = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Number;"
+FORMATTED_NUMBER_ENTRY = "(Ljava/lang/String;Ljava/lang/Class;Ljava/text/NumberFormat;)Ljava/lang/Number;"
 
 
 class Unsupported(ValueError):
@@ -110,14 +113,26 @@ def select(entry, fields, inputs, api):
     if not descriptor:
         raise Unsupported("supply the descriptor of the bound public entry")
     if fields == ["call.outcome", "return.type", "return.value"]:
-        api.require(owner, method, "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Number;", static=True)
+        if descriptor not in (NUMBER_ENTRY, FORMATTED_NUMBER_ENTRY):
+            raise Unsupported("need a public conversion of text and a numeric class, optionally with NumberFormat")
+        api.require(owner, method, descriptor, static=True)
+        formatted = descriptor == FORMATTED_NUMBER_ENTRY
         for item in inputs:
             keys(item, ["conversions"])
             for conv in nonempty(item["conversions"], "texts and requested numeric types"):
-                keys(conv, ["text", "type"])
-                if conv["type"] not in NUMBERS or not isinstance(conv["text"], str):
+                keys(conv, ["text", "type", "format"] if formatted else ["text", "type"])
+                if not isinstance(conv["type"], str) or conv["type"] not in NUMBERS or not isinstance(conv["text"], str):
                     raise Unsupported("each conversion needs literal text and a supported numeric target type")
+                if formatted and conv["format"] is not None:
+                    fmt = conv["format"]
+                    keys(fmt, ["locale", "pattern", "parseBigDecimal"])
+                    if not isinstance(fmt["locale"], str) or not fmt["locale"].strip():
+                        raise Unsupported("which explicit language tag supplies the decimal symbols?")
+                    if not isinstance(fmt["pattern"], str) or type(fmt["parseBigDecimal"]) is not bool:
+                        raise Unsupported("supply a decimal pattern and an explicit BigDecimal parsing flag")
         recipe = {"family": "typed numeric conversions", "owner": owner, "method": method}
+        if formatted:
+            recipe["formatArgument"] = "java.text.DecimalFormat"
     elif fields == ["result.defined", "fallback.value", "fallback.calls"]:
         _, desc = api.select(owner, [method], r"\(Ljava/util/function/Predicate;\)L[\w/$]+;")
         result = desc.split(")L")[1][:-1].replace("/", ".")
@@ -150,21 +165,35 @@ def select(entry, fields, inputs, api):
 def source(recipe):
     p = recipe
     if p["family"] == "typed numeric conversions":
-        body = '''
-            for (Map<String,String> pair : (List<Map<String,String>>)data.get("conversions")) {
-                String type = pair.get("type");
+        formatted = "formatArgument" in p
+        setup = '\n                java.text.NumberFormat format = numberFormat((Map<String,Object>)pair.get("format"));'
+        body = Template('''
+            for (Map<String,$pairType> pair : (List<Map<String,$pairType>>)data.get("conversions")) {
+                String type = ${cast}pair.get("type");
                 Class<? extends Number> target = Class.forName(
                         (type.startsWith("Big") ? "java.math." : "java.lang.") + type).asSubclass(Number.class);
-                String text = pair.get("text");
+                String text = ${cast}pair.get("text");$setup
                 try {
-                    Number value = OWNER.METHOD(text, target);
+                    Number value = $owner.$method(text, target$argument);
                     if (value == null) observations.add(row("return", null, null));
                     else observations.add(row("return", value.getClass().getName(), value.toString()));
                 } catch (RuntimeException error) {
                     observations.add(row("throws", error.getClass().getName()));
                 }
-            }'''.replace("OWNER", p["owner"]).replace("METHOD", p["method"])
+            }''').substitute(owner=p["owner"], method=p["method"], pairType="Object" if formatted else "String",
+                            cast="(String)" if formatted else "", setup=setup if formatted else "",
+                            argument=", format" if formatted else "")
         support = ""
+        if formatted:
+            support = '''
+                private static java.text.NumberFormat numberFormat(Map<String,Object> spec) {
+                    if (spec == null) return null;
+                    Locale locale = new Locale.Builder().setLanguageTag((String)spec.get("locale")).build();
+                    java.text.DecimalFormat format = new java.text.DecimalFormat((String)spec.get("pattern"),
+                            new java.text.DecimalFormatSymbols(locale));
+                    format.setParseBigDecimal((Boolean)spec.get("parseBigDecimal"));
+                    return format;
+                }'''
     elif p["family"] == "selection and lazy default":
         body = '''
             for (Map<String,Object> selection : (List<Map<String,Object>>)data.get("selections")) {

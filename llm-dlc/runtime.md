@@ -384,6 +384,10 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    hashes in `records/public-observer/`. An unsupported history records its first missing operation.
    To materialize after setup, run `scaffold_example.py generate --registration REG --predictions PRED --before OLD --after NEW --jdk JDK --output DIR`.
    The `emit` form takes the same inputs with the predictions omitted and writes only the measurement bundle.
+   A numeric conversion bound to the three-argument `NumberFormat` overload takes an explicit `format` on
+   each call. Supply `null` or a decimal pattern, BCP 47 locale and boolean `parseBigDecimal`. Replay checks
+   the actual input text, target class, formatter construction and parsing mode at the public invocation.
+   [Formatted numeric inputs and controls](../verification/generated-observers/registrations/458-format.json)
    Resume with `build.py --change-plan application --before DIR/old.json --after DIR/new.json --jdk JDK --workflows DIR/workflows.json --previous records/entry-bindings.json --run --output REPORT`.
    The runner loads the saved class archive and checks the declared fields and original JVM calls. Handwritten
    workflows retain their authored provenance. [Reviewed inputs](../verification/generated-observers/registrations/458.json)

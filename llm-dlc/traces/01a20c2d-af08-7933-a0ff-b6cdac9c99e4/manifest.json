@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T22:53:38.183Z",
-  "duration_seconds": 232967,
+  "ended": "2026-11-26T23:10:20.042Z",
+  "duration_seconds": 233969,
   "stats": {
-    "turns": 36,
-    "api_calls": 5820,
-    "tool_calls": 14540,
-    "tool_errors": 313,
-    "compactions": 24,
+    "turns": 37,
+    "api_calls": 5886,
+    "tool_calls": 14707,
+    "tool_errors": 316,
+    "compactions": 25,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 7675027,
-      "output_tokens": 3370192,
-      "cache_read_input_tokens": 1587854848,
+      "input_tokens": 7805435,
+      "output_tokens": 3406154,
+      "cache_read_input_tokens": 1597861504,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8095,
-    "exec": 5566,
-    "apply_patch": 683,
+    "Bash": 8184,
+    "exec": 5630,
+    "apply_patch": 697,
     "wait": 108,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -178,6 +178,7 @@
     "examples/tools/targets/observer_histories.py",
     "examples/tools/targets/observer_public_data.py",
     "examples/tools/targets/observer_recipes.py",
+    "examples/tools/targets/observer_rescore.py",
     "examples/tools/targets/observer_review.py",
     "examples/tools/targets/observer_state.py",
     "examples/tools/targets/observer_structures.py",
@@ -186,6 +187,7 @@
     "examples/tools/targets/public_postgres.py",
     "examples/tools/targets/resource_workflows.py",
     "examples/tools/targets/test_change_plan.py",
+    "examples/tools/targets/test_observer_generation.py",
     "examples/tools/targets/upgrade_replay.py",
     "examples/tools/validate_example.py",
     "lib/benchmark/beyond-jbmc/README.md",
@@ -349,6 +351,7 @@
     "verification/generated-observers/falsifiers.py",
     "verification/generated-observers/history_reach.py",
     "verification/generated-observers/numbered_handoff.py",
+    "verification/generated-observers/rescoring.py",
     "verification/generated-observers/scorecard.py",
     "verification/jobs/2026/11/25/20261125-183811-replay-60-l-series-java-questions-on-23.json",
     "verification/merged-pr-links/audit.py",
@@ -890,24 +893,38 @@
     {
       "index": 24,
       "started": "2026-11-26T21:14:32.029Z",
-      "ended": "2026-11-26T22:53:38.183Z",
+      "ended": "2026-11-26T22:56:48.138Z",
       "turns": 2,
-      "api_calls": 254,
+      "api_calls": 261,
       "usage": {
-        "input_tokens": 225595,
-        "output_tokens": 189095,
-        "cache_read_input_tokens": 68729600,
+        "input_tokens": 227202,
+        "output_tokens": 195547,
+        "cache_read_input_tokens": 71613568,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 410196
+      "peak_context_tokens": 414096
+    },
+    {
+      "index": 25,
+      "started": "2026-11-26T22:56:48.146Z",
+      "ended": "2026-11-26T23:10:20.042Z",
+      "turns": 1,
+      "api_calls": 59,
+      "usage": {
+        "input_tokens": 128801,
+        "output_tokens": 29510,
+        "cache_read_input_tokens": 7122688,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 161326
     }
   ],
   "log": {
-    "sha256": "b897dd3a4ead7e7dce12a4344447276e972c0e20d653e66b46808bb79157df0e",
-    "bytes": 92095791,
-    "lines": 45953,
-    "gzip_bytes": 16876504,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/b897dd3a4ead7e7dce12a4344447276e972c0e20d653e66b46808bb79157df0e.jsonl.gz"
+    "sha256": "6d128727333261a868d73d07573fba39801d82a3822472aaea1a0e3fd7e196d5",
+    "bytes": 93853815,
+    "lines": 46481,
+    "gzip_bytes": 17274047,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/6d128727333261a868d73d07573fba39801d82a3822472aaea1a0e3fd7e196d5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2758,6 +2775,22 @@
       "summary": "Record generated caller qualification for all 31 questions",
       "body": "The original distributions yielded complete typed observations on all 45 registered histories on both sides. Twenty-six finite predictions held, three were refuted and two incorrect historical parent baselines stayed open. The immutable first transfer recovered two of five cases, below the three-case target. The scorecard retains its nine missing setups, the field origins and class digests, subsequent case-aware recipe engineering, unchanged controls and the separate cold-discovery denominator.\n\nThe numbered scaffold and build passed from a checkout with no authored caller. Cold, warm and empty-cache results agreed, and the warm comparison reused 44 of 62 question sides. A wrong expectation present before generation produced identical caller bytes and was refuted by the original fixed values. Verified all 16 collector receipts, 33 named outputs at their exact revisions, 38 case archives and 34 local links. The scorecard regenerates byte for byte. The final selection passed 55 suites. Collector 90692aac0ce2 contains the passing follow-up for the last changed-body check.",
       "log_sha256": "b897dd3a4ead7e7dce12a4344447276e972c0e20d653e66b46808bb79157df0e"
+    },
+    {
+      "change_id": "tkxosnrmyntmyrwnolxvwtpupnsxpxtx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "6d128727333261a868d73d07573fba39801d82a3822472aaea1a0e3fd7e196d5"
+    },
+    {
+      "change_id": "wuwkrkrnkvopsrmnxnxovnxowuwszspy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind generated numeric arguments and formats (verification pending)",
+      "body": "Recover the frozen three-argument Spring parser with a locale-specific DecimalFormat or an explicit null formatter. JDI follows the JDK objects constructed by the caller and reads the text, target class and parsing mode at the original invocation. Existing two-argument callers retain identical Java source.\n\nAll 57 selected test suites passed. On the original JARs the previously blocked input yielded BigDecimal 1.5 and the grouping control returned 1.500 with German symbols and 1500 with US symbols. Job 20261126-230357-qualify-generated-formatted-numeric-call repeats all questions cold, warm and with an empty cache and challenges five equal-output argument substitutions.",
+      "log_sha256": "6d128727333261a868d73d07573fba39801d82a3822472aaea1a0e3fd7e196d5"
     }
   ],
   "logs": {
@@ -3060,6 +3093,12 @@
       "lines": 14194,
       "gzip_bytes": 4429665,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/6a30f77b02d19b3a8cff59ae96a281990dda9148ffc2f58418aeb65209aa0f8f.jsonl.gz"
+    },
+    "6d128727333261a868d73d07573fba39801d82a3822472aaea1a0e3fd7e196d5": {
+      "bytes": 93853815,
+      "lines": 46481,
+      "gzip_bytes": 17274047,
+      "url": null
     },
     "70e23aa949f7fbeca4697f7258fafbeda4ec6d2bb15ec63784f71a165574c260": {
       "bytes": 75452496,
