@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "469",
+  "title": "Binding the first JDBC batch row once when returning generated keys",
+  "summary": "The merge eliminated redundant first-row bindings, and two actual generated keys identified the two inserted H2 rows.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "duplicate-delivery",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "NamedParameterJdbcTemplate.batchUpdate and JdbcClient.batch"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Two generated-key paths now reuse the first row already bound during statement creation. The change reaches named batches through NamedParameterJdbcTemplate and indexed batches through JdbcClient."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37308"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "The recording wrapper forwards calls to H2 2.4.240. Bind order, addBatch snapshots, update counts, generated keys and independent reads come from the same run."
+  ]
+}

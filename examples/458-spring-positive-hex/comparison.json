@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37434",
+  "revisions": {
+    "parent": "2c5c6b580f90ce77973d16d24bce4c5dce00b558",
+    "fix": "3e05e8872f529c5f843e68fb6a82250349b9f019"
+  },
+  "entry": "NumberUtils.parseNumber",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37434.1",
+      "role": "Intent",
+      "args": [
+        "plus"
+      ],
+      "history": "Parse `+0x7f` as Integer and BigInteger.",
+      "prediction": "The parent is expected to throw NumberFormatException for each. The landing should return Integer 127 and BigInteger 127 respectively.",
+      "basis": "The PR reports the Integer exception. Seven sixteens plus fifteen is 127, and unary plus preserves it.",
+      "refutation": "Either merged call rejects the text, changes the value or returns another type.",
+      "expected": {
+        "parent": {
+          "return": "NumberFormatException NumberFormatException"
+        },
+        "fix": {
+          "return": "Integer=127 BigInteger=127"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37434.2",
+      "role": "Control",
+      "args": [
+        "signed"
+      ],
+      "history": "Parse `-0x7f` as Integer and `+127` as BigInteger.",
+      "prediction": "Both revisions should yield −127 and 127 in the requested types.",
+      "basis": "Existing signed hex and decimal inputs denote the same magnitudes with opposite and positive signs.",
+      "refutation": "Either control throws or changes sign, value or type.",
+      "expected": {
+        "parent": {
+          "return": "Integer=-127 BigInteger=127"
+        },
+        "fix": {
+          "return": "Integer=-127 BigInteger=127"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37434.3",
+      "role": "Challenge",
+      "args": [
+        "width"
+      ],
+      "history": "At the landing, try both `+0x80` and `+#80` with Short and Byte.",
+      "prediction": "Each spelling should yield Short 128. Both Byte calls should throw NumberFormatException.",
+      "basis": "The JDK integral decoders recognize both prefixes. Signed byte ends at 127 while short includes 128.",
+      "refutation": "A prefix changes the outcome, or a Byte wraps to −128.",
+      "expected": {
+        "fix": {
+          "return": "Short=128 NumberFormatException Short=128 NumberFormatException"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/1366",
+  "revisions": {
+    "parent": "f78bc953f47cd05ca8f686bce963349ccc79df51",
+    "fix": "0ddcce4169dd9c885b02cba1180d49d1d5c366e0"
+  },
+  "entry": "NamedParameterJdbcTemplate.execute and queryForObject",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#1366.1",
+      "role": "Intent",
+      "args": [
+        "all"
+      ],
+      "history": "Pass the query above with exactly one named argument.",
+      "prediction": "Expect InvalidDataAccessApiUsageException for mixed placeholder styles before statement creation on the parent. After, expect the sentinel, the literal ?& operator preserved, :album replaced by one ?, and only slot 1 set to Back in Black.",
+      "basis": "The JSON array and text array are SQL literals. Only :album denotes an application value. The PR reports the mixed-placeholder diagnostic and the regression checks the substitution.",
+      "refutation": "The merged call rejects the query, changes the operator, binds an extra slot or omits the title.",
+      "expected": {
+        "parent": {
+          "return": "InvalidDataAccessApiUsageException prepared=0 callback=0"
+        },
+        "fix": {
+          "return": "SELECT '[\"3\",\"11\"]'::jsonb ?& '{3,11}'::text[] AND ? = 'Back in Black' bind=[1=Back in Black] callback=sentinel"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1366.2",
+      "role": "Control",
+      "args": [
+        "mixed"
+      ],
+      "history": "Pass SELECT :album = ? with the same map to execute.",
+      "prediction": "Both revisions should reject the combination with InvalidDataAccessApiUsageException before the callback.",
+      "basis": "The standalone ? and :album really are two different styles of application placeholder.",
+      "refutation": "A callback receives the mixed statement, or rejection depends on the revision.",
+      "expected": {
+        "parent": {
+          "return": "InvalidDataAccessApiUsageException prepared=0 callback=0"
+        },
+        "fix": {
+          "return": "InvalidDataAccessApiUsageException prepared=0 callback=0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1366.3",
+      "role": "Challenge",
+      "args": [
+        "operators"
+      ],
+      "history": "Replace ?& with ?\\| while holding the named parameter and both SQL operands fixed. Use RHS '{3,99}' so the operators have different truth values.",
+      "prediction": "After, both raw operators should reach their callbacks with exactly one bind. For an independent read on a pgJDBC PreparedStatement, spell the literal operators ??\\| and ??&. On both revisions queryForObject(sql,map,Boolean.class) with this driver spelling should return true for any and false for all.",
+      "basis": "3 is present and 99 is absent. Membership in any versus all supplied keys gives an oracle independent of Spring’s counting.",
+      "refutation": "Spring changes either operator or bind position, or the validated database path returns the same Boolean for both.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "pgAny=true pgAll=false"
+          ]
+        },
+        "fix": {
+          "return": "SELECT '[\"3\",\"11\"]'::jsonb ?| '{3,99}'::text[] AND ? = 'Back in Black' bind=[1=Back in Black] callback=sentinel / SELECT '[\"3\",\"11\"]'::jsonb ?& '{3,99}'::text[] AND ? = 'Back in Black' bind=[1=Back in Black] callback=sentinel pgAny=true pgAll=false"
+        }
+      }
+    }
+  ]
+}

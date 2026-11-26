@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "476",
+  "title": "A retried Flux completes and publishes the successful cache operation",
+  "summary": "The merged cache advice resubscribed after failure, delivered the successful attempt, and kept failed-attempt data out of the cache.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "Cacheable and CacheEvict Flux through the managed retry proxy"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The reactive cache advice now creates its shared publisher and cache subscriber for each subscription, including a retry after an error."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37403"
+  },
+  "verdictLabel": "4/4 merged predictions matched",
+  "notes": [
+    "Both the caching and retry advisors run on the managed service. Timeouts are paired with an independent source count and cache read."
+  ]
+}

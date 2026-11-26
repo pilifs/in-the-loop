@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "a82c26aecc0a9260bda25b3ae79c3ad045d11ddb1e98bcce37ab8c81cd832357",
+  "runtimeSha256": "b595886b9a314ef6c93bb1ffe13ef0825b9f356d8c33e579dc5a82f1d5caacf7",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "36628c7aea23ccf0d4a58eabb840fe9a7841a41ee3f90bf17a3501dfa5d05bd5"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "052a889d13f389514341bf2774c0dc8e5aa399ddd7da973643e7d3a38ba73fa7",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36913.1",
+          "outcome": {
+            "return": "eligible=true error=ConversionFailedException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36913.2",
+          "outcome": {
+            "return": "eligible=true String=42 raw=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36913.3",
+          "outcome": {
+            "return": "eligible=true LocalDate=1970-02-12"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36913.1",
+          "outcome": {
+            "return": "eligible=false error=ConverterNotFoundException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36913.2",
+          "outcome": {
+            "return": "eligible=true String=42 raw=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36913.3",
+          "outcome": {
+            "return": "eligible=true LocalDate=1970-02-12"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

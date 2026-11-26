@@ -1,0 +1,131 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "a5c453995b9776a3c09155244ddb5e91dd4a26a8c9f8ef0b67e797d6fdb5340e",
+  "runtimeSha256": "472bf7a83db6d2c667a8b09ea8a3e3fc2e24417029564f578683b55e166c449f",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "92060d7692fef8b54bb242f5dfb6f825af295d31ec84fe5ebbabfe4f9842468a"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "25364649b92609ccf8500220fe62558e8b896f494e8976a122cf42fa2d43154d",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30238.1",
+          "outcome": {
+            "return": "AssertionError/AssertionError"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30238.2",
+          "outcome": {
+            "return": "pass/pass"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30238.3",
+          "outcome": {
+            "return": "scalar=AssertionError/AssertionError listAB=absent/absent listAC=absent/absent"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30238.1",
+          "outcome": {
+            "return": "pass/pass"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30238.2",
+          "outcome": {
+            "return": "pass/pass"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30238.3",
+          "outcome": {
+            "return": "scalar=pass/pass listAB=pass/pass listAC=AssertionError/AssertionError"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "callerClassesBySide": {
+        "parent": {
+          "PublicCaller.class": "cd0a87b90b553586de241b423b9ab8171745a8929266e3bdbcdfffee4324c95f",
+          "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+        },
+        "fix": {
+          "PublicCaller.class": "25364649b92609ccf8500220fe62558e8b896f494e8976a122cf42fa2d43154d",
+          "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+        }
+      },
+      "callerInvocations": {
+        "parent": [
+          {
+            "caller": "inferred",
+            "offset": 7,
+            "method": "header",
+            "descriptor": "(Ljava/lang/String;Lorg/hamcrest/Matcher;)Lorg/springframework/test/web/client/RequestMatcher;"
+          },
+          {
+            "caller": "inferred",
+            "offset": 21,
+            "method": "queryParam",
+            "descriptor": "(Ljava/lang/String;Lorg/hamcrest/Matcher;)Lorg/springframework/test/web/client/RequestMatcher;"
+          },
+          {
+            "caller": "observe",
+            "offset": 149,
+            "method": "header",
+            "descriptor": "(Ljava/lang/String;[Lorg/hamcrest/Matcher;)Lorg/springframework/test/web/client/RequestMatcher;"
+          },
+          {
+            "caller": "observe",
+            "offset": 170,
+            "method": "queryParam",
+            "descriptor": "(Ljava/lang/String;[Lorg/hamcrest/Matcher;)Lorg/springframework/test/web/client/RequestMatcher;"
+          }
+        ],
+        "fix": [
+          {
+            "caller": "inferred",
+            "offset": 14,
+            "method": "header",
+            "descriptor": "(Ljava/lang/String;[Lorg/hamcrest/Matcher;)Lorg/springframework/test/web/client/RequestMatcher;"
+          },
+          {
+            "caller": "inferred",
+            "offset": 35,
+            "method": "queryParam",
+            "descriptor": "(Ljava/lang/String;[Lorg/hamcrest/Matcher;)Lorg/springframework/test/web/client/RequestMatcher;"
+          },
+          {
+            "caller": "observe",
+            "offset": 149,
+            "method": "header",
+            "descriptor": "(Ljava/lang/String;[Lorg/hamcrest/Matcher;)Lorg/springframework/test/web/client/RequestMatcher;"
+          },
+          {
+            "caller": "observe",
+            "offset": 170,
+            "method": "queryParam",
+            "descriptor": "(Ljava/lang/String;[Lorg/hamcrest/Matcher;)Lorg/springframework/test/web/client/RequestMatcher;"
+          }
+        ]
+      }
+    }
+  }
+}

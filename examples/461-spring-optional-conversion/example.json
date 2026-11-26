@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "461",
+  "title": "Optional conversion eligibility reflects its known element type",
+  "summary": "Spring stopped offering an Optional<Integer> to LocalDate conversion when its default converters could not supply it.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "validation-gap",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "DefaultConversionService.canConvert and convert"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "DefaultConversionService now consults the Optional's declared generic argument when selecting the unwrapping converter."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36913"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "The same TypeDescriptor is passed to the eligibility query and the conversion."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "463",
+  "title": "Derived HTTP clients keep independent default header and cookie lists",
+  "summary": "All three HTTP clients isolated an edited default header and cookie list from a second derivative of the base client.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "RestClient, WebClient and WebTestClient request exchange"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The client builders copy individual value lists when deriving builders. WebTestClient also takes a snapshot when it builds a client."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37325"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "The synchronous request factory reads the serialized Cookie header. The two reactive clients deliver requests to an in-process HttpHandler. The initial header is added through defaultHeaders so the fixture supplies a mutable list for the append.",
+    "Seeding the retained WebTestClient builder with defaultHeader instead made its later append throw on both pins and on 7.0.10. The retained-builder follow-up also compares the mutable initializer and a fresh derivative."
+  ]
+}

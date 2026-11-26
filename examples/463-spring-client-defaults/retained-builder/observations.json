@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "5c7c5062e97ceefbd19609bcf02e793a29ccc671bce56ca17b951ce9c7df4ddd",
+  "runtimeSha256": "0da7be70856a0688afbacb4e65226ea04cd50000f6fa3c3a49b5154fc96a1039",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "095bbd1977425ce0c0dc3b8814f97d09bc060a96998159735400514e8d6738c8"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "0932a205bc287a3f80e0dea10699ef30466dae48f271bf7f31054bf97382ef98",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37325.followup.retained-convenience",
+          "outcome": {
+            "return": "append=UnsupportedOperationException A=[one]/[one]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37325.followup.retained-consumer",
+          "outcome": {
+            "return": "B=[one, two]/[one, two] A=[one, two]/[one, two]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37325.followup.derived-convenience",
+          "outcome": {
+            "return": "append=UnsupportedOperationException A=[one]/[one]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37325.followup.retained-convenience",
+          "outcome": {
+            "return": "append=UnsupportedOperationException A=[one]/[one]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37325.followup.retained-consumer",
+          "outcome": {
+            "return": "B=[one, two]/[one, two] A=[one]/[one]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37325.followup.derived-convenience",
+          "outcome": {
+            "return": "B=[one, two]/[one, two] A=[one]/[one]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

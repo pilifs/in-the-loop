@@ -68,6 +68,9 @@ ENTRIES = {
     "455": ("N03-threeten-extra", "src/main/java",
             "org.threeten.extra.chrono.BritishCutoverDate#until(Ljava/time/chrono/ChronoLocalDate;)Ljava/time/chrono/ChronoPeriod;"),
     "456": ("N04-geometry-api-java", "src/main/java", "com.esri.core.geometry.TopologicalOperations#restorePolylineParts_(IIIII)V"),
+    "466": ("O09", "spring-web/src/main/java", "org.springframework.http.codec.ServerSentEventHttpMessageReader"
+            "#buildEvent(Ljava/util/List;Lorg/springframework/core/ResolvableType;ZLjava/util/Map;)Ljava/lang/Object;"),
+    "475": ("O18", "spring-jms/src/main/java", "org.springframework.jms.connection.SingleConnectionFactory#initConnection()V"),
 }
 
 

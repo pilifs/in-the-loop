@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "466",
+  "title": "Malformed SSE retry hints preserve event delivery",
+  "summary": "The merge delivered both events after an invalid retry hint. It still accepted a trailing space as part of a 25 ms retry.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "WebClient.ResponseSpec.bodyToFlux"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The event-stream reader checks for ASCII digits and treats unrepresentable millisecond values as unusable hints."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37193"
+  },
+  "verdictLabel": "2/3 merged predictions matched · challenge refuted",
+  "notes": [
+    "The public observation records each ServerSentEvent envelope, the terminal signal, and both exception types when the stream fails."
+  ]
+}

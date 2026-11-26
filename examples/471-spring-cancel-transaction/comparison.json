@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/25256",
+  "revisions": {
+    "parent": "8853f4b883822e0ccb13e3ef6c6aba01f280f77a",
+    "fix": "217b6e37a64b2df7f7265cfff1adf52361872469"
+  },
+  "entry": "TransactionalOperator.transactional",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#25256.1",
+      "role": "Intent",
+      "args": [
+        "cancel"
+      ],
+      "history": "Explicitly cancel the otherwise open Flux after the insert has finished and its token has been observed.",
+      "prediction": "The parent is expected to commit with the token durable. The landing should roll back with no token visible. Each should take exactly one terminal transaction action.",
+      "basis": "The insert was acknowledged before cancellation. Committed and rolled-back inserts have opposite visibility to a fresh reader. Issue #25091 reports partial commits on cancellation.",
+      "refutation": "The landing commits or exposes the token after rollback cleanup, or cancellation leaves the transaction open.",
+      "expected": {
+        "parent": {
+          "return": "values=[token] terminal=cancel actions=[commit] rows=[token]"
+        },
+        "fix": {
+          "return": "values=[token] terminal=cancel actions=[rollback] rows=[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#25256.2",
+      "role": "Control",
+      "args": [
+        "terminals"
+      ],
+      "history": "Replace the open tail with normal completion. In a separate run replace it with a designated RuntimeException following the insert. Consume both sources to their terminal signal.",
+      "prediction": "Both revisions should commit the completed write and expose its token. Both should roll back the erroring write, propagate that error and expose no corresponding row.",
+      "basis": "Normal completion and unchecked failure have independent success and rollback rules. Neither source is cancelled.",
+      "refutation": "Either completed token disappears, the failed token persists, or the failure is swallowed.",
+      "expected": {
+        "parent": {
+          "return": "values=[token] terminal=complete actions=[commit] rows=[token] / values=[token] terminal=designated actions=[rollback] rows=[]"
+        },
+        "fix": {
+          "return": "values=[token] terminal=complete actions=[commit] rows=[token] / values=[token] terminal=designated actions=[rollback] rows=[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#25256.3",
+      "role": "Challenge",
+      "args": [
+        "placement"
+      ],
+      "history": "Hold the insert, token and open tail fixed. Compare operator.transactional(source).take(1) with operator.transactional(source.take(1)); consume the resulting single value to completion.",
+      "prediction": "Both calls should deliver exactly the token to the subscriber. On the landing, a fresh reader should find the row only for the inner take. Parent semantics predict visibility for both histories.",
+      "basis": "Outside the transaction wrapper, take cancels the wrapped publisher. Inside, take completes the publisher that the wrapper observes. The downstream value alone is identical.",
+      "refutation": "The landed rows have the same visibility after both cleanups, or outside take persists a partial transaction.",
+      "expected": {
+        "parent": {
+          "return": "outside values=[token] terminal=complete actions=[commit] rows=[token] / inside values=[token] terminal=complete actions=[commit] rows=[token]"
+        },
+        "fix": {
+          "return": "outside values=[token] terminal=complete actions=[rollback] rows=[] / inside values=[token] terminal=complete actions=[commit] rows=[token]"
+        }
+      }
+    }
+  ]
+}

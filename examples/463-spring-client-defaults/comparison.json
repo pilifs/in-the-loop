@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37325",
+  "revisions": {
+    "parent": "0c575d443dbdff69349a2369f40491c002dc2c96",
+    "fix": "4cf6335372556d4f6ccc3a0166318c5f19037e8f"
+  },
+  "entry": "RestClient, WebClient and WebTestClient request exchange",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37325.1",
+      "role": "Intent",
+      "args": [
+        "append"
+      ],
+      "history": "Run this history with RestClient, WebClient and WebTestClient, keeping URI, handler and request defaults fixed.",
+      "prediction": "Expect the new derivative to send [one,two] on both revisions. A fresh derivative of the base is expected to leak two before and send only [one] after for each name.",
+      "basis": "The PR demonstrates the original RestClient cookie list acquiring two. Each derived configuration starts from the same original defaults.",
+      "refutation": "The landed base derivative sends two, or the edited derivative loses either value.",
+      "expected": {
+        "parent": {
+          "return": "rest=[one, two]/[one, two]/[]/[] -> [one, two]/[one, two]/[]/[] web=[one, two]/[one, two]/[]/[] -> [one, two]/[one, two]/[]/[] test=[one, two]/[one, two]/[]/[] -> [one, two]/[one, two]/[]/[]"
+        },
+        "fix": {
+          "return": "rest=[one, two]/[one, two]/[]/[] -> [one]/[one]/[]/[] web=[one, two]/[one, two]/[]/[] -> [one]/[one]/[]/[] test=[one, two]/[one, two]/[]/[] -> [one]/[one]/[]/[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37325.2",
+      "role": "Control",
+      "args": [
+        "new"
+      ],
+      "history": "Using fresh fixtures, add a previously absent header X-Extra and cookie extra only to the derived builder.",
+      "prediction": "On both revisions the original should omit both names and still send its initial values.",
+      "basis": "The previous copy already allocated distinct maps. Adding a new key distinguishes map sharing from value-list sharing.",
+      "refutation": "The new name reaches the original or its previous value disappears.",
+      "expected": {
+        "parent": {
+          "return": "rest=[one]/[one]/[two]/[two] -> [one]/[one]/[]/[] web=[one]/[one]/[two]/[two] -> [one]/[one]/[]/[] test=[one]/[one]/[two]/[two] -> [one]/[one]/[]/[]"
+        },
+        "fix": {
+          "return": "rest=[one]/[one]/[two]/[two] -> [one]/[one]/[]/[] web=[one]/[one]/[two]/[two] -> [one]/[one]/[]/[] test=[one]/[one]/[two]/[two] -> [one]/[one]/[]/[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37325.3",
+      "role": "Challenge",
+      "args": [
+        "snapshot"
+      ],
+      "history": "Build WebTestClient A from a retained builder. Append two to the builder’s existing header list and cookie, build B, then GET from A after B.",
+      "prediction": "On the landing A should send just one for both names while B sends one and two. The PR describes parent leakage into clients already built.",
+      "basis": "A's public build boundary precedes the change. Capturing actual requests independently tests the snapshot clients consume.",
+      "refutation": "A sends B's later values, or B sends only A's original values.",
+      "expected": {
+        "parent": {
+          "return": "B=[one, two]/[one, two]/[]/[] A=[one, two]/[one, two]/[]/[]"
+        },
+        "fix": {
+          "return": "B=[one, two]/[one, two]/[]/[] A=[one]/[one]/[]/[]"
+        }
+      }
+    }
+  ]
+}

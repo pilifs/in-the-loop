@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "472",
+  "title": "Outer R2DBC transactions remain active after nested savepoints",
+  "summary": "Both nested R2DBC scopes preserved the enclosing transaction on the merge. Its outer rollback removed even the successful inner write.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "lost-committed-data",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "TransactionalOperator.execute and DatabaseClient.sql"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A completed PROPAGATION_NESTED scope now releases its savepoint during cleanup and preserves the outer connection holder. This matters when another nested scope or more SQL follows the first."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/31133"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "DatabaseClient uses the same connection factory as the transaction manager. The wrapper forwards to R2DBC H2, counts completed transaction and savepoint operations, and leaves the independent reader outside the transaction."
+  ]
+}

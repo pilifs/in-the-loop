@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "8ce0047735139c2e9782cb853721e948bdecf07bb4a16040edbc62f337e8fbab",
+  "runtimeSha256": "27c1cb9f8d48c0ba2b1b0e9902fe224de89105d57149734ba4849ade06b76089",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "c29a0084dc989b0865d6d7d4a0a9a756fe0f757bcc6b162e79534bfbce743b62"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "35c2dcdbaf3cc8f4428d185012a0c16459e1653c0c810d18323fc9dc93956f60",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37434.1",
+          "outcome": {
+            "return": "NumberFormatException NumberFormatException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37434.2",
+          "outcome": {
+            "return": "Integer=-127 BigInteger=127"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37434.3",
+          "outcome": {
+            "return": "NumberFormatException NumberFormatException NumberFormatException NumberFormatException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37434.1",
+          "outcome": {
+            "return": "Integer=127 BigInteger=127"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37434.2",
+          "outcome": {
+            "return": "Integer=-127 BigInteger=127"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37434.3",
+          "outcome": {
+            "return": "Short=128 NumberFormatException Short=128 NumberFormatException"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

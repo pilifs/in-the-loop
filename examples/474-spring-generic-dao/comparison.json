@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37047",
+  "revisions": {
+    "parent": "05a1075b69053eb8e0c24c748fc9064d6ad2a1a2",
+    "fix": "74a6c1c328e75c696b2833a7b284414c6c7083ce"
+  },
+  "entry": "BeanFactory.getBean and BaseDao.persist",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37047.1",
+      "role": "Intent",
+      "args": [
+        "user"
+      ],
+      "history": "Look up userDao with the User token. Call persist with User(\"1\").",
+      "prediction": "The PR reports BeanNotOfRequiredTypeException on the parent. The landing should return the managed proxy, return the supplied user from persist, and cache that user under users/1.",
+      "basis": "The factory method declares the User type and its implementation declares @CachePut on persist. A cache read observes that advice remained active.",
+      "refutation": "The lookup rejects the bean, the invocation fails, or users/1 has the wrong value.",
+      "expected": {
+        "parent": {
+          "return": "BeanNotOfRequiredTypeException"
+        },
+        "fix": {
+          "return": "proxy=true same=true result=1 users=1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37047.2",
+      "role": "Control",
+      "args": [
+        "raw"
+      ],
+      "history": "Obtain userDao by name with the raw BaseDao.class overload and persist User(\"2\").",
+      "prediction": "Both revisions should accept the exposed interface and store that user under users/2.",
+      "basis": "The JDK proxy implements BaseDao regardless of its erased type argument.",
+      "refutation": "Lookup fails or persist bypasses the cache.",
+      "expected": {
+        "parent": {
+          "return": "proxy=true same=true result=2 users=2"
+        },
+        "fix": {
+          "return": "proxy=true same=true result=2 users=2"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37047.3",
+      "role": "Challenge",
+      "args": [
+        "mismatch"
+      ],
+      "history": "On the landing, request userDao again with `BaseDao<Order>` while orderDao is present. Then request orderDao with that same token and persist Order(\"9\").",
+      "prediction": "The first call should throw BeanNotOfRequiredTypeException. The second should return the order proxy, populate orders/9 and leave users/9 absent.",
+      "basis": "Both beans expose the same erased interface. Their factory methods and cache destinations distinguish the actual generic bindings.",
+      "refutation": "The wrong name/token pair is accepted, or the valid call reaches the other bean’s cache.",
+      "expected": {
+        "fix": {
+          "return": "wrong=BeanNotOfRequiredTypeException proxy=true result=9 orders=9 users=null"
+        }
+      }
+    }
+  ]
+}

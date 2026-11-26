@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/30530",
+  "revisions": {
+    "parent": "9332b3f69084081d181dd8fb4051cedf1aad859d",
+    "fix": "5977bb05ca737ba8b0516d7ee42e005b7c591868"
+  },
+  "entry": "DatabaseClient.GenericExecuteSpec.map",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#30530.1",
+      "role": "Intent",
+      "args": [
+        "map"
+      ],
+      "history": "Supply the two named columns to each mapper.",
+      "prediction": "The two org.springframework.r2dbc.core mapper classes are absent from the parent. On the landing expect one instance of the requested type whose firstName is Ada and age is 37.",
+      "basis": "The bean’s setters and record’s canonical constructor name the fields. The underscore spelling is documented for both mapping modes.",
+      "refutation": "A merged mapper rejects the matching columns, returns the wrong type, or swaps, loses or changes either value.",
+      "expected": {
+        "parent": {
+          "return": "bean=absent record=absent"
+        },
+        "fix": {
+          "return": "bean=PersonBean(Ada,37) record=Person(Ada,37)"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30530.2",
+      "role": "Control",
+      "args": [
+        "lambda"
+      ],
+      "history": "Map the same projection with an explicit two-argument row/metadata lambda that constructs Person from row.get(\"first_name\",String.class) and row.get(\"age\",Integer.class).",
+      "prediction": "Both revisions should return Person(Ada,37).",
+      "basis": "This existing DatabaseClient mapping overload gives a baseline from the same driver values and names.",
+      "refutation": "The first name or age is missing in the explicit mapping or the publisher produces a different row count.",
+      "expected": {
+        "parent": {
+          "return": "rows=[Person(Ada,37)]"
+        },
+        "fix": {
+          "return": "rows=[Person(Ada,37)]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30530.3",
+      "role": "Challenge",
+      "args": [
+        "strict"
+      ],
+      "history": "Use a static class Label with a discoverable constructor Label(String name) that stores name.toUpperCase(Locale.ROOT) and a public setName(String) that stores the original spelling. Supply only name = Ada. Call DataClassRowMapper.apply first with its default settings and again with setCheckFullyPopulated(true).",
+      "prediction": "Constructor precedence predicts ADA in both modes because the only bean property has a source and is populated. Source review predicts a possible contradiction: default returns ADA but strict mode throws InvalidDataAccessApiUsageException.",
+      "basis": "All writable properties have been supplied. The constructor consumes name, so the corresponding setter must be skipped. A strict completeness check should accept that same complete row.",
+      "refutation": "A strict-mode exception with the complete row refutes the completeness expectation. The raw value Ada would instead show unexpected setter invocation.",
+      "expected": {
+        "fix": {
+          "return": "default=ADA strict=ADA"
+        }
+      }
+    }
+  ]
+}

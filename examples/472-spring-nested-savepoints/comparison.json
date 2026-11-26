@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/31133",
+  "revisions": {
+    "parent": "5c7bf0c2fec41d91be510003f00d8ecebe308b5b",
+    "fix": "8d4ea72e4e2f01e37bca46db8662fae133595d6b"
+  },
+  "entry": "TransactionalOperator.execute and DatabaseClient.sql",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#31133.1",
+      "role": "Intent",
+      "args": [
+        "nested"
+      ],
+      "history": "Commit the outer transaction after the two nested scopes.",
+      "prediction": "The PR reports losing outer transaction state on the parent, so a later inner scope can cease to be nested or fail to start. On the landing expect two nested statuses, one outer commit, and the rows A, B, D only.",
+      "basis": "Releasing the first savepoint keeps B inside the open transaction. Rolling back to the second savepoint discards C without undoing earlier writes.",
+      "refutation": "The second scope is no longer nested, C survives, any expected row is lost, or the sequence completes exceptionally on the landing.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "lostOuter=true"
+          ]
+        },
+        "fix": {
+          "return": "nested=[true, true] commits=1 rollbacks=0 savepoints=2 rows=[A, B, D] terminal=complete lostOuter=false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#31133.2",
+      "role": "Control",
+      "args": [
+        "outer"
+      ],
+      "history": "Use the same outer transaction without any nested scope. Once let insertion of A complete normally. In a fresh run mark that outer transaction rollback-only.",
+      "prediction": "Both revisions should expose A after commit and nothing after rollback, and create no savepoints.",
+      "basis": "There is one transaction boundary and one write. The nested savepoint cleanup is never reached.",
+      "refutation": "The independently observed rows depend on the revision, or a savepoint is requested.",
+      "expected": {
+        "parent": {
+          "return": "nested=[] commits=1 rollbacks=0 savepoints=0 rows=[A] terminal=complete lostOuter=false / nested=[] commits=0 rollbacks=1 savepoints=0 rows=[] terminal=complete lostOuter=false"
+        },
+        "fix": {
+          "return": "nested=[] commits=1 rollbacks=0 savepoints=0 rows=[A] terminal=complete lostOuter=false / nested=[] commits=0 rollbacks=1 savepoints=0 rows=[] terminal=complete lostOuter=false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#31133.3",
+      "role": "Challenge",
+      "args": [
+        "outer-rollback"
+      ],
+      "history": "Keep the successful inner insertion of B, then mark the outer transaction rollback-only after writing D. Compare with the committing history above on the landing.",
+      "prediction": "No A, B, C or D may persist. In particular B must disappear even though its nested scope completed successfully.",
+      "basis": "Releasing a savepoint cannot make the changes durable independently of its enclosing transaction.",
+      "refutation": "B or D remains visible after the outer rollback, even if recorded savepoint operations looked correct.",
+      "expected": {
+        "fix": {
+          "return": "nested=[true, true] commits=0 rollbacks=1 savepoints=2 rows=[] terminal=complete lostOuter=false"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "474",
+  "title": "Generic bean lookup returns the advised interface proxy",
+  "summary": "Typed bean lookup retained the advised User proxy while continuing to reject an Order token for that same bean name.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "caching",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "BeanFactory.getBean and BaseDao.persist"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Named lookup with a ParameterizedTypeReference now consults the bean factory’s type metadata when matching an instantiated bean."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37047"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "The factory methods declare their generic return types. The cache is read independently of the returned entity."
+  ]
+}

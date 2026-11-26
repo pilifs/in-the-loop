@@ -25178,6 +25178,787 @@
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/37322",
       "target": null
+    },
+    {
+      "id": "458",
+      "path": "examples/458-spring-positive-hex",
+      "title": "An explicit plus sign on hexadecimal integers",
+      "summary": "Both hexadecimal prefixes now accept unary plus. The result still respects the requested numeric type and its bounds.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "NumberUtils.parseNumber",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each call records the runtime class and value or the number-format exception independently."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37434",
+      "target": null
+    },
+    {
+      "id": "459",
+      "path": "examples/459-spring-sunday-cron",
+      "title": "A Sunday-to-Sunday cron range fires once a week",
+      "summary": "A singleton Sunday range advanced from Thursday to Friday on the parent and to Sunday on the merge.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "CronExpression.next",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The clocks are local dates and times. The Sunday returned by the singleton expression is the seed for the next set of calls."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37576",
+      "target": null
+    },
+    {
+      "id": "460",
+      "path": "examples/460-spring-inferred-matchers",
+      "title": "A single Hamcrest matcher sees the first HTTP request value",
+      "summary": "Recompiling the same unqualified Hamcrest call changed the method selected by javac for both headers and query parameters.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "MockRestRequestMatchers.header and queryParam",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both compilations use the same caller source, compiler and Hamcrest version. The JVM receipt records the caller class hashes and the four direct factory call sites on each side. Reflection is used only for the two list factory names introduced at the merge."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/30238",
+      "target": null
+    },
+    {
+      "id": "461",
+      "path": "examples/461-spring-optional-conversion",
+      "title": "Optional conversion eligibility reflects its known element type",
+      "summary": "Spring stopped offering an Optional<Integer> to LocalDate conversion when its default converters could not supply it.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "DefaultConversionService.canConvert and convert",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The same TypeDescriptor is passed to the eligibility query and the conversion."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36913",
+      "target": null
+    },
+    {
+      "id": "462",
+      "path": "examples/462-spring-bound-functions",
+      "title": "SpEL calls a function bound to a Java receiver",
+      "summary": "A parsed SpEL function now invokes its bound Java receiver and sees a replacement binding on the next evaluation.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "SpelExpressionParser.parseExpression and Expression.getValue",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "expression-evaluation"
+        ],
+        "defect": [
+          "hidden-capability"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The receiver is captured with a public JDK method handle. The initial binding uses setVariable, which exists on both revisions."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/30045",
+      "target": null
+    },
+    {
+      "id": "463",
+      "path": "examples/463-spring-client-defaults",
+      "title": "Derived HTTP clients keep independent default header and cookie lists",
+      "summary": "All three HTTP clients isolated an edited default header and cookie list from a second derivative of the base client.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "RestClient, WebClient and WebTestClient request exchange",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The synchronous request factory reads the serialized Cookie header. The two reactive clients deliver requests to an in-process HttpHandler. The initial header is added through defaultHeaders so the fixture supplies a mutable list for the append.",
+        "Seeding the retained WebTestClient builder with defaultHeader instead made its later append throw on both pins and on 7.0.10. The retained-builder follow-up also compares the mutable initializer and a fresh derivative."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37325",
+      "target": null
+    },
+    {
+      "id": "464",
+      "path": "examples/464-spring-rendering-cookies",
+      "title": "Copying a rendering response preserves cookies in both web stacks",
+      "summary": "Rebuilding a rendering response retained cookies, including two currencies with different paths, at both HTTP boundaries.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "RenderingResponse.from and writeTo",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both a servlet ModelAndView and a resolving reactive View receive the model. The caller also decodes Set-Cookie response fields and compares value/path multiplicity."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37378",
+      "target": null
+    },
+    {
+      "id": "465",
+      "path": "examples/465-spring-resource-ranges",
+      "title": "A stale range validator returns the current resource in full",
+      "summary": "Four resource routes agreed on the status, Content-Range and body for stale, matching, weak and date validators.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ResourceHttpRequestHandler, HttpEntityMethodProcessor, RouterFunctions and ResourceWebHandler",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "4/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The same six-byte file, fixed modification time and ETag reach an MVC static handler, an annotated ResponseEntity controller reached by a mapped DispatcherServlet GET, a functional MVC route and a WebFlux resource handler. Each response body is read after handling."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37218",
+      "target": null
+    },
+    {
+      "id": "466",
+      "path": "examples/466-spring-sse-retry",
+      "title": "Malformed SSE retry hints preserve event delivery",
+      "summary": "The merge delivered both events after an invalid retry hint. It still accepted a trailing space as part of a 25 ms retry.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "WebClient.ResponseSpec.bodyToFlux",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched · challenge refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The public observation records each ServerSentEvent envelope, the terminal signal, and both exception types when the stream fails."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37193",
+      "target": null
+    },
+    {
+      "id": "467",
+      "path": "examples/467-spring-joined-buffers",
+      "title": "Joined data buffers reach the destination byte for byte",
+      "summary": "The merged synchronous writer traversed every component, including when the destination accepted one byte at a time.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "DataBufferUtils.write",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The caller counts the readable components before writing, releases the emitted buffer, closes the channel and independently reads the destination file."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36714",
+      "target": null
+    },
+    {
+      "id": "468",
+      "path": "examples/468-spring-json-operators",
+      "title": "PostgreSQL JSON operators beside a named JDBC parameter",
+      "summary": "The pinned named-parameter parser preserved both PostgreSQL JSON operators and bound only the application parameter.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "NamedParameterJdbcTemplate.execute and queryForObject",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The exact NamedParameterUtils.java from each pin is compiled against the same Spring JDBC 5.0.0.M5 companions. The driver path uses pgJDBC 42.7.15 and the digest-pinned PostgreSQL 17.12 container. The recording DataSource and real database queries answer different parts of the question."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/1366",
+      "target": null
+    },
+    {
+      "id": "469",
+      "path": "examples/469-spring-batch-keys",
+      "title": "Binding the first JDBC batch row once when returning generated keys",
+      "summary": "The merge eliminated redundant first-row bindings, and two actual generated keys identified the two inserted H2 rows.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "NamedParameterJdbcTemplate.batchUpdate and JdbcClient.batch",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The recording wrapper forwards calls to H2 2.4.240. Bind order, addBatch snapshots, update counts, generated keys and independent reads come from the same run."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37308",
+      "target": null
+    },
+    {
+      "id": "470",
+      "path": "examples/470-spring-r2dbc-mappers",
+      "title": "Mapping R2DBC results by property or constructor name",
+      "summary": "Both new R2DBC mappers read the row. Strict constructor mapping nevertheless rejected a complete one-property result.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "DatabaseClient.GenericExecuteSpec.map",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched · challenge refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The projections run on R2DBC H2. The caller is compiled with -parameters, reads the actual driver row and preserves the constructor-versus-setter distinction."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/30530",
+      "target": null
+    },
+    {
+      "id": "471",
+      "path": "examples/471-spring-cancel-transaction",
+      "title": "Transaction outcome when a reactive subscriber cancels",
+      "summary": "The pinned reactive operator rolled back cancellation at the merge. Moving take(1) inside its transaction preserved the row.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "TransactionalOperator.transactional",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "lost-committed-data"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The exact TransactionalOperatorImpl.java from each pin is compiled against the same Spring 5.3.0-M1 transaction and R2DBC companions. A delegating manager waits for real H2 transaction cleanup before a fresh unpooled read. These results cover the Java operator."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/25256",
+      "target": null
+    },
+    {
+      "id": "472",
+      "path": "examples/472-spring-nested-savepoints",
+      "title": "Outer R2DBC transactions remain active after nested savepoints",
+      "summary": "Both nested R2DBC scopes preserved the enclosing transaction on the merge. Its outer rollback removed even the successful inner write.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "TransactionalOperator.execute and DatabaseClient.sql",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "lost-committed-data"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "DatabaseClient uses the same connection factory as the transaction manager. The wrapper forwards to R2DBC H2, counts completed transaction and savepoint operations, and leaves the independent reader outside the transaction."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/31133",
+      "target": null
+    },
+    {
+      "id": "473",
+      "path": "examples/473-spring-resource-collections",
+      "title": "A single classpath resource injected into a collection",
+      "summary": "An XML context populated both a resource list and a resource set from a single file on the merge.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ClassPathXmlApplicationContext.refresh and Resource.getInputStream",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each variant gets a fresh class loader and XML context with its own fixture directory. The caller opens every Resource and reads the stream."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/31699",
+      "target": null
+    },
+    {
+      "id": "474",
+      "path": "examples/474-spring-generic-dao",
+      "title": "Generic bean lookup returns the advised interface proxy",
+      "summary": "Typed bean lookup retained the advised User proxy while continuing to reject an Order token for that same bean name.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "BeanFactory.getBean and BaseDao.persist",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "caching"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The factory methods declare their generic return types. The cache is read independently of the returned entity."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37047",
+      "target": null
+    },
+    {
+      "id": "475",
+      "path": "examples/475-spring-jms-replacement",
+      "title": "JMS recovery after a replacement connection fails preparation",
+      "summary": "After reset the merged JMS factory recovered on C. Direct reinitialization followed by the same failure left the retry on closed A.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "SingleConnectionFactory.createConnection, resetConnection and initConnection",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "crash-recovery"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched · challenge refuted",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A deterministic Jakarta JMS provider records every creation, listener installation and physical close. It refuses sessions after a physical close. All application calls use the public Spring factory."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/29116",
+      "target": null
+    },
+    {
+      "id": "476",
+      "path": "examples/476-spring-retry-cache",
+      "title": "A retried Flux completes and publishes the successful cache operation",
+      "summary": "The merged cache advice resubscribed after failure, delivered the successful attempt, and kept failed-attempt data out of the cache.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "Cacheable and CacheEvict Flux through the managed retry proxy",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "4/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both the caching and retry advisors run on the managed service. Timeouts are paired with an independent source count and cache read."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37403",
+      "target": null
+    },
+    {
+      "id": "477",
+      "path": "examples/477-spring-flux-context",
+      "title": "The subscriber’s Reactor Context reaches a cached Flux on a miss",
+      "summary": "On a cache miss, the merged Flux saw the subscriber's context. After explicit eviction a new subscription saw the replacement value.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "Cacheable, CachePut and CacheEvict with subscriber Context",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "caching"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "4/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The argument that identifies the cache entry is held fixed while the subscriber context changes. Each variant starts with a new application context and cache."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37600",
+      "target": null
     }
   ]
 }

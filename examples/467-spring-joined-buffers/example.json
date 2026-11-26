@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "467",
+  "title": "Joined data buffers reach the destination byte for byte",
+  "summary": "The merged synchronous writer traversed every component, including when the destination accepted one byte at a time.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "DataBufferUtils.write"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The two-commit landing changes synchronous channel traversal and asynchronous file-write callbacks. Both paths must finish every component of a joined buffer."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36714"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "The caller counts the readable components before writing, releases the emitted buffer, closes the channel and independently reads the destination file."
+  ]
+}

@@ -167,6 +167,14 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 **10. libGDX, PR #7278. A reused output polygon returns stale bounds after successful clipping.** Resolved upstream by #7522. The witness reproduced on both original revisions and 1.13.0. On 1.14.2 the identical caller returned the correct vertices and bounds. [Release evidence and upstream repair](merged-pr-links/m01-m10/upstream.md#libgdx-repaired-the-reused-bounds)
 
+**11. Spring Framework, PR #37193. An SSE retry field with a trailing space still sets the delay.** The merged WebClient and Spring 7.0.10 delivered the payload with a 25 ms retry for both the valid leading-space field and the trailing-space field. The EventSource digits rule predicts an absent hint for the latter. [Caller and observed event envelopes](../examples/466-spring-sse-retry/README.md) · [Release reproduction](merged-pr-links/o01-o20/upstream.md#server-sent-event-retry-hints)
+
+**12. Spring Framework, PR #30530. Strict R2DBC constructor mapping rejects a complete row.** On the merge the same driver row produced `ADA` by constructor with default settings, then raised InvalidDataAccessApiUsageException with full-population checking. The only writable property was supplied. Spring removed the strict setter in August 2023. The original call raises NoSuchMethodError on 7.0.10. [Release follow-up and upstream removal](merged-pr-links/o01-o20/upstream.md#strict-r2dbc-constructor-mapping) · [Application type and R2DBC readback](../examples/470-spring-r2dbc-mappers/README.md)
+
+**13. Spring Framework, PR #29116. Direct JMS reinitialization leaves a closed connection installed after replacement fails.** After a reset, the merged factory closed the rejected B and returned a session on C. Direct reinitialization closed A and B but attempted the next session on closed A. [Public calls and provider record](../examples/475-spring-jms-replacement/README.md)
+
+**14. Spring Framework, PR #37325. WebTestClient can reject an append to its live default headers.** Initializing a header through defaultHeader and appending through defaultHeaders on the same retained builder threw UnsupportedOperationException on the parent, the merge and Spring 7.0.10. Seeding through the consumer allowed the append. A fresh derivative successfully copied the convenience-initialized list on the merge. [Caller, controls and release results](../examples/463-spring-client-defaults/retained-builder/README.md)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

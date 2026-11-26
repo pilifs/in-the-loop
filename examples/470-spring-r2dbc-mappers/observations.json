@@ -1,0 +1,70 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "8b28703235de4f72952c5a6d35414d8a3ad6bc072ca062c0d1033a279f2a0746",
+  "runtimeSha256": "ddca8ca23058af39ff081a7ddd91c4f43d6cc2bdc00631535237b18779cfb79a",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "353dc5fd2fac191b4246a8fa4c2c3f6d08ac3451e5b9d28fc92743f69c4cc231"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Label.class": "eee9c7e0ed9c4ba8c22a40901720bbdf068a2568d0a4fdff09b30c63af115e2b",
+        "PublicCaller$Person.class": "08a12bd489549d9ec8f8e13a2644896fac7c16af2621a965d542c053cd11df06",
+        "PublicCaller$PersonBean.class": "b80ce314a12ea29f9b1e03b9160368d2446bb3b58321ca006f6e8141d1eabbee",
+        "PublicCaller.class": "7cc9db299572b711d03099a1328f83003d038c0a61a2075ad3baed34ed5f3b71",
+        "UpgradeObservation.class": "4da9e388f1776f700ab6d2a11148d500baddd31cd8f0121a31672660607c34dc"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30530.1",
+          "outcome": {
+            "return": "bean=absent record=absent"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30530.2",
+          "outcome": {
+            "return": "rows=[Person(Ada,37)]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30530.3",
+          "outcome": {
+            "return": "bean=absent record=absent"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30530.1",
+          "outcome": {
+            "return": "bean=PersonBean(Ada,37) record=Person(Ada,37)"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30530.2",
+          "outcome": {
+            "return": "rows=[Person(Ada,37)]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30530.3",
+          "outcome": {
+            "return": "default=ADA strict=InvalidDataAccessApiUsageException"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

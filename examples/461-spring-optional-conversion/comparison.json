@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36913",
+  "revisions": {
+    "parent": "bcfa6c3c4fc9133229bcf252827989555ec009a7",
+    "fix": "af466ccf63bc55f82961b6627fe0c97c43a54632"
+  },
+  "entry": "DefaultConversionService.canConvert and convert",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36913.1",
+      "role": "Intent",
+      "args": [
+        "date"
+      ],
+      "history": "Ask about `Optional<Integer>` to LocalDate with default converters.",
+      "prediction": "The PR reports true followed by conversion failure before. Expect false and a ConverterNotFoundException on a direct attempt after.",
+      "basis": "An Integer has no default LocalDate conversion. The merged regression checks predicate and exception together.",
+      "refutation": "The merged predicate offers the conversion, or the direct attempt produces a date.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "eligible=true",
+            "error="
+          ]
+        },
+        "fix": {
+          "return": "eligible=false error=ConverterNotFoundException"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36913.2",
+      "role": "Control",
+      "args": [
+        "string"
+      ],
+      "history": "Change target to String with the same Optional.of(42). Also ask about raw Optional to LocalDate.",
+      "prediction": "Both revisions should say true and yield `42` as a String for the typed conversion. The raw predicate should remain true.",
+      "basis": "Default number-to-string conversion supplies the value. Raw Optional has no declared element that would rule a converter out.",
+      "refutation": "A typed value is lost, or an unknown element type is rejected up front.",
+      "expected": {
+        "parent": {
+          "return": "eligible=true String=42 raw=true"
+        },
+        "fix": {
+          "return": "eligible=true String=42 raw=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36913.3",
+      "role": "Challenge",
+      "args": [
+        "converter"
+      ],
+      "history": "On the landing use a fresh service with an explicit Integer→LocalDate converter defined by LocalDate.ofEpochDay. Repeat the original query and convert Optional.of(42).",
+      "prediction": "The predicate should now be true and the result 1970-02-12.",
+      "basis": "The supplied conversion defines the expected result. An implementation that simply rejects all Optional-to-date pairs cannot satisfy it.",
+      "refutation": "The newly registered path stays unavailable or unwraps to the wrong date.",
+      "expected": {
+        "fix": {
+          "return": "eligible=true LocalDate=1970-02-12"
+        }
+      }
+    }
+  ]
+}

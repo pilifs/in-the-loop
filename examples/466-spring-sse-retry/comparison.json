@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37193",
+  "revisions": {
+    "parent": "60b9f4cd3a491a84e1dfe294005729cf49ed36e5",
+    "fix": "adbc8ceeab6e004ad8664c2ff5639449c18f2396"
+  },
+  "entry": "WebClient.ResponseSpec.bodyToFlux",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37193.1",
+      "role": "Intent",
+      "args": [
+        "bad"
+      ],
+      "history": "Send retry:none then data:foo in the first event, and data:bar in the next.",
+      "prediction": "The PR reports NumberFormatException interrupting the stream before the fix. Expect data foo and bar in order, both retry values null, then completion after.",
+      "basis": "The field is optional. The event parser should ignore an invalid retry field and continue processing data.",
+      "refutation": "The merged stream errors, loses either payload or invents a delay.",
+      "expected": {
+        "parent": {
+          "return": "[] error=NumberFormatException"
+        },
+        "fix": {
+          "return": "[foo@null, bar@null] complete"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37193.2",
+      "role": "Control",
+      "args": [
+        "valid"
+      ],
+      "history": "First event has retry: 25 and data:foo; second has data:bar.",
+      "prediction": "The first Spring event should carry Duration.ofMillis(25), the second no retry field, and both payloads should arrive on both revisions.",
+      "basis": "The field contains decimal ASCII digits after the single optional space. The Spring envelope represents the fields on each event.",
+      "refutation": "Either revision loses a payload or reports a different duration on the first event.",
+      "expected": {
+        "parent": {
+          "return": "[foo@25, bar@null] complete"
+        },
+        "fix": {
+          "return": "[foo@25, bar@null] complete"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37193.3",
+      "role": "Challenge",
+      "args": [
+        "space"
+      ],
+      "history": "Compare two one-event streams: retry: 25 versus retry:25 followed by one trailing ASCII space. In each append a newline, data:foo, and a blank line.",
+      "prediction": "The SSE rule predicts 25 ms for the first and no retry value for the second, with identical foo payloads. The merged source instead appears to accept the trailing space as well.",
+      "basis": "The field parser drops one optional leading space. A trailing space remains part of the value and is outside the ASCII digits.",
+      "refutation": "A merged duration of 25 ms for the trailing-space event refutes standards compliance even if both payloads arrive.",
+      "expected": {
+        "fix": {
+          "return": "[foo@25] complete / [foo@null] complete"
+        }
+      }
+    }
+  ]
+}

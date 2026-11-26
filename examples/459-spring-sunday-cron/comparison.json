@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37576",
+  "revisions": {
+    "parent": "7ff9e3d0314766984efb20b6cbf2cfe6e19e378d",
+    "fix": "1f083db2da6fe35908f1365f177c2091f5c0a26a"
+  },
+  "entry": "CronExpression.next",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37576.1",
+      "role": "Intent",
+      "args": [
+        "first"
+      ],
+      "history": "Advance once from Thursday 25 February at 15:00.",
+      "prediction": "The PR reports Friday 26 February at 00:00 on the parent. Expect Sunday 28 February at 00:00 on the landing.",
+      "basis": "Both endpoints name Sunday. The first Sunday after Thursday the 25th is the 28th.",
+      "refutation": "The landing returns Friday, skips the first Sunday or changes the time of day.",
+      "expected": {
+        "parent": {
+          "return": "2021-02-26T00:00"
+        },
+        "fix": {
+          "return": "2021-02-28T00:00"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37576.2",
+      "role": "Control",
+      "args": [
+        "sunday"
+      ],
+      "history": "Use the singleton day field SUN and then 0-0 with the same start.",
+      "prediction": "Both should produce 28 February at midnight on both revisions.",
+      "basis": "The PR reports both spellings already denote a single Sunday.",
+      "refutation": "Either spelling gives another date or disagrees with the other.",
+      "expected": {
+        "parent": {
+          "return": "2021-02-28T00:00 2021-02-28T00:00"
+        },
+        "fix": {
+          "return": "2021-02-28T00:00 2021-02-28T00:00"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37576.3",
+      "role": "Challenge",
+      "args": [
+        "next"
+      ],
+      "history": "Start exactly at 28 February 00:00 and compare SUN-SUN, 7-7 and SUN on the landing.",
+      "prediction": "All three next calls should return 7 March 00:00.",
+      "basis": "next advances strictly past its seed. There is no intervening Sunday, even though the month changes.",
+      "refutation": "Any expression repeats its seed, returns 1 March or misses 7 March.",
+      "expected": {
+        "fix": {
+          "return": "2021-03-07T00:00 2021-03-07T00:00 2021-03-07T00:00"
+        }
+      }
+    }
+  ]
+}

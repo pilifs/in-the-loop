@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/31699",
+  "revisions": {
+    "parent": "4a6c3e8f5dda538c07d41f424e6f15a51c410ada",
+    "fix": "feef98b73ce4f86779075298debf6614f01b47c9"
+  },
+  "entry": "ClassPathXmlApplicationContext.refresh and Resource.getInputStream",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#31699.1",
+      "role": "Intent",
+      "args": [
+        "literal"
+      ],
+      "history": "Refresh the context with exactly one matching file.",
+      "prediction": "The parent is expected to fail property population. On the landing both getters should expose collections containing one readable Resource with bytes 4f 4e 45 0a.",
+      "basis": "Both destination types can represent a singleton. The known file contents identify the element independently of its implementation.",
+      "refutation": "Refresh still fails, a collection is empty, or the element opens different bytes.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "refresh=BeanCreationException"
+          ]
+        },
+        "fix": {
+          "return": "list=[4f4e450a] set=[4f4e450a]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#31699.2",
+      "role": "Control",
+      "args": [
+        "two"
+      ],
+      "history": "In the same fixture directory add two.txt (TWO followed by LF) and bind both properties to classpath*:fixtures/*.txt.",
+      "prediction": "Both revisions should expose two elements in each collection, whose streams contain ONE and TWO with their final LFs. Accept either enumeration order.",
+      "basis": "The two matching classpath entries exist on a single isolated classpath root. Neither target requires a resource discovery order.",
+      "refutation": "A file is lost or duplicated, or either stream cannot be read.",
+      "expected": {
+        "parent": {
+          "return": "list=[4f4e450a, 54574f0a] set=[4f4e450a, 54574f0a]"
+        },
+        "fix": {
+          "return": "list=[4f4e450a, 54574f0a] set=[4f4e450a, 54574f0a]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#31699.3",
+      "role": "Challenge",
+      "args": [
+        "singletons"
+      ],
+      "history": "With only one.txt present, compare the literal location with classpath*:fixtures/*.txt on the landing.",
+      "prediction": "Both spellings should populate both collections with one element opening the same four bytes. Resource implementation classes may differ.",
+      "basis": "Changing the expression used to select the only entry does not change its identity or contents.",
+      "refutation": "Only the pattern succeeds, or either collection resolves a different file.",
+      "expected": {
+        "fix": {
+          "return": "literal=list=[4f4e450a] set=[4f4e450a] wildcard=list=[4f4e450a] set=[4f4e450a]"
+        }
+      }
+    }
+  ]
+}

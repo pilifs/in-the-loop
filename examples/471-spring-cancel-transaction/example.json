@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "471",
+  "title": "Transaction outcome when a reactive subscriber cancels",
+  "summary": "The pinned reactive operator rolled back cancellation at the merge. Moving take(1) inside its transaction preserved the row.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "lost-committed-data",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "TransactionalOperator.transactional"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Spring changes the cleanup for a cancellation observed by a reactive transaction from commit to rollback. It applies to TransactionalOperator and annotated reactive method interception. The Kotlin executeAndAwait extension also waits for completion."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/25256"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "The exact TransactionalOperatorImpl.java from each pin is compiled against the same Spring 5.3.0-M1 transaction and R2DBC companions. A delegating manager waits for real H2 transaction cleanup before a fresh unpooled read. These results cover the Java operator."
+  ]
+}

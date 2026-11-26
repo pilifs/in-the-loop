@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/29116",
+  "revisions": {
+    "parent": "b1cf832c28473518240a91afed17bd51f95fbf9a",
+    "fix": "4cc02fe3bcbfcafe824a9ca130e47bfaa79cb522"
+  },
+  "entry": "SingleConnectionFactory.createConnection, resetConnection and initConnection",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#29116.1",
+      "role": "Intent",
+      "args": [
+        "reset"
+      ],
+      "history": "Begin with healthy A, reset, fail preparation of B, and retry.",
+      "prediction": "Both should surface B’s preparation exception. The parent is expected to keep B available to the retry. The landing should attempt to close B and the retry should prepare C and return a C session.",
+      "basis": "After the explicit reset, there is no earlier shared connection to reuse. The provider’s independent session tags identify the candidate in use.",
+      "refutation": "A landed retry uses B or bypasses preparation of C, or the candidate receives no close attempt.",
+      "expected": {
+        "parent": {
+          "return": "failure=prepare-B retry=session-B created=[A, B] prepared=[A, B] closed=[A]"
+        },
+        "fix": {
+          "return": "failure=prepare-B retry=session-C created=[A, B, C] prepared=[A, B, C] closed=[A, B]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#29116.2",
+      "role": "Control",
+      "args": [
+        "shared"
+      ],
+      "history": "Make two successful createConnection calls before any reset and open a session through each logical handle.",
+      "prediction": "On both revisions the provider should create one physical A, install its listener and supply both sessions through A.",
+      "basis": "SingleConnectionFactory promises to share a physical connection. Proxy identity need not be the same.",
+      "refutation": "A second physical connection is created, or one handle reaches another provider connection.",
+      "expected": {
+        "parent": {
+          "return": "first=session-A second=session-A created=[A] prepared=[A] closed=[]"
+        },
+        "fix": {
+          "return": "first=session-A second=session-A created=[A] prepared=[A] closed=[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#29116.3",
+      "role": "Challenge",
+      "args": [
+        "init"
+      ],
+      "history": "Begin fresh with healthy A. Replace the explicit reset with public initConnection() while A is still installed. Let B fail preparation; then call createConnection and open a session.",
+      "prediction": "The documented reinitialization closes A. A usable retry should reach prepared C. The landed source suggests it can retain closed A when B fails; record the first post-failure session outcome.",
+      "basis": "A closed physical connection cannot supply a working JMS session. The provider tags distinguish a recovered connection from either rejected candidate.",
+      "refutation": "The retry reuses closed A or exposes B, instead of returning a working C session.",
+      "expected": {
+        "fix": {
+          "return": "failure=prepare-B retry=session-C created=[A, B, C] prepared=[A, B, C] closed=[A, B]"
+        }
+      }
+    }
+  ]
+}

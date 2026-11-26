@@ -1,0 +1,85 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "669e8988297a8614aeec44648cd4eea09c528869e916ba715ddf336476bed686",
+  "runtimeSha256": "445034fbeda3cda024728407d121915124a8114c1644ab91071e02a08032f404",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "9e3b64cb9bca24c813d23b7561817eefda13262c4160d1372182640c15abe4e3"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Config.class": "364ba20fa0ca65b44010b8a585c57e7efd89ef350a68a3a34036d45dc28f3214",
+        "PublicCaller$Service.class": "fede669ed9352df896eb27a25c55d10b9f77a9b8141d9431c9a7d961847ec3c5",
+        "PublicCaller.class": "53df3b8f9316601378fc95679c4cd87e971dd71de49e540821d7cdc3d922225f",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37600.1",
+          "outcome": {
+            "return": "first=[none] second=[none] subscriptions=1 cache=[none]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37600.2",
+          "outcome": {
+            "return": "first=t1 second=t1 subscriptions=1 cache=t1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37600.3",
+          "outcome": {
+            "return": "put=[none] stored=[none] evict=[none] final=null subscriptions=2"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37600.4",
+          "outcome": {
+            "return": "first=[none] empty=true second=[none] subscriptions=2 cache=[none]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37600.1",
+          "outcome": {
+            "return": "first=[t1] second=[t1] subscriptions=1 cache=[t1]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37600.2",
+          "outcome": {
+            "return": "first=t1 second=t1 subscriptions=1 cache=t1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37600.3",
+          "outcome": {
+            "return": "put=[t1] stored=[t1] evict=[t2] final=null subscriptions=2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37600.4",
+          "outcome": {
+            "return": "first=[t1] empty=true second=[t2] subscriptions=2 cache=[t2]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}
