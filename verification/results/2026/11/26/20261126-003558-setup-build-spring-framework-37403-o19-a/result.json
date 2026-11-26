@@ -1,0 +1,380 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-003558-setup-build-spring-framework-37403-o19-a",
+  "title": "Setup: build Spring Framework #37403 (O19) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 7m21s, peak 3.8 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-003558-setup-build-spring-framework-37403-o19-a.json",
+    "sha256": "13bcf5879aa23badbb20f188ef25b14af8f89d8d2a543b5e248bdf8afb75eacc",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-003558-setup-build-spring-framework-37403-o19-a",
+      "title": "Setup: build Spring Framework #37403 (O19) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md, case O19 (spring-projects/spring-framework#37403: Flux resubscription in reactive caching). In the worktrees $O/worktrees/O19-{fix,parent} (O = ~/.cache/in-the-loop/spring-pr-links-o01-o20), offline (dependencies resolved online beforehand), it builds the jars of spring-context with the Gradle each checkout's wrapper names, runs the landed test classes (ReactiveRetryInterceptorTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-context in $O/artifacts/O19-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $O/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned O19",
+      "submitted": {
+        "at": "2026-11-26T00:35:58+00:00",
+        "session": "bfc9aed1-6b9f-409a-9ed4-c5515dca4d80",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "O19 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O19 fix",
+          "cwd": "."
+        },
+        {
+          "name": "O19 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O19 parent",
+          "cwd": "."
+        },
+        {
+          "name": "O19 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O19 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "O19 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O19 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "132ae3386c8914da894d7a90e5eb592dcf083f6b",
+  "startedAt": "2026-11-26T00:44:57+00:00",
+  "finishedAt": "2026-11-26T00:52:30+00:00",
+  "wallSeconds": 453.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1123013,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 4070961152,
+    "wallSeconds": 442.0,
+    "cpuSeconds": 1018.0,
+    "memoryOfEstimate": 0.63,
+    "durationOfEstimate": 0.29
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "O19 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O19 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 165.354,
+      "cpuSeconds": 372.416,
+      "cpuThrottledSeconds": 43.861,
+      "peakMemoryBytes": 3076546560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-o19-fix-offline-build-and-land.log",
+        "lines": 38,
+        "bytes": 4693,
+        "sha256": "beb04b71664912a867fb1e3dd70cc9c29af026b0e63b7ffca4385ab8a141da7c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/worktrees/O19-fix gradle=9.8.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=110 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context:jar :spring-context:test --tests org.sprin",
+        "junit tests=24 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.resilience.ReactiveRetryInterceptorTests junit tests=18 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O19-fix/spring-context.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O19-fix/spring-context.testRuntimeClasspath.txt 92 entries",
+        "b74d79a4e0acd7621c7cc56dc9fd1af5227190a937228fe10a425dfa32719e5d  jars/spring-context-7.0.10-SNAPSHOT.jar",
+        "0ce2d2d008306c61bf665d40010b94e69ac134e5c50ceecd0fa1da8afe7970d7  tree/spring-aop/build/libs/spring-aop-7.0.10-SNAPSHOT.jar",
+        "fd6b9ac1392d8c3ec9fa20e9069c753197bfdde021ecbf7c9152ecf6d5d7bd9a  tree/spring-aop/build/libs/spring-aop-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "52037fa238e705c81e6581774cf475024e7ff2e1624a3dc98553045d34d5a7e8  tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT.jar",
+        "7c1189776729b5f94d765f9f7dcb25e901a5da54d4f85b1e2e60b1ea95005903  tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "b74d79a4e0acd7621c7cc56dc9fd1af5227190a937228fe10a425dfa32719e5d  tree/spring-context/build/libs/spring-context-7.0.10-SNAPSHOT.jar",
+        "6a67c031d44cb2f135c08625fc1311581c4e62e4bf208677c74280119ef130f0  tree/spring-context/build/libs/spring-context-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "45f7e7f09096b29238afd140817feec6db67a37d34fd219b1cdcf1ed50f9d482  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT.jar",
+        "ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "24d6fc9fd6963165ea8aa2a6360326fb14a3d1ebc7c4428114298e9bd762187f  tree/spring-core-test/build/libs/spring-core-test-7.0.10-SNAPSHOT.jar",
+        "79544fbebdd8c00b4d4fcc5f774f7e2cd82bbbbce1bb474c33616f8811b60bb8  tree/spring-expression/build/libs/spring-expression-7.0.10-SNAPSHOT.jar",
+        "665a133a7bf82d44aef43bac93129bba49223a06cd42320e8544dc19140a5aea  tree/spring-instrument/build/libs/spring-instrument-7.0.10-SNAPSHOT.jar",
+        "295ef68e35e4edf2fa86beb3316663f6d50fe8abafe2eb313e70514f4d82b798  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheEvictListSubscriber.class",
+        "7e0cd22a09d95836f0eb768fc6e804a4964c3f5311620c75eddedd0019a5824c  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheOperationCacheKey.class",
+        "63d57f1e2de95dbabbaa210c93a710d95a5bc52d60359f0e68cda002e7cadee2  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheOperationContext.class",
+        "f0086201b861632ded52bc71df116c4b32d017c953e5691864c6c06cbe062e1c  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheOperationContexts.class",
+        "72e92f51af96b06ec38bc1eb189e2195279da54d7af69737080061904bbf031e  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheOperationMetadata.class",
+        "7949d32d36fe276236fb5ccfc45b0fc5b59f764237aacc9fb2609a3fb260fae0  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CachePutListSubscriber.class",
+        "3bd725b03d4a15adcba056520bf27dbdb6c95ab00ace512853fbeedbbe9783c3  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CachePutRequest.class",
+        "d6ec4be6fdde9a91691d3f57978e77009bef3ed0ca2de6555b833e9faeeed0ee  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$ReactiveCachingHandler.class",
+        "6c357c8fec1385f962bb01f107b52d99243201d1514ddaae0d2d8122e51a6790  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "O19 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O19 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 151.846,
+      "cpuSeconds": 325.717,
+      "cpuThrottledSeconds": 40.039,
+      "peakMemoryBytes": 3177680896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-o19-parent-offline-build-and-t.log",
+        "lines": 38,
+        "bytes": 4702,
+        "sha256": "518f52c6aa06a4728c6798ae7501386f5464f0822b494e49947b74b127955bc3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/worktrees/O19-parent gradle=9.8.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=108 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context:jar :spring-context:test --tests org.sp",
+        "junit tests=22 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.resilience.ReactiveRetryInterceptorTests junit tests=16 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O19-parent/spring-context.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O19-parent/spring-context.testRuntimeClasspath.txt 92 entries",
+        "a9fdab03f69493ef5eb5a69a76a986a01dbd8bfb32c0c0789559094f283e1744  jars/spring-context-7.0.10-SNAPSHOT.jar",
+        "0ce2d2d008306c61bf665d40010b94e69ac134e5c50ceecd0fa1da8afe7970d7  tree/spring-aop/build/libs/spring-aop-7.0.10-SNAPSHOT.jar",
+        "fd6b9ac1392d8c3ec9fa20e9069c753197bfdde021ecbf7c9152ecf6d5d7bd9a  tree/spring-aop/build/libs/spring-aop-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "52037fa238e705c81e6581774cf475024e7ff2e1624a3dc98553045d34d5a7e8  tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT.jar",
+        "7c1189776729b5f94d765f9f7dcb25e901a5da54d4f85b1e2e60b1ea95005903  tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "a9fdab03f69493ef5eb5a69a76a986a01dbd8bfb32c0c0789559094f283e1744  tree/spring-context/build/libs/spring-context-7.0.10-SNAPSHOT.jar",
+        "6a67c031d44cb2f135c08625fc1311581c4e62e4bf208677c74280119ef130f0  tree/spring-context/build/libs/spring-context-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "45f7e7f09096b29238afd140817feec6db67a37d34fd219b1cdcf1ed50f9d482  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT.jar",
+        "ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "24d6fc9fd6963165ea8aa2a6360326fb14a3d1ebc7c4428114298e9bd762187f  tree/spring-core-test/build/libs/spring-core-test-7.0.10-SNAPSHOT.jar",
+        "79544fbebdd8c00b4d4fcc5f774f7e2cd82bbbbce1bb474c33616f8811b60bb8  tree/spring-expression/build/libs/spring-expression-7.0.10-SNAPSHOT.jar",
+        "665a133a7bf82d44aef43bac93129bba49223a06cd42320e8544dc19140a5aea  tree/spring-instrument/build/libs/spring-instrument-7.0.10-SNAPSHOT.jar",
+        "295ef68e35e4edf2fa86beb3316663f6d50fe8abafe2eb313e70514f4d82b798  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheEvictListSubscriber.class",
+        "7e0cd22a09d95836f0eb768fc6e804a4964c3f5311620c75eddedd0019a5824c  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheOperationCacheKey.class",
+        "63d57f1e2de95dbabbaa210c93a710d95a5bc52d60359f0e68cda002e7cadee2  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheOperationContext.class",
+        "f0086201b861632ded52bc71df116c4b32d017c953e5691864c6c06cbe062e1c  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheOperationContexts.class",
+        "72e92f51af96b06ec38bc1eb189e2195279da54d7af69737080061904bbf031e  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CacheOperationMetadata.class",
+        "7949d32d36fe276236fb5ccfc45b0fc5b59f764237aacc9fb2609a3fb260fae0  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CachePutListSubscriber.class",
+        "3bd725b03d4a15adcba056520bf27dbdb6c95ab00ace512853fbeedbbe9783c3  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$CachePutRequest.class",
+        "5303a34d4011bb02326e20c472f029b4b7c882f176e06fb49fcbb025f57a8fe3  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport$ReactiveCachingHandler.class",
+        "6c357c8fec1385f962bb01f107b52d99243201d1514ddaae0d2d8122e51a6790  spring-context-7.0.10-SNAPSHOT.jar!/org/springframework/cache/interceptor/CacheAspectSupport.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "O19 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O19 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 121.547,
+      "cpuSeconds": 317.951,
+      "cpuThrottledSeconds": 60.401,
+      "peakMemoryBytes": 4070961152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-o19-transplant-the-fix-s-tests.log",
+        "lines": 17,
+        "bytes": 1271,
+        "sha256": "1f1bbc5d8af8f95ae1ce3f8d190bf8c29ea604eded3952403513f569365ea47a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-context/src/test/java/org/springframework/resilience/ReactiveRetryInterceptorTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O19-parent-landed gradle=9.8.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=121 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context:test --tests org.springframework.res",
+        "junit tests=24 failures=2 errors=0 skipped=0",
+        "junit failed ReactiveRetryInterceptorTests#withCacheEvictAnnotation()",
+        "junit failed ReactiveRetryInterceptorTests#withCacheableAnnotation()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.resilience.ReactiveRetryInterceptorTests junit tests=18 failures=2 errors=0 skipped=0 junit failed ReactiveRetryInterceptorTests#withCacheEvictAnnotation() junit failed ReactiveRetryInterceptorTests#withCacheableAnnotation() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "O19 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O19 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.204,
+      "cpuSeconds": 1.874,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 170672128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-o19-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "dbfbb95e97331fc04a04c62204efb5f4815c84fef99a74089d47cd3eb99310d9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned O19"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T00:52:41+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T005230Z-77822002d4d8675c"
+    }
+  }
+}
