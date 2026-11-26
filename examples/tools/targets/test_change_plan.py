@@ -171,6 +171,26 @@ class ChangePlanTest(unittest.TestCase):
             stored.write_text(json.dumps(damaged))
             self.assertIsNone(cache.lookup("old", files, self.binding, info))
 
+    def test_offline_shared_entry_requires_each_completed_claims_own_witness(self):
+        from targets import change_plan
+        graph = {"kind": "production", "classpath": ["a", "b"]}
+        key = change_inventory.digest(graph)
+        record = {"side": "new", "entry": self.entry, "status": "bound", "graph": key}
+        ref = change_inventory.digest(record)
+        claims = [{"id": name, "claimKey": name, "entry": self.entry, "entryBindings": {"new": ref},
+                   "status": "established"} for name in ("explicit", "omitted")]
+        report = {"schema": change_plan.SCHEMA, "graphs": {key: {**graph, "key": key}},
+                  "entryBindings": {ref: record}, "claims": claims, "executionState": "complete",
+                  "bindingWitnesses": {ref: [{"claim": c["id"]} for c in claims]}}
+        read = change_plan.saved_bindings(report)
+        self.assertEqual([r["witnesses"] for r in read["claims"]], [[{"claim": "explicit"}], [{"claim": "omitted"}]])
+        report["bindingWitnesses"][ref].pop(0)
+        with self.assertRaisesRegex(ValueError, "no original witness"):
+            change_plan.saved_bindings(report)
+        report["graphs"][key]["classpath"].reverse()
+        with self.assertRaisesRegex(ValueError, "graph differs"):
+            change_plan.saved_bindings(report)
+
     def test_added_removed_and_unknown_designated_methods_are_accounted_for(self):
         common = ("a/Client", "call", "()I")
         private = ("a/Client", "unused", "()I")

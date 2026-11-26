@@ -54,10 +54,29 @@ def absences_hold(paths):
     return True
 
 
-def resolve(path, jdk, image, environment, *, kind, layout_cache=None):
+def changed_inputs(launches):
+    expected = {}
+    for launch in launches:
+        for row in launch["classpath"]:
+            expected[row["file"]] = row["sha256"]
+            expected[row["originalFile"]] = row["sha256"]
+        for row in launch.get("environmentFiles", []):
+            expected[row["file"]] = row["sha256"]
+    changed = []
+    for name, sha in expected.items():
+        try:
+            if file_digest(Path(name)) == sha:
+                continue
+        except OSError:
+            pass
+        changed.append(name)
+    return changed
+
+
+def resolve(path, jdk, image, environment, *, kind, layout_cache=None, index=None):
     document = json.loads(path.read_text())
     feature = int(runtime_jdk.identity(jdk)["feature"])
-    files, entries, graph = deployment_graph.resolve(document, path.parent, feature, file_digest, layout_cache=layout_cache)
+    files, entries, graph = deployment_graph.resolve(document, path.parent, feature, file_digest, layout_cache=layout_cache, index=index)
     if pin := document.get("jdkReleaseSha256"):
         if upgrade_replay.sha(jdk / "release") != pin:
             raise ValueError(f"the JDK differs from the prepared {kind} launch")

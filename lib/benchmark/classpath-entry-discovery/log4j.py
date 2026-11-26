@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import zipfile
 
 from transfer import ROOT, JDK
 from targets import change_evidence, upgrade_replay
@@ -53,6 +54,10 @@ def run(destination):
                             "--previous",previous,"--cache",cache,"--output",plan,"--run","--seconds","180"],check=True)
             report = json.loads(plan.read_bytes())
             previous = plan
+            offline = work / (mode + "-bindings.json")
+            subprocess.run([sys.executable,ROOT/"examples/tools/build.py","--change-plan","bindings",plan,"--verify-receipts","--output",offline],check=True)
+            if len(json.loads(offline.read_bytes())["claims"]) != 4:
+                raise ValueError("saved report lost a claim or revision")
             for claim in report["claims"]:
                 name = claim["id"]
                 expected_status = "refuted" if name == "explicit" and mode.startswith("replacement") else "established"
@@ -83,7 +88,12 @@ def run(destination):
             raise ValueError("warm and clean predictions disagree")
         if stages["replacement-warm"]["explicit"] != ["refuted"] * 4:
             raise ValueError("same-path substitution missed one of the four zone predictions")
-        change_evidence.write_json(destination,{"rows":rows,"strictEngine":{s:strict[s]["disposition"] for s in ("old","new")},
+        archive = destination.with_name("log4j-plans.zip")
+        with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zipped:
+            for file in sorted([work/"scaffold.json", *(work/(mode+".json") for mode in stages),
+                                *work.glob("*-bindings.json"), *(work/"receipts").glob("*.json")]):
+                zipped.write(file, file.relative_to(work).as_posix())
+        change_evidence.write_json(destination,{"rows":rows,"plansSha256":upgrade_replay.sha(archive),"strictEngine":{s:strict[s]["disposition"] for s in ("old","new")},
                                                 "strictReceiptSha256":upgrade_replay.sha(ORACLE/"first-native.json")})
         print("Two scaffold bindings, eight frozen cases, five cache comparisons; all independent histories matched")
 

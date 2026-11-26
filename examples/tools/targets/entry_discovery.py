@@ -36,6 +36,11 @@ class Definition:
         return self.declarations
 
 
+def access(flags):
+    return {"access": flags, "public": bool(flags & 1), "static": bool(flags & 8),
+            "synthetic": bool(flags & 0x1000), "bridge": bool(flags & 0x40)}
+
+
 def fingerprints(definition):
     """Instruction operands use resolved pool constants. Unmodelled bootstrap or handler changes stay class-level."""
     pool, methods, _ = runtime_jar._declarations(definition.data, with_code=True)
@@ -76,9 +81,15 @@ class Artifact:
         self.resources = defaultdict(list)
         self.skipped = []
         self.multi = "disabled"
+        self.manifests = []
+        self.has_jar_index = False
         def add(name, data):
             if name.upper() == "META-INF/MANIFEST.MF" and not file.is_dir():
-                self.multi = runtime_jar.multi_release(data)
+                self.manifests.append(data)
+                if name == "META-INF/MANIFEST.MF":
+                    self.multi = runtime_jar.multi_release(data)
+            if name.upper() == "META-INF/INDEX.LIST" and not file.is_dir():
+                self.has_jar_index = True
             variant = class_binding.VERSIONED.fullmatch(name) if not file.is_dir() else None
             logical = variant[2] if variant else name
             release = int(variant[1]) if variant else 0
@@ -107,12 +118,15 @@ class Index:
     def __init__(self):
         self.artifacts = {}
 
+    def artifact(self, file, sha):
+        if sha not in self.artifacts:
+            self.artifacts[sha] = Artifact(file)
+        return self.artifacts[sha]
+
     def view(self, files, hashes, feature):
         winners, physical, resources = {}, defaultdict(list), defaultdict(list)
         for i, (file, sha) in enumerate(zip(files, hashes, strict=True)):
-            if sha not in self.artifacts:
-                self.artifacts[sha] = Artifact(file)
-            artifact = self.artifacts[sha]
+            artifact = self.artifact(file, sha)
             for owner, defs in artifact.classes.items():
                 physical[owner].extend((i, d) for d in defs)
                 eligible = [d for d in defs if artifact.eligible(d.release, feature)]
@@ -139,9 +153,16 @@ class View:
 
     def origins(self, owner):
         winner = self.winners.get(owner)
-        return [{"index": i, "artifactSha256": self.hashes[i], "entry": d.entry, "classSha256": d.sha,
-                 "release": d.release or None, "selected": bool(winner and winner[0] == i and winner[1] is d)}
-                for i, d in self.physical.get(owner, [])]
+        origins = []
+        for index, definition in self.physical.get(owner, []):
+            selected = bool(winner and winner[0] == index and winner[1] is definition)
+            reason = ("effective class in the first provider" if selected else
+                      "another provider wins" if winner and winner[0] < index else
+                      "physical variant is not effective on this JDK")
+            origins.append({"index": index, "artifactSha256": self.hashes[index], "entry": definition.entry,
+                            "classSha256": definition.sha, "release": definition.release or None,
+                            "selected": selected, "reason": reason})
+        return origins
 
 
 def changes(old, new):
@@ -162,12 +183,31 @@ def changes(old, new):
             member = selector(owner, name, desc)
             targets.add(member)
             differences.append({"entry": entry_name(member), "change": "added" if a is None else "removed" if b is None else "changed",
-                                "sides": {s: {"bodyDigest": fp[0], "access": item[1].methods()[name, desc][0]}
+                                "sides": {s: {"bodyDigest": fp[0], **access(item[1].methods()[name, desc][0])}
                                           for s, fp, item in (("old", a, before), ("new", b, after)) if fp}})
         if before and after and before[1].sha != after[1].sha and (
                 not differences or any(f[1] for f in [*old_methods.values(), *new_methods.values()])):
             class_only.append(owner)
+        physical_changes = []
+        left = {(i, d.entry):d for i, d in old.physical.get(owner, ())}
+        right = {(i, d.entry):d for i, d in new.physical.get(owner, ())}
+        for slot in sorted(left.keys() | right.keys()):
+            a, b = left.get(slot), right.get(slot)
+            if a and b and a.sha == b.sha:
+                continue
+            # Winners are detailed above. Preserve selector-level evidence for changes confined to a shadow.
+            if (a is None or before and a is before[1]) and (b is None or after and b is after[1]):
+                continue
+            sides = [(s, definition, fingerprints(definition)) for s,definition in (("old",a),("new",b)) if definition]
+            signatures = sorted(set().union(*(fp.keys() for _,_,fp in sides)))
+            selectors = []
+            for key in signatures:
+                versions = {s: {"bodyDigest": fp[key][0], **access(d.methods()[key][0])} for s,d,fp in sides if key in fp}
+                if len(versions) != 2 or versions["old"] != versions["new"]:
+                    selectors.append({"entry": entry_name((owner,*key)), "sides": versions})
+            physical_changes.append({"index": slot[0], "physicalEntry": slot[1], "selectors": selectors})
         rows.append({"owner": owner, "old": old.origins(owner), "new": new.origins(owner), "selectors": differences,
+                     "otherPhysicalChanges": physical_changes,
                      "providerMoved": bool(before and after and before[0] != after[0]),
                      "effectiveBytesChanged": (before[1].sha if before else None) != (after[1].sha if after else None)})
     return rows, targets, class_only
@@ -205,6 +245,22 @@ def callers(view, targets):
     return routes, len(scanned)
 
 
+def construction(view, owner):
+    definition = view.winners[owner][1]
+    constructors = [entry_name((owner, name, desc)) for (name, desc), (flags, _) in definition.methods().items()
+                    if name == "<init>" and flags & 1]
+    result = ")L" + owner + ";"
+    factories = []
+    for name, (_, candidate) in view.winners.items():
+        if result.encode() not in candidate.data or not runtime_jar.class_flags(candidate.data) & 1:
+            continue
+        for (method, descriptor), (flags, _) in candidate.methods().items():
+            if flags & 9 == 9 and descriptor.endswith(result):
+                factories.append(entry_name((name, method, descriptor)))
+    return {"publicConstructors": sorted(constructors), "publicFactories": sorted(factories),
+            "evidence": "declared return type; construction and receiver still need a caller"}
+
+
 def discover(views, declared=(), changed=(), limit=64):
     old, new = views["old"], views["new"]
     rows, inferred, class_only = changes(old, new)
@@ -225,6 +281,16 @@ def discover(views, declared=(), changed=(), limit=64):
     for rank, row in enumerate(ordered, 1):
         row["rank"] = rank
     retained = [r for i, r in enumerate(ordered) if i < limit or r["entry"] in declared]
+    receiver_routes = {}
+    for row in retained:
+        owner, method, _ = runtime_jar.parse_target(row["entry"])
+        for side, details in row["sides"].items():
+            if details["access"] & 8 or method == "<init>":
+                continue
+            key = side, owner
+            if key not in receiver_routes:
+                receiver_routes[key] = construction(views[side], runtime_jar.internal(owner))
+            details["construction"] = receiver_routes[key]
     missing = sorted(set(declared) - ranking.keys())
     retained.extend({"entry": e, "sides": {}, "independentlyDiscovered": False,
                      "basis": ["supplied public question"]} for e in missing)

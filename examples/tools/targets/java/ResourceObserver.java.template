@@ -24,7 +24,26 @@ public final class UpgradeProbe {
         Lookup(URL[] urls) { super(urls, ClassLoader.getSystemClassLoader().getParent()); }
         @Override public Enumeration<URL> getResources(String name) throws IOException {
             names.add(name);
-            return super.getResources(name);
+            Enumeration<URL> resources = super.getResources(name);
+            if (!Boolean.getBoolean("entry.resource.trace")) return resources;
+            System.out.println("RESOURCE-REQUEST\t" + getClass().getName() + "\t" + name);
+            return new Enumeration<URL>() {
+                public boolean hasMoreElements() { return resources.hasMoreElements(); }
+                public URL nextElement() {
+                    URL url = resources.nextElement();
+                    try {
+                        Path path = java.nio.file.Paths.get(url.toURI()).normalize();
+                        for (URL root : getURLs()) {
+                            Path directory = java.nio.file.Paths.get(root.toURI()).normalize();
+                            if (path.startsWith(directory)) {
+                                System.out.println("RESOURCE-ORIGIN\t" + name + "\t" + directory.getFileName());
+                                break;
+                            }
+                        }
+                    } catch (java.net.URISyntaxException e) { throw new IllegalStateException(e); }
+                    return url;
+                }
+            };
         }
     }
 

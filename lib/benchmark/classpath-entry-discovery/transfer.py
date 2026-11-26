@@ -53,7 +53,8 @@ def transfer(destination, reverse=False):
                  "candidates": inv["candidates"], "changedDefinitions": inv["changedDefinitions"],
                  "deployments": {s: report["launches"][s]["production"] for s in ("old", "new")},
                  "bindings": report["entryBindings"], "manualProviderIndices": 0,
-                 "measurements": {"archiveScans": inv["coverage"]["archiveScans"], "checkerBatches": 1, "jvmProbes": 2}}
+                 "measurements": {"archiveScans": inv["coverage"]["archiveScans"], "checkerBatches": report["discovery"]["checkerBatches"],
+                                  "jvmProbes": report["discovery"]["jvmProbes"]}}
         with destination.open("x") as stream:
             json.dump(value, stream, separators=(",", ":"))
             stream.write("\n")

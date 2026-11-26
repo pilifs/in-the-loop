@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 import hashlib
 import json
+from pathlib import Path
 from typing import Optional
 
 from targets.interfaces import RUNTIME, TaskPlan, Unsupported
@@ -49,6 +50,11 @@ class ProofRecipe:
         from targets import runtime, runtime_jar
         entry = runtime.java_target(self.entry)
         paths, entries, originals, dependencies = {}, {}, {}, {}
+        staged = None
+        if getattr(plan, "folder", None):
+            record = Path(plan.folder) / "records/entry-bindings.json"
+            if record.is_file():
+                staged = json.loads(record.read_bytes())
         for revision, (_, prepared, artifacts) in sides.items():
             upstream = prepared.source["target"]
             original = upstream["loadedFrom"]
@@ -74,6 +80,24 @@ class ProofRecipe:
                                       f"extracting {original} before {first} changes the deployment order")
             originals[revision] = first
             dependencies[revision] = selected[1:]
+            if staged is not None:
+                from targets.change_inventory import digest as record_digest
+                candidates = [(ref, r) for ref, r in staged.get("entryBindings", {}).items()
+                              if r.get("entry") == plan.target and r.get("profile") == "production"
+                              and r.get("revision") == prepared.commit]
+                if candidates:
+                    hashes = [a.sha256 for a in selected if a.role != "adapter"]
+                    matching = []
+                    for ref, record in candidates:
+                        graph = staged.get("graphs", {}).get(record.get("graph"), {})
+                        if (record_digest(record) == ref and record.get("status") == "bound"
+                                and record.get("classSha256") == upstream.get("classSha256")
+                                and hashes == [r["sha256"] for r in graph.get("classpath", [])]):
+                            matching.append((ref, record))
+                    if not matching:
+                        raise runtime.Refused("classpath", f"{revision}: the prepared proof inputs differ from the scaffold binding for {plan.target}")
+                    entries[revision]["scaffoldBindingRefs"] = sorted(ref for ref,_ in matching)
+                    entries[revision]["scaffoldJdk"] = staged["graphs"][matching[0][1]["graph"]]["jdk"]
             if upstream.get("entryBinding"):
                 entries[revision]["entryBinding"] = upstream["entryBinding"]
             paths[revision] = [dict(path=a.path, sha256=a.sha256, role=a.role) for a in selected]

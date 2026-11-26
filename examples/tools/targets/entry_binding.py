@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 from urllib.parse import unquote, urlsplit
 
-from targets import class_binding, runtime_jar, runtime_jdk, upgrade_replay
+from targets import class_binding, entry_discovery, runtime_jar, runtime_jdk, upgrade_replay
 from targets.change_inventory import digest
 
 
@@ -41,9 +41,12 @@ def observe(jdk, compiled, files, queries):
     return observations
 
 
-def qualify(checker, graphs, entries):
+def qualify(checker, graphs, entries, *, measurements=None):
     """One JVM per named launch and one checker batch per JDK (separate observed MR bindings as needed)."""
     records, groups = {}, {}
+    if measurements is None:
+        measurements = {}
+    measurements.update(jvmProbes=0, checkerBatches=0)
     with tempfile.TemporaryDirectory(prefix="entry-bind-") as tmp:
         root = Path(tmp)
         for side, (files, launch, jdk) in graphs.items():
@@ -66,6 +69,7 @@ def qualify(checker, graphs, entries):
                 subprocess.run([jdk / "bin/javac", "-proc:none", "-d", compiled, upgrade_replay.LOOKUP],
                                cwd=compiled, check=True, capture_output=True, timeout=30)
             queries = [request(e) for e in selectors]
+            measurements["jvmProbes"] += 1
             observations = observe(jdk, compiled, files, queries)
             for entry, seen in zip(selectors, observations, strict=True):
                 records[side][entry]["jvm"] = seen
@@ -74,6 +78,7 @@ def qualify(checker, graphs, entries):
             feature = int(runtime_jdk.identity(jdk)["feature"])
             env = {**os.environ, "JAVA_HOME": str(jdk), "JVMCONTRACT_JAR_RELEASE": str(feature)}
             env.pop("JVMCONTRACT_CLASS_OBSERVATIONS", None)
+            measurements["checkerBatches"] += 1
             answers, release = class_binding.ask(checker, env, root, batch)
             if release is not None and release != feature:
                 raise ValueError("checker selected a different JDK release")
@@ -86,12 +91,15 @@ def qualify(checker, graphs, entries):
                     observed = {r["jvm"]["owner"]: r["jvm"]["sha256"] for _, r in pairs if r["jvm"]["status"] == "bound"}
                     pin = root / ("observations-" + digest(side)[:12] + ".json")
                     pin.write_text(json.dumps({"feature": feature, "classes": observed}))
+                    measurements["checkerBatches"] += 1
                     retry, _ = class_binding.ask(checker, {**env, "JVMCONTRACT_CLASS_OBSERVATIONS": str(pin)},
                                                  root, {side: batch[side]})
                     response = retry[side]
                 for (entry, record), selected in zip(pairs, response["bindings"], strict=True):
                     seen = record["jvm"]
                     record["checker"] = selected
+                    if "method" in selected and selected["method"].get("access") is not None:
+                        record["declarationFlags"] = entry_discovery.access(selected["method"]["access"])
                     owner = seen["owner"]
                     if seen["status"] != "bound":
                         problem = f"{side}: JVM public lookup of {entry}: {seen['status']}"

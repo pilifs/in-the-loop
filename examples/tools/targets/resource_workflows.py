@@ -58,6 +58,9 @@ def source(target, names):
                     throw new IllegalStateException("provider does not implement the requested service in its defining loader");
                 found.add(item.getClass().getName());
             }}"""
+    body = (f'if (Boolean.getBoolean("entry.resource.trace")) System.out.println("RESOURCE-ENTRY\\t" + '
+            f'{owner.replace("$", ".")}.class.getClassLoader().getClass().getName() + "\\t" + '
+            f'{owner.replace("$", ".")}.class.getProtectionDomain().getCodeSource().getLocation());\n' + body)
     return TEMPLATE.read_text().replace("INVOCATION", body).replace("RESOURCE_NAMES", ", ".join(map(json.dumps, names)))
 
 
@@ -70,15 +73,21 @@ def compile_observer(work, probe, files, jdk):
     subprocess.run(args, check=True, capture_output=True, timeout=30)
 
 
-def physical(work, compiled, jdk, files, inputs):
+def physical(work, compiled, jdk, files, inputs, *, trace=None):
     cp = os.pathsep.join(map(str, [compiled, *files]))
     cmd = [jdk / "bin/java", "-Xmx256m", "-XX:-UsePerfData", "-Duser.language=en", "-Duser.country=US",
            "-Duser.timezone=UTC", "-Djava.io.tmpdir=" + str(work), "-cp", cp, "ReadLookup", *inputs]
+    if trace is not None:
+        cmd.insert(1, "-Dentry.resource.trace=true")
     proc = subprocess.run(cmd, cwd=work, text=True, capture_output=True, timeout=25,
                           env={"HOME": str(work), "PATH": str(jdk / "bin") + ":/usr/bin:/bin", "LANG": "C.UTF-8", "TZ": "UTC"})
     rows = [s[7:] for s in proc.stdout.splitlines() if s.startswith("LOOKUP ")]
     if proc.returncode or len(rows) != 1:
         raise ValueError("original caller did not return a unique observation: " + proc.stderr[-600:])
+    if trace is not None:
+        for line in proc.stdout.splitlines():
+            if line.startswith(("RESOURCE-ENTRY\t", "RESOURCE-REQUEST\t", "RESOURCE-ORIGIN\t")):
+                trace.append(line.split("\t"))
     return rows[0]
 
 
@@ -149,9 +158,10 @@ def discover_entry(entry, target, graphs, jdk, dest):
                 for w in workflows:
                     for case in json.loads((dest / w["scope"]).read_bytes())["cases"]:
                         args = case["args"]
-                        value = physical(work, work / "populated", jdk, files, args)
+                        trace = []
+                        value = physical(work, work / "populated", jdk, files, args, trace=trace)
                         expected = expectation(target[2], queries[side], names, args)
-                        trials.append({"args": args, "actual": value, "expected": expected})
+                        trials.append({"args": args, "actual": value, "expected": expected, "lookupTrace": trace})
             record["stage"] = "original JVM controls passed" if all(r["actual"] == r["expected"] for v in record["physical"].values() for r in v) else "registered prediction refuted on an original JVM"
     except (ValueError, OSError, subprocess.SubprocessError) as error:
         record["firstScaffoldStop"] = str(error)
@@ -167,7 +177,7 @@ def discover(before, after, jdk, dest):
     image = change_inventory.jdk_binding(jdk)
     selected = {}
     for side, file in (("old", before), ("new", after)):
-        files, launch = change_inventory.resolve(file, jdk, image, {}, kind="production", layout_cache=dest / "deployment-layouts")
+        files, launch = change_inventory.resolve(file, jdk, image, {}, kind="production", layout_cache=dest / "deployment-layouts", index=index)
         hashes = [p["sha256"] for p in launch["classpath"]]
         paths[side], packet[side], graphs[side] = files, hashes, launch
         views[side] = view = index.view(files, hashes, feature)

@@ -80,6 +80,14 @@ def ordered(work, prove=False):
                "helperProvider":bound[key]["Helper#value()I"]["providerIndex"],"resourceLookup":"defining ClassLoader.getResources(mark.txt)",
                "resourceOrder":physical.split()[1:],"manualProviderIndices":0}
         if prove:
+            scaffold = work / ("scaffold-" + key)
+            (scaffold / "records").mkdir(parents=True)
+            commit = "ordered-fixture-" + key
+            prepared_manifest = scaffold / "prepared.json"
+            change_evidence.write_json(prepared_manifest, {**manifest(files), "commit": commit})
+            record_path = scaffold / "records/entry-bindings.json"
+            subprocess.run([sys.executable, ROOT/"examples/tools/scaffold_example.py", "bind", "--before",prepared_manifest,
+                            "--after",prepared_manifest,"--jdk",JDK,"--entry",name,"--checker",CHECKER,"--output",record_path],check=True)
             row["engines"] = {}
             for engine in ("native","jbmc"):
                 attempt = work / (key.replace(",","-") + engine)
@@ -91,15 +99,17 @@ def ordered(work, prove=False):
                     artifacts.append(interfaces.Artifact(f.name, upgrade_replay.sha(f),"original" if f==a else "dependency"))
                 selected = bound[key][name]
                 target = {"loadedFrom":b.name,"classSha256":selected["classSha256"],"class":"OrderEntry"}
-                prepared = SimpleNamespace(source={"target":target})
+                prepared = SimpleNamespace(source={"target":target}, commit=commit)
                 sides = {"after":(where,prepared,artifacts)}
-                plan = SimpleNamespace(revisions=["after"],engine=engine,kind="prove",target=name)
+                plan = SimpleNamespace(revisions=["after"],engine=engine,kind="prove",target=name,folder=str(scaffold))
                 reports = []
                 for n, prediction in enumerate((int(expected.split()[0]),99)):
                     recipe = recipes.ProofRecipe("direct-method","prove",name,name,tuple(
                         recipes.Argument(k,flag,v) for k,flag,v in (("assert","--assert",f"result == {prediction}"),
                         ("engine","--engine",engine),("gaps","--gaps","strict"))),{})
                     invocation = recipe.bind(plan,str(CHECKER),sides,f"run-{n}",60)
+                    if not invocation.entries["after"].get("scaffoldBindingRefs"):
+                        raise ValueError("actual proof recipe lost the frozen scaffold binding")
                     env = {**os.environ,"JAVA_HOME":str(JDK),"JVMCONTRACT_JAR_RELEASE":"21"}
                     if engine == "native":
                         runtime._launch_guard(plan,CHECKER,env,sides,invocation,runtime_jdk.identity(JDK),attempt,attempt)
@@ -107,7 +117,7 @@ def ordered(work, prove=False):
                     outputs = json.loads(result.stdout)
                     verdict = outputs[0]["verdict"]
                     reports.append({"assert":f"result == {prediction}","verdict":verdict,"exit":result.returncode,"argv":list(invocation.argv),
-                                    "reason":outputs[0].get("reason"),"classpath":invocation.classpaths})
+                                    "reason":outputs[0].get("reason"),"classpath":invocation.classpaths, "scaffoldBindingRefs":invocation.entries["after"]["scaffoldBindingRefs"]})
                 if [r["verdict"] for r in reports] != ["verified","violation"]:
                     raise ValueError(f"{engine} {key}: ordered helper controls {reports}")
                 row["engines"][engine] = reports

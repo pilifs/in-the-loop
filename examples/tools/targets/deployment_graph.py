@@ -13,15 +13,17 @@ def manifest(file, feature):
         return [], []
     with zipfile.ZipFile(file) as jar:
         names = jar.namelist()
-        issues = []
-        if feature < 21 and any(n.upper() == "META-INF/INDEX.LIST" for n in names):
-            issues.append("JAR index can name additional providers")
-        matches = [n for n in names if n.upper() == "META-INF/MANIFEST.MF"]
-        if len(matches) > 1:
-            return [], [*issues, "ambiguous manifest member"]
-        if not matches:
-            return [], issues
-        data = jar.read(matches[0])
+        members = [jar.read(info) for info in jar.infolist() if info.filename.upper() == "META-INF/MANIFEST.MF"]
+        return manifest_entries(members, any(n.upper() == "META-INF/INDEX.LIST" for n in names), feature)
+
+
+def manifest_entries(members, has_index, feature):
+    issues = ["JAR index can name additional providers"] if has_index and feature < 21 else []
+    if len(members) > 1:
+        return [], [*issues, "ambiguous manifest member"]
+    if not members:
+        return [], issues
+    data = members[0]
     main = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
     values = [line.partition(b":")[2].strip(b" \t\f") for line in main.split(b"\n") if line.lower().startswith(b"class-path:")]
     if len(values) > 1 or any(not re.fullmatch(rb"[\x20-\x7e\t\f]*", value) for value in values):
@@ -35,7 +37,7 @@ def local(token, parent):
     return Path(os.path.normpath(parent / token))
 
 
-def resolve(document, base, feature, file_digest, *, layout_cache=None):
+def resolve(document, base, feature, file_digest, *, layout_cache=None, index=None):
     # A signed or acquired root supplies paths. A basename or a matching digest alone cannot locate a URL.
     captured = (base / document["deploymentRoot"]).resolve() if document.get("deploymentRoot") else None
     roots, pins, sha_by_real = [], {}, {}
@@ -65,6 +67,8 @@ def resolve(document, base, feature, file_digest, *, layout_cache=None):
         sha_by_real[file.resolve()] = actual
         if declared:
             roots.append(url)
+    if sum(row.get("role") == "client" for row in document["classpath"]) > 1:
+        raise ValueError("the deployment identifies more than one original client")
     for row in document["classpath"]:
         load(row, True)
     for row in document.get("manifestProviders", []):
@@ -80,7 +84,11 @@ def resolve(document, base, feature, file_digest, *, layout_cache=None):
     manifests = {}
     def tokens(file, sha):
         if sha not in manifests:
-            manifests[sha] = manifest(file, feature)
+            if index is None:
+                manifests[sha] = manifest(file, feature)
+            else:
+                artifact = index.artifact(file, sha)
+                manifests[sha] = manifest_entries(artifact.manifests, artifact.has_jar_index, feature)
         return manifests[sha]
     def visit(url, source):
         if url in positions:

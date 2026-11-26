@@ -326,6 +326,10 @@ your plan asks for.
      (`misstates`, which the setup corrects as you state it) or where something is missing or too narrow
      (`suggestion`, which is the user's);
    - **designed** (a catalog entry, or a change with no example): nothing states its claims yet. Design them.
+   When prepared artifacts are already available, run `build.py --change-plan application` with their
+   `--before` and `--after` manifests, the pinned `--jdk` and a new `--output`. Without a workflow this ranks
+   accessible callers from the compiled declarations. Supply `--changed-selector` for a known method or
+   `--entry` for an approved public entry. The report records alternative entries and their construction paths.
 3. **Each change.** Record its two exact commits and its public GitHub or supplied local source locator. Read the caller and the dependency change to identify what a client can observe and what the change is meant to preserve.
 4. **Its size.** The closest past examples and what they cost (`examples/tools/find.py`, their notes and receipts,
    `pipeline.py report`), set against the budget: whether a proof is plausible here and what will be hard.

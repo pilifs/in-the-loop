@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-202434-carry-staged-entry-records-into-native-a",
+  "title": "Carry staged entry records into native and stock proof invocations",
+  "description": "On both classpath orders and B alone, qualify the public method through stage 3 and require its saved binding reference at the actual native and stock JBMC assertions. Check one true and one false sentinel on every route. Independently repeat the Log4j strict attempt and compare its first unsupported dependency on each side.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T20:24:34+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Verify sentinels from stage 3",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/staged-backend.json",
+      "cwd": "."
+    },
+    {
+      "name": "Trace the independent strict boundary",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/strict.py verification/classpath-entry-discovery/log4j-strict.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/classpath-entry-discovery/staged-backend.json",
+    "verification/classpath-entry-discovery/log4j-strict.json"
+  ]
+}

@@ -1832,17 +1832,23 @@ def _launch_guard(plan, exe, env, sides, invocation, jdk, workdir, attempt):
 
     Returns, for an equivalence, each side's logical entries of its original JAR as the checker sees them under the
     bound release (`_class_dirs` extracts by them); None for a property proof."""
-    seen = {}
-    for _, (_, side_prepared, _) in sides.items():
+    seen, differing = {}, set()
+    for side, (_, side_prepared, _) in sides.items():
+        scoped_jdk = invocation.entries[side].get("scaffoldJdk")
+        if scoped_jdk:
+            from targets import change_inventory
+            if change_inventory.jdk_binding(Path(jdk["home"])) != scoped_jdk:
+                raise Refused("verifier", f"{side}: verifier JDK differs from the independently bound scaffold profile")
         bound = side_prepared.source["target"]
         if bound.get("classObservation"):
             if str(jdk["feature"]) not in bound["classObservation"]["jdks"]:
-                raise Refused("verifier", f"{bound['class']} was bound by what JDK {', '.join(bound['classObservation']['jdks'])} "
-                                          f"loaded, and the verifier runs on JDK {jdk['feature']}, which was not observed")
+                raise Refused("verifier", f"{bound['class']} was observed on other JDKs than the verifier's {jdk['feature']}")
             if seen.setdefault(bound["class"], bound["classSha256"]) != bound["classSha256"]:
-                # One observations file serves the launch, and the two sides' subjects are one class name.
-                raise Refused("verifier", f"{bound['class']} was seen loaded as different bytes on the two sides, and one "
-                                          "launch binds one observation for a class name")
+                differing.add(bound["class"])
+    # A normal multi-release selection can be checked independently on each side. A folded manifest whose
+    # two sides actually require different observer overrides will receive the resolver's typed refusal below.
+    for name in differing:
+        del seen[name]
     if seen:
         observations = workdir / "class-observations.json"
         observations.write_text(json.dumps({"feature": int(jdk["feature"]), "classes": seen}, indent=2, sort_keys=True) + "\n")

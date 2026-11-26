@@ -98,10 +98,10 @@ def compare(args, *, original_binary=True, archive_index=None):
     for side, manifest, test in (("old", args.before, args.before_test), ("new", args.after, args.after_test)):
         jdk = jdks[side]
         image = images[jdk]
-        paths[side], production = change_inventory.resolve(manifest, jdk, image, environment, kind="production" if original_binary or side == "old" else "original-client", layout_cache=layout_cache)
+        paths[side], production = change_inventory.resolve(manifest, jdk, image, environment, kind="production" if original_binary or side == "old" else "original-client", layout_cache=layout_cache, index=archive_index)
         launches[side] = {"production": production}
         if test:
-            test_files, launches[side]["test"] = change_inventory.resolve(test, jdk, image, environment, kind="test", layout_cache=layout_cache)
+            test_files, launches[side]["test"] = change_inventory.resolve(test, jdk, image, environment, kind="test", layout_cache=layout_cache, index=archive_index)
             tests[side + "/test"] = (test_files, launches[side]["test"], jdk)
         snapshots[side] = archive_index.view(paths[side], [r["sha256"] for r in production["classpath"]],
                                              int(runtime_jdk.identity(jdk)["feature"]))
@@ -116,15 +116,26 @@ def compare(args, *, original_binary=True, archive_index=None):
     inventory["coverage"] = archive_index.coverage()
     checker = args.checker.resolve()
     if workflows and not getattr(args, "supplied_only", False):
-        inventory["applicationEntries"] = change_inventory.framework_inventory(checker, paths, jdks)
+        if any(launch["production"]["clientIndex"] for launch in launches.values()):
+            inventory["applicationEntries"] = {"status": "open", "reason": "framework comparator requires the client as its first root"}
+        else:
+            inventory["applicationEntries"] = change_inventory.framework_inventory(checker, paths, jdks)
     graphs = {s: (paths[s], launches[s]["production"], jdks[s]) for s in paths}
     selected_entries = declared
     if not declared:
         selected_entries = {row["entry"] for row in inventory["candidates"][:getattr(args, "probe_limit", 8)]}
     all_graphs = {**graphs, **tests}
-    bindings = entry_binding.qualify(checker, all_graphs, {side: selected_entries for side in all_graphs})
+    measurements = {}
+    bindings = entry_binding.qualify(checker, all_graphs, {side: selected_entries for side in all_graphs}, measurements=measurements)
     problems = {}
     for side, records in bindings.items():
+        if side in snapshots:
+            view = snapshots[side]
+        else:
+            files, launch, jdk = all_graphs[side]
+            view = archive_index.view(files, [r["sha256"] for r in launch["classpath"]], int(runtime_jdk.identity(jdk)["feature"]))
+        for entry, record in records.items():
+            record["candidateOrigins"] = view.origins(runtime_jar.internal(runtime_jar.parse_target(entry)[0]))
         if side in tests:
             continue
         launches[side]["classes"] = [r["checker"] for r in records.values() if "checker" in r]
@@ -148,7 +159,7 @@ def compare(args, *, original_binary=True, archive_index=None):
                 "adaptedApplication": "compare the supplied client and runtime on each side"},
             "claims": [], "preparationSeconds": round(time.monotonic() - started, 4)}
     plan["discovery"] = {"mode": "supplied entry" if declared else inventory["inputMode"], "probed": sorted(selected_entries),
-                         "totalCandidates": inventory["candidateCount"], "manualProviderIndices": 0}
+                         "totalCandidates": inventory["candidateCount"], "manualProviderIndices": 0, **measurements}
     previous = json.loads(args.previous.read_text()) if args.previous else None
     if previous is not None:
         plan["resumedBindings"] = {key: "requalified" if previous.get("entryBindings", {}).get(key) == value else "new binding"
@@ -201,7 +212,7 @@ def compare(args, *, original_binary=True, archive_index=None):
             if manifest:
                 side_inputs[side]["manifestClassPath"] = manifest
         new_expected = {c["input"]: c["expectedNew"] for c in row["intent"]["allowedChanges"]} if isinstance(row["intent"], dict) else {}
-        cache = change_evidence.SideCache(args.cache, basis, side_inputs, defer_writes=bool(missing),
+        cache = change_evidence.SideCache(args.cache, basis, side_inputs, defer_writes=True,
                                           new_expected=new_expected) if use_cache else None
         evidence = {}
         try:
@@ -215,7 +226,8 @@ def compare(args, *, original_binary=True, archive_index=None):
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             evidence.update(status="open", reason=str(error))
         stable = initially_absent and change_inventory.absences_hold(missing)
-        if cache and missing and stable and evidence.get("status") != "open":
+        changed_files = change_inventory.changed_inputs((old, new))
+        if cache and stable and not changed_files and evidence.get("status") != "open":
             cache.publish_pending()
         if evidence.get("cases") == spec["cases"]:
             node.update(change_evidence.compose(spec, evidence, row["intent"]))
@@ -228,6 +240,8 @@ def compare(args, *, original_binary=True, archive_index=None):
         if unresolved or not stable:
             node.update(status="open", firstOpenDependency={"manifestClassPath": unresolved} if unresolved
                         else "a manifest Class-Path changed during the original JVM comparisons")
+        if changed_files:
+            node.update(status="open", firstOpenDependency={"changedRuntimeFiles": changed_files})
         if "checkedHelper" in row:
             node["helperProofs"] = {side: {k: proof[k] for k in ("key", "entry", "action", "proofDigest")}
                                     for side, proof in evidence.get("helperProofs", {}).items()}
@@ -243,7 +257,7 @@ def compare(args, *, original_binary=True, archive_index=None):
         node["receipt"] = {"path": os.path.relpath(receipt, args.output.parent), "sha256": upgrade_replay.sha(receipt)}
         for side, ref in node["entryBindings"].items():
             trials = evidence.get("sides", {}).get(side, {}).get("trials", [])
-            plan["bindingWitnesses"].setdefault(ref, []).append({"claim": name, "receipt": node["receipt"],
+            plan["bindingWitnesses"].setdefault(ref, []).append({"claim": node["id"], "receipt": node["receipt"],
                 "qualifiedMethodEntries": sum(t.get("qualifiedMethodEntries", 0) for t in trials),
                 "changedBodyChains": sorted({tuple(chain) for t in trials for rep in t.get("changedBodyChains", []) for chain in rep}),
                 "dispatchedTo": sorted({i["dispatchedTo"] for t in trials for i in t.get("entryInvocations", [])})})
@@ -284,6 +298,14 @@ def compare(args, *, original_binary=True, archive_index=None):
         plan["executionState"] = "complete"
     if previous is not None:
         plan["delta"] = delta(previous, plan)
+    # A provider can appear or be replaced after an earlier claim. Check again before publishing the plan.
+    if args.run:
+        changed_final = change_inventory.changed_inputs((old, new))
+        for node in plan["claims"]:
+            if node["status"] != "open" and (not change_inventory.absences_hold(missing) or changed_final):
+                node.update(status="open", firstOpenDependency="deployment changed before plan publication")
+        plan["counts"] = {cohort: dict(Counter(n["status"] for n in plan["claims"] if n["cohort"] == cohort))
+                          for cohort in ("registered", "additional", "control")}
     return plan
 
 
@@ -337,9 +359,53 @@ def example_plan(number):
     return report
 
 
+def saved_bindings(report, receipt_root=None):
+    """Read a saved scaffold or replay without starting a JVM, locating its artifacts or trusting a stale key."""
+    if report.get("schema") != SCHEMA:
+        raise ValueError("unknown saved change-plan format")
+    if "entryBindings" not in report:
+        return {"status": "requalification required", "reason": "historical plan predates independent entry bindings",
+                "claims": [n["id"] for n in report.get("claims", [])]}
+    records = report["entryBindings"]
+    graphs = report.get("graphs", {})
+    for key, graph in graphs.items():
+        identity = {k:v for k,v in graph.items() if k not in ("key", "commit", "sourceSha256", "preparation")}
+        if key != graph.get("key") or digest(identity) != key:
+            raise ValueError("saved deployment graph differs from its digest")
+    for key, record in records.items():
+        if key != digest(record) or record.get("graph") not in graphs:
+            raise ValueError("saved entry binding or its graph reference differs")
+    rows = []
+    for claim in report.get("claims", []):
+        for side, ref in claim.get("entryBindings", {}).items():
+            record = records.get(ref)
+            if not record or record["side"] != side or record["entry"] != claim["entry"]:
+                raise ValueError("saved question points to a different side or selector")
+            witnesses = [w for w in report.get("bindingWitnesses", {}).get(ref, []) if w["claim"] == claim["id"]]
+            if report.get("executionState") == "complete" and claim["status"] in ("refuted", "established") and not witnesses:
+                raise ValueError("completed question has no original witness at its bound entry")
+            if receipt_root is not None:
+                for witness in witnesses:
+                    receipt = witness["receipt"]
+                    file = (receipt_root / receipt["path"]).resolve()
+                    if (not file.is_relative_to(receipt_root.resolve()) or upgrade_replay.sha(file) != receipt["sha256"]
+                            or json.loads(file.read_bytes())["sides"][side].get("entryBinding") != ref):
+                        raise ValueError("original witness receipt differs from the saved entry binding")
+            rows.append({"claim": claim["id"], "claimKey": claim["claimKey"], "side": side, "entry": record["entry"],
+                         "binding": ref, "status": record["status"], "providerIndex": record.get("providerIndex"),
+                         "classSha256": record.get("classSha256"), "physicalEntry": record.get("physicalEntry"),
+                         "firstOpenDependency": record.get("firstOpenDependency"),
+                         "witnesses": witnesses})
+    return {"status": "recorded", "graphs": len(graphs), "bindings": len(records), "claims": rows}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
+    saved = sub.add_parser("bindings", help="read and check saved entry records offline")
+    saved.add_argument("report", type=Path)
+    saved.add_argument("--output", type=Path)
+    saved.add_argument("--verify-receipts", action="store_true", help="also verify the saved original-JVM evidence files")
     example = sub.add_parser("example", help="project the target runner's frozen claims, routes and dependencies")
     example.add_argument("number", type=int)
     upgrade = sub.add_parser("upgrade", aliases=["application"], help="compare prepared JVM applications with their ordered classpaths")
@@ -361,6 +427,13 @@ def main(argv=None):
         command.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
+        if args.command == "bindings":
+            account = saved_bindings(json.loads(args.report.read_bytes()), args.report.parent if args.verify_receipts else None)
+            if args.output:
+                change_evidence.write_json(args.output, account)
+            else:
+                print(json.dumps(account, indent=2))
+            return 0
         plan = example_plan(args.number) if args.command == "example" else compare(args)
         change_evidence.write_json(args.output, plan)
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
