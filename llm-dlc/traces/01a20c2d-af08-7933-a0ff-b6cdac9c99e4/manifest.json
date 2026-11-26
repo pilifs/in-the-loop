@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize q",
   "client": {
@@ -12,25 +12,25 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T19:11:11.213Z",
-  "duration_seconds": 219620,
+  "ended": "2026-11-26T19:16:57.023Z",
+  "duration_seconds": 219966,
   "stats": {
-    "turns": 32,
-    "api_calls": 5263,
-    "tool_calls": 13297,
+    "turns": 33,
+    "api_calls": 5278,
+    "tool_calls": 13335,
     "tool_errors": 280,
-    "compactions": 22,
+    "compactions": 23,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 6974525,
-      "output_tokens": 2979396,
-      "cache_read_input_tokens": 1430866048,
+      "input_tokens": 7015045,
+      "output_tokens": 2991540,
+      "cache_read_input_tokens": 1433700096,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 7456,
-    "exec": 5018,
+    "Bash": 7482,
+    "exec": 5030,
     "apply_patch": 630,
     "wait": 108,
     "sleep": 79,
@@ -837,24 +837,38 @@
     {
       "index": 22,
       "started": "2026-11-26T16:10:08.929Z",
-      "ended": "2026-11-26T19:11:11.213Z",
+      "ended": "2026-11-26T19:14:11.487Z",
       "turns": 2,
-      "api_calls": 191,
+      "api_calls": 198,
       "usage": {
-        "input_tokens": 304765,
-        "output_tokens": 109580,
-        "cache_read_input_tokens": 49219072,
+        "input_tokens": 306390,
+        "output_tokens": 115148,
+        "cache_read_input_tokens": 51710464,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 354362
+      "peak_context_tokens": 357590
+    },
+    {
+      "index": 23,
+      "started": "2026-11-26T19:14:11.495Z",
+      "ended": "2026-11-26T19:16:57.023Z",
+      "turns": 1,
+      "api_calls": 8,
+      "usage": {
+        "input_tokens": 38895,
+        "output_tokens": 6576,
+        "cache_read_input_tokens": 342656,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 56614
     }
   ],
   "log": {
-    "sha256": "e62ffc9a3ab2c091db172248bf916b692e2bcf44595b0a8da8bb803d3509a1ba",
-    "bytes": 82315399,
-    "lines": 41581,
-    "gzip_bytes": 15132253,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/e62ffc9a3ab2c091db172248bf916b692e2bcf44595b0a8da8bb803d3509a1ba.jsonl.gz"
+    "sha256": "663d2ba7ce7c2c12058800ab668c82d29c123d578b4dfa4a763d044f7f88771b",
+    "bytes": 82816227,
+    "lines": 41715,
+    "gzip_bytes": 15251663,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/663d2ba7ce7c2c12058800ab668c82d29c123d578b4dfa4a763d044f7f88771b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2492,24 +2506,24 @@
     },
     {
       "change_id": "pkooxllvwkvqmtmoomslruslpmzsyvmn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "98893b3bc020c8be5101d137e1be23b19fd9a02b",
+      "immutable": true,
       "summary": "Check 50 organic Java changes at public APIs (verification pending)",
       "body": "Register 150 histories for examples 538–587 and run 312 fresh JVM observations on both original revisions, including the Guava JRE and Android builds. All 50 merged intent predictions and control predictions matched. The RxJava Observable intent already passed on the parent, while its Flowable challenge exposed the change. The marked Commons IO skip and Avro decimal slice refuted their preservation predictions. Two more release questions concern retry events and recursive record comparison.\n\nAll 50 example validators with replay and all 40 selected suites passed. All seven earlier campaign audits stayed byte-identical. Check original class hashes where the setup lists only class digests, and the identical released base plus every compiled member for the two source overlays. Job 20261126-184313-replay-150-organic-java-r-series-predict repeats the full audit. Job 20261126-185342-trace-original-r-series-reader-group-ret requests 32 original-method debugger trials.",
       "log_sha256": "475c3bb43944d63ba91958b6253083c55020d80053ca3a3dcba3c7371a249f29"
     },
     {
       "change_id": "vmwzkqknyutnxtxyqwtnvvsyouvkzzss",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8208fc8ddbf2ff28418949f7a3fceef04f15ab80",
+      "immutable": true,
       "summary": "Recheck organic Java R-series findings on releases (verification pending)",
       "body": "Replay the original compiled callers on 44 published deployments across 22 cases. Of 132 release outcomes, 131 reproduced their named original side exactly. Resilience4j 2.1.0 stopped silently where both PR pins and 2.2.0 announced an unscheduled retry. The Commons IO mark and Avro slice findings reproduced on releases, as did the default AssertJ record getter precedence. A fresh Commons IO mark also shortened from two readable characters to zero when moved two characters into the same input.\n\nForty-two extra public histories isolate duplicate-key transformer calls, mark offsets, Avro buffer forms and RxJava group publication order. Eighteen more ran the same Jackson callers on both pins with published companion libraries, reproducing every value and exception. All 25 affected example validators, 35 selected test suites, ten negative checks and both prior Spring release audits passed. The original 312-history replay and 32 debugger trials passed independently. Job 20261126-185408-repeat-the-organic-java-r-series-release repeats the 192 release and follow-up histories and requires byte-identical output.",
       "log_sha256": "b0d6ec1448d105b2fec4a97cb6d7605b8a4a66bbca92e44f634ae2cbf211139b"
     },
     {
       "change_id": "uzvnqxosxyqulszpzkvvwlktzyyuyxnz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "910547ecfa9997cc41ceaecb30dd195e67b85321",
+      "immutable": true,
       "summary": "Record the completed organic Java R-series verification",
       "body": "All three independent jobs passed. The final job repeated the 132 published-release and 60 additional histories in five steps. Its two JSON files and the full original audit matched the committed measurements byte for byte. Checked all three collector receipts, the 32 debugger trials and all 65 local links in the final report. The documentation change selected no additional tests.",
       "log_sha256": "e62ffc9a3ab2c091db172248bf916b692e2bcf44595b0a8da8bb803d3509a1ba"
@@ -2767,6 +2781,12 @@
       "lines": 17470,
       "gzip_bytes": 5576316,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/64b8f20159e2e9b10c47968a54940572c4910335e9a736d9fe002a861060db96.jsonl.gz"
+    },
+    "663d2ba7ce7c2c12058800ab668c82d29c123d578b4dfa4a763d044f7f88771b": {
+      "bytes": 82816227,
+      "lines": 41715,
+      "gzip_bytes": 15251663,
+      "url": null
     },
     "68ff61f4ff7966d6f91506761ff8870245fbd6ba7eee84e6d89b926edf6389a0": {
       "bytes": 49998203,
