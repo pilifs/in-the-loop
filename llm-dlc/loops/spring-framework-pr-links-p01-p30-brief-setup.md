@@ -198,7 +198,10 @@ builds; resolve without the 401 repositories below); `repo.spring.io/milestone` 
 worktree, `-I $P/scripts/resolve-all.init.gradle setupResolveAll -PsetupResolve=Classpath,kotlin,Kotlin,annotationProcessor,AnnotationProcessor`
 then `-PsetupResolve=ALL`, over **every project** of the build (the init script adds tasks `setupResolveAll` and
 `setupWriteClasspath` to every project and changes no upstream file). Summaries: `$P/logs/resolve-7x.summary.txt`,
-`$P/logs/resolve-6x.summary.txt`; logs `$P/logs/WORKTREE.resolve{1,2}.online.log`.
+`$P/logs/resolve-6x.summary.txt`; logs `$P/logs/WORKTREE.resolve{1,2}.online.log`. All 47 worktrees of the 6.x and 7.x cases (P29's `later` included) resolved every configuration of pass 1 (513–564 per
+worktree). Pass 2 (718–1,173 configurations) failed only on configurations no compile or test task uses: the Kotlin plugin's
+IDE-only `*DependenciesMetadata` (122 per worktree at 7.0.x, none at 7.1, 70–85 at 6.x) and, at P20 (Gradle 7.6), the legacy
+`default` configuration of eight projects, as in the O01–O20 setup.
 
 ## The 5.x builds cannot be configured
 
@@ -322,7 +325,7 @@ One job per buildable case (23; the seven 5.x cases have none), each of four ste
 Jar and classpath modules are those with changed production sources, plus the test module; P22 adds spring-context (the
 brief's scenario builds its proxies through `@Bean` in an `AnnotationConfigApplicationContext`). Before submitting,
 `case_job.sh CASE dryrun` (offline `--dry-run` of both pins' task graphs, the classpath tasks included) configured for each
-case (`$P/logs/dryrun-6x.txt`, `$P/logs/dryrun-7x.txt`). Logs per step: `$P/logs/CASE-ROLE.test.offline.{log,junit.txt,class.txt}`,
+case (`$P/logs/dryrun-6x.txt`, `$P/logs/dryrun-7x.txt`; the first batch of 7.x dry-runs was stopped by a time limit after P07's fix pin and rerun from there). Logs per step: `$P/logs/CASE-ROLE.test.offline.{log,junit.txt,class.txt}`,
 `$P/logs/CASE-parent-landed.test.offline.*`, `$P/logs/CASE-ROLE.cp-M-CONF.log`.
 
 | Case | Job |
@@ -335,3 +338,51 @@ case (`$P/logs/dryrun-6x.txt`, `$P/logs/dryrun-7x.txt`). Logs per step: `$P/logs
 | P26 | `20261126-025059-setup-build-spring-framework-28322-p26-a` |
 | P27 | `20261126-025059-setup-build-spring-framework-30020-p27-a` |
 | P28 | `20261126-025059-setup-build-spring-framework-33470-p28-a` |
+| P25 (rerun) | `20261126-032211-setup-build-spring-framework-32469-p25-a` |
+| P01 | `20261126-032325-setup-build-spring-framework-37435-p01-a` |
+| P02 | `20261126-032325-setup-build-spring-framework-37349-p02-a` |
+| P03 | `20261126-032325-setup-build-spring-framework-36480-p03-a` |
+| P04 | `20261126-032326-setup-build-spring-framework-36207-p04-a` |
+| P06 | `20261126-032326-setup-build-spring-framework-37351-p06-a` |
+| P07 | `20261126-032326-setup-build-spring-framework-36626-p07-a` |
+| P08 | `20261126-032326-setup-build-spring-framework-37596-p08-a` |
+| P10 | `20261126-032326-setup-build-spring-framework-37531-p10-a` |
+| P12 | `20261126-032326-setup-build-spring-framework-37559-p12-a` |
+| P13 | `20261126-032326-setup-build-spring-framework-37202-p13-a` |
+| P14 | `20261126-032327-setup-build-spring-framework-37059-p14-a` |
+| P15 | `20261126-032327-setup-build-spring-framework-37159-p15-a` |
+| P17 | `20261126-032327-setup-build-spring-framework-37014-p17-a` |
+| P29 | `20261126-032327-setup-build-spring-framework-36556-p29-a` |
+| P30 | `20261126-032327-setup-build-spring-framework-36865-p30-a` |
+
+The first P25 job (`…-025059-…-p25-a`) failed: its landed `ProxyExceptionHandlingTests` is abstract and its tests live in two
+nested subclasses (`ObjenesisCglibAopProxyTests`, `JdkAopProxyTests`), which `--tests ProxyExceptionHandlingTests` does not select
+("No tests found for given includes"), so the fix step ran no test and the transplant step had nothing to fail. `cases.tsv` now
+names it `ProxyExceptionHandlingTests*`, `case_job.sh` strips the `*` when it looks for the source file and collects the nested
+classes' results, and the transplant deletes a test file the landing removed (P25 removes `ClassWithConstructor.java`; before, the
+copy kept it). No other case's landed test class is abstract.
+
+## Job results
+
+Read from the step logs in `$P/logs/` after the runner finished the jobs on 2026-11-26 (it recorded the results on another
+head, commit `a31e51b72c46`, not in this record's commits). Fix and parent columns: the landed test classes at that pin (a
+class the landing adds is absent at the parent, so that step builds the jars only). Transplant: the fix's changed test files on
+a copy of the parent.
+
+**Spring 7.x cases**: jobs queued (table above), results to follow.
+
+**Spring 6.x cases.** Seven jobs passed every step; P25's first job failed (above) and was resubmitted.
+
+| Case | Fix | Parent | Transplant |
+|---|---|---|---|
+| P20 | exit 0, 14 tests, 0 failures, 0 errors (216 s) | exit 0, 13 tests, 0 failures, 0 errors (178 s) | **fails**: 14 tests, 1 failure; `R2dbcTransactionManagerUnitTests#testConnectionReleasedWhenRollbackFails()`, `AssertionError` at `R2dbcTransactionManagerUnitTests.java:348` |
+| P21 | exit 0, 1 test, 0 failures, 0 errors (239 s) | jars only (the test class is new) (170 s) | **fails**: 1 test, 1 failure; `AnnotatedBeanDefinitionReaderTests#registerBeanWithQualifiers()`, `AssertionFailedError` at `AnnotatedBeanDefinitionReaderTests.java:46` |
+| P22 | exit 0, 7 tests, 0 failures, 0 errors (123 s) | exit 0, 4 tests, 0 failures, 0 errors (64 s) | **fails**: 7 tests, 2 failures; `ScopedProxyUtilsTests#createScopedProxyTargetCleansAutowireSettingsInTargetDefinition()`, `#createScopedProxyTargetOvertakesAutowireSettingsToProxyBeanDefinition()` (`ScopedProxyUtilsTests.java:94`, `:137`) |
+| P24 | exit 0, 63 tests, 0 failures, 0 errors (277 s) | exit 0, 35 tests, 0 failures, 0 errors (120 s) | **does not compile**: 35 errors, 31 of them `cannot find symbol: method contextName()` (the attribute the landing adds to `@TestBean`, `@MockitoBean`, `@MockitoSpyBean`), the rest `constructor BeanOverrideHandler ... cannot be applied to given types` (`BeanOverrideContextCustomizerTests.java:74`, `DummyBean.java:69`, `EasyMockBeanOverrideHandler.java:46`) |
+| P26 | exit 0, 32 tests, 0 failures, 0 errors (225 s) | exit 0, 31 tests, 0 failures, 0 errors (206 s) | **fails**: 32 tests, 1 failure; `ApplicationContextEventTests#eventForSelfInjectedProxiedListenerFiredOnlyOnce()`, `AssertionFailedError` at `ApplicationContextEventTests.java:293` |
+| P27 | exit 0, 6 tests, 0 failures, 0 errors (242 s) | exit 0, 2 tests, 0 failures, 0 errors (209 s; the JUnit 4 and TestNG classes are new) | **fails**: 6 tests, 6 failures; `ParallelApplicationEventsIntegrationTests#executeTestsInParallelInstancePerMethod()`, `#rejectTestsInParallelWithInstancePerClassAndRecordApplicationEvents()`, `JUnit4ApplicationEventsAsyncIntegrationTests#asyncPublication`, `#asyncConsumption`, `TestNGApplicationEventsAsyncIntegrationTests#asyncPublication`, `#asyncConsumption` |
+| P28 | exit 0, 15 tests, 0 failures, 0 errors (196 s) | exit 0, 11 tests, 0 failures, 0 errors (206 s) | **fails**: 15 tests, 1 failure; `TransactionalApplicationListenerMethodAdapterTests#withTransactionalAnnotationOnEnclosingClass()`, `AssertionError` at `TransactionalApplicationListenerMethodAdapterTests.java:165` |
+
+P27's transplant compiled with the fix's `spring-test.gradle` (Awaitility); its failures are assertions and, in the JUnit 4 class,
+an `IllegalStateException` at `JUnit4ApplicationEventsAsyncIntegrationTests.java:74`. P24's fix pin runs 63 tests across its 29
+landed classes. The `clean` step left no untracked or ignored file in any of the fourteen worktrees, and no `$P/build/` copy remains.
