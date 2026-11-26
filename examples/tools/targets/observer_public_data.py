@@ -4,6 +4,7 @@ from targets import runtime_jar
 from targets.observer_recipes import keys, nonempty, Unsupported
 
 STACK = ["peek.outcome", "peek.value"]
+STACK_RETAINED = [*STACK, "pop.afterPeek"]
 CSS = ["dimension.spelling", "dimension.type", "dimension.magnitude"]
 DATES = ["date.inputAlias", "date.returnAlias", "date.copy", "date.target"]
 
@@ -11,7 +12,7 @@ DATES = ["date.inputAlias", "date.returnAlias", "date.copy", "date.target"]
 def select(entry, fields, inputs, api):
     owner, method, desc = runtime_jar.parse_target(entry)
     recipe = {"owner":owner,"method":method}
-    if fields == STACK:
+    if fields in (STACK,STACK_RETAINED):
         api.require(owner, method, "()Ljava/lang/Object;")
         api.select(owner, ["push"], r"\(Ljava/lang/Object;\)(?:V|Z|Ljava/lang/Object;)")
         api.require(owner, "pop", "()Ljava/lang/Object;")
@@ -26,7 +27,8 @@ def select(entry, fields, inputs, api):
             if (type(item["capacity"]) != int or not 0 < item["capacity"] <= 1024 or type(item["drain"]) != bool
                     or not isinstance(item["values"], list) or len(item["values"]) > item["capacity"]):
                 raise Unsupported("stack observation needs its capacity, sequence of pushes and drain boundary")
-        return {**recipe,"family":"peek on a retained stack","constructor":cls,"capacity":with_capacity}
+        return {**recipe,"family":"peek on a retained stack","constructor":cls,"capacity":with_capacity,
+                "subsequentPop":fields == STACK_RETAINED}
     if fields == CSS:
         api.require(owner, method, desc)
         match = re.fullmatch(r"\(L([\w/$]+/InputSource);\)L([\w/$]+);",desc)
@@ -95,8 +97,12 @@ def body(p):
                 Object value = receiver.METHOD();
                 observations.add(row("return", value));
             } catch (RuntimeException error) { observations.add(row("throws",error.getClass().getName())); }
+            FOLLOWING
         '''
-        return body.replace("OWNER",p["owner"]).replace("CONSTRUCT",p["constructor"]).replace(
+        following = ('try { observations.add(row("pop",receiver.pop())); } '
+                'catch (RuntimeException error) { observations.add(row("throws",error.getClass().getName())); }'
+                if p.get("subsequentPop") else "")
+        return body.replace("FOLLOWING",following).replace("OWNER",p["owner"]).replace("CONSTRUCT",p["constructor"]).replace(
             "CAPACITY",'(Integer)data.get("capacity")' if p["capacity"] else "").replace("METHOD",p["method"]), ""
     if p["family"]=="CSS grammar with typed dimension readback":
         body='''

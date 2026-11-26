@@ -133,3 +133,89 @@ def prepare(folder, options, work):
           "inputSources":["registered history","approved fixture meanings","public declarations"],
           "evaluatorSource":"side-scoped numbered predictions", "authoredCallerRead":False})
     return paths
+
+
+def saved_setup(folder):
+    """Read the numbered scaffold offline. Its planned entries confer no execution or proof verdict."""
+    from targets import change_plan
+    from targets.change_inventory import digest
+    records = folder / "records"
+    bundle = records / "public-observer"
+    generation = json.loads((bundle/"generation.json").read_bytes())
+    if generation.get("status") != "compiled":
+        raise ValueError(generation.get("firstOpenDependency","no compiled public observer"))
+    review = records/"reviewed-public-inputs/review.json"
+    if review.is_file():
+        reviewed = json.loads(review.read_bytes())
+        if reviewed.get("status") == "open":
+            raise ValueError(reviewed["firstOpenDependency"])
+        if (reviewed["comparisonSha256"] != upgrade_replay.sha(folder/"comparison.json")
+                or reviewed["runtimeSha256"] != upgrade_replay.sha(folder/"runtime.json")):
+            raise ValueError("the numbered prediction or runtime changed after scaffold-only")
+    spec = json.loads((bundle/"registration.json").read_bytes())
+    _, workflows = change_plan.frozen_workflows(bundle/"workflows.json")
+    scaffold = json.loads((records/"entry-bindings.json").read_bytes())
+    check = change_plan.saved_bindings(scaffold)
+    bound = {(e["claim"],e["side"]) for e in check["claims"] if e["deploymentQuestion"]=="adapted" and e["status"]=="bound"}
+    if set(workflows) != {q["id"] for q in spec["questions"]}:
+        raise ValueError("the scaffold omits a registered question")
+    nodes={n["id"]:n for n in scaffold["claims"]}
+    if set(nodes)!=set(workflows):
+        raise ValueError("the entry-binding plan identifies different questions")
+    for name,(row,_,_,scope) in workflows.items():
+        if any((name,side) not in bound for side in ("old","new")):
+            raise ValueError("public entry still requires a binding for " + name)
+        if nodes[name]["claimKey"] != digest({"scope":scope,"intent":row["intent"],"assumptions":row["assumptions"]}):
+            raise ValueError("reviewed expectation or scope differs from the bound plan")
+    return bundle, list(workflows)
+
+
+def resume_numbered(folder):
+    from targets import change_plan
+    bundle,_=saved_setup(folder)
+    records=folder/"records"
+    runtime=json.loads((folder/"runtime.json").read_bytes())
+    jdk=Path(os.environ.get("PUBLIC_COMPARISON_JDK",Path.home()/".sdkman/candidates/java"/runtime["jdk"]))
+    report=records/"public-replay.json"
+    status=change_plan.main(["application","--before",str(bundle/"old.json"),"--after",str(bundle/"new.json"),
+        "--jdk",str(jdk),"--workflows",str(bundle/"workflows.json"),"--previous",str(records/"entry-bindings.json"),
+        "--supplied-only","--run","--output",str(report)])
+    if status:
+        raise ValueError("generated numbered replay could not qualify its original inputs")
+    return json.loads(report.read_bytes())
+
+
+def finite_answers(folder):
+    """Derive each numbered verdict from its bound, repeated JVM receipts under the reviewed scope."""
+    from targets import change_plan
+    from targets.change_inventory import digest
+    bundle,names = saved_setup(folder)
+    answers = {name:None for name in names}
+    path = folder/"records/public-replay.json"
+    if not path.is_file():
+        return answers
+    plan = json.loads(path.read_bytes())
+    if plan.get("executionState") != "complete":
+        return answers
+    change_plan.saved_bindings(plan,path.parent)
+    _, scopes = change_plan.frozen_workflows(bundle/"workflows.json")
+    for node in plan["claims"]:
+        name = node["id"]
+        if name not in scopes or node["status"]=="open":
+            continue
+        row,_,_,spec=scopes[name]
+        expected_key=digest({"scope":spec,"intent":row["intent"],"assumptions":row["assumptions"]})
+        if expected_key != node["claimKey"]:
+            continue
+        ref=node["receipt"]
+        file=(path.parent/ref["path"]).resolve()
+        if not file.is_relative_to(path.parent.resolve()) or upgrade_replay.sha(file)!=ref["sha256"]:
+            raise ValueError("numbered evidence differs from the published JVM receipt")
+        actual=json.loads(file.read_bytes())
+        if actual.get("generatedObserver",{}).get("bundle")!=spec["generatedObserver"]["sha256"]:
+            raise ValueError("numbered evidence belongs to another compiled observer")
+        composed=change_evidence.compose(spec,actual,row["intent"])
+        if composed["status"]!=node["status"]:
+            raise ValueError("numbered finite verdict disagrees with its qualified observations")
+        answers[name]=composed["status"]
+    return answers

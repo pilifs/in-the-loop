@@ -8,7 +8,7 @@ def select(entry, fields, inputs, api):
         return observer_io.select(entry, fields, inputs, api)
     if fields in (observer_state.WEIGHTS, observer_state.TRANSITIONS, observer_state.MAP):
         return observer_state.select(entry, fields, inputs, api)
-    if fields in (observer_public_data.STACK, observer_public_data.CSS, observer_public_data.DATES):
+    if fields in (observer_public_data.STACK, observer_public_data.STACK_RETAINED, observer_public_data.CSS, observer_public_data.DATES):
         return observer_public_data.select(entry, fields, inputs, api)
     if fields in (observer_structures.COPIES, observer_structures.EVENTS, observer_structures.SEARCH):
         return observer_structures.select(entry, fields, inputs, api)

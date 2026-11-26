@@ -281,6 +281,15 @@ public final class UpgradeTrace {
         return null;
     }
 
+    private static java.math.BigInteger integerValue(ObjectReference object) {
+        ReferenceType type = object.referenceType();
+        com.sun.jdi.ArrayReference mag = (com.sun.jdi.ArrayReference)object.getValue(type.fieldByName("mag"));
+        java.nio.ByteBuffer bytes = java.nio.ByteBuffer.allocate(mag.length() * 4);
+        for (Value limb : mag.getValues()) bytes.putInt(((com.sun.jdi.IntegerValue)limb).value());
+        int sign = ((com.sun.jdi.IntegerValue)object.getValue(type.fieldByName("signum"))).value();
+        return new java.math.BigInteger(sign, bytes.array());
+    }
+
     // Inspect standard numeric return objects without executing injected code in the original JVM.
     private static String numericReturn(Value value) {
         if (value == null) return "null";
@@ -288,11 +297,14 @@ public final class UpgradeTrace {
         ReferenceType type = object.referenceType();
         String number;
         if (type.name().equals("java.math.BigInteger")) {
-            com.sun.jdi.ArrayReference mag = (com.sun.jdi.ArrayReference)object.getValue(type.fieldByName("mag"));
-            java.nio.ByteBuffer bytes = java.nio.ByteBuffer.allocate(mag.length() * 4);
-            for (Value limb : mag.getValues()) bytes.putInt(((com.sun.jdi.IntegerValue)limb).value());
-            int sign = ((com.sun.jdi.IntegerValue)object.getValue(type.fieldByName("signum"))).value();
-            number = new java.math.BigInteger(sign, bytes.array()).toString();
+            number = integerValue(object).toString();
+        } else if (type.name().equals("java.math.BigDecimal")) {
+            long compact = ((com.sun.jdi.LongValue)object.getValue(type.fieldByName("intCompact"))).value();
+            int scale = ((com.sun.jdi.IntegerValue)object.getValue(type.fieldByName("scale"))).value();
+            java.math.BigInteger unscaled = compact == Long.MIN_VALUE
+                    ? integerValue((ObjectReference)object.getValue(type.fieldByName("intVal")))
+                    : java.math.BigInteger.valueOf(compact);
+            number = new java.math.BigDecimal(unscaled, scale).toString();
         } else {
             Field field = type.fieldByName("value");
             if (field == null || !(object.getValue(field) instanceof com.sun.jdi.PrimitiveValue))

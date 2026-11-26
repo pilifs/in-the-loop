@@ -375,6 +375,10 @@ def claim_hashes(root: Path, row: dict) -> dict[str, str]:
     import hashlib
     try:
         folder = root / row["path"]
+        bundle = folder / "records/public-observer"
+        if not (folder/"target.json").exists() and (bundle/"generation.json").is_file():
+            files = [folder/"comparison.json", bundle/"registration.json", bundle/"workflows.json", *sorted(bundle.glob("scope-*.json"))]
+            return {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() if p.is_file() else "missing" for p in files}
         target = json.loads((folder / "target.json").read_text())
     except (OSError, ValueError, KeyError, TypeError):
         return {}

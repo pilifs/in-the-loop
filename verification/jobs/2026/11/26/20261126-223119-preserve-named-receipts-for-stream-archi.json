@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-223119-preserve-named-receipts-for-stream-archi",
+  "title": "Preserve named receipts for stream archive decoder and map replays",
+  "description": "The previous development job passed every cold, warm and empty-cache comparison. Its wildcard output declaration was interpreted literally, so the collector retained no archives. Repeat these original-JVM measurements and name every expected ZIP explicitly.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T22:31:19+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Repeat all histories and retain each original JVM receipt",
+      "run": "python3 verification/generated-observers/campaign.py --empty-cache io J06 J10 J17",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/io-clean.zip",
+    "verification/generated-observers/receipts/J06-clean.zip",
+    "verification/generated-observers/receipts/J10-clean.zip",
+    "verification/generated-observers/receipts/J17-clean.zip"
+  ]
+}

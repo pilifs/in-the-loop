@@ -387,6 +387,13 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    Resume with `build.py --change-plan application --before DIR/old.json --after DIR/new.json --jdk JDK --workflows DIR/workflows.json --previous records/entry-bindings.json --run --output REPORT`.
    The runner loads the saved class archive and checks the declared fields and original JVM calls. Handwritten
    workflows retain their authored provenance. [Reviewed inputs](../verification/generated-observers/registrations/458.json)
+   For numbered comparisons, `watch.py preflight` reads the bound questions at the scaffold-only boundary.
+   A later `build.py NNN` loads the frozen caller and writes its finite results to `records/public-replay.json`.
+   Preflight derives its answers from the referenced JVM receipts. The authored comparison remains accessible
+   through `python3 -m targets.public_comparison NNN --authored` with `PYTHONPATH=examples/tools`.
+   Re-score a frozen run with `build.py --change-plan rescore --bundle DIR --report REPORT --predictions PRED --output NEW`.
+   For a marked minimum, `build.py --change-plan helper-table --bundle DIR --report REPORT --jdk JDK --output HELPER`
+   derives its finite rows. Reference that declaration with `checkedHelper` in a separate workflow.
    Stage 2 can omit workflows to discover public callers from the compiled change. Review competing observations
    with the claim owner. During replay, pass the saved record as `--previous` to `build.py --change-plan application --run`.
    The manifest's `classpath` lists the declared roots in JVM order. Each root carries `file` and `sha256`.

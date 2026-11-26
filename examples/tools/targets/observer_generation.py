@@ -112,6 +112,7 @@ def generate(reg, before, after, jdk, work, *, fixture_root=None):
     manifests = {s: portable_manifest(p) for s, p in (("old", before), ("new", after))}
     for side, manifest in manifests.items():
         change_evidence.write_json(work / (side + ".json"), manifest)
+    step = "resolve the pinned original deployment"
     try:
         feature = int(runtime_jdk.identity(jdk)["feature"])
         for side, manifest in manifests.items():
@@ -122,6 +123,7 @@ def generate(reg, before, after, jdk, work, *, fixture_root=None):
                 raise Unsupported(f"{side} needs its original manifest deployment locations")
             cp[side] = files
         inputs = [x for q in reg["questions"] for x in q["inputs"]]
+        step = "resolve public construction, operation and field reads"
         api = observer_recipes.API(cp["old"], feature)
         try:
             recipe = observer_recipes.select(reg["entry"], reg["fields"], inputs, api)
@@ -149,11 +151,13 @@ def generate(reg, before, after, jdk, work, *, fixture_root=None):
         src.write_text(observer_recipes.source(recipe))
         record["sourceSha256"] = sha(src)
         record["fieldSources"] = observer_fields.mapping(reg["fields"],recipe,reg["entry"])
+        step = "compile once against the older public API"
         record["compiled"] = compile_caller(work, src, cp["old"], jdk)
         record["archiveSha256"] = sha(work / "caller.zip")
         record["status"] = "compiled"
-    except (Unsupported, subprocess.TimeoutExpired) as e:
+    except (ValueError, OSError, subprocess.TimeoutExpired, zipfile.BadZipFile) as e:
         record["firstOpenDependency"] = str(e)
+        record["stoppedAt"] = step
         record["rejected"].append({"entry": reg["entry"], "reason": str(e)})
     change_evidence.write_json(work / "generation.json", record)
     return record

@@ -67,5 +67,8 @@ def mapping(fields, recipe, entry):
             ("[0][2]","copy constructor and getter","nullable milliseconds"),
             ("[0][3,4]","Date forwarded to recording target and subsequent original getter","nullable milliseconds")],
     }
+    sources = fields_by_family[family]
+    if family == "peek on a retained stack" and recipe.get("subsequentPop"):
+        sources.append(("[1][1]", "subsequent pop on the same receiver", "retained top or exception type"))
     return [{"field":field,"position":position,"source":source,"type":kind}
-            for field,(position,source,kind) in zip(fields,fields_by_family[family],strict=True)]
+            for field,(position,source,kind) in zip(fields,sources,strict=True)]

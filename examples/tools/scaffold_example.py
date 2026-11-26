@@ -125,6 +125,11 @@ def scaffold(number: str, plan_path: Path, write: bool, root: Path = REPO) -> di
                 try:
                     paths = observer_review.prepare(folder, numbered, folder/"records/reviewed-public-inputs")
                 except observer_recipes.Unsupported as error:
+                    from targets import change_evidence, upgrade_replay
+                    change_evidence.write_json(folder/"records/reviewed-public-inputs/review.json",
+                        {"status":"open","firstOpenDependency":str(error),
+                         "comparisonSha256":upgrade_replay.sha(folder/"comparison.json"),
+                         "runtimeSha256":upgrade_replay.sha(folder/"runtime.json")})
                     out["leftForSetup"].append(str(error))
                     return out
             else:
