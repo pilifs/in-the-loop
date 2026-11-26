@@ -18,6 +18,86 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-070: what stops or slows an unattended setup phase: a register from the organic PR queue of 2026-11-25 and 26
+
+- **Status**: open, a register to address later (the user, 2026-11-26). Each item says what happened, what it cost and a direction for a fix; none is chosen yet. Items with a finding of their own point to it.
+- **Raised**: 2026-11-26, by the watcher, from the advisor's draft, at the user's request. Facts from the watcher's product notes (`~/code/scripts/analysis/watcher-notes/organic-product-notes-2026-11-25.md`).
+- **Found**: the queue ran setup phases (Claude Opus 5.5, `single_run.py setup`) for the generated briefs of entries 7 and 15 to 19 (L01-L20, M01-M10, N01-N05, Spring O01-O20, Spring P01-P30). Each was unattended between the watcher's verdicts, and most were held up at least once by one of these.
+
+#### Blockers: the run stopped until a person acted
+
+1. **A self-matching wait loop**, `until ! pgrep -f 'PATTERN'`, whose own command line matches PATTERN, so it never ends. Five occurrences:
+   - L setup;
+   - M setup, 36 min (21:04 to 21:40), ended outside the watcher's session after the classifier refused the watcher's kill;
+   - the advisor's monitor;
+   - O setup, on `case_job.sh O..`, 46 min;
+   - P setup, on `review show`, not blocking; it timed out.
+
+   **See VF-069.** The operating-notes rule ("Waiting for a command to finish") exists, but was not followed. Since 2026-11-26 the user lets the watcher kill such a loop by PID, within limits.
+2. **A leftover daemon kept the run's systemd scope alive.**
+   - After Spring P's first setup leg ended (04:15 UTC, 2026-11-26), the setup's private GnuPG keyring left `dirmngr --homedir ~/.cache/in-the-loop/spring-pr-links-p01-p30/gnupg --daemon` (pid 1993751) in `feature-loop-single-spring-framework-pr-links-p01-p30-brief-setup.scope`. The agent had stopped `gpg-agent` but not `dirmngr`.
+   - `single_run.py start` refuses while that scope is active, and the restart at 04:35 ended at once with status 1. The classifier refused the watcher's `systemctl --user stop`, and the delegation covers only wait loops.
+   - The queue stood idle for **about 7 h 50 min** (04:35 to ~12:23), until the user stopped the scope.
+   - **Direction:**
+     - the loop ends its scope when a leg ends (`systemctl --user stop`, or `KillMode=` on the scope);
+     - or `single_run.py start` stops a scope that holds only known helper daemons (`dirmngr`, `gpg-agent`, `keyboxd`);
+     - and the setup template has agents run `gpgconf --homedir DIR --kill all` when they finish with a private keyring.
+3. **Build inputs that exist in no public repository**, so a historical build can't be configured.
+   - **Affected cases:** Spring O11 and O14, and Spring P's seven 5.x cases (P05, P09, P11, P16, P18, P19, P23).
+   - **What they need:**
+     - `propdeps-plugin` 0.0.8 or 0.0.9.RELEASE;
+     - `docbook-reference-plugin` 0.3.1;
+     - dokka `integration` 0.9.15;
+     - `spring-asciidoctor-extensions` 0.1.3.RELEASE;
+     - `gradle-enterprise-conventions` 0.0.2;
+     - Kotlin 1.4-M2 or other Bintray artifacts.
+
+     These were served only by `repo.spring.io`'s private repositories (now 401) or by Bintray (closed in 2021). L15's Gradle `grolifant` 0.16.1 was found on a JCenter mirror with the pinned hash.
+   - **How the cases went:** each case asked the user for a decision: credentials (unrealistic) or released jars.
+     - Spring O's domain run settled it itself (60/63 claims decided): it compiled the pins' exact changed sources against released dependencies, labelled separately.
+     - For Spring P the user decided on 2026-11-26: "Stuff that cannot be built should be verified against pinned JARS like Spring 0." The setup then built each 5.x pin's changed files into a slice against a pinned release. All seven cases behave as their PRs say: the fix's tests pass on the fix slice and fail on the parent slice, and fail the same way on the plain release. The slices' class digests repeat over two runs.
+   - **Direction:** make the user's P decision the standing policy of the setup and domain templates. When a historical build can't be configured from public sources, use (a) a byte-identical artifact from a public mirror with the pinned hash, or else (b) the pin's exact changed sources compiled against the nearest pinned release, labelled as such. It is then decided once, not once per case.
+
+#### Slowdowns: the run went on, but slower or noisier
+
+4. **Commits took 5 to 15 minutes.** A sync cache shared between workspaces made every session re-sync on every other commit. **Fixed** by srqoyurr (merged 2026-11-25, develop 661006fa): commits and lands now take about 80 to 140 s. The item stays here only as the reason agents backgrounded commits, which is what set up item 1's waits.
+5. **Allow-list churn from the runs' own names.**
+   - **What was flagged:** setup and domain agents spent turns proposing false positives found in their own logs:
+     - "long token" for artifact file names they created themselves (`L05-junit-framework-…jar`, 10 at once);
+     - "public IP" for version strings (Liberica `17.0.21.1`, four-part Jackson versions), an RFC section number and long Java classpaths.
+   - **Where it stands:** each proposal waits for the user's `allow approve`, since delegation is off. About 29 are pending, and 29 more sit uncommitted in the P setup's workspace.
+   - **Direction:**
+     - the redaction rules recognise dotted version strings in a version context;
+     - they treat file names under the run's own cache folder as non-secrets;
+     - or setup agents name their artifacts so they don't trip the long-token rule.
+6. **`sync.py review show` takes over 200 s a finding**, and setup agents look at each warning masked before proposing it. That wait is also what item 1's P occurrence waited on. **Direction:** profile it as was done for commits; a batch `review show ID ...` would also help.
+7. **Job results land on another head.** The pipeline collects a setup's jobs on the default line, not in the run's workspace.
+   - Agents then read them "from the head where it recorded them" (P's 24 results: `933de3d18d34`).
+   - One agent (M) waited for a commit instead.
+   - **Direction:** `single_run.py jobs` (or the setup template) tells the agent where its collected results are, or the watcher moves the run's workspace onto the line before continuing it.
+
+#### Inputs that limit evidence: recorded, not blocking
+
+8. **Expired snapshot dependencies.**
+   - Jackson's pinned `3.2.0-SNAPSHOT` parent is gone from the snapshot repository, so it was rebuilt from nearby upstream commits.
+   - Reactor's `2020.0.0-SNAPSHOT` survives only as a later build.
+
+   These are recorded per case, and need no fix beyond the label.
+9. **Signature checks that can't be completed.**
+   - Spring's signing key `9A2C7A98E457C53D` comes back from keyservers without user IDs and can't be imported, so the 5.x release jars' signatures are unchecked; their SHA-1 hashes match.
+   - RxJava 2.1.14 and 2.1.15's key is revoked as compromised.
+   - Solr 9.8.0 is signed by an expired key.
+
+   These are recorded per case.
+10. **Disk taken by setup caches.**
+    - `~/.cache/in-the-loop/spring-pr-links-o01-o20` took 17 to 24 GB, and `…-p01-p30` 29 GB before its agent cut it to 25 GB.
+    - The cache folder was 125 GB on 2026-11-26.
+    - Nothing prunes a setup's build outputs once its brief is verified, and examples' replays may still read from them.
+    - **Direction:** a per-batch prune step after the domain run lands, which keeps what the replays reference (grep the repository for the path first).
+
+- **Needs**: the user, to choose a direction for each item, or dismiss it.
+- **Closes when**: items 2, 3 and 5 to 7 have fixes or are dismissed by the user. Item 1 closes with VF-069, and item 4 is already fixed. Items 8 to 10 close with a recorded decision.
+
 ### VF-069: an agent's wait loop matches its own command line in pgrep and never ends; a hung run needs the user
 
 - **Status**: open. It needs a robust way to wait, a rule in the operating notes, and a sanctioned way for the watcher to clear a hung wait.

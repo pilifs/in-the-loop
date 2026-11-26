@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "ended",
+  "status": "open",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-26T04:12:15.146Z",
-  "duration_seconds": 902688,
+  "ended": "2026-11-26T12:45:35.630Z",
+  "duration_seconds": 933489,
   "stats": {
-    "turns": 1510,
-    "api_calls": 6460,
-    "tool_calls": 5746,
-    "tool_errors": 69,
-    "compactions": 16,
+    "turns": 1515,
+    "api_calls": 6486,
+    "tool_calls": 5770,
+    "tool_errors": 70,
+    "compactions": 17,
     "peak_context_tokens": 666720,
     "usage": {
-      "input_tokens": 15994,
-      "output_tokens": 2714590,
-      "cache_read_input_tokens": 2017920227,
-      "cache_creation_input_tokens": 9115237
+      "input_tokens": 16054,
+      "output_tokens": 2728506,
+      "cache_read_input_tokens": 2022823742,
+      "cache_creation_input_tokens": 9190985
     }
   },
   "tools": {
-    "Bash": 5512,
-    "SendMessage": 93,
+    "Bash": 5535,
+    "SendMessage": 94,
     "Edit": 34,
     "ToolSearch": 25,
     "Write": 20,
@@ -306,24 +306,38 @@
     {
       "index": 16,
       "started": "2026-11-25T11:44:10.877Z",
-      "ended": "2026-11-26T04:12:15.146Z",
-      "turns": 124,
-      "api_calls": 479,
+      "ended": "2026-11-26T04:36:47.446Z",
+      "turns": 126,
+      "api_calls": 488,
       "usage": {
-        "input_tokens": 1214,
-        "output_tokens": 154718,
-        "cache_read_input_tokens": 118627663,
-        "cache_creation_input_tokens": 357846
+        "input_tokens": 1236,
+        "output_tokens": 158745,
+        "cache_read_input_tokens": 122179691,
+        "cache_creation_input_tokens": 365693
       },
-      "peak_context_tokens": 391589
+      "peak_context_tokens": 399581
+    },
+    {
+      "index": 17,
+      "started": "2026-11-26T05:31:35.212Z",
+      "ended": "2026-11-26T12:45:35.630Z",
+      "turns": 3,
+      "api_calls": 17,
+      "usage": {
+        "input_tokens": 38,
+        "output_tokens": 9889,
+        "cache_read_input_tokens": 1351487,
+        "cache_creation_input_tokens": 67901
+      },
+      "peak_context_tokens": 95202
     }
   ],
   "log": {
-    "sha256": "d43f02cbc916ba6ac8241809462a7059991144176bb823e073ceeff669328310",
-    "bytes": 100460008,
-    "lines": 56503,
-    "gzip_bytes": 15644370,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/d43f02cbc916ba6ac8241809462a7059991144176bb823e073ceeff669328310.jsonl.gz"
+    "sha256": "98e09d4b71da35022c6ae5c5331c96f787c7376e8dc354d6d152770d44edc8f6",
+    "bytes": 101640498,
+    "lines": 56807,
+    "gzip_bytes": 15922743,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/98e09d4b71da35022c6ae5c5331c96f787c7376e8dc354d6d152770d44edc8f6.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -14406,6 +14420,22 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-032327-setup-build-spring-framework-37159-p15-a: failed: 3 passed, 1 failed step(s) in 55m30s, peak 4.0 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-p01-p30-brief-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "d43f02cbc916ba6ac8241809462a7059991144176bb823e073ceeff669328310"
+    },
+    {
+      "change_id": "oyqmvvuronokopokrvyqynkymktyoyso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "98e09d4b71da35022c6ae5c5331c96f787c7376e8dc354d6d152770d44edc8f6"
+    },
+    {
+      "change_id": "quuxzrvlulmzyksoqksvxkkskpxpvuvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-070: a register of what stops or slows an unattended setup phase",
+      "body": "At the user's request, a finding that lists what held up the organic PR queue's setup phases on 2026-11-25 and 26, to be addressed later. It has three groups: blockers (self-matching waits, see VF-069; a leftover dirmngr daemon that kept the Spring P setup's scope alive for about 7 h 50 min; build inputs in no public repository, which the user settled for P with pinned released jars); slowdowns (slow commits, fixed by srqoyurr; allow-list churn from the runs' own names and versions; slow review show; job results on another head); and evidence limits (expired snapshots, incomplete signature checks, setup caches with no prune step). Each item has a direction, and none is chosen. Drafted by the advisor, with times and counts corrected from the watcher's product notes.",
+      "log_sha256": "98e09d4b71da35022c6ae5c5331c96f787c7376e8dc354d6d152770d44edc8f6"
     }
   ],
   "logs": {
@@ -17600,6 +17630,12 @@
       "lines": 43609,
       "gzip_bytes": 12600898,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/98bb6fbb4b1cd527c86e187d0d9aa90d58dbde84517126d302a1f90799324563.jsonl.gz"
+    },
+    "98e09d4b71da35022c6ae5c5331c96f787c7376e8dc354d6d152770d44edc8f6": {
+      "bytes": 101640498,
+      "lines": 56807,
+      "gzip_bytes": 15922743,
+      "url": null
     },
     "98f73371bc9b526ffc1841ce037a37fd771a872492f9e5f3d90cfe01d7149720": {
       "bytes": 40443145,
