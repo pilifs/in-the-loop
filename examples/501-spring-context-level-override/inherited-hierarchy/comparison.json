@@ -1,0 +1,100 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/34723",
+  "revisions": {
+    "parent": "3afd5511743840dd2c97d7410362963dd0d9f3e2",
+    "fix": "c168e1c2976267630d86c7114cf934a0f01aa8c9"
+  },
+  "entry": "SpringExtension with an inherited ContextHierarchy",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#34723.inheritance.1",
+      "role": "Control",
+      "args": [
+        "plain"
+      ],
+      "history": "Inherit the two named levels without a field override.",
+      "prediction": "The local parent and child consumers return P/C.",
+      "basis": "ContextHierarchy is inherited. TestBean documents all levels by default and the named level when selected. The same-level and unmodified inherited controls check each mechanism separately.",
+      "refutation": "Jupiter fails before invoking the test, or local lookups, injected consumers or the override field select different services.",
+      "expected": {
+        "fix": {
+          "return": "P/C"
+        },
+        "parent": {
+          "return": "P/C"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34723.inheritance.2",
+      "role": "Control",
+      "args": [
+        "direct-all"
+      ],
+      "history": "Declare both levels on the class with the unscoped field.",
+      "prediction": "The local parent and child consumers return X/X fieldIsChild=true.",
+      "basis": "ContextHierarchy is inherited. TestBean documents all levels by default and the named level when selected. The same-level and unmodified inherited controls check each mechanism separately.",
+      "refutation": "Jupiter fails before invoking the test, or local lookups, injected consumers or the override field select different services.",
+      "expected": {
+        "fix": {
+          "return": "X/X fieldIsChild=true"
+        },
+        "parent": {
+          "return": "X/X fieldIsChild=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34723.inheritance.3",
+      "role": "Control",
+      "args": [
+        "direct-child"
+      ],
+      "history": "Declare both levels on the class with the child-only override.",
+      "prediction": "The local parent and child consumers return P/X fieldIsChild=true.",
+      "basis": "ContextHierarchy is inherited. TestBean documents all levels by default and the named level when selected. The same-level and unmodified inherited controls check each mechanism separately.",
+      "refutation": "Jupiter fails before invoking the test, or local lookups, injected consumers or the override field select different services.",
+      "expected": {
+        "fix": {
+          "return": "P/X fieldIsChild=true"
+        },
+        "parent": {
+          "return": "X/X fieldIsChild=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34723.inheritance.4",
+      "role": "Challenge",
+      "args": [
+        "inherited-all"
+      ],
+      "history": "Move only the hierarchy declaration to an abstract superclass and retain the unscoped field.",
+      "prediction": "The local parent and child consumers return X/X fieldIsChild=true.",
+      "basis": "ContextHierarchy is inherited. TestBean documents all levels by default and the named level when selected. The same-level and unmodified inherited controls check each mechanism separately.",
+      "refutation": "Jupiter fails before invoking the test, or local lookups, injected consumers or the override field select different services.",
+      "expected": {
+        "fix": {
+          "return": "X/X fieldIsChild=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34723.inheritance.5",
+      "role": "Challenge",
+      "args": [
+        "inherited-child"
+      ],
+      "history": "Inherit the hierarchy and declare the child-only override on the concrete test.",
+      "prediction": "The local parent and child consumers return P/X fieldIsChild=true.",
+      "basis": "ContextHierarchy is inherited. TestBean documents all levels by default and the named level when selected. The same-level and unmodified inherited controls check each mechanism separately.",
+      "refutation": "Jupiter fails before invoking the test, or local lookups, injected consumers or the override field select different services.",
+      "expected": {
+        "fix": {
+          "return": "P/X fieldIsChild=true"
+        }
+      }
+    }
+  ]
+}

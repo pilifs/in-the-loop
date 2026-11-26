@@ -12,3 +12,5 @@ Each hierarchy is declared on the concrete Jupiter test. Both mock clients run o
 | Challenge · cache | `mocks=true parentReused=false parentClean=false` | `mocks=true parentReused=true parentClean=true` | matched |
 
 With the prepared campaign cache, run `python3 examples/tools/build.py 501` to repeat this comparison. [Registered questions and falsifiers](comparison.json) · [Public caller](caller/PublicCaller.java) · [Locked inputs](runtime.json) · [Measured outcomes](observations.json) · [Upstream pull request](https://github.com/spring-projects/spring-framework/pull/34723)
+
+Moving the hierarchy declaration to an abstract superclass caused both subclass field overrides to fail on the landing and Spring 7.1.0. [Separate inheritance follow-up](inherited-hierarchy/README.md)

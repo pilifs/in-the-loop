@@ -22,6 +22,10 @@ Declare `@RecordApplicationEvents`, `@TestInstance(PER_CLASS)` and `@Execution(C
 
 The same application binary called the public three-argument `ScriptUtils.readScript` successfully on Spring JDBC 5.1.4.RELEASE and raised `NoSuchMethodError` on 5.1.5.RELEASE. The source was compiled against the parent and the invocation descriptor was checked with javap. A separate comparison of `ResourceDatabasePopulator` executed the two intended inserts on the later release. With the original SQL and 5.1.4, the first insert was already durable when the second statement failed. [Direct client and independent database reads](../../../examples/493-spring-sql-comment-lines/README.md) · [Historical release results](historical-observations.json)
 
+## Bean overrides in an inherited test hierarchy
+
+Declare two named application contexts on an abstract test superclass, then add a `@TestBean` field to the concrete Jupiter class. Both an unscoped override and a child-only override failed during test preparation on Spring 7.1.0. Inheriting the contexts alone worked. Declaring those same levels directly on the class carrying the field made both override scopes work, with matching level-local callers and field identity. Five separate follow-up histories compare the declaration sites on the two original revisions and the release. [Complete reproduction](../../../examples/501-spring-context-level-override/inherited-hierarchy/README.md)
+
 ## Reproduction
 
 From a checkout with the prepared campaign cache, run the following commands. Each release comparison recompiles the original callers and checks the class origins. The last command checks the versions, digests, exact outcomes and comparison side for every history.

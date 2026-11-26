@@ -268,6 +268,8 @@ All three entries above reproduced on published Spring 7.1.0 with the original c
 
 **19. Spring JDBC, PR #22392. A public script reader disappears between patch releases.** A direct client compiled against the original three-argument ScriptUtils.readScript returned its SQL on 5.1.4.RELEASE and raised NoSuchMethodError on 5.1.5.RELEASE. This is a historical binary-compatibility finding. [Release reproduction and original invocation descriptor](merged-pr-links/p01-p30/upstream.md#historical-jdbc-compatibility)
 
+**20. Spring TestContext, PR #34723. A test subclass cannot apply a bean override to a hierarchy inherited from its superclass in these fixtures.** The inherited hierarchy served both original beans, and both override scopes worked when the two context levels were declared on the concrete test. Moving only the hierarchy to its superclass made both fields fail before the test method on the landing and Spring 7.1.0. [Five histories, caller and released witness](../examples/501-spring-context-level-override/inherited-hierarchy/README.md)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:
