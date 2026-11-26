@@ -125,6 +125,9 @@ again, until it returns `ended`.
   - A cycle with no commit is yours to read: the outcome may be reached, the agent may have ended on a question,
     or it may be stuck. `continue` only when the report says why there is no commit and another cycle would end
     with one.
+  - A run whose log has gone quiet may be held by a wait loop that can never end (VF-069): run
+    `python3 llm-dlc/tools/single_run.py unhang NAME --dry-run`, and if it names one, the same without
+    `--dry-run` ends it. Say so in your next report.
   - When all that is left for the agent is to act on verification jobs that are still out, don't have it wait
     in a cycle: answer `stop` with that reason, run `python3 llm-dlc/tools/single_run.py jobs NAME` as a
     background task, and when it says the queue is clear, `single_run.py start NAME` continues the run.

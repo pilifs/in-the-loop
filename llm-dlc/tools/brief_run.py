@@ -684,6 +684,34 @@ def adopt_logs(root: Path) -> None:
         subprocess.run([sys.executable, str(sync), "adopt-logs"], cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
 
 
+def onto_line(root: Path, workspace: str) -> str:
+    """The workspace, moved to the line's last commit so that a run starts from everything landed: refused while it
+    holds uncommitted work or commits the line lacks. A workspace that does not exist yet is made by `start`."""
+    known = workspaces(root)
+    if workspace not in known:
+        return "made by the run's start"
+    folder = known[workspace]
+    if folder is None or not folder.is_dir():
+        raise Problem(f"jj knows the workspace {workspace} but not its folder")
+    heads = jj(root, "log", "--no-graph", "-r", "@-", "-T", 'commit_id ++ "\n"').stdout.split()
+    if len(heads) != 1:
+        raise Problem("the default workspace is in the middle of a merge: commit it first")
+    if commit_id(root, f"{workspace}@-") == heads[0]:
+        return "on the line already"
+    dirty = [f for f in jj(folder, "diff", "-r", "@", "--name-only").stdout.splitlines() if f.strip()]
+    left = [f for f in dirty if not regenerable(folder, f)]
+    if left:
+        raise Problem(f"the workspace {workspace} has uncommitted files ({', '.join(left[:5])}): land or finish them first")
+    if not merged_in(root, workspace):
+        raise Problem(f"the workspace {workspace} has commits the line lacks: land its run first")
+    if dirty:
+        jj(folder, "restore", "--", *dirty)  # generated trace output only: sync.py writes it again
+    r = jj(folder, "new", heads[0])
+    if r.returncode != 0:
+        raise Problem(f"could not move the workspace {workspace} onto the line: {r.stderr.strip()}")
+    return f"moved onto {heads[0][:12]}"
+
+
 def land(run: Run, workspace: str, message: tuple[str, str] | None = None, at_work: bool = False) -> dict:
     """Bring WORKSPACE's line to the default workspace's (see the header), and the session logs it names. AT_WORK:
     its session is still working there, and what it has not committed stays there."""

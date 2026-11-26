@@ -52,6 +52,11 @@ is feature-loop.sh's `single-agent`, with this run's directory as its conductor.
                                         keeping the queue meanwhile: for a run stopped only to wait on its jobs,
                                         which `start` then continues. Returns early with a result that did not pass.
     single_run.py land NAME             bring a workspace's commits to this checkout's line (brief_run.py's `land`)
+    single_run.py unhang NAME [--min-age MINUTES] [--dry-run]
+                                        end the run's hung waits: a wait loop (until/while ... pgrep -f PATTERN ...) in
+                                        the run's processes, at least MINUTES old (10), whose PATTERN no process matches
+                                        but the loop itself, so it can never end (VF-069). Each is ended by its pid, and
+                                        named; nothing else of the run is touched. --dry-run only names them.
     single_run.py list                  the runs this checkout knows, and which are under way
     single_run.py setup NAME --brief FILE [--record FILE] [start's options, but the texts]
         start a brief's setup phase as the run NAME: a setup agent (Claude Opus 5.5 at high effort, unless --client,
@@ -288,6 +293,17 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
                       f"a run of another name works elsewhere")
     brief = brief_named(run, a.brief, workspace) if a.brief else data.get("brief")
     folder, made = workspace_folder(run, workspace) if workspace else (run.root, False)
+    # A run restarted in its own workspace starts from the line when it can (VF-070, item 7): what the watcher
+    # collected for it while it was stopped (its jobs' results) is committed on the line, not in the workspace, and an
+    # agent that does not see it reads "recorded on another head", or waits for a commit that is already there. Moved
+    # only when the workspace's own commits are landed and nothing is left uncommitted in it; otherwise `start` says so.
+    onto = None
+    if not new and workspace and not made:
+        try:
+            onto = brief_run.onto_line(run.root, workspace)
+        except brief_run.Problem as e:
+            onto = (f"left where it is: {e}" + ("; `single_run.py land` and then `start` bring in what the line has since"
+                                                 if "commits the line lacks" in str(e) else ""))
     script = folder / "llm-dlc" / "tools" / "feature-loop.sh"
     try:
         knows = "single-agent)" in script.read_text()
@@ -377,6 +393,7 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
         "started": run.name, "pid": pid, "session": session, "newSession": new and not a.session,
         "forkOf": data["fork"] if new else None, "folder": str(folder),
         "workspace": workspace, **({"workspaceMade": "now, from this line's last commit"} if made else {}),
+        **({"workspaceOntoLine": onto} if onto else {}),
         "client": client, "model": data["model"], **({"runs": resolved["model"]} if resolved["model"] != data["model"] else {}),
         "effort": data["effort"], **({"compactAt": compact_at} if compact_at else {}), "memory": memory,
         "cycles": cycles or "no limit",
@@ -721,6 +738,105 @@ def cmd_stop(run: Run, now: bool) -> int:
     return 0
 
 
+# Hung waits (VF-069). An agent that waits for a command with `until ! pgrep -f 'PATTERN'; do sleep N; done` waits
+# forever when PATTERN also matches the loop's own command line, which holds it: pgrep then always finds the loop. On
+# 2026-11-25 and 26 such loops held setup runs for 36 to 46 minutes until a person ended them. A loop whose patterns
+# no other process matches can never end, and ending it takes nothing from the run: the command it waited for is
+# gone. This is the sanctioned way to end one, which the user delegated to the watcher until it existed.
+WAIT_LOOP = re.compile(r"\b(?:until|while)\b.*\bpgrep\b.*\bsleep\b", re.S)
+PGREP_PATTERN = re.compile(r"""\bpgrep\s+(?:-[a-zA-Z]+\s+)*-[a-zA-Z]*f[a-zA-Z]*\s+(?:'([^']*)'|"([^"]*)"|(\S+))""")
+
+
+def processes() -> dict[int, dict]:
+    """This machine's processes, as unhang reads them: ppid, age in seconds and command line."""
+    ticks, uptime = os.sysconf("SC_CLK_TCK"), float(Path("/proc/uptime").read_text().split()[0])
+    out = {}
+    for d in Path("/proc").iterdir():
+        if not d.name.isdigit():
+            continue
+        try:
+            stat = (d / "stat").read_text()
+            fields = stat[stat.rindex(")") + 2:].split()
+            cmd = (d / "cmdline").read_bytes().replace(b"\0", b" ").decode(errors="replace").strip()
+        except (OSError, ValueError):
+            continue
+        out[int(d.name)] = {"ppid": int(fields[1]), "age": uptime - int(fields[19]) / ticks, "cmd": cmd}
+    return out
+
+
+def run_processes(run: Run, procs: dict[int, dict]) -> set[int]:
+    """The run's processes: the loop's descendants, and whatever its scope still holds (a loop left by a turn that
+    ended is no longer below the loop)."""
+    pids: set[int] = set()
+    loop = (run.read().get("loop") or {}).get("pid")
+    if loop and int(loop) in procs:
+        pids.add(int(loop))
+        grew = True
+        while grew:
+            more = {pid for pid, p in procs.items() if p["ppid"] in pids} - pids
+            pids |= more
+            grew = bool(more)
+    try:
+        r = subprocess.run(["systemctl", "--user", "show", "-p", "ControlGroup", "--value",
+                            f"feature-loop-single-{run.name}.scope"], capture_output=True, text=True, timeout=30)
+        group = r.stdout.strip() if r.returncode == 0 else ""
+    except (OSError, subprocess.TimeoutExpired):
+        group = ""
+    if group:
+        try:
+            pids |= {int(x) for x in Path(f"/sys/fs/cgroup{group}/cgroup.procs").read_text().split()}
+        except OSError:
+            pass
+    return pids
+
+
+def hung_waits(procs: dict[int, dict], candidates: set[int], min_age: float) -> list[dict]:
+    """The wait loops among candidates, at least min_age seconds old, whose every pgrep -f pattern matches no process
+    besides other waits on it: no process it waits for is left, so it can never end."""
+    found = []
+    for pid in sorted(candidates):
+        p = procs.get(pid)
+        if not p or not WAIT_LOOP.search(p["cmd"]) or p["age"] < min_age:
+            continue
+        # Claude Code runs a command inside eval '...', where each quote of it is '"'"': read the command as typed.
+        typed = p["cmd"].replace("'\"'\"'", "'")
+        patterns = [next(g for g in m.groups() if g is not None) for m in PGREP_PATTERN.finditer(typed)]
+        if not patterns:
+            continue
+        try:
+            compiled = [re.compile(x) for x in patterns]
+        except re.error:
+            continue  # pgrep's own dialect, which this does not read: left alone
+        waited = [q for q, o in procs.items() if q != pid and not WAIT_LOOP.search(o["cmd"])
+                  and any(c.search(o["cmd"]) for c in compiled)]
+        if not waited:
+            found.append({"pid": pid, "age": round(p["age"]), "patterns": patterns, "cmd": p["cmd"][-160:]})
+    return found
+
+
+def cmd_unhang(run: Run, min_age_minutes: float, dry_run: bool) -> int:
+    if not run.read():
+        raise Problem(f"no run {run.name} here ({run.dir})")
+    procs = processes()
+    found = hung_waits(procs, run_processes(run, procs) - {os.getpid()}, min_age_minutes * 60)
+    ended = []
+    if not dry_run:
+        for f in found:
+            try:
+                os.kill(f["pid"], signal.SIGTERM)
+                ended.append(f["pid"])
+            except ProcessLookupError:
+                pass
+        if found:
+            with open(run.dir / "unhang.jsonl", "a") as out:
+                for f in found:
+                    out.write(json.dumps({"time": watch.now(), **f, "ended": f["pid"] in ended}) + "\n")
+    print(json.dumps({"run": run.name, "hung": found, "ended": ended,
+                      "next": ("nothing hung" if not found else "named only (--dry-run)" if dry_run else
+                               "ended; record each in VF-069's occurrences and the next report to the user")}, indent=1))
+    return 0
+
+
 def cmd_land(run: Run) -> int:
     data = run.read()
     workspace = data.get("workspace")
@@ -773,7 +889,11 @@ def cmd_jobs(run: Run, timeout: float) -> int:
         if left == 0 or flagged:
             print(json.dumps({"kind": "jobs", "left": left, "came": came,
                               "note": RESULTS_NOTE if flagged else
-                              f"the queue is clear: `single_run.py start {run.name}` continues the run"}, indent=1))
+                              f"the queue is clear: `single_run.py start {run.name}` continues the run" + (
+                                  f"; its results are committed on this line, not in the workspace "
+                                  f"{run.read()['workspace']}: `single_run.py land {run.name}` first, so that `start` "
+                                  f"moves the workspace onto the line and the agent sees them"
+                                  if came and run.read().get("workspace") else "")}, indent=1))
             return 0
         if time.monotonic() >= until:
             print(json.dumps({"kind": "nothing", "left": left, "came": came, "note": "jobs are still out: wait again"}))
@@ -1010,6 +1130,9 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     j = named("jobs", "block until the verification queue is clear, keeping it meanwhile")
     j.add_argument("--timeout", type=float, default=3300)
     named("land", "bring a workspace's commits to this checkout's line")
+    h = named("unhang", "end the run's hung waits: wait loops whose pgrep pattern only matches themselves (VF-069)")
+    h.add_argument("--min-age", type=float, default=10, help="minutes a loop must have run (10)")
+    h.add_argument("--dry-run", action="store_true")
     n = named("notes", "put a setup run's notes into the brief, and into each other copy of it")
     n.add_argument("--to", action="append", default=[], metavar="FILE")
     sub.add_parser("loop").add_argument("name")  # the detached process of a run: `start` runs it
@@ -1063,6 +1186,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             return cmd_collect(run)
         if args.command == "jobs":
             return cmd_jobs(run, args.timeout)
+        if args.command == "unhang":
+            return cmd_unhang(run, args.min_age, args.dry_run)
         return cmd_land(run)
     except Problem as e:
         print(f"single_run.py: {e}", file=sys.stderr)
