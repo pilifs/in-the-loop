@@ -1,0 +1,385 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-144025-setup-build-spring-framework-37577-q07-a",
+  "title": "Setup: build Spring Framework #37577 (Q07) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 4m51s, peak 3.2 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-144025-setup-build-spring-framework-37577-q07-a.json",
+    "sha256": "f5226b5c64c54d0851b709c0c31b4a4dfda9a6d7925b884c836d55895c016a45",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-144025-setup-build-spring-framework-37577-q07-a",
+      "title": "Setup: build Spring Framework #37577 (Q07) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, case Q07 (spring-projects/spring-framework#37577: Remapping deletion changes the reference-map count immediately). In the worktrees $P/worktrees/Q07-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-q01-q30), offline (dependencies resolved online beforehand), it builds the jars of spring-core with the Gradle each checkout's wrapper names, runs the landed test classes (ConcurrentReferenceHashMapTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-core in $P/artifacts/Q07-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned Q07",
+      "submitted": {
+        "at": "2026-11-26T14:40:25+00:00",
+        "session": "56626182-a69a-4945-91c7-07e11b9bb46a",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "Q07 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q07 fix",
+          "cwd": "."
+        },
+        {
+          "name": "Q07 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q07 parent",
+          "cwd": "."
+        },
+        {
+          "name": "Q07 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q07 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "Q07 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q07 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4607cc1187f24d79e63ce5f7633a41338f4dd5d5",
+  "startedAt": "2026-11-26T14:55:43+00:00",
+  "finishedAt": "2026-11-26T15:00:44+00:00",
+  "wallSeconds": 301.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1664671,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3419439104,
+    "wallSeconds": 291.8,
+    "cpuSeconds": 711.8,
+    "memoryOfEstimate": 0.53,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Q07 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q07 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 109.51,
+      "cpuSeconds": 254.573,
+      "cpuThrottledSeconds": 8.238,
+      "peakMemoryBytes": 2597556224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-q07-fix-offline-build-and-land.log",
+        "lines": 47,
+        "bytes": 6233,
+        "sha256": "9f266dc0ee80cf2065eac9c35c6654ed7114ff22937c081045b76928ec2d781f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.util.ConcurrentReferenceHashMapTests junit tests=63 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q07-fix/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q07-fix/spring-core.testRuntimeClasspath.txt 77 entries",
+        "8a39f90f3d342285e466dff2b3028c6bcb177e06a9c70e414d02d5debd0bcd3d  jars/spring-core-7.0.11-SNAPSHOT.jar",
+        "8a39f90f3d342285e466dff2b3028c6bcb177e06a9c70e414d02d5debd0bcd3d  tree/spring-core/build/libs/spring-core-7.0.11-SNAPSHOT.jar",
+        "ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2  tree/spring-core/build/libs/spring-core-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "5d4747acd5d43891cbc382c6f668c7983fa8288d210c9a215cda9fdee4c6a101  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$1.class",
+        "a24b142f4bb98ef739b6652201a0ae4572f015f6bd55898a58f3df12638a2912  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$2.class",
+        "d635877d59f3e771c0dac515631ad82d673b14b1600d094ff0207f481d5d8ce1  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$3.class",
+        "add5829f0a338647780097206c591f21bb6d589656bec6dead4ba0d40139b515  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$4.class",
+        "440ef99f502bbed8f0a034df733be470ea80394c6999ebba8374e6fe71989a03  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$5.class",
+        "f30464aaf15cbd211e7a870e6a07a025115d28eb6cd108480b8ce47d19097f73  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$6.class",
+        "2ad85dc4d4e95c51c3eb7a36d60a0855fdcbf4d9389ce107cd7a01ab698ed070  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$7.class",
+        "d5a76c34cb3493b76904081f8dbd217d4899c4e1365cb5446f568ca4681001cf  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$8.class",
+        "bb0a3f035fa49ae5245de52b369333b37db3ff1d2ba16e2801c8b99d0532a7e2  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$9.class",
+        "94afc1617509714ea9f9700c569f442c053e28d8ff5f7f80f0dd6f34d7d58153  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Entries.class",
+        "3f6a03d35b6def668a08363598b5fc42a2da1731b8a8195b636a0d97cd5766af  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Entry.class",
+        "af5c65372c15363410845edebd018189642b4af29144538b0155c0a5ae4b6680  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$EntryIterator.class",
+        "308b2c30048559d9be492a8f2521978d3d6a5f0ae890d77e91661d4e689c6b06  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$EntrySet.class",
+        "328f56655a65a0552459b5a25bcf102fef7cb436e1027815720a1683dc4bad83  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$KeyIterator.class",
+        "b513ae33b2e03a095089aaeb92933112f7e48ffabd9aa8b32f0679cc9bdfd89b  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$KeySet.class",
+        "9e9a599375aae242be954f56ac8fd2d8c529eab665bf0eb50d731c3e5612ff1a  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Reference.class",
+        "e2d72419a5bc4645e5659a2ca316370d522f68bc4975a00c4a5ff9bf1877f851  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$ReferenceManager.class",
+        "607ed534b9572599d9a7f473b78bca8fb190beceb511de523ee061825d105653  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$ReferenceType.class",
+        "d061e8895cbe3d5278df1f8946de1c193135b0f807cb2c4ddfc66510d1a57bc0  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Restructure.class",
+        "688b6f198a6f055952cd2cee637b0b9a0c670d8e8d598734bc14fb1bc6fe2c42  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Segment.class",
+        "f795a866fca83c5272b0ebc40ec22b0d008b1041935fa22b6f291581051fb2b0  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$SoftEntryReference.class",
+        "f0c1c27e7f39b0ad6d72c577a88bf1d1ac68410b090fff0df2cbae8e26ea3b7c  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Task.class",
+        "9d5e28797e1a1edfdc59badf8d6509b185ca81b06613dc310532402e184ba210  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$TaskOption.class",
+        "71e790df122cb5c092c26d788daca70b5dcd64a735226f4e9d75833ecc88fd22  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$ValueIterator.class",
+        "03a4b5fc950cd26e41a3fad70759630a82736fedea396a9b3c4e4891f43a9cd0  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Values.class",
+        "e08108ac9398e74170fd9c8821797c008df5a354061245fc2d0e448a2fa2e79e  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$WeakEntryReference.class",
+        "da9dd61492184d68e081fba52dc803a06baeaaa5f2617e88fcf7ab1e317f6aa8  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Q07 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q07 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 89.971,
+      "cpuSeconds": 234.009,
+      "cpuThrottledSeconds": 2.547,
+      "peakMemoryBytes": 2341249024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-q07-parent-offline-build-and-t.log",
+        "lines": 47,
+        "bytes": 6242,
+        "sha256": "c031faef205c28b0c853d928c77bc51489b79605de830ddef9069ee0a9bfee70",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.util.ConcurrentReferenceHashMapTests junit tests=63 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q07-parent/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q07-parent/spring-core.testRuntimeClasspath.txt 77 entries",
+        "be1f664dc9cd3db983909f1b9146cd8e6a75e538120d7b13428541cbe5843b40  jars/spring-core-7.0.11-SNAPSHOT.jar",
+        "be1f664dc9cd3db983909f1b9146cd8e6a75e538120d7b13428541cbe5843b40  tree/spring-core/build/libs/spring-core-7.0.11-SNAPSHOT.jar",
+        "ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2  tree/spring-core/build/libs/spring-core-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "5d4747acd5d43891cbc382c6f668c7983fa8288d210c9a215cda9fdee4c6a101  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$1.class",
+        "a24b142f4bb98ef739b6652201a0ae4572f015f6bd55898a58f3df12638a2912  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$2.class",
+        "d635877d59f3e771c0dac515631ad82d673b14b1600d094ff0207f481d5d8ce1  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$3.class",
+        "add5829f0a338647780097206c591f21bb6d589656bec6dead4ba0d40139b515  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$4.class",
+        "440ef99f502bbed8f0a034df733be470ea80394c6999ebba8374e6fe71989a03  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$5.class",
+        "f30464aaf15cbd211e7a870e6a07a025115d28eb6cd108480b8ce47d19097f73  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$6.class",
+        "2ad85dc4d4e95c51c3eb7a36d60a0855fdcbf4d9389ce107cd7a01ab698ed070  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$7.class",
+        "d5a76c34cb3493b76904081f8dbd217d4899c4e1365cb5446f568ca4681001cf  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$8.class",
+        "bb0a3f035fa49ae5245de52b369333b37db3ff1d2ba16e2801c8b99d0532a7e2  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$9.class",
+        "94afc1617509714ea9f9700c569f442c053e28d8ff5f7f80f0dd6f34d7d58153  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Entries.class",
+        "3f6a03d35b6def668a08363598b5fc42a2da1731b8a8195b636a0d97cd5766af  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Entry.class",
+        "af5c65372c15363410845edebd018189642b4af29144538b0155c0a5ae4b6680  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$EntryIterator.class",
+        "308b2c30048559d9be492a8f2521978d3d6a5f0ae890d77e91661d4e689c6b06  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$EntrySet.class",
+        "328f56655a65a0552459b5a25bcf102fef7cb436e1027815720a1683dc4bad83  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$KeyIterator.class",
+        "b513ae33b2e03a095089aaeb92933112f7e48ffabd9aa8b32f0679cc9bdfd89b  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$KeySet.class",
+        "9e9a599375aae242be954f56ac8fd2d8c529eab665bf0eb50d731c3e5612ff1a  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Reference.class",
+        "e2d72419a5bc4645e5659a2ca316370d522f68bc4975a00c4a5ff9bf1877f851  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$ReferenceManager.class",
+        "607ed534b9572599d9a7f473b78bca8fb190beceb511de523ee061825d105653  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$ReferenceType.class",
+        "d061e8895cbe3d5278df1f8946de1c193135b0f807cb2c4ddfc66510d1a57bc0  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Restructure.class",
+        "688b6f198a6f055952cd2cee637b0b9a0c670d8e8d598734bc14fb1bc6fe2c42  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Segment.class",
+        "f795a866fca83c5272b0ebc40ec22b0d008b1041935fa22b6f291581051fb2b0  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$SoftEntryReference.class",
+        "f0c1c27e7f39b0ad6d72c577a88bf1d1ac68410b090fff0df2cbae8e26ea3b7c  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Task.class",
+        "9d5e28797e1a1edfdc59badf8d6509b185ca81b06613dc310532402e184ba210  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$TaskOption.class",
+        "71e790df122cb5c092c26d788daca70b5dcd64a735226f4e9d75833ecc88fd22  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$ValueIterator.class",
+        "03a4b5fc950cd26e41a3fad70759630a82736fedea396a9b3c4e4891f43a9cd0  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$Values.class",
+        "e08108ac9398e74170fd9c8821797c008df5a354061245fc2d0e448a2fa2e79e  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap$WeakEntryReference.class",
+        "ff0daea4b8877ba84c17262cb88926ce347ba92beb3aed3856e83860a96666b2  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/util/ConcurrentReferenceHashMap.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Q07 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q07 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 91.301,
+      "cpuSeconds": 222.37,
+      "cpuThrottledSeconds": 28.317,
+      "peakMemoryBytes": 3419439104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-q07-transplant-the-fix-s-tests.log",
+        "lines": 18,
+        "bytes": 1318,
+        "sha256": "feb432dff2c4643780bb95fc84719176896e3c4ba25c24332739be676cde3199",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-core/src/test/java/org/springframework/util/ConcurrentReferenceHashMapTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q07-parent-landed gradle=9.8.2 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=91 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:test --tests org.springframework.util.Co",
+        "junit tests=63 failures=3 errors=0 skipped=0",
+        "junit failed ConcurrentReferenceHashMapTests#merge()",
+        "junit failed ConcurrentReferenceHashMapTests#computeIfPresent()",
+        "junit failed ConcurrentReferenceHashMapTests#compute()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.util.ConcurrentReferenceHashMapTests junit tests=63 failures=3 errors=0 skipped=0 junit failed ConcurrentReferenceHashMapTests#merge() junit failed ConcurrentReferenceHashMapTests#computeIfPresent() junit failed ConcurrentReferenceHashMapTests#compute() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Q07 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q07 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 1.003,
+      "cpuSeconds": 0.832,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 44908544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-q07-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "91617b5b75bf23e7b45b7138c6d60b147f08b2d4aa90097758527ed393bc2002",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned Q07"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T15:01:10+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T150044Z-6746117c53458478"
+    }
+  }
+}
