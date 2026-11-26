@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37325",
+  "revisions": {
+    "parent": "0c575d443dbdff69349a2369f40491c002dc2c96",
+    "fix": "4cf6335372556d4f6ccc3a0166318c5f19037e8f"
+  },
+  "entry": "WebTestClient.Builder.defaultHeaders after defaultHeader or defaultHeaders",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37325.followup.retained-convenience",
+      "role": "Follow-up",
+      "args": [
+        "retained-convenience"
+      ],
+      "history": "Seed X-Mode with defaultHeader. Build A, then append to the same builder through defaultHeaders and attempt to build B. Read the request from A even when the append fails.",
+      "basis": "The initial physical run threw on the merge. Both builder sources store Arrays.asList(values) for the convenience overload.",
+      "expected": {
+        "parent": {
+          "return": "append=UnsupportedOperationException A=[one]/[one]"
+        },
+        "fix": {
+          "return": "append=UnsupportedOperationException A=[one]/[one]"
+        }
+      },
+      "refutation": "The append succeeds, or the failed append changes the request sent by A."
+    },
+    {
+      "id": "spring-projects/spring-framework#37325.followup.retained-consumer",
+      "role": "Control",
+      "args": [
+        "retained-consumer"
+      ],
+      "history": "Repeat with the original header inserted using defaultHeaders and HttpHeaders.add.",
+      "basis": "The registered O06 snapshot history measured an expandable initial list.",
+      "expected": {
+        "parent": {
+          "return": "B=[one, two]/[one, two] A=[one, two]/[one, two]"
+        },
+        "fix": {
+          "return": "B=[one, two]/[one, two] A=[one]/[one]"
+        }
+      },
+      "refutation": "Changing only the seeding call leaves the retained builder unable to append."
+    },
+    {
+      "id": "spring-projects/spring-framework#37325.followup.derived-convenience",
+      "role": "Control",
+      "args": [
+        "derived-convenience"
+      ],
+      "history": "Seed with defaultHeader, build A, then append through A.mutate(). Read the edited client and a fresh derivative of A.",
+      "basis": "The merged builder copies the value list when deriving the client.",
+      "expected": {
+        "fix": {
+          "return": "B=[one, two]/[one, two] A=[one]/[one]"
+        }
+      },
+      "refutation": "A merged derivative cannot append, or the second derivative of the base sends the edit."
+    }
+  ]
+}

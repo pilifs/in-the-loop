@@ -34,6 +34,7 @@
   },
   "verdictLabel": "3/3 merged predictions matched",
   "notes": [
-    "The synchronous request factory reads the serialized Cookie header. The two reactive clients deliver requests to an in-process HttpHandler. The initial header is added through defaultHeaders so the fixture supplies a mutable list for the append."
+    "The synchronous request factory reads the serialized Cookie header. The two reactive clients deliver requests to an in-process HttpHandler. The initial header is added through defaultHeaders so the fixture supplies a mutable list for the append.",
+    "Seeding the retained WebTestClient builder with defaultHeader instead made its later append throw on both pins and on 7.0.10. The retained-builder follow-up also compares the mutable initializer and a fresh derivative."
   ]
 }

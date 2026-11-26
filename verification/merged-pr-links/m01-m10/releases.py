@@ -16,6 +16,11 @@ from recheck import classpath, jars_for, sha
 
 def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-inputs.json"):
     folder, = (ROOT / "examples").glob(number + "-*")
+    if "variant" in project:
+        variant = project["variant"]
+        if variant in ("", ".", "..") or Path(variant).name != variant:
+            raise ValueError("a release variant must name an example subdirectory")
+        folder = folder / variant
     runtime = comparison.read(folder / "runtime.json")
     spec = comparison.read(folder / "comparison.json")
     physical = comparison.read(folder / "observations.json")
@@ -47,7 +52,7 @@ def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-in
         classes = work / "caller"
         comparison.compile_java(compiler, compile_cp, classes, [comparison.upgrade_replay.LAUNCHER, *sources],
                                 ["-parameters"] if deployment.get("parameterNames") else [])
-        fingerprints = {p.relative_to(classes).as_posix(): sha(p) for p in classes.rglob("*.class")}
+        fingerprints = comparison.class_digests(classes)
         if fingerprints != physical["deployments"]["pins"]["callerClasses"]:
             raise ValueError(f"{number}: different historical caller bytecode")
         receipt["callerClasses"] = fingerprints

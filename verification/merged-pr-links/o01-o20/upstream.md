@@ -20,6 +20,8 @@ Configure SingleConnectionFactory with reconnect-on-exception and a provider sup
 
 On both the PR landing and 7.0.10, the factory closed A and B, then tried to create the session on closed A. It never requested C. The same provider with an explicit `resetConnection()` first recovered on C. Ordinary logical handles shared one healthy A. This identifies the direct reinitialization path and gives the two comparison histories for an upstream report. [Historical observations](../../../examples/475-spring-jms-replacement/README.md) · [Release observations](release-observations.json)
 
+Spring issue #31418 described failed connection preparation during an ActiveMQ restart on 5.2.25. Maintainers pointed to the backport of the earlier fix. The 7.0.10 witness here begins with a healthy installed connection and exercises direct reinitialization, supplying a specific follow-up to that discussion. [Spring issue #31418](https://github.com/spring-projects/spring-framework/issues/31418)
+
 ## Reproduction
 
 With the prepared Spring campaign cache, run the following command from the checkout. The first run can fetch missing release JARs from Maven Central. Subsequent runs can use the same cache offline.

@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T01:55:23.930Z",
-  "duration_seconds": 157473,
+  "ended": "2026-11-26T02:08:42.300Z",
+  "duration_seconds": 158271,
   "stats": {
     "turns": 26,
-    "api_calls": 4727,
-    "tool_calls": 11854,
-    "tool_errors": 243,
+    "api_calls": 4777,
+    "tool_calls": 11958,
+    "tool_errors": 244,
     "compactions": 19,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 6215942,
-      "output_tokens": 2640564,
-      "cache_read_input_tokens": 1302798208,
+      "input_tokens": 6236766,
+      "output_tokens": 2664361,
+      "cache_read_input_tokens": 1316004608,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 6611,
-    "exec": 4515,
-    "apply_patch": 559,
-    "wait": 88,
+    "Bash": 6662,
+    "exec": 4562,
+    "apply_patch": 562,
+    "wait": 91,
     "sleep": 75,
     "send_message_to_user_async": 5,
     "request_user_input_async": 1
@@ -90,6 +90,7 @@
     "examples/455-threeten-british-cutover/caller/PublicCaller.java",
     "examples/456-esri-polyline-difference/caller/PublicCaller.java",
     "examples/457-spring-mysql-id-reservations/caller/PublicCaller.java",
+    "examples/465-spring-resource-ranges/caller/PublicCaller.java",
     "examples/schema/example.schema.json",
     "examples/tools/build.py",
     "examples/tools/targets/change_evidence.py",
@@ -701,24 +702,24 @@
     {
       "index": 19,
       "started": "2026-11-25T23:37:45.342Z",
-      "ended": "2026-11-26T01:55:23.930Z",
+      "ended": "2026-11-26T02:08:42.300Z",
       "turns": 2,
-      "api_calls": 100,
+      "api_calls": 150,
       "usage": {
-        "input_tokens": 163496,
-        "output_tokens": 72148,
-        "cache_read_input_tokens": 17293824,
+        "input_tokens": 184320,
+        "output_tokens": 95945,
+        "cache_read_input_tokens": 30500224,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 241211
+      "peak_context_tokens": 281769
     }
   ],
   "log": {
-    "sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391",
-    "bytes": 72133707,
-    "lines": 37337,
-    "gzip_bytes": 13199286,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391.jsonl.gz"
+    "sha256": "f55df9ffcb1cb32bf00926b42f1e2cc1248602352f94c18387d4fc7b9ec2a655",
+    "bytes": 72548172,
+    "lines": 37706,
+    "gzip_bytes": 13255670,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/f55df9ffcb1cb32bf00926b42f1e2cc1248602352f94c18387d4fc7b9ec2a655.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2281,6 +2282,14 @@
       "summary": "Compare 20 Spring changes at public APIs (verification pending)",
       "body": "Add examples 458–477 and compare all 63 registered predictions in 126 fresh JVM histories. All 20 intended contrasts and unchanged controls held. Preserve three merged counterexamples and the parent WebClient exception wrapper. The original Gradle builds supply 18 pairs. For two unavailable builds, compile the exact Git blobs against common released companions and verify the loaded classes. Record the Java call descriptors for the separately compiled Hamcrest calls, HTTP responses on four routes, PostgreSQL JSON predicates, JDBC generated-key lookups, and reactive transaction cleanup and row visibility.\n\nAll twenty example validators replayed their histories and all 56 selected suites passed. The audit reproduced four earlier campaigns byte for byte. Negative checks rejected a reused caller, changed overloads, swapped sources, an incorrect database version, different companion classpaths and duplicated class bytes. The three historical challenge callers also ran on Spring 7.0.10: the trailing-space SSE hint and direct JMS recovery reproduced. Spring removed the strict R2DBC setter in 2023, so the release reports a missing method. Record these in VF-065.\n\nJob 20261126-014520-replay-63-spring-predictions-across-20-p independently repeats the 126 histories. Job 20261126-014529-trace-the-spring-sse-and-jms-public-coun checks 24 original-method debugger trials. Job 20261126-015446-recheck-three-spring-counterexamples-on compares all nine published-release histories with the release receipt.",
       "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "vqvyztxknykkzpuvoqusqoluxppprrul",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check Spring builder and servlet boundaries (verification pending)",
+      "body": "A retained WebTestClient builder seeded through defaultHeader throws when its live headers are appended to. The same append works when the initial value was added through the consumer. Test both initializers and a fresh derivative on the original PR pins and on published 7.0.10. Preserve the nine supplementary observations apart from the 63 registered predictions. Send all range requests through a mapped DispatcherServlet controller and check that the method actually ran once per request. All eight paired route observations remain identical.\n\nAll 56 selected suites and both changed example validators passed. The independent full campaign replay and 24 original-method debugger trials passed. The first release job reproduced all nine earlier outcomes and all hashes, but file enumeration ordered two JSON maps differently. Sorting the class keys alone makes its output byte-identical. Previous release receipts still replay, and all twelve current release histories repeat locally.\n\nJob 20261126-015908-recheck-three-spring-counterexamples-on supersedes 20261126-015446-recheck-three-spring-counterexamples-on. It checks deterministic release receipts, six supplementary parent and merge histories, three further release histories, and the final public controller dispatch and campaign audit.",
+      "log_sha256": "f55df9ffcb1cb32bf00926b42f1e2cc1248602352f94c18387d4fc7b9ec2a655"
     }
   ],
   "logs": {
@@ -2787,6 +2796,12 @@
       "lines": 14620,
       "gzip_bytes": 4477787,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/f41e194be85edbcc56a9f53c358aa2110725c9a7cd9a794333c756ba7a086131.jsonl.gz"
+    },
+    "f55df9ffcb1cb32bf00926b42f1e2cc1248602352f94c18387d4fc7b9ec2a655": {
+      "bytes": 72548172,
+      "lines": 37706,
+      "gzip_bytes": 13255670,
+      "url": null
     },
     "f5b9672c0e3ee1b1f028ef2dbd0032d033f9bdc6854e1b287fb83ae84e55c57c": {
       "bytes": 24388795,

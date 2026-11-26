@@ -3,16 +3,18 @@ import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
 import java.time.*;
 import java.util.*;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.io.*;
 import org.springframework.http.*;
 import org.springframework.http.converter.*;
 import org.springframework.http.server.PathContainer;
-import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
-import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.function.*;
-import org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.reactive.resource.ResourceWebHandler;
 import org.springframework.web.testfixture.http.server.reactive.MockServerHttpRequest;
@@ -35,8 +37,36 @@ public class PublicCaller {
         file = new FileSystemResource(path);
     }
 
-    public ResponseEntity<Resource> controller() {
-        return ResponseEntity.ok().lastModified(MODIFIED).eTag(ETAG).body(file);
+    @RestController
+    public static class ResourceController {
+        private final Resource resource;
+        int requests;
+        ResourceController(Resource resource) { this.resource = resource; }
+
+        @GetMapping("/six.txt")
+        public ResponseEntity<Resource> download() {
+            requests++;
+            return ResponseEntity.ok().lastModified(MODIFIED).eTag(ETAG).body(resource);
+        }
+    }
+
+    void dispatch(MockHttpServletRequest request, MockHttpServletResponse response) throws Exception {
+        var controller = new ResourceController(file);
+        try (var context = new GenericWebApplicationContext(request.getServletContext())) {
+            context.registerBean(ResourceController.class, () -> controller);
+            context.registerBean(RequestMappingHandlerMapping.class);
+            context.registerBean(RequestMappingHandlerAdapter.class, () -> {
+                var adapter = new RequestMappingHandlerAdapter();
+                adapter.setMessageConverters(converters);
+                return adapter;
+            });
+            context.refresh();
+            var servlet = new DispatcherServlet(context);
+            servlet.init(new MockServletConfig(request.getServletContext()));
+            try { servlet.service(request, response); }
+            finally { servlet.destroy(); }
+            if (controller.requests != 1) throw new IllegalStateException("GET did not reach the mapped controller once");
+        }
     }
 
     record Reply(int status, String range, String body, String modified) {
@@ -81,8 +111,7 @@ public class PublicCaller {
                 req.setAttribute(org.springframework.web.servlet.HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, "six.txt");
                 handler.handleRequest(req, res);
             }
-            case "controller" -> new HttpEntityMethodProcessor(converters).handleReturnValue(controller(),
-                    new MethodParameter(getClass().getMethod("controller"), -1), new ModelAndViewContainer(), new ServletWebRequest(req,res));
+            case "controller" -> dispatch(req, res);
             case "functional" -> {
                 var router = RouterFunctions.resource(RequestPredicates.GET("/six.txt"), file,
                         (r, h) -> { h.setETag(ETAG); h.setLastModified(MODIFIED); });
