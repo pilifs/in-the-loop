@@ -1,0 +1,211 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-201853-recheck-both-log4j-claim-witnesses-acros",
+  "title": "Recheck both Log4j claim witnesses across cold warm and substituted deployments",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 28.9s, peak 153.3 MiB (estimated 2m00s, 3.0 GiB)",
+  "attention": [
+    "declared output verification/classpath-entry-discovery/log4j-replays.json was not produced",
+    "declared output verification/classpath-entry-discovery/log4j-plans.zip was not produced",
+    "step 1 (Scaffold and replay both frozen claims) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-201853-recheck-both-log4j-claim-witnesses-acros.json",
+    "sha256": "153f48a5e671f50e06dd45dab5cfea0dd6b34a7faea532b604e90e7cf1cdac94",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-201853-recheck-both-log4j-claim-witnesses-acros",
+      "title": "Recheck both Log4j claim witnesses across cold warm and substituted deployments",
+      "description": "Repeat the unchanged explicit and omitted zone claims with per-claim witness references. Compare every original observation to independent campaign evidence, check same-path core replacement against a fresh cache, and require that both unchanged parent sides are reused.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T20:18:53+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Scaffold and replay both frozen claims",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/log4j.py verification/classpath-entry-discovery/log4j-replays.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/classpath-entry-discovery/log4j-replays.json",
+        "verification/classpath-entry-discovery/log4j-plans.zip"
+      ]
+    }
+  },
+  "sourceCommit": "6740a83542214ef2cf8d06c3247ad2d409cb59f9",
+  "startedAt": "2026-11-26T20:28:37+00:00",
+  "finishedAt": "2026-11-26T20:32:21+00:00",
+  "wallSeconds": 224.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 175616,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 160722944,
+    "wallSeconds": 28.9,
+    "cpuSeconds": 35.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 182.925,
+      "cpuSeconds": 182.963,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2372825088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b9af798dbd4217433e847b8dd6778d584b63cfe2b1874edc193af10d9cbacc50",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261126-201853-recheck-both-log4j-claim-witnesses-acros/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 02s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Scaffold and replay both frozen claims",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/log4j.py verification/classpath-entry-discovery/log4j-replays.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 28.873,
+      "cpuSeconds": 35.112,
+      "cpuThrottledSeconds": 6.588,
+      "peakMemoryBytes": 160722944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-scaffold-and-replay-both-froze.log",
+        "lines": 9,
+        "bytes": 747,
+        "sha256": "67720323e0c6854eccc2f8ed6bd890d3eed2293957f32c35114017c3e0c9f2ca",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/entry-log4j-qg8z90nh/scaffold.json",
+        "2 claims in /tmp/entry-log4j-qg8z90nh/cold.json",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261126-201853-recheck-both-log4j-claim-witnesses-acros/lib/benchmark/classpath-entry-discovery/log4j.py\", line 104, in <module>",
+        "    run(p.parse_args().output)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261126-201853-recheck-both-log4j-claim-witnesses-acros/lib/benchmark/classpath-entry-discovery/log4j.py\", line 75, in run",
+        "    raise ValueError(\"original finite observations disagree with the independent campaign\")",
+        "ValueError: original finite observations disagree with the independent campaign"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T20:32:28+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "cce54373dc67ee5aafed6cde0874e7d252e44e6b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
+    "built": true
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T203221Z-108809ef7b157506",
+      "outputs": "20261126T203221Z-1264538f04bc2b11",
+      "workdir": "20261126T203226Z-0861568eb9ad2c7a"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261126-201853-recheck-both-log4j-claim-witnesses-acros"
+}

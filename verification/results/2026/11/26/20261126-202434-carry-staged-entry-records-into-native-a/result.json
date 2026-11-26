@@ -1,0 +1,229 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-202434-carry-staged-entry-records-into-native-a",
+  "title": "Carry staged entry records into native and stock proof invocations",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 8.0s, peak 114.4 MiB (estimated 1m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-202434-carry-staged-entry-records-into-native-a.json",
+    "sha256": "74d050352c8bf36d13af6b16e2aa3f9c892906063bc6d8b19876f4d08cf0c1fb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-202434-carry-staged-entry-records-into-native-a",
+      "title": "Carry staged entry records into native and stock proof invocations",
+      "description": "On both classpath orders and B alone, qualify the public method through stage 3 and require its saved binding reference at the actual native and stock JBMC assertions. Check one true and one false sentinel on every route. Independently repeat the Log4j strict attempt and compare its first unsupported dependency on each side.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T20:24:34+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Verify sentinels from stage 3",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/staged-backend.json",
+          "cwd": "."
+        },
+        {
+          "name": "Trace the independent strict boundary",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/strict.py verification/classpath-entry-discovery/log4j-strict.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/classpath-entry-discovery/staged-backend.json",
+        "verification/classpath-entry-discovery/log4j-strict.json"
+      ]
+    }
+  },
+  "sourceCommit": "6740a83542214ef2cf8d06c3247ad2d409cb59f9",
+  "startedAt": "2026-11-26T20:28:37+00:00",
+  "finishedAt": "2026-11-26T20:32:00+00:00",
+  "wallSeconds": 203.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 175616,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 119967744,
+    "wallSeconds": 8.0,
+    "cpuSeconds": 11.2,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Verify sentinels from stage 3",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/staged-backend.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 6.817,
+      "cpuSeconds": 9.223,
+      "cpuThrottledSeconds": 0.622,
+      "peakMemoryBytes": 119967744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-verify-sentinels-from-stage-3.log",
+        "lines": 4,
+        "bytes": 285,
+        "sha256": "e913157f67bb540fefbc3a884b0189039a48144c6cab9c076c40fb8fc9bbfc93",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0 claims in /tmp/entry-controls-g9ppwc_n/scaffold-A,B/records/entry-bindings.json",
+        "0 claims in /tmp/entry-controls-g9ppwc_n/scaffold-B,A/records/entry-bindings.json",
+        "0 claims in /tmp/entry-controls-g9ppwc_n/scaffold-B/records/entry-bindings.json",
+        "backend: 3 qualified deployment controls"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Trace the independent strict boundary",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/strict.py verification/classpath-entry-discovery/log4j-strict.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 1.202,
+      "cpuSeconds": 2.0,
+      "cpuThrottledSeconds": 0.228,
+      "peakMemoryBytes": 87470080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-trace-the-independent-strict-b.log",
+        "lines": 1,
+        "bytes": 89,
+        "sha256": "91e2e453fe3b46fd5ab46954a1028a5c49f896d3976c61a1ffcd33313df5223d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Original strict native scheduling route stopped at TimeZone.getDefault on both revisions"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/classpath-entry-discovery/staged-backend.json",
+      "change": "added",
+      "bytes": 17596,
+      "sha256": "d46b8e933c5c9b737d62e5e3fb0ac6650b1bb1852c74820e4b4efdef159192e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/classpath-entry-discovery/log4j-strict.json",
+      "change": "added",
+      "bytes": 3581,
+      "sha256": "123a3bbd772ad4c69853f3311f27727afbb3f067a6d925cccb19bb5d0b2629d5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T20:32:28+00:00",
+    "applied": [
+      "verification/classpath-entry-discovery/staged-backend.json",
+      "verification/classpath-entry-discovery/log4j-strict.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "cce54373dc67ee5aafed6cde0874e7d252e44e6b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T203200Z-362582aedaa38389",
+      "outputs": "20261126T203200Z-428594e176df4a26",
+      "diff": "20261126T203200Z-480776848d06c579"
+    }
+  }
+}

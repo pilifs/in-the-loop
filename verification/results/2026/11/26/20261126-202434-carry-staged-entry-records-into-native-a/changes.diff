@@ -1,0 +1,665 @@
+--- /dev/null
++++ b/verification/classpath-entry-discovery/staged-backend.json
+@@ -0,0 +1,585 @@
++[
++  {
++    "case": 2,
++    "profile": "A,B",
++    "question": "OrderEntry#read()I",
++    "jvm": "11 A B",
++    "entryProvider": 1,
++    "helperProvider": 0,
++    "resourceLookup": "defining ClassLoader.getResources(mark.txt)",
++    "resourceOrder": [
++      "A",
++      "B"
++    ],
++    "manualProviderIndices": 0,
++    "engines": {
++      "native": [
++        {
++          "assert": "result == 11",
++          "verdict": "verified",
++          "exit": 0,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/A.jar",
++            "--classpath",
++            "prepare/after/B.jar",
++            "--assert",
++            "result == 11",
++            "--engine",
++            "native",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-0/work",
++            "--report",
++            "run-0/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "A.jar",
++                "sha256": "f17af70f2b2b91f47454083ebb6277285ca225898e50a170f7dc8c6345ebe7a3",
++                "role": "original"
++              },
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "656899d18ac021858ef967a564a864cbe1232f2a10b50a6af3d671090d393a94",
++            "f7b7e4cbf2ccec2323879590497755f339345f5786da93f08606535703e4e0b7"
++          ]
++        },
++        {
++          "assert": "result == 99",
++          "verdict": "violation",
++          "exit": 1,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/A.jar",
++            "--classpath",
++            "prepare/after/B.jar",
++            "--assert",
++            "result == 99",
++            "--engine",
++            "native",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-1/work",
++            "--report",
++            "run-1/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "A.jar",
++                "sha256": "f17af70f2b2b91f47454083ebb6277285ca225898e50a170f7dc8c6345ebe7a3",
++                "role": "original"
++              },
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "656899d18ac021858ef967a564a864cbe1232f2a10b50a6af3d671090d393a94",
++            "f7b7e4cbf2ccec2323879590497755f339345f5786da93f08606535703e4e0b7"
++          ]
++        }
++      ],
++      "jbmc": [
++        {
++          "assert": "result == 11",
++          "verdict": "verified",
++          "exit": 0,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/A.jar",
++            "--classpath",
++            "prepare/after/B.jar",
++            "--assert",
++            "result == 11",
++            "--engine",
++            "jbmc",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-0/work",
++            "--report",
++            "run-0/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "A.jar",
++                "sha256": "f17af70f2b2b91f47454083ebb6277285ca225898e50a170f7dc8c6345ebe7a3",
++                "role": "original"
++              },
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "656899d18ac021858ef967a564a864cbe1232f2a10b50a6af3d671090d393a94",
++            "f7b7e4cbf2ccec2323879590497755f339345f5786da93f08606535703e4e0b7"
++          ]
++        },
++        {
++          "assert": "result == 99",
++          "verdict": "violation",
++          "exit": 1,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/A.jar",
++            "--classpath",
++            "prepare/after/B.jar",
++            "--assert",
++            "result == 99",
++            "--engine",
++            "jbmc",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-1/work",
++            "--report",
++            "run-1/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "A.jar",
++                "sha256": "f17af70f2b2b91f47454083ebb6277285ca225898e50a170f7dc8c6345ebe7a3",
++                "role": "original"
++              },
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "656899d18ac021858ef967a564a864cbe1232f2a10b50a6af3d671090d393a94",
++            "f7b7e4cbf2ccec2323879590497755f339345f5786da93f08606535703e4e0b7"
++          ]
++        }
++      ]
++    }
++  },
++  {
++    "case": 2,
++    "profile": "B,A",
++    "question": "OrderEntry#read()I",
++    "jvm": "22 B A",
++    "entryProvider": 0,
++    "helperProvider": 0,
++    "resourceLookup": "defining ClassLoader.getResources(mark.txt)",
++    "resourceOrder": [
++      "B",
++      "A"
++    ],
++    "manualProviderIndices": 0,
++    "engines": {
++      "native": [
++        {
++          "assert": "result == 22",
++          "verdict": "verified",
++          "exit": 0,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/B.jar",
++            "--classpath",
++            "prepare/after/A.jar",
++            "--assert",
++            "result == 22",
++            "--engine",
++            "native",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-0/work",
++            "--report",
++            "run-0/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              },
++              {
++                "path": "A.jar",
++                "sha256": "f17af70f2b2b91f47454083ebb6277285ca225898e50a170f7dc8c6345ebe7a3",
++                "role": "original"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "fbfc928c75091c7e86b61010729856bccfffa9079dff8f0f7061f5ef7b4cc42e",
++            "fdc0dc187383dfddb90c541ca69d2fece605cd2056b6994662b0b5bb1bc939c3"
++          ]
++        },
++        {
++          "assert": "result == 99",
++          "verdict": "violation",
++          "exit": 1,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/B.jar",
++            "--classpath",
++            "prepare/after/A.jar",
++            "--assert",
++            "result == 99",
++            "--engine",
++            "native",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-1/work",
++            "--report",
++            "run-1/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              },
++              {
++                "path": "A.jar",
++                "sha256": "f17af70f2b2b91f47454083ebb6277285ca225898e50a170f7dc8c6345ebe7a3",
++                "role": "original"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "fbfc928c75091c7e86b61010729856bccfffa9079dff8f0f7061f5ef7b4cc42e",
++            "fdc0dc187383dfddb90c541ca69d2fece605cd2056b6994662b0b5bb1bc939c3"
++          ]
++        }
++      ],
++      "jbmc": [
++        {
++          "assert": "result == 22",
++          "verdict": "verified",
++          "exit": 0,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/B.jar",
++            "--classpath",
++            "prepare/after/A.jar",
++            "--assert",
++            "result == 22",
++            "--engine",
++            "jbmc",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-0/work",
++            "--report",
++            "run-0/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              },
++              {
++                "path": "A.jar",
++                "sha256": "f17af70f2b2b91f47454083ebb6277285ca225898e50a170f7dc8c6345ebe7a3",
++                "role": "original"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "fbfc928c75091c7e86b61010729856bccfffa9079dff8f0f7061f5ef7b4cc42e",
++            "fdc0dc187383dfddb90c541ca69d2fece605cd2056b6994662b0b5bb1bc939c3"
++          ]
++        },
++        {
++          "assert": "result == 99",
++          "verdict": "violation",
++          "exit": 1,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/B.jar",
++            "--classpath",
++            "prepare/after/A.jar",
++            "--assert",
++            "result == 99",
++            "--engine",
++            "jbmc",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-1/work",
++            "--report",
++            "run-1/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              },
++              {
++                "path": "A.jar",
++                "sha256": "f17af70f2b2b91f47454083ebb6277285ca225898e50a170f7dc8c6345ebe7a3",
++                "role": "original"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "fbfc928c75091c7e86b61010729856bccfffa9079dff8f0f7061f5ef7b4cc42e",
++            "fdc0dc187383dfddb90c541ca69d2fece605cd2056b6994662b0b5bb1bc939c3"
++          ]
++        }
++      ]
++    }
++  },
++  {
++    "case": 2,
++    "profile": "B",
++    "question": "OrderEntry#read()I",
++    "jvm": "22 B",
++    "entryProvider": 0,
++    "helperProvider": 0,
++    "resourceLookup": "defining ClassLoader.getResources(mark.txt)",
++    "resourceOrder": [
++      "B"
++    ],
++    "manualProviderIndices": 0,
++    "engines": {
++      "native": [
++        {
++          "assert": "result == 22",
++          "verdict": "verified",
++          "exit": 0,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/B.jar",
++            "--assert",
++            "result == 22",
++            "--engine",
++            "native",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-0/work",
++            "--report",
++            "run-0/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "bbd353ea3fd4e2384d1bf221188425da102b2240a19ae9522be02bacc999024b",
++            "bcd45b691cb5d7ee08c842fafec92355f9fd32ca6d00347baa9fc6b853df146c"
++          ]
++        },
++        {
++          "assert": "result == 99",
++          "verdict": "violation",
++          "exit": 1,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/B.jar",
++            "--assert",
++            "result == 99",
++            "--engine",
++            "native",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-1/work",
++            "--report",
++            "run-1/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "bbd353ea3fd4e2384d1bf221188425da102b2240a19ae9522be02bacc999024b",
++            "bcd45b691cb5d7ee08c842fafec92355f9fd32ca6d00347baa9fc6b853df146c"
++          ]
++        }
++      ],
++      "jbmc": [
++        {
++          "assert": "result == 22",
++          "verdict": "verified",
++          "exit": 0,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/B.jar",
++            "--assert",
++            "result == 22",
++            "--engine",
++            "jbmc",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-0/work",
++            "--report",
++            "run-0/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "bbd353ea3fd4e2384d1bf221188425da102b2240a19ae9522be02bacc999024b",
++            "bcd45b691cb5d7ee08c842fafec92355f9fd32ca6d00347baa9fc6b853df146c"
++          ]
++        },
++        {
++          "assert": "result == 99",
++          "verdict": "violation",
++          "exit": 1,
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++            "prove",
++            "OrderEntry#read()",
++            "--classes",
++            "prepare/after/B.jar",
++            "--assert",
++            "result == 99",
++            "--engine",
++            "jbmc",
++            "--gaps",
++            "strict",
++            "--timeout",
++            "60",
++            "--work",
++            "run-1/work",
++            "--report",
++            "run-1/report",
++            "--json"
++          ],
++          "reason": null,
++          "classpath": {
++            "after": [
++              {
++                "path": "B.jar",
++                "sha256": "cc22436c5bc99969a606f5326ada06faaef7bd97b72202a066f725a47514eb17",
++                "role": "dependency"
++              }
++            ]
++          },
++          "scaffoldBindingRefs": [
++            "bbd353ea3fd4e2384d1bf221188425da102b2240a19ae9522be02bacc999024b",
++            "bcd45b691cb5d7ee08c842fafec92355f9fd32ca6d00347baa9fc6b853df146c"
++          ]
++        }
++      ]
++    }
++  }
++]
+--- /dev/null
++++ b/verification/classpath-entry-discovery/log4j-strict.json
+@@ -0,0 +1,74 @@
++[
++  {
++    "revision": "old",
++    "entry": "UpgradeProbe#schedule()Z",
++    "classPath": [
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/G-logging-log4j2-parent-log4j-api.jar",
++        "sha256": "c9d2f400916a5346816deff5309f725069804a810e7d0492294d931a391d7582"
++      },
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/G-logging-log4j2-parent-log4j-core.jar",
++        "sha256": "da05ae3790513bb74285ce65a37e9b06829b82d9af2939df826a815176802b6f"
++      }
++    ],
++    "adapterClassSha256": "da26e59d565f9c4682f69b1abfa90d3baf34b4c19f3de0b034747e56c00fe152",
++    "status": "open",
++    "firstOpenDependency": "\u2717 UpgradeProbe#schedule()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getDefault() at UpgradeProbe.observe:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++      "prove",
++      "--classes",
++      "/tmp/strict-schedule-j0lz1i6t/old",
++      "UpgradeProbe#schedule()Z",
++      "--classpath",
++      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/G-logging-log4j2-parent-log4j-api.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/G-logging-log4j2-parent-log4j-core.jar",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--assert",
++      "result == true",
++      "--unwind",
++      "16",
++      "--json"
++    ],
++    "exit": 1
++  },
++  {
++    "revision": "new",
++    "entry": "UpgradeProbe#schedule()Z",
++    "classPath": [
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/G-logging-log4j2-fix-log4j-api.jar",
++        "sha256": "c9d2f400916a5346816deff5309f725069804a810e7d0492294d931a391d7582"
++      },
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/G-logging-log4j2-fix-log4j-core.jar",
++        "sha256": "c98f9f1dad7d5e81f893838971083cabe252e454c3568c11db0f47e4f3df9b60"
++      }
++    ],
++    "adapterClassSha256": "da26e59d565f9c4682f69b1abfa90d3baf34b4c19f3de0b034747e56c00fe152",
++    "status": "open",
++    "firstOpenDependency": "\u2717 UpgradeProbe#schedule()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getDefault() at UpgradeProbe.observe:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
++      "prove",
++      "--classes",
++      "/tmp/strict-schedule-j0lz1i6t/new",
++      "UpgradeProbe#schedule()Z",
++      "--classpath",
++      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/G-logging-log4j2-fix-log4j-api.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/G-logging-log4j2-fix-log4j-core.jar",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--assert",
++      "result == true",
++      "--unwind",
++      "16",
++      "--json"
++    ],
++    "exit": 1
++  }
++]
