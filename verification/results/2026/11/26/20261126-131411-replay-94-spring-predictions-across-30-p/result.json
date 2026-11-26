@@ -1,0 +1,255 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-131411-replay-94-spring-predictions-across-30-p",
+  "title": "Replay 94 Spring predictions across 30 pull requests",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m20s, peak 145.2 MiB (estimated 3m00s, 768.0 MiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-131411-replay-94-spring-predictions-across-30-p.json",
+    "sha256": "864628c08fcab8921a3bd5196d78566a564b3c27a61da53cb62e9b1252ac31e5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-131411-replay-94-spring-predictions-across-30-p",
+      "title": "Replay 94 Spring predictions across 30 pull requests",
+      "description": "Recompile the public Java callers and repeat all 188 original JVM histories for examples 478 through 507. Check all loaded providers and independently pinned class bytes across 23 module builds and seven historical source-slice pairs.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay",
+        "java:source-overload-resolution",
+        "jdbc:durable-transaction-readback"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-results.md"
+        ]
+      },
+      "expected": "The audit reproduces byte for byte with 31 intended contrasts, 30 unchanged controls, three refuted merged predictions and one refuted parent prediction.",
+      "submitted": {
+        "at": "2026-11-26T13:14:11+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Run all original public callers",
+          "run": "python3 verification/merged-pr-links/audit.py --campaign p01-p30 --replay --output verification/merged-pr-links/p01-p30/repeated-audit.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the measured campaign audit",
+          "run": "cmp verification/merged-pr-links/p01-p30/audit.json verification/merged-pr-links/p01-p30/repeated-audit.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/p01-p30/repeated-audit.json"
+      ]
+    }
+  },
+  "sourceCommit": "6b2ec5727305df7ae63f0c2ada321aa89e075cbf",
+  "startedAt": "2026-11-26T13:18:41+00:00",
+  "finishedAt": "2026-11-26T13:20:11+00:00",
+  "wallSeconds": 90.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 527719,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 152236032,
+    "wallSeconds": 80.2,
+    "cpuSeconds": 135.7,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.45
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run all original public callers",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign p01-p30 --replay --output verification/merged-pr-links/p01-p30/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 79.98,
+      "cpuSeconds": 135.644,
+      "cpuThrottledSeconds": 6.166,
+      "peakMemoryBytes": 152236032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-all-original-public-caller.log",
+        "lines": 198,
+        "bytes": 19969,
+        "sha256": "77422774edce06871122797ca09c6aa5fffa84f2ea1a6214919ac2255b64aa5d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins fix spring-projects/spring-framework#34723.4 {'return': 'mocks=true parentReused=true parentClean=true'}",
+        "pins parent spring-projects/spring-framework#32469.1 {'return': 'advice=wrapper caller=wrapper cause=true'}",
+        "pins parent spring-projects/spring-framework#32469.2 {'return': 'class=true jdk=true jdkUndeclared=true'}",
+        "pins parent spring-projects/spring-framework#32469.3 {'return': 'class=wrapper:0 jdk=normal:1'}",
+        "pins fix spring-projects/spring-framework#32469.1 {'return': 'advice=original caller=wrapper cause=true'}",
+        "pins fix spring-projects/spring-framework#32469.2 {'return': 'class=true jdk=true jdkUndeclared=true'}",
+        "pins fix spring-projects/spring-framework#32469.3 {'return': 'class=normal:1 jdk=normal:1'}",
+        "pins parent spring-projects/spring-framework#28322.1 {'return': 'callbacks=2'}",
+        "pins parent spring-projects/spring-framework#28322.2 {'return': 'ordered=true count=2'}",
+        "pins parent spring-projects/spring-framework#28322.3 {'return': 'first=2/1/1 second=2/1/1 identities=true'}",
+        "pins fix spring-projects/spring-framework#28322.1 {'return': 'callbacks=1'}",
+        "pins fix spring-projects/spring-framework#28322.2 {'return': 'ordered=true count=2'}",
+        "pins fix spring-projects/spring-framework#28322.3 {'return': 'first=1/1/1 second=1/1/1 identities=true'}",
+        "pins parent spring-projects/spring-framework#30020.1 {'return': '[]'}",
+        "pins parent spring-projects/spring-framework#30020.2 {'return': '[parent]'}",
+        "pins parent spring-projects/spring-framework#30020.3 {'return': 'child=IllegalStateException parent=[A]'}",
+        "pins parent spring-projects/spring-framework#30020.4 {'return': 'enabled=ran disabled=ran'}",
+        "pins fix spring-projects/spring-framework#30020.1 {'return': '[child]'}",
+        "pins fix spring-projects/spring-framework#30020.2 {'return': '[parent]'}",
+        "pins fix spring-projects/spring-framework#30020.3 {'return': 'child=[A, B] parent=[A, B]'}",
+        "pins fix spring-projects/spring-framework#30020.4 {'return': 'enabled=IllegalStateException disabled=IllegalStateException'}",
+        "pins parent spring-projects/spring-framework#33470.1 {'return': 'accepted'}",
+        "pins parent spring-projects/spring-framework#33470.2 {'return': 'IllegalStateException/accepted'}",
+        "pins parent spring-projects/spring-framework#33470.3 {'return': '[receipt]'}",
+        "pins fix spring-projects/spring-framework#33470.1 {'return': 'IllegalStateException'}",
+        "pins fix spring-projects/spring-framework#33470.2 {'return': 'IllegalStateException/accepted'}",
+        "pins fix spring-projects/spring-framework#33470.3 {'return': '[receipt]'}",
+        "pins parent spring-projects/spring-framework#36556.1 {'return': 'explicit=08:00Z overload=unavailable'}",
+        "pins parent spring-projects/spring-framework#36556.2 {'return': 'count=1 next=09:00Z disabled=true'}",
+        "pins parent spring-projects/spring-framework#36556.3 {'return': 'explicit=08:00Z/09:00Z overload=unavailable'}",
+        "pins fix spring-projects/spring-framework#36556.1 {'return': 'explicit=08:00Z overload=08:00Z'}",
+        "pins fix spring-projects/spring-framework#36556.2 {'return': 'count=1 next=09:00Z disabled=true'}",
+        "pins fix spring-projects/spring-framework#36556.3 {'return': 'explicit=08:00Z/09:00Z overload=08:00Z/09:00Z'}",
+        "pins parent spring-projects/spring-framework#36865.1 {'return': '2025-04-26T00:00+03:00=2025-04-25T21:00:00Z / 2025-04-26T02:00+03:00=2025-04-25T23:00:00Z'}",
+        "pins parent spring-projects/spring-framework#36865.2 {'return': '2025-04-24T00:00+02:00=2025-04-23T22:00:00Z / 2025-04-24T02:00+02:00=2025-04-24T00:00:00Z'}",
+        "pins parent spring-projects/spring-framework#36865.3 {'return': '2026-03-10T00:00-04:00=2026-03-10T04:00:00Z / 2026-03-10T02:00-04:00=2026-03-10T06:00:00Z'}",
+        "pins fix spring-projects/spring-framework#36865.1 {'return': '2025-04-25T02:00+03:00=2025-04-24T23:00:00Z / 2025-04-25T04:00+03:00=2025-04-25T01:00:00Z'}",
+        "pins fix spring-projects/spring-framework#36865.2 {'return': '2025-04-24T00:00+02:00=2025-04-23T22:00:00Z / 2025-04-24T02:00+02:00=2025-04-24T00:00:00Z'}",
+        "pins fix spring-projects/spring-framework#36865.3 {'return': '2026-03-09T00:00-04:00=2026-03-09T04:00:00Z / 2026-03-09T02:00-04:00=2026-03-09T06:00:00Z'}",
+        "{\"cases\": 30, \"controlsMatchedOnBoth\": 30, \"deploymentPairs\": 30, \"fixedIntentsMatched\": 31, \"fixedPredictionsMatched\": 91, \"fixedRefutations\": 3, \"freshJvms\": 188, \"fullBuildPairs\": 23, \"omittedParentHistories\": 0, \"pairedIntentChanges\": 31, \"parentRefutations\": 1, \"pinnedSourcePairs\": 7, \"question"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Compare the measured campaign audit",
+      "run": "cmp verification/merged-pr-links/p01-p30/audit.json verification/merged-pr-links/p01-p30/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.006,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2035712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compare-the-measured-campaign.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/p01-p30/repeated-audit.json",
+      "change": "added",
+      "bytes": 10556,
+      "sha256": "f5953fa0d05bbfd1ef653e9ef4f6a84be9a6463a703b54b95bcce6513969e9c2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T13:20:20+00:00",
+    "applied": [
+      "verification/merged-pr-links/p01-p30/repeated-audit.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T132011Z-7670744d36871285",
+      "outputs": "20261126T132011Z-7917418a49bb78b3",
+      "diff": "20261126T132011Z-809999581ebfb27d"
+    }
+  }
+}
