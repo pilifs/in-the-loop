@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T23:19:30.950Z",
-  "duration_seconds": 234520,
+  "ended": "2026-11-26T23:28:23.553Z",
+  "duration_seconds": 235053,
   "stats": {
     "turns": 37,
-    "api_calls": 5931,
-    "tool_calls": 14797,
+    "api_calls": 5972,
+    "tool_calls": 14880,
     "tool_errors": 319,
     "compactions": 25,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 7823240,
-      "output_tokens": 3425675,
-      "cache_read_input_tokens": 1605837568,
+      "input_tokens": 7836186,
+      "output_tokens": 3444589,
+      "cache_read_input_tokens": 1614450304,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8214,
-    "exec": 5675,
-    "apply_patch": 712,
+    "Bash": 8240,
+    "exec": 5716,
+    "apply_patch": 728,
     "wait": 108,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -350,6 +350,7 @@
     "verification/findings.md",
     "verification/generated-observers/campaign.py",
     "verification/generated-observers/falsifiers.py",
+    "verification/generated-observers/followup_score.py",
     "verification/generated-observers/history_reach.py",
     "verification/generated-observers/numbered_handoff.py",
     "verification/generated-observers/numbered_inputs.py",
@@ -909,24 +910,24 @@
     {
       "index": 25,
       "started": "2026-11-26T22:56:48.146Z",
-      "ended": "2026-11-26T23:19:30.950Z",
+      "ended": "2026-11-26T23:28:23.553Z",
       "turns": 1,
-      "api_calls": 104,
+      "api_calls": 145,
       "usage": {
-        "input_tokens": 146606,
-        "output_tokens": 49031,
-        "cache_read_input_tokens": 15098752,
+        "input_tokens": 159552,
+        "output_tokens": 67945,
+        "cache_read_input_tokens": 23711488,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 194951
+      "peak_context_tokens": 223900
     }
   ],
   "log": {
-    "sha256": "97765db7baf12ac08d1236088fbfef77eceb44066f58dbbe251254dea489bfb1",
-    "bytes": 94382131,
-    "lines": 46800,
-    "gzip_bytes": 17353483,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/97765db7baf12ac08d1236088fbfef77eceb44066f58dbbe251254dea489bfb1.jsonl.gz"
+    "sha256": "23f2b7b91ca727167435c9216c8361609655407266130e75318c301b4069b0bc",
+    "bytes": 94778104,
+    "lines": 47092,
+    "gzip_bytes": 17408724,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/23f2b7b91ca727167435c9216c8361609655407266130e75318c301b4069b0bc.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2787,20 +2788,28 @@
       "log_sha256": "6d128727333261a868d73d07573fba39801d82a3822472aaea1a0e3fd7e196d5"
     },
     {
-      "change_id": "nqrrppounppyrmtoptoxorlyooryyymr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "97765db7baf12ac08d1236088fbfef77eceb44066f58dbbe251254dea489bfb1"
-    },
-    {
       "change_id": "zpnxovxqqsnkryzsmntpylwnkvznvllk",
       "commit_id": null,
       "immutable": false,
       "summary": "Re-score measured open baselines offline (verification pending)",
       "body": "Record runtime stability through publication. Let a separate evaluation correct an original parent prediction when both original deployments provided complete repeated observations. Recheck the claim, bundle, side-specific witness and receipt. Preserve earlier adjudications and leave incomplete or unstable evidence open.\n\nThe archived CSS and Spring SSE questions each remained open with their original predicates, established with a corrected parent, and refuted with a deliberately incorrect fix. All three used the same original observations per question. Five missing or altered evidence controls per case lost qualification. The selected suites passed 57 of 57. Job 20261126-231202-re-score-a-lone-open-baseline-from-its-o tests the public command on a newly measured single question.",
       "log_sha256": "97765db7baf12ac08d1236088fbfef77eceb44066f58dbbe251254dea489bfb1"
+    },
+    {
+      "change_id": "wvrksqxnnukymozmrnxlqpmumlzvunxw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "23f2b7b91ca727167435c9216c8361609655407266130e75318c301b4069b0bc"
+    },
+    {
+      "change_id": "vunzowxlnwnrwqmwvnzvqlvzkukqvnwn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preserve ordered numbered histories on resume (verification pending)",
+      "body": "Consume complete numeric and callback histories in order. Include malformed and empty literals, bind an explicitly reviewed NumberFormat, and report unsupported operations in the review. Cross-check stored criteria, inputs and deployments before reusing a numbered caller. A rejected new fixture leaves the old class archive intact.\n\nAll six original Spring and Vavr question domains matched their frozen packets. A caller-free checkout prepared both supplementary registrations, and a direct JVM run measured BigDecimal 1.5 followed by IllegalArgumentException for the malformed literal. All 58 selected test suites passed. Job 20261126-232218-replay-complete-numbered-literal-and-cal tests the numbered resume and its open and stale-review controls.",
+      "log_sha256": "23f2b7b91ca727167435c9216c8361609655407266130e75318c301b4069b0bc"
     }
   ],
   "logs": {
@@ -2893,6 +2902,12 @@
       "lines": 12958,
       "gzip_bytes": 4231245,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/233f38e7c629768e53b71b77925106e08d2c390a790beb280b05edc8c0208c35.jsonl.gz"
+    },
+    "23f2b7b91ca727167435c9216c8361609655407266130e75318c301b4069b0bc": {
+      "bytes": 94778104,
+      "lines": 47092,
+      "gzip_bytes": 17408724,
+      "url": null
     },
     "2496cd5a12ffe88853732b4ee86abc21c076115485ea6035b539eb3e029b120d": {
       "bytes": 75189301,

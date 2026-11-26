@@ -378,6 +378,10 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    `{"deployment":"pins"}` instead. Stage 3 reads its `comparison.json` and `runtime.json`, resolves the public
    signature on the pinned JARs, and derives the inputs from the registered history. A counting supplier also
    needs its approved return value in `inputDefaults.fallback` when the history omits it.
+   For the formatted numeric overload, put its fixture in `inputDefaults.numberFormat`. Backtick-quoted
+   input text can be empty, malformed or locale-specific. Setup retains the order of literals and
+   predicates and records the first operation it cannot interpret. Resuming by number checks the reviewed
+   inputs, predicates and deployments against the scaffold that supplied the caller.
    The registration supplies the public selector, changed selectors, public fields, deterministic assumptions,
    and each question's ID, semantic input data, observed history and side scope. Stage 3 generates one Java
    caller for the related questions, compiles against the older API and keeps the class bytes and their

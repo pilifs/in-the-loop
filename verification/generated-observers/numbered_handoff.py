@@ -14,7 +14,7 @@ import campaign
 HERE, ROOT = campaign.HERE, campaign.ROOT
 
 
-def handoff(root, numbers, scaffold_only=False):
+def handoff(root, numbers, scaffold_only=False, *, reviewed=None, archive=None):
     example_root = root/"examples"
     example_root.mkdir()
     shutil.copytree(ROOT/"examples/tools",example_root/"tools",ignore=shutil.ignore_patterns("test_*.py","__pycache__"))
@@ -40,8 +40,13 @@ def handoff(root, numbers, scaffold_only=False):
             shutil.copyfile(original/name,folder/name)
         folders[number]=folder
         spec=campaign.read(folder/"comparison.json")
+        defaults = {"fallback":99} if number=="445" else {}
+        if reviewed is not None:
+            spec["questions"] = reviewed[number]["questions"]
+            defaults = reviewed[number]["inputDefaults"]
+            campaign.write(folder/"comparison.json", spec)
         plan["examples"].append({"id":number,"review":"designed","publicComparison":{
-            "deployment":"pins","inputDefaults":{"fallback":99} if number=="445" else {}},
+            "deployment":"pins","inputDefaults":defaults},
             "entry":{"target":spec["entry"],"inputs":"The semantic histories in the numbered registration.","invocation":"adapter"},
             "controls":{"positive":["The registered unchanged input"],"negative":["An altered evaluator prediction"],
                         "mutation":["Retain the same compiled measurement on a changed subject."]},
@@ -68,18 +73,21 @@ def handoff(root, numbers, scaffold_only=False):
         command([sys.executable,tools/"build.py",n])
         after={p.name:(campaign.upgrade_replay.sha(p),p.stat().st_mtime_ns) for p in files}
         report=campaign.read(records/"public-replay.json")
-        if before!=after or len(report["claims"])!=3 or any(c["status"]!="established" for c in report["claims"]):
+        asked = {q["id"] for q in campaign.read(folder/"comparison.json")["questions"]}
+        if before!=after or {c["id"] for c in report["claims"]}!=asked or any(c["status"]!="established" for c in report["claims"]):
             raise ValueError("resume changed frozen bytes or left a registered question unsettled")
         result["examples"][n]={"inputs":["example.json","runtime.json","comparison.json"],"unchangedFiles":{k:v[0] for k,v in before.items()},
             "scaffoldState":campaign.read(records/"entry-bindings.json")["executionState"],
             "resumeState":report["executionState"],"claimStatuses":{c["id"]:c["status"] for c in report["claims"]}}
         packages.extend([p for p in records.rglob("*") if p.is_file() and "deployment-layouts" not in p.parts])
+        if reviewed is not None:
+            packages.extend(folder / name for name in ("example.json", "comparison.json", "runtime.json"))
     after_run=json.loads(command([sys.executable,ROOT/"llm-dlc/tools/watch.py","--root",root,"preflight",*numbers]))
     if after_run["decided"] != numbers:
         raise ValueError("the watcher did not recover the scoped finite results from their receipts")
     result["afterResume"]=after_run
     campaign.write(root/"handoff.json",result)
-    campaign.pack(root,[*packages,root/"handoff.json"],HERE/"receipts/numbered-handoff.zip")
+    campaign.pack(root,[*packages,root/"handoff.json"],archive or HERE/"receipts/numbered-handoff.zip")
 
 
 if __name__=="__main__":

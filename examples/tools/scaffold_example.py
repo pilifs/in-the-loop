@@ -139,8 +139,18 @@ def scaffold(number: str, plan_path: Path, write: bool, root: Path = REPO) -> di
                 bundle = folder / "records" / "public-observer"
                 if "predictions" not in paths or "workflows" in paths:
                     raise ValueError("a reviewed registration requires its predictions and generates its own workflows")
-                generation = observer_generation.materialize(paths["registration"], paths["predictions"],
-                    paths["before"], paths["after"], paths["jdk"], bundle)
+                try:
+                    generation = observer_generation.materialize(paths["registration"], paths["predictions"],
+                        paths["before"], paths["after"], paths["jdk"], bundle)
+                except ValueError as error:
+                    if numbered is None:
+                        raise
+                    from targets import change_evidence
+                    review = folder/"records/reviewed-public-inputs/review.json"
+                    detail = json.loads(review.read_bytes())
+                    change_evidence.write_json(review, {**detail, "status": "open", "firstOpenDependency": str(error)})
+                    out["refused"].append(str(error))
+                    return out
                 out["generatedObserver"] = str(bundle / "generation.json")
                 if generation["status"] != "compiled":
                     out["leftForSetup"].append(generation["firstOpenDependency"])
@@ -153,6 +163,10 @@ def scaffold(number: str, plan_path: Path, write: bool, root: Path = REPO) -> di
                 out["refused"].append("the prepared deployment binding failed")
                 return out
             report = json.loads(record.read_text())
+            if numbered is not None:
+                from targets import change_evidence, upgrade_replay
+                report["numberedReviewSha256"] = upgrade_replay.sha(folder/"records/reviewed-public-inputs/review.json")
+                change_evidence.write_json(record, report)
             for binding in report["entryBindings"].values():
                 if binding["status"] != "bound":
                     out["leftForSetup"].append(f"{binding['side']} {binding['entry']}: {binding['firstOpenDependency']}")

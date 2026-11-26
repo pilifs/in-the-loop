@@ -164,6 +164,16 @@ def generate(reg, before, after, jdk, work, *, fixture_root=None):
     return record
 
 
+def finite_domain(question, expected):
+    sides, inputs = question["sides"], question["inputs"]
+    if set(expected) != set(sides) or any(len(values) != len(inputs) for values in expected.values()):
+        raise ValueError("prediction differs from the approved side scope or domain: " + question["id"])
+    cases = [{"args": arguments(item), "expected": wire(v)} for item, v in zip(inputs, expected[sides[0]], strict=True)]
+    changes = [{"input": i, "expectedNew": wire(v)} for i, v in enumerate(expected.get("new", []))
+               if len(sides) == 2 and wire(v) != cases[i]["expected"]]
+    return cases, changes
+
+
 def workflows(reg, predictions, work):
     """Evaluator phase. Its only generated files are scopes and workflow declarations."""
     from targets import change_plan
@@ -172,13 +182,7 @@ def workflows(reg, predictions, work):
     recipe = json.loads((work / "generation.json").read_bytes())["recipe"]
     rows = []
     for index, q in enumerate(reg["questions"]):
-        expected = predictions[q["id"]]
-        if set(expected) != set(q["sides"]) or any(len(values) != len(q["inputs"]) for values in expected.values()):
-            raise ValueError("prediction differs from the approved side scope or domain: " + q["id"])
-        base = expected[q["sides"][0]]
-        cases = [{"args": arguments(item), "expected": wire(v)} for item, v in zip(q["inputs"], base, strict=True)]
-        changes = [{"input": i, "expectedNew": wire(v)} for i, v in enumerate(expected.get("new", []))
-                   if len(q["sides"]) == 2 and wire(v) != cases[i]["expected"]]
+        cases, changes = finite_domain(q, predictions[q["id"]])
         name = f"scope-{index + 1}.json"
         spec = {"entry": recipe.get("bindingEntry",reg["entry"]), "probeClass": "UpgradeProbe", "observer": ", ".join(reg["fields"]),
                 "basis": q["history"], "cases": cases, "assertedSides": q["sides"],
