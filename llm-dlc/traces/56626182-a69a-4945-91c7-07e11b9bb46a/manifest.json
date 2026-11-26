@@ -1,0 +1,168 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "56626182-a69a-4945-91c7-07e11b9bb46a",
+  "status": "open",
+  "title": null,
+  "first_prompt": "You are the SETUP AGENT for `llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md`. Your role is strictly limited to mechanical setup. The goal is that the domain agent who comes after you can sta",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.332"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-26T13:47:46.434Z",
+  "ended": "2026-11-26T15:19:05.094Z",
+  "duration_seconds": 5479,
+  "stats": {
+    "turns": 11,
+    "api_calls": 230,
+    "tool_calls": 228,
+    "tool_errors": 7,
+    "compactions": 2,
+    "peak_context_tokens": 418365,
+    "usage": {
+      "input_tokens": 464,
+      "output_tokens": 180434,
+      "cache_read_input_tokens": 51703659,
+      "cache_creation_input_tokens": 684896
+    }
+  },
+  "tools": {
+    "Bash": 216,
+    "Read": 11,
+    "Write": 1
+  },
+  "files_touched": [
+    "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-26T13:47:46.434Z",
+      "ended": "2026-11-26T14:45:14.659Z",
+      "turns": 1,
+      "api_calls": 153,
+      "usage": {
+        "input_tokens": 306,
+        "output_tokens": 140003,
+        "cache_read_input_tokens": 42515138,
+        "cache_creation_input_tokens": 406642
+      },
+      "peak_context_tokens": 418365
+    },
+    {
+      "index": 1,
+      "started": "2026-11-26T14:46:31.661Z",
+      "ended": "2026-11-26T15:14:39.355Z",
+      "turns": 5,
+      "api_calls": 56,
+      "usage": {
+        "input_tokens": 114,
+        "output_tokens": 29933,
+        "cache_read_input_tokens": 7228320,
+        "cache_creation_input_tokens": 163758
+      },
+      "peak_context_tokens": 177411
+    },
+    {
+      "index": 2,
+      "started": "2026-11-26T15:15:40.306Z",
+      "ended": "2026-11-26T15:19:05.094Z",
+      "turns": 5,
+      "api_calls": 21,
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 10498,
+        "cache_read_input_tokens": 1960201,
+        "cache_creation_input_tokens": 114496
+      },
+      "peak_context_tokens": 128149
+    }
+  ],
+  "log": {
+    "sha256": "cdf03391a985a51492cd6cada7e393d5bb71e886c78803c632468abc6821fb2a",
+    "bytes": 5426743,
+    "lines": 1769,
+    "gzip_bytes": 1026836,
+    "path": "llm-dlc/traces/56626182-a69a-4945-91c7-07e11b9bb46a/logs/cdf03391a985a51492cd6cada7e393d5bb71e886c78803c632468abc6821fb2a.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "ymsxzkuykwskwxwoqpyuoupsmwuvqtyv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up Spring Q01-Q30 pins, toolchains and slices (verification pending)",
+      "body": "Setup for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, recorded in spring-framework-pr-links-q01-q30-brief-setup.md: all 61 pinned revisions fetched into the shared mirror with a worktree each, every PR's merge commit checked against the after pin and its changed files, 19 signed pins verified; 20 Gradle distributions and Temurin 24.0.2 fetched and checked against their publishers' checksums (and Adoptium's signature); every configuration of the Gradle 6-9 worktrees resolved online. Eight old builds (Q04, Q10, Q17-Q20, Q25, Q26) cannot be configured from public repositories, so their changed files were compiled against the nearest released jars (compared by git blob id) and their landed tests run on JDK 8: each passes at the fix and, where it compiles on the parent, fails there, except Q20's, which never calls clone(). Q09 configures with grolifant 0.14 from Grails core (sha1 checked). Released versions the brief names fetched with sha1 and signatures checked. Six jobs queue offline builds and the landed tests of Q09, Q11, Q12, Q13, Q28 and Q30 at both pins: 20261126-141555-setup-build-spring-framework-{26700-q09,27716-q11,27735-q12,34709-q13,35140-q28,35732-q30}-a.",
+      "log_sha256": "76a5a70edd38fa59430f0836dc59bae00fa86bafedad96b659da284b2c04776c"
+    },
+    {
+      "change_id": "kmlpysyxkmvrvnkwoszpwumurlkqxxww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue Spring Q01-Q30 Gradle 9 setup builds (verification pending)",
+      "body": "Sixteen more setup jobs for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, one per Spring 7 case (Q01-Q03, Q05-Q08, Q14-Q16, Q21-Q24, Q27, Q29): each builds the changed modules offline at both pins, runs the landed test classes, keeps jars, class digests and classpaths, and runs the fix's tests on a copy of the parent, where they should fail or not compile. Every worktree's configurations were resolved online first and every task graph dry-ran offline. The record gains the slice-route results with class digests, the released artifacts with their checksums and signatures, the snapshot builds in the cache, the rerun commands and a first version of the notes for the domain agent. Jobs: 20261126-144024-setup-build-spring-framework-{36912-q01,36550-q02,37326-q03,35808-q05}-a, 20261126-144025-setup-build-spring-framework-{37332-q06,37577-q07,37524-q08,37602-q14,37261-q15,37053-q16,36602-q21,37096-q22}-a, 20261126-144026-setup-build-spring-framework-{37601-q23,36162-q24,37525-q27,37465-q29}-a.",
+      "log_sha256": "879c647fa2f09ed03637d5772541669c7804a9f8487b185e8cbd2dd1df2a1943"
+    },
+    {
+      "change_id": "nvkomtvxvwytmnworylonwxkztluruqn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Requeue Spring Q09 and Q11 setup builds (verification pending)",
+      "body": "The first setup jobs of Q09 (spring-framework#26700) and Q11 (#27716) failed offline on spring-beans' Groovy compile task, which resolves groovy-ant 3.0.8/3.0.9 through a detached configuration that the earlier online resolution of named configurations did not reach. A new init-script task resolved those coordinates online at both pins; the jobs are queued again: 20261126-144401-setup-build-spring-framework-26700-q09-a and 20261126-144401-setup-build-spring-framework-27716-q11-a.",
+      "log_sha256": "2885420de10c9ee266b392d8730636cacfa4b318dec78757dc511138b03a12ac"
+    },
+    {
+      "change_id": "nzssktxwopqswoynsulwqrluptoxouok",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record Spring Q01-Q30 setup build results; requeue Q11 (verification pending)",
+      "body": "The setup record for the Spring Q01-Q30 brief now has the results of 21 of its 22 offline Gradle setup jobs. Each landed test class passes at its fix pin and the parent's versions pass at the parent. The fix's tests fail on the parent (17 cases) or do not compile there (Q05, Q12, Q24, Q29). The record also has the sha256 of every built jar and changed class, the classpath entry counts, and notes on Q16's leak-check cascade and on top-level classes that compile identically at both pins.\n\nQ11 failed offline twice in spring-beans' Groovy compile: Gradle 7.3 resolves the whole Groovy 3.0.9 runtime in a detached configuration. Those modules and javaparser-core were resolved online at both pins and confirmed offline, and job 20261126-151047-setup-build-spring-framework-27716-q11-a is queued. The jobs' own results are recorded on the runner's line (b4cff56869fd).",
+      "log_sha256": "2a1bd94c7e03a687d20954e04abc0c5fb9fbe24fa0757d494e5406d9a6eea83b"
+    },
+    {
+      "change_id": "lvkztvpwpotvmxrmmukpnpynopkoxzyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record Spring Q11 setup build result; Q01-Q30 setup complete",
+      "body": "Q11 (Spring Framework #27716) passed its third verification job, 20261126-151047-setup-build-spring-framework-27716-q11-a, after the Gradle 7.3 Groovy runtime modules were resolved into the offline cache. At the fix pin NamedParameterUtilsUnitTests passes (25 tests), the parent's own version passes at the parent (24 tests), and the fix's test file run on the parent fails exactly the landed parseSqlStatementWithSquareBracket(). The setup record now has Q11's jar and class sha256 digests, its spring-r2dbc classpath counts (18 runtime, 61 test, equal at both pins), and disk use; all 22 Gradle cases and the 8 slice cases are verified, and the record no longer says in progress.",
+      "log_sha256": "cdf03391a985a51492cd6cada7e393d5bb71e886c78803c632468abc6821fb2a"
+    }
+  ],
+  "logs": {
+    "2885420de10c9ee266b392d8730636cacfa4b318dec78757dc511138b03a12ac": {
+      "bytes": 3040976,
+      "lines": 1061,
+      "gzip_bytes": 522612,
+      "url": null
+    },
+    "2a1bd94c7e03a687d20954e04abc0c5fb9fbe24fa0757d494e5406d9a6eea83b": {
+      "bytes": 4469808,
+      "lines": 1543,
+      "gzip_bytes": 807698,
+      "url": null
+    },
+    "76a5a70edd38fa59430f0836dc59bae00fa86bafedad96b659da284b2c04776c": {
+      "bytes": 2578791,
+      "lines": 851,
+      "gzip_bytes": 463030,
+      "url": null
+    },
+    "879c647fa2f09ed03637d5772541669c7804a9f8487b185e8cbd2dd1df2a1943": {
+      "bytes": 2940127,
+      "lines": 1016,
+      "gzip_bytes": 511558,
+      "url": null
+    },
+    "cdf03391a985a51492cd6cada7e393d5bb71e886c78803c632468abc6821fb2a": {
+      "bytes": 5426743,
+      "lines": 1769,
+      "gzip_bytes": 1026836,
+      "url": null
+    }
+  },
+  "redaction_policy": 7,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}
