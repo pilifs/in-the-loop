@@ -11,3 +11,5 @@ The pin's compiled DictionaryPageReader precedes the same Parquet 1.18.2/Hadoop 
 | Challenge | `[new-one, new-two]/[new-one, new-two]/[new-one, new-two]` | `[new-one, new-two]/[one, two]/[new-one, new-two]` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 576`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/apache/parquet-java/pull/3830)
+
+With identical compiled caller bytes, 1.18.1 matched the parent and 1.18.2 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

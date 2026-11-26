@@ -11,3 +11,5 @@ The unavailable snapshot parent POM was rebuilt from Jackson BOM 7796a7ddb240ce4
 | Challenge | `tested=28,exact=22,wrong=[UTF-32BE@3995+0:[1f600, d800], UTF-32LE@3995+0:[1f600, d800], UTF-32BE@3996+1:[d83d, f600, 10000], UTF-32LE@3996+1:[d83d, f600, 10000], UTF-32BE@3997+0:[d83d, f600, 10000], UTF-32LE@3997+0:[d83d, f600, 10000]]` | `tested=28,exact=28,wrong=[]` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 555`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/FasterXML/jackson-core/pull/1716)
+
+With identical compiled caller bytes, 2.21.6 matched the parent and 2.21.7 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

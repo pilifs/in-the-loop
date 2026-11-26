@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-185408-repeat-the-organic-java-r-series-release",
+  "title": "Repeat the organic Java R-series release and follow-up histories",
+  "description": "Run identical compiled clients for 22 cases on 44 published deployments. Compare 132 outcomes with the original history and the documented Resilience4j 2.1.0 difference. Repeat 42 additional histories for transformed keys, marks, decimal buffer views and Observable group order, and all 18 observations with stable Jackson companions.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:released-runtime",
+    "java:public-caller-replay",
+    "java:original-class-provenance"
+  ],
+  "links": {},
+  "expected": "All 132 published-release observations, 42 additional public histories and 18 dependency comparisons repeat. Both output files must match the committed records byte for byte.",
+  "submitted": {
+    "at": "2026-11-26T18:54:08+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Replay 44 released deployments",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/r01-r50/release-inputs.json --output verification/merged-pr-links/r01-r50/repeated-releases.json",
+      "cwd": "."
+    },
+    {
+      "name": "Check each released history against its original side",
+      "run": "python3 verification/merged-pr-links/r01-r50/check_releases.py --results verification/merged-pr-links/r01-r50/repeated-releases.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare release receipts",
+      "run": "cmp verification/merged-pr-links/r01-r50/release-observations.json verification/merged-pr-links/r01-r50/repeated-releases.json",
+      "cwd": "."
+    },
+    {
+      "name": "Replay extra histories and stable Jackson dependencies",
+      "run": "python3 verification/merged-pr-links/r01-r50/followups.py --output verification/merged-pr-links/r01-r50/repeated-followups.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the extra histories",
+      "run": "cmp verification/merged-pr-links/r01-r50/followup-observations.json verification/merged-pr-links/r01-r50/repeated-followups.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/r01-r50/repeated-releases.json",
+    "verification/merged-pr-links/r01-r50/repeated-followups.json"
+  ]
+}

@@ -13,3 +13,5 @@ The intermediate commit f7f1d51d4c57 changed only release notes. Its junit-jupit
 | Challenge | `1/1,failed=F,passed=P / 1/1,failed=F,passed=absent` | `1/1,failed=F,passed=absent / 1/1,failed=F,passed=absent` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 587`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/junit-team/junit-framework/pull/4466)
+
+With identical compiled caller bytes, 5.12.1 matched the parent and 5.12.2 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

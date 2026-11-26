@@ -46,7 +46,8 @@ def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-in
                "jdkReleaseSha256": project["jdkReleaseSha256"], "versions": {}}
     with tempfile.TemporaryDirectory(prefix="public-releases-") as temporary:
         work = Path(temporary)
-        deployment = runtime["deployments"]["pins"]
+        original = project.get("deployment", "pins")
+        deployment = runtime["deployments"][original]
         if "compileVersion" in project:
             compile_cp = classpath([jars[key] for key in project["versions"][project["compileVersion"]]])
         else:
@@ -57,7 +58,7 @@ def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-in
                                 [comparison.upgrade_replay.LAUNCHER, *sources, *adapters["fix"], *originals],
                                 ["-parameters"] if deployment.get("parameterNames") else [])
         fingerprints = comparison.class_digests(classes)
-        if fingerprints != physical["deployments"]["pins"]["callerClasses"]:
+        if fingerprints != physical["deployments"][original]["callerClasses"]:
             raise ValueError(f"{number}: different historical caller bytecode")
         receipt["callerClasses"] = fingerprints
         for version, keys in project["versions"].items():
@@ -94,8 +95,8 @@ def check_observations(lock_file, result_file, references, release_changes=None)
         number = r["example"]
         folder, = (ROOT / "examples").glob(number + "-*")
         spec = comparison.read(folder / "comparison.json")
-        physical = comparison.read(folder / "observations.json")["deployments"]["pins"]
         project = lock["projects"][number]
+        physical = comparison.read(folder / "observations.json")["deployments"][project.get("deployment", "pins")]
         roles = references[number]
         if (r["releaseInputsSha256"] != comparison.upgrade_replay.sha(lock_file)
                 or r["historicalObservationsSha256"] != comparison.upgrade_replay.sha(folder / "observations.json")

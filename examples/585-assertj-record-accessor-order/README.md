@@ -11,3 +11,5 @@ The landed source tries getField() before the bare accessor. Both objects return
 | Challenge | `field=one/two,getter=fixed/fixed,equal=true` | `field=one/two,getter=fixed/fixed,equal=true` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 585`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/assertj/assertj/pull/3710)
+
+With identical compiled caller bytes, 3.27.0 matched the parent and 3.27.1 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

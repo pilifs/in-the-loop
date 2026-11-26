@@ -11,3 +11,5 @@ The factory contract creates a fallback per exception. A single constant fallbac
 | Challenge | `gets=1,factories=1,error=java.lang.IllegalAccessException` | `gets=2,factories=2,results=[fallback-1, fallback-2]` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 583`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/resilience4j/resilience4j/pull/1999)
+
+With identical compiled caller bytes, 2.1.0 matched the parent and 2.2.0 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

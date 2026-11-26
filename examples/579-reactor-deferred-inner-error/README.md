@@ -13,3 +13,5 @@ The physical callers run on Temurin 8u512, the Java major reported for Reactor 3
 | Challenge | `[1, 2]/same-error/demand=true / [1, 2, 3, 4]/same-error/demand=true` | `[1, 2, 3, 4]/same-error/demand=true / [1, 2, 3, 4]/same-error/demand=true` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 579`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/reactor/reactor-core/pull/937)
+
+With identical compiled caller bytes, 3.1.0.RELEASE, 3.1.1.RELEASE matched the parent and 3.1.2.RELEASE matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

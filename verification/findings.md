@@ -306,6 +306,10 @@ All four Q-series cases reproduced on published Spring Framework 7.1.0. The reac
 
 **28. AssertJ, PR #3710. A constant JavaBeans getter can conceal unequal record components in recursive comparison.** The generated component accessors returned different strings. Equality passed with the extra getter and failed as expected without it on the landing. The reporting decision depends on the intended getter precedence. [Record fixtures and controls](merged-pr-links/r01-r50/upstream.md#assertj-record-accessor-precedence)
 
+**29. Apache Commons IO. A fresh mark(2) at offset two makes a bounded reader report immediate EOF.** With a six-character global bound, moving the mark from offset zero to one and two shortened the available read window from two characters to one and zero. The independent delegate read returned the same third character every time. This occurred on Commons IO 2.22.0 and both PR #860 pins. [Offset and reset measurements](merged-pr-links/r01-r50/upstream.md#mark-position-shortens-a-fresh-commons-io-read-window)
+
+For entries 25–28, released callers reproduced the marked skip on Commons IO 2.22.0, the sliced decimal on Avro 1.11.4 and 1.12.0, the negative retry notification on Resilience4j 2.2.0, and the record getter precedence on AssertJ 3.27.1. Resilience4j 2.1.0 stopped silently for the same returned value. [Release comparisons](merged-pr-links/r01-r50/upstream.md#what-reproduced-on-published-versions)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

@@ -11,3 +11,5 @@ BigInteger on the original decimal text is an independent exact oracle, unaffect
 | Challenge | `12345678901234568000000:true/12345678901234567890123:true` | `12345678901234567890123:true/12345678901234567890123:true` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 564`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/FasterXML/jackson-core/pull/1816)
+
+With identical compiled caller bytes, 2.21.8 matched the parent and 2.21.9 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

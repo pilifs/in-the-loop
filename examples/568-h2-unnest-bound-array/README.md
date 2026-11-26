@@ -11,3 +11,5 @@ The scalar-row query independently exposes the current bindings. Changing both v
 | Challenge | `[null, null]/[null, null]/[7, 7] / [null, null]/[null, null]/[-4, 9]` | `[7, 7]/[7, 7]/[7, 7] / [-4, 9]/[-4, 9]/[-4, 9]` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 568`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/h2database/h2database/pull/4034)
+
+With identical compiled caller bytes, 2.2.224 matched the parent and 2.3.230 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

@@ -15,3 +15,14 @@ An asynchronous supplier returns a completed stage containing `again`. Configure
 ## AssertJ record accessor precedence
 
 Compare two records with different string components, equal booleans, and a JavaBeans getter that returns the same constant. The default recursive equality assertion passes on the landing. Calling the component accessors directly gives `one` and `two`. Removing the constant getter lets the merged assertion distinguish the strings. This is a question about the documented choice of accessor for a record with a JavaBeans getter. [Both record definitions and default assertions](../../../examples/585-assertj-record-accessor-order/README.md)
+
+## What reproduced on published versions
+
+- **Commons IO 2.22.0** returned four from the marked skip and left the delegate on character `4`. The global-bound behavior in this release matched the original parent. [Release measurements](release-observations.json)
+- **Avro 1.11.4 and 1.12.0** decoded the prefixed slice as 7 and the independent copy as 12.30. The same logical value decoded normally from an ordinary heap buffer, raised ReadOnlyBufferException from a read-only buffer and raised UnsupportedOperationException from a direct buffer. The caller preserved the input bytes across these storage variations. Avro 1.11.3 lacked the logical conversion. [View construction](DecimalViews.java) · [Release and view outcomes](followup-observations.json)
+- **Resilience4j 2.2.0** delivered the negative-delay retry notification. In 2.1.0 the stage returned the same value after a single call with zero retry events. Both releases accepted the positive-delay control. [Version-specific event and oracle](check_releases.py) · [Release measurements](release-observations.json)
+- **AssertJ 3.27.1** distinguished the ordinary record component but accepted equality when the constant JavaBeans getter was present. The getter also took precedence in 3.27.0, where the ordinary record fixture still missed the unequal component. Maintainers can decide whether the default policy should prefer record components or document the precedence. [Release measurements](release-observations.json)
+
+## Mark position shortens a fresh Commons IO read window
+
+Use a fresh BoundedReader over `abcdefg` with a global maximum of six. At starting positions zero, one and two, call `mark(2)` and read until the wrapper returns EOF. The three post-mark strings were `ab`, `b` and the empty string. The delegate’s next character was `c` each time. A reset allowed `a`, `b` and EOF respectively. Each stream had at least two characters of global allowance at its mark. The results agreed on 2.22.0 and both PR pins. This case uses only ordinary reads after marking. It can be reported independently of the skip discrepancy. [Three positions and independent delegate reads](MarkWindow.java) · [Measured results](followup-observations.json)

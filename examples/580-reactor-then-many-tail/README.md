@@ -11,3 +11,5 @@ The receiver’s completion is the condition for starting the tail. An error ter
 | Challenge | `[a]/same-error/tail=0` | `[]/same-error/tail=0` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 580`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/reactor/reactor-core/pull/3783)
+
+With identical compiled caller bytes, 3.4.37 matched the parent and 3.4.38 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

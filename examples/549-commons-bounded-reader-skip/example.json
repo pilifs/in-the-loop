@@ -33,7 +33,8 @@
     "url": "https://github.com/apache/commons-io/pull/860"
   },
   "notes": [
-    "The read predicate checks markedAt and readAheadLimit. The landed skip predicate uses only the global remaining count. Direct delegate read distinguishes positions 2 and 4."
+    "The read predicate checks markedAt and readAheadLimit. The landed skip predicate uses only the global remaining count. Direct delegate read distinguishes positions 2 and 4.",
+    "With identical compiled caller bytes, 2.22.0 matched the parent on all three histories. With the same mark(2) at offsets zero, one and two, the read windows contained two, one and zero characters. The direct delegate read confirmed the cursor position, and reset returned to the same restricted window on both pins and 2.22.0."
   ],
   "verdictLabel": "2/3 merged predictions matched"
 }

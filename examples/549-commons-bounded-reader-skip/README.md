@@ -11,3 +11,5 @@ The read predicate checks markedAt and readAheadLimit. The landed skip predicate
 | Challenge | `0/1/-1;4/4` | `0/1/-1;4/4` | refuted |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 549`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/apache/commons-io/pull/860)
+
+With identical compiled caller bytes, 2.22.0 matched the parent on all three histories. With the same mark(2) at offsets zero, one and two, the read windows contained two, one and zero characters. The direct delegate read confirmed the cursor position, and reset returned to the same restricted window on both pins and 2.22.0. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json) · [Additional comparisons](../../verification/merged-pr-links/r01-r50/followup-observations.json)

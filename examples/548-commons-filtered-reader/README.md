@@ -11,3 +11,5 @@ Deleting x first leaves ab in every case. Skipping its first retained character 
 | Challenge | `1/a/98 / 1/a/98 / 1/b/-1` | `1/b/-1 / 1/b/-1 / 1/b/-1` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 548`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/apache/commons-io/pull/931)
+
+With identical compiled caller bytes, 2.22.0 matched the parent on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

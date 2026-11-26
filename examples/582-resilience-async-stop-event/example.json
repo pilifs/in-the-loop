@@ -33,7 +33,8 @@
     "url": "https://github.com/resilience4j/resilience4j/pull/2067"
   },
   "notes": [
-    "The exceptional path branches on the sign before event publication. AsyncContext.onResult publishes RetryOnRetryEvent before returning its interval, and the async decorator stops at a negative value."
+    "The exceptional path branches on the sign before event publication. AsyncContext.onResult publishes RetryOnRetryEvent before returning its interval, and the async decorator stops at a negative value.",
+    "The caller ran on Resilience4j 2.1.0, 2.2.0. A negative interval for a retryable result ended the stage after one call on both releases. Only 2.2.0 emitted the −1 ms retry event. Both original PR pins also emitted it."
   ],
   "verdictLabel": "3/3 merged predictions matched"
 }

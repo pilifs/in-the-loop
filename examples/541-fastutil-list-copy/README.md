@@ -11,3 +11,5 @@ The copied interval is [0,4). Later writes to a caller-owned copy cannot mutate 
 | Challenge | `throws java.lang.ArrayIndexOutOfBoundsException` | `true/[0, 1, 2, 3, 77]/0 / true/[0, 1, 2, 3, 88, 88, 88]/0` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 541`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/vigna/fastutil/pull/325)
+
+With identical compiled caller bytes, 8.5.13 matched the parent and 8.5.14 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)

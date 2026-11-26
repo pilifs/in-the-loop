@@ -11,3 +11,5 @@ The key is known before the value conversion. Independent inner and outer subscr
 | Challenge | `0//[]//same-error / 1/K/[]/same-error/same-error` | `1/K/[]/same-error/same-error / 1/K/[]/same-error/same-error` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 581`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/ReactiveX/RxJava/pull/6664)
+
+With identical compiled caller bytes, 3.0.0-RC3 matched the parent and 3.0.0-RC4, 3.0.0-RC5 matched the landing on all three histories. A synchronous outer observer changed a value used by the selector. The parent and RC3 selected the changed value. The landing, RC4 and RC5 selected the initial value before publishing the group. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json) · [Additional comparisons](../../verification/merged-pr-links/r01-r50/followup-observations.json)

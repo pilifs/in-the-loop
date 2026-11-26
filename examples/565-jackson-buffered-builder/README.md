@@ -11,3 +11,5 @@ Both builds use the timestamped Jackson Core 3.4.0 and annotations 2.24 snapshot
 | Challenge | `5,6,7,8 / 0,0,7,0 / 0,0,7,8 / 5,16,7,8 / 0,0,7,0 / 0,0,7,8` | `5,6,7,8 / 5,6,7,8 / 5,6,7,8 / 5,16,7,8 / 5,16,7,8 / 5,16,7,8` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 565`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/FasterXML/jackson-databind/pull/6407)
+
+Replacing the dated snapshots with Jackson Core 3.3.0 and annotations 2.23 reproduced all six returns or exceptions with the original caller bytes. [Pinned and released companion comparison](../../verification/merged-pr-links/r01-r50/followup-observations.json)

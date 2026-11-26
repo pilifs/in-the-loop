@@ -11,3 +11,5 @@ Identical raw component declarations can represent different parameterized types
 | Challenge | `throws java.lang.IllegalArgumentException` | `Long:1/[Long:2, Long:3, Long:4]/Long:5/true / String:x/[String:y, String:z]/String:w/true / Long:1/[Long:2, Long:3, Long:4]/Long:5/true` | matched |
 
 With the prepared R-series cache, run `python3 examples/tools/build.py 562`. [Questions and falsifiers](comparison.json) · [Caller](caller/PublicCaller.java) · [Runtime inputs](runtime.json) · [Recorded outcomes](observations.json) · [Upstream pull request](https://github.com/square/moshi/pull/1442)
+
+With identical compiled caller bytes, 1.13.0 matched the landing on all three histories. [Release measurements](../../verification/merged-pr-links/r01-r50/release-observations.json)
