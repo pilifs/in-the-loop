@@ -1,0 +1,395 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-025059-setup-build-spring-framework-30020-p27-a",
+  "title": "Setup: build Spring Framework #30020 (P27) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 21m40s, peak 3.5 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-025059-setup-build-spring-framework-30020-p27-a.json",
+    "sha256": "71307fca7050f283c6e5cfb84bb8c231e91319919b3dc6b658b7c040587179fd",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-025059-setup-build-spring-framework-30020-p27-a",
+      "title": "Setup: build Spring Framework #30020 (P27) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P27 (spring-projects/spring-framework#30020: Recording application events from a test's child threads). In the worktrees $P/worktrees/P27-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-test with the Gradle each checkout's wrapper names, runs the landed test classes (JUnit4ApplicationEventsAsyncIntegrationTests JUnitJupiterApplicationEventsIntegrationTests ParallelApplicationEventsIntegrationTests TestNGApplicationEventsAsyncIntegrationTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-test in $P/artifacts/P27-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P27",
+      "submitted": {
+        "at": "2026-11-26T02:50:59+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P27 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P27 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P27 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P27 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P27 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P27 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P27 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P27 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "8db656c304c797d15e9eaedfe2f2d036bec4970d",
+  "startedAt": "2026-11-26T02:51:51+00:00",
+  "finishedAt": "2026-11-26T03:13:52+00:00",
+  "wallSeconds": 1321.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2091580,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3805184000,
+    "wallSeconds": 1300.3,
+    "cpuSeconds": 1079.3,
+    "memoryOfEstimate": 0.59,
+    "durationOfEstimate": 0.87
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P27 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P27 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 551.471,
+      "cpuSeconds": 441.825,
+      "cpuThrottledSeconds": 25.666,
+      "peakMemoryBytes": 3703132160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p27-fix-offline-build-and-land.log",
+        "lines": 47,
+        "bytes": 5802,
+        "sha256": "80091599d9b84862211a9ca07d77153415ff333c90abada96cbcf82195f3fe2d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :spring-beans:processResources",
+        "> Task :spring-test:processResources",
+        "> Task :spring-test:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "class org.springframework.test.context.junit4.event.JUnit4ApplicationEventsAsyncIntegrationTests junit tests=2 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.test.context.junit.jupiter.event.JUnitJupiterApplicationEventsIntegrationTests no-result",
+        "class org.springframework.test.context.junit.jupiter.event.ParallelApplicationEventsIntegrationTests junit tests=2 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.test.context.testng.event.TestNGApplicationEventsAsyncIntegrationTests junit tests=2 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P27-fix/spring-test.runtimeClasspath.txt 108 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P27-fix/spring-test.testRuntimeClasspath.txt 219 entries",
+        "b071314be23db623623c1395cb919ed8638ddbb2b826f2d18a001ef80d9fa86e  jars/spring-test-6.1.0-SNAPSHOT.jar",
+        "7e7698a0a2a015357f006d6af275ade7c09ac55a8d77fe42d5d25beb0ce294d7  tree/spring-aop/build/libs/spring-aop-6.1.0-SNAPSHOT.jar",
+        "9b7f984586db9f3908745ccbef710fb4ac43a83b228d252a1f5d98aa6ea5ff09  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT.jar",
+        "b56b882b3f4dd735b5b3e7265ff61c7151a9c7a154afcca181f45b9ab76be1a7  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "549b7c4123bcdf32346110a1fbb99566fa2f80dcdd535b6b775076ba6d8ad6a4  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT.jar",
+        "ea0ea85c1f04feece9e9eca4f45f3207c84292726c58822debcb99f1373991d1  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "5a339ca347482d36b31211e59b74624320631dea270e2eeb7de0066f33e53e9e  tree/spring-context-support/build/libs/spring-context-support-6.1.0-SNAPSHOT.jar",
+        "aab2591e792d0c79af03a43e67e4a970bd37b0ce53569e2d58b0f789646dcd90  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT.jar",
+        "45197f83cad713e819c3cd855469fef2f4247c27d0fefd922489e3cc2abde9c8  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "62c1cc65bf6b7e62927ea1e0bc82763cd14ea438ab9454fe41373be748b35809  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "77babccfa72da2237e1533fda20a4354be23a65a766b07f4eff5e99789706e57  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "bbad553c5f297b2490937ef5177f14ba6c58bbde85e6e60adf9adb6e2e1bcdce  tree/spring-core-test/build/libs/spring-core-test-6.1.0-SNAPSHOT.jar",
+        "ab0eedc70320cdffed8e7b4648640a509d9286c1e908e4370df370caa57c563a  tree/spring-expression/build/libs/spring-expression-6.1.0-SNAPSHOT.jar",
+        "d24faeeed1471baf9b50a4e020b761cabbc33c1a382a1662e950251ada3b44ac  tree/spring-jcl/build/libs/spring-jcl-6.1.0-SNAPSHOT.jar",
+        "e6462d43dac8e836e87d9a7a4a39880e30c4ef703a98a2c28098728619d9a38f  tree/spring-jdbc/build/libs/spring-jdbc-6.1.0-SNAPSHOT.jar",
+        "ffab9e1f5aee9e58ee6648badf0efa6cfa2704f51d11d3bc30c5335bd5dfb3bb  tree/spring-orm/build/libs/spring-orm-6.1.0-SNAPSHOT.jar",
+        "3a192f017a69ecfbd8717edce6a5fea14dd29e0d33d13fc677c1212d9b915d9b  tree/spring-oxm/build/libs/spring-oxm-6.1.0-SNAPSHOT.jar",
+        "b071314be23db623623c1395cb919ed8638ddbb2b826f2d18a001ef80d9fa86e  tree/spring-test/build/libs/spring-test-6.1.0-SNAPSHOT.jar",
+        "470acd309e4a5f5d60960d4a5449a6c597efddd875eb41311c1a8c8c2e0dc3b0  tree/spring-test/build/libs/spring-test-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "abfa2f5f8b826cc8012638485a2967623ba7f6e707ade8fa90435f223f4536c2  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT.jar",
+        "46d650133a48104a28bfb4db7ccdfe6f301904024cbd03f4f09792b3b03ef470  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "ab0c6f55422a916516517e58f66cac0837b1eb0e543028469713dcbcf686892f  tree/spring-web/build/libs/spring-web-6.1.0-SNAPSHOT.jar",
+        "26106b9959c52b3cddd9ab7dea016d72776aaea038366423a6d4b4a588d06b10  tree/spring-web/build/libs/spring-web-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "5c4e896bc0f9fb1c7254f7afc50ca12f7c55d4a3395e65561c3410a6dbcbb6a1  tree/spring-webflux/build/libs/spring-webflux-6.1.0-SNAPSHOT.jar",
+        "fad05bfd4cbb8a36679679c3b2475d2464988258c1f9c631cc2e6c574a4d07bb  tree/spring-webmvc/build/libs/spring-webmvc-6.1.0-SNAPSHOT.jar",
+        "64be5ec5a5cdbafea0c7e3f85b3d3787d5d9e335b0efaedb0414d04a3383d1c2  tree/spring-websocket/build/libs/spring-websocket-6.1.0-SNAPSHOT.jar",
+        "42a81c7eaf685366bd9e1cc724d159093fedf98c1671def8451ffb125554e5bc  spring-test-6.1.0-SNAPSHOT.jar!/org/springframework/test/context/event/ApplicationEventsHolder.class",
+        "c4bcf52a844b80eb1f9e747d4cccb162ea333977498eae6ed0d339707fe0b539  spring-test-6.1.0-SNAPSHOT.jar!/org/springframework/test/context/event/DefaultApplicationEvents.class",
+        "6d79c4ea0dd1effb565527b7e55012c3d4382bbb12e3c2d08960ce50f244824f  spring-test-6.1.0-SNAPSHOT.jar!/org/springframework/test/context/junit/jupiter/SpringExtension.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P27 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P27 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 534.903,
+      "cpuSeconds": 319.554,
+      "cpuThrottledSeconds": 22.718,
+      "peakMemoryBytes": 3805184000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p27-parent-offline-build-and-t.log",
+        "lines": 47,
+        "bytes": 5543,
+        "sha256": "7bef1d3ebfccb37d70a209235397a829acf436f784457ea6dd5615a0cb1126e4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :spring-beans:processResources",
+        "> Task :spring-test:processResources",
+        "> Task :spring-test:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "class org.springframework.test.context.junit4.event.JUnit4ApplicationEventsAsyncIntegrationTests no-result",
+        "class org.springframework.test.context.junit.jupiter.event.JUnitJupiterApplicationEventsIntegrationTests no-result",
+        "class org.springframework.test.context.junit.jupiter.event.ParallelApplicationEventsIntegrationTests junit tests=2 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.test.context.testng.event.TestNGApplicationEventsAsyncIntegrationTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P27-parent/spring-test.runtimeClasspath.txt 108 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P27-parent/spring-test.testRuntimeClasspath.txt 218 entries",
+        "bbd2a2ef8c6f41e6c41640643c82b2b19fd0a8ec5e76cb1352f3a4cdbc56d877  jars/spring-test-6.1.0-SNAPSHOT.jar",
+        "30bdb4d71ce174419ce4775d661f751884e1c20055f2784be367bf8944956ac6  tree/spring-aop/build/libs/spring-aop-6.1.0-SNAPSHOT.jar",
+        "0f0ffd343f576cb961cfdb3fc22aaf3c37f30b809f4b1cb504b522b0696c36db  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT.jar",
+        "0bd19b3988b2d3505a9eb7bc5e953f2d42564a6000f0eeff26cb250328da39a3  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "a6d4526df8c45c30fad388cca6e14659d25c48644a6e203403b481ed102e6643  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT.jar",
+        "2e12c09bac54e7601fc26211f27c002a27f9a94c4a51643bf071414632d4d598  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "0d3a7835e32eff718009982197f8946f3cda6601fe91f1e135d2ef53e8edb044  tree/spring-context-support/build/libs/spring-context-support-6.1.0-SNAPSHOT.jar",
+        "cdc75487d1828ae70558b54faa08a5755c772a2249d659688d6803bff9c4a188  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT.jar",
+        "bbfc840064a7505f86bdc5885ecad17da37e417d425f98ab9d22a4725f5f102e  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "05765e42d6420662944a81532bdb2bc3cfc42b9cb12b553cf5faf22ccbd93fa2  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "b445f372e5011d09fd2d6db982eed3368fb2960498d3eedd3a467fe7584c2ce8  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "972823c19b0850ffd855dc28aa6cc9be5db0ced781a5427cef47b9f48670f0da  tree/spring-core-test/build/libs/spring-core-test-6.1.0-SNAPSHOT.jar",
+        "d5cd5a7cec283f428d1f41ff024b2501516828fbf97fc8047fa12e33e18bd431  tree/spring-expression/build/libs/spring-expression-6.1.0-SNAPSHOT.jar",
+        "bf272e0a1805ac17127bc771d4366d720e3ed1f9a656f167d68903d4ded2e6af  tree/spring-jcl/build/libs/spring-jcl-6.1.0-SNAPSHOT.jar",
+        "5d3c7365d6cb1b9a8094526bf139748144e0c9f9c89d4c6293494889ac36b8e7  tree/spring-jdbc/build/libs/spring-jdbc-6.1.0-SNAPSHOT.jar",
+        "b21470adde8fb308256ae8db9bb7039314416c9b373d3098bef3d9321ef34808  tree/spring-orm/build/libs/spring-orm-6.1.0-SNAPSHOT.jar",
+        "c980d80420e66d96998c7c7dd73180ca0e6a51d4ddf36b95d20516eab4fcfd4b  tree/spring-oxm/build/libs/spring-oxm-6.1.0-SNAPSHOT.jar",
+        "bbd2a2ef8c6f41e6c41640643c82b2b19fd0a8ec5e76cb1352f3a4cdbc56d877  tree/spring-test/build/libs/spring-test-6.1.0-SNAPSHOT.jar",
+        "02d46e16d5ae0fceb217d5de4edb4f766eaa2da1595e77a90afa5e388d19bf08  tree/spring-test/build/libs/spring-test-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "b479fdbe67cf3eac34d06e82ed6c1207a9d5ba3eff9c6b4bd79ad7d99a2de529  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT.jar",
+        "f2a6a7f712e6ac9db1210a6141f73e5912049ece3b3c087fbbc82f63414dda94  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "ff157fb1b199c0aa53caf8bf6bce1d04a2c995198af5b0c45f548d3904c4f7ed  tree/spring-web/build/libs/spring-web-6.1.0-SNAPSHOT.jar",
+        "c1ac75d2c4aec5cd0df15d7dc621f9cd43cb9b6a1b53f1fd0c572a7103700800  tree/spring-web/build/libs/spring-web-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "1e65171c30b7447c3402c131d0f3d3eb0c1bc33e83bb6aef66a5f5260fff3fb1  tree/spring-webflux/build/libs/spring-webflux-6.1.0-SNAPSHOT.jar",
+        "a64f43674e2aa9f668cc3db833fdeeca1470fdc294749d460c3dc641ac466dfe  tree/spring-webmvc/build/libs/spring-webmvc-6.1.0-SNAPSHOT.jar",
+        "ca937a7e019d026a7b9027f76698a6b6ddee5ceb00a5284eaa09c94a4047b284  tree/spring-websocket/build/libs/spring-websocket-6.1.0-SNAPSHOT.jar",
+        "e5a20c6ac5b9eddd55bb8ac9f7a4eb6b0315bb133159b90ee764efa96546af3a  spring-test-6.1.0-SNAPSHOT.jar!/org/springframework/test/context/event/ApplicationEventsHolder.class",
+        "5f0888ce4c51b8274f6836ac5d824b42562abb1613d59e793beff8ac3232b974  spring-test-6.1.0-SNAPSHOT.jar!/org/springframework/test/context/event/DefaultApplicationEvents.class",
+        "c794460a20f422b7e5aebc8554335644ae7b9143658730a16f9d4266596a30df  spring-test-6.1.0-SNAPSHOT.jar!/org/springframework/test/context/junit/jupiter/SpringExtension.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P27 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P27 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 210.277,
+      "cpuSeconds": 315.969,
+      "cpuThrottledSeconds": 23.872,
+      "peakMemoryBytes": 3470422016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p27-transplant-the-fix-s-tests.log",
+        "lines": 28,
+        "bytes": 3288,
+        "sha256": "bcc0e859686850f4daabed55196f1db6cb41397921df29932f812813825ecc7c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-test/spring-test.gradle",
+        "transplanted spring-test/src/test/java/org/springframework/test/context/junit4/event/JUnit4ApplicationEventsAsyncIntegrationTests.java",
+        "transplanted spring-test/src/test/java/org/springframework/test/context/junit/jupiter/event/JUnitJupiterApplicationEventsIntegrationTests.java",
+        "transplanted spring-test/src/test/java/org/springframework/test/context/junit/jupiter/event/ParallelApplicationEventsIntegrationTests.java",
+        "transplanted spring-test/src/test/java/org/springframework/test/context/testng/event/TestNGApplicationEventsAsyncIntegrationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P27-parent-landed gradle=8.1.1 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=209 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-test:test --tests org.springframework.test.",
+        "junit tests=6 failures=6 errors=0 skipped=0",
+        "junit failed ParallelApplicationEventsIntegrationTests#executeTestsInParallelInstancePerMethod()",
+        "junit failed ParallelApplicationEventsIntegrationTests#rejectTestsInParallelWithInstancePerClassAndRecordApplicationEvents()",
+        "junit failed JUnit4ApplicationEventsAsyncIntegrationTests#asyncPublication",
+        "junit failed JUnit4ApplicationEventsAsyncIntegrationTests#asyncConsumption",
+        "junit failed TestNGApplicationEventsAsyncIntegrationTests#asyncConsumption",
+        "junit failed TestNGApplicationEventsAsyncIntegrationTests#asyncPublication",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:jar",
+        "> Configure project :framework-docs",
+        "> Task :spring-beans:processResources",
+        "> Task :spring-test:processResources",
+        "> Task :spring-test:processTestFixturesResources NO-SOURCE",
+        "class org.springframework.test.context.junit4.event.JUnit4ApplicationEventsAsyncIntegrationTests junit tests=2 failures=2 errors=0 skipped=0 junit failed JUnit4ApplicationEventsAsyncIntegrationTests#asyncPublication junit failed JUnit4ApplicationEventsAsyncIntegrationTests#asyncConsumption ",
+        "class org.springframework.test.context.junit.jupiter.event.JUnitJupiterApplicationEventsIntegrationTests no-result",
+        "class org.springframework.test.context.junit.jupiter.event.ParallelApplicationEventsIntegrationTests junit tests=2 failures=2 errors=0 skipped=0 junit failed ParallelApplicationEventsIntegrationTests#executeTestsInParallelInstancePerMethod() junit failed ParallelApplicationEventsIntegrationTests#rej",
+        "class org.springframework.test.context.testng.event.TestNGApplicationEventsAsyncIntegrationTests junit tests=2 failures=2 errors=0 skipped=0 junit failed TestNGApplicationEventsAsyncIntegrationTests#asyncConsumption junit failed TestNGApplicationEventsAsyncIntegrationTests#asyncPublication ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P27 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P27 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.608,
+      "cpuSeconds": 1.937,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 160579584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p27-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "40456bccea516e98f66c11f4d2851e01af0e372b87585d20b9589ecb5846cd44",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P27"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T03:14:23+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T031352Z-774172c21536e0ec"
+    }
+  }
+}
