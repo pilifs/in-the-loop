@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -95,13 +96,16 @@ def ordered(work, prove=False):
                 where.mkdir(parents=True)
                 artifacts = []
                 for f in files:
-                    (where/f.name).symlink_to(f)
+                    shutil.copyfile(f,where/f.name)
                     artifacts.append(interfaces.Artifact(f.name, upgrade_replay.sha(f),"original" if f==a else "dependency"))
-                selected = bound[key][name]
-                target = {"loadedFrom":b.name,"classSha256":selected["classSha256"],"class":"OrderEntry"}
+                plan = SimpleNamespace(revisions=["after"],engine=engine,kind="prove",target=name,folder=str(scaffold))
+                builder = runtime._Build(where,JDK,{"release":"8"})
+                provider_names=[f.name for f in files]
+                target=runtime._ordered_target(plan,builder,{"jdks":["21"]},provider_names,provider_names[0],None,provider_names[1:])
+                if target["loadedFrom"] != b.name:
+                    raise ValueError("normal preparation selected the wrong entry provider")
                 prepared = SimpleNamespace(source={"target":target}, commit=commit)
                 sides = {"after":(where,prepared,artifacts)}
-                plan = SimpleNamespace(revisions=["after"],engine=engine,kind="prove",target=name,folder=str(scaffold))
                 reports = []
                 for n, prediction in enumerate((int(expected.split()[0]),99)):
                     recipe = recipes.ProofRecipe("direct-method","prove",name,name,tuple(
@@ -141,6 +145,21 @@ def layouts(work):
             raise ValueError(f"manifest recursion differs: {label} {actual}")
         rows.append({"case":5,"profile":label,"resourceOrder":actual,"order":[str(f.relative_to(work)) for f in fs],
                      "edges":graph["manifestClassPath"]["edges"]})
+    # A manifest dependency precedes a later explicit root which defines the same binary name.
+    left=jar(work/"left/lib.jar",compile_sources(work/"left-build",{"Value":"public class Value {public static int get(){return 7;}}"}))
+    right=jar(work/"right/lib.jar",compile_sources(work/"right-build",{"Value":"public class Value {public static int get(){return 9;}}"}))
+    main=compile_sources(work/"root-build",{"Use":"public class Use {public static void main(String[] a){System.out.print(Value.get());}}"},[left])
+    for first, second, expected in (("left","right",7),("right","left",9)):
+        root=jar(work/"root.jar",main,f"Class-Path: {first}/lib.jar {second}/lib.jar")
+        roots=[root,right]
+        files,graph,jdk=launch(roots,additional={"manifestProviders":manifest([left])["classpath"]})
+        bindings=entry_binding.qualify(CHECKER,{"side":(files,graph,jdk)},{"side":["Value#get()I"]})["side"]
+        measured=bindings["Value#get()I"]
+        actual=int(java(roots,"Use"))
+        if measured["providerIndex"]!=1 or actual!=expected or Path(measured["provider"]).parent.name!=first:
+            raise ValueError("manifest and explicit duplicate disagree on the effective owner")
+        rows.append({"case":5,"profile":first+" manifest dependency first","value":actual,"declaredRoots":graph["orderedRoots"],
+                     "order":[str(f.relative_to(work)) for f in files],"binding":measured,"edges":graph["manifestClassPath"]["edges"]})
     return rows
 
 
@@ -152,7 +171,8 @@ def linkage(work):
               try{System.out.print(Lookup.get("k"));}catch(NoSuchMethodError e){System.out.print(e.getClass().getName());}}}'''},[good]))
     store = entry_discovery.Index()
     graphs = {k:launch(files) for k,files in (("wrong first",[client,wrong,good]),("valid first",[client,good,wrong]),
-                                              ("moved",[client,moved,wrong]))}
+                                              ("moved",[client,jar(work/"spacer.jar",{"unused":"empty"}),moved,wrong]),
+                                              ("removed",[client,wrong]),("identical copies",[client,good,moved]))}
     name = "Lookup#get(Ljava/lang/String;)I"
     result = entry_binding.qualify(CHECKER,graphs,{s:[name] for s in graphs})
     rows = []
@@ -160,14 +180,30 @@ def linkage(work):
         outcome = java(files,"App")
         bound = result[k][name]
         view = store.view(files,[r["sha256"] for r in graph["classpath"]],21)
-        if (outcome,bound["status"]) != (("java.lang.NoSuchMethodError","open") if k=="wrong first" else ("42","bound")):
+        if (outcome,bound["status"]) != (("java.lang.NoSuchMethodError","open") if k in ("wrong first","removed") else ("42","bound")):
             raise ValueError(f"{k}: missing member was supplied by a shadow")
         rows.append({"case":6,"profile":k,"question":name,"observed":outcome,"binding":bound,
-                     "origins":view.origins("Lookup"),"originalClientSha256":upgrade_replay.sha(client)})
+                     "origins":view.origins("Lookup",("get","(Ljava/lang/String;)I")),"originalClientSha256":upgrade_replay.sha(client)})
+        if k == "identical copies":
+            definitions = rows[-1]["origins"]
+            if len(definitions)!=2 or definitions[0]["classSha256"] != definitions[1]["classSha256"] or definitions[0]["provider"] == definitions[1]["provider"]:
+                raise ValueError("byte-identical code sources were collapsed")
+    undetermined = launch([client,wrong,good], additional={"ordered":False})
+    pending = entry_binding.qualify(CHECKER, {"unordered":undetermined}, {"unordered":[name]})["unordered"][name]
+    if pending["status"] != "open" or "order is unknown" not in str(pending["firstOpenDependency"]):
+        raise ValueError("an unordered bag of providers selected a winner")
+    old_view=store.view([client,good,wrong],[upgrade_replay.sha(f) for f in [client,good,wrong]],21)
+    moved_files=graphs["moved"][0]
+    new_view=store.view(moved_files,[upgrade_replay.sha(f) for f in moved_files],21)
+    change=next(r for r in entry_discovery.changes(old_view,new_view)[0] if r["owner"]=="Lookup")
+    rows.append({"case":6,"profile":"unordered","question":name,"binding":pending,"origins":old_view.origins("Lookup"),
+                 "observed":"order evidence required","originalClientSha256":upgrade_replay.sha(client)})
+    if not change["providerMoved"]:raise ValueError("the physical index lost the provider move")
+    next(r for r in rows if r["profile"]=="moved")["move"]=change
     return rows
 
 
-def multirelease(work):
+def multirelease(work, check_proofs=False):
     a = jar(work/"empty.jar",{"unused":"A"})
     jarfiles = {}
     for mark in (3,5,7):
@@ -178,7 +214,7 @@ def multirelease(work):
     for mode,header in (("normal","Multi-Release: true"),("folded","Multi-Release: tr\r\n ue")):
         for side,version in (("old",5),("new",7)):
             carrier = jar(work/(mode+side+".jar"),{**jarfiles[3],"META-INF/versions/21/Gate.class":jarfiles[version]["Gate.class"]},header)
-            for feature in ("17","21"):
+            for feature in ("8","17","21"):
                 key = f"{mode}/{side}/{feature}"
                 graphs[key]=launch([a,carrier,reader],feature)
                 expected[key]=version if mode=="normal" and feature=="21" else 3
@@ -194,16 +230,43 @@ def multirelease(work):
         if not mismatch:
             raise ValueError("a different physical class digest was accepted")
         rows.append({"case":8,"profile":key,"actual":actual,"binding":record,"negativeDigestRefusal":mismatch})
+        if check_proofs and key.startswith("normal/") and "/old/" in key:
+            # Probe the unadapted stock command separately to make its selection observable. Product proof
+            # receipts cannot substitute the native resolver's answer for a stock physical-member observation.
+            answers = {}
+            for engine in ("native", "jbmc"):
+                reports = []
+                for value in (actual, 3 if actual != 3 else 5):
+                    argv = [CHECKER,"prove","Gate#marker()I","--classes",files[0],"--classpath",
+                            os.pathsep.join(map(str,files[1:])),"--engine",engine,"--gaps","strict","--assert",f"result == {value}","--json"]
+                    proc = subprocess.run(argv, cwd=work, text=True, capture_output=True, timeout=60,
+                        env={**os.environ,"JAVA_HOME":str(jdk),"PATH":str(jdk/"bin")+os.pathsep+os.environ["PATH"],
+                             "JVMCONTRACT_JAR_RELEASE":key.split("/")[-1]})
+                    result, = json.loads(proc.stdout)
+                    reports.append({"asserted":value,"verdict":result["verdict"],"exit":proc.returncode})
+                answers[engine] = reports
+            if [r["verdict"] for r in answers["native"]] != ["verified", "violation"]:
+                raise ValueError(f"{key}: actual native proof used a different physical class: {answers}")
+            rows[-1]["actualProofs"]=answers
+            prepared = SimpleNamespace(source={"target":{"loadedFrom":files[1].name,"class":"Gate",
+                                                           "classObservation":record["jvm"]}})
+            recipe=recipes.ProofRecipe("direct-method","prove",entry,entry,(),{})
+            try:
+                recipe.bind(SimpleNamespace(engine="jbmc"),str(CHECKER),{"side":(work,prepared,[])},str(work),60)
+            except runtime.Refused as stop:
+                rows[-1]["stockRoute"]=stop.diagnostic
+            else:
+                raise ValueError("stock JBMC was qualified by native multi-release observations")
     return rows
 
 
 if __name__ == "__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode",choices=["order","backend","layouts","linkage","multi-release"])
+    parser.add_argument("mode",choices=["order","backend","layouts","linkage","multi-release","mr-proofs"])
     parser.add_argument("output",type=Path)
     args=parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="entry-controls-") as d:
-        fn={"order":ordered,"backend":lambda w:ordered(w,True),"layouts":layouts,"linkage":linkage,"multi-release":multirelease}[args.mode]
+        fn={"order":ordered,"backend":lambda w:ordered(w,True),"layouts":layouts,"linkage":linkage,"multi-release":multirelease,"mr-proofs":lambda w:multirelease(w,True)}[args.mode]
         result=fn(Path(d))
         change_evidence.write_json(args.output,result)
         print(f"{args.mode}: {len(result)} qualified deployment controls")

@@ -135,7 +135,14 @@ def compare(args, *, original_binary=True, archive_index=None):
             files, launch, jdk = all_graphs[side]
             view = archive_index.view(files, [r["sha256"] for r in launch["classpath"]], int(runtime_jdk.identity(jdk)["feature"]))
         for entry, record in records.items():
-            record["candidateOrigins"] = view.origins(runtime_jar.internal(runtime_jar.parse_target(entry)[0]))
+            owner, name, descriptor = runtime_jar.parse_target(entry)
+            record["candidateOrigins"] = view.origins(runtime_jar.internal(owner), (name, descriptor))
+            if isinstance(record.get("firstOpenDependency"), dict) and "order is unknown" in record["firstOpenDependency"].get("reason", ""):
+                for origin in record["candidateOrigins"]:
+                    origin.update(selected=None, reason="winner depends on the unknown launch order")
+            if "resolvedEntry" in record:
+                owner = runtime_jar.parse_target(record["resolvedEntry"])[0]
+                record["declarationOrigins"] = view.origins(runtime_jar.internal(owner))
         if side in tests:
             continue
         launches[side]["classes"] = [r["checker"] for r in records.values() if "checker" in r]
@@ -168,6 +175,7 @@ def compare(args, *, original_binary=True, archive_index=None):
             plan["previousBindingStatus"] = "historical receipt requires requalification"
     if previous is not None and (previous.get("schema") != SCHEMA or previous.get("change") != plan["change"]):
         raise ValueError("previous report belongs to a different change")
+    prior_claims = {r["id"]: r for r in (previous or {}).get("claims", [])}
     pending = []
     for name, (row, scope, probe, spec) in workflows.items():
         assumptions = row.get("assumptions", [])
@@ -177,8 +185,11 @@ def compare(args, *, original_binary=True, archive_index=None):
                  "seconds": args.seconds, "kind": "production"}
         candidate = next((c for c in inventory["candidates"] if c["entry"] == spec["entry"]), {})
         trace_changes = sorted({s["chain"][-1] for s in candidate.get("sides", {}).values() if s.get("chain")})
-        if trace_changes:
-            basis["traceChangedEntries"] = trace_changes
+        prior = prior_claims.get(name, {})
+        if prior.get("claimKey") == claim_key and prior.get("traceInput") == list(getattr(args, "changed_selector", [])):
+            trace_changes = prior.get("traceChangedEntries", trace_changes)
+        # Direct-entry evidence remains comparable when replacing the other revision makes the bytecode diff empty.
+        basis["traceChangedEntries"] = trace_changes or [spec["entry"]]
         helper = row.get("checkedHelper")
         if helper is not None:
             basis["checkedHelper"] = digest(helper)
@@ -189,6 +200,8 @@ def compare(args, *, original_binary=True, archive_index=None):
                 "status": "open", "firstOpenDependency": "original caller executions"}
         if helper is not None:
             node["derivation"] = "finite public history with a checked, pure helper substituted on both deployments"
+        node["traceChangedEntries"] = basis["traceChangedEntries"]
+        node["traceInput"] = list(getattr(args, "changed_selector", []))
         node["entryBindings"] = {s: digest(bindings[s][spec["entry"]]) for s in graphs}
         plan["claims"].append(node)
         if spec["entry"] in problems:

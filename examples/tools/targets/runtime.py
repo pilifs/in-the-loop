@@ -691,7 +691,7 @@ def _loaded_classes(build, source, workdir, classpath, names, step="loaded-class
     return seen, releases
 
 
-def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_classes=(), dependencies=(), compiled_slice=(), observe=None):
+def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_classes=(), dependencies=(), compiled_slice=(), observe=None, staged_order=False):
     """The loaded target's origin, after refusing shadowed classes and a missing target method; and the original
     methods the adapter calls. A replay task's adapter must reference the target. The prepared record carries this
     reference check for the verifier and the JVM controls.
@@ -708,9 +708,9 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
     for name, holders in runtime_jar.duplicates(classpath, workdir):
         # A shaded module may contain a non-target dependency class also present in
         # the Maven runtime. The subject JVM must confirm which bytes actually load.
-        if (name in declared and (name != target_name or (name in compiled_slice and holders[0] == original))
-                and (original not in holders or holders[0] == original)
-                and all(path == original or path in dependencies for path in holders)):
+        known = (name in declared and (name != target_name or (name in compiled_slice and holders[0] == original))
+                 and (original not in holders or holders[0] == original))
+        if (known or staged_order) and all(path == original or path in dependencies for path in holders):
             resolution[name.replace("/", ".")] = [
                 {"path": path, "classSha256": hashlib.sha256(runtime_jar.read_class(workdir / path, name)).hexdigest()}
                 for path in holders]
@@ -752,7 +752,7 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
         found["classObservation"] = {"by": "LoadedClasses on each JDK the artifact runs on", "jdks": observation["jdks"],
                                      "jdkReleases": observation["jdkReleases"], "sha256": observation["sha256"],
                                      "candidates": observation["candidates"]}
-    if set(ordered_classes) != set(resolution):
+    if set(ordered_classes) - resolution.keys() or not staged_order and set(ordered_classes) != set(resolution):
         raise Refused("classpath", "a declared ordered class does not have multiple dependency providers")
     if resolution:
         found["orderedClasses"] = resolution
@@ -803,13 +803,26 @@ def _ordered_target(plan, build, source, classpath, original, adapter, dependenc
     supplied_original = original
     owner = runtime_jar.parse_target(plan.target)[0]
     providers = [p for p in classpath if p == original or p in dependencies]
+    staged_order = False
+    record_path = Path(plan.folder) / "records/entry-bindings.json" if getattr(plan, "folder", None) else None
+    if record_path and record_path.is_file():
+        from targets.change_plan import saved_bindings
+        report = json.loads(record_path.read_bytes())
+        saved_bindings(report)
+        hashes = [sha256(workdir / path) for path in providers]
+        staged_order = any(r.get("entry") == plan.target and r.get("status") == "bound"
+                           and r.get("profile") == "production"
+                           and [a["sha256"] for a in report["graphs"][r["graph"]]["classpath"]] == hashes
+                           for r in report.get("entryBindings", {}).values())
     holders = [p for p in providers if class_binding.candidates(workdir / p, runtime_jar.internal(owner))]
-    if holders and original not in holders:
+    if holders and (original not in holders or staged_order):
         original = holders[0]
+    if staged_order:
+        dependencies = [p for p in providers if p != original]
     target = _check_classpath(plan, workdir, classpath, original, adapter,
                               ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies, compiled_slice=compiled_slice,
-                              observe=_observer(build, source, workdir, classpath))
-    if original != supplied_original:
+                              observe=_observer(build, source, workdir, classpath), staged_order=staged_order)
+    if original != supplied_original or staged_order:
         seen, releases = _loaded_classes(build, source, workdir, classpath, [owner], step="entry-origin")
         if any(by_name[owner] != (original, target["classSha256"]) for by_name in seen.values()):
             raise Refused("classpath", f"{owner}: original JVM and prepared entry provider disagree")

@@ -18,7 +18,7 @@ QUESTIONS = ("explicit", "omitted")
 
 
 def run(destination):
-    reference = {(r["side"],tuple(r["args"])): r["observations"] for r in json.loads((ORACLE/"processes.json").read_bytes())}
+    reference = {(r["side"],tuple(r["args"])): [{"return": value} for value in r["observations"]] for r in json.loads((ORACLE/"processes.json").read_bytes())}
     strict = json.loads((ORACLE/"first-native.json").read_bytes())
     with tempfile.TemporaryDirectory(prefix="entry-log4j-") as tmp:
         work = Path(tmp)

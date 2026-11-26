@@ -120,6 +120,70 @@ def facade(work):
     return rows
 
 
+def original_client(work):
+    library = "public class Library {public static int read(){return Helper.value();}}"
+    probe = "public class UpgradeProbe {public static String observe(String[] a){return Integer.toString(Client.run());}}"
+    for side, rate, offset in (("old", 1, 10), ("new", 2, 100)):
+        classes = compile_sources(work/side, {
+            "Helper": "public class Helper {public static int value(){return " + str(rate) + ";}}",
+            "Client": "public class Client {public static int run(){return " + str(offset) + "+Library.read();}}",
+            "Library": library})
+        files = [jar(work/side/(name + ".jar"), {name + ".class": classes[name + ".class"]})
+                 for name in ("Helper", "Client", "Library")]
+        doc = manifest(files)
+        doc["commit"] = side
+        doc["classpath"][1]["role"] = "client"
+        WRITE(work/(side + ".json"), doc)
+    entry = "Library#read()I"
+    workflow = register(work, entry, "Original client on a new deployment", 11, probe, after=102)
+    spec = json.loads((work/"scope.json").read_bytes())
+    spec["invocationVia"] = "Client#run()I"
+    WRITE(work/"scope.json", spec)
+    _, result = plan(work,work/"old.json",work/"new.json","comparison",workflow,run=True)
+    adapted = result["claims"][0]
+    original = result["deploymentQuestions"]["originalBinary"]["claims"][0]
+    expected = [("adapted",adapted,102),("original-client",original,12)]
+    rows = []
+    for profile, claim, value in expected:
+        outcome = claim["children"][0]
+        if outcome["old"] != {"return":"11"} or outcome["new"] != {"return":str(value)}:
+            raise ValueError("the wrong artifact was swapped for the original-client comparison")
+        ref = claim["entryBindings"]["new"]
+        bound = result["entryBindings"][ref]
+        graph = result["graphs"][bound["graph"]]
+        if bound["providerIndex"] != 2 or graph["clientIndex"] != 1:
+            raise ValueError("client, helper and entry roles were conflated")
+        rows.append({"case":6,"revision":"new","profile":profile,"entry":entry,"clientIndex":1,"providerIndex":2,
+                     "orderedHashes":[r["sha256"] for r in graph["classpath"]],"actual":value,
+                     "originalReturn":11,"binding":ref,"observedClaimStatus":claim["status"]})
+    if sum(a != b for a,b in zip(rows[0]["orderedHashes"],rows[1]["orderedHashes"],strict=True)) != 1:
+        raise ValueError("original-client comparison changed another provider")
+    return rows
+
+
+def inherited(work):
+    cls = compile_sources(work/"compile", {
+        "Base": "public class Base {public int value(){return 6;}}",
+        "Child": "public class Child extends Base {}"})
+    base = jar(work/"base.jar", {"Base.class":cls["Base.class"]})
+    child = jar(work/"client.jar", {"Child.class":cls["Child.class"]})
+    for side in ("old","new"):
+        WRITE(work/(side+".json"),manifest([child,base]))
+    workflow=register(work,"Child#value()I","Inherited public entry",6,
+        'public class UpgradeProbe {public static String observe(String[] a){return Integer.toString(new Child().value());}}')
+    _,report=plan(work,work/"old.json",work/"new.json","inherited",workflow,run=True)
+    claim=report["claims"][0]
+    if claim["status"]!="established":raise ValueError(claim)
+    rows=[]
+    for side,ref in claim["entryBindings"].items():
+        b=report["entryBindings"][ref]
+        if b["resolvedEntry"]!="Base#value()I" or b["providerIndex"]!=1 or b["symbolicOwner"]["checker"]["index"]!=0:
+            raise ValueError("inherited implementation or symbolic owner was rebound")
+        rows.append({"case":6,"revision":side,"profile":"inherited","entry":claim["entry"],"resolvedEntry":b["resolvedEntry"],
+                     "providerIndex":1,"binding":b,"status":claim["status"],"witness":report["bindingWitnesses"][ref]})
+    return rows
+
+
 def resources(work,slot,second):
     # The discoverer receives neutral filenames only. Its registered answers are opened after it saves the proposals.
     packet=Path.home()/".cache/in-the-loop/beyond-jbmc/panel/evaluation"/slot/"packet"
@@ -163,12 +227,12 @@ def resources(work,slot,second):
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode",choices=["optional","facade","index","index-second","batik"])
+    parser.add_argument("mode",choices=["optional","facade","original-client","inherited","index","index-second","batik"])
     parser.add_argument("output",type=Path)
     args=parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="entry-workflows-") as tmp:
-        if args.mode in ("optional","facade"):
-            result={"optional":optional,"facade":facade}[args.mode](Path(tmp))
+        if args.mode in ("optional","facade","original-client","inherited"):
+            result={"optional":optional,"facade":facade,"original-client":original_client,"inherited":inherited}[args.mode](Path(tmp))
         else:
             result=resources(Path(tmp),"04" if args.mode=="batik" else "15",args.mode=="index-second")
         WRITE(args.output,result)

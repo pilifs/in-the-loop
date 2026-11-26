@@ -136,7 +136,7 @@ class Index:
                 eligible = [v for v in versions if artifact.eligible(v[0], feature)]
                 if eligible:
                     resources[name].append(max(eligible)[1])
-        return View(winners, physical, resources, hashes)
+        return View(winners, physical, resources, hashes, files)
 
     def coverage(self):
         return {"archiveScans": len(self.artifacts), "artifacts": {
@@ -150,8 +150,9 @@ class View:
     physical: dict
     resources: dict
     hashes: list
+    files: list
 
-    def origins(self, owner):
+    def origins(self, owner, member=None):
         winner = self.winners.get(owner)
         origins = []
         for index, definition in self.physical.get(owner, []):
@@ -159,9 +160,15 @@ class View:
             reason = ("effective class in the first provider" if selected else
                       "another provider wins" if winner and winner[0] < index else
                       "physical variant is not effective on this JDK")
-            origins.append({"index": index, "artifactSha256": self.hashes[index], "entry": definition.entry,
+            origins.append({"index": index, "provider": str(self.files[index]), "artifactSha256": self.hashes[index], "entry": definition.entry,
                             "classSha256": definition.sha, "release": definition.release or None,
                             "selected": selected, "reason": reason})
+            if member is not None:
+                methods = definition.methods()
+                flags = methods[member][0] if member in methods else None
+                origins[-1]["member"] = {"name": member[0], "descriptor": member[1], "declared": flags is not None,
+                                         "overloads": sorted(desc for name,desc in methods if name == member[0]),
+                                         **(access(flags) if flags is not None else {})}
         return origins
 
 

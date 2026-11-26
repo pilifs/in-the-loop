@@ -85,7 +85,7 @@ class SideCache:
                 record = json.loads(path.read_text())
                 payload = record["evidence"]
                 if (record["key"] == key and digest(payload) == record["evidenceSha256"]
-                        and self.valid(payload, self.domain(side, report), report["entry"], binding.get("entryArtifactSha256", binding["classpath"][0]), binding.get("requiredHelperProof"))):
+                        and self.valid(payload, self.domain(side, report), binding.get("resolvedEntry", report["entry"]), binding.get("entryArtifactSha256", binding["classpath"][0]), binding.get("requiredHelperProof"))):
                     self.actions[side]["action"] = "exact reuse"
                     return payload
             except (KeyError, TypeError, ValueError):
@@ -95,7 +95,7 @@ class SideCache:
     def remember(self, side, binding, report, loaded_per_input):
         payload = {"trials": binding["trials"], "loadedDependencyClasses": binding["loadedDependencyClasses"],
                    "loadedPerInput": {str(i): sorted(v) for i, v in loaded_per_input.items()}}
-        if self.valid(payload, self.domain(side, report), report["entry"], binding.get("entryArtifactSha256", binding["classpath"][0]), binding.get("requiredHelperProof")):
+        if self.valid(payload, self.domain(side, report), binding.get("resolvedEntry", report["entry"]), binding.get("entryArtifactSha256", binding["classpath"][0]), binding.get("requiredHelperProof")):
             key = self.actions[side]["key"]
             path = self.directory / (key + ".json")
             record = {"key": key, "evidenceSha256": digest(payload), "evidence": payload}
@@ -132,7 +132,7 @@ def compose(spec, report, intent="preserve"):
         for side in ("old", "new"):
             trial = indexed[side].get(i, {})
             cp = sides.get(side, {}).get("classpath", [])
-            values[side] = outcome(trial, spec["entry"], sides[side].get("entryArtifactSha256", cp[0]), sides[side].get("requiredHelperProof")) if cp else None
+            values[side] = outcome(trial, sides[side].get("resolvedEntry", spec["entry"]), sides[side].get("entryArtifactSha256", cp[0]), sides[side].get("requiredHelperProof")) if cp else None
             if trial.get("beforeEntry"):
                 startup[side] = trial["beforeEntry"]
         old, new = values["old"], values["new"]

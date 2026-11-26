@@ -89,6 +89,8 @@ def check_input(path, entry, dependency, *, qualified=None, effective=None):
     if qualified is not None:
         from targets.change_inventory import digest
         binding["entryBinding"] = digest(qualified)
+        if "resolvedEntry" in qualified:
+            binding["resolvedEntry"] = qualified["resolvedEntry"]
     for key in ("operandScope", "declaredDependencyScope", "modulePomSha256"):
         if key in doc:
             binding[key] = doc[key]
@@ -406,13 +408,14 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         first_early = None
         old_loaded = {}
         for side,(files,dependency,side_record) in prepared.items():
+            live_entry = side_record.get("resolvedEntry", caller)
             subject_jdk = jdk if side == "old" else after_jdk
             subject_feature = int(runtime_jdk.identity(subject_jdk)["feature"])
             if after_jdk != jdk:
                 side_record["jdk"] = runtime_jdk.identity(subject_jdk)["release"]
             subject_tools = [subject_jdk/"lib/tools.jar"] if (subject_jdk/"lib/tools.jar").is_file() else []
             launch = [str(subject_jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*subject_tools]),
-                      "UpgradeTrace", caller, str(subject_jdk)]
+                      "UpgradeTrace", live_entry, str(subject_jdk)]
             if trace_changes:
                 launch.insert(1, "-Dupgrade.trace.changed=" + "|".join(trace_changes))
             if inspect_receiver or native_caller:
@@ -463,14 +466,14 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if early:
                         trace_exception = exception_types(trace_exception, early[0]["causes"])
                     child_output, marks, observation_text = run(run_dir, trace_exception)
-                    if (inspect_receiver or native_caller) and "UPGRADE-HIT " + caller in marks:
+                    if (inspect_receiver or native_caller) and "UPGRADE-HIT " + live_entry in marks:
                         trial_record.setdefault("receiverAtEntry", []).append(upgrade_receiver.at_entry(marks))
                     detail = next((line[len("UPGRADE-DETAIL "):] for line in observation_text.splitlines()
                                    if line.startswith("UPGRADE-DETAIL ")), "")
                     if detail:
                         detail = base64.b64decode(detail, validate=True).decode("utf-16-be", "surrogatepass")
                         report["stoppedAt"]["exception"] = detail[:750]
-                    if "UPGRADE-HIT " + caller not in marks:
+                    if "UPGRADE-HIT " + live_entry not in marks:
                         outcome = typed_outcome(observation_text.splitlines())
                         if "throws" not in outcome:
                             raise ValueError(f"{side} input {index}: the original caller method was never entered. {detail}")
@@ -481,7 +484,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                             cause_names = [line[len("UPGRADE-CAUSE "):] for line in observation_text.splitlines()
                                            if line.startswith("UPGRADE-CAUSE ")] or [outcome["throws"]]
                             child_output, marks, observation_text = run(run_dir, exception_types(outcome["throws"], cause_names))
-                        if (typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + caller in marks
+                        if (typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + live_entry in marks
                                 or (trace_exception and trace_exception.split(",")[0] != outcome["throws"])):
                             raise ValueError(f"{side} input {index}: inconsistent failure before the original caller")
                         loaded = class_origins(child_output)
@@ -501,7 +504,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if "throws" in outcome:
                         if not trace_exception:
                             child_output, marks, observation_text = run(temp / f"{side}-{index}-{trial}-escape", outcome["throws"])
-                        if typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + caller not in marks:
+                        if typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + live_entry not in marks:
                             raise ValueError(f"{side} input {index}: inconsistent exception across original caller replays")
                         evidence = throw_evidence(marks, class_origins(child_output), files, side_record["classpath"],
                                                   dependency, observation_text.splitlines())
@@ -530,7 +533,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                                   for line in marks if line.startswith("UPGRADE-CHANGED ")]
                         trial_record.setdefault("changedBodyChains", []).append(chains)
                     trial_record["qualifiedMethodEntries"] += 1
-                    observation,classes=parse_output(child_output,caller,files[side_record["entryProviderIndex"]],dependency,observation_text,escape=escape)
+                    observation,classes=parse_output(child_output,live_entry,files[side_record["entryProviderIndex"]],dependency,observation_text,escape=escape)
                     trials.append(observation)
                     operand_classes.update(classes)
                     loaded_each_time = loaded_each_time and bool(classes)

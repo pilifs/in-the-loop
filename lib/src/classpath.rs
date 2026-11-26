@@ -132,6 +132,17 @@ fn versioned_entries(zip: &crate::zip::ZipArchive) -> Result<JarVersions, Error>
     Ok(JarVersions { mode, entries: out })
 }
 
+fn legacy_boot_archive(home: &Path) -> Option<PathBuf> {
+    if home.join("lib/modules").is_file() { return None }
+    [home.join("jre/lib/rt.jar"), home.join("lib/rt.jar")].into_iter().find(|path| path.is_file())
+}
+
+/// The installation whose boot classes the checker will actually read, including an explicitly selected JDK 8.
+pub(crate) fn binding_java_home() -> Option<PathBuf> {
+    let legacy = std::env::var_os("JAVA_HOME").map(PathBuf::from).filter(|home| legacy_boot_archive(home).is_some());
+    legacy.or_else(JImage::find_java_home)
+}
+
 /// An explicitly bound release for a native check, checked against the actual JDK installation.
 /// A launcher override or an unavailable runtime leaves multi-release classes subject to the conservative refusal.
 pub(crate) fn configured_jar_release() -> Option<u32> {
@@ -141,7 +152,7 @@ pub(crate) fn configured_jar_release() -> Option<u32> {
             return None;
         }
     }
-    let release = std::fs::read_to_string(crate::jimage::JImage::find_java_home()?.join("release")).ok()?;
+    let release = std::fs::read_to_string(binding_java_home()?.join("release")).ok()?;
     let version = release.lines().find_map(|l| l.strip_prefix("JAVA_VERSION="))?.trim_matches('"');
     let feature: u32 = version.strip_prefix("1.").unwrap_or(version).split(|ch: char| !ch.is_ascii_digit()).next()?.parse().ok()?;
     (requested == feature).then_some(requested)
@@ -566,10 +577,7 @@ impl ClassPath {
 
     /// Uses the JDK found through `JAVA_HOME` or `PATH` for JDK class shapes, if there is one.
     pub fn with_default_jdk(mut self) -> ClassPath {
-        let legacy = std::env::var_os("JAVA_HOME").map(PathBuf::from).and_then(|home| {
-            if home.join("lib/modules").is_file() { return None }
-            [home.join("jre/lib/rt.jar"), home.join("lib/rt.jar")].into_iter().find(|p| p.is_file())
-        });
+        let legacy = std::env::var_os("JAVA_HOME").map(PathBuf::from).and_then(|home| legacy_boot_archive(&home));
         self.legacy_boot = None;
         if let Some(archive) = legacy {
             self.legacy_boot = crate::zip::ZipArchive::open(&archive).ok();
@@ -577,7 +585,9 @@ impl ClassPath {
             return self.with_jdk(jdk);
         }
         self.jdk = None;
-        self.jar_release = None;
+        let major = self.legacy_boot.as_ref().and_then(|boot| boot.read("java/lang/Object.class").ok().flatten())
+            .and_then(|bytes| Some(u16::from_be_bytes(bytes.get(6..8)?.try_into().ok()?)));
+        self.jar_release = self.jar_release.filter(|&feature| feature <= 8 && major.map(u32::from) == feature.checked_add(44));
         self.reset_runtime_caches();
         self
     }

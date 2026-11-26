@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-203730-verify-multi-release-entry-binding-acros",
+  "title": "Verify multi-release entry binding across legacy and modular JVM profiles",
+  "description": "Run twelve original Gate deployments across JDK 8, 17 and 21 with ordinary and folded multi-release manifests. Compare exact class origins and sentinel values. Execute matching and deliberately incorrect assertions on the native and raw stock routes and check the separate stock qualification boundary. Recheck inherited symbolic owners, a client in slot one and the one-sided missing-member control.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T20:37:30+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Original JVM and actual multi-release checker routes",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py mr-proofs verification/classpath-entry-discovery/mr-proofs.json",
+      "cwd": "."
+    },
+    {
+      "name": "Bind the inherited declaration",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/workflows.py inherited verification/classpath-entry-discovery/inherited.json",
+      "cwd": "."
+    },
+    {
+      "name": "Only swap the real original client",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/workflows.py original-client verification/classpath-entry-discovery/original-client.json",
+      "cwd": "."
+    },
+    {
+      "name": "Normal preparation and both proof engines",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/prepared-backend.json"
+    }
+  ],
+  "outputs": [
+    "verification/classpath-entry-discovery/mr-proofs.json",
+    "verification/classpath-entry-discovery/prepared-backend.json"
+  ]
+}

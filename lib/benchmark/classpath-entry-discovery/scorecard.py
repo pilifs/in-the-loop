@@ -95,6 +95,14 @@ def main():
         add(6,"Lookup", "moved" if r["profile"]=="moved" else "original",r["profile"],r["question"],"supplied original client",r["question"],
             coverage={"physicalOrigins":r["origins"],"clientSha256":r["originalClientSha256"]},agreement=r["binding"]["status"]=="bound",
             public=r["observed"]=="42",first=r["binding"].get("firstOpenDependency"),status=r["observed"],evidence="linkage.json")
+    for r in read("original-client"):
+        add(6,"Original client",r["revision"],r["profile"],r["entry"],"supplied caller",r["entry"],
+            coverage={"clientIndex":r["clientIndex"],"entryProvider":r["providerIndex"],"actual":r["actual"]},
+            agreement=True,public=True,status=r["observedClaimStatus"],evidence="original-client.json")
+    for r in read("inherited"):
+        add(6,"Inherited declaration",r["revision"],r["profile"],r["entry"],"supplied symbolic owner",r["resolvedEntry"],
+            coverage={"symbolicOwnerIndex":0,"declaringProvider":r["providerIndex"]},agreement=True,public=True,status=r["status"],
+            evidence="inherited.json")
     for r in read("facade"):
         add(7,"Factory and private helper",r["revision"],"original",r["question"],r["inputMode"],r["question"],
             proposed=r["candidates"],coverage={"chain":r["chain"],"publicFactory":r["factory"]},agreement=True,public=True,body=True,

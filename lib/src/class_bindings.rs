@@ -75,7 +75,7 @@ pub fn answer(request: &Request) -> Result<Value, Error> {
         }
         sides.insert(name.clone(), json!({ "bindings": bindings, "entries": entries }));
     }
-    let home = crate::jimage::JImage::find_java_home().map(|h| h.display().to_string());
+    let home = crate::classpath::binding_java_home().map(|h| h.display().to_string());
     Ok(json!({ "schema": SCHEMA, "bound_release": bound, "java_home": home, "sides": sides }))
 }
 

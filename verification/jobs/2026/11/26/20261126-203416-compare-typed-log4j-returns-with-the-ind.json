@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-203416-compare-typed-log4j-returns-with-the-ind",
+  "title": "Compare typed Log4j returns with the independent zone histories",
+  "description": "The previous run completed its cold replay but compared a typed return object to the archive's plain return string. Normalize the archived strings to typed returns and compare every input twice. Exercise both shared-entry claims, the resumed and clean caches, and same-path replacement. Verify every archived plan and receipt offline.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T20:34:16+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Check every scheduling history and its reuse",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/log4j.py verification/classpath-entry-discovery/log4j-replays.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/classpath-entry-discovery/log4j-replays.json",
+    "verification/classpath-entry-discovery/log4j-plans.zip"
+  ]
+}

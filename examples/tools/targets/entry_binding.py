@@ -41,9 +41,9 @@ def observe(jdk, compiled, files, queries):
     return observations
 
 
-def qualify(checker, graphs, entries, *, measurements=None):
+def qualify(checker, graphs, entries, *, measurements=None, resolve_inherited=True):
     """One JVM per named launch and one checker batch per JDK (separate observed MR bindings as needed)."""
-    records, groups = {}, {}
+    records, groups, inherited = {}, {}, {}
     if measurements is None:
         measurements = {}
     measurements.update(jvmProbes=0, checkerBatches=0)
@@ -109,6 +109,9 @@ def qualify(checker, graphs, entries, *, measurements=None):
                         if not problem and selected["entry"] != seen["physicalEntry"]:
                             problem = f"{side}: JVM selected {seen['physicalEntry']}, checker selected {selected['entry']}"
                         if not problem and seen["method"] and not selected["method"]["declared"]:
+                            if resolve_inherited and seen["declaringClass"] not in ("-", owner):
+                                declaration = seen["declaringClass"] + "#" + seen["method"] + seen["descriptor"]
+                                inherited.setdefault(side, {})[entry] = declaration
                             problem = f"{side}: {entry} resolves to {seen['declaringClass']}; checker requires a declared method"
                         if not problem:
                             index = selected["index"]
@@ -120,4 +123,21 @@ def qualify(checker, graphs, entries, *, measurements=None):
                                               physicalEntry=seen["physicalEntry"], classSha256=seen["sha256"])
                     if problem:
                         record["firstOpenDependency"] = problem
+    if inherited:
+        counts = {}
+        declarations = qualify(checker, {s:graphs[s] for s in inherited},
+                               {s:names.values() for s,names in inherited.items()},
+                               measurements=counts, resolve_inherited=False)
+        for k,v in counts.items():
+            measurements[k] += v
+        for side, symbolic in inherited.items():
+            for entry, member in symbolic.items():
+                record = records[side][entry]
+                defining = declarations[side][member]
+                if defining["status"] != "bound":
+                    record["firstOpenDependency"] = {"resolvedEntry":member, "declaration":defining["firstOpenDependency"]}
+                    continue
+                symbolic_owner = {"jvm": record["jvm"], "checker": record["checker"]}
+                record.update(defining, entry=entry, resolvedEntry=member, symbolicOwner=symbolic_owner)
+                record.pop("firstOpenDependency", None)
     return records

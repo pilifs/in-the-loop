@@ -54,10 +54,15 @@ class ProofRecipe:
         if getattr(plan, "folder", None):
             record = Path(plan.folder) / "records/entry-bindings.json"
             if record.is_file():
+                from targets.change_plan import saved_bindings
                 staged = json.loads(record.read_bytes())
+                saved_bindings(staged)
         for revision, (_, prepared, artifacts) in sides.items():
             upstream = prepared.source["target"]
             original = upstream["loadedFrom"]
+            if plan.engine == "jbmc" and upstream.get("classObservation"):
+                raise runtime.Refused("verifier", f"{revision}: stock JBMC has no measured physical member for "
+                                      f"{upstream.get('class', self.subject)} in this multi-release deployment")
             digest = upstream.get("classSha256")
             selected = [a for a in artifacts if a.path == original or a.role in ("original", "dependency", "stub")
                         or (self.correspondence and a.role == "adapter")]

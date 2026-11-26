@@ -375,6 +375,14 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    Both forms check each pinned deployment on its own JVM and ask the native resolver for the exact descriptor.
    Stage 2 can omit workflows to discover public callers from the compiled change. Review competing observations
    with the claim owner. During replay, pass the saved record as `--previous` to `build.py --change-plan application --run`.
+   The manifest's `classpath` lists the declared roots in JVM order. Each root carries `file` and `sha256`.
+   Set `role: client` on the original caller artifact when it occupies a later slot. For a renamed storage file,
+   give the manifest a `deploymentRoot` and each mapped artifact its original absolute `deploymentPath` within
+   that capture. Pin additional local URL targets in `manifestProviders` with the same fields. A known missing
+   optional target is checked again before publication. Use `layoutKnown: false` when deployment locations
+   are missing, and `ordered: false` for an unordered collection. A custom loader can describe its `scope` and
+   `delegation` in `loader`. The default binder qualifies the application loader's parent-first search.
+   Read an archived comparison with `build.py --change-plan bindings REPORT --verify-receipts`.
 4. The change run once on a JVM (the replay task), with the plan's controls, and the mutant's replay.
 5. **How each proof task is invoked,** confirmed without attempting the proof and recorded on the task as
    `invocation` ([`target.schema.json`](../examples/schema/target.schema.json)), with the date and what showed it:
