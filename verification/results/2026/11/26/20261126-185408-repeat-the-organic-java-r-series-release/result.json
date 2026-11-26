@@ -1,0 +1,382 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-185408-repeat-the-organic-java-r-series-release",
+  "title": "Repeat the organic Java R-series release and follow-up histories",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 47.1s, peak 105.7 MiB (estimated 2m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-185408-repeat-the-organic-java-r-series-release.json",
+    "sha256": "98eaf81184b0051843f9cff71cf8d87b32f1350b3e40061389642763e69be6f7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-185408-repeat-the-organic-java-r-series-release",
+      "title": "Repeat the organic Java R-series release and follow-up histories",
+      "description": "Run identical compiled clients for 22 cases on 44 published deployments. Compare 132 outcomes with the original history and the documented Resilience4j 2.1.0 difference. Repeat 42 additional histories for transformed keys, marks, decimal buffer views and Observable group order, and all 18 observations with stable Jackson companions.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:released-runtime",
+        "java:public-caller-replay",
+        "java:original-class-provenance"
+      ],
+      "links": {},
+      "expected": "All 132 published-release observations, 42 additional public histories and 18 dependency comparisons repeat. Both output files must match the committed records byte for byte.",
+      "submitted": {
+        "at": "2026-11-26T18:54:08+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Replay 44 released deployments",
+          "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/r01-r50/release-inputs.json --output verification/merged-pr-links/r01-r50/repeated-releases.json",
+          "cwd": "."
+        },
+        {
+          "name": "Check each released history against its original side",
+          "run": "python3 verification/merged-pr-links/r01-r50/check_releases.py --results verification/merged-pr-links/r01-r50/repeated-releases.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare release receipts",
+          "run": "cmp verification/merged-pr-links/r01-r50/release-observations.json verification/merged-pr-links/r01-r50/repeated-releases.json",
+          "cwd": "."
+        },
+        {
+          "name": "Replay extra histories and stable Jackson dependencies",
+          "run": "python3 verification/merged-pr-links/r01-r50/followups.py --output verification/merged-pr-links/r01-r50/repeated-followups.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the extra histories",
+          "run": "cmp verification/merged-pr-links/r01-r50/followup-observations.json verification/merged-pr-links/r01-r50/repeated-followups.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/r01-r50/repeated-releases.json",
+        "verification/merged-pr-links/r01-r50/repeated-followups.json"
+      ]
+    }
+  },
+  "sourceCommit": "0c0d80712e690992bf36d8d46a657bb9ba3ed0af",
+  "startedAt": "2026-11-26T19:08:47+00:00",
+  "finishedAt": "2026-11-26T19:09:43+00:00",
+  "wallSeconds": 56.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3594782,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 110858240,
+    "wallSeconds": 47.1,
+    "cpuSeconds": 82.2,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay 44 released deployments",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/r01-r50/release-inputs.json --output verification/merged-pr-links/r01-r50/repeated-releases.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 33.665,
+      "cpuSeconds": 59.853,
+      "cpuThrottledSeconds": 3.02,
+      "peakMemoryBytes": 110858240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-44-released-deployments.log",
+        "lines": 48,
+        "bytes": 1921,
+        "sha256": "343c9f5cd2003a00d5b039469e7d23b730eed51f4a1ff02e4db15e457ff83610",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "548 2.22.0 [False, True, False]",
+        "549 2.22.0 [False, False, False]",
+        "550 1.3.1 [False, True, False]",
+        "550 1.3.2 [True, True, True]",
+        "555 2.21.6 [False, True, False]",
+        "555 2.21.7 [True, True, True]",
+        "557 1.10.0 [False, True, False]",
+        "557 1.11.0 [True, True, True]",
+        "562 1.13.0 [True, True, True]",
+        "564 2.21.8 [False, True, False]",
+        "564 2.21.9 [True, True, True]",
+        "568 2.2.224 [False, True, False]",
+        "568 2.3.230 [True, True, True]",
+        "574 1.11.3 [False, True, False]",
+        "574 1.11.4 [True, True, False]",
+        "574 1.12.0 [True, True, False]",
+        "575 1.11.3 [False, True, False]",
+        "575 1.12.0 [True, True, True]",
+        "576 1.18.1 [False, True, False]",
+        "576 1.18.2 [True, True, True]",
+        "578 2.0.6 [False, True, False]",
+        "578 2.0.7 [True, True, True]",
+        "579 3.1.0.RELEASE [False, True, False]",
+        "579 3.1.1.RELEASE [False, True, False]",
+        "579 3.1.2.RELEASE [True, True, True]",
+        "580 3.4.37 [False, True, False]",
+        "580 3.4.38 [True, True, True]",
+        "581 3.0.0-RC3 [True, True, False]",
+        "581 3.0.0-RC4 [True, True, True]",
+        "581 3.0.0-RC5 [True, True, True]",
+        "582 2.1.0 [False, True, False]",
+        "582 2.2.0 [True, True, True]",
+        "583 2.1.0 [False, True, False]",
+        "583 2.2.0 [True, True, True]",
+        "585 3.27.0 [False, True, True]",
+        "585 3.27.1 [True, True, True]",
+        "586 6.1.1 [False, True, False]",
+        "586 6.1.2 [True, True, True]",
+        "587 5.12.1 [False, True, False]",
+        "587 5.12.2 [True, True, True]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check each released history against its original side",
+      "run": "python3 verification/merged-pr-links/r01-r50/check_releases.py --results verification/merged-pr-links/r01-r50/repeated-releases.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.068,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 15876096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-each-released-history-ag.log",
+        "lines": 1,
+        "bytes": 42,
+        "sha256": "4d4e6083d53e3ddd883e88ac1bf80ccfc139b6964edc816b4346281eed206aeb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "132 public release observations verified."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Compare release receipts",
+      "run": "cmp verification/merged-pr-links/r01-r50/release-observations.json verification/merged-pr-links/r01-r50/repeated-releases.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.007,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2088960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-compare-release-receipts.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Replay extra histories and stable Jackson dependencies",
+      "run": "python3 verification/merged-pr-links/r01-r50/followups.py --output verification/merged-pr-links/r01-r50/repeated-followups.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 12.825,
+      "cpuSeconds": 22.312,
+      "cpuThrottledSeconds": 0.796,
+      "peakMemoryBytes": 100003840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-replay-extra-histories-and-sta.log",
+        "lines": 1,
+        "bytes": 73,
+        "sha256": "3513c087c3b177c8b48a90d582e21069a7705db0eeb16e85865a6ff30dc15679",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Additional public histories and release-companion observations replayed."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Compare the extra histories",
+      "run": "cmp verification/merged-pr-links/r01-r50/followup-observations.json verification/merged-pr-links/r01-r50/repeated-followups.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.009,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2134016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-compare-the-extra-histories.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/r01-r50/repeated-releases.json",
+      "change": "added",
+      "bytes": 122408,
+      "sha256": "982ab89eb42556791e7ed08b4c18e05ceecc7495e734b22c81f49d1af6347541",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/r01-r50/repeated-followups.json",
+      "change": "added",
+      "bytes": 15682,
+      "sha256": "abc1a5fdf51e68b062c9c1e304beaf731478fa338a0f666c60b3357a63b95506",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T19:10:00+00:00",
+    "applied": [
+      "verification/merged-pr-links/r01-r50/repeated-releases.json",
+      "verification/merged-pr-links/r01-r50/repeated-followups.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T190943Z-316564dcd77bf3e1",
+      "outputs": "20261126T190943Z-3398207afc35764d",
+      "diff": "20261126T190943Z-36076129ff0f66e3"
+    }
+  }
+}
