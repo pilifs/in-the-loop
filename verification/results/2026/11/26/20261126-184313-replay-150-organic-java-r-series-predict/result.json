@@ -1,0 +1,249 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-184313-replay-150-organic-java-r-series-predict",
+  "title": "Replay 150 organic Java R-series predictions on both revisions",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m32s, peak 164.6 MiB (estimated 3m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-184313-replay-150-organic-java-r-series-predict.json",
+    "sha256": "72e89ea39bf883eef4665a8bfed4238ab748d899fa353bd2161ac48ba0286d3e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-184313-replay-150-organic-java-r-series-predict",
+      "title": "Replay 150 organic Java R-series predictions on both revisions",
+      "description": "Recompile examples 538–587 and repeat every public history on both original revisions. Repeat both Guava distributions, the Parquet and Reactor source overlays, and the real SCOTT, Feign and JUnit callers. Check the original class and input hashes and compare the complete audit.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay",
+        "java:original-class-provenance",
+        "java:library-upgrade"
+      ],
+      "links": {},
+      "expected": "312 fresh JVM observations across 52 deployment pairs, 148 of 150 merged predictions confirmed, two competing predictions observed, all 50 merged intents and control predictions matched. The complete audit is byte-identical.",
+      "submitted": {
+        "at": "2026-11-26T18:43:13+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Replay public histories and check original classes",
+          "run": "python3 verification/merged-pr-links/audit.py --campaign r01-r50 --replay --output verification/merged-pr-links/r01-r50/repeated-audit.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare measured audit",
+          "run": "cmp verification/merged-pr-links/r01-r50/audit.json verification/merged-pr-links/r01-r50/repeated-audit.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/r01-r50/repeated-audit.json"
+      ]
+    }
+  },
+  "sourceCommit": "5298c29ce52e8abd4a219330b65836e789fced4d",
+  "startedAt": "2026-11-26T19:02:47+00:00",
+  "finishedAt": "2026-11-26T19:04:28+00:00",
+  "wallSeconds": 101.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3470373,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 172580864,
+    "wallSeconds": 92.2,
+    "cpuSeconds": 162.6,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.51
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay public histories and check original classes",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign r01-r50 --replay --output verification/merged-pr-links/r01-r50/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 91.979,
+      "cpuSeconds": 162.631,
+      "cpuThrottledSeconds": 8.115,
+      "peakMemoryBytes": 172580864,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-public-histories-and-ch.log",
+        "lines": 320,
+        "bytes": 27623,
+        "sha256": "d84b509453aec9f5daf2605dc2a87e190c94b950de39f6850b8346352f9a5378",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins fix ReactiveX/RxJava#6664.1 {'return': 'K/[7]/complete/complete'}",
+        "pins fix ReactiveX/RxJava#6664.2 {'return': '1/K/[7, 8]/complete/complete'}",
+        "pins fix ReactiveX/RxJava#6664.3 {'return': '1/K/[]/same-error/same-error / 1/K/[]/same-error/same-error'}",
+        "pins parent resilience4j/resilience4j#2067.1 {'return': 'calls=1,retries=[0],errors=0,same-error'}",
+        "pins parent resilience4j/resilience4j#2067.2 {'return': 'calls=2,retries=[1],errors=0,ok'}",
+        "pins parent resilience4j/resilience4j#2067.3 {'return': 'calls=1,retries=[-1],errors=0,again'}",
+        "pins fix resilience4j/resilience4j#2067.1 {'return': 'calls=2,retries=[0],errors=1,same-error'}",
+        "pins fix resilience4j/resilience4j#2067.2 {'return': 'calls=2,retries=[1],errors=0,ok'}",
+        "pins fix resilience4j/resilience4j#2067.3 {'return': 'calls=1,retries=[-1],errors=0,again'}",
+        "pins parent resilience4j/resilience4j#1999.1 {'return': 'gets=1,factories=1,error=java.lang.IllegalAccessException'}",
+        "pins parent resilience4j/resilience4j#1999.2 {'return': 'gets=1,factories=0,result=server'}",
+        "pins parent resilience4j/resilience4j#1999.3 {'return': 'gets=1,factories=1,error=java.lang.IllegalAccessException'}",
+        "pins fix resilience4j/resilience4j#1999.1 {'return': 'gets=1,factories=1,result=fallback'}",
+        "pins fix resilience4j/resilience4j#1999.2 {'return': 'gets=1,factories=0,result=server'}",
+        "pins fix resilience4j/resilience4j#1999.3 {'return': 'gets=2,factories=2,results=[fallback-1, fallback-2]'}",
+        "pins parent remkop/picocli#2036.1 {'throws': 'picocli.CommandLine$ParameterException'}",
+        "pins parent remkop/picocli#2036.2 {'return': '1/true/actual'}",
+        "pins parent remkop/picocli#2036.3 {'throws': 'picocli.CommandLine$ParameterException'}",
+        "pins fix remkop/picocli#2036.1 {'return': '1/true/<null>'}",
+        "pins fix remkop/picocli#2036.2 {'return': '1/true/actual'}",
+        "pins fix remkop/picocli#2036.3 {'return': '1/true/empty / 1/true/empty / 1/true/<null> / 1/true/<null>'}",
+        "pins parent assertj/assertj#3710.1 {'return': 'equal=true,unequal=false'}",
+        "pins parent assertj/assertj#3710.2 {'return': 'equal=true'}",
+        "pins parent assertj/assertj#3710.3 {'return': 'field=one/two,getter=fixed/fixed,equal=true'}",
+        "pins fix assertj/assertj#3710.1 {'return': 'equal=false,unequal=true'}",
+        "pins fix assertj/assertj#3710.2 {'return': 'equal=true'}",
+        "pins fix assertj/assertj#3710.3 {'return': 'field=one/two,getter=fixed/fixed,equal=true'}",
+        "pins parent junit-team/junit-framework#5839.1 {'return': 'leaves=[A, B],unique=2,suite=FAILED/NoTestsDiscoveredException'}",
+        "pins parent junit-team/junit-framework#5839.2 {'return': 'leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException'}",
+        "pins parent junit-team/junit-framework#5839.3 {'return': 'leaves=[A, B],unique=2,suite=FAILED/NoTestsDiscoveredException / leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException'}",
+        "pins fix junit-team/junit-framework#5839.1 {'return': 'leaves=[A, B],unique=2,suite=SUCCESSFUL'}",
+        "pins fix junit-team/junit-framework#5839.2 {'return': 'leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException'}",
+        "pins fix junit-team/junit-framework#5839.3 {'return': 'leaves=[A, B],unique=2,suite=SUCCESSFUL / leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException'}",
+        "pins parent junit-team/junit-framework#4466.1 {'return': '1/1,failed=F,passed=P'}",
+        "pins parent junit-team/junit-framework#4466.2 {'return': '0/1,passed=absent'}",
+        "pins parent junit-team/junit-framework#4466.3 {'return': '1/1,failed=F,passed=P / 1/1,failed=F,passed=absent'}",
+        "pins fix junit-team/junit-framework#4466.1 {'return': '1/1,failed=F,passed=absent'}",
+        "pins fix junit-team/junit-framework#4466.2 {'return': '0/1,passed=absent'}",
+        "pins fix junit-team/junit-framework#4466.3 {'return': '1/1,failed=F,passed=absent / 1/1,failed=F,passed=absent'}",
+        "{\"cases\": 50, \"competingPredictionsMatched\": 2, \"controlsMatchedOnBoth\": 50, \"deploymentPairs\": 52, \"fixedIntentsMatched\": 50, \"fixedPredictionsMatched\": 148, \"fixedRefutations\": 2, \"freshJvms\": 312, \"fullBuildPairs\": 50, \"omittedParentHistories\": 0, \"pairedIntentChanges\": 49, \"parentHistoriesWithou"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Compare measured audit",
+      "run": "cmp verification/merged-pr-links/r01-r50/audit.json verification/merged-pr-links/r01-r50/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.007,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2097152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compare-measured-audit.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/r01-r50/repeated-audit.json",
+      "change": "added",
+      "bytes": 16398,
+      "sha256": "b7dde9feed155fc306c014786ce1aab50ca9dfc0c04d6df76d4f78e5cd9f2def",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T19:04:54+00:00",
+    "applied": [
+      "verification/merged-pr-links/r01-r50/repeated-audit.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T190428Z-912341adf1e7c9da",
+      "outputs": "20261126T190428Z-933376bce2ee9e7d",
+      "diff": "20261126T190428Z-9487571ee12b0829"
+    }
+  }
+}
