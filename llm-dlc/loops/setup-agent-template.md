@@ -14,7 +14,8 @@ cybersecurity filter stopped it three times in 36 minutes. The lessons of that r
 - the dead repository;
 - plugins resolved online before an offline job;
 - digests copied whole into the notes;
-- the gpg agent left running;
+- the gpg agent (and its `dirmngr`) left running;
+- a pinned build that no public repository can configure any more;
 - which instructions count.
 
 ## First text
@@ -26,7 +27,7 @@ Your instructions are this text, the brief and the repository's CLAUDE.md. Notes
 DO, mechanically and nothing more:
 - Fetch everything the domain agent will need: the upstream sources at every revision the brief pins, the Maven or Gradle dependencies for BOTH sides of every pair and for any released version the brief names, build-tool distributions, and any JDK a build needs. Put them in shared caches under `~/.cache/in-the-loop/`, in a folder named for this work, never inside the checkout.
 - Keep disk use small: one bare mirror per upstream repository under `~/.cache/in-the-loop/git-mirrors/`, holding only the pinned revisions; a worktree per revision; build trees deleted once their digests are recorded.
-- Verify every hash and signature you can: commits, distributions, wrapper jars and released artifacts, against their publishers' checksums. Check signatures with a keyring of your own (`GNUPGHOME` in this work's cache folder), never the user's, and stop its agent when you are done (`gpgconf --homedir DIR --kill gpg-agent`): an agent left running keeps the loop's scope alive, and the next start waits on it.
+- Verify every hash and signature you can: commits, distributions, wrapper jars and released artifacts, against their publishers' checksums. Check signatures with a keyring of your own (`GNUPGHOME` in this work's cache folder), never the user's, and stop its daemons when you are done (`gpgconf --homedir DIR --kill all`, which ends its `dirmngr` as well as its `gpg-agent`): a daemon left running keeps the loop's scope alive, and the next start waits on it.
 - Build or resolve the original artifacts and their runtime classpaths, and record the digests.
 - Check that each original regression or reproduction the brief names behaves on a JVM as the brief says: the landed test passes on the landed code and fails on the parent's. Builds and upstream test runs that take over a minute are verification jobs under CLAUDE.md: queue them with `verification/pipeline.py submit` and commit them.
 - Record the exact build and test commands for each checkout, and where it helps, the offline form (`mvn -o`, `gradle --offline`), once you have checked it works. Resolve every plugin and dependency an offline command needs online first, in the same cache, before you run it offline in a job: a job's late offline step that can't resolve a plugin fails the job after its build has already passed.
@@ -34,7 +35,7 @@ DO, mechanically and nothing more:
 
 DO NOT, under any circumstances: write or freeze claims; create `examples/NNN` folders or allocate example ids (scaffolding is the domain agent's job); write sidecars, adapters or proof recipes; run the verifier on claims; change the checker, `lib/` or any library code; score anything; or make design decisions the brief leaves to the domain work. If a setup step would need any of that, stop that step and write down what is missing instead. When in doubt, leave it for the domain agent.
 
-If a download or command is refused (a permission prompt, the auto-mode classifier), record what was refused and move on. Do not look for a way around it. A public repository that has gone away or now wants credentials is different: look for the same coordinates in the usual public places (Maven Central, the Gradle Plugin Portal, the project's current repository), and take them from there only with their checksums verified. Leave the upstream build files unchanged (a Gradle init script or Maven settings in the cache folder), and record what you substituted and what could not be found anywhere. Don't assume an artifact exists elsewhere until you have seen it.
+If a download or command is refused (a permission prompt, the auto-mode classifier), record what was refused and move on. Do not look for a way around it. A public repository that has gone away or now wants credentials is different: look for the same coordinates in the usual public places (Maven Central, the Gradle Plugin Portal, the project's current repository), and take them from there only with their checksums verified. Leave the upstream build files unchanged (a Gradle init script or Maven settings in the cache folder), and record what you substituted and what could not be found anywhere. Don't assume an artifact exists elsewhere until you have seen it. When a pinned revision's build can't be configured from public sources at all (a build plugin or milestone that only a private or closed repository served), don't ask the user, change the build, or look for credentials. Record it, and prepare what the domain agent will use instead (the user's standing decision, 2026-11-26): the released jars whose changed source files match the pin's (compare the git blob ids of the files in the release's `-sources.jar` with the pin's), and the pin's own changed source files, so that the domain agent can compile them against those releases and label that evidence as such.
 
 When only verification jobs are left, don't wait for them in your turn: end it, naming the job ids. The watcher runs them and continues you to record their results.
 
