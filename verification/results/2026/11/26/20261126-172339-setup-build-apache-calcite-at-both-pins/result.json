@@ -1,0 +1,544 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-172339-setup-build-apache-calcite-at-both-pins",
+  "title": "Setup: build Apache Calcite at both pins of #5345 and #4942 and run their landed tests",
+  "status": "passed",
+  "summary": "passed: 8 passed step(s) in 13m58s, peak 4.4 GiB (estimated 1h15m, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-172339-setup-build-apache-calcite-at-both-pins.json",
+    "sha256": "e1779424a4475c216bc2a4cf325105cc2288ed934f5bbf201af097bbf244d95a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-172339-setup-build-apache-calcite-at-both-pins",
+      "title": "Setup: build Apache Calcite at both pins of #5345 and #4942 and run their landed tests",
+      "description": "Setup for cases R33 (apache/calcite#5345, RexSimplify keeps semantics-changing nested casts) and R34 (apache/calcite#4942, sub-millisecond temporal literals survive constant reduction) of llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md; no claims, no verifier. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees, with the Gradle cache resolved online there already (inline, 2026-11-26), offline Gradle 8.14.4 on JDK 21 with the build's default JDK 25 compile toolchain: for each case, builds calcite-core, -linq4j and -testkit at the fix and the parent pins, runs the PR's landed test classes (R33: RexLosslessCastTest, RelToSqlConverterTest, CoreQuidemTest with cast.iq; R34: RexExecutorTest, CalciteSqlOperatorTest for the one-line testkit change), keeps the jars with class digests and the core runtime and test classpaths under $O/artifacts/CASE-ROLE/, then overlays the fix's changed test files on a copy of the parent and runs them again, where the new tests are expected to fail. Each Calcite core build takes several minutes, so the runs are a job. The last steps delete the build trees.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md"
+        ]
+      },
+      "expected": "every step exits 0; the fix and parent steps print 'test rc=0' with their junit summaries in $O/logs/CASE-ROLE.test-offline.junit.txt; each landed step prints LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED and names the failing tests in $O/logs/CASE-parent-landed.test-offline.failures.txt; the clean steps print 'cleaned'",
+      "submitted": {
+        "at": "2026-11-26T17:23:39+00:00",
+        "session": "955141f5-9ccb-41fa-9e12-8a9dfab2ca8b",
+        "by": "setup agent (Claude Opus 5.5), fork D"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "6G",
+        "duration": "75m",
+        "notes": "6 offline Calcite builds (core compile ~4-6 min each with buildSrc cached) plus CoreQuidemTest and CalciteSqlOperatorTest runs; Gradle client 512m, daemon 2g, test JVM ~1-2g"
+      },
+      "steps": [
+        {
+          "name": "R33 fix: calcite core/linq4j/testkit jars, RexLosslessCastTest + RelToSqlConverterTest + CoreQuidemTest, jars/classpaths kept",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 fix",
+          "cwd": "."
+        },
+        {
+          "name": "R33 parent: the same with the parent's own test files",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 parent",
+          "cwd": "."
+        },
+        {
+          "name": "R33 landed: the fix's three test files on a copy of the parent (some expected to fail)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 landed",
+          "cwd": "."
+        },
+        {
+          "name": "R33 clean",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 clean",
+          "cwd": "."
+        },
+        {
+          "name": "R34 fix: calcite jars, RexExecutorTest + CalciteSqlOperatorTest, jars/classpaths kept",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 fix",
+          "cwd": "."
+        },
+        {
+          "name": "R34 parent: the same with the parent's own test files",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 parent",
+          "cwd": "."
+        },
+        {
+          "name": "R34 landed: the fix's test files (RexExecutorTest, testkit SqlOperatorTest) on a copy of the parent (some expected to fail)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 landed",
+          "cwd": "."
+        },
+        {
+          "name": "R34 clean",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "b6859c0a994225e883f52f2acecc76708c124fde",
+  "startedAt": "2026-11-26T17:29:07+00:00",
+  "finishedAt": "2026-11-26T17:43:16+00:00",
+  "wallSeconds": 849.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2815801,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 18000.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 4500.0,
+    "notes": "6 offline Calcite builds (core compile ~4-6 min each with buildSrc cached) plus CoreQuidemTest and CalciteSqlOperatorTest runs; Gradle client 512m, daemon 2g, test JVM ~1-2g"
+  },
+  "usage": {
+    "peakMemoryBytes": 4763000832,
+    "wallSeconds": 838.0,
+    "cpuSeconds": 1996.9,
+    "memoryOfEstimate": 0.74,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "R33 fix: calcite core/linq4j/testkit jars, RexLosslessCastTest + RelToSqlConverterTest + CoreQuidemTest, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 18000.0,
+      "cancelled": false,
+      "wallSeconds": 162.787,
+      "cpuSeconds": 401.229,
+      "cpuThrottledSeconds": 51.451,
+      "peakMemoryBytes": 4047093760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-r33-fix-calcite-core-linq4j-te.log",
+        "lines": 11,
+        "bytes": 1220,
+        "sha256": "3f02a919849384b7e9d526abb71b30b2c7a29f4e9470347e6fac700217a5f3ef",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R33-calcite-fix gradle=8.14.4 jdk=21.0.13.0+9-tem gradle-exit=0 seconds=136 args=--offline --no-scan --continue :core:jar :linq4j:jar :testkit:jar :core:test --tests org.apache.calcite.rex.RexLosslessCastTest --tests org.apache.cal",
+        "junit tests=698 failures=0 errors=0 skipped=0",
+        "BUILD SUCCESSFUL in 2m 15s",
+        "37 actionable tasks: 20 executed, 17 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R33-fix/core.runtimeClasspath.txt 45 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R33-fix/core.testRuntimeClasspath.txt 90 entries",
+        "695fc04c5c811cc6ba28c13b62d1087ad0c47d41b82ba32ddb41a9bb262f55aa  calcite-core-1.43.0-SNAPSHOT.jar",
+        "8d9fa7070a3f0fb6b4e3fb792bd3e7c4d8db10682601741a2501d70cef0a9206  calcite-linq4j-1.43.0-SNAPSHOT.jar",
+        "7b9282c246f3e802cc22616b8cf515212b29a8571b65a9861e8a692d19e2313a  calcite-testkit-1.43.0-SNAPSHOT.jar",
+        "R33 fix test rc=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "R33 parent: the same with the parent's own test files",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 18000.0,
+      "cancelled": false,
+      "wallSeconds": 135.909,
+      "cpuSeconds": 342.367,
+      "cpuThrottledSeconds": 48.655,
+      "peakMemoryBytes": 3560378368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-r33-parent-the-same-with-the-p.log",
+        "lines": 11,
+        "bytes": 1232,
+        "sha256": "d278839dda52e89db688081aef7c2679bece5756bddd4bea97fe52d62e557c38",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R33-calcite-parent gradle=8.14.4 jdk=21.0.13.0+9-tem gradle-exit=0 seconds=108 args=--offline --no-scan --continue :core:jar :linq4j:jar :testkit:jar :core:test --tests org.apache.calcite.rex.RexLosslessCastTest --tests org.apache.",
+        "junit tests=696 failures=0 errors=0 skipped=0",
+        "BUILD SUCCESSFUL in 1m 48s",
+        "37 actionable tasks: 20 executed, 17 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R33-parent/core.runtimeClasspath.txt 45 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R33-parent/core.testRuntimeClasspath.txt 90 entries",
+        "7614e56dae4fa86ffcca4536363c8bf19c114eed39e3086a95d68b287efde9e6  calcite-core-1.43.0-SNAPSHOT.jar",
+        "8d9fa7070a3f0fb6b4e3fb792bd3e7c4d8db10682601741a2501d70cef0a9206  calcite-linq4j-1.43.0-SNAPSHOT.jar",
+        "7b9282c246f3e802cc22616b8cf515212b29a8571b65a9861e8a692d19e2313a  calcite-testkit-1.43.0-SNAPSHOT.jar",
+        "R33 parent test rc=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "R33 landed: the fix's three test files on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 landed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 18000.0,
+      "cancelled": false,
+      "wallSeconds": 134.099,
+      "cpuSeconds": 330.347,
+      "cpuThrottledSeconds": 40.925,
+      "peakMemoryBytes": 4763000832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-r33-landed-the-fix-s-three-tes.log",
+        "lines": 22,
+        "bytes": 1613,
+        "sha256": "1eeb7ab01c6619f87fee654fcb6bc499e26f1795cc6b8599578bd9c6b53855b7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "overlaid core/src/test/java/org/apache/calcite/rel/rel2sql/RelToSqlConverterTest.java",
+        "overlaid core/src/test/java/org/apache/calcite/rex/RexLosslessCastTest.java",
+        "overlaid core/src/test/resources/sql/cast.iq",
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R33-parent-landed gradle=8.14.4 jdk=21.0.13.0+9-tem gradle-exit=1 seconds=134 args=--offline --no-scan --continue :core:jar :linq4j:jar :testkit:jar :core:test --tests org.apache.calcite.rex.RexLosslessCastTest --tests org.apache.calci",
+        "junit tests=698 failures=4 errors=0 skipped=0",
+        "junit failed RelToSqlConverterTest#testBigQueryCast()",
+        "junit failed RexLosslessCastTest#keepInnerCastThatChangesResult()",
+        "junit failed RexLosslessCastTest#testLosslessCastApproximateToChar()",
+        "junit failed CoreQuidemTest#[31] sql/cast.iq",
+        "> Task :core:test FAILED",
+        "",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R33-parent-landed/build/reports/problems/problems-report.html",
+        "--",
+        "* What went wrong:",
+        "Execution failed for task ':core:test'.",
+        "> There were failing tests. See the report at: file:///home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R33-parent-landed/core/build/reports/tests/test/index.html",
+        "--",
+        "BUILD FAILED in 2m 12s",
+        "37 actionable tasks: 37 executed",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "R33 landed rc=1 (failures expected)",
+        "LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "R33 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 18000.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.378,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 4939776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-r33-clean.log",
+        "lines": 1,
+        "bytes": 8,
+        "sha256": "37c3dee866bc87fc3d52b6b053805dfbe5df3d394fdad9ec535f162a4e695941",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "R34 fix: calcite jars, RexExecutorTest + CalciteSqlOperatorTest, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 18000.0,
+      "cancelled": false,
+      "wallSeconds": 152.62,
+      "cpuSeconds": 342.946,
+      "cpuThrottledSeconds": 23.328,
+      "peakMemoryBytes": 3466715136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-r34-fix-calcite-jars-rexexecut.log",
+        "lines": 11,
+        "bytes": 1162,
+        "sha256": "ac5bff383393c29bd91a5ca7bbcc28b6d45b9f783b984d4b33378ae92143a078",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R34-calcite-fix gradle=8.14.4 jdk=21.0.13.0+9-tem gradle-exit=0 seconds=129 args=--offline --no-scan --continue :core:jar :linq4j:jar :testkit:jar :core:test --tests org.apache.calcite.rex.RexExecutorTest --tests org.apache.calcite",
+        "junit tests=606 failures=0 errors=0 skipped=1",
+        "BUILD SUCCESSFUL in 2m 8s",
+        "33 actionable tasks: 20 executed, 13 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R34-fix/core.runtimeClasspath.txt 45 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R34-fix/core.testRuntimeClasspath.txt 90 entries",
+        "bcae09062b08b28864d177d72168318d9c6b5d18d9d1942abb8d0e9bdcb4052e  calcite-core-1.43.0-SNAPSHOT.jar",
+        "aebdc77ec5dab482155a0179858ccd895b721f7cd289a51050c449cc03624ecb  calcite-linq4j-1.43.0-SNAPSHOT.jar",
+        "04a5a73d87f57bb05035bf154ca7173c1278bf33edc47f98ad6da527e02bfcc5  calcite-testkit-1.43.0-SNAPSHOT.jar",
+        "R34 fix test rc=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "R34 parent: the same with the parent's own test files",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 18000.0,
+      "cancelled": false,
+      "wallSeconds": 129.51,
+      "cpuSeconds": 297.794,
+      "cpuThrottledSeconds": 15.656,
+      "peakMemoryBytes": 3136139264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-r34-parent-the-same-with-the-p.log",
+        "lines": 11,
+        "bytes": 1175,
+        "sha256": "45f6ffe2140687ee2313166369b706f7baa4e3e9c19af98a7fa0df1f102580a3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R34-calcite-parent gradle=8.14.4 jdk=21.0.13.0+9-tem gradle-exit=0 seconds=109 args=--offline --no-scan --continue :core:jar :linq4j:jar :testkit:jar :core:test --tests org.apache.calcite.rex.RexExecutorTest --tests org.apache.calc",
+        "junit tests=598 failures=0 errors=0 skipped=1",
+        "BUILD SUCCESSFUL in 1m 48s",
+        "33 actionable tasks: 20 executed, 13 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R34-parent/core.runtimeClasspath.txt 45 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R34-parent/core.testRuntimeClasspath.txt 90 entries",
+        "762297160d3a185c458e46894931dba0e07dfa50096ad4f4823755daaea47a65  calcite-core-1.43.0-SNAPSHOT.jar",
+        "aebdc77ec5dab482155a0179858ccd895b721f7cd289a51050c449cc03624ecb  calcite-linq4j-1.43.0-SNAPSHOT.jar",
+        "7737b9e616b7cce4bf0359c8fe8cee4f0736f809c3702b86cabfd86f1f42b34d  calcite-testkit-1.43.0-SNAPSHOT.jar",
+        "R34 parent test rc=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "R34 landed: the fix's test files (RexExecutorTest, testkit SqlOperatorTest) on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 landed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 18000.0,
+      "cancelled": false,
+      "wallSeconds": 122.071,
+      "cpuSeconds": 281.522,
+      "cpuThrottledSeconds": 16.157,
+      "peakMemoryBytes": 4599496704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-r34-landed-the-fix-s-test-file.log",
+        "lines": 26,
+        "bytes": 1909,
+        "sha256": "204e391eb3d865d8940527188f1c442d5e82f08b97bd258f3a841bb49f383c03",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "overlaid core/src/test/java/org/apache/calcite/rex/RexExecutorTest.java",
+        "overlaid testkit/src/main/java/org/apache/calcite/test/SqlOperatorTest.java",
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R34-parent-landed gradle=8.14.4 jdk=21.0.13.0+9-tem gradle-exit=1 seconds=122 args=--offline --no-scan --continue :core:jar :linq4j:jar :testkit:jar :core:test --tests org.apache.calcite.rex.RexExecutorTest --tests org.apache.calcite.t",
+        "junit tests=606 failures=9 errors=0 skipped=1",
+        "junit failed RexExecutorTest#testReduceTimeCastWithFractionalSeconds()",
+        "junit failed RexExecutorTest#testReduceTimeToVarcharWithFractionalSeconds()",
+        "junit failed RexExecutorTest#testReduceTimestampToVarcharWithFractionalSeconds()",
+        "junit failed RexExecutorTest#testReduceTimestampCastWithFractionalSeconds()",
+        "junit failed RexExecutorTest#testReduceTimeToVarcharWithMilliseconds()",
+        "junit failed RexExecutorTest#testReduceLiteralWithMicroseconds()",
+        "junit failed RexExecutorTest#testReduceTimestampToVarcharWithZeroMilliseconds()",
+        "junit failed RexExecutorTest#testReduceTimeToVarcharWithZeroMilliseconds()",
+        "junit failed CalciteSqlOperatorTest#testConcatWSFunc()",
+        "> Task :core:test FAILED",
+        "",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R34-parent-landed/build/reports/problems/problems-report.html",
+        "--",
+        "* What went wrong:",
+        "Execution failed for task ':core:test'.",
+        "> There were failing tests. See the report at: file:///home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R34-parent-landed/core/build/reports/tests/test/index.html",
+        "--",
+        "BUILD FAILED in 2m",
+        "33 actionable tasks: 33 executed",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "R34 landed rc=1 (failures expected)",
+        "LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 8,
+      "name": "R34 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 18000.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.328,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 3944448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/8-r34-clean.log",
+        "lines": 1,
+        "bytes": 8,
+        "sha256": "37c3dee866bc87fc3d52b6b053805dfbe5df3d394fdad9ec535f162a4e695941",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T17:43:35+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T174316Z-3761133e56c6f103"
+    }
+  }
+}
