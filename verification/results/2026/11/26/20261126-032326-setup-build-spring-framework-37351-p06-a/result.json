@@ -1,0 +1,363 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-032326-setup-build-spring-framework-37351-p06-a",
+  "title": "Setup: build Spring Framework #37351 (P06) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 5m36s, peak 3.2 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-032326-setup-build-spring-framework-37351-p06-a.json",
+    "sha256": "4451bc335b2410c657fa39a99de7ee1cbcff123dc5a3cc2b39d9c98689968f6f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-032326-setup-build-spring-framework-37351-p06-a",
+      "title": "Setup: build Spring Framework #37351 (P06) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P06 (spring-projects/spring-framework#37351: A failed computation leaves no case-insensitive key behind). In the worktrees $P/worktrees/P06-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-core with the Gradle each checkout's wrapper names, runs the landed test classes (LinkedCaseInsensitiveMapTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-core in $P/artifacts/P06-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P06",
+      "submitted": {
+        "at": "2026-11-26T03:23:26+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P06 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P06 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P06 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P06 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P06 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P06 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P06 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P06 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "629f1997d1f51f029e19cbf1f1fefaf3b197dc38",
+  "startedAt": "2026-11-26T03:30:26+00:00",
+  "finishedAt": "2026-11-26T03:36:13+00:00",
+  "wallSeconds": 347.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2262997,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3476598784,
+    "wallSeconds": 336.5,
+    "cpuSeconds": 749.7,
+    "memoryOfEstimate": 0.54,
+    "durationOfEstimate": 0.37
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P06 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P06 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 108.972,
+      "cpuSeconds": 255.614,
+      "cpuThrottledSeconds": 2.228,
+      "peakMemoryBytes": 2453614592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p06-fix-offline-build-and-land.log",
+        "lines": 29,
+        "bytes": 3261,
+        "sha256": "b022e7d37abf9fee6c5900fce9aee0f4300cec4d5b484debcb1724c2c9c448bf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P06-fix gradle=9.8.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=66 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:jar :spring-core:test --tests org.springframew",
+        "junit tests=23 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.util.LinkedCaseInsensitiveMapTests junit tests=23 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P06-fix/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P06-fix/spring-core.testRuntimeClasspath.txt 77 entries",
+        "7224611050fbe55257b777856c5c4548ba6fd700519952a21c08dc9a6929b4fe  jars/spring-core-7.0.10-SNAPSHOT.jar",
+        "7224611050fbe55257b777856c5c4548ba6fd700519952a21c08dc9a6929b4fe  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "7629fb9812c592383d31c1624942d572f63538ee06fefe3d07a8720086319e68  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$1.class",
+        "1fb2164b88d582f7fbde85cc60b81e5ffb59a027615e96a22d5f71f4fc029d18  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$EntryIterator.class",
+        "3b6976b0e2fa88ae3649e9772327f0d1cfd1d2e91c89d89efdcfd5dc5c446069  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$EntrySet.class",
+        "9931249934de7d5f43af7d28326c64717dbbacb5a8883a1d393b9f2b59a6b207  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$EntrySetIterator.class",
+        "24b4e162105cb78d3e330da4de659b660b5d484d1d3029d6717102833d7e09fc  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$KeySet.class",
+        "7e8311a2ab1d0bc411759c3f1ee251a5363188ed87db099ac660c9c45f2fddd5  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$KeySetIterator.class",
+        "45ebd40278da6d852e32ab9134f5a86c82846bfa42826c26748dad0a11a17de8  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$Values.class",
+        "22bc40f882c804eaa6627540ea7ff60f35c5d6710d38c1cadc472e6656275198  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$ValuesIterator.class",
+        "b1a4e0cc6f2faaefcc0102010aa3918ec5e116bc771b15575b23c9f893e668ac  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P06 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P06 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 125.339,
+      "cpuSeconds": 237.63,
+      "cpuThrottledSeconds": 2.364,
+      "peakMemoryBytes": 2427211776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p06-parent-offline-build-and-t.log",
+        "lines": 29,
+        "bytes": 3270,
+        "sha256": "e6c0785388e278059df01cdb07f41039eb7b7ac6fb7c015422a59408ac1b6c2b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P06-parent gradle=9.8.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=63 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:jar :spring-core:test --tests org.springfra",
+        "junit tests=18 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.util.LinkedCaseInsensitiveMapTests junit tests=18 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P06-parent/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P06-parent/spring-core.testRuntimeClasspath.txt 77 entries",
+        "0657582c48cd2e4ac67d89021b4edda4a52e0f4b28712d358deca0d047cf6d48  jars/spring-core-7.0.10-SNAPSHOT.jar",
+        "0657582c48cd2e4ac67d89021b4edda4a52e0f4b28712d358deca0d047cf6d48  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "7629fb9812c592383d31c1624942d572f63538ee06fefe3d07a8720086319e68  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$1.class",
+        "db66858035a4729954cf8c4b93a6e3c63e580033c7f55ad18be5c3f40ce8a0aa  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$EntryIterator.class",
+        "6126160d208ad705dbafd625e4d17b56bc7cffdd626e494f477e680dac389324  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$EntrySet.class",
+        "fbcd9e0c593a38dbb07ca2f78f7567378d17023e312366350c95f30673c9713b  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$EntrySetIterator.class",
+        "368782acf37a71fabf704ec3d9408d20ec26bf917dfc334bef12b54a17114feb  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$KeySet.class",
+        "2efae57cbcd7c324f6e2c25c437f3dd9d4e1b1a5aaed60f9254625401180cd58  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$KeySetIterator.class",
+        "4f7ccde15ae0cee138bab222cfd42e0020c25985051c542a8d28233632837238  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$Values.class",
+        "8748439b0b923a0c0cbbe8db77456b47af11cac4367335efe207e569a5255bdb  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap$ValuesIterator.class",
+        "d95ddb1b6a2b9e96161e5297d1e14b37bb240655c3eb6c9f4e202b2848fa76d7  spring-core-7.0.10-SNAPSHOT.jar!/org/springframework/util/LinkedCaseInsensitiveMap.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P06 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P06 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 97.939,
+      "cpuSeconds": 254.427,
+      "cpuThrottledSeconds": 25.412,
+      "peakMemoryBytes": 3476598784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p06-transplant-the-fix-s-tests.log",
+        "lines": 18,
+        "bytes": 1496,
+        "sha256": "17cbf3c3f74b9fe4389eae93eae463809cf5c2d9a2eaf1ca71d952d91b752ea9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-core/src/test/java/org/springframework/util/LinkedCaseInsensitiveMapTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P06-parent-landed gradle=9.8.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=97 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:test --tests org.springframework.util.Li",
+        "junit tests=23 failures=3 errors=0 skipped=0",
+        "junit failed LinkedCaseInsensitiveMapTests#computeIfAbsentWithFailingMappingFunction()",
+        "junit failed LinkedCaseInsensitiveMapTests#computeIfAbsentAfterNullComputedValueUsesGivenKey()",
+        "junit failed LinkedCaseInsensitiveMapTests#computeIfAbsentWithNullComputedValue()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.util.LinkedCaseInsensitiveMapTests junit tests=23 failures=3 errors=0 skipped=0 junit failed LinkedCaseInsensitiveMapTests#computeIfAbsentWithFailingMappingFunction() junit failed LinkedCaseInsensitiveMapTests#computeIfAbsentAfterNullComputedValueUsesGivenKey() junit failed",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P06 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P06 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 4.209,
+      "cpuSeconds": 2.061,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 175300608,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p06-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "9bb980346c211b040fbb2061e337655ac143020dd0f54b4285a9f5ff14f5a73a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P06"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T03:36:38+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T033613Z-783248ab343e381d"
+    }
+  }
+}
