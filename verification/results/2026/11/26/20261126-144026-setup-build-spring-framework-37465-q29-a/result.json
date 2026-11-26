@@ -1,0 +1,365 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-144026-setup-build-spring-framework-37465-q29-a",
+  "title": "Setup: build Spring Framework #37465 (Q29) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 5m03s, peak 3.3 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-144026-setup-build-spring-framework-37465-q29-a.json",
+    "sha256": "bbf958b976e87a902331df5b836f1985a15e08fbc0f9a23a66fe15bae7af0adb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-144026-setup-build-spring-framework-37465-q29-a",
+      "title": "Setup: build Spring Framework #37465 (Q29) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, case Q29 (spring-projects/spring-framework#37465: Read retry counts and exception history inside retry callbacks). In the worktrees $P/worktrees/Q29-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-q01-q30), offline (dependencies resolved online beforehand), it builds the jars of spring-core with the Gradle each checkout's wrapper names, runs the landed test classes (RetryTemplateTests CompositeRetryListenerTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-core in $P/artifacts/Q29-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned Q29",
+      "submitted": {
+        "at": "2026-11-26T14:40:26+00:00",
+        "session": "56626182-a69a-4945-91c7-07e11b9bb46a",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "Q29 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q29 fix",
+          "cwd": "."
+        },
+        {
+          "name": "Q29 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q29 parent",
+          "cwd": "."
+        },
+        {
+          "name": "Q29 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q29 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "Q29 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q29 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4607cc1187f24d79e63ce5f7633a41338f4dd5d5",
+  "startedAt": "2026-11-26T14:58:13+00:00",
+  "finishedAt": "2026-11-26T15:03:27+00:00",
+  "wallSeconds": 314.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1664671,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3501576192,
+    "wallSeconds": 303.4,
+    "cpuSeconds": 701.9,
+    "memoryOfEstimate": 0.54,
+    "durationOfEstimate": 0.25
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Q29 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q29 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 98.536,
+      "cpuSeconds": 242.854,
+      "cpuThrottledSeconds": 6.89,
+      "peakMemoryBytes": 2582065152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-q29-fix-offline-build-and-land.log",
+        "lines": 28,
+        "bytes": 3044,
+        "sha256": "d529aa5810f48a515b2e901b0a4bf1f38b8cd8c7ecd6f2704d42181041747fee",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q29-fix gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=58 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:jar :spring-core:test --tests org.springframew",
+        "junit tests=31 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.core.retry.RetryTemplateTests junit tests=24 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.core.retry.support.CompositeRetryListenerTests junit tests=7 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q29-fix/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q29-fix/spring-core.testRuntimeClasspath.txt 77 entries",
+        "f3b9d4a635f4f692e5321603b46801d154e8e86abfb5aef42835d618f14c7d1a  jars/spring-core-7.1.0-SNAPSHOT.jar",
+        "f3b9d4a635f4f692e5321603b46801d154e8e86abfb5aef42835d618f14c7d1a  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "2ce215ae47ac4d69ab071a534b1f8c6588feb69de1bc28c4e57246b9803882e5  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "bf39fbe04424dc8d339d5e5bae7be05fd75fe285d99e0e7edbcc5e799373277e  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryListener.class",
+        "3ba8b900d3a3b4b9b42fd90a76187700d82afd8b67101ce1bf1152bbb66ed727  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate$1.class",
+        "4408c3655c864b902df02681b8f31cbd4d70cb9154a01da1f5d895bc395aa322  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate$2.class",
+        "0fd2aebb49e8fcae003d5b5694a35663c8e57ecefe6ac3f1e8c51bbb7207bcea  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate$3.class",
+        "59d17de4d91b32e041cdf158d387d355c095f2ecbc5a9831ab77df1445cb339e  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate$MutableRetryState.class",
+        "2c1e3c9e1a5d769ed6395b823f14e6e1a5b382625804484473643a400a5eb1a4  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate.class",
+        "bebef62722d9ed395edb529ea510a452dd01cddd43414caddbbff0e2b1624134  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/support/CompositeRetryListener.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Q29 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q29 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 113.393,
+      "cpuSeconds": 245.632,
+      "cpuThrottledSeconds": 2.456,
+      "peakMemoryBytes": 2479730688,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-q29-parent-offline-build-and-t.log",
+        "lines": 28,
+        "bytes": 3053,
+        "sha256": "41704bd9b276b0d94ef1cf88e427821d80cbeb1768b3af915230cd8f8f7dc513",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q29-parent gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=79 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:jar :spring-core:test --tests org.springfra",
+        "junit tests=31 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.core.retry.RetryTemplateTests junit tests=24 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.core.retry.support.CompositeRetryListenerTests junit tests=7 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q29-parent/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q29-parent/spring-core.testRuntimeClasspath.txt 77 entries",
+        "3d5e0896f4c86f0edbb264c12b3a74dd8ef3be06323f5a5e0e292354dc083cbd  jars/spring-core-7.1.0-SNAPSHOT.jar",
+        "3d5e0896f4c86f0edbb264c12b3a74dd8ef3be06323f5a5e0e292354dc083cbd  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "2ce215ae47ac4d69ab071a534b1f8c6588feb69de1bc28c4e57246b9803882e5  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "dbc99f8c2a71f035156fc219d7c7995dcb37d5e9b94326c940323701d3f4d1cc  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryListener.class",
+        "3ba8b900d3a3b4b9b42fd90a76187700d82afd8b67101ce1bf1152bbb66ed727  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate$1.class",
+        "4408c3655c864b902df02681b8f31cbd4d70cb9154a01da1f5d895bc395aa322  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate$2.class",
+        "0fd2aebb49e8fcae003d5b5694a35663c8e57ecefe6ac3f1e8c51bbb7207bcea  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate$3.class",
+        "59d17de4d91b32e041cdf158d387d355c095f2ecbc5a9831ab77df1445cb339e  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate$MutableRetryState.class",
+        "7e1299b546cdb6d433e0a0a0c6023c90ffa05f0bcb721d3565d52796af69d830  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/RetryTemplate.class",
+        "ffd88c6f534ea9ec610766b0f787f59bd77ad9e1eb9db2a60babbcc33acdca12  spring-core-7.1.0-SNAPSHOT.jar!/org/springframework/core/retry/support/CompositeRetryListener.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Q29 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q29 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 90.222,
+      "cpuSeconds": 212.418,
+      "cpuThrottledSeconds": 20.599,
+      "peakMemoryBytes": 3501576192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-q29-transplant-the-fix-s-tests.log",
+        "lines": 22,
+        "bytes": 2561,
+        "sha256": "ad980022000475bf9459efc9baeefdc506e9fda7199d9a5936cb91cc642c2b4d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-core/src/test/java/org/springframework/core/retry/RetryTemplateTests.java",
+        "transplanted spring-core/src/test/java/org/springframework/core/retry/support/CompositeRetryListenerTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q29-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=90 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:test --tests org.springframework.core.re",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.core.retry.RetryTemplateTests no-result",
+        "class org.springframework.core.retry.support.CompositeRetryListenerTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q29-parent-landed/spring-core/src/test/java/org/springframework/core/retry/support/CompositeRetryListenerTests.java:82: error: method onRetrySuccess in class CompositeRetryListener cannot be applied to given types;",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q29-parent-landed/spring-core/src/test/java/org/springframework/core/retry/support/CompositeRetryListenerTests.java:84: error: method onRetrySuccess in interface RetryListener cannot be applied to given types;",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q29-parent-landed/spring-core/src/test/java/org/springframework/core/retry/support/CompositeRetryListenerTests.java:85: error: method onRetrySuccess in interface RetryListener cannot be applied to given types;",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q29-parent-landed/spring-core/src/test/java/org/springframework/core/retry/support/CompositeRetryListenerTests.java:86: error: method onRetrySuccess in interface RetryListener cannot be applied to given types;",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q29-parent-landed/spring-core/src/test/java/org/springframework/core/retry/support/CompositeRetryListenerTests.java:93: error: method onRetryFailure in class CompositeRetryListener cannot be applied to given types;",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Q29 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q29 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 1.203,
+      "cpuSeconds": 1.008,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 51515392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-q29-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "b9966900bd435d051cb7dcc00b189d120eab3a350c8c00fb0a12f93132cf11d8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned Q29"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T15:03:49+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T150327Z-4295780d936a48d4"
+    }
+  }
+}
