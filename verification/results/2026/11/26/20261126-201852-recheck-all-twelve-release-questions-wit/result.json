@@ -1,0 +1,444 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-201852-recheck-all-twelve-release-questions-wit",
+  "title": "Recheck all twelve release questions with their own entry witnesses",
+  "status": "passed",
+  "summary": "passed: 6 passed step(s) in 2m14s, peak 378.5 MiB (estimated 3m00s, 3.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-201852-recheck-all-twelve-release-questions-wit.json",
+    "sha256": "6888e99c0a7253e967fb19e9b66067de8ae30eba961e4a0ee3c954d121cff682",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-201852-recheck-all-twelve-release-questions-wit",
+      "title": "Recheck all twelve release questions with their own entry witnesses",
+      "description": "The first panel job established both Sisu finite claims but labeled the shared entry receipt with the last claim id. This replay checks each claim against its own original method hits and recorded release outcomes, then withholds deployment locations. All six slots produce independent records, including the dom4j control.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T20:18:52+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Replay panel 03",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 03 verification/classpath-entry-discovery/panel-03.json",
+          "cwd": "."
+        },
+        {
+          "name": "Replay panel 04",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 04 verification/classpath-entry-discovery/panel-04.json",
+          "cwd": "."
+        },
+        {
+          "name": "Replay panel 08",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 08 verification/classpath-entry-discovery/panel-08.json",
+          "cwd": "."
+        },
+        {
+          "name": "Replay panel 10",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 10 verification/classpath-entry-discovery/panel-10.json",
+          "cwd": "."
+        },
+        {
+          "name": "Replay panel 13",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 13 verification/classpath-entry-discovery/panel-13.json",
+          "cwd": "."
+        },
+        {
+          "name": "Replay panel 16",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 16 verification/classpath-entry-discovery/panel-16.json",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/classpath-entry-discovery/panel-03.json",
+        "verification/classpath-entry-discovery/panel-04.json",
+        "verification/classpath-entry-discovery/panel-08.json",
+        "verification/classpath-entry-discovery/panel-10.json",
+        "verification/classpath-entry-discovery/panel-13.json",
+        "verification/classpath-entry-discovery/panel-16.json"
+      ]
+    }
+  },
+  "sourceCommit": "6740a83542214ef2cf8d06c3247ad2d409cb59f9",
+  "startedAt": "2026-11-26T20:28:37+00:00",
+  "finishedAt": "2026-11-26T20:34:06+00:00",
+  "wallSeconds": 329.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 175616,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 396849152,
+    "wallSeconds": 134.2,
+    "cpuSeconds": 152.2,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.75
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay panel 03",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 03 verification/classpath-entry-discovery/panel-03.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 13.235,
+      "cpuSeconds": 14.671,
+      "cpuThrottledSeconds": 1.915,
+      "peakMemoryBytes": 162533376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-panel-03.log",
+        "lines": 3,
+        "bytes": 174,
+        "sha256": "65b3d1e8728230083711e043cd2758bc82de6957d022dbc4f270593a3ffa6879",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/qualified-release-03-z96k36nl/captured.json",
+        "2 claims in /tmp/qualified-release-03-z96k36nl/withheld.json",
+        "03 both captured questions checked on both releases"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay panel 04",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 04 verification/classpath-entry-discovery/panel-04.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 22.067,
+      "cpuSeconds": 29.19,
+      "cpuThrottledSeconds": 4.566,
+      "peakMemoryBytes": 384901120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-panel-04.log",
+        "lines": 3,
+        "bytes": 174,
+        "sha256": "3881e7b706c351d4bf1e884b90e8a19c53fc8c119d299f16594da328dbac0234",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/qualified-release-04-k3d7m_yg/captured.json",
+        "2 claims in /tmp/qualified-release-04-k3d7m_yg/withheld.json",
+        "04 both captured questions checked on both releases"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Replay panel 08",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 08 verification/classpath-entry-discovery/panel-08.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 28.662,
+      "cpuSeconds": 27.256,
+      "cpuThrottledSeconds": 1.721,
+      "peakMemoryBytes": 175955968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-replay-panel-08.log",
+        "lines": 3,
+        "bytes": 174,
+        "sha256": "ac5ac6041eec4859af9285a24e0793277ffb8baa00304f94d80dbd91563814a7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/qualified-release-08-0246ycz_/captured.json",
+        "2 claims in /tmp/qualified-release-08-0246ycz_/withheld.json",
+        "08 both captured questions checked on both releases"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Replay panel 10",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 10 verification/classpath-entry-discovery/panel-10.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 18.304,
+      "cpuSeconds": 21.537,
+      "cpuThrottledSeconds": 1.211,
+      "peakMemoryBytes": 153128960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-replay-panel-10.log",
+        "lines": 3,
+        "bytes": 174,
+        "sha256": "0fe18f3fc88b74526f9b776bf6d222a73997f4631c4a95f0ea9eb63b450075e7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/qualified-release-10-mwgzm49t/captured.json",
+        "2 claims in /tmp/qualified-release-10-mwgzm49t/withheld.json",
+        "10 both captured questions checked on both releases"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Replay panel 13",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 13 verification/classpath-entry-discovery/panel-13.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 32.904,
+      "cpuSeconds": 36.196,
+      "cpuThrottledSeconds": 2.397,
+      "peakMemoryBytes": 396849152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-replay-panel-13.log",
+        "lines": 3,
+        "bytes": 174,
+        "sha256": "5ad1cc5683d0a3fa82467097923ff96728cd65f00d58c03efc800e7b00526caa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/qualified-release-13-ikss9qcj/captured.json",
+        "2 claims in /tmp/qualified-release-13-ikss9qcj/withheld.json",
+        "13 both captured questions checked on both releases"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "Replay panel 16",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/panel.py 16 verification/classpath-entry-discovery/panel-16.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 19.058,
+      "cpuSeconds": 23.375,
+      "cpuThrottledSeconds": 1.712,
+      "peakMemoryBytes": 153350144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-replay-panel-16.log",
+        "lines": 3,
+        "bytes": 174,
+        "sha256": "d633794a570f5164ab70411cef18e72232b5f45de2dd94fb3ac0548280123979",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/qualified-release-16-7t0ezp7s/captured.json",
+        "2 claims in /tmp/qualified-release-16-7t0ezp7s/withheld.json",
+        "16 both captured questions checked on both releases"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/classpath-entry-discovery/panel-03.json",
+      "change": "modified",
+      "bytes": 11187,
+      "sha256": "e3bc304824f641c1c319b9988d847bfce6aab8e30e91e30d3a95cc4a64e29db4",
+      "sourceSha256": "1f4727b6767b8af5211f007d50b75696dcc5be4ac059bfa11b88bc4b9352f4ec"
+    },
+    {
+      "path": "verification/classpath-entry-discovery/panel-04.json",
+      "change": "added",
+      "bytes": 12273,
+      "sha256": "4f08b1d6d3b605441aaca700b7b8f00cdf722eddc8f2b140949e858a34f08fad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/classpath-entry-discovery/panel-08.json",
+      "change": "added",
+      "bytes": 11937,
+      "sha256": "12abd71825ca14ea824f2bbe7dc18ffb80abcb0be063ad82c62603a767d06309",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/classpath-entry-discovery/panel-10.json",
+      "change": "added",
+      "bytes": 11057,
+      "sha256": "bab33c8d8252ed2135237b228a169536c711022de09f8bc68ad6880e77ed7bc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/classpath-entry-discovery/panel-13.json",
+      "change": "added",
+      "bytes": 12185,
+      "sha256": "2e2dd0ac849e0219870bbd450490e426ed0bb3ecd29a4865603ecf2ef1f0df87",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/classpath-entry-discovery/panel-16.json",
+      "change": "added",
+      "bytes": 11547,
+      "sha256": "98f18a7aec39f4a574863c236a6f2418694ae66dc4f318fefc8d50a991fe1ffc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T20:34:36+00:00",
+    "applied": [
+      "verification/classpath-entry-discovery/panel-04.json",
+      "verification/classpath-entry-discovery/panel-08.json",
+      "verification/classpath-entry-discovery/panel-10.json",
+      "verification/classpath-entry-discovery/panel-13.json",
+      "verification/classpath-entry-discovery/panel-16.json"
+    ],
+    "conflicts": [
+      "verification/classpath-entry-discovery/panel-03.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "cce54373dc67ee5aafed6cde0874e7d252e44e6b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cce54373dc67ee5aafed6cde0874e7d252e44e6b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T203406Z-5799798f961ec1cc",
+      "outputs": "20261126T203406Z-6135584c63d1d6bf",
+      "diff": "20261126T203406Z-6344760a6300ead2"
+    }
+  }
+}
