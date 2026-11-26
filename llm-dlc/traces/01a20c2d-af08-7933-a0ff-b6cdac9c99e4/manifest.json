@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize q",
   "client": {
@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-25T23:40:04.829Z",
-  "duration_seconds": 149354,
+  "ended": "2026-11-26T01:55:23.930Z",
+  "duration_seconds": 157473,
   "stats": {
-    "turns": 25,
-    "api_calls": 4633,
-    "tool_calls": 11591,
+    "turns": 26,
+    "api_calls": 4727,
+    "tool_calls": 11854,
     "tool_errors": 243,
     "compactions": 19,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 6087854,
-      "output_tokens": 2574175,
-      "cache_read_input_tokens": 1285727488,
+      "input_tokens": 6215942,
+      "output_tokens": 2640564,
+      "cache_read_input_tokens": 1302798208,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 6450,
-    "exec": 4421,
-    "apply_patch": 551,
+    "Bash": 6611,
+    "exec": 4515,
+    "apply_patch": 559,
     "wait": 88,
     "sleep": 75,
     "send_message_to_user_async": 5,
@@ -701,24 +701,24 @@
     {
       "index": 19,
       "started": "2026-11-25T23:37:45.342Z",
-      "ended": "2026-11-25T23:40:04.829Z",
-      "turns": 1,
-      "api_calls": 6,
+      "ended": "2026-11-26T01:55:23.930Z",
+      "turns": 2,
+      "api_calls": 100,
       "usage": {
-        "input_tokens": 35408,
-        "output_tokens": 5759,
-        "cache_read_input_tokens": 223104,
+        "input_tokens": 163496,
+        "output_tokens": 72148,
+        "cache_read_input_tokens": 17293824,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 52972
+      "peak_context_tokens": 241211
     }
   ],
   "log": {
-    "sha256": "f3647bd11c00be2ca2295ff816151c1c291e6012eb144cbd7ed32171557918ed",
-    "bytes": 70124497,
-    "lines": 36576,
-    "gzip_bytes": 12859442,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/f3647bd11c00be2ca2295ff816151c1c291e6012eb144cbd7ed32171557918ed.jsonl.gz"
+    "sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391",
+    "bytes": 72133707,
+    "lines": 37337,
+    "gzip_bytes": 13199286,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2073,6 +2073,214 @@
       "summary": "Record all three completed N01–N05 verification jobs",
       "body": "The independent comparison reran all 34 public histories, including both failure boundaries and the ordinary control on a fresh MySQL 9.1.0 server. Its audit was byte-identical to the registered results. Two debugger jobs qualified 40 additional JVM trials through the four registered original methods.\n\nReopened all four collected debugger reports and checked every selected input, invocation site, caller class, dependency and original return against the campaign. All 14 results-page links resolve. The documentation-only change selects no additional test suites.",
       "log_sha256": "f99281e578a0292235651034280345bb5f11253b4769914ba0af5a906956135d"
+    },
+    {
+      "change_id": "lvqlnyqrxqomovzsmqpvppnntxtnqymw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up Spring Framework O01-O20 sources, toolchains and the 6.x build jobs (verification pending)",
+      "body": "Setup for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md: all 43 pinned spring-framework commits fetched into the shared mirror with worktrees under ~/.cache/in-the-loop/spring-pr-links-o01-o20, each PR's merge commit checked against the brief's after pin, landed diffs checked against the PR file lists, and commit signatures checked in a keyring of the setup's own. Thirteen Gradle distributions verified against gradle.org, a BellSoft Liberica 17 fetched for the 6.1.2 build, and every configuration of every project resolved online for the 7.x and 6.x revisions.\n\nQueued jobs: 20261126-001149-setup-build-spring-framework-30238-o03-a, 20261126-001149-setup-build-spring-framework-30045-o05-a, 20261126-001149-setup-build-spring-framework-30530-o13-a, 20261126-001149-setup-build-spring-framework-31133-o15-a, 20261126-001149-setup-build-spring-framework-31699-o16-a, 20261126-001149-setup-build-spring-framework-29116-o18-a. Each builds the case's modules offline at both pins, runs the landed tests, and runs the fix's tests on the parent, where they must fail.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "xwxzvnzqsupkyvlvlxtkrmyrnvrvnpny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the 7.x Spring Framework O01-O20 setup jobs and record the old builds' gaps (verification pending)",
+      "body": "Adds twelve setup jobs for the Spring 7.x cases of llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md (each builds both pins offline, runs the landed tests and runs the fix's tests on the parent), after every configuration of every project resolved online and an offline dry run of each job's task graph configured. The record now documents the Gradle distributions, build facts by era, snapshot digests, the released artifacts (checksums and signatures) and a PostgreSQL smoke, and why O11 (#1366) and O14 (#25256) cannot be built: their plugins and Kotlin 1.4-M2 are in no public repository. Released spring-jdbc and spring-tx versions whose changed files equal those pins' are identified instead.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "rxlolvqltspkkykpryrsmowwwtpwzyuk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the 6.x Spring Framework O01-O20 setup job results and the notes for the domain agent",
+      "body": "The six jobs for the Spring 6.x cases of llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md passed every step: each landed test class passes at the fix and the parent's at the parent, and the fix's tests on the parent fail (O15, O16, O18) or do not compile (O03, O05, O13). Their jar and changed-class digests are recorded. Adds the rerun commands, what failed or was not done, and the Setup Agent Notes; the twelve 7.x jobs are still pending.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "loorwnyrustqsqutookpwmvpunmtnxql",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose the Liberica version string 17.0.21.1 for the allow list",
+      "body": "The setup session for the Spring Framework O01-O20 brief fetched BellSoft Liberica JDK 17.0.21.1; the redactor's public-ip rule matches that version string in the session log. Proposed only; it stays a warning until a person approves it.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "rpwnkqnwoksrkqmqrnmqttznwprpxorr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the 7.x Spring Framework O01-O20 setup job results; setup complete",
+      "body": "All twelve 7.x setup jobs (O01, O02, O04, O06-O10, O12, O17, O19, O20) passed every step: each landed test class passes at its fix pin, the parent's version passes at the parent, and the fix's test files transplanted onto the parent fail (O08's spring-web tests do not compile against the parent; its webmvc and webflux If-Range tests fail). The setup record now has their per-test results with every failing test named, the full sha256 of every built module jar and changed class at both pins, the kept classpath sizes, job times and memory peaks, and the disk figures. The 7.x jars are reproducible (fixed entry dates), which the digest section now says. The worktrees were checked clean and the private keyring's dirmngr was stopped.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "lknsnvnsyzyozsknxyyxxkuqrtqrpylk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "uvsnpxnpszrqsumstotyrszlvurmkskp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-001149-setup-build-spring-framework-30045-o05-a: passed: 4 passed step(s) in 12m50s, peak 2.0 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "usqzxoytmvutrnvyrutymnvuqmnxvlsq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-001149-setup-build-spring-framework-29116-o18-a: passed: 4 passed step(s) in 15m31s, peak 2.1 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "ootzwnznoquoqwyotvssstvtlxxsqzur",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261126-001149-setup-build-spring-framework-30238-o03-a: passed: 4 passed step(s) in 17m47s, peak 3.2 GiB (estimated 20m00s, 6.0 GiB) 20261126-001149-setup-build-spring-framework-30530-o13-a: passed: 4 passed step(s) in 17m38s, peak 2.4 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "rpnkrwlumxksqlwunzwrlrymkqmpyuym",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-001149-setup-build-spring-framework-31699-o16-a: passed: 4 passed step(s) in 18m29s, peak 3.3 GiB (estimated 30m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "qrlknwpmsypyzppsurumvpkplnnnywtp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-001149-setup-build-spring-framework-31133-o15-a: passed: 4 passed step(s) in 20m15s, peak 2.6 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "tqqxmqrnvppqlymvkswptyqruwsnxyml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261126-003556-setup-build-spring-framework-37434-o01-a: passed: 4 passed step(s) in 5m20s, peak 3.8 GiB (estimated 20m00s, 6.0 GiB) 20261126-003557-setup-build-spring-framework-36913-o04-a: passed: 4 passed step(s) in 5m46s, peak 3.4 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "rlwrkktpxpyzrmzrnqltrqxlxkuxwlmu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-003557-setup-build-spring-framework-36714-o10-a: passed: 4 passed step(s) in 6m17s, peak 3.2 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "onsnvqyqmkvuuzulvloturtskqwqvllv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-003557-setup-build-spring-framework-37047-o17-a: passed: 4 passed step(s) in 6m49s, peak 4.1 GiB (estimated 25m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "nsnxkqputuvomswpuupxrvlmyypxpvou",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-003556-setup-build-spring-framework-37576-o02-a: passed: 4 passed step(s) in 7m27s, peak 4.1 GiB (estimated 25m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "wzxkwvkoomwzmwntkuqmtrloxpqnqswk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-003557-setup-build-spring-framework-37193-o09-a: passed: 4 passed step(s) in 10m06s, peak 4.6 GiB (estimated 25m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "kytukyolwrpkspwnxqpkrtnmyvvwopwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-003557-setup-build-spring-framework-37308-o12-a: passed: 4 passed step(s) in 6m35s, peak 3.2 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "pupxzqpwzzptrzzzuponyoxznlqztovo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-003558-setup-build-spring-framework-37403-o19-a: passed: 4 passed step(s) in 7m21s, peak 3.8 GiB (estimated 25m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "lnloryyoszyloynkpltzrlszorqprqls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261126-003557-setup-build-spring-framework-37218-o08-a: passed: 4 passed step(s) in 11m47s, peak 6.1 GiB (estimated 40m00s, 6.0 GiB) 20261126-003558-setup-build-spring-framework-37600-o20-a: passed: 4 passed step(s) in 7m03s, peak 4.0 GiB (estimated 25m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "ppruvkqxwqxpkpmkoltmunwnpnylkoto",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-003557-setup-build-spring-framework-37378-o07-a: passed: 4 passed step(s) in 10m53s, peak 4.4 GiB (estimated 30m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "lonnyrusozwuznupyssrvmxutpzttrst",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-003557-setup-build-spring-framework-37325-o06-a: passed: 4 passed step(s) in 12m07s, peak 5.7 GiB (estimated 40m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-o01-o20-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "nomvsyxwnptxnrxolpowkssmvnvqrnuk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-069: a fourth self-matching wait, in the Spring O01-O20 setup",
+      "body": "The O01-O20 setup agent waited with until ! pgrep -f 'case_job.sh O.. dryrun', whose regex matches the loop itself, after all 18 of its build jobs had passed; found 46 minutes in. It happened after the operating-notes rule was added, so the finding now says the tool-side fixes matter more than the rule.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "nrrrqzpknzmtwmwoktqrypnwrmwnsqov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on spring-framework-pr-links-o01-o20-brief-setup",
+      "body": "The watcher's verdicts on the single-agent run spring-framework-pr-links-o01-o20-brief-setup (llm-dlc/decisions/single-spring-framework-pr-links-o01-o20-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "msnurlkyusmyzpozsxvxnrptqtokqztx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run spring-framework-pr-links-o01-o20-brief-setup into the line",
+      "body": "The single-agent run spring-framework-pr-links-o01-o20-brief-setup (session bfc9aed1-6b9f-409a-9ed4-c5515dca4d80) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "npmnztowulxvnknkuzuqwtxvvzrttotn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of spring-framework-pr-links-o01-o20-brief into its brief",
+      "body": "The setup run spring-framework-pr-links-o01-o20-brief-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md and ~/code/scripts/analysis/spring-framework-pr-links-o01-o20-brief.md, for the domain agent.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
+    },
+    {
+      "change_id": "lwwlprpnqrvqsqlqxptllqpqytzqyktn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Compare 20 Spring changes at public APIs (verification pending)",
+      "body": "Add examples 458–477 and compare all 63 registered predictions in 126 fresh JVM histories. All 20 intended contrasts and unchanged controls held. Preserve three merged counterexamples and the parent WebClient exception wrapper. The original Gradle builds supply 18 pairs. For two unavailable builds, compile the exact Git blobs against common released companions and verify the loaded classes. Record the Java call descriptors for the separately compiled Hamcrest calls, HTTP responses on four routes, PostgreSQL JSON predicates, JDBC generated-key lookups, and reactive transaction cleanup and row visibility.\n\nAll twenty example validators replayed their histories and all 56 selected suites passed. The audit reproduced four earlier campaigns byte for byte. Negative checks rejected a reused caller, changed overloads, swapped sources, an incorrect database version, different companion classpaths and duplicated class bytes. The three historical challenge callers also ran on Spring 7.0.10: the trailing-space SSE hint and direct JMS recovery reproduced. Spring removed the strict R2DBC setter in 2023, so the release reports a missing method. Record these in VF-065.\n\nJob 20261126-014520-replay-63-spring-predictions-across-20-p independently repeats the 126 histories. Job 20261126-014529-trace-the-spring-sse-and-jms-public-coun checks 24 original-method debugger trials. Job 20261126-015446-recheck-three-spring-counterexamples-on compares all nine published-release histories with the release receipt.",
+      "log_sha256": "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391"
     }
   ],
   "logs": {
@@ -2201,6 +2409,12 @@
       "lines": 15257,
       "gzip_bytes": 4911507,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/36d58481ab1962167756084410457abe57225531cf2b69bcf7f4426964490964.jsonl.gz"
+    },
+    "3c3e765b56c034b3541627e19688e3269977e1e823b9086b9c041c46c4d79391": {
+      "bytes": 72133707,
+      "lines": 37337,
+      "gzip_bytes": 13199286,
+      "url": null
     },
     "44ddc5a74b25e66cf97de34e4fee32a0d55e90cb68158384b21a2b4b08398a15": {
       "bytes": 11722768,
@@ -2566,12 +2780,6 @@
       "bytes": 63935822,
       "lines": 33653,
       "gzip_bytes": 11658916,
-      "url": null
-    },
-    "f3647bd11c00be2ca2295ff816151c1c291e6012eb144cbd7ed32171557918ed": {
-      "bytes": 70124497,
-      "lines": 36576,
-      "gzip_bytes": 12859442,
       "url": null
     },
     "f41e194be85edbcc56a9f53c358aa2110725c9a7cd9a794333c756ba7a086131": {

@@ -2,6 +2,7 @@
 import argparse
 import base64
 from contextlib import ExitStack
+import hashlib
 import json
 import os
 import re
@@ -11,7 +12,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-from targets import runtime_jdk, upgrade_replay
+from targets import runtime_jdk, upgrade_claims, upgrade_replay
 
 EXAMPLES = Path(__file__).resolve().parents[2]
 SIDES = ("parent", "fix")
@@ -65,6 +66,10 @@ def comparison_plan(folder):
     if services - {"postgres", "mysql"}:
         raise ValueError("unknown public comparison service")
     required = ["javac", "java"] + (["docker"] if services else [])
+    if any("sourceSlice" in d for d in runtime["deployments"].values()):
+        required.append("git")
+    if any("callOwner" in d for d in runtime["deployments"].values()):
+        required.append("javap")
     return {"example": folder.name[:3], "approach": "B8", "executable": True, "notExecuted": None,
             "runner": "public-comparison", "revisions": spec["revisions"], "questions": ids,
             "deployments": list(runtime["deployments"]), "tools": {"required": required, "optional": []}}
@@ -131,6 +136,49 @@ def observe(jdk, classpath, trial, caller, args, providers, *, label, service_en
     return outcome
 
 
+def compile_java(jdk, classpath, dest, sources, options=()):
+    dest.mkdir(parents=True, exist_ok=True)
+    subprocess.run([jdk / "bin/javac", "-J-XX:-UsePerfData", "-J-Xmx192m", "-g", "-proc:none",
+                    "-encoding", "UTF-8", *options, "-cp", classpath, "-d", dest, *sources], check=True)
+
+
+def class_digests(folder):
+    return {p.relative_to(folder).as_posix(): upgrade_replay.sha(p) for p in sorted(folder.rglob("*.class"))}
+
+
+def caller_invocations(jdk, folder, owner):
+    code = upgrade_claims.disassemble(jdk, [folder], "PublicCaller", 15)
+    sites = [{"caller": member[0], "offset": pc, "method": method, "descriptor": descriptor}
+             for member, pc, (target, method, descriptor) in upgrade_claims.invocation_sites(code, "PublicCaller")
+             if target == owner.replace(".", "/")]
+    if not sites:
+        raise ValueError(f"compiled caller has no direct calls to {owner}")
+    return sites
+
+
+def compile_source_slice(cache, jdk, deployment, revisions, side, cp, work):
+    """Overlay one original source blob on the same released dependencies on both sides."""
+    source = deployment["sourceSlice"]
+    tree = (cache / source["worktrees"][side]).resolve(strict=True)
+    if not tree.is_relative_to(cache) or not re.fullmatch(r"[0-9a-f]{40}", revisions[side]):
+        raise ValueError("invalid pinned source tree or revision")
+    path = Path(source["path"])
+    if path.is_absolute() or ".." in path.parts or path.suffix != ".java":
+        raise ValueError("invalid source slice path")
+    data = subprocess.check_output(["git", "-C", tree, "show", f"{revisions[side]}:{path}"])
+    blob = hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()
+    if blob != source["blobs"][side] or hashlib.sha256(data).hexdigest() != source["sha256"][side]:
+        raise ValueError(f"{side} original source digest differs")
+    work.mkdir(parents=True)
+    original = work / path.name
+    original.write_bytes(data)
+    classes = work / "classes"
+    compile_java(jdk, cp, classes, [original], ["--release", "8", "-implicit:none"])
+    if not (classes / (source["class"].replace(".", "/") + ".class")).is_file():
+        raise ValueError("source slice did not produce its registered class")
+    return classes
+
+
 def replay(folder, record=False):
     comparison_plan(folder)
     spec = read(folder / "comparison.json")
@@ -160,13 +208,25 @@ def replay(folder, record=False):
                 from targets.public_mysql import mysql
                 service_env = services.enter_context(mysql(deploy["mysqlImage"]))
             cp = {side: classpath(cache, runtime, deploy, side, work / "packages" / name) for side in SIDES}
-            classes = work / name
-            classes.mkdir(exist_ok=True)
-            subprocess.run([jdk / "bin/javac", "-J-XX:-UsePerfData", "-J-Xmx192m", "-g", "-proc:none", "-encoding", "UTF-8",
-                            "-cp", cp["fix"], "-d", classes, upgrade_replay.LAUNCHER, *sources], check=True)
+            slices = {}
+            if "sourceSlice" in deploy:
+                for side in SIDES:
+                    slices[side] = compile_source_slice(cache, jdk, deploy, spec["revisions"], side, cp[side],
+                                                        work / "slices" / name / side)
+                    cp[side] = str(slices[side]) + os.pathsep + cp[side]
+            per_side = deploy.get("compilePerSide", False)
+            classes = {}
+            for side in (SIDES if per_side else ("fix",)):
+                classes[side] = work / name / side
+                compile_java(jdk, cp[side], classes[side], [upgrade_replay.LAUNCHER, *sources],
+                             ["-parameters"] if deploy.get("parameterNames") else [])
+            if not per_side:
+                classes["parent"] = classes["fix"]
             runs = []
             for side in SIDES:
                 providers = {cls: cache / deploy["classpath"][side][index] for cls, index in deploy["providers"].items()}
+                if slices:
+                    providers[deploy["sourceSlice"]["class"]] = slices[side]
                 for row in spec["questions"]:
                     if side in row.get("omit", {}):
                         continue
@@ -174,7 +234,7 @@ def replay(folder, record=False):
                         trial = Path(trial_path)
                         if fixtures:
                             shutil.copytree(folder / "fixtures", trial / "fixtures")
-                        actual = observe(jdk, str(classes) + os.pathsep + cp[side], trial, "PublicCaller",
+                        actual = observe(jdk, str(classes[side]) + os.pathsep + cp[side], trial, "PublicCaller",
                                          row["args"], providers, label=f"{folder.name} {side} {row['id']}",
                                          service_env=service_env, open_modules=deploy.get("openModules", ()))
                         print(f"{name} {side} {row['id']} {actual}", flush=True)
@@ -182,8 +242,15 @@ def replay(folder, record=False):
                         runs.append({"side": side, "id": row["id"], "outcome": actual,
                                      "prediction": "observed only" if expected is None else
                                      ("matched" if agrees(expected, actual) else "refuted")})
-            result["deployments"][name] = {"callerClasses": {p.relative_to(classes).as_posix(): sha(p)
-                for p in sorted(classes.rglob("*.class"))}, "observations": runs}
+            record_entry = {"callerClasses": class_digests(classes["fix"]), "observations": runs}
+            if per_side:
+                record_entry["callerClassesBySide"] = {side: class_digests(classes[side]) for side in SIDES}
+            if "callOwner" in deploy:
+                record_entry["callerInvocations"] = {
+                    side: caller_invocations(jdk, classes[side], deploy["callOwner"]) for side in SIDES}
+            if slices:
+                record_entry["sourceSliceClasses"] = {side: class_digests(slices[side]) for side in SIDES}
+            result["deployments"][name] = record_entry
             if deploy.get("service") == "postgres":
                 result["deployments"][name]["postgresVersionNumber"] = int(service_env["PUBLIC_COMPARISON_PG_VERSION"])
             elif deploy.get("service") == "mysql":

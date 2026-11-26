@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "462",
+  "title": "SpEL calls a function bound to a Java receiver",
+  "summary": "A parsed SpEL function now invokes its bound Java receiver and sees a replacement binding on the next evaluation.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "expression-evaluation",
+    "hidden-capability",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "SpelExpressionParser.parseExpression and Expression.getValue"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "SpEL can invoke MethodHandle values under its existing function syntax. StandardEvaluationContext gains a registerFunction overload for handles."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/30045"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "The receiver is captured with a public JDK method handle. The initial binding uses setVariable, which exists on both revisions."
+  ]
+}

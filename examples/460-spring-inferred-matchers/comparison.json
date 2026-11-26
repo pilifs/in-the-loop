@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/30238",
+  "revisions": {
+    "parent": "f0eb43a6af37df784cd2f0367022c5dba4273bf0",
+    "fix": "95883b9eb7228dfeafc227de9d2ccfbd22e90ce8"
+  },
+  "entry": "MockRestRequestMatchers.header and queryParam",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#30238.1",
+      "role": "Intent",
+      "args": [
+        "inferred"
+      ],
+      "history": "Call header(\"X-Choice\", equalTo(\"a\")) and queryParam(\"q\", equalTo(\"a\")) with unqualified generic inference.",
+      "prediction": "Expect two assertion failures before and two successful matches after.",
+      "basis": "The issue documents inference selecting a single list parameter. A String equals the first value a, while a list containing a and b does not equal that String.",
+      "refutation": "Either recompiled landed matcher rejects the request, or both parent calls already select the scalar overload under the same compiler.",
+      "expected": {
+        "parent": {
+          "return": "AssertionError/AssertionError"
+        },
+        "fix": {
+          "return": "pass/pass"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30238.2",
+      "role": "Control",
+      "args": [
+        "typed"
+      ],
+      "history": "Give the factory an explicit type witness, `CoreMatchers.<String>equalTo(\"a\")`.",
+      "prediction": "The header and query matchers should succeed on both revisions.",
+      "basis": "The explicit String matcher targets the element overload. The reporter used this workaround.",
+      "refutation": "Either typed matcher receives the entire list or fails on a.",
+      "expected": {
+        "parent": {
+          "return": "pass/pass"
+        },
+        "fix": {
+          "return": "pass/pass"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30238.3",
+      "role": "Challenge",
+      "args": [
+        "tail"
+      ],
+      "history": "On the landing change only the second value b to c. Compare the two scalar calls with headerList and queryParamList using Hamcrest contains(\"a\",\"b\").",
+      "prediction": "Scalar calls still pass. Both list calls pass on [a,b] and fail on [a,c].",
+      "basis": "The second item lies outside a one-element scalar expectation and inside the ordered list expectation.",
+      "refutation": "A scalar result depends on the tail, or a list matcher accepts the changed tail.",
+      "expected": {
+        "fix": {
+          "return": "scalar=pass/pass listAB=pass/pass listAC=AssertionError/AssertionError"
+        }
+      }
+    }
+  ]
+}

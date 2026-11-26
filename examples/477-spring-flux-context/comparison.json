@@ -1,0 +1,81 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37600",
+  "revisions": {
+    "parent": "bed8682544f942ecb9e398fe4106f16a56185c63",
+    "fix": "67467f48fa4aef1a3bd227b8b45b11bb7925369b"
+  },
+  "entry": "Cacheable, CachePut and CacheEvict with subscriber Context",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37600.1",
+      "role": "Intent",
+      "args": [
+        "flux"
+      ],
+      "history": "Call lookup(\"k\") first under t1, then under t2 with the same key. Inspect cache.get(\"k\").get().",
+      "prediction": "The PR reports [none] twice before. On the landing expect [t1] twice, a stored list [t1], and one source subscription.",
+      "basis": "The first caller supplies the value on a miss. Both method arguments identify the same cache entry even though the second subscriber has a different context.",
+      "refutation": "The first result loses t1, the hit observes t2, or the two calls run the producer twice.",
+      "expected": {
+        "parent": {
+          "return": "first=[none] second=[none] subscriptions=1 cache=[none]"
+        },
+        "fix": {
+          "return": "first=[t1] second=[t1] subscriptions=1 cache=[t1]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37600.2",
+      "role": "Control",
+      "args": [
+        "mono"
+      ],
+      "history": "Use a fresh cache and an otherwise equivalent @Cacheable `Mono<String>` based on Mono.deferContextual. Make the same miss and hit.",
+      "prediction": "Both revisions should emit t1 on the miss and on the repeated key.",
+      "basis": "The single-value reactive path supplies a control for the Flux sharing introduced by the cache collector. The upstream regression includes both publisher types.",
+      "refutation": "The Mono loses its context on a miss or changes value on a hit.",
+      "expected": {
+        "parent": {
+          "return": "first=t1 second=t1 subscriptions=1 cache=t1"
+        },
+        "fix": {
+          "return": "first=t1 second=t1 subscriptions=1 cache=t1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37600.3",
+      "role": "Put and eviction",
+      "args": [
+        "write"
+      ],
+      "history": "On fresh state, call a Flux-returning @CachePut(\"first\") for \"k\" under t1; then call a Flux-returning @CacheEvict(\"first\") for \"k\" under t2. Both sources emit \"tenant\" as above.",
+      "prediction": "On the landing expect [t1] and cache value [t1] after put, then [t2] and an absent key after eviction.",
+      "basis": "Put stores a completed result, eviction removes it. Both operations expose their own caller’s context through the returned stream.",
+      "refutation": "The cache changes correctly but either Flux emits none, or the Flux has the right value and the cache transition fails.",
+      "expected": {
+        "fix": {
+          "return": "put=[t1] stored=[t1] evict=[t2] final=null subscriptions=2"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37600.4",
+      "role": "Challenge",
+      "args": [
+        "defer"
+      ],
+      "history": "Hold \"k\" fixed. Save the cacheable Flux before attaching any context; first subscribe under t1. Evict \"k\" explicitly through Cache.evict(\"k\"), obtain a new lookup(\"k\") Flux and subscribe under t2.",
+      "prediction": "The landing should deliver [t1] followed by [t2], subscribe to the producer twice, and end with cache value [t2].",
+      "basis": "Each call is a confirmed miss; subscription determines the Reactor Context. Emptying the entry prevents an earlier stored value from answering for the second context.",
+      "refutation": "A miss reads the assembly-time default or reuses t1 after eviction.",
+      "expected": {
+        "fix": {
+          "return": "first=[t1] empty=true second=[t2] subscriptions=2 cache=[t2]"
+        }
+      }
+    }
+  ]
+}

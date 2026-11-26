@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "b213928a7a648b3e1e926cba196c62c89aff8df2a8ea586ff2e4aeba550ccb55",
+  "runtimeSha256": "c5b5aec04a3b0da22442455b9ca53be7b8cfe3c5bc0c307d058ffb5dba705d28",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "737ceb189be3977f80e8b802880f82afb7eee7d2cc57be93aa0c6bf293c76bbe"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "0dbd991c520750432a5248384c346e0b0a8f893c8374708f87fef4babeb01fc7",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#29116.1",
+          "outcome": {
+            "return": "failure=prepare-B retry=session-B created=[A, B] prepared=[A, B] closed=[A]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#29116.2",
+          "outcome": {
+            "return": "first=session-A second=session-A created=[A] prepared=[A] closed=[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#29116.3",
+          "outcome": {
+            "return": "failure=prepare-B retry=session-B created=[A, B] prepared=[A, B] closed=[A]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#29116.1",
+          "outcome": {
+            "return": "failure=prepare-B retry=session-C created=[A, B, C] prepared=[A, B, C] closed=[A, B]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#29116.2",
+          "outcome": {
+            "return": "first=session-A second=session-A created=[A] prepared=[A] closed=[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#29116.3",
+          "outcome": {
+            "return": "failure=prepare-B retry=closed-A created=[A, B] prepared=[A, B] closed=[A, B]"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

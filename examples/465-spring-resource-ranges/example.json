@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "465",
+  "title": "A stale range validator returns the current resource in full",
+  "summary": "Four resource routes agreed on the status, Content-Range and body for stale, matching, weak and date validators.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "validation-gap",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ResourceHttpRequestHandler, HttpEntityMethodProcessor, RouterFunctions and ResourceWebHandler"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The range covers both submitted commits, including the final polishing commit. The resource-serving paths consult If-Range before interpreting Range."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37218"
+  },
+  "verdictLabel": "4/4 merged predictions matched",
+  "notes": [
+    "The same six-byte file, fixed modification time and ETag reach an MVC static handler, a ResponseEntity controller return-value processor, a functional MVC route and a WebFlux resource handler. Each response body is read after handling."
+  ]
+}

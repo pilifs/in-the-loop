@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-014529-trace-the-spring-sse-and-jms-public-coun",
+  "title": "Trace the Spring SSE and JMS public counterexamples at their original methods",
+  "description": "Replay the intent, stable control and challenge for both PRs twice on each original revision under the debugger. Bind all 24 observed returns to the registered caller bytecode, call sites, source pins and ordered classpaths. Include the trailing-space SSE hint and direct JMS reinitialization recovery.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-results.md"
+    ]
+  },
+  "expected": "Two saved debugger reports each contain twelve qualified JVM trials at the SSE event builder or JMS physical-connection initializer. All recorded outputs match the independent public replay.",
+  "submitted": {
+    "at": "2026-11-26T01:45:29+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Trace both Spring methods",
+      "run": "python3 verification/merged-pr-links/qualify.py 466 475 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/o01-o20/qualified",
+      "cwd": "."
+    },
+    {
+      "name": "Check every saved debugger trial",
+      "run": "python3 verification/merged-pr-links/qualify.py 466 475 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/o01-o20/qualified --check",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/o01-o20/qualified"
+  ]
+}

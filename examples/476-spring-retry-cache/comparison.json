@@ -1,0 +1,90 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37403",
+  "revisions": {
+    "parent": "3709672494e0e6582a28e0378c0e8a339d6545e9",
+    "fix": "440139fec1e61b275ea152da8293e7647ab9b917"
+  },
+  "entry": "Cacheable and CacheEvict Flux through the managed retry proxy",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37403.1",
+      "role": "Intent",
+      "args": [
+        "miss"
+      ],
+      "history": "Call the retryable cacheable method on a miss.",
+      "prediction": "The PR reports a parent hang on retry. The landing should complete with [a,b], reach the source twice and cache the list [a,b].",
+      "basis": "The fixture succeeds on the second subscription. The no-argument method uses SimpleKey.EMPTY, so a separate cache read can confirm publication.",
+      "refutation": "The retry never reaches the source again, times out, delivers different values, or leaves the key absent.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "terminal=timeout",
+            "subscriptions=1"
+          ]
+        },
+        "fix": {
+          "return": "values=[a, b] terminal=complete subscriptions=2 cache=[a, b]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37403.2",
+      "role": "Control",
+      "args": [
+        "hit"
+      ],
+      "history": "Have the very first subscription succeed with [a,b]. Call the same proxy method again after completion.",
+      "prediction": "Both revisions should deliver [a,b] twice, with one source subscription in total.",
+      "basis": "A successful cached sequence is replayable under the same key without running its producer.",
+      "refutation": "A successful first call fails to populate the cache or the repeat subscribes to the source again.",
+      "expected": {
+        "parent": {
+          "return": "first=[a, b] second=[a, b] subscriptions=1 cache=[a, b]"
+        },
+        "fix": {
+          "return": "first=[a, b] second=[a, b] subscriptions=1 cache=[a, b]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37403.3",
+      "role": "Eviction",
+      "args": [
+        "evict"
+      ],
+      "history": "Use @CacheEvict(\"tests\") in place of @Cacheable. Preload SimpleKey.EMPTY with [old] and retain the error-then-success source.",
+      "prediction": "The parent is expected to stall at retry. On the landing, the caller should receive [a,b] and the independent cache lookup should be empty after completion.",
+      "basis": "Eviction after a successful invocation removes the existing key. The return sequence and cache state can disagree.",
+      "refutation": "The Flux stalls or succeeds while the sentinel entry survives.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "terminal=timeout",
+            "subscriptions=1"
+          ]
+        },
+        "fix": {
+          "return": "values=[a, b] terminal=complete subscriptions=2 cache=null"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37403.4",
+      "role": "Challenge",
+      "args": [
+        "partial"
+      ],
+      "history": "On a fresh cacheable miss, make the failed first attempt emit \"partial\" before its IOException. The successful retry still emits [a,b].",
+      "prediction": "On the landing the continuous downstream collector should see [partial,a,b]. The stored list and a subsequent cache-hit call should each yield only [a,b], with the source count still two.",
+      "basis": "Reactive retry resubscribes after already delivered values. Only the successfully completed attempt qualifies to populate this cache entry.",
+      "refutation": "The consumer loses its already delivered prefix, or a later cache hit replays a value from the failed attempt.",
+      "expected": {
+        "fix": {
+          "return": "values=[partial, a, b] terminal=complete subscriptions=2 cache=[a, b] hit=[a, b] finalSubscriptions=2"
+        }
+      }
+    }
+  ]
+}

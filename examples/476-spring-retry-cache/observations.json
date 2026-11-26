@@ -1,0 +1,86 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "7220b459d1f5d138da67f32086d0c01c3cdfbfb2bf08577be993d6f9be7fecba",
+  "runtimeSha256": "15673dc6ec4284e40efeca5ead9db2c4b825b852f379dfc7452722c15e4bea21",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "cf1d958465ed8391c00dcdcd41d3ec1fcf1d88329e4ec7e2b3e255ae25000d4a"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Config.class": "8c01c342050a8053254dc79c23cd60afc58e66b397eb4c1d6058e819f1ddde64",
+        "PublicCaller$Service.class": "0101cf4db76fd618cfd69981bcef767cccf1d8861d1050395c717f18320b914b",
+        "PublicCaller$Source.class": "d46291b205d483330ea401f33a68ae2bdeb5c5ba2615d048d253b02563324ab7",
+        "PublicCaller.class": "e0af5bad058f4465ae784795b9d198443655d8ddd823b6f4b9e8c27b2a3ad6cf",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37403.1",
+          "outcome": {
+            "return": "values=[] terminal=timeout subscriptions=1 cache=null"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37403.2",
+          "outcome": {
+            "return": "first=[a, b] second=[a, b] subscriptions=1 cache=[a, b]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37403.3",
+          "outcome": {
+            "return": "values=[] terminal=timeout subscriptions=1 cache=[old]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37403.4",
+          "outcome": {
+            "return": "values=[partial] terminal=timeout subscriptions=1 cache=null"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37403.1",
+          "outcome": {
+            "return": "values=[a, b] terminal=complete subscriptions=2 cache=[a, b]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37403.2",
+          "outcome": {
+            "return": "first=[a, b] second=[a, b] subscriptions=1 cache=[a, b]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37403.3",
+          "outcome": {
+            "return": "values=[a, b] terminal=complete subscriptions=2 cache=null"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37403.4",
+          "outcome": {
+            "return": "values=[partial, a, b] terminal=complete subscriptions=2 cache=[a, b] hit=[a, b] finalSubscriptions=2"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

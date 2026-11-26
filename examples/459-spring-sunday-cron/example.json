@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "459",
+  "title": "A Sunday-to-Sunday cron range fires once a week",
+  "summary": "A singleton Sunday range advanced from Thursday to Friday on the parent and to Sunday on the merge.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "CronExpression.next"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The range parser previously expanded the singleton Sunday range to the whole week."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37576"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "The clocks are local dates and times. The Sunday returned by the singleton expression is the seed for the next set of calls."
+  ]
+}

@@ -1,9 +1,8 @@
-"""Repeat the three historical counterexamples on two published releases apiece."""
+"""Repeat registered public callers on the published releases in an input lock."""
 import argparse
 import json
 from pathlib import Path
 import shutil
-import subprocess
 import sys
 import tempfile
 
@@ -15,7 +14,7 @@ from targets import public_comparison as comparison
 from recheck import classpath, jars_for, sha
 
 
-def measure(number, project, lock, local_cache, fetch):
+def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-inputs.json"):
     folder, = (ROOT / "examples").glob(number + "-*")
     runtime = comparison.read(folder / "runtime.json")
     spec = comparison.read(folder / "comparison.json")
@@ -35,16 +34,19 @@ def measure(number, project, lock, local_cache, fetch):
         raise ValueError(f"{number}: JDK differs from lock")
     artifact_keys = [key for version in project["versions"].values() for key in version]
     jars = jars_for({"modules": [], "dependencies": artifact_keys}, local_cache, fetch, lock["sha256"], setup)
-    receipt = {"example": number, "releaseInputsSha256": sha(HERE / "release-inputs.json"),
+    receipt = {"example": number, "releaseInputsSha256": sha(inputs),
                "historicalObservationsSha256": sha(folder / "observations.json"),
                "jdkReleaseSha256": project["jdkReleaseSha256"], "versions": {}}
     with tempfile.TemporaryDirectory(prefix="public-releases-") as temporary:
         work = Path(temporary)
-        compile_cp = classpath([jars[key] for key in project["versions"][project["compileVersion"]]])
+        deployment = runtime["deployments"]["pins"]
+        if "compileVersion" in project:
+            compile_cp = classpath([jars[key] for key in project["versions"][project["compileVersion"]]])
+        else:
+            compile_cp = comparison.classpath(setup, runtime, deployment, "fix", work)
         classes = work / "caller"
-        classes.mkdir()
-        subprocess.run([compiler / "bin/javac", "-g", "-proc:none", "-encoding", "UTF-8", "-cp", compile_cp,
-                        "-d", classes, comparison.upgrade_replay.LAUNCHER, *sources], check=True)
+        comparison.compile_java(compiler, compile_cp, classes, [comparison.upgrade_replay.LAUNCHER, *sources],
+                                ["-parameters"] if deployment.get("parameterNames") else [])
         fingerprints = {p.relative_to(classes).as_posix(): sha(p) for p in classes.rglob("*.class")}
         if fingerprints != physical["deployments"]["pins"]["callerClasses"]:
             raise ValueError(f"{number}: different historical caller bytecode")
@@ -71,15 +73,17 @@ def measure(number, project, lock, local_cache, fetch):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cache", type=Path, default=Path.home() / ".cache/in-the-loop/merged-pr-links-m01-m10-followup")
+    parser.add_argument("--inputs", type=Path, default=HERE / "release-inputs.json", help="campaign release input lock")
+    parser.add_argument("--cache", type=Path, help="local Maven artifact cache")
     parser.add_argument("--fetch", action="store_true", help="retrieve missing Maven artifacts and check their pinned digests")
     parser.add_argument("--output", type=Path, help="write the fresh observations to this path")
     args = parser.parse_args()
-    lock = comparison.read(HERE / "release-inputs.json")
-    reports = [measure(n, p, lock, args.cache.resolve(), args.fetch) for n, p in lock["projects"].items()]
+    lock = comparison.read(args.inputs)
+    cache = args.cache or Path.home() / ".cache/in-the-loop" / lock.get("cache", "merged-pr-links-m01-m10-followup")
+    reports = [measure(n, p, lock, cache.resolve(), args.fetch, args.inputs) for n, p in lock["projects"].items()]
     if args.output:
         args.output.write_text(json.dumps(reports, indent=2, ensure_ascii=False) + "\n")
-    elif reports != comparison.read(HERE / "release-observations.json"):
+    elif reports != comparison.read(args.inputs.with_name("release-observations.json")):
         raise SystemExit("release observations differ from the recorded histories")
     for report in reports:
         for version, result in report["versions"].items():

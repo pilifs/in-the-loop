@@ -1,0 +1,79 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "e8d80fbc9fd4a6e2883aa4951c4c96a7c439a49d92fd1a253250669f3b86a221",
+  "runtimeSha256": "891a7c3e2c948ded6abbe054e9b5dd28f85c8842e5c57e518b211d573a8a88b3",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "4f6efca136e084fbc39dd18dc3f6674dd3c11ab31b098ed124960882fa523c26"
+  },
+  "deployments": {
+    "pinned-source": {
+      "callerClasses": {
+        "PublicCaller$Recorder.class": "6c86042612bdda9fc1f2df9e49522598755c65f5d2727d6fd079f87f0a23da78",
+        "PublicCaller.class": "9a1d84258eb9512557670b775bce8aa1ecf0d3a2fccf074f0937e569e0d8b420",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1366.1",
+          "outcome": {
+            "return": "InvalidDataAccessApiUsageException prepared=0 callback=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1366.2",
+          "outcome": {
+            "return": "InvalidDataAccessApiUsageException prepared=0 callback=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1366.3",
+          "outcome": {
+            "return": "InvalidDataAccessApiUsageException prepared=0 callback=0 / InvalidDataAccessApiUsageException prepared=0 callback=0 pgAny=true pgAll=false"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1366.1",
+          "outcome": {
+            "return": "SELECT '[\"3\",\"11\"]'::jsonb ?& '{3,11}'::text[] AND ? = 'Back in Black' bind=[1=Back in Black] callback=sentinel"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1366.2",
+          "outcome": {
+            "return": "InvalidDataAccessApiUsageException prepared=0 callback=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1366.3",
+          "outcome": {
+            "return": "SELECT '[\"3\",\"11\"]'::jsonb ?| '{3,99}'::text[] AND ? = 'Back in Black' bind=[1=Back in Black] callback=sentinel / SELECT '[\"3\",\"11\"]'::jsonb ?& '{3,99}'::text[] AND ? = 'Back in Black' bind=[1=Back in Black] callback=sentinel pgAny=true pgAll=false"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "sourceSliceClasses": {
+        "parent": {
+          "org/springframework/jdbc/core/namedparam/NamedParameterUtils$ParameterHolder.class": "e9f9c529956942ccfda40c8f7533de1c983dee999c1acd7d049661f207adc27b",
+          "org/springframework/jdbc/core/namedparam/NamedParameterUtils.class": "eb61412b8adc720b59d015c18e299aca637de99231e58c79f5d0058af81463ae"
+        },
+        "fix": {
+          "org/springframework/jdbc/core/namedparam/NamedParameterUtils$ParameterHolder.class": "e9f9c529956942ccfda40c8f7533de1c983dee999c1acd7d049661f207adc27b",
+          "org/springframework/jdbc/core/namedparam/NamedParameterUtils.class": "bbdc6d14bbb260d8be9cd20730a8fe10a3962d5d99efa91cda97fd548d456722"
+        }
+      },
+      "postgresVersionNumber": 170012
+    }
+  }
+}

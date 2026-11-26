@@ -1,0 +1,70 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37308",
+  "revisions": {
+    "parent": "5772133ba7c65e5b7e738d33add0ffed6102f62b",
+    "fix": "6e5efdc89ba269b8dd7aedf3f894387f5b6cc50a"
+  },
+  "entry": "NamedParameterJdbcTemplate.batchUpdate and JdbcClient.batch",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37308.1",
+      "role": "Intent",
+      "args": [
+        "named"
+      ],
+      "history": "Execute the two named rows with generated keys.",
+      "prediction": "Expect the parent to bind the two foo/UK values twice before the first addBatch. After, each value should be bound once. Both should add exactly the two original rows in order and return [1,1].",
+      "basis": "Only two parameter values belong to each input row. The landed test counts the setter calls and supplies the update counts.",
+      "refutation": "The first pair is set twice after the change, the second row is skipped, or the recorded batches differ from the two inputs.",
+      "expected": {
+        "parent": {
+          "return": "bind=[1=foo, 2=UK, 1=foo, 2=UK, 1=bar, 2=US] rows=[[foo, UK], [bar, US]] counts=[1, 1]"
+        },
+        "fix": {
+          "return": "bind=[1=foo, 2=UK, 1=bar, 2=US] rows=[[foo, UK], [bar, US]] counts=[1, 1]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37308.2",
+      "role": "Control",
+      "args": [
+        "plain"
+      ],
+      "history": "Call the overload without a KeyHolder on the same two rows.",
+      "prediction": "On both revisions expect one binding of each slot per row, two ordered batch entries and [1,1].",
+      "basis": "This overload uses its batch setter for every entry and never needs the generated-key statement creator.",
+      "refutation": "Bindings repeat, the first row is absent, or the returned counts change.",
+      "expected": {
+        "parent": {
+          "return": "bind=[1=foo, 2=UK, 1=bar, 2=US] rows=[[foo, UK], [bar, US]] counts=[1, 1]"
+        },
+        "fix": {
+          "return": "bind=[1=foo, 2=UK, 1=bar, 2=US] rows=[[foo, UK], [bar, US]] counts=[1, 1]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37308.3",
+      "role": "Challenge",
+      "args": [
+        "keys"
+      ],
+      "history": "Use JdbcClient.create(dataSource).sql with indexed SQL and .batch().param(\"foo\").add().param(\"bar\").add().update(holder, \"id\") to insert into a fresh table with an identity id and a name. Wrap a driver that returns one key per batch entry and exact update counts. Read the committed rows on a second connection.",
+      "prediction": "On both revisions expect [1,1], two distinct returned keys, and names foo and bar at those keys. The merged JDBC call should bind each name once in row order. Driver-selected numeric IDs may vary.",
+      "basis": "Looking up the returned keys tests the caller’s use of the generated IDs. Omitting the first row or reusing it for the second would break the readback.",
+      "refutation": "A key is missing or identifies the wrong data, either row is bound twice after the change, or the expected rows are absent.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "counts=[1, 1] distinctKeys=2 read=[foo, bar] rows=2"
+          ]
+        },
+        "fix": {
+          "return": "bind=[1=foo, 1=bar] counts=[1, 1] distinctKeys=2 read=[foo, bar] rows=2"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-014520-replay-63-spring-predictions-across-20-p",
+  "title": "Replay 63 Spring predictions across 20 parent and merge pairs",
+  "description": "Recompile all twenty application callers and repeat their 126 JVM histories, including the four HTTP resource routes, separate Hamcrest compilations, PostgreSQL operator queries and independent JDBC and reactive transaction reads. Compare the complete audit with the campaign registration.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay",
+    "jdbc:durable-transaction-readback",
+    "java:source-overload-resolution"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-results.md"
+    ]
+  },
+  "expected": "The audit repeats byte for byte, including 60 of 63 merged predictions matched, three counterexamples, one parent exception-wrapper discrepancy, twenty unchanged controls, eighteen full build pairs and two exact source slices.",
+  "submitted": {
+    "at": "2026-11-26T01:45:20+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git",
+    "docker"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Run the public comparisons",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign o01-o20 --replay --output verification/merged-pr-links/o01-o20/repeated-audit.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare with the registered audit",
+      "run": "cmp verification/merged-pr-links/o01-o20/audit.json verification/merged-pr-links/o01-o20/repeated-audit.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/o01-o20/repeated-audit.json"
+  ]
+}

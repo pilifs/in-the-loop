@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "477",
+  "title": "The subscriber’s Reactor Context reaches a cached Flux on a miss",
+  "summary": "On a cache miss, the merged Flux saw the subscriber's context. After explicit eviction a new subscription saw the replacement value.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "caching",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "Cacheable, CachePut and CacheEvict with subscriber Context"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The reactive caching advice transfers subscription context to the source shared by the caller and the cache collector."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37600"
+  },
+  "verdictLabel": "4/4 merged predictions matched",
+  "notes": [
+    "The argument that identifies the cache entry is held fixed while the subscriber context changes. Each variant starts with a new application context and cache."
+  ]
+}

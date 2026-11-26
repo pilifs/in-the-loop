@@ -1,0 +1,84 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37218",
+  "revisions": {
+    "parent": "749aa1f6a9bd70b637f01b0e2dceb1103cd1c5f1",
+    "fix": "05619fe624cd410736848b3bf4f83d632cfe54f5"
+  },
+  "entry": "ResourceHttpRequestHandler, HttpEntityMethodProcessor, RouterFunctions and ResourceWebHandler",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37218.1",
+      "role": "Intent",
+      "args": [
+        "stale"
+      ],
+      "history": "Send Range: bytes=1-3 and If-Range: \"v1\".",
+      "prediction": "The parent is expected to send 206 with bcd. The landing should return 200, abcdef and no Content-Range on each route.",
+      "basis": "The client's validator is stale. RFC 9110 requires ignoring the range so the client can replace its old representation.",
+      "refutation": "Any landed route emits a slice, a partial status or a Content-Range.",
+      "expected": {
+        "parent": {
+          "return": "static=206|bytes 1-3/6|bcd controller=206|bytes 1-3/6|bcd functional=206|bytes 1-3/6|bcd webflux=206|bytes 1-3/6|bcd"
+        },
+        "fix": {
+          "return": "static=200|-|abcdef controller=200|-|abcdef functional=200|-|abcdef webflux=200|-|abcdef"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37218.2",
+      "role": "Control",
+      "args": [
+        "matching"
+      ],
+      "history": "Use the same Range with no If-Range, then with the matching strong \"v2\".",
+      "prediction": "Both revisions should return 206, Content-Range bytes 1-3/6 and the exact bytes bcd.",
+      "basis": "An inclusive range from offsets 1 through 3 selects three known bytes. Both requests authorize serving that range.",
+      "refutation": "Status or endpoints are wrong, or the body cannot be spliced back at offset 1.",
+      "expected": {
+        "parent": {
+          "return": "static=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd controller=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd functional=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd webflux=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd"
+        },
+        "fix": {
+          "return": "static=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd controller=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd functional=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd webflux=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37218.3",
+      "role": "Challenge",
+      "args": [
+        "weak"
+      ],
+      "history": "Keep the stale validator and replace the requested range with bytes=broken. Also try a syntactically valid range with W/\"v2\".",
+      "prediction": "At the landing both should return the entire abcdef and 200. In the first call ignoring the range also suppresses any range-parse failure.",
+      "basis": "The validator is evaluated before Range. Weak tags cannot authorize combining portions of representations.",
+      "refutation": "The malformed value yields 416 or the weak tag yields a partial body.",
+      "expected": {
+        "fix": {
+          "return": "static=200|-|abcdef;200|-|abcdef controller=200|-|abcdef;200|-|abcdef functional=200|-|abcdef;200|-|abcdef webflux=200|-|abcdef;200|-|abcdef"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37218.4",
+      "role": "Date validator",
+      "args": [
+        "date"
+      ],
+      "history": "Use a resource known to change at most once per second and an emitted Last-Modified value. Send that exact HTTP-date, then the valid date one second later, with bytes=1-3.",
+      "prediction": "The landing should return 206/bcd for the exact strong date and 200/abcdef for the later date. Before, expect 206/bcd for both.",
+      "basis": "If-Range date comparison is exact. A later date does not identify the representation used for a previous download.",
+      "refutation": "The exact date loses the range, or the later date is treated as fresh enough.",
+      "expected": {
+        "parent": {
+          "return": "static=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd controller=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd functional=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd webflux=206|bytes 1-3/6|bcd;206|bytes 1-3/6|bcd"
+        },
+        "fix": {
+          "return": "static=206|bytes 1-3/6|bcd;200|-|abcdef controller=206|bytes 1-3/6|bcd;200|-|abcdef functional=206|bytes 1-3/6|bcd;200|-|abcdef webflux=206|bytes 1-3/6|bcd;200|-|abcdef"
+        }
+      }
+    }
+  ]
+}

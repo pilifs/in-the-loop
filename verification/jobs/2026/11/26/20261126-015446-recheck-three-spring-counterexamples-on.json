@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-015446-recheck-three-spring-counterexamples-on",
+  "title": "Recheck three Spring counterexamples on published 7.0.10",
+  "description": "Use the historical caller bytecode for the SSE field, R2DBC constructor mapper and JMS recovery cases against published Spring 7.0.10. Run all nine histories with hash-locked artifacts and compare every event, mapped object, exception and provider action with the release receipt.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "paths": [
+      "verification/merged-pr-links/o01-o20/upstream.md"
+    ]
+  },
+  "expected": "The release receipts match byte for byte. SSE accepts the trailing space, the strict R2DBC API is absent, and direct JMS reinitialization returns to closed A.",
+  "submitted": {
+    "at": "2026-11-26T01:54:46+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "512M",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Run the released modules",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/o01-o20/release-inputs.json --fetch --output verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the release receipts",
+      "run": "cmp verification/merged-pr-links/o01-o20/release-observations.json verification/merged-pr-links/o01-o20/repeated-release-observations.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/o01-o20/repeated-release-observations.json"
+  ]
+}

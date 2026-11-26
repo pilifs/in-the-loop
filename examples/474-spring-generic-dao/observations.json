@@ -1,0 +1,75 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "af1958250b02fc86af4df12699062f506a6e2ca772efbba236ef909efba8342b",
+  "runtimeSha256": "e46834d4795813e0798d769994b996e2688fc93ab74137256bb2ddc7a6a368c4",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "3fc3853e51dacc0decc0e4d11b03c5d47e305eaffa84d4f17b74cddd5a90f921"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$1.class": "6527ae8bd0270ca6a3cb2cbd9dbc57ba855ca7310118823fe3ec9718fde29788",
+        "PublicCaller$2.class": "bbb57c5209181418f103a02c51b0fcc20f59a5b5edd3be23b1d6ae6487935098",
+        "PublicCaller$BaseDao.class": "4df507ab2dbb127fc697e220f7d0377bc3a9df259905ac518d761b9ec871b45c",
+        "PublicCaller$Config.class": "2ea019cdfc92bdb0780d525f81782006f1cfc9eb1bfb583755fa2fe5634c1809",
+        "PublicCaller$Order.class": "e333a6d2e2b46b05c96dfac843672fd23f32c001279783ec6b4d49e8327074a1",
+        "PublicCaller$Orders.class": "9e5413b643dde47a5fad562380c1555a90e11b5a6af998c03d79320fe0137aee",
+        "PublicCaller$User.class": "71bc68b5c425c5b572b42eb7bcf0275ad250faf5ec63b5cb1533fe7467f04116",
+        "PublicCaller$Users.class": "20506e3caeb4a157af2eab7a2ba0546b34d97e5652957ef5e9e14bb6e35c9310",
+        "PublicCaller.class": "dd0c39bb17e303c0dfa916b8c0c6f49721639b072bdebd12f9ff672e15d30a77",
+        "UpgradeObservation.class": "4da9e388f1776f700ab6d2a11148d500baddd31cd8f0121a31672660607c34dc"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37047.1",
+          "outcome": {
+            "return": "BeanNotOfRequiredTypeException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37047.2",
+          "outcome": {
+            "return": "proxy=true same=true result=2 users=2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37047.3",
+          "outcome": {
+            "return": "wrong=BeanNotOfRequiredTypeException order=BeanNotOfRequiredTypeException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37047.1",
+          "outcome": {
+            "return": "proxy=true same=true result=1 users=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37047.2",
+          "outcome": {
+            "return": "proxy=true same=true result=2 users=2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37047.3",
+          "outcome": {
+            "return": "wrong=BeanNotOfRequiredTypeException proxy=true result=9 orders=9 users=null"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

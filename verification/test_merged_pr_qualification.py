@@ -12,9 +12,27 @@ import unittest
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / "merged-pr-links"))
 import qualify
+import audit
 
 
 class QualifiedHistoryTest(unittest.TestCase):
+    def test_spring_overload_and_source_slice_evidence_is_revision_specific(self):
+        setup = (HERE.parent / "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md").read_text()
+        for number in (3, 11, 14):
+            with self.subTest(number=number):
+                folder, = (HERE.parent / "examples").glob(f"{457 + number}-*")
+                deployment, = json.loads((folder / "runtime.json").read_text())["deployments"].values()
+                recorded, = json.loads((folder / "observations.json").read_text())["deployments"].values()
+                audit.check_spring_deployment(number, deployment, recorded, setup)
+                if number == 3:
+                    recorded["callerInvocations"]["parent"] = recorded["callerInvocations"]["fix"]
+                elif number == 11:
+                    recorded["postgresVersionNumber"] = 160004
+                else:
+                    deployment["sourceSlice"]["blobs"]["parent"] = deployment["sourceSlice"]["blobs"]["fix"]
+                with self.assertRaises(ValueError):
+                    audit.check_spring_deployment(number, deployment, recorded, setup)
+
     def test_original_zip_fixture_is_bound_to_the_method_entry(self):
         receipt = HERE / "merged-pr-links/m01-m10/intent/446-pins.json.gz"
         with tempfile.TemporaryDirectory() as temp:

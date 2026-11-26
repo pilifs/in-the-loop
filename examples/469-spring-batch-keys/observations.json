@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "2c7a7cfa36320e051801f0e756cb5e4a808a2468016e63c74c291d0f7015edab",
+  "runtimeSha256": "a1c21beb6170cfa1428a57cd895c60af4154d77f52c5f4a5843fd305e4b3ddf6",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "a2b642ab824ed6a8e97d93d2e0ae0b98e78b708923d32d6c09afe5ed9f548194"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Recording.class": "af832d8b578e4cdec57a36fa854ba51c9be53866691135254803f14d337ad44f",
+        "PublicCaller.class": "4fa7760a234fc0216265d7ef56778ac430432eb8166a224276d8558966fb09e5",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37308.1",
+          "outcome": {
+            "return": "bind=[1=foo, 2=UK, 1=foo, 2=UK, 1=bar, 2=US] rows=[[foo, UK], [bar, US]] counts=[1, 1]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37308.2",
+          "outcome": {
+            "return": "bind=[1=foo, 2=UK, 1=bar, 2=US] rows=[[foo, UK], [bar, US]] counts=[1, 1]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37308.3",
+          "outcome": {
+            "return": "bind=[1=foo, 1=foo, 1=bar] counts=[1, 1] distinctKeys=2 read=[foo, bar] rows=2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37308.1",
+          "outcome": {
+            "return": "bind=[1=foo, 2=UK, 1=bar, 2=US] rows=[[foo, UK], [bar, US]] counts=[1, 1]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37308.2",
+          "outcome": {
+            "return": "bind=[1=foo, 2=UK, 1=bar, 2=US] rows=[[foo, UK], [bar, US]] counts=[1, 1]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37308.3",
+          "outcome": {
+            "return": "bind=[1=foo, 1=bar] counts=[1, 1] distinctKeys=2 read=[foo, bar] rows=2"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

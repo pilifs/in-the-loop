@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "464",
+  "title": "Copying a rendering response preserves cookies in both web stacks",
+  "summary": "Rebuilding a rendering response retained cookies, including two currencies with different paths, at both HTTP boundaries.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "RenderingResponse.from and writeTo"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "RenderingResponse.from copies cookies when rebuilding a functional MVC or WebFlux response."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37378"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "Both a servlet ModelAndView and a resolving reactive View receive the model. The caller also decodes Set-Cookie response fields and compares value/path multiplicity."
+  ]
+}

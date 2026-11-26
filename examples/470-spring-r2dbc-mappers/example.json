@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "470",
+  "title": "Mapping R2DBC results by property or constructor name",
+  "summary": "Both new R2DBC mappers read the row. Strict constructor mapping nevertheless rejected a complete one-property result.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "validation-gap",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "DatabaseClient.GenericExecuteSpec.map"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "The five submitted commits landed together as two new mapper classes and two test classes. R2DBC clients can pass a Spring Function to map driver-provided Row or OutParameters objects to a Java type."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/30530"
+  },
+  "verdictLabel": "2/3 merged predictions matched · challenge refuted",
+  "notes": [
+    "The projections run on R2DBC H2. The caller is compiled with -parameters, reads the actual driver row and preserves the constructor-versus-setter distinction."
+  ]
+}

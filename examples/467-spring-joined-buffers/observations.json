@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "f051e00b57a66b5c26ec7838db43bec94476473c596d493468e1b294e9e599de",
+  "runtimeSha256": "c23e6731ae47a9c98c33eaf81f9518f50baad04ad9dc5ccd4cc5b197215f6f14",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "36f8b5408d40e902a589a4938c4a320a8e72d195d6f1fce9c7d7b1b23881547e"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$1.class": "5f5d8e365f6b87a595c664033dfabbf0c3b27eb90f878842cfeb833433076375",
+        "PublicCaller.class": "317974ce1d5cb3e59e15fbbd49c83a9a6623fe5d49cc38e6c0cc4df52fba76a7",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36714.1",
+          "outcome": {
+            "return": "components=2 emitted=1 bytes=foo"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36714.2",
+          "outcome": {
+            "return": "components=1 emitted=1 bytes=foobar"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36714.3",
+          "outcome": {
+            "return": "sync components=3 emitted=1 bytes=f async components=3 emitted=1 bytes=XXfoobar"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36714.1",
+          "outcome": {
+            "return": "components=2 emitted=1 bytes=foobar"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36714.2",
+          "outcome": {
+            "return": "components=1 emitted=1 bytes=foobar"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36714.3",
+          "outcome": {
+            "return": "sync components=3 emitted=1 bytes=foobar async components=3 emitted=1 bytes=XXfoobar"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

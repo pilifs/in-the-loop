@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/30045",
+  "revisions": {
+    "parent": "d3c3088c6ba27a5a6d7f458a76f5d91320aaf828",
+    "fix": "906c54faffc75721b98f9b9cf63d35edd81f7b4f"
+  },
+  "entry": "SpelExpressionParser.parseExpression and Expression.getValue",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#30045.1",
+      "role": "Intent",
+      "args": [
+        "red"
+      ],
+      "history": "Evaluate the one-argument expression with red- bound as the receiver.",
+      "prediction": "Expect a SpelEvaluationException on the parent and the String red-fox after.",
+      "basis": "The old function evaluator requires a reflective Method. Direct Java concatenation on the captured receiver gives red-fox.",
+      "refutation": "The parent already invokes this handle, or the landing rejects the call or loses the prefix.",
+      "expected": {
+        "parent": {
+          "return": "SpelEvaluationException"
+        },
+        "fix": {
+          "return": "String=red-fox"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30045.2",
+      "role": "Control",
+      "args": [
+        "static"
+      ],
+      "history": "Register the reflective public static Integer.toString(int) under num and evaluate #num(7).",
+      "prediction": "Both revisions should return the String 7.",
+      "basis": "SpEL already supported static reflective functions. Direct invocation gives the same typed result.",
+      "refutation": "Either evaluation rejects the Method or returns an Integer instead.",
+      "expected": {
+        "parent": {
+          "return": "String=7"
+        },
+        "fix": {
+          "return": "String=7"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30045.3",
+      "role": "Challenge",
+      "args": [
+        "rebind"
+      ],
+      "history": "On the landing reuse the same parsed #tag expression. Replace its binding with the same virtual handle bound to blue-, now using the new registerFunction overload.",
+      "prediction": "Successive evaluations should give red-fox then blue-fox with the argument unchanged.",
+      "basis": "The function variable belongs to the evaluation context. Direct invocation on each receiver supplies an independent expected value.",
+      "refutation": "The second evaluation keeps the first receiver, drops the receiver or changes the argument.",
+      "expected": {
+        "fix": {
+          "return": "String=red-fox String=blue-fox"
+        }
+      }
+    }
+  ]
+}

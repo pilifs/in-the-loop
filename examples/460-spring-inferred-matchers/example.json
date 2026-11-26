@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "460",
+  "title": "A single Hamcrest matcher sees the first HTTP request value",
+  "summary": "Recompiling the same unqualified Hamcrest call changed the method selected by javac for both headers and query parameters.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "MockRestRequestMatchers.header and queryParam"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Two submitted commits landed together. The list-valued factories became headerList and queryParamList so the existing scalar matcher calls resolve as intended."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/30238"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "Both compilations use the same caller source, compiler and Hamcrest version. The JVM receipt records the caller class hashes and the four direct factory call sites on each side. Reflection is used only for the two list factory names introduced at the merge."
+  ]
+}

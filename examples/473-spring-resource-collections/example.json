@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "473",
+  "title": "A single classpath resource injected into a collection",
+  "summary": "An XML context populated both a resource list and a resource set from a single file on the merge.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ClassPathXmlApplicationContext.refresh and Resource.getInputStream"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Array conversion now considers the required collection type before unwrapping a one-element array."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/31699"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "Each variant gets a fresh class loader and XML context with its own fixture directory. The caller opens every Resource and reads the stream."
+  ]
+}

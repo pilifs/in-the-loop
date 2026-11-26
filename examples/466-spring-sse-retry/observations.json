@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "6f9131176c05eec539a5a1c41bd9b65bbf62da7bdde52fd2df4f43e6a2ad3f52",
+  "runtimeSha256": "1f4469097428c2cbe9fe527900f5ce782134e520394b4e0257f5ba2fede539fb",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "6f20d528f67a24bf0c0ff7b545c085ec01848f1c6db9f494eca56cec3c95c9f5"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$1.class": "1e68466f2a936f6bb08c71067f9d7f39ebe200cc2e5e70e5c2f2d1ae372ea5b0",
+        "PublicCaller.class": "6ccd04d7161d24c23aa0657071c79ed553db6ab711d999b36347a664443a910c",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37193.1",
+          "outcome": {
+            "return": "[] error=WebClientResponseException cause=NumberFormatException"
+          },
+          "prediction": "refuted"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37193.2",
+          "outcome": {
+            "return": "[foo@25, bar@null] complete"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37193.3",
+          "outcome": {
+            "return": "[foo@25] complete / [foo@25] complete"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37193.1",
+          "outcome": {
+            "return": "[foo@null, bar@null] complete"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37193.2",
+          "outcome": {
+            "return": "[foo@25, bar@null] complete"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37193.3",
+          "outcome": {
+            "return": "[foo@25] complete / [foo@25] complete"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

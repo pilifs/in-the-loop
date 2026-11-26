@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37378",
+  "revisions": {
+    "parent": "d5a7fc9a9ce32a94176620be4d9d6b070a260b9c",
+    "fix": "f03b76a53dfd87e53db0c4c72f37e2a87c94f7c2"
+  },
+  "entry": "RenderingResponse.from and writeTo",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37378.1",
+      "role": "Intent",
+      "args": [
+        "copy"
+      ],
+      "history": "Rebuild the populated response in each stack and inspect the copied cookies.",
+      "prediction": "Expect currency to be absent on the parent and present once with value EUR and path /shop after.",
+      "basis": "The PR reports a response filter losing the handler's cookie. The supplied cookie defines its expected attributes.",
+      "refutation": "Either merged copy loses the cookie, changes its value or widens its path.",
+      "expected": {
+        "parent": {
+          "return": "mvc=checkout/201/summary/book//cart original=[currency=EUR@/shop] copy=[] wire=[] flux=checkout/201/summary/book//cart original=[currency=EUR@/shop] copy=[] wire=[]"
+        },
+        "fix": {
+          "return": "mvc=checkout/201/summary/book//cart original=[currency=EUR@/shop] copy=[currency=EUR@/shop] wire=[currency=EUR@/shop] flux=checkout/201/summary/book//cart original=[currency=EUR@/shop] copy=[currency=EUR@/shop] wire=[currency=EUR@/shop]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37378.2",
+      "role": "Control",
+      "args": [
+        "plain"
+      ],
+      "history": "Repeat without any cookie and add the same path model attribute.",
+      "prediction": "Both revisions should retain view checkout, CREATED, X-View=summary and item=book, add path=/cart and emit no cookie.",
+      "basis": "These are existing independent rendering fields inherited by from().",
+      "refutation": "The copy changes status or view, loses either model value, or invents a cookie.",
+      "expected": {
+        "parent": {
+          "return": "mvc=checkout/201/summary/book//cart original=[] copy=[] wire=[] flux=checkout/201/summary/book//cart original=[] copy=[] wire=[]"
+        },
+        "fix": {
+          "return": "mvc=checkout/201/summary/book//cart original=[] copy=[] wire=[] flux=checkout/201/summary/book//cart original=[] copy=[] wire=[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37378.3",
+      "role": "Challenge",
+      "args": [
+        "paths"
+      ],
+      "history": "With two original currency cookies, use EUR at /shop and USD at /account, then add a fresh visit=1 cookie to the copy. Inspect cookies written to the HTTP response.",
+      "prediction": "On the landing both currency value/path pairs and visit=1 should reach the client once. The original should still contain only its two currency entries.",
+      "basis": "Cookies with one name and different paths can coexist. Comparing value/path pairs tests multiplicity across the serialization boundary.",
+      "refutation": "One path overwrites the other, the copy adds visit to the original, or the wire response drops an entry.",
+      "expected": {
+        "fix": {
+          "return": "mvc=checkout/201/summary/book//cart original=[currency=EUR@/shop, currency=USD@/account] copy=[currency=EUR@/shop, currency=USD@/account, visit=1@/] wire=[currency=EUR@/shop, currency=USD@/account, visit=1@/] flux=checkout/201/summary/book//cart original=[currency=EUR@/shop, currency=USD@/account] copy=[currency=EUR@/shop, currency=USD@/account, visit=1@/] wire=[currency=EUR@/shop, currency=USD@/account, visit=1@/]"
+        }
+      }
+    }
+  ]
+}

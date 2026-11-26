@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "475",
+  "title": "JMS recovery after a replacement connection fails preparation",
+  "summary": "After reset the merged JMS factory recovered on C. Direct reinitialization followed by the same failure left the retry on closed A.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "crash-recovery",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "SingleConnectionFactory.createConnection, resetConnection and initConnection"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "SingleConnectionFactory now prepares each new physical connection before installing it and attempts to close the candidate when preparation raises JMSException."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/29116"
+  },
+  "verdictLabel": "2/3 merged predictions matched · challenge refuted",
+  "notes": [
+    "A deterministic Jakarta JMS provider records every creation, listener installation and physical close. It refuses sessions after a physical close. All application calls use the public Spring factory."
+  ]
+}

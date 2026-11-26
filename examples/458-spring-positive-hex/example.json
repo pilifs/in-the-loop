@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "458",
+  "title": "An explicit plus sign on hexadecimal integers",
+  "summary": "Both hexadecimal prefixes now accept unary plus. The result still respects the requested numeric type and its bounds.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "NumberUtils.parseNumber"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The change accepts a leading plus in hexadecimal detection and in the separate BigInteger decoder."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37434"
+  },
+  "verdictLabel": "3/3 merged predictions matched",
+  "notes": [
+    "Each call records the runtime class and value or the number-format exception independently."
+  ]
+}

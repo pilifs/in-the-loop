@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36714",
+  "revisions": {
+    "parent": "6467fca05b874f3e44fbd9451a252f035abbeafc",
+    "fix": "80534f9df6aaa6b155ef3fb8494c057b0d4f268f"
+  },
+  "entry": "DataBufferUtils.write",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36714.1",
+      "role": "Intent",
+      "args": [
+        "joined"
+      ],
+      "history": "Write the joined buffer to a synchronous WritableByteChannel backed by a fresh file.",
+      "prediction": "For a true two-component buffer the parent is expected to leave only foo. The landing should emit the buffer once, complete and leave foobar on disk.",
+      "basis": "The PR identifies a first-component-only loop. Concatenating the two known byte arrays yields six bytes.",
+      "refutation": "The landed subscriber completes with a truncated file, duplicates bytes or loses the emitted buffer.",
+      "expected": {
+        "parent": {
+          "return": "components=2 emitted=1 bytes=foo"
+        },
+        "fix": {
+          "return": "components=2 emitted=1 bytes=foobar"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36714.2",
+      "role": "Control",
+      "args": [
+        "single"
+      ],
+      "history": "Write foobar in one contiguous buffer through the same synchronous channel.",
+      "prediction": "Both revisions should complete with the six exact bytes foobar.",
+      "basis": "A single readable component exercises the original write loop without a segment transition.",
+      "refutation": "Either file differs from the original byte array.",
+      "expected": {
+        "parent": {
+          "return": "components=1 emitted=1 bytes=foobar"
+        },
+        "fix": {
+          "return": "components=1 emitted=1 bytes=foobar"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36714.3",
+      "role": "Challenge",
+      "args": [
+        "short"
+      ],
+      "history": "Hold the bytes fixed and repartition them as f, oob, ar. Use a synchronous channel that accepts just one byte per successful write. Repeat with a fresh AsynchronousFileChannel at offset 2 in a file initialized to XX.",
+      "prediction": "At the landing the first file should contain foobar and the second XXfoobar; each subscription completes and emits one buffer.",
+      "basis": "Segmentation and short positive writes preserve the ordered byte stream. The supplied position protects the two-byte prefix.",
+      "refutation": "A boundary loses or duplicates a byte, overwrites XX, or completion occurs before the final byte is visible.",
+      "expected": {
+        "fix": {
+          "return": "sync components=3 emitted=1 bytes=foobar async components=3 emitted=1 bytes=XXfoobar"
+        }
+      }
+    }
+  ]
+}

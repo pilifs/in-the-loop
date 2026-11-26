@@ -1,0 +1,77 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "18ec8f04dde0f1c98a076323a87bbd318fe1517512b6a33b738213f0cfae3a24",
+  "runtimeSha256": "51cc19310bc9b864b8dd1662a14dd833d39b4565c0d930df63ed887f3c525e81",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "c66e0a66d210c58fb2bdbb3a3efe06e11c440dc57de1ec43c48ccdcc5402706d"
+  },
+  "deployments": {
+    "pinned-source": {
+      "callerClasses": {
+        "PublicCaller$1.class": "5da0c9ec765cbfbd22b725674dc63a80298dbe61a5be3af53624793f8049267b",
+        "PublicCaller$Manager.class": "b548fddb0d41247991001b0279a26ad4e61f1e0d9cd693fbce95fa65fade37d8",
+        "PublicCaller.class": "1f5e4b4e24cab837ab8f510dceda6f97676e07dc693a08a5bd1d3ec91ee452b6",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25256.1",
+          "outcome": {
+            "return": "values=[token] terminal=cancel actions=[commit] rows=[token]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25256.2",
+          "outcome": {
+            "return": "values=[token] terminal=complete actions=[commit] rows=[token] / values=[token] terminal=designated actions=[rollback] rows=[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25256.3",
+          "outcome": {
+            "return": "outside values=[token] terminal=complete actions=[commit] rows=[token] / inside values=[token] terminal=complete actions=[commit] rows=[token]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25256.1",
+          "outcome": {
+            "return": "values=[token] terminal=cancel actions=[rollback] rows=[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25256.2",
+          "outcome": {
+            "return": "values=[token] terminal=complete actions=[commit] rows=[token] / values=[token] terminal=designated actions=[rollback] rows=[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25256.3",
+          "outcome": {
+            "return": "outside values=[token] terminal=complete actions=[rollback] rows=[] / inside values=[token] terminal=complete actions=[commit] rows=[token]"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "sourceSliceClasses": {
+        "parent": {
+          "org/springframework/transaction/reactive/TransactionalOperatorImpl.class": "40338b9d2462ae26548dbccd7f07868c8ba24b4bf54e3536f8a1afd1772b7996"
+        },
+        "fix": {
+          "org/springframework/transaction/reactive/TransactionalOperatorImpl.class": "95f69dc18521bfd2968eec47ea15cf516035d10fba0f24c47b572639366e99f9"
+        }
+      }
+    }
+  }
+}
