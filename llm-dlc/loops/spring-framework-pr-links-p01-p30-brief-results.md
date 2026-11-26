@@ -46,3 +46,15 @@ P04 compiled a small subclass separately against the two protected YAML signatur
 The SQL script also refuted one parent prediction. With the original fixture and H2 auto-commit, the first row was already committed when the parent threw ScriptStatementFailedException. The original report described a missing terminator. The merged populator committed both intended rows. [SQL fixture, client linkage and independent readback](../../examples/493-spring-sql-comment-lines/README.md)
 
 Run `python3 verification/merged-pr-links/audit.py --campaign p01-p30` to check the recorded evidence. Add `--replay` to recompile the callers and repeat all 188 original histories using the prepared cache.
+
+## Published releases and subsequent revisions
+
+All three merged counterexamples reproduced on Spring Framework 7.1.0. The same release rejected a recording Jupiter class with explicit concurrent execution and a per-class test instance even with global parallelism disabled. Its diagnostic still suggests disabling parallel execution. Thirteen release histories reproduced all four cases' original merged outcomes. [Reproductions for upstream review](../../verification/merged-pr-links/p01-p30/upstream.md) · [Measured release results](../../verification/merged-pr-links/p01-p30/release-observations.json)
+
+For the seven historical source-slice cases, the same binaries ran on both of the independently published Spring versions identified by setup. All 46 outcomes matched their corresponding original parent or landing. Three more runs reproduced the P26 parent's double delivery and its controls on the originally reported Spring 5.3.18. This includes the direct SQL client's binary linkage failure on 5.1.5.RELEASE and the independently observed transaction visibility change on 5.2.0.RELEASE. [Historical release results](../../verification/merged-pr-links/p01-p30/historical-observations.json) · [Version and digest lock](../../verification/merged-pr-links/p01-p30/historical-inputs.json)
+
+The named P29 maintainer revision added a Javadoc `@since` to the registrar. The original landing and later registrar classes, compiled on the same classpath, had identical javap instruction and signature listings. All six executions of the registered cron caller on those two classes matched the original landing. [Source digests, instruction digest and histories](../../verification/merged-pr-links/p01-p30/cron-polish.json)
+
+## Independent verification
+
+The full replay job reproduced all 188 original histories and a byte-identical campaign audit. The debugger job ran 24 trials at the original mail copy and R2DBC cleanup methods. Each requested intent, control and challenge reached the original method twice on each revision and returned the same result as the public caller. Both saved debugger reports passed an independent check against the source revisions, exact classpaths, caller bytecode and invocation sites. [Full replay job](../../verification/jobs/2026/11/26/20261126-131411-replay-94-spring-predictions-across-30-p.json) · [Original-method debugger job](../../verification/jobs/2026/11/26/20261126-131422-trace-spring-mail-copies-and-r2dbc-loan.json)

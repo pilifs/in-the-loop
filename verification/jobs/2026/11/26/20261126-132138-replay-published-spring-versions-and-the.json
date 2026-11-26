@@ -1,0 +1,75 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-132138-replay-published-spring-versions-and-the",
+  "title": "Replay published Spring versions and the later cron revision",
+  "description": "Use the exact original caller binaries for 13 histories on Spring 7.1.0, 46 on the seven historical release pairs and three on reported 5.3.18. Compare each output to its measured original side and reproduce six additional JVM histories on both original registrar sources at the cron landing and the maintainer revision.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay",
+    "jdbc:durable-transaction-readback"
+  ],
+  "links": {
+    "paths": [
+      "verification/merged-pr-links/p01-p30/upstream.md"
+    ]
+  },
+  "expected": "All 62 release histories match their original side. The current and historical release results and the cron follow-up match the three checked-in files byte for byte.",
+  "submitted": {
+    "at": "2026-11-26T13:21:38+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Replay the four current release cases",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/p01-p30/release-inputs.json --output verification/merged-pr-links/p01-p30/repeated-release.json",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the historical published versions",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/p01-p30/historical-inputs.json --output verification/merged-pr-links/p01-p30/repeated-historical.json",
+      "cwd": "."
+    },
+    {
+      "name": "Check the side and outcome of every released history",
+      "run": "python3 verification/merged-pr-links/p01-p30/check_releases.py --release verification/merged-pr-links/p01-p30/repeated-release.json --historical verification/merged-pr-links/p01-p30/repeated-historical.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare current release results",
+      "run": "cmp verification/merged-pr-links/p01-p30/release-observations.json verification/merged-pr-links/p01-p30/repeated-release.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare historical release results",
+      "run": "cmp verification/merged-pr-links/p01-p30/historical-observations.json verification/merged-pr-links/p01-p30/repeated-historical.json",
+      "cwd": "."
+    },
+    {
+      "name": "Measure the named maintainer cron revision",
+      "run": "python3 verification/merged-pr-links/p01-p30/cron_polish.py --output verification/merged-pr-links/p01-p30/repeated-cron.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the cron follow-up",
+      "run": "cmp verification/merged-pr-links/p01-p30/cron-polish.json verification/merged-pr-links/p01-p30/repeated-cron.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/p01-p30/repeated-release.json",
+    "verification/merged-pr-links/p01-p30/repeated-historical.json",
+    "verification/merged-pr-links/p01-p30/repeated-cron.json"
+  ]
+}

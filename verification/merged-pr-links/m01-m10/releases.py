@@ -25,8 +25,10 @@ def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-in
     spec = comparison.read(folder / "comparison.json")
     physical = comparison.read(folder / "observations.json")
     sources = sorted((folder / "caller").rglob("*.java"))
+    adapters = {side: sorted((folder / "adapters" / side).rglob("*.java")) for side in comparison.SIDES}
     fixtures = sorted(p for p in (folder / "fixtures").rglob("*") if p.is_file())
-    if (physical["inputs"] != {p.relative_to(folder).as_posix(): sha(p) for p in sources + fixtures}
+    if (physical["inputs"] != {p.relative_to(folder).as_posix(): sha(p)
+                               for p in sources + fixtures + adapters["parent"] + adapters["fix"]}
             or physical["comparisonSha256"] != sha(folder / "comparison.json")
             or physical["runtimeSha256"] != sha(folder / "runtime.json")
             or physical["launcherSha256"] != sha(comparison.upgrade_replay.LAUNCHER)):
@@ -48,9 +50,11 @@ def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-in
         if "compileVersion" in project:
             compile_cp = classpath([jars[key] for key in project["versions"][project["compileVersion"]]])
         else:
-            compile_cp = comparison.classpath(setup, runtime, deployment, "fix", work)
+            compile_cp = comparison.classpath(setup, runtime, deployment, deployment.get("compileAgainst", "fix"), work)
         classes = work / "caller"
-        comparison.compile_java(compiler, compile_cp, classes, [comparison.upgrade_replay.LAUNCHER, *sources],
+        originals, resources = comparison.upstream_test_inputs(setup, spec, deployment, work / "test-inputs")
+        comparison.compile_java(compiler, compile_cp, classes,
+                                [comparison.upgrade_replay.LAUNCHER, *sources, *adapters["fix"], *originals],
                                 ["-parameters"] if deployment.get("parameterNames") else [])
         fingerprints = comparison.class_digests(classes)
         if fingerprints != physical["deployments"]["pins"]["callerClasses"]:
@@ -65,7 +69,7 @@ def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-in
                     trial = Path(t)
                     if fixtures:
                         shutil.copytree(folder / "fixtures", trial / "fixtures")
-                    actual = comparison.observe(jdk, classpath([classes, *files]), trial, "PublicCaller",
+                    actual = comparison.observe(jdk, classpath([classes, *([resources] if resources else []), *files]), trial, "PublicCaller",
                                                 question["args"], origins, label=f"{number} {version} {question['role']}",
                                                 open_modules=project.get("openModules", []))
                 rows.append({"question": question["id"], "outcome": actual,

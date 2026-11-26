@@ -262,6 +262,12 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 **17. Spring Framework, PR #37559. The default protobuf JSON Lines encoder splits two records into twelve lines.** The merged encoder selected the advertised media type. The compact printer produced two independently parseable messages. With the default printer all twelve physical lines failed independent parsing. [Generated protobuf messages and line reader](../examples/489-spring-protobuf-json-lines/README.md)
 
+All three entries above reproduced on published Spring 7.1.0 with the original caller binaries. [Release reproductions and controls](merged-pr-links/p01-p30/upstream.md)
+
+**18. Spring Framework, PR #30020. Disabling global parallelism does not clear the Jupiter configuration error that recommends it.** The recording class used explicit PER_CLASS and CONCURRENT annotations. Both values of the global parallel switch produced the same container failure on the landing and 7.1.0. [Diagnostic and engine reproduction](merged-pr-links/p01-p30/upstream.md#disabling-parallelism-in-a-recording-jupiter-test)
+
+**19. Spring JDBC, PR #22392. A public script reader disappears between patch releases.** A direct client compiled against the original three-argument ScriptUtils.readScript returned its SQL on 5.1.4.RELEASE and raised NoSuchMethodError on 5.1.5.RELEASE. This is a historical binary-compatibility finding. [Release reproduction and original invocation descriptor](merged-pr-links/p01-p30/upstream.md#historical-jdbc-compatibility)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:
