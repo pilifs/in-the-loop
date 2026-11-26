@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-025059-setup-build-spring-framework-28322-p26-a",
+  "title": "Setup: build Spring Framework #28322 (P26) at both pins offline and run its landed tests",
+  "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P26 (spring-projects/spring-framework#28322: A self-injected proxied listener receives each published event once). In the worktrees $P/worktrees/P26-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-context with the Gradle each checkout's wrapper names, runs the landed test classes (ApplicationContextEventTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-context in $P/artifacts/P26-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+    ]
+  },
+  "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P26",
+  "submitted": {
+    "at": "2026-11-26T02:50:59+00:00",
+    "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "unzip"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "6G",
+    "duration": "20m",
+    "memoryLimit": "9G",
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "steps": [
+    {
+      "name": "P26 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P26 fix",
+      "cwd": "."
+    },
+    {
+      "name": "P26 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P26 parent",
+      "cwd": "."
+    },
+    {
+      "name": "P26 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P26 transplant",
+      "cwd": "."
+    },
+    {
+      "name": "P26 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P26 clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

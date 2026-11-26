@@ -271,3 +271,67 @@ keys.openpgp.org return without a user id, so gpg cannot import it (unchecked; t
 reactive-streams 1.0.3's key `1364C5E2DF3E99C5` likewise; 29 have no `.asc` (Spring milestones and RCs, Reactor RCs and some
 Hibernate dependencies); byte-buddy 1.9.5 is signed by a key revoked since (`REVKEYSIG BB2914C1FA0811C3`); 50 are good
 signatures (39, plus 11 by keys expired since). The jasync sets pull `r2dbc-spi:1.0.0.RELEASE`, Kotlin 1.6.21 and Netty 4.1.86.
+
+## Snapshot dependencies
+
+The 7.1.0-SNAPSHOT platforms import `reactor-bom:2026.0.0-SNAPSHOT` (reactor-core and reactor-test 3.9.0-SNAPSHOT,
+reactor-netty 1.4.0-SNAPSHOT) and `micrometer-bom:1.18.0-SNAPSHOT`; their cached jars have the same digests as the O01–O20
+setup's of 2026-11-25. P20 (6.0.5-SNAPSHOT) imports `reactor-bom:2022.0.3-SNAPSHOT` and `micrometer-bom:1.10.4-SNAPSHOT`, which
+`repo.spring.io/snapshot` serves only as their last builds: reactor-core 3.5.3-SNAPSHOT `20230214.110429`, reactor-netty-http
+1.1.3-SNAPSHOT `20230214.122029`, micrometer-observation 1.10.4-SNAPSHOT `20230213.230149`, ten days after P20's pins
+(2023-02-03), not the builds of the pin's date. Both pins of a case read the same bytes; build `--offline` to keep them.
+
+| Module | sha256 |
+|---|---|
+| `io.micrometer:micrometer-commons:1.10.4-SNAPSHOT` | `779baf6da3f9bee44bf7f1a67b655c472f477bd97a0c1759a73648ce9e42d2cc` |
+| `io.micrometer:micrometer-commons:1.18.0-SNAPSHOT` | `1b3add3a081c9e9390fe3305dff43db944ea7a39b9a50a03acb1e3e65497eff9` |
+| `io.micrometer:micrometer-core:1.18.0-SNAPSHOT` | `048dcfc51a98e344c22bc17720bceca999f65f7a5fd403a967b7aea296547fa6` |
+| `io.micrometer:micrometer-jakarta9:1.18.0-SNAPSHOT` | `c5809b29a8458dd9128ff5e5f5beda7cdad73bbe72527f4b990a1c29a90fe6b1` |
+| `io.micrometer:micrometer-observation:1.10.4-SNAPSHOT` | `e573abb99f25611417355b7370f801f51be019eb010ed444f97e26b0baa7f9b0` |
+| `io.micrometer:micrometer-observation:1.18.0-SNAPSHOT` | `e1c8305e6b8e30563012c3aa6cea565a9367ba773202386e8015efa5a46e6964` |
+| `io.micrometer:micrometer-observation-test:1.10.4-SNAPSHOT` | `79a770fe29e2a53b1fd418f8b9ce35a2019fd3fa2c855d2557d2d86be21ed384` |
+| `io.micrometer:micrometer-observation-test:1.18.0-SNAPSHOT` | `d4e85b7504c8621ba20e56a11bf4c0ff062b03a0b553bfce6d9e24c6d37da742` |
+| `io.projectreactor.netty:reactor-netty-core:1.1.3-SNAPSHOT` | `ba4ae81fe3650c3a2e25677d377f9fe15ca9c5de1fd99e31cd24624ddbe7f825` |
+| `io.projectreactor.netty:reactor-netty-core:1.4.0-SNAPSHOT` | `eec27fecf961e887aa8ec1d1add4173556bf46d9ca87c429295ae93c2ebbba03` |
+| `io.projectreactor.netty:reactor-netty-http:1.1.3-SNAPSHOT` | `95c6775b50d1b6df931b571ba8e5a41561790909dbd862e0bc5b9006bec8a2d6` |
+| `io.projectreactor.netty:reactor-netty-http:1.4.0-SNAPSHOT` | `e28e59e57bb53e643b71f8ec5aa253db868cbb5190bcd4ea67509c9d44533e55` |
+| `io.projectreactor:reactor-core:3.5.3-SNAPSHOT` | `3b5ae2f28f08a59d552e19132b5b2d816e0752aedd42c40ab899562a8a0cf693` |
+| `io.projectreactor:reactor-core:3.9.0-SNAPSHOT` | `51436b9a3967185ee445d5db4053c5c43886465121383f6196d8f383a66bfc72` |
+| `io.projectreactor:reactor-test:3.5.3-SNAPSHOT` | `939c3e79174c963835bfc4aadbc6247d3c2b56d1aa67f14166037d8905337ac5` |
+| `io.projectreactor:reactor-test:3.9.0-SNAPSHOT` | `129ede5ed343d6996fa427f48ffb29d56d0b7a6814d006c00e3c644a985b44a3` |
+
+## Jobs
+
+One job per buildable case (23; the seven 5.x cases have none), each of four steps run by `$P/scripts/case_job.sh CASE STEP`
+(table of modules and test classes: `$P/scripts/cases.tsv`, the landed `*Tests.java` files; submitted by
+`$P/scripts/submit_case.sh`):
+
+1. `fix`: in `$W/CASE-fix`, offline: `:M:jar` for the case's jar modules and `:M:test --tests CLASS` for each landed test class,
+   with `-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue`; then keeps
+   `$P/artifacts/CASE-fix/`: `jars/`, `SHA256SUMS` (jars, and every class compiled from a production source file the landing
+   changed, nested classes included) and, per classpath module M, `M.runtimeClasspath.txt` and `M.testRuntimeClasspath.txt`
+   (`:`-joined; the project outputs they name are copied under `tree/`, the rest are paths into `$P/gradle-home`; written by
+   `-I $P/scripts/resolve-all.init.gradle :M:setupWriteClasspath -PsetupCpConf=CONF -PsetupCpOut=FILE`).
+2. `parent`: the same in `$W/CASE-parent`, with those landed classes that exist at the parent.
+3. `transplant`: `git archive` of the parent into `$P/build/CASE-parent-landed`, every changed file under `src/test` or
+   `src/testFixtures` taken from the fix (and a changed module build file: only P27's `spring-test.gradle`, which adds
+   `testImplementation("org.awaitility:awaitility")`), then the same test classes. Passes when they fail
+   (`TRANSPLANT-FAILS-AS-EXPECTED`) or do not compile (`TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED`).
+4. `clean`: `git clean -fdxq` in both worktrees, transplant copy removed.
+
+Jar and classpath modules are those with changed production sources, plus the test module; P22 adds spring-context (the
+brief's scenario builds its proxies through `@Bean` in an `AnnotationConfigApplicationContext`). Before submitting,
+`case_job.sh CASE dryrun` (offline `--dry-run` of both pins' task graphs, the classpath tasks included) configured for each
+case (`$P/logs/dryrun-6x.txt`, `$P/logs/dryrun-7x.txt`). Logs per step: `$P/logs/CASE-ROLE.test.offline.{log,junit.txt,class.txt}`,
+`$P/logs/CASE-parent-landed.test.offline.*`, `$P/logs/CASE-ROLE.cp-M-CONF.log`.
+
+| Case | Job |
+|---|---|
+| P20 | `20261126-025058-setup-build-spring-framework-29703-p20-a` |
+| P21 | `20261126-025059-setup-build-spring-framework-33533-p21-a` |
+| P22 | `20261126-025059-setup-build-spring-framework-35627-p22-a` |
+| P24 | `20261126-025059-setup-build-spring-framework-34723-p24-a` |
+| P25 | `20261126-025059-setup-build-spring-framework-32469-p25-a` |
+| P26 | `20261126-025059-setup-build-spring-framework-28322-p26-a` |
+| P27 | `20261126-025059-setup-build-spring-framework-30020-p27-a` |
+| P28 | `20261126-025059-setup-build-spring-framework-33470-p28-a` |
