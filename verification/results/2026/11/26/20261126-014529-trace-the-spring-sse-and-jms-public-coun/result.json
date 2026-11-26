@@ -1,0 +1,226 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-014529-trace-the-spring-sse-and-jms-public-coun",
+  "title": "Trace the Spring SSE and JMS public counterexamples at their original methods",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 22.0s, peak 107.4 MiB (estimated 1m00s, 768.0 MiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-014529-trace-the-spring-sse-and-jms-public-coun.json",
+    "sha256": "62528fe216bafe26892742d89a604a58aea9f15c633dd186c9f4aca9a7f168e2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-014529-trace-the-spring-sse-and-jms-public-coun",
+      "title": "Trace the Spring SSE and JMS public counterexamples at their original methods",
+      "description": "Replay the intent, stable control and challenge for both PRs twice on each original revision under the debugger. Bind all 24 observed returns to the registered caller bytecode, call sites, source pins and ordered classpaths. Include the trailing-space SSE hint and direct JMS reinitialization recovery.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-results.md"
+        ]
+      },
+      "expected": "Two saved debugger reports each contain twelve qualified JVM trials at the SSE event builder or JMS physical-connection initializer. All recorded outputs match the independent public replay.",
+      "submitted": {
+        "at": "2026-11-26T01:45:29+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Trace both Spring methods",
+          "run": "python3 verification/merged-pr-links/qualify.py 466 475 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/o01-o20/qualified",
+          "cwd": "."
+        },
+        {
+          "name": "Check every saved debugger trial",
+          "run": "python3 verification/merged-pr-links/qualify.py 466 475 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/o01-o20/qualified --check",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/o01-o20/qualified"
+      ]
+    }
+  },
+  "sourceCommit": "12de2accb7c3ba7065c5fca6826b7fd0673c4d4a",
+  "startedAt": "2026-11-26T01:56:41+00:00",
+  "finishedAt": "2026-11-26T01:57:15+00:00",
+  "wallSeconds": 34.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1660181,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 112640000,
+    "wallSeconds": 22.0,
+    "cpuSeconds": 27.4,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.37
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Trace both Spring methods",
+      "run": "python3 verification/merged-pr-links/qualify.py 466 475 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/o01-o20/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 21.839,
+      "cpuSeconds": 27.312,
+      "cpuThrottledSeconds": 5.007,
+      "peakMemoryBytes": 112640000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-trace-both-spring-methods.log",
+        "lines": 2,
+        "bytes": 311,
+        "sha256": "ea855420d9bd9cc3798e5a1ae21106e02588d7d5c554e89b4f9f6970c7e87789",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "466 pins org.springframework.http.codec.ServerSentEventHttpMessageReader#buildEvent(Ljava/util/List;Lorg/springframework/core/ResolvableType;ZLjava/util/Map;)Ljava/lang/Object; 12 qualified JVM trials",
+        "475 pins org.springframework.jms.connection.SingleConnectionFactory#initConnection()V 12 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check every saved debugger trial",
+      "run": "python3 verification/merged-pr-links/qualify.py 466 475 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/o01-o20/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.056,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13139968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-every-saved-debugger-tri.log",
+        "lines": 2,
+        "bytes": 321,
+        "sha256": "5493759673156e2af4bae51588bd6842c9fafbbe2b069b7cd3f1368527916479",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "466 pins org.springframework.http.codec.ServerSentEventHttpMessageReader#buildEvent(Ljava/util/List;Lorg/springframework/core/ResolvableType;ZLjava/util/Map;)Ljava/lang/Object; 12 verified saved JVM trials",
+        "475 pins org.springframework.jms.connection.SingleConnectionFactory#initConnection()V 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/o01-o20/qualified/466-pins.json.gz",
+      "change": "added",
+      "bytes": 3526,
+      "sha256": "787b0ea34c9a78045d238ac4fceacb130ee495dd8baa1fbd4d85b8141e81cec7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/o01-o20/qualified/475-pins.json.gz",
+      "change": "added",
+      "bytes": 2586,
+      "sha256": "e4c9f052b1b3f044c0831e54db9121cfddfbfecc088c8843fdd9e482734aa785",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T01:57:23+00:00",
+    "applied": [
+      "verification/merged-pr-links/o01-o20/qualified/466-pins.json.gz",
+      "verification/merged-pr-links/o01-o20/qualified/475-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T015715Z-071869147e522cee",
+      "outputs": "20261126T015715Z-23431690eea1cc49",
+      "diff": "20261126T015715Z-271469008bba6fd6"
+    }
+  }
+}
