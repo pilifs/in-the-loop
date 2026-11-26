@@ -1003,3 +1003,164 @@ Determine what each merged change lets a Java caller observe, which results shou
 **Technical notes.** The code is in junit-jupiter-engine, with regression coverage in jupiter-tests. Use a method parameter or per-test field for each claimed path. A shared static class directory has a different owner and can legitimately survive a failed child.
 
 **Sources.** [TempDirectory.java](https://github.com/junit-team/junit-framework/blob/48276fd094821f79afb3cd384b8c70946d73350b/junit-jupiter-engine/src/main/java/org/junit/jupiter/engine/extension/TempDirectory.java) · [TempDirectoryCleanupTests.java](https://github.com/junit-team/junit-framework/blob/48276fd094821f79afb3cd384b8c70946d73350b/jupiter-tests/src/test/java/org/junit/jupiter/engine/extension/TempDirectoryCleanupTests.java) · [release-notes-5.12.2.adoc](https://github.com/junit-team/junit-framework/blob/48276fd094821f79afb3cd384b8c70946d73350b/documentation/src/docs/asciidoc/release-notes/release-notes-5.12.2.adoc) · [build.gradle.kts](https://github.com/junit-team/junit-framework/blob/48276fd094821f79afb3cd384b8c70946d73350b/build.gradle.kts) · [Issue #4464](https://github.com/junit-team/junit-framework/issues/4464).
+
+## Setup Agent Notes
+
+`$O` = `~/.cache/in-the-loop/merged-pr-links-r01-r50`; `source $O/scripts/env.sh` first (it sets `$W`, `$M`, `TMPDIR`, `GRADLE_USER_HOME`, the JDK homes
+`$J8` `$J11` `$J17` `$J21` `$J25` `$J27` and `$MVN`). Case ids R01–R50 are this record's labels in the brief's order, not example ids. Detail for each case is
+in its section above (parts A–D), and the summary table names the part.
+
+### What is ready, and where
+
+- **Revisions.** Both pins of all 50 PRs are in shallow mirrors under `~/.cache/in-the-loop/git-mirrors/`, with one worktree each at
+  `$W/CASE-MIRROR-parent` and `$W/CASE-MIRROR-fix`. They are clean, with no build output. R41, R49 and R50 are standalone depth-1 clones, because
+  their builds read git metadata. Every PR is merged, and its merge commit is the brief's after pin (*Upstream revisions*). The two-commit ranges
+  have their middle commits fetched: R24 `ba880df507664d320f54028810c42e07e429515f` and R50 `f7f1d51d4c57322dece17011a3da540b0f98bfbb`.
+- **Builds.** 49 of the 50 cases are built at both pins. R39 parquet is the exception (see below). R01's parent side, R33, R34, R49 and R50 were built
+  by jobs, and their artifacts are in place (R50's from its rerun job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`). Each built case has, in `$O/artifacts/CASE-ROLE/`:
+  - the jar;
+  - `SHA256SUMS`, covering the jar and every class of each changed production file;
+  - the runtime and test classpaths (`:`-joined, pointing into `$O/m2` or `$O/gradle-home`). Sibling module jars are copied under `tree/` where a
+    classpath needs them.
+
+  Each case section names its exceptions. For example, R23/R24 use `core-testing-test-classpath.txt` and R48 uses `core-tests-test-classpath.txt`.
+- **Offline commands.** Every Maven and Gradle command in the case sections was checked offline and runs from the caches. Maven runs through
+  `$O/scripts/mvn_case.sh` (or the part's `mvn_A.sh`, `case_B.sh`, `*_C.*` helpers); Gradle through `$O/scripts/gradle_case_D.sh DIR TAG GVER JDK RESULTDIR ARGS`.
+- **JDKs by case:**
+
+  | JDK | Cases |
+  |---|---|
+  | `$J8` | R21, R22, R32, R41, R43, R44 |
+  | `$J11` | R37, R38, R47 |
+  | `$J17` | most Maven cases, R25, R45, R46 |
+  | `$J21` | R03, R08, R10, R13, R48, R50; R33/R34 with a 25 toolchain |
+  | `$J25` | R49; R05/R09 with the `$J27` javac toolchain |
+
+  `$J27` is Temurin 27.0.1.1+4, added under `$O/tools` and verified, because Guava's pom requires a JDK 27 toolchain. Apache Ant 1.10.15 is also in
+  `$O/tools`, for fastutil.
+- **Release jars.** Released jars, `-sources.jar`s and POMs are in `$O/releases/ARTIFACT-VERSION/`, checked against Maven Central's
+  `.sha1`/`.sha256`/`.sha512` and their `.asc` signatures. The releases the brief names are among them:
+  - H2 2.2.224 (R31);
+  - Reactor Core 3.1.0.RELEASE (R42);
+  - Resilience4j 2.1.0 (R46);
+  - JUnit 6.1.1 (R49) and 5.12.2 (R50): runtime sets in `$O/releases/junit-set-{6.1.1,6.1.2,5.12.1,5.12.2}/classpath.txt`.
+- **Release pairs.** Releases that match a pin's changed sources, from the *Summary by case*:
+
+  | Kind | Cases and releases |
+  |---|---|
+  | Exact parent/fix pairs | R41 rxjava 2.0.6/2.0.7, R43 reactor-core 3.4.37/3.4.38, R50 junit-jupiter-engine 5.12.1/5.12.2 |
+  | Fix byte for byte | R13 jimfs 1.3.2, R18 jackson-core 2.21.7, R20 commons-csv 1.11.0, R38 avro 1.12.0 (`TimePeriod.java`) |
+  | Fix, not byte for byte | R03 vavr 1.1.0, R04 fastutil 8.5.14, R05/R09 guava 33.8.0, R15 commons-codec 1.22.1/1.23.0, R25 moshi 1.13.0, R27 jackson-core 2.21.9, R30 jackson-dataformat-xml 3.3.0, R31 h2 2.3.230, R36 arrow 20.0.0, R37 avro 1.11.4/1.12.0, R44 rxjava 3.0.0-RC4, R45/R46 resilience4j 2.2.0, R47 picocli 4.7.4, R48 assertj 3.27.1 |
+  | Parent byte for byte | R06 commons-lang3 3.22.0, R14 fastutil 8.5.19, R22 javapoet 1.13.0, R35 arrow 20.0.0, R40 threeten-extra 1.11.0 |
+  | No release has the fix | R01, R02, R06, R07, R08, R10, R11, R12, R14, R16, R17, R19, R21, R23, R24, R26, R28, R29, R33, R34, R35, R40 |
+- **Generated sources** the brief's code lives in: R04 `$O/artifacts/R04-ROLE/generated-src/IntImmutableList.java` (from `drv/ImmutableList.drv`),
+  R35 `$O/artifacts/R35-ROLE/generated-src/*Decimal*HolderReaderImpl.java` (from the FMPP template). For fastutil, `make sources` must run before
+  compiling, because the generated files are git-ignored.
+
+### What was verified on a JVM
+
+- **43 cases (inline).** The landed tests pass on the fix, the parent's own copy passes on the parent, and the fix's landed tests fail on a copy of
+  the parent. They fail where the PR or the brief says. Exact counts, failing tests and messages are in each case's *Landed tests*, and the overlay
+  runs' surefire reports are kept under `$O/logs/surefire/`. Of these:
+  - in R37 and R38 the fix's tests do not compile on the parent (new API);
+  - R11 also gives the same 16 failures against the released commons-io 2.22.0 classes, as the PR says.
+- **R42 (slice route only).** 10 of the 226 landed tests fail on the parent slice and on reactor-core 3.1.1.RELEASE. All pass on the fix slice and
+  on 3.1.2.RELEASE.
+- **R39 (releases and pin-source overlays only).** The landed method passes on parquet-hadoop 1.18.2 and fails on 1.18.1. The fix pin's
+  `DictionaryPageReader.java` compiled onto 1.18.2 passes, and the parent pin's fails.
+- **5 more cases by verification jobs**, which came back passed. Each landed test set passes on the fix, the parent's own copy passes on the parent, and
+  the fix's landed tests fail on a copy of the parent where the PR says:
+
+  | Case | Fix · parent's own · fix's tests on the parent | Job |
+  |---|---|---|
+  | R01 | 120,694/0 · 120,694/0 · 15 fail (the throwing-callback `updateValue`/`updateValueWith` assertions) | `20261126-173550-setup-run-eclipse-collections-1786-s-lan` (the fix side ran inline) |
+  | R33 | 698/0 · 696/0 · 4 fail | `20261126-172339-setup-build-apache-calcite-at-both-pins` |
+  | R34 | 606/0 · 598/0 · 9 fail | `20261126-172339-setup-build-apache-calcite-at-both-pins` |
+  | R49 | 59/0 · 59/0 · 1 fails (`SuiteEngineTests#dynamicSuite`, `NoTestsDiscoveredException`) | `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` |
+  | R50 | 18/0 · 16/0 · 3 fail (`cleanupModeOnSuccessFailingThenPassingField`, `…FailingStaticFieldWithNesting`, `…FailingThenPassingParameter`: the passing test's directory is not cleaned) | `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins` |
+
+  So **48 cases** are checked at both pins on a JVM. The other two, R39 and R42, are checked only by their release, overlay or slice routes above, so
+  every one of the 50 cases has had its landed regression run on both sides in some form.
+  - **R50's first job ran no test.** In job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`, its three offline builds stopped at
+    `:jupiter-tests:compileTestGroovy` (13 Groovy 4.0.26 modules resolved only at compile time were missing), yet the job reported passed because its
+    script exited 0. The modules were resolved (`$O/scripts/resolve-groovy-D.init.gradle`, all 47 files equal Central's `.sha1`), `junit_job.sh` now fails
+    a step whose outcome is wrong, and the rerun above is the result. Its jars replaced the first job's.
+  - `calcite_job.sh` also exits 0 in every case, so R33 and R34 above were read from their logs (`test rc=0` with tests > 0, and the landed marker), not from
+    the job status alone. `R01_job.sh` fails its landed step when nothing fails.
+  - The job results are recorded on another head (`77cdd5d09f2c` at the time of writing); they were read from there and not merged here.
+- **None of the brief's own scenarios, controls or challenges was run.** That is on purpose.
+
+### What to know before starting
+
+- **R39 parquet pins are not built.** `parquet-format-structures` needs a `thrift` 0.23.0 compiler. None is installed, and bison and flex, needed to
+  build one, are missing. Following the user's standing decision, use one of these and label the evidence as release or overlay evidence:
+  - released parquet-hadoop **1.18.1**, whose `DictionaryPageReader.java` equals the parent pin's blob;
+  - released parquet-hadoop **1.18.2**, which equals the fix pin's blob;
+  - the pins' own `DictionaryPageReader.java` compiled against 1.18.2, in `$O/artifacts/R39-ROLE/R39-ROLE-overlay.jar` (put it first on the classpath).
+
+  The release graphs are in `$O/resolve/R39-parquet-{1.18.1,1.18.2}/`.
+- **R42 reactor-core #937's pinned build cannot be configured from any public source.** Its build-script plugins `propdeps-plugin:0.0.7`,
+  `spring-io-plugin:0.0.4.RELEASE` and dokka `integration:0.9.15` were only on repo.spring.io, which now answers 401/405. Use the slice route or
+  3.1.1.RELEASE (parent) and 3.1.2.RELEASE (fix) for the two code files, and label the evidence so. The change to `Flux.java` is Javadoc only.
+- **R16: substitute snapshot.** Both commons-compress pins depend on `commons-io:commons-io:2.21.0-SNAPSHOT`, which no public repository serves any
+  more. It was built from commons-io's public source at `e19519ad1a61ec6852601d28ffe94a8967e4e3e0` (the last `master` commit before the fix merged)
+  and installed in `$O/m2`. Its jar sha256 is `3740da21bcac36e8cda476d6afc40cc60dd122be1c3df535bf965341c6a9b845`. Label R16's builds as built
+  against that substitute.
+- **R18: rebuilt parent POM.** Its parent POM `jackson-base:2.21.7-SNAPSHOT` is gone. It was rebuilt from FasterXML/jackson-bom at
+  `7796a7ddb240ce41c1b6c6a3a435b29948a6a727`, which predates both pins, and differs from the 2.21.7 release only in version strings and the output
+  timestamp. R27's snapshot parent (`2.21.9-20261017.195440-2`) predates its pins.
+- **R28, R29 and R30 are unstable inputs.** They were built against **later snapshot builds of their Jackson dependencies than the pins used**,
+  because the snapshot repository keeps only the latest build.
+
+  | Cases | Snapshot builds used |
+  |---|---|
+  | R28, R29 | `jackson-core:3.4.0-20261126.043215-13`, `jackson-annotations:2.24-20261124.040648-4` |
+  | R30 | `jackson-core:3.3.0-20261106.043746-116`, `jackson-databind:3.3.0-20261107.181845-176`, `jackson-annotations:2.23-20261106.041643-18` |
+
+  Their sha256 digests are in the part B snapshot table, and copies are in `$O/artifacts/snapshots-B/`. Use the offline commands or the
+  `*-classpath.pinned.txt` files: an online `-U` build may pull newer builds. Say which build a claim ran on when it could depend on them.
+- **Substituted build-plugin dependencies.** jcenter is gone, so the build-plugin dependencies of R41, R44, R45 and R46 were copied with the same
+  coordinates, SHA-1 checked, into `$O/dl/subst-repo-D`. Pass `GINIT=$O/scripts/subst-repo-D.init.gradle` to use them. Nothing on a compile or test
+  classpath comes from there.
+- **R01: Maven settings.** R01 needs `$O/maven-settings-ec.xml`, because repo.eclipse.org answered 503; the file mirrors that repository to Central.
+- **Command-line switches** some builds need (no build file was changed):
+
+  | Cases | Needs |
+  |---|---|
+  | R05, R09 Guava | `-Dskip=true` (or its toolchains plugin downloads JDKs into `~/.m2`) |
+  | R35, R36 Arrow | `-Dmaven.gitcommitid.skip=true -Ddevelocity.scan.disabled=true`; running vector code on JDK 17 needs `--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED` and a memory provider jar (in `tree/`) |
+  | R37, R38 Avro | `-Dmaven.build.cache.enabled=false` |
+  | R32 H2 | `TestFunctions` needs a non-UTC default zone (`-Duser.timezone=America/Los_Angeles`) and the test annotation processor's service file (`$O/scripts/h2-test-services`), the same on both pins; H2 tests stop at their first failure |
+  | R50 | its build rejects unknown `-P` properties: pass setup parameters as `-D`. `gradle.properties` sets `org.gradle.warning.mode=fail`, so the setup passes `--warning-mode=summary`. The Groovy test compile classpath is resolved by `setupResolveGroovy` (`$O/scripts/resolve-groovy-D.init.gradle`) |
+  | R16 | after a `-Dtest=` run, an offline `package` fails jacoco's coverage check: use `clean package` |
+- **Coverage limits of the landed tests.**
+  - R44's landed tests fail on the parent only for the Flowable path; the Observable change is not separated by them.
+  - R12's landed tests do not touch `mark` + `skip`, the brief's #860.3 discrepancy.
+  - R35's historical failure depends on native byte order; this machine is x86_64, little-endian.
+  - R37's parent already has `DurationConversion`, because R38 merged first.
+- **Release details.**
+  - R02: commons-collections4 4.6.0 has a third `IndexedCollection.add()`, equal to neither pin. Check it before treating it as either side.
+  - R32: no release matches either pin (H2 was reorganized before 2.0.202).
+  - R25: no release is on the parent side (1.12.0 has no record support).
+  - R11's test class is new in the fix. Its `[1]`/`[2]` invocations are a boolean parameter, not the two concrete filter classes.
+- **Test counting.**
+  - R26: Gson's `java-time-test` execution always runs `JavaTimeTest`, so read `PrimitiveTest`'s own count (107 fix, 106 parent).
+  - R45/R46 run with test-retry, so each failure appears four times in the XML.
+  - R35/R36's fix-side counts are 2 tests under two surefire configurations.
+- **Signatures.** All release signatures verify. fastutil's are EXPKEYSIG (valid signature, key listed as expired), and the keyserver's Resilience4j
+  2.x key expired before the signing dates. Every keyring is this work's own (`$O/gnupg-A` … `$O/gnupg-D`), and their daemons are stopped.
+- **Rebuilt jars.** The kept jar digests are of those copies. A rebuild changes a jar's digest (timestamps) but not the class digests.
+- **Runtime notes.** R25's records need a JVM of 16 or later and the multi-release jar (the adapter is under `META-INF/versions/16/`). JUnit's
+  `@TempDir` (R50) follows `java.io.tmpdir`, which defaults to `/tmp` whatever `TMPDIR` says: pass `-Djava.io.tmpdir=` a folder under `~/.cache/in-the-loop/`.
+
+### What is left for the domain work on purpose
+
+- All claims, fixtures and harnesses: the brief's public scenarios with their controls and challenges, and its predictions (for example R21's
+  compile-and-reflect readback, R37's sliced `ByteBuffer`, R35's neighbour variation, R39's request order, the JUnit `Launcher` runs, a Feign stub
+  server, the CPIO and TAR archives). None was written or run.
+- The choice between pin jars, slice jars, overlay jars and release jars where more than one exists, and how to label the evidence.
+- Rebuilding R28–R30's snapshot inputs as they stood at the pins' dates (not done), and whether R02's 4.6.0 `add()` matters.
+- No full upstream test suites were run beyond the landed classes; R01's fix side is the exception, run whole.
+
+**Setup is complete** (2026-11-26): no setup job is pending, and the only gaps are the ones named above (R39's pins unbuilt, R42's pinned build
+unconfigurable, R16/R18 substitutes, R28–R30's later snapshot inputs).
