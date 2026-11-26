@@ -193,3 +193,407 @@ PR metadata (`gh api`, `$O/upstream/prs/`): base branch, head, commits, changed 
 | R49 | `main` | `a9b9d4af8c1ad500904b9bbeb0166d102243f913` | 2 | 5 | 2026-07-04T21:34:54Z |
 | R50 | `main` | `b36e605570c200fdaa65e4e3c9f14208b36e3e74` | 2 | 4 | 2025-04-11T13:42:18Z |
 
+## Toolchain and shared files
+
+| Tool | Where | Identity |
+|---|---|---|
+| Temurin 8u512, 11.0.33, 17.0.21, 21.0.13, 25.0.5 | `~/.sdkman/candidates/java/` (`$J8` `$J11` `$J17` `$J21` `$J25`) | earlier setups' installations; none added |
+| Maven 3.10.0 | on `PATH` (sdkman, `~/.sdkman/candidates/maven/3.10.0`) | all Maven cases |
+| Gradle distributions | `$O/tools/`, zips in `$O/dl/gradle/` | see the fork D section (Gradle cases) |
+
+Caches and files this work owns:
+- `$O/m2` (Maven local repository, shared by all Maven cases), `$O/gradle-home` (`GRADLE_USER_HOME`, Gradle cases), `$O/maven-settings.xml`
+  (sets only the local repository), `$O/toolchains.xml` (JDKs 8, 11, 17, 21, 25).
+- `$O/artifacts/CASE-ROLE/`: built jars, `SHA256SUMS` (jar + every class of each changed production source file), `runtime-classpath.txt`,
+  `test-classpath.txt` (`:`-joined, paths into `$O/m2` or `$O/gradle-home`); per-case exceptions are named in the case's section.
+- `$O/releases/A-V/`: released artifacts from Maven Central with their `.sha1` (and `.sha256`/`.sha512` where published) checked and `.asc` beside them.
+- `$O/logs/`: every build and test log (`TAG.log`) with a summary (`TAG.junit.txt`). `$O/upstream/prs/`: each PR's `gh api` record and changed files.
+- Keyrings `$O/gnupg-A` … `$O/gnupg-D` (one per part of the setup; agents stopped), keys `$O/keys-A/` … `$O/keys-D/`.
+- Helpers in `$O/scripts/`: `env.sh`, `pins.tsv`, `fetch.sh`, `worktrees.sh`, `mvn_case.sh` (one Maven run, 4 GB scope, log + JUnit summary),
+  `keep_mvn.sh` (artifacts and classpaths), `junit_summary.py`, `central_get.sh` (Central download with checksum checks), `resolve-all.init.gradle`
+  (adds tasks `setupResolveAll`, `setupWriteClasspath`; changes no upstream file), `cp_localize.py`, `assemble_record.sh` (writes this record from
+  `$O/notes/`), and per-case job scripts `CASE_job.sh`.
+
+`mvn_case.sh DIR TAG JDK [online] ARGS...` runs `systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 choom -n 500 -- $MVN [-o] ARGS`
+in DIR with `JAVA_HOME=JDK`, `MAVEN_OPTS=-Xmx1g`. The Maven commands in the case sections are its ARGS.
+
+The setup was done in four parts at once (A: small Maven projects, B: medium Maven projects, C: large Maven projects and fastutil's Ant build,
+D: Gradle projects); each part's section follows the summary.
+
+
+## Cases R02–R40 (fork A)
+
+Thirteen Maven cases, all built and tested inline (every run under a minute), with `$O/scripts/run_A.sh CASE JDK TESTS [MODULE]`: online `-DskipTests package` and the landed tests at the fix, online `-DskipTests package` at the parent, then offline: `package`, the landed tests on the fix, the parent's own copy of them on the parent, and the fix's changed test files overlaid on a copy of the parent (`$O/build/CASE-parent-landed`, the parent's tracked files plus the fix's changed `src/test` files; removed again, its surefire reports kept in `$O/logs/surefire/CASE-parent-landed/`). Each Maven run goes through `$O/scripts/mvn_A.sh DIR TAG JDK REPORTDIR [online] ARGS` (4 GB scope, `choom -n 500`, `MAVEN_OPTS=-Xmx1g`, log `$O/logs/TAG.log`, summary `$O/logs/TAG.junit.txt`). Test runs add `-Drat.skip` (RAT would flag the copy). Artifacts by `$O/scripts/keep_A.sh CASE ROLE JDK [MODULE] [online]`: `$O/artifacts/CASE-ROLE/` holds the jar, `SHA256SUMS` (jar and every class of each changed production file), `runtime-classpath.txt` and `test-classpath.txt` (`:`-joined, paths into `$O/m2`), each written online once and then again offline (checked). Build trees were removed afterwards (`git clean -fdx`); the offline commands rebuild in seconds.
+
+Release side: jars, `-sources.jar` and POMs from Maven Central in `$O/releases/ARTIFACT-VERSION/` by `$O/scripts/central_get.sh` (every file's `.sha1`, and `.sha256`/`.sha512` where published, matched: 92 checks, `$O/logs/A-central-get.txt`). All 45 `.asc` signatures (15 releases × jar, sources, POM) are **good**, checked in the keyring `$O/gnupg-A` (agent and dirmngr stopped) with keys in `$O/keys-A/`: the Apache Commons `KEYS` (https://downloads.apache.org/commons/KEYS) and, from keyserver.ubuntu.com, `1D0A8B5E77C678A7C724445ABF984B4145EA13F7` (Egor Andreevici, JavaPoet), `B41089A2DA79B0FA5810252872385FF0AF338D52` (Stephen Colebourne, ThreeTen-Extra), `BDB5FA4FE719D787FB3D3197F6D4A1D411E9D1AE` (Christopher Povirk, Jimfs) and `C7BE5BCC9FEC15518CFDA882B0F3710FA64900E7` (Éamonn McManus, Gson). The Commons releases are signed by `2DB4F1EF0FA761ECC4EA935C86FDC7E2A11262CB` or `F4DD59C90148BDC52BEB90A4530AA5F25C25011F` (Gary Gregory). Per file: `$O/logs/A-release-signatures.txt`; jar digests: `$O/logs/A-release-sha256.txt`. Source comparison: `$O/scripts/relcmp_A.py` (git blob ids of each changed production file in the `-sources.jar` against both pins, `$O/logs/A-release-blobs.txt`) and, where neither matches, `$O/scripts/relhunks_A.py` (how many of the fix's added and the parent's removed lines the release file holds, `$O/logs/A-release-hunks.txt`).
+
+### R02 · Apache Commons Collections #688 — unique IndexedCollection add atomicity
+
+**Pins.** Parent `dad2ff61e516a601da8179708959263e38af8d68`, fix `ca83f8699e10403be6987b92fb1a877743df8262`. Changed: `src/changes/changes.xml` (+1 −0); `src/main/java/org/apache/commons/collections4/collection/IndexedCollection.java` (+11 −0); `src/test/java/org/apache/commons/collections4/collection/IndexedCollectionTest.java` (+11 −0).
+
+**Build facts.** `org.apache.commons:commons-collections4:4.6.0-SNAPSHOT` (same at both pins), parent `org.apache.commons:commons-parent:102`, source/target 1.8 (classes major 52). Runtime classpath: `commons-codec-1.22.0.jar` only. Tests: JUnit Jupiter 5.14.3, junit-pioneer 1.9.1, EasyMock 5.6.0, guava-testlib 33.6.0-jre.
+
+**Commands** (in `$W/R02-commons-collections-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 39 s, parent 17 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 6 s, parent 7 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=IndexedCollectionTest test` (fix 4 s)
+
+**Landed tests.** Fix: `IndexedCollectionTest` 33 run, 0 failures. Parent's own copy on the parent: 32 run, 0 failures. Fix's copy on the parent: 33 run, **1 failure**, the new test: `testFailedUniqueAddDoesNotPolluteDecoratedCollection:144 expected: <1> but was: <2>` (the backing collection gained the rejected element). Logs: `$O/logs/R02-fix-landed.log`, `$O/logs/R02-parent-own.log`, `$O/logs/R02-parent-landed.log`.
+
+**Release side.** Maven Central: 4.5.0 (2025-04-19, before the fix) and 4.6.0 (2026-08-06, after the merge). **Neither release's `IndexedCollection.java` is either pin** (blob `17084b2b6728722d6265cf6897e72a1bc2f1ab76` in 4.5.0, `c18ca39222faf29aec67736eedbf61bd6a0d3d86` in 4.6.0; the pins' blob ids are in `$O/logs/A-release-blobs.txt`) and neither contains the fix's added lines (0 of 2 distinct). 4.6.0's `add()` calls `toValidKey(object)` before `super.add(object)`, a different implementation from both pins; what that does with a duplicate key is for the domain work. No release on Central carries the fix's code. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R02-parent/`, `$O/artifacts/R02-fix/`), sha256:
+- parent: `commons-collections4-4.6.0-SNAPSHOT.jar` `6588aa90992c87ab9058e90ee459948857d8727da96f86062e93ec284c10be9b`
+- parent: `org/apache/commons/collections4/collection/IndexedCollection.class` `d9db129fdcaecc38119fc02b6042b02689c53ac4dd0058b578188f94ab029404`
+- fix: `commons-collections4-4.6.0-SNAPSHOT.jar` `b6ec4619cf6c5b43379c087acd4a9f5bdde960a7c346462adfa28005092c2d91`
+- fix: `org/apache/commons/collections4/collection/IndexedCollection.class` `4bc76711ce285e4591153a8d11d335d55b2956a03bd378521e3f814a97ed4bc8`
+
+### R06 · Apache Commons Lang #1865 — Fraction.divideBy at Integer.MIN_VALUE
+
+**Pins.** Parent `ef7586831c7842c97ad4be8693ddef6f94bb8b64`, fix `355f246760cad21ca597424b49bb1151c0a63a96`. Changed: `src/main/java/org/apache/commons/lang3/math/Fraction.java` (+18 −1); `src/test/java/org/apache/commons/lang3/math/FractionTest.java` (+46 −0).
+
+**Build facts.** `org.apache.commons:commons-lang3:3.22.1-SNAPSHOT`, parent `org.apache.commons:commons-parent:107`, source/target 1.8 (major 52). **No runtime dependencies** (the jar alone). Tests: JUnit Jupiter 5.14.4, junit-pioneer 1.9.1, Mockito 4.11.0, EasyMock 5.6.0. Built on JDK 17 (the PR reports JDK 25 targeting Java 8; CI covers 8–27).
+
+**Commands** (in `$W/R06-commons-lang-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 40 s, parent 31 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 18 s, parent 13 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=FractionTest test` (fix 4 s)
+
+**Landed tests.** Fix: `FractionTest` 58 run, 0 failures. Parent's own: 39 run, 0 failures. Fix's copy on the parent: 58 run, **10 errors**, the ten invocations the PR names: `testDivideIntegerMinValue(int, int, int, int, int, int)[1]`–`[9]` and `testDivideZeroByIntegerMinValue`, each `ArithmeticException: overflow: can't negate numerator` (lines 415 and 439). Logs: `$O/logs/R06-fix-landed.log`, `$O/logs/R06-parent-own.log`, `$O/logs/R06-parent-landed.log`.
+
+**Release side.** Latest release 3.22.0 (2026-11-08, before the merge on 2026-11-15): its `Fraction.java` **is the parent's byte for byte** (blob `7a88070744d26f61a04f325533892aa5ac75446e`). No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R06-parent/`, `$O/artifacts/R06-fix/`), sha256:
+- parent: `commons-lang3-3.22.1-SNAPSHOT.jar` `5d59b16aadb3a575ecd197dc1910bbbfe2018141465d224fa5bfda68292a1e4d`
+- parent: `org/apache/commons/lang3/math/Fraction.class` `169d7d5cdb572abe6849948743a7eabd7cbca8b4b77f4ebbb26cdf6770ebd2eb`
+- fix: `commons-lang3-3.22.1-SNAPSHOT.jar` `83c55bb5cf70de521699ddbe41212cf4fd893c7a33f54b91af5aabbeeddf2b3f`
+- fix: `org/apache/commons/lang3/math/Fraction.class` `61135e062cac40633c0099a926200084b11f642092887d04ea175470dbb1d945`
+
+### R11 · Apache Commons IO #931 — CharacterFilterReader bulk read and skip
+
+**Pins.** Parent `31cc5e824df9726d08cf5ee8154c1721abc2668d`, fix `1af75d36371fb56603cccca8bfd8083f5c97d6f2`. Changed: `src/main/java/org/apache/commons/io/input/AbstractCharacterFilterReader.java` (+20 −13); `src/test/java/org/apache/commons/io/input/AbstractCharacterFilterReaderTest.java` (+191 −0, new).
+
+**Build facts.** `commons-io:commons-io:2.23.0-SNAPSHOT`, parent `org.apache.commons:commons-parent:107`, source/target 1.8 (major 52), no runtime dependencies. Tests: JUnit Jupiter 5.14.x, Mockito 4.11.0.
+
+**Commands** (in `$W/R11-commons-io-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 16 s, parent 15 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 6 s, parent 5 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=AbstractCharacterFilterReaderTest test` (fix 4 s)
+
+**Landed tests.** The test class is **new** in the fix (`added`), so the parent has no copy of its own (`-Dtest=` matched nothing there). Fix: 28 run, 0 failures. Fix's copy on the parent: 28 run, **16 failures**, 8 tests × 2 values of their boolean parameter: `testReadAfterFilteredChunk:43 expected: <1> but was: <0>`, `testReadAllFiltered:55 expected: <-1> but was: <0>`, `testReadCharBuffer:64 expected: <1> but was: <0>`, `testReadShortDelegate:113 expected: <1> but was: <0>`, `testSkipAllFiltered:138 expected: <0> but was: <1>`, `testSkipBeyondEof:147 expected: <2> but was: <6>`, `testSkipCountsRetainedCharacters:158 expected: <98> but was: <97>`, `testSkipNegative:175 Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.` Logs: `$O/logs/R11-fix-landed.log`, `$O/logs/R11-parent-own.log`, `$O/logs/R11-parent-landed.log`.
+
+**Release side.** The PR says sixteen cases fail on "the released 2.22.0 JAR". 2.22.0 (2026-04-19) is the latest release; its `AbstractCharacterFilterReader.java` is neither pin byte for byte (blob `b9851d93b1dd91a3d9689f9fdce798e15bcde6dd`) but holds all 7 of the parent's removed lines and none of the fix's 10 added ones. **Checked on a JVM:** the fix's compiled test classes run against the classes of the released `commons-io-2.22.0.jar` (unpacked in place of `target/classes`, `jacoco:prepare-agent surefire:test`, offline): 28 run, **the same 16 failures** (`$O/logs/R11-release-2.22.0-landed.log`). No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R11-parent/`, `$O/artifacts/R11-fix/`), sha256:
+- parent: `commons-io-2.23.0-SNAPSHOT.jar` `c1e58e416ac18390cdbca5ae38bfe4f85a079f54fd09c2418cb8b3651fcf7b8a`
+- parent: `org/apache/commons/io/input/AbstractCharacterFilterReader.class` `49d29d5c4cff732f42974feb9acda99d1190bda490834545a54a7550c71eadac`
+- fix: `commons-io-2.23.0-SNAPSHOT.jar` `b73226bb990f126dd45f4737b73c8cd319b7ed46ba73af591351b54067f5a206`
+- fix: `org/apache/commons/io/input/AbstractCharacterFilterReader.class` `0e6b0c2b07ab94dc12d21739c14e3576fd231fa82af0715e6b742506cb89d1c7`
+
+### R12 · Apache Commons IO #860 — BoundedReader.skip and the delegate position
+
+**Pins.** Parent `cfe19ad9dcc9d0c7308e2dc187b2f8b57de21af0`, fix `e806e6b5926993ec6348a78542b1e1377a765e88`. Changed: `src/main/java/org/apache/commons/io/input/BoundedReader.java` (+10 −2); `src/test/java/org/apache/commons/io/input/BoundedReaderTest.java` (+30 −0).
+
+**Build facts.** `commons-io:commons-io:2.23.0-SNAPSHOT`, parent `org.apache.commons:commons-parent:102`, source/target 1.8 (major 52), no runtime dependencies.
+
+**Commands** (in `$W/R12-commons-io-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 16 s, parent 19 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 7 s, parent 9 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=BoundedReaderTest test` (fix 5 s)
+
+**Landed tests.** Fix: `BoundedReaderTest` 19 run, 0 failures. Parent's own: 16 run, 0 failures. Fix's copy on the parent: 19 run, **3 failures**: `testSkipDoesNotExceedBound:250 expected: <3> but was: <11>`, `testSkipDoesNotOverflowCharsRead:258 expected: <3> but was: <11>`, `testSkipUsesActualSkippedCount:272 expected: <50> but was: <-1>`. The landed tests do not exercise `mark` with `skip` (the brief's challenge 860.3). Logs: `$O/logs/R12-fix-landed.log`, `$O/logs/R12-parent-own.log`, `$O/logs/R12-parent-landed.log`.
+
+**Release side.** 2.22.0 (latest) `BoundedReader.java`: neither pin byte for byte (blob `5ba0dfe6b18d1938f0e2f37e8001aa2ef20d4509`); has the parent's 1 removed line, none of the fix's 7 added: parent side. No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R12-parent/`, `$O/artifacts/R12-fix/`), sha256:
+- parent: `commons-io-2.23.0-SNAPSHOT.jar` `acc7044d601b86f4366548c519ddbd86fe2d5b73322478b3ab5a2e6235c1455b`
+- parent: `org/apache/commons/io/input/BoundedReader.class` `4c572e26290c22448995921dfdf4201f72a27290b181e2532145be22f733d815`
+- fix: `commons-io-2.23.0-SNAPSHOT.jar` `82a92fb64d84989329ddb93f6df0b470c612fd17ec3f6b43defb7144377adfcc`
+- fix: `org/apache/commons/io/input/BoundedReader.class` `29db73f51ef61adcaa749ad68a63521ea0affe0639a24f1a0dec7366ddd4dc3f`
+
+### R13 · Google Jimfs #435 — zero-length read after EOF
+
+**Pins.** Parent `f0dcab50faa6626b9275d6604a89d7debfff3677`, fix `0e5725b4d44ec51d54fba15336aa23147c1bedc7`. Changed: `jimfs/src/main/java/com/google/common/jimfs/JimfsInputStream.java` (+3 −0); `jimfs/src/test/java/com/google/common/jimfs/JimfsInputStreamTest.java` (+19 −0); `jimfs/src/test/java/com/google/common/jimfs/JimfsUnixLikeFileSystemTest.java` (+1 −1).
+
+**Build facts.** Module `jimfs` of the multi-module build (`-pl jimfs -am`), `com.google.jimfs:jimfs:HEAD-SNAPSHOT`, parent `com.google.jimfs:jimfs-parent:HEAD-SNAPSHOT`, `java.version` 1.8 (major 52); built on JDK 21 (CI runs 8, 11, 21). Runtime classpath (9 entries, `runtime-classpath.txt`): guava 33.5.0-jre, failureaccess, listenablefuture, error_prone_annotations 2.41.0, j2objc-annotations, icu4j 77.1, auto-service-annotations, jsr305, jspecify. Tests: JUnit 4.13.2, Truth.
+
+**Commands** (in `$W/R13-jimfs-ROLE`, JDK `$J21`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-pl jimfs -am -Dsurefire.failIfNoSpecifiedTests=false -DskipTests package` (fix 24 s, parent 17 s)
+- **offline (checked)**: `-o -pl jimfs -am -Dsurefire.failIfNoSpecifiedTests=false -DskipTests package` (fix 5 s, parent 6 s)
+- landed tests, offline: `-o -pl jimfs -am -Dsurefire.failIfNoSpecifiedTests=false -Drat.skip -Dtest=JimfsInputStreamTest,JimfsUnixLikeFileSystemTest test` (fix 2 s)
+
+**Landed tests.** Fix: `JimfsInputStreamTest` 15 + `JimfsUnixLikeFileSystemTest` 101, 0 failures. Parent's own: 13 + 101, 0 failures. Fix's copies on the parent: 15 + 101, **1 failure**: `JimfsInputStreamTest.testRead_zeroLengthAtEof_returnsZero:133 value of: read(...) expected: 0 but was : -1`. The adjusted `JimfsUnixLikeFileSystemTest` passes on the parent too. Logs: `$O/logs/R13-fix-landed.log`, `$O/logs/R13-parent-own.log`, `$O/logs/R13-parent-landed.log`.
+
+**Release side.** 1.3.1 (2025-07-11) lacks the fix's one added line (blob `41bcc91135547db84c8e81f33e76377d3d4e0e65`, parent side). **1.3.2 (2026-08-18) `JimfsInputStream.java` is the fix's byte for byte** (blob `f83aa2f1cccbb6843d20cf311090be30e998498c`). Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R13-parent/`, `$O/artifacts/R13-fix/`), sha256:
+- parent: `jimfs-HEAD-SNAPSHOT.jar` `696942f8352984abb66a67fe6e350c98aaecb27e99952b5efcd3df8ed853fd74`
+- parent: `com/google/common/jimfs/JimfsInputStream.class` `e83b147789b2370af6b78d5cf3cbb17c55539ef8bf5f14632040d46651b796e0`
+- fix: `jimfs-HEAD-SNAPSHOT.jar` `cfb54d8fec9ef0a8ec7b55ab7514b63c9ea90945c83619a74cb5c5df6651e4cd`
+- fix: `com/google/common/jimfs/JimfsInputStream.class` `43f11611814faa8a8597b2a9f4fece1abe8244af3ad6ac4056bf15e36e89bba9`
+
+### R15 · Apache Commons Codec #437 — custom Base58 alphabet
+
+**Pins.** Parent `ac982579962c32ee28be1e80cdb514a829e3366f`, fix `98986558dc1c0e2013b76bea92d75bde80568a00`. Changed: `src/changes/changes.xml` (+1 −0); `src/main/java/org/apache/commons/codec/binary/Base58.java` (+69 −23); `src/test/java/org/apache/commons/codec/binary/Base58Test.java` (+53 −0).
+
+**Build facts.** `commons-codec:commons-codec:1.22.1-SNAPSHOT`, parent `org.apache.commons:commons-parent:102`, source/target 1.8 (major 52), no runtime dependencies.
+
+**Commands** (in `$W/R15-commons-codec-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 12 s, parent 14 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 6 s, parent 6 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=Base58Test test` (fix 5 s)
+
+**Landed tests.** Fix: `Base58Test` 27 run, 0 failures. Parent's own: 22 run, 0 failures. Fix's copy on the parent: 27 run, **5 failures**: `testBuilderCustomEncodeTableAffectsEncodeAndDecode:86 expected: <1> but was: <2>`, `testBuilderCustomEncodeTableAffectsIsInAlphabet:95 expected: <true> but was: <false>`, `testBuilderCustomEncodeTableAffectsLeadingZeros:106 expected: <221> but was: <112>`, `testBuilderCustomEncodeTableRejectsDuplicateEntries:114` and `testBuilderCustomEncodeTableRejectsInvalidLength:119` (`Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.`). Logs: `$O/logs/R15-fix-landed.log`, `$O/logs/R15-parent-own.log`, `$O/logs/R15-parent-landed.log`.
+
+**Release side.** 1.22.0 (2026-04-19): parent side (all 22 of the parent's removed lines, none of the fix's 49 added; blob `5372dd8e53674becfb4ad349d32808c6212a320e`). 1.22.1 (2026-07-27): 46 of the 49 added lines, none of the removed (blob `7633646a95622acbf9c81d5161c745ca90432486`). 1.23.0 (2026-10-04): 40 of 49 added, none removed (blob `8c309bb57c5d046d6d4028523ce01a9360feb5c8`). So 1.22.1 is the first release with the fix, though **no release file equals the fix's byte for byte**. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R15-parent/`, `$O/artifacts/R15-fix/`), sha256:
+- parent: `commons-codec-1.22.1-SNAPSHOT.jar` `fc764314c518341e67b7b6d53a55485fdbac1545bf81882e776cf8807b82e2a0`
+- parent: `org/apache/commons/codec/binary/Base58$Builder.class` `70e90adb7489b961e29c1b230e7ed3ea50ebcc8a9f5c1223710fe77dcb4164e8`
+- parent: `org/apache/commons/codec/binary/Base58.class` `baba8a2b287e64d6a9459f417bfa94230dec607faba5c23b538f35b8040481f9`
+- fix: `commons-codec-1.22.1-SNAPSHOT.jar` `33fef9d7b8501930257b86f54756e754f628337edbb703b28a2ea4e3d49f76a2`
+- fix: `org/apache/commons/codec/binary/Base58$Builder.class` `11ec7d218d86408c23c07d58d459df13a732ad9998c89dac91e0484e9952546d`
+- fix: `org/apache/commons/codec/binary/Base58.class` `e08c91f1a298689b635c8b3664a40e29ed3ee5ed534a763b7d20d8eb2de3af23`
+
+### R16 · Apache Commons Compress #725 — CPIO checksum with a destination offset
+
+**Pins.** Parent `a7a749f028a38a07c6b3765a4b2c3607b1ab6e71`, fix `befbfe070270f61c29e032b51363dfc8c8ef51f1`. Changed: `src/changes/changes.xml` (+1 −0); `src/main/java/org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream.java` (+2 −2); `src/test/java/org/apache/commons/compress/archivers/cpio/CpioArchiveInputStreamTest.java` (+17 −0).
+
+**Build facts.** `org.apache.commons:commons-compress:1.29.0-SNAPSHOT`, parent `org.apache.commons:commons-parent:89`, source/target 1.8 (major 52). The PR's base branch is `commons_io_2_21_0`, and both pins depend on **`commons-io:commons-io:2.21.0-SNAPSHOT`**, which the Apache snapshot repository no longer serves (404; its commons-io snapshots are now 2.23.0-SNAPSHOT) and Central never had. **Substitution:** commons-io built from its public source at `e19519ad1a61ec6852601d28ffe94a8967e4e3e0` (tree `4a439badec33636a6a34fe62551ad12ad8337f1a`, 2025-10-10T06:58:55-04:00, the last commit on commons-io `master` before the fix merged; its version is `2.21.0-SNAPSHOT`), worktree `$W/R16-subst-commons-io-e19519ad1a61ec6852601d28ffe94a8967e4e3e0`, `mvn -DskipTests -Drat.skip install` on JDK 17 (17 s) into `$O/m2`; jar sha256 `3740da21bcac36e8cda476d6afc40cc60dd122be1c3df535bf965341c6a9b845`. Between the parent's date (2025-10-08 18:42Z) and the fix's, commons-io `master` gained only 5 commits (typos, commons-parent 88→89, test/CI bumps), so one revision stands for both sides. No upstream file was changed. Runtime classpath: zstd-jni 1.5.7-4, brotli dec 0.1.2, xz 1.10, commons-codec 1.19.0, asm 9.9, commons-io 2.21.0-SNAPSHOT (the substitute), commons-lang3 3.19.0.
+
+**Commands** (in `$W/R16-commons-compress-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 25 s, parent 31 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 25 s, parent 16 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=CpioArchiveInputStreamTest test` (fix 6 s)
+- The offline `package` right after a `-Dtest=` run fails jacoco's coverage `check` (the partial `jacoco.exec` is left in `target`); use `clean package` (checked) or `-Djacoco.skip`. Classpaths for the older parent 89 needed the dependency plugin resolved online once (done).
+
+**Landed tests.** Fix: `CpioArchiveInputStreamTest` 10 run, 0 failures. Parent's own: 9 run, 0 failures. Fix's copy on the parent: 10 run, **1 error**: `testCrcVerification:195 Unexpected exception thrown: org.apache.commons.compress.archivers.ArchiveException: CRC Error. Occurred at byte: 155`. Logs: `$O/logs/R16-fix-landed.log`, `$O/logs/R16-parent-own.log`, `$O/logs/R16-parent-landed.log`.
+
+**Release side.** Latest release 1.28.0 (2025-07-26): `CpioArchiveInputStream.java` is neither pin (blob `09199fd5ed49bea51260b75688656113e11a951c`, no Builder class); its loop has `this.crc += b[pos] & 0xFF;` — the parent's indexing. No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R16-parent/`, `$O/artifacts/R16-fix/`), sha256:
+- parent: `commons-compress-1.29.0-SNAPSHOT.jar` `41e50bb790b6da650cc7a7e5b560336544bcc72bfd211824a338c59a18c20b66`
+- parent: `org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream$1.class` `f0d7331680a1cbdb12707a97f1e3732d356e1d337c899ebf2334bbec25efc298`
+- parent: `org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream$Builder.class` `7784c58e27586369c22b87db6c5b28c7a3e182df8de765ccef1b44a0b5a51282`
+- parent: `org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream.class` `12a0f34d7ff3174ca48c6897ba7221b7f90c942ed32546bc8491c9bdb127c974`
+- fix: `commons-compress-1.29.0-SNAPSHOT.jar` `5e368b873069e12bcf95c7ac73e8cb99c404206009da9c006f1262ef198e1108`
+- fix: `org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream$1.class` `f0d7331680a1cbdb12707a97f1e3732d356e1d337c899ebf2334bbec25efc298`
+- fix: `org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream$Builder.class` `7784c58e27586369c22b87db6c5b28c7a3e182df8de765ccef1b44a0b5a51282`
+- fix: `org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream.class` `eb0d85a87d19f3914513621268cf18bec033c270cd481a35117e28e57d676848`
+
+### R17 · Apache Commons Compress #775 — aligned GNU PAX 1.0 sparse map
+
+**Pins.** Parent `a8cb750e5bdd0fe136d5d9cab38781f9447b2dd3`, fix `948512a35a9f8ed1f8eac12f743e879aff9266d2`. Changed: `src/changes/changes.xml` (+1 −0); `src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java` (+1 −1); `src/test/java/org/apache/commons/compress/archivers/tar/TarUtilsTest.java` (+43 −0).
+
+**Build facts.** `org.apache.commons:commons-compress:1.29.0-SNAPSHOT`, parent `org.apache.commons:commons-parent:102`, source/target 1.8 (major 52). Runtime classpath: zstd-jni 1.5.7-11, brotli dec 0.1.2, xz 1.12, commons-codec 1.22.0, asm 9.10.1, commons-io 2.22.0, commons-lang3 3.20.0 (all released).
+
+**Commands** (in `$W/R17-commons-compress-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 37 s, parent 24 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 11 s, parent 12 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=TarUtilsTest test` (fix 5 s)
+
+**Landed tests.** Fix: `TarUtilsTest` 63 run, 0 failures. Parent's own: 62 run, 0 failures. Fix's copy on the parent: 63 run, **1 failure**: `testParsePAX1XSparseHeadersDoesNotSkipAlignedDataRecord:370 expected: <65> but was: <66>` (the next raw byte is `B` instead of `A`, as the brief says). Logs: `$O/logs/R17-fix-landed.log`, `$O/logs/R17-parent-own.log`, `$O/logs/R17-parent-landed.log`.
+
+**Release side.** 1.28.0 (latest) `TarUtils.java`: neither pin (blob `72c0cf0f7c2a8ec2bae50a31cd4407310761734e`), has the parent's removed line, not the fix's: parent side. No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R17-parent/`, `$O/artifacts/R17-fix/`), sha256:
+- parent: `commons-compress-1.29.0-SNAPSHOT.jar` `43f751ba0860c83284612038620532e9408d6aad276cc43561a75948f038e5ab`
+- parent: `org/apache/commons/compress/archivers/tar/TarUtils$1.class` `3fbd3c0fc79d1a28a58537a4a851d9536ff02a42cdc82565c79a04d4bd4c79ed`
+- parent: `org/apache/commons/compress/archivers/tar/TarUtils.class` `4473131dba1900c74b6ba3714ddfa1e185cec818e543a3b9ce249fa8d70f2390`
+- fix: `commons-compress-1.29.0-SNAPSHOT.jar` `0996f45284ce748dfa6eaf60db21f67d993ae93f24cbc29e8b20cecb4aed0c27`
+- fix: `org/apache/commons/compress/archivers/tar/TarUtils$1.class` `3fbd3c0fc79d1a28a58537a4a851d9536ff02a42cdc82565c79a04d4bd4c79ed`
+- fix: `org/apache/commons/compress/archivers/tar/TarUtils.class` `623b94eeadbc2260ba1cb2eea650a3513257f1e35cdd4636be707bc6ecd3d40b`
+
+### R20 · Apache Commons CSV #412 — MONGODB_CSV empty first column
+
+**Pins.** Parent `2abebaa74eb413ece7a56d86f826bc690ee26df9`, fix `5770cc07e351cc124d34a6049c59e9aea8885675`. Changed: `src/main/java/org/apache/commons/csv/Lexer.java` (+12 −12); `src/test/java/org/apache/commons/csv/CSVParserTest.java` (+35 −0).
+
+**Build facts.** `org.apache.commons:commons-csv:1.11.0-SNAPSHOT`, parent `org.apache.commons:commons-parent:69`, source/target 1.8 (major 52). Runtime classpath: commons-io 2.16.0, commons-codec 1.16.1.
+
+**Commands** (in `$W/R20-commons-csv-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 23 s, parent 12 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 6 s, parent 5 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=CSVParserTest test` (fix 4 s)
+
+**Landed tests.** Fix: `CSVParserTest` 117 run, 0 failures, 4 skipped. Parent's own: 116 run, 4 skipped. Fix's copy on the parent: 117 run, **1 error**: `testParsingPrintedEmptyFirstColumn:1587 RuntimeException: format: MongoDBCsv` caused by `IOException: (startline 2) EOF reached before encapsulated token finished` (with a suppressed `format: MongoDBTsv`). Logs: `$O/logs/R20-fix-landed.log`, `$O/logs/R20-parent-own.log`, `$O/logs/R20-parent-landed.log`.
+
+**Release side.** 1.10.0 (2023-01-28): parent side (blob `06b2c9c222e507c97f19a2b97d69e1be107a33c7`). **1.11.0 (2024-04-28) `Lexer.java` is the fix's byte for byte** (blob `80bde6c7e8161141e31a50e2854eef867dadba63`). Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R20-parent/`, `$O/artifacts/R20-fix/`), sha256:
+- parent: `commons-csv-1.11.0-SNAPSHOT.jar` `21ead670a5dc7baa056185fcf35f2d3cb6b8797752eca7c6866689562fbe07ca`
+- parent: `org/apache/commons/csv/Lexer.class` `2bdbf22f594b086913c0014f906ce76c3d3ae6a9932bf0e203bd5c7b0b289e45`
+- fix: `commons-csv-1.11.0-SNAPSHOT.jar` `d8a7a7391bc192ada00426432109950c9964c29398443535e163d2cd1281c9eb`
+- fix: `org/apache/commons/csv/Lexer.class` `5cf3677f061176248826537dd9393d91fded573621af0a6357b50f7844790651`
+
+### R21 · Square JavaPoet #994 — long annotation member literal
+
+**Pins.** Parent `aaebc488320bd11aab1a6248d6b8058a255c92df`, fix `c9925e48577e3e74b91eb737b2c2b3c22109cde8`. Changed: `src/main/java/com/squareup/javapoet/AnnotationSpec.java` (+3 −0); `src/test/java/com/squareup/javapoet/AnnotationSpecTest.java` (+2 −2).
+
+**Build facts.** `com.squareup:javapoet:1.14.0-SNAPSHOT`, parent `org.sonatype.oss:oss-parent:7`, `java.version` 1.8 (major 52); built on **JDK 8** (CI uses 8). No runtime dependencies. Tests: JUnit 4.13.2, Truth, compile-testing 0.21.0, Mockito.
+
+**Commands** (in `$W/R21-javapoet-ROLE`, JDK `$J8`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 8 s, parent 6 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 2 s, parent 2 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=AnnotationSpecTest test` (fix 3 s)
+
+**Landed tests.** Fix: `AnnotationSpecTest` 11 run, 0 failures. Parent's own: 11 run, 0 failures (the PR only edits the golden string). Fix's copy on the parent: 11 run, **1 failure**: `reflectAnnotationWithDefaults:304` with the diff `-    d = 12345678910L,` / `+    d = 12345678910,`. Logs: `$O/logs/R21-fix-landed.log`, `$O/logs/R21-parent-own.log`, `$O/logs/R21-parent-landed.log`.
+
+**Release side.** The only and last release is 1.13.0 (2020-06-18); its `AnnotationSpec.java` (blob `5525d7b487561e75c596c0dfd1d2ab084eff9e8a`) lacks the fix's 2 added lines. No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R21-parent/`, `$O/artifacts/R21-fix/`), sha256:
+- parent: `javapoet-1.14.0-SNAPSHOT.jar` `b7c5b03820aa38d35e1c2547901f7d68f373f6c388ba2420cadd7c775e96bd67`
+- parent: `com/squareup/javapoet/AnnotationSpec$1.class` `cc537c781cd1c3dab44e43f8a798c71a96b14d110ae57b7b10398c2fe3c84d83`
+- parent: `com/squareup/javapoet/AnnotationSpec$Builder.class` `f6d3ec9f5338322988d6eb11187069d1454272b2b9f121597ec121ed331ed2e1`
+- parent: `com/squareup/javapoet/AnnotationSpec$Visitor.class` `80ba9202ba5274c817fb6e5a1b236b5bc40ac8e53537bb415314961f4b1b6449`
+- parent: `com/squareup/javapoet/AnnotationSpec.class` `6714477394f561e5ec7def68427167ebe8c1e46a3ce9b7aea742f35b065e24bb`
+- fix: `javapoet-1.14.0-SNAPSHOT.jar` `3fc2cb4ab0e3c945ce4f87dc55354cbdc22256c6a77e9a4b6d4d8987b7c14652`
+- fix: `com/squareup/javapoet/AnnotationSpec$1.class` `cc537c781cd1c3dab44e43f8a798c71a96b14d110ae57b7b10398c2fe3c84d83`
+- fix: `com/squareup/javapoet/AnnotationSpec$Builder.class` `1428979fc3f7694f55ec3c9cb71b860b4b6ccfdd823ad21ca611c753f2de9030`
+- fix: `com/squareup/javapoet/AnnotationSpec$Visitor.class` `1fad5c7c788c08b40516a08fd1f748276effe05a6c1d9d5e603b6e407a426da9`
+- fix: `com/squareup/javapoet/AnnotationSpec.class` `6714477394f561e5ec7def68427167ebe8c1e46a3ce9b7aea742f35b065e24bb`
+
+### R22 · Square JavaPoet #986 — box and unbox annotated primitives
+
+**Pins.** Parent `0d55218ae3b8c8d6fe84132b7867d8c12698ce5e`, fix `d682f2013751d25725349d79b449870d0e77354c`. Changed: `src/main/java/com/squareup/javapoet/TypeName.java` (+37 −28); `src/test/java/com/squareup/javapoet/TypeNameTest.java` (+15 −0).
+
+**Build facts.** As R21: `com.squareup:javapoet:1.14.0-SNAPSHOT`, JDK 8, major 52, no runtime dependencies.
+
+**Commands** (in `$W/R22-javapoet-ROLE`, JDK `$J8`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 7 s, parent 6 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 2 s, parent 2 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=TypeNameTest test` (fix 2 s)
+
+**Landed tests.** Fix: `TypeNameTest` 14 run, 0 failures. Parent's own: 12 run, 0 failures. Fix's copy on the parent: 14 run, **2 failures, 1 error**: `canBoxAnnotatedPrimitive:184` (message `boolean`), `isBoxedPrimitive:180 value of: isBoxedPrimitive()`, and `canUnboxAnnotatedPrimitive:190 UnsupportedOperationException: cannot unbox java.lang. @java.lang.Object Boolean`. Logs: `$O/logs/R22-fix-landed.log`, `$O/logs/R22-parent-own.log`, `$O/logs/R22-parent-landed.log`.
+
+**Release side.** 1.13.0's `TypeName.java` **is the parent's byte for byte** (blob `c0986bb998d6765202b34b0c9c03e7e99891b3ca`). No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R22-parent/`, `$O/artifacts/R22-fix/`), sha256:
+- parent: `javapoet-1.14.0-SNAPSHOT.jar` `e691f97cec33f441b314f5238d70b649cce257b9ebc1fbda7e4544f8b1757a2f`
+- parent: `com/squareup/javapoet/TypeName$1.class` `56bafc05874e1cecb267c10fff75845c6c76f113d259a76960c204bbe6703941`
+- parent: `com/squareup/javapoet/TypeName$2.class` `88d953f92b290c65d6b92e9c0850b27980586e028bc567a960a2834a116c27c3`
+- parent: `com/squareup/javapoet/TypeName.class` `c767daa9f8022d9c529c0beef6fde04b3950d791d0ed54cb610f1c0e437fc377`
+- fix: `javapoet-1.14.0-SNAPSHOT.jar` `160644be3c1422534ec9886474d70492a05493d7e8cb71d083a4d13aa60ab054`
+- fix: `com/squareup/javapoet/TypeName$1.class` `3d6d5254ad01cc622f6dd616fb678a9e21e43b53eb85c2b9e1f87f169edbea2c`
+- fix: `com/squareup/javapoet/TypeName$2.class` `0813d487d1adc603b9cbb898cad12f62a14e2ad9916a70a473b8c11159df8429`
+- fix: `com/squareup/javapoet/TypeName.class` `cd042c7a989bb1b79733e87fc7ba3133ecbbc765dafbf7d4171c418f53644f7f`
+
+### R26 · Google Gson #2998 — toJsonTree keeps Byte/Short/Integer
+
+**Pins.** Parent `c616243d1d78c0466b53be39f893094ebb7c6918`, fix `e83ef91dc7614e6f8fb5ea8dd3fd67530602f05c`. Changed: `gson/src/main/java/com/google/gson/internal/bind/TypeAdapters.java` (+3 −3); `gson/src/test/java/com/google/gson/functional/PrimitiveTest.java` (+27 −0).
+
+**Build facts.** Module `gson` (`-pl gson -am`), `com.google.code.gson:gson:2.15.1-SNAPSHOT`, parent `com.google.code.gson:gson-parent:2.15.1-SNAPSHOT`, `maven.compiler.release` 8 (major 52). The enforcer requires a JDK in [17,26): built on JDK 17. Runtime classpath: `error_prone_annotations-2.51.0.jar`. The module has a second surefire execution, `java-time-test`, which runs `JavaTimeTest` (23 tests) even with `-DskipTests` and `-Dtest=`; it passes everywhere.
+
+**Commands** (in `$W/R26-gson-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-pl gson -am -Dsurefire.failIfNoSpecifiedTests=false -DskipTests package` (fix 12 s, parent 10 s)
+- **offline (checked)**: `-o -pl gson -am -Dsurefire.failIfNoSpecifiedTests=false -DskipTests package` (fix 6 s, parent 4 s)
+- landed tests, offline: `-o -pl gson -am -Dsurefire.failIfNoSpecifiedTests=false -Drat.skip -Dtest=PrimitiveTest test` (fix 5 s)
+
+**Landed tests.** Fix: `PrimitiveTest` 107 run, 0 failures. Parent's own: 106 run, 0 failures. Fix's copy on the parent: 107 run, **1 failure**: `testToJsonTreePreservesIntegralType:169 value of: getClass() expected: class java.lang.Byte but was : class java.lang.Long`. Logs: `$O/logs/R26-fix-landed.log`, `$O/logs/R26-parent-own.log`, `$O/logs/R26-parent-landed.log`.
+
+**Release side.** Latest release 2.15.0 (2026-10-24): `TypeAdapters.java` neither pin byte for byte (blob `5c7cc5df0ff618858111544da26356884817b3e4`) but holds the parent's 3 removed lines and none of the fix's: parent side. No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R26-parent/`, `$O/artifacts/R26-fix/`), sha256:
+- parent: `gson-2.15.1-SNAPSHOT.jar` `d0f1405d0f7ff2bfe9b58ae2590cf8735f9b22ec56e4d0c0e9c4263a1fba2a31`
+- parent: `com/google/gson/internal/bind/TypeAdapters$10.class` `94a4e51d8abe6a272a87c3b8b72b83ed0dd55e5d561ec60890e637abf788c0fc`
+- parent: `com/google/gson/internal/bind/TypeAdapters$11.class` `9696e30f97f8d14dd716548433069311fa7d0bed3921775dba5929d65dba365b`
+- parent: `com/google/gson/internal/bind/TypeAdapters$12.class` `97e04db29158b380c8240c0ea1967c38d006c7cf8bc7b09eb892276e47e7b1d7`
+- parent: `com/google/gson/internal/bind/TypeAdapters$13.class` `25a5a5f7451117379c2ca9c301e979ed1e3152d1b39190c0619e9273f4d0693b`
+- parent: `com/google/gson/internal/bind/TypeAdapters$14.class` `01738c48e6d5c8d16cf7afc980bdf43dfe4a296618748fd1d41ae6c3b893f639`
+- parent: `com/google/gson/internal/bind/TypeAdapters$15.class` `1ecc3a2c94352f2439b72affdf5b8de4aed78bd3e842e607dbf17a6b09756779`
+- parent: `com/google/gson/internal/bind/TypeAdapters$16.class` `5b3f2a4145689874c4e8b59722a57b3bb5449811533971236723fbf328d3bc60`
+- parent: `com/google/gson/internal/bind/TypeAdapters$17.class` `9c16d9867e12504ec360a50648b44ac0bf5b283f22d0a4a66282b10c57fae010`
+- parent: `com/google/gson/internal/bind/TypeAdapters$18.class` `5f3150b23ba283c9e258ceb25f652fbc561d47bc480e785a46937050823bf9dd`
+- parent: `com/google/gson/internal/bind/TypeAdapters$19.class` `1b5b76739daaeeefb7c52bc7d59f27ac8bb40b0a5eb6a317950c7c49a38a2dc8`
+- parent: `com/google/gson/internal/bind/TypeAdapters$1.class` `f0bfd46456f59c8f152a4da6ca70b4b7bd8f319e3883bd1d6c1b7e2e611eb527`
+- parent: `com/google/gson/internal/bind/TypeAdapters$20.class` `ce2e32190ae801770f14f77d41222f556136c081b0525ff1335d742080d6128b`
+- parent: `com/google/gson/internal/bind/TypeAdapters$21.class` `9e58da882f522d483bd2e7ba651d0332ce1eecea601bf60b4989a3b9ef4424b6`
+- parent: `com/google/gson/internal/bind/TypeAdapters$22.class` `5470c1fe83985e4ee6712aba602b9adcb2756c414ac504bb6f8bd2e59c641aa0`
+- parent: `com/google/gson/internal/bind/TypeAdapters$23.class` `61dc57a94bb47c1547f650b99f8d649517dd70682010117be612226539d75dfe`
+- parent: `com/google/gson/internal/bind/TypeAdapters$24.class` `b0e6e4d1f56985a6a3f5e4714eb4d96bbcf53585534d76c9e86e28e9dafc1980`
+- parent: `com/google/gson/internal/bind/TypeAdapters$25.class` `fd37589f64926b8a0ad9d2ebdc01bec016e1b4c9187fd396fea6ffc0b2c1f593`
+- parent: `com/google/gson/internal/bind/TypeAdapters$26.class` `cf564d2d219dc5f14d90031bde152c2693c58faa6a2ed1ab2413192fc55402ba`
+- parent: `com/google/gson/internal/bind/TypeAdapters$27.class` `d7baef3b289511dd8ea97dc748c7445fda07a5bccb6234f5ebd28e2cf74440ba`
+- parent: `com/google/gson/internal/bind/TypeAdapters$28.class` `e664a7de2d4146c8106f0c9a2f4b0f74c0984b4fe55e31b5881ba7362da65e0f`
+- parent: `com/google/gson/internal/bind/TypeAdapters$29.class` `48b04580508018244cb04e71a5d7ab52fbf414ea5f1cce25a3c0a18835f4d867`
+- parent: `com/google/gson/internal/bind/TypeAdapters$2.class` `01d7e5a008ca8406a7360ba362f6e29fe668adcacf3a53c92918ea4c9984a110`
+- parent: `com/google/gson/internal/bind/TypeAdapters$30.class` `bd06aeb151a3186a110b82d9f1fde30f3c2ec6d6031f829d89eadde15af98a04`
+- parent: `com/google/gson/internal/bind/TypeAdapters$31.class` `9dd9fad5584763499567485b625e61be34807490b82a917fa141e91e353331f0`
+- parent: `com/google/gson/internal/bind/TypeAdapters$32.class` `912b9bb59686204c23f6dc56d38bf7e7e1dea94478cb5a8a08de726c89883ea3`
+- parent: `com/google/gson/internal/bind/TypeAdapters$33$1.class` `06f54a61e6907cb3fb1bf91354ebab8eb72748386214092769b894f573588bf8`
+- parent: `com/google/gson/internal/bind/TypeAdapters$33.class` `ea8c14b95e03ca787915484e12b99d6d3118f6f93e10741e79afb8cdf0bdfafb`
+- parent: `com/google/gson/internal/bind/TypeAdapters$34.class` `2ab5428411e976d5345d49c5bd576e8df37f022652fae0cb0975291674ee452e`
+- parent: `com/google/gson/internal/bind/TypeAdapters$3.class` `18f1ded9b1636bc66ff0b404dee6e5c6b0c78ea2e049542bc9ea9627ae53f9c1`
+- parent: `com/google/gson/internal/bind/TypeAdapters$4.class` `21fa71a81c4d4492339e21134fae22b8940f90f518f5ea0625bc2bb56af76d10`
+- parent: `com/google/gson/internal/bind/TypeAdapters$5.class` `9ccac6deefd5d2a77504da4248a9457de9da1af933d11fee04e6c360e3448c6f`
+- parent: `com/google/gson/internal/bind/TypeAdapters$6.class` `4d4a5d69bb56b4c28064320e6c1440ef3184bf4058ebfbc397dbe94564698015`
+- parent: `com/google/gson/internal/bind/TypeAdapters$7.class` `50a66a66f1f38d30bc99dfba5e624ea4315dea27795574d90089cb764a2d8475`
+- parent: `com/google/gson/internal/bind/TypeAdapters$8.class` `e0e004e54317b6865cda1466453a322493bd7552e38d1c170a1ae479f7bd9df7`
+- parent: `com/google/gson/internal/bind/TypeAdapters$9.class` `9dd24dc234d83da49e311e6a78cbcea36f0c35ea2ed659ab88e07ae73c28a0d0`
+- parent: `com/google/gson/internal/bind/TypeAdapters$DoubleAdapter.class` `109cdc18b5f2cde2cac0aea5ac3f34f447e71dbbb5bc8d93742c4a058686964b`
+- parent: `com/google/gson/internal/bind/TypeAdapters$FloatAdapter.class` `223a3f78eeb67076e867fbf2274ff6181fac98b8e4434fb9f5f6409375950772`
+- parent: `com/google/gson/internal/bind/TypeAdapters$IntegerFieldsTypeAdapter.class` `58163cf5e855305e7d6d3fbdfe7512548c6e90aa1bc6a0737af78751a93d0885`
+- parent: `com/google/gson/internal/bind/TypeAdapters.class` `9f1ae499020777ea671f1811970cbd109dcdd988d3f8ec5bceebdaa60e07f22e`
+- fix: `gson-2.15.1-SNAPSHOT.jar` `5f93c520f0a2440b4602ea6efabb214cd8f976f4337d1f2d7778b5f095c5b1e8`
+- fix: `com/google/gson/internal/bind/TypeAdapters$10.class` `94a4e51d8abe6a272a87c3b8b72b83ed0dd55e5d561ec60890e637abf788c0fc`
+- fix: `com/google/gson/internal/bind/TypeAdapters$11.class` `9696e30f97f8d14dd716548433069311fa7d0bed3921775dba5929d65dba365b`
+- fix: `com/google/gson/internal/bind/TypeAdapters$12.class` `97e04db29158b380c8240c0ea1967c38d006c7cf8bc7b09eb892276e47e7b1d7`
+- fix: `com/google/gson/internal/bind/TypeAdapters$13.class` `25a5a5f7451117379c2ca9c301e979ed1e3152d1b39190c0619e9273f4d0693b`
+- fix: `com/google/gson/internal/bind/TypeAdapters$14.class` `01738c48e6d5c8d16cf7afc980bdf43dfe4a296618748fd1d41ae6c3b893f639`
+- fix: `com/google/gson/internal/bind/TypeAdapters$15.class` `1ecc3a2c94352f2439b72affdf5b8de4aed78bd3e842e607dbf17a6b09756779`
+- fix: `com/google/gson/internal/bind/TypeAdapters$16.class` `5b3f2a4145689874c4e8b59722a57b3bb5449811533971236723fbf328d3bc60`
+- fix: `com/google/gson/internal/bind/TypeAdapters$17.class` `9c16d9867e12504ec360a50648b44ac0bf5b283f22d0a4a66282b10c57fae010`
+- fix: `com/google/gson/internal/bind/TypeAdapters$18.class` `5f3150b23ba283c9e258ceb25f652fbc561d47bc480e785a46937050823bf9dd`
+- fix: `com/google/gson/internal/bind/TypeAdapters$19.class` `1b5b76739daaeeefb7c52bc7d59f27ac8bb40b0a5eb6a317950c7c49a38a2dc8`
+- fix: `com/google/gson/internal/bind/TypeAdapters$1.class` `f0bfd46456f59c8f152a4da6ca70b4b7bd8f319e3883bd1d6c1b7e2e611eb527`
+- fix: `com/google/gson/internal/bind/TypeAdapters$20.class` `ce2e32190ae801770f14f77d41222f556136c081b0525ff1335d742080d6128b`
+- fix: `com/google/gson/internal/bind/TypeAdapters$21.class` `9e58da882f522d483bd2e7ba651d0332ce1eecea601bf60b4989a3b9ef4424b6`
+- fix: `com/google/gson/internal/bind/TypeAdapters$22.class` `5470c1fe83985e4ee6712aba602b9adcb2756c414ac504bb6f8bd2e59c641aa0`
+- fix: `com/google/gson/internal/bind/TypeAdapters$23.class` `61dc57a94bb47c1547f650b99f8d649517dd70682010117be612226539d75dfe`
+- fix: `com/google/gson/internal/bind/TypeAdapters$24.class` `b0e6e4d1f56985a6a3f5e4714eb4d96bbcf53585534d76c9e86e28e9dafc1980`
+- fix: `com/google/gson/internal/bind/TypeAdapters$25.class` `fd37589f64926b8a0ad9d2ebdc01bec016e1b4c9187fd396fea6ffc0b2c1f593`
+- fix: `com/google/gson/internal/bind/TypeAdapters$26.class` `cf564d2d219dc5f14d90031bde152c2693c58faa6a2ed1ab2413192fc55402ba`
+- fix: `com/google/gson/internal/bind/TypeAdapters$27.class` `d7baef3b289511dd8ea97dc748c7445fda07a5bccb6234f5ebd28e2cf74440ba`
+- fix: `com/google/gson/internal/bind/TypeAdapters$28.class` `e664a7de2d4146c8106f0c9a2f4b0f74c0984b4fe55e31b5881ba7362da65e0f`
+- fix: `com/google/gson/internal/bind/TypeAdapters$29.class` `48b04580508018244cb04e71a5d7ab52fbf414ea5f1cce25a3c0a18835f4d867`
+- fix: `com/google/gson/internal/bind/TypeAdapters$2.class` `01d7e5a008ca8406a7360ba362f6e29fe668adcacf3a53c92918ea4c9984a110`
+- fix: `com/google/gson/internal/bind/TypeAdapters$30.class` `bd06aeb151a3186a110b82d9f1fde30f3c2ec6d6031f829d89eadde15af98a04`
+- fix: `com/google/gson/internal/bind/TypeAdapters$31.class` `9dd9fad5584763499567485b625e61be34807490b82a917fa141e91e353331f0`
+- fix: `com/google/gson/internal/bind/TypeAdapters$32.class` `912b9bb59686204c23f6dc56d38bf7e7e1dea94478cb5a8a08de726c89883ea3`
+- fix: `com/google/gson/internal/bind/TypeAdapters$33$1.class` `06f54a61e6907cb3fb1bf91354ebab8eb72748386214092769b894f573588bf8`
+- fix: `com/google/gson/internal/bind/TypeAdapters$33.class` `ea8c14b95e03ca787915484e12b99d6d3118f6f93e10741e79afb8cdf0bdfafb`
+- fix: `com/google/gson/internal/bind/TypeAdapters$34.class` `2ab5428411e976d5345d49c5bd576e8df37f022652fae0cb0975291674ee452e`
+- fix: `com/google/gson/internal/bind/TypeAdapters$3.class` `18f1ded9b1636bc66ff0b404dee6e5c6b0c78ea2e049542bc9ea9627ae53f9c1`
+- fix: `com/google/gson/internal/bind/TypeAdapters$4.class` `21fa71a81c4d4492339e21134fae22b8940f90f518f5ea0625bc2bb56af76d10`
+- fix: `com/google/gson/internal/bind/TypeAdapters$5.class` `e0c0b3f57ee156f7ec48e08f6c86082f8c632a9666800177032f9ac6e824acea`
+- fix: `com/google/gson/internal/bind/TypeAdapters$6.class` `a609a82285074787a01479b79e7b2910aef18ad599f59df48d9dac839bfd31bf`
+- fix: `com/google/gson/internal/bind/TypeAdapters$7.class` `c3ad3dffbce15dc2c33d5fe2c4b6a0dde34079ba1025b4c6f4b16f50397079ff`
+- fix: `com/google/gson/internal/bind/TypeAdapters$8.class` `e0e004e54317b6865cda1466453a322493bd7552e38d1c170a1ae479f7bd9df7`
+- fix: `com/google/gson/internal/bind/TypeAdapters$9.class` `9dd24dc234d83da49e311e6a78cbcea36f0c35ea2ed659ab88e07ae73c28a0d0`
+- fix: `com/google/gson/internal/bind/TypeAdapters$DoubleAdapter.class` `109cdc18b5f2cde2cac0aea5ac3f34f447e71dbbb5bc8d93742c4a058686964b`
+- fix: `com/google/gson/internal/bind/TypeAdapters$FloatAdapter.class` `223a3f78eeb67076e867fbf2274ff6181fac98b8e4434fb9f5f6409375950772`
+- fix: `com/google/gson/internal/bind/TypeAdapters$IntegerFieldsTypeAdapter.class` `58163cf5e855305e7d6d3fbdfe7512548c6e90aa1bc6a0737af78751a93d0885`
+- fix: `com/google/gson/internal/bind/TypeAdapters.class` `9f1ae499020777ea671f1811970cbd109dcdd988d3f8ec5bceebdaa60e07f22e`
+
+### R40 · ThreeTen-Extra #433 — OffsetDate.until across offsets
+
+**Pins.** Parent `9b5e316f5fad89ef80a05d8cdec522315c2e26ba`, fix `cad4ef4bdf209d8d76016e9d8322c18eab7c8cb0`. Changed: `src/changes/changes.xml` (+5 −0); `src/main/java/org/threeten/extra/OffsetDate.java` (+60 −2); `src/test/java/org/threeten/extra/TestOffsetDate.java` (+39 −0).
+
+**Build facts.** `org.threeten:threeten-extra:1.11.1-SNAPSHOT` (no parent POM), `maven.compiler.release` 8 (major 52). Runtime classpath: jspecify 1.0.1, joda-convert 2.2.4.
+
+**Commands** (in `$W/R40-threeten-extra-ROLE`, JDK `$J17`; ARGS of `mvn_A.sh`):
+- online, first resolution: `-DskipTests package` (fix 24 s, parent 21 s)
+- **offline (checked)**: `-o -DskipTests package` (fix 5 s, parent 5 s)
+- landed tests, offline: `-o -Drat.skip -Dtest=TestOffsetDate test` (fix 6 s)
+
+**Landed tests.** Fix: `TestOffsetDate` 408 run, 0 failures. Parent's own: 402 run, 0 failures. Fix's copy on the parent: 408 run, **5 failures, 1 error**: five invocations of `test_until_differentOffset(long, OffsetDate, OffsetDate, TemporalUnit)` `[1]`–`[5]` (`expected: <0> but was: <-1>` ×3 at line 602, `expected: <-1> but was: <-2>` and `expected: <0> but was: <-1>` at 604), and `test_until_extremes:609 DateTimeException: Invalid value for Year (valid values -999999999 - 999999999): 1000000000`. Logs: `$O/logs/R40-fix-landed.log`, `$O/logs/R40-parent-own.log`, `$O/logs/R40-parent-landed.log`.
+
+**Release side.** Latest release 1.11.0 (2026-10-15, before the merge on 2026-10-24): its `OffsetDate.java` **is the parent's byte for byte** (blob `39d6a79b77b83ea3eb465b2feda10ae6983cb8fd`). No release with the fix. Signatures good (above).
+
+**Artifacts** (`$O/artifacts/R40-parent/`, `$O/artifacts/R40-fix/`), sha256:
+- parent: `threeten-extra-1.11.1-SNAPSHOT.jar` `44738fd0b6455cc89d7bf417decb1f109022a71091ba0370906053f776fb550e`
+- parent: `org/threeten/extra/OffsetDate.class` `3d67f1131dedb1b4a11b261d044841c8ad00ba2a92899fa11579b692583c1dba`
+- fix: `threeten-extra-1.11.1-SNAPSHOT.jar` `2989d4ed5441b6fbe50c01af258caaaa700c31c72054a59b8957097ccaa7e1e8`
+- fix: `org/threeten/extra/OffsetDate$1.class` `093a214ed838d8859bd97206c85e997b15d572125b6999cdaf44452aa8b2f2cd`
+- fix: `org/threeten/extra/OffsetDate.class` `5e22c299bf1e948b973e63ce65fdfd21b3e3f623c5f6a9e41a8eec277268770c`
+
+
