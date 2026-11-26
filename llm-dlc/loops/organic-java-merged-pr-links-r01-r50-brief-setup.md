@@ -597,3 +597,337 @@ Release side: jars, `-sources.jar` and POMs from Maven Central in `$O/releases/A
 - fix: `org/threeten/extra/OffsetDate.class` `5e22c299bf1e948b973e63ce65fdfd21b3e3f623c5f6a9e41a8eec277268770c`
 
 
+## Cases R03–R48 (fork B)
+
+Thirteen cases, all Maven, all built and checked inline (no run took over a minute offline; the longest offline run is R03's 38–39 s,
+the longest online first resolution R48's 67 s). **No verification job was needed for these cases.**
+
+Helpers (fork B, in `$O/scripts/`):
+- `mvn_B.sh DIR TAG JDK REPORTDIR [online] ARGS...`: `mvn_case.sh` with the surefire report directory of a module: `systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 choom -n 500 -- $MVN [-o] ARGS` in DIR with `JAVA_HOME=JDK`, `MAVEN_OPTS=-Xmx1g`; log `$O/logs/TAG.log`, JUnit summary `$O/logs/TAG.junit.txt`. Offline unless `online`.
+- `case_B.sh CASE JDK MODDIR TESTS`: offline, with `-pl MODDIR -am` (none when MODDIR is `.`), `-Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dtest=TESTS package`: (1) the fix worktree → `CASE-fix-landed`; (2) the parent worktree with its own copy of TESTS → `CASE-parent-landed`; (3) `$O/build/CASE-parent-landed` → `CASE-parent-landedfix`, failures with messages in `$O/logs/CASE-parent-landedfix.failures.txt`.
+- `overlay_B.sh CASE`: `$O/build/CASE-parent-landed` = `git archive` of the parent pin plus every test file the PR changed, copied from the fix (list in `$O/logs/CASE-parent-landedfix.overlay.txt`).
+- `keep_B.sh CASE ROLE JDK MODDIR [online]`: `keep_mvn.sh` for a module directory (jar, `SHA256SUMS` of the jar and of every class of each changed production source, `runtime-classpath.txt`, `test-classpath.txt`, `:`-joined, paths into `$O/m2`).
+- `junit_fail_B.py` (failure names, types, messages), `relcmp_B.sh` (git blob ids of the changed production sources in a release `-sources.jar` vs both pins), `relcmp2_B.sh` + `lines_B.py` (how many of the removed and added lines a release holds).
+
+Common facts:
+- Every built jar is in `$O/artifacts/CASE-ROLE/`; its digest is in that folder's `SHA256SUMS` (first line), followed by the digest of every class of each production source file the PR changed. **Jar digests are of the kept copy only: a rebuild gives a different jar digest (entry timestamps) but the same class digests** (checked on R07: `org/locationtech/jts/geom/CoordinateList.class` rebuilt from a clean tree = `3b6e19a68ee11603a68dcc49c9cfbdbba8e69103b09ca8f95c64e87c1cfae2e1`, as kept).
+- Build trees were removed (`git clean -fdx` in the 26 worktrees, `$O/build/CASE-*` deleted) after the digests were recorded; offline rebuilds take seconds (checked after cleaning on R07 and R30).
+- Release artifacts are under `$O/releases/A-V/` (jar, pom, `-sources.jar`, with Central's `.sha1`/`.sha256`/`.sha512` beside them, all matching: 48 sha1, 42 sha256, 42 sha512 checks, `$O/logs/B-release-hashes.txt`; jar digests in `$O/logs/B-release-sha256.txt`). Every `.asc` checked in the keyring `$O/gnupg-B` (daemons stopped) with keys from keyserver.ubuntu.com saved in `$O/keys-B/`: 48 of 48 GOODSIG (`$O/logs/B-release-signatures.txt`). Nothing further vouches for the keys. Signers: vavr `0942F59B726DA4BD2837DD44F45F03308EE961FF` (Grzegorz Piwowarek); jts-core `6EB0DED2F354B5D1DD24006168127E5CB45F41F3` (Jody Garnett); jgrapht-core `78F389DC7C11455EAD8897EE24AE93BAFAF1CAD9` (John Sichi); jackson-core, jackson-databind, jackson-dataformat-xml `28118C070CB22A0175A2E8D43D12CA2AC19F3181` (Tatu Saloranta); javaparser-core `6DE9B8077FBB2F8A019F4904BD17A565509DEE20` (uid jean-pierre.lerbscher); assertj-core `BE685132AFD2740D9095F9040CC0B712FEE75827` (AssertJ).
+- Release comparisons: `$O/logs/B-relcmp-1.txt`, `$O/logs/B-relcmp-2.txt` (blob ids in full). "= parent"/"= fix" below means the release's source file has the same git blob id as that pin's.
+- The parent-side "own copy" run finds no test when the PR added the test class (`junit tests=0`); that is expected.
+
+| Case | Built | Release side | Landed tests (fix / parent's own / fix's on parent) | Upstream run |
+|---|---|---|---|---|
+| R03 vavr #3276 | Maven, JDK 21, `-pl vavr -am`, offline | 1.0.1 lacks; **1.1.0** has the fix line (not byte-equal) | 1900/1900, 1897/1897, **3 fail** | inline |
+| R07 jts #1168 | Maven, JDK 17, `-pl modules/core -am`, offline | 1.20.0 lacks; no release with it | 4/4, 3/3, **1 fail** | inline |
+| R19 jts #1092 | as R07 | 1.20.0 `WKBWriter`/`WKTWriter` = parent; no release with it | 13/13, 12/12, **1 error** | inline |
+| R08 jgrapht #1379 | Maven, JDK 21, `-pl jgrapht-core -am`, offline | 1.5.3 lacks; no release with it | 10/10, 2/2, **8 errors** | inline |
+| R10 jgrapht #1376 | as R08 | 1.5.3 = parent; no release with it | 10/10, 8/8, **2 errors** | inline |
+| R18 jackson-core #1716 | Maven, JDK 17, offline; **vanished snapshot parent rebuilt** | 2.21.6 = parent; **2.21.7 = fix** | 4/4, (none), **4 fail** | inline |
+| R27 jackson-core #1816 | Maven, JDK 17, offline; snapshot parent predates pins | 2.21.8 lacks; **2.21.9** has all added lines | 7/7, (none), **6 fail** | inline |
+| R28 jackson-databind #6407 | Maven, JDK 17, offline; **snapshot deps postdate pins** | 3.3.0 = parent (4 files); no release with it | 8/8, (none), **7 fail** | inline |
+| R29 jackson-databind #6473 | as R28 | 3.3.0 and 3.1.9 lack; no release with it | 10/10, (none), **1 fail + 2 errors** | inline |
+| R30 jackson-dataformat-xml #895 | Maven, JDK 17, offline; **snapshot deps 2½ months after pins** | 3.2.2, 3.2.3 lack; **3.3.0** has all 42 added lines | 15/15, 11/11, **4 fail** | inline |
+| R23 javaparser #5176 | Maven, JDK 17, `-pl javaparser-core-testing -am`, offline | 3.28.2 = parent (5 files); no release with it | 16/16, 8/8, **7 fail** | inline |
+| R24 javaparser #5207 | as R23 | 3.28.2 lacks; no release with it | 36/36, 14/14, **11 fail + 4 errors** | inline |
+| R48 assertj #3710 | Maven, JDK 21, `-pl assertj-tests/assertj-integration-tests/assertj-core-tests -am`, offline | 3.27.0 = parent; **3.27.1** has all 8 added lines | 1/1, (none), **1 fail** | inline |
+
+### Jackson snapshot inputs (R18, R27–R30) — unstable inputs
+
+All five Jackson pins are `-SNAPSHOT` versions whose parent POM and Jackson dependencies are `-SNAPSHOT`s served only by the Central Portal
+snapshot repository the POMs declare (`https://central.sonatype.com/repository/maven-snapshots`), which keeps **only the latest build** of each
+snapshot version. What was resolved on 2026-11-26 (each file's `.sha1` from that repository matched, `$O/artifacts/snapshots-B/remote-sha1-check.txt`;
+timestamped copies and sha256 in `$O/artifacts/snapshots-B/SHA256SUMS`):
+
+| Snapshot | Resolved build | sha256 | Used by | Relative to the pins |
+|---|---|---|---|---|
+| `com.fasterxml.jackson:jackson-base:2.21.7-SNAPSHOT` (+ `jackson-bom`) | **absent** from the repository; rebuilt (below) | `600895e418942eebb133b28d4801b556bacf9b64cf8d6b88c53d4f1aee7bf177` (base), `404c848b5fa0f2f2739338b9774d88e74d08abe4500cad15275ff7fdc46cec06` (bom) | R18 | source at 2026-08-15, before both pins |
+| `com.fasterxml.jackson:jackson-base:2.21.9-SNAPSHOT` | `2.21.9-20261017.195440-2` | `6dd8fde86c59a0bb2f6bfa61f4894d345a37a1f2a67b303fbffbd547565cd25a` | R27 | before both pins (2026-11-03) |
+| `com.fasterxml.jackson:jackson-bom:2.21.9-SNAPSHOT` | `2.21.9-20261017.195440-2` | `1b1be4454bf13e09a07be0224674c4db156951d75ad09d2d4b11e74e3a662d78` | R27 | before |
+| `tools.jackson:jackson-base:3.4.0-SNAPSHOT` | `3.4.0-20261108.022425-1` | `af28e1dff5feecbd26084a4d2f0b491a7d622339c479b3b8c93ef73f86af9888` | R28, R29 | before R28's parent pin (2026-11-08T05:52Z) and R29 |
+| `tools.jackson:jackson-bom:3.4.0-SNAPSHOT` | `3.4.0-20261108.022425-1` | `fdfe95299daa5d7bb38e40646cb322cecff5f60a636a67c4ef4c99a959207bc2` | R28, R29 | before |
+| `tools.jackson.core:jackson-core:3.4.0-SNAPSHOT` (jar) | `3.4.0-20261126.043215-13` | `d2b4ddbf754a4340daf0fd306773464b2fe6dad38c5c21910a0a1634678c7ea2` | R28, R29 (runtime) | **after** all R28/R29 pins |
+| `com.fasterxml.jackson.core:jackson-annotations:2.24-SNAPSHOT` (jar) | `2.24-20261124.040648-4` | `178d396bc61050c6181519d390537464a223383d70e04bf3abee30ad1719d7a5` | R28, R29 (runtime) | **after** |
+| `com.fasterxml.jackson:jackson-parent:2.24-SNAPSHOT` | `2.24-20261107.233449-2` | `d27368f42c607ea352b41bf03ee9e45982fceae7eaec974cb3c0257a6d892524` | (annotations' parent) | |
+| `tools.jackson:jackson-base:3.3.0-SNAPSHOT` | `3.3.0-20261108.015624-14` | `d51bba0a25a935d7702d078ccf5e59974759225b5710a288c2c147341bcde101` | R30 | **after** R30's pins (2026-08-22) |
+| `tools.jackson:jackson-bom:3.3.0-SNAPSHOT` | `3.3.0-20261108.015624-14` | `3b116ccb2abff445d6a0a25d9a83caf4aee3a47e4a19b527b808902214377f5d` | R30 | **after** |
+| `tools.jackson.core:jackson-core:3.3.0-SNAPSHOT` (jar) | `3.3.0-20261106.043746-116` | `f08441718942668bb1eb7b9834e05a08bd68f6cc1f75760ea02328a2a1175b0e` | R30 (runtime) | **after** |
+| `tools.jackson.core:jackson-databind:3.3.0-SNAPSHOT` (jar) | `3.3.0-20261107.181845-176` | `be7d7b485da10541b10436d1d1ad01e5e6a1c82163b9734fe7ec53d280c4f365` | R30 (runtime) | **after** |
+| `com.fasterxml.jackson.core:jackson-annotations:2.23-SNAPSHOT` (jar) | `2.23-20261106.041643-18` | `838ae67b1430bed7cf66b4560d7e86bb8b08745d33e0fb78ebc582e712dacce3` | R30 (runtime) | **after** |
+| `com.fasterxml.jackson:jackson-parent:2.23-SNAPSHOT` | `2.23-20261103.010715-5` | `481f4c2098ab2aac3864fc189b81d4e6a34b20ba55127a0712203fd6398fb30a` | (annotations' parent) | |
+| `tools.jackson.module:jackson-module-jakarta-xmlbind-annotations:3.3.0-SNAPSHOT` (jar) | `3.3.0-20261103.185810-24` | `07a3e4ac25f08c707ec63eb2cbb3589c599baa8b306dc52fc2dd13c9afe750e8` | R30 (test) | **after** |
+| `tools.jackson.module:jackson-modules-base:3.3.0-SNAPSHOT` | `3.3.0-20261103.185810-24` | `05795f1124f5e309bbfee839d89ba9e51252587541741198a55d30b6bfb8a8cc` | (its parent) | |
+
+(The timestamped POMs of the jars are in the same folder with their own sha256.) So R28, R29 and R30 were built and tested against
+**later builds** of their Jackson dependencies than the ones the pins were built with: the pins' own snapshot builds are no longer served.
+The PRs change only the case's own module, and the landed tests behave as the PRs say on these inputs; a claim that could depend on
+jackson-core, jackson-annotations or (R30) jackson-databind behaviour should say which build it ran on. The m2 copies under the plain
+`-SNAPSHOT` names equal these timestamped files today, but a later online (`-U`) Maven run could replace them: **use the offline commands**, or the
+`*-classpath.pinned.txt` files in `$O/artifacts/R28-*/`, `R29-*/`, `R30-*/`, which name the timestamped copies in `$O/artifacts/snapshots-B/` instead.
+Not done: rebuilding the R28–R30 snapshot inputs from their upstream branches at the pins' times (as the M01–M10 setup did for M02). R28 and R29
+would need different `jackson-core:3.4.0-SNAPSHOT` builds under one coordinate, so it would need a local repository per case; left as is.
+
+**R18's substitution.** `jackson-base:2.21.7-SNAPSHOT` (and its parent `jackson-bom:2.21.7-SNAPSHOT`) are gone (`Non-resolvable parent POM … (absent)`,
+`$O/logs/R18-jackson-core-fix-resolve-online.log`); 2.21.7 itself was released 2026-09-21, after both pins. Both POMs were built from their own
+upstream, `FasterXML/jackson-bom` branch `2.21`, at the last first-parent commit before R18's parent pin (2026-09-11T19:22:26-07:00):
+`7796a7ddb240ce41c1b6c6a3a435b29948a6a727` (2026-08-15, "Merge branch '2.20' into 2.21"); the branch's next commit, `6702bf32e5dfab76ebd57906eee2ff4f68b3eb41`,
+is 2026-09-20, after the fix pin (2026-09-16), so the same input serves both sides. Mirror `$M/jackson-bom.git` (ref `refs/pins/R18-snap-7796a7ddb240ce41c1b6c6a3a435b29948a6a727`,
+branch history fetched `--shallow-since=2026-07-01`), worktree `$W/R18-snap-jackson-bom`, installed into `$O/m2` with `mvn_B.sh $W/R18-snap-jackson-bom R18-snap-jackson-bom-install $J17 x online install` (3 s);
+copies in `$O/artifacts/snapshots-B/rebuilt-R18/`. Its diff to the 2.21.7 release commit `62d4d51724430074c0b7223fa69bacab444bee04` is the version strings and
+`project.build.outputTimestamp` only (3 files, 6 lines). jackson-base's parent `com.fasterxml.jackson:jackson-parent:2.21` is a release.
+
+### R03 · vavr #3276 — `computeIfPresent` with a null result
+
+**Pins.** Parent `f74004d3cef44fcccc7996783d34f734ba25ffd3`, fix `2b77936d4788fee24b99e8a372fd93923d8b6c12`. Changed: `vavr/src/main/java/io/vavr/collection/Maps.java` (+1 −1:
+`Option.of(newValue)` → `Option.some(newValue)`), `vavr/src/test/java/io/vavr/collection/AbstractMapTest.java` (+7 −1).
+
+**Build facts.** `io.vavr:vavr:2.0.0-SNAPSHOT`, parent `io.vavr:vavr-parent:2.0.0-SNAPSHOT` (the reactor root; no external snapshot), `java.version` 21, classes
+**major 65**, `module-info.class` present. JUnit Jupiter 6.0.3. Runtime classpath: `io.vavr:vavr-match:1.0.0`, `io.vavr:vavr-match-processor:1.0.0`, `org.jspecify:jspecify:1.0.0`.
+Built on JDK 21 (`$J21`; CI builds 21–26).
+
+**Commands** (in `$W/R03-vavr-ROLE`, `$J21`, report dir `vavr/target/surefire-reports`):
+- online, first resolution (58 s): `-pl vavr -am -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dtest=HashMapTest,LinkedHashMapTest,TreeMapTest package`
+- **offline (checked, 38–39 s)**: the same with `-o` (`case_B.sh R03 $J21 vavr HashMapTest,LinkedHashMapTest,TreeMapTest`).
+
+**Landed tests.** `AbstractMapTest` is abstract; its concrete subclasses are `HashMapTest`, `LinkedHashMapTest`, `TreeMapTest`. Fix: 1900 run, 0 failures.
+Parent's own: 1897, 0 failures. Fix's `AbstractMapTest` on the parent: 1900 run, **3 failures**, one per map type, `AbstractMapTest$ComputeIfPresentTests#shouldComputeIfPresentWithNullResult`:
+`expected: (Some(null), HashMap((1, null))) but was: (None, HashMap((1, null)))` (likewise `LinkedHashMap`, `TreeMap`).
+
+**Release side.** `io.vavr:vavr` 1.0.1 (2026-03-01) holds the removed line, not the added one; **1.1.0** (2026-10-24) holds the added line `Option.some(newValue)` and not the
+removed one (its `Maps.java` is not byte-equal to either pin). Both signed (GOODSIG). Jars: `$O/releases/vavr-1.0.1/`, `$O/releases/vavr-1.1.0/`.
+
+**Artifacts.** `$O/artifacts/R03-ROLE/vavr-2.0.0-SNAPSHOT.jar`; `Maps.class` fix `c2c0834b4bc23f0c5cb844aacd916fc03d52475b191c5600897b1b2783bab914`, parent `f944d9eec8ee191f438ec0bee204e210de648b556e75fa2dfa0a869dd57362ec`
+(`Maps$OfEntries.class` the same on both, `f76f15f17edae614628c9baf5aaab6c99c73ebd37a5af28f433ef483c0444334`).
+
+### R07 · jts #1168 — `CoordinateList.clone()` doubles the list
+
+**Pins.** Parent `45744222b0b8a861c44dbc2c03dcf4f1e85c27fd`, fix `c406f5abe914d471ceb9cf0b872e8a634a1a1be6`. Changed: `modules/core/src/main/java/org/locationtech/jts/geom/CoordinateList.java` (+1 −1:
+`clone.add(i, …)` → `clone.set(i, …)`), `modules/core/src/test/java/org/locationtech/jts/geom/CoordinateListTest.java` (+8 −1, new `testClone`).
+
+**Build facts.** `org.locationtech.jts:jts-core:1.20.1-SNAPSHOT` (root `org.locationtech.jts:jts:1.20.1-SNAPSHOT`, modules `build-tools`, `modules/{core,io,example,tests,app,lab}`),
+source/target 1.8, classes **major 52**, no `module-info`. **No runtime dependencies.** Tests JUnit 4.13.1 (surefire 2.15). Built on `$J17`. The checkstyle plugin of
+jts-core depends on the reactor's `build-tools` module, so **every command needs `-am`** (without it, offline fails: `build-tools-1.20.1-SNAPSHOT.jar NOT allowed from apache.snapshots`).
+
+**Commands** (in `$W/R07-jts-ROLE`, `$J17`, report dir `modules/core/target/surefire-reports`):
+- online (10 s): `-pl modules/core -am -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dtest=CoordinateListTest package` (a `-DskipTests` run first does not resolve the surefire JUnit 4 provider)
+- **offline (checked, 10–16 s)**: the same with `-o` (`case_B.sh R07 $J17 modules/core CoordinateListTest`).
+
+**Landed tests.** Fix: `CoordinateListTest` 4/4. Parent's own: 3/3. Fix's test on the parent: **1 failure**, `CoordinateListTest#testClone`:
+`list has wrong length expected:<6> but was:<3>` (the assertion is `assertEquals(msg, coordArray.length, ords.length / 2)`, so the parent's clone has **6** coordinates for the 3 inputs).
+
+**Release side.** Latest release 1.20.0 (2024-08-30) holds the removed `clone.add(i, …)` line: parent side. No later release (none with the fix). Signed (GOODSIG).
+
+**Artifacts.** `$O/artifacts/R07-ROLE/jts-core-1.20.1-SNAPSHOT.jar`; `CoordinateList.class` fix `3b6e19a68ee11603a68dcc49c9cfbdbba8e69103b09ca8f95c64e87c1cfae2e1`, parent `1e09c97b72d8d47007b56fba13ab54833546336330ec7600444d0603b4a8a04c`.
+
+### R19 · jts #1092 — WKB ordinate flags for measured geometry
+
+**Pins.** Parent `a7597288e551757426015db75c22603c0baeff20`, fix `034207b1de6605ad3eb8dbf8373b1ad8fab1b1b3`. Changed: `modules/core/src/main/java/org/locationtech/jts/io/CheckOrdinatesFilter.java`
+(added, +79: the former `WKTWriter$CheckOrdinatesFilter` made a top-level class), `…/io/WKBWriter.java` (+41 −30), `…/io/WKTWriter.java` (−55), `modules/core/src/test/java/org/locationtech/jts/io/WKBWriterTest.java` (+21 −12).
+
+**Build facts.** As R07 (same module, version and JDK).
+
+**Commands.** As R07 with `-Dtest=WKBWriterTest`; offline checked (11–19 s; `case_B.sh R19 $J17 modules/core WKBWriterTest`).
+
+**Landed tests.** Fix: `WKBWriterTest` 13/13. Parent's own: 12/12. Fix's on the parent: **1 error**, `WKBWriterTest#testWkbLineStringM`: `java.lang.IllegalArgumentException: Invalid ordinate index: 3`.
+
+**Release side.** 1.20.0's `WKBWriter.java` and `WKTWriter.java` = parent byte for byte; `CheckOrdinatesFilter.java` absent. No release with the fix.
+
+**Artifacts.** `$O/artifacts/R19-ROLE/`; fix `CheckOrdinatesFilter.class` `0d669783153c4f6c3fdf660faa9929e0b26c0c5f7218682ec2b3d8789f0ee08d`, `WKBWriter.class` `e9ec283b649026eb88339eceaf0bb946d1c8f6d521685a75cdbbd01266146178`,
+`WKTWriter.class` `53707e0705ef1a558d2eb89c7b3ae32300ce49cf70e390f8b92966a2589c6b78`; parent `WKBWriter.class` `30e711fa83ddbdfbc7eb9ffe51d378eee02ad3bcf487d691c73cabe823bdfef6`, `WKTWriter.class`
+`214e5b86bb172f9cad9c26106c5e29704aeb725f814475f0656458179a08636d`, `WKTWriter$1.class` `accbf24829689f1b62c0bdfc1f9b1620495a880521c9a70d24fb79664a4f84d4`, `WKTWriter$CheckOrdinatesFilter.class` `8669e211823278a54d057e12e4f650a1f020a92cdbe413e462daf8f1d792240d`.
+
+### R08 · jgrapht #1379 — connectivity listener before the sets are computed
+
+**Pins.** Parent `fabfabe6f279c0dd61b417a543d33d94fd039249`, fix `955e5cfb9b22d7ac2ef956849523d22041baf730`. Changed: `jgrapht-core/src/main/java/org/jgrapht/alg/connectivity/ConnectivityInspector.java` (+9:
+two `if (connectedSets == null)` guards, one clearing `vertexToConnectedSet`), `jgrapht-core/src/test/java/org/jgrapht/alg/connectivity/ConnectivityInspectorTest.java` (+79).
+
+**Build facts.** `org.jgrapht:jgrapht-core:1.6.0-SNAPSHOT` (root `org.jgrapht:jgrapht:1.6.0-SNAPSHOT`), `java.version` 21, classes **major 65**, `module-info` present.
+Runtime: `org.jheaps:jheaps:0.14`, `org.apfloat:apfloat:1.16.0`. Tests JUnit Jupiter 6.1.2. Built on `$J21`.
+
+**Commands** (in `$W/R08-jgrapht-ROLE`, `$J21`, report dir `jgrapht-core/target/surefire-reports`):
+- online (19 s): `-pl jgrapht-core -am -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dtest=ConnectivityInspectorTest package`
+- **offline (checked, 5–18 s)**: the same with `-o` (`case_B.sh R08 $J21 jgrapht-core ConnectivityInspectorTest`).
+
+**Landed tests.** Fix: 10/10. Parent's own: 2/2. Fix's on the parent: **8 errors**, both parameters (`(boolean)[1]`, `[2]`) of `testListenerVertexAddBeforeQuery`,
+`testListenerVertexAddAfterRemoval` (`NullPointerException: Cannot invoke "java.util.List.add(Object)" because "this.connectedSets" is null`), `testListenerEdgeAddBeforeQuery`,
+`testListenerEdgeAddAfterRemovalAndPartialQuery` (`… "java.util.List.remove(Object)" because "this.connectedSets" is null`). The PR reports eight failing regressions.
+
+**Release side.** Latest release 1.5.3 (2026-04-11) lacks the guards (none of the fix-specific added lines). No release with the fix. Signed (GOODSIG).
+
+**Artifacts.** `$O/artifacts/R08-ROLE/jgrapht-core-1.6.0-SNAPSHOT.jar`; `ConnectivityInspector.class` fix `7037805aa54cbd8039003187d753bc7142607008acf1cbf4b5c784183506f305`, parent `ecffbb8bddb584b8532a6d7564ad1bcc93528bdaa8c7851b21ae498e1b9a6c65`;
+`ConnectivityInspector$MyTraversalListener.class` fix `72ecfbe1a0b628754eb2e2fc469b16dfaba76fe17b832cc14888a9e6fff0b7e9`, parent `4c90d7219024b8f8e9940661316494407c4e15463b6bca7b4885ccb64d36a531`.
+
+### R10 · jgrapht #1376 — farthest insertion with negative weights
+
+**Pins.** Parent `e5bc1c06804bd90c5cf549954587728fc8dae101`, fix `9fc7edbcc3d1e753bc1863bda0cf1c2f652e083a`. Changed: `jgrapht-core/src/main/java/org/jgrapht/alg/tour/FarthestInsertionHeuristicTSP.java` (+2 −2),
+`jgrapht-core/src/test/java/org/jgrapht/alg/tour/FarthestInsertionHeuristicTSPTest.java` (+40).
+
+**Build facts.** As R08. **Commands.** As R08 with `-Dtest=FarthestInsertionHeuristicTSPTest`; offline checked (13–23 s).
+
+**Landed tests.** Fix: 10/10. Parent's own: 8/8. Fix's on the parent: **2 errors**: `testNegativeEdgeWeights` (`:194 ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 5`, the K4 case)
+and `testNegativeEdgeWeightsAllNegative` (`:214 NullPointerException: Cannot invoke "Object.toString()" because "e" is null`, the triangle).
+
+**Release side.** 1.5.3's `FarthestInsertionHeuristicTSP.java` = parent byte for byte. No release with the fix.
+
+**Artifacts.** `$O/artifacts/R10-ROLE/`; `FarthestInsertionHeuristicTSP.class` fix `ed8684c759c319ed5111d570df20282d272b36efc78c3ec14e3af7e6045bcd6d`, parent `2ba2ede1af23442dcc77a455dee995c6a9bbe6d4d55a855cb6fc92b315692652`.
+
+### R18 · jackson-core #1716 — UTF-32 surrogate pair split at a buffer refill
+
+**Pins.** Parent `2a0ea7beeb9eb0a16f04c14e07b5d0804c64433d`, fix `15591d013c44ef3b2a84bb639df396149a5917f5` (base branch `2.21`). Changed: `src/main/java/com/fasterxml/jackson/core/io/UTF32Reader.java` (+1 −1),
+`src/test/java/com/fasterxml/jackson/core/io/UTF32ReaderSurrogate1713Test.java` (added, +122), `release-notes/CREDITS-2.x`, `release-notes/VERSION-2.x`.
+
+**Build facts.** `com.fasterxml.jackson.core:jackson-core:2.21.7-SNAPSHOT`, parent `com.fasterxml.jackson:jackson-base:2.21.7-SNAPSHOT` **(rebuilt, see above)**. Classes **major 52**
+(Java 8 target), multi-release `module-info`. The jar shades `ch.randelshofer:fastdoubleparser:2.0.1` (listed as its one runtime-classpath entry). Tests JUnit Jupiter 5.14.1. Built on `$J17`.
+
+**Commands** (in `$W/R18-jackson-core-ROLE`, `$J17`, report dir `target/surefire-reports`; needs the rebuilt POMs in `$O/m2`, present):
+- online (10 s): `-Dtest=UTF32ReaderSurrogate1713Test package`
+- **offline (checked, 7 s)**: `-o -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dtest=UTF32ReaderSurrogate1713Test package` (`case_B.sh R18 $J17 . UTF32ReaderSurrogate1713Test`).
+
+**Landed tests.** Fix: 4/4. Parent: no such class. Fix's on the parent: **4 failures**, every test: `singleCharReadBigEndian`, `singleCharReadLittleEndian`, `chunkedReadSplitsPair`
+(`bigEndian=true, chunkSize=1 ==> expected: <a😀𐀀􏿿b…> but was: <a…`), `viaParserAtBufferBoundary` (`prefixLen=3995, bigEndian=true ==> expected: <mnopq😀𐀀…> but was: <mnopq😀…`); the
+"but was" strings hold unpaired or replaced surrogates (`$O/logs/R18-parent-landedfix.failures.txt`).
+
+**Release side.** 2.21.6 (2026-08-14) `UTF32Reader.java` = parent; **2.21.7** (2026-09-21) = fix, byte for byte. Both signed (GOODSIG).
+
+**Artifacts.** `$O/artifacts/R18-ROLE/jackson-core-2.21.7-SNAPSHOT.jar`; `UTF32Reader.class` fix `bfef62d28d5432823a0268f500c281158d3667b53f45d707b95b26c7dba40675`, parent `cfe9b05ad0df709a02e9893968e5d9e6a9c34c9aa8059582081245d44334e042`.
+
+### R27 · jackson-core #1816 — stale deferred numbers across tokens
+
+**Pins.** Parent `682b4062b60d8317956ca80a28c3c92cf46d93ce`, fix `b251524f3a857fd5960548ea12d4ba2dc92f8c43` (base `2.21`). Changed: `src/main/java/com/fasterxml/jackson/core/base/ParserBase.java` (+31 −15),
+`…/json/async/NonBlockingJsonParserBase.java` (+10), `…/json/async/NonBlockingUtf8JsonParserBase.java` (+4 −4), `src/test/java/com/fasterxml/jackson/core/read/NumberStaleValue1815Test.java` (added, +191), `release-notes/VERSION-2.x`.
+
+**Build facts.** `jackson-core:2.21.9-SNAPSHOT`, parent `jackson-base:2.21.9-SNAPSHOT` resolved as `2.21.9-20261017.195440-2` (before both pins). Otherwise as R18.
+
+**Commands.** As R18 with `-Dtest=NumberStaleValue1815Test`: online 11 s, **offline checked 7–8 s**.
+
+**Landed tests.** Fix: 7/7. Parent: no such class. Fix's on the parent: **6 failures**: `staleBigDecimal` and `staleBigDecimalAsync` (`expected: <7> but was: <2>`), `deferredBigInteger` and
+`deferredBigIntegerAsync` (`expected: <1.5> but was: <0.0>`), `staleValuesAtEOFAsync` (`expected: <7.0> but was: <2.5>`), `staleNumberStringBeforeNaNAsync` (`expected: <true> but was: <false>`); one test passes.
+
+**Release side.** 2.21.8 (2026-10-17): the two async files = parent; `ParserBase.java` holds 12 of the 15 removed lines and 13 of the 30 added (generic ones): parent side. **2.21.9** (2026-11-24):
+the two async files = fix byte for byte; `ParserBase.java` holds all 30 added lines (not byte-equal: 11 of the 15 removed lines still occur elsewhere in the file). 2.23.0 (2026-11-08,
+another line) has the async lines but only 15 of the 30 `ParserBase` additions: not compared further. All signed.
+
+**Artifacts.** `$O/artifacts/R27-ROLE/jackson-core-2.21.9-SNAPSHOT.jar`; fix `ParserBase.class` `4287e01cb828dd26c063e34b01576afa6c076afa3cc98419b3b0a5691da9de2e`, `NonBlockingJsonParserBase.class`
+`3e0062104825e575246ba8a3159aa8ea71ab52bf19e5597465e47ac65def8f8d`, `NonBlockingUtf8JsonParserBase.class` `6b312a3f3495498d86923053e74212200036ea0387f0ebc90ee22795b338cd1b`; parent `6145e112266bf5f3c991b3e9af15a0516d5b9db2c63714cee54e3af09d70e8a0`,
+`7a5d8f88bfa44313f9ffb10e44661c0b614c3a88ab068c46739a44db6880ab16`, `4989b359732a6b064c7ca06455a9181eb94c4b391178d678201c94fa8f1dd8d4`.
+
+### R28 · jackson-databind #6407 — immutable builder replacements with a late creator property
+
+**Pins.** Parent `b02acce88765473e3d883c877f1e64e1c1d8910d`, fix `0736200316cc75d98d38b73622aad09f28a1fc93` (base `3.x`). Changed: `src/main/java/tools/jackson/databind/deser/bean/BeanAsArrayBuilderDeserializer.java` (+2 −2),
+`…/BuilderBasedDeserializer.java` (+4 −4), `…/PropertyBasedCreator.java` (+29 −1), `…/PropertyValue.java` (+21), `src/test/java/tools/jackson/databind/deser/builder/ImmutableBuilderWithCreator6397Test.java` (added, +189).
+
+**Build facts.** `tools.jackson.core:jackson-databind:3.4.0-SNAPSHOT`, parent `tools.jackson:jackson-base:3.4.0-SNAPSHOT`; `javac.src.version` 17, classes **major 61**, `module-info` present.
+Runtime: `jackson-annotations:2.24-SNAPSHOT`, `jackson-core:3.4.0-SNAPSHOT` (**later builds than the pins'**, table above). Tests JUnit Jupiter 6.0.3. Built on `$J17`.
+
+**Commands** (in `$W/R28-jackson-databind-ROLE`, `$J17`, report dir `target/surefire-reports`): online 19 s `-Dtest=ImmutableBuilderWithCreator6397Test package`; **offline checked, 17–19 s**
+(`case_B.sh R28 $J17 . ImmutableBuilderWithCreator6397Test`).
+
+**Landed tests.** Fix: 8/8. Parent: no such class. Fix's on the parent: **7 failures** (one passes): `retainsBufferedObjectBuilderProperties` (`expected: <Value[a=5, b=6, c=7, d=8]> but was: <Value[a=0, b=0, c=7, d=8]>`),
+`retainsBufferedArrayBuilderProperties` (same), `retainsBufferedObjectBuilderPropertiesCreatorLast` (`… but was: <Value[a=0, b=0, c=7, d=0]>`), `retainsBufferedObjectBuilderPropertiesCreatorMissing`
+(`expected: <Value[a=5, b=6, c=0, d=8]> but was: <Value[a=0, b=0, c=0, d=0]>`), `retainsBufferedArrayBuilderPropertiesCreatorMissing` (`expected: <Value[a=5, b=6, c=0, d=0]> but was: <Value[a=0, b=0, c=0, d=0]>`),
+`retainsBufferedUnwrappedBuilderProperties` (`expected: <UnwrappedValue[a=5, c=7, x=3]> but was: <UnwrappedValue[a=0, c=7, x=3]>`), `retainsBufferedUnwrappedBuilderPropertiesCreatorMissing`.
+
+**Release side.** 3.3.0 (2026-11-08): all four files = parent byte for byte. 3.1.9 (2026-11-24, older line) holds the removed lines: parent side. No 3.4.0 release; none with the fix. 3.3.0 signed.
+
+**Artifacts.** `$O/artifacts/R28-ROLE/jackson-databind-3.4.0-SNAPSHOT.jar` (11 class digests in `SHA256SUMS`; e.g. `PropertyBasedCreator.class` fix `25d00d3bf2722700b4e42a69de1b007c4ce8fa597fc9dd9d54ec306728589c0a`,
+parent `c4b9f83c96b9b2d4ab1da53d0db5de862155a2e11ad927dabcd806fa93ed4722`); classpaths also as `*-classpath.pinned.txt`.
+
+### R29 · jackson-databind #6473 — merging into an existing EnumMap
+
+**Pins.** Parent `66ade176743438d3b8247348465aa31eb95e24f7`, fix `949188f567b60b88851f4898eeb9bc82d098cfbe` (base `3.x`). Changed: `src/main/java/tools/jackson/databind/deser/jdk/EnumMapDeserializer.java` (+85 −5),
+`src/test/java/tools/jackson/databind/deser/merge/EnumMapMerge6445Test.java` (added, +292), `release-notes/CREDITS`, `release-notes/VERSION`.
+
+**Build facts.** As R28 (same version and snapshot inputs). **Commands.** As R28 with `-Dtest=EnumMapMerge6445Test`; offline checked (17–20 s).
+
+**Landed tests.** Fix: 10/10. Parent: no such class. Fix's on the parent: **1 failure + 2 errors**: `mergeKeepsExistingValueAndAddsMissingKeys` (`expected: <…EnumMapMerge6445Test$Creatable@5b5b59> but was: <…$Creatable@1934ad7c>`:
+the existing value object was replaced), `mergeIntoEnumMapWithNonCreatableValues` and `mergeIntoMapTypedEnumMap` (`InvalidDefinitionException: Cannot construct instance of `…EnumMapMerge6445Test$Value` (no Creators, like default constructor, exist)`);
+the other 7 (fresh maps, content overrides) pass on the parent too.
+
+**Release side.** 3.3.0 and 3.1.9: `EnumMapDeserializer.java` holds all 5 removed lines and only generic added lines: parent side. No release with the fix.
+
+**Artifacts.** `$O/artifacts/R29-ROLE/`; `EnumMapDeserializer.class` fix `75eb7cb28993009f0fb05d72a88f39ae2059a906fe33bf65e279bcaab9ef8e3c`, parent `365448e874668dc0d25f377e68bf7406caef3a184335b6989b84d9825ff36224`.
+
+### R30 · jackson-dataformat-xml #895 — always-on Base64 names starting with a digit
+
+**Pins.** Parent `f560daa9ecb75c50de084c5a57559f84134554b3`, fix `c3584c7120d6a11e3d417a081d8600be47103fe9` (base `3.x`). Changed: `src/main/java/tools/jackson/dataformat/xml/XmlNameProcessors.java` (+44 −2),
+`src/test/java/tools/jackson/dataformat/xml/misc/XmlNameEscapeTest.java` (+119), `release-notes/CREDITS`, `release-notes/VERSION`.
+
+**Build facts.** `tools.jackson.dataformat:jackson-dataformat-xml:3.3.0-SNAPSHOT`, parent `tools.jackson:jackson-base:3.3.0-SNAPSHOT`; classes **major 61**, `module-info` present. Runtime:
+`jackson-core:3.3.0-SNAPSHOT`, `jackson-annotations:2.23-SNAPSHOT`, `jackson-databind:3.3.0-SNAPSHOT` (**all November builds, about 2½ months after the pins**, table above), `org.codehaus.woodstox:stax2-api:4.3.1`,
+`com.fasterxml.woodstox:woodstox-core:7.3.0`. Test: `jackson-module-jakarta-xmlbind-annotations:3.3.0-SNAPSHOT`, JUnit Jupiter 6.0.3. Built on `$J17`.
+
+**Commands** (in `$W/R30-jackson-dataformat-xml-ROLE`, `$J17`): online 10 s `-Dtest=XmlNameEscapeTest package`; **offline checked, 7–8 s** (`case_B.sh R30 $J17 . XmlNameEscapeTest`; rechecked from a clean tree).
+
+**Landed tests.** Fix: 15/15. Parent's own: 11/11. Fix's on the parent: **4 failures**: `testAlwaysOnBase64NameInvariants` (`Invalid XML name '0IA' encoded from 'Ѐ' ==> expected: <true> but was: <false>`),
+`testAlwaysOnBase64NameStartBoundary` (`<DTO><YmFkTWFw><0IA>at</0IA><z78>below</z78></YmFkTWFw></DTO> ==> expected: <true> but was: <false>`), `testAlwaysOnBase64NonAsciiKeysRoundTrip`
+(`<DTO><YmFkTWFw><5Lit5paH>cjk</5Lit5paH>…`), `testAlwaysOnBase64AttributeNameRoundTrip` (`<AttrDTO 0IBmaXJzdA="x"/>`).
+
+**Release side.** 3.2.2 (2026-08-14, the last before the fix) and 3.2.3 (2026-09-22) hold both removed lines and few added ones: parent side. **3.3.0** (2026-11-08) holds all 42 added lines and
+neither removed one (not byte-equal to the fix). 3.2.2 and 3.3.0 jars kept and signed; 3.2.3 sources only.
+
+**Artifacts.** `$O/artifacts/R30-ROLE/jackson-dataformat-xml-3.3.0-SNAPSHOT.jar`; `XmlNameProcessors.class` fix `d5dbcc736c5284f79da964e56ca56b4e8dd87595a1623d03b447249199d32a81`, parent `1bc5bf167d845e429c161de86a6feb82a5ce3a66710be2ae81096a7822230ad6`;
+`XmlNameProcessors$AlwaysOnBase64NameProcessor.class` fix `a408ef2147a986b8fad3d39c0a0e32506b009352fef355f7a47e16834392ce6a`, parent `bef5872b5bb6e66627193815d5b5c420fd75857c5314108b567ed61c7a181189` (other nested classes in `SHA256SUMS`); `*-classpath.pinned.txt` as R28.
+
+### R23 · javaparser #5176 — typed literal setters notify observers
+
+**Pins.** Parent `a322c502cfac7d97495fc3f41c6b74a06924267f`, fix `c9c78dd4c965646dd97bbf3108ff1faefa1ae198`. Changed (each +1 −1 unless noted): `javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java`,
+`…/DoubleLiteralExpr.java`, `…/IntegerLiteralExpr.java`, `…/LongLiteralExpr.java`, `…/StringLiteralExpr.java` (+2 −2); tests `javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/LiteralStringValueExprTest.java` (+60),
+`…/printer/lexicalpreservation/LiteralValueSettersTest.java` (added, +84).
+
+**Build facts.** `com.github.javaparser:javaparser-core:3.29.0-SNAPSHOT` (root `javaparser-parent:3.29.0-SNAPSHOT`, 8 modules; only `javaparser-core` and `javaparser-core-testing` built), `java.version` 1.8,
+classes **major 52**, no `module-info` (Automatic-Module). **No runtime dependencies.** Tests (`javaparser-core-testing`): JUnit Jupiter 5.14.4, AssertJ 3.27.7, Mockito 4.11.0, Hamcrest 3.0. Built on `$J17`. No external snapshot.
+
+**Commands** (in `$W/R23-javaparser-ROLE`, `$J17`, report dir `javaparser-core-testing/target/surefire-reports`):
+- online (18 s): `-pl javaparser-core-testing -am -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dtest=LiteralStringValueExprTest,LiteralValueSettersTest package`
+- **offline (checked, 10–14 s)**: the same with `-o` (`case_B.sh R23 $J17 javaparser-core-testing LiteralStringValueExprTest,LiteralValueSettersTest`).
+
+**Landed tests.** Fix: 16/16. Parent's own: 8/8 (`LiteralStringValueExprTest` only). Fix's on the parent: **7 failures**: `LiteralStringValueExprTest#typedSettersNotifyObservers` (`Wanted but not invoked:
+astObserver.propertyChange("b\n", VALUE, "a", "b\n") … Actually, there were zero interactions with this mock.`) and `LiteralValueSettersTest#setInt` (`expected: <class A { int i = 2; }> but was: <class A { int i = 1; }>`),
+`setDouble`, `setString` (`expected: <class A { String s = "b\n"; }> but was: <class A { String s = "a"; }>`), `setEscapedValue`, `setChar`, `setLong` (`expected: <… long l = 2; }> but was: <… long l = 1L; }>`).
+
+**Release side.** Latest release 3.28.2 (2026-05-31): all five files = parent byte for byte. No 3.29.0 release; none with the fix. Signed.
+
+**Artifacts.** `$O/artifacts/R23-ROLE/javaparser-core-3.29.0-SNAPSHOT.jar` (five class digests in `SHA256SUMS`, e.g. `StringLiteralExpr.class` fix `146defc223e3d9c1fe76a3776fb80c939b588646779aa70951c8651294b360be`,
+parent `09f6e9b1ed2d1ee48a7e3a29df999b4fdbd56f4b980d3ff0f79dee1faea6ebcd`); `core-testing-test-classpath.txt` = the test classpath of `javaparser-core-testing`, with the kept jar in place of the reactor's.
+
+### R24 · javaparser #5207 — lexical printing of C-style array brackets
+
+**Pins.** Parent `7bb33415ec75aa3fe01c1b3741cbe9ee48413739`, fix `ae2e9400810933b1523f3182acc69bf8998e26ca`, two commits: middle `ba880df507664d320f54028810c42e07e429515f` (test only: `ArrayTypeTest.java` +15,
+annotated-varargs legal notation). Changed overall: `javaparser-core/src/main/java/com/github/javaparser/ast/type/ArrayType.java` (+13 −1), `…/printer/ConcreteSyntaxModel.java` (+9 −6),
+`…/printer/concretesyntaxmodel/CsmArrayBrackets.java` (added, +172), `…/printer/lexicalpreservation/LexicalDifferenceCalculator.java` (+12), `…/LexicalPreservingPrinter.java` (+6 −17);
+tests `javaparser-core-testing/src/test/java/com/github/javaparser/ast/type/ArrayTypeTest.java` (+20), `…/printer/lexicalpreservation/CStyleArrayDeclarationTest.java` (added, +147).
+
+**Build facts.** As R23. **Commands.** As R23 with `-Dtest=ArrayTypeTest,CStyleArrayDeclarationTest`; offline checked (12–14 s).
+
+**Landed tests.** Fix: 36/36. Parent's own: 14/14 (`ArrayTypeTest`). Fix's on the parent: **11 failures + 4 errors**: `ArrayTypeTest#ellipsisCanHaveAnnotationsToo` (`expected: <int[]@X... a[]> but was: <int[][]@X... a>`;
+the fix commit changed this assertion), and in `CStyleArrayDeclarationTest`: `renameIdentifier[1–3]` (e.g. `expected: <class A { void m(String b[]) {} }> but was: <class A { void m(String a[]b) {} }>`,
+`[3]`: `expected: <… m(String[] b[]) …> but was: <… m(String[] a[]b) …>`), `replaceName[1]` (same), `replaceName[3–5]` (`UnsupportedOperationException: NodeText: …`), `replaceTypeByArrayType[1–2]`
+(e.g. `expected: <class A { void m(long[] a) {} }> but was: <class A { void m(long[]) {} }>`), `[3]` (`UnsupportedOperationException: removed CsmToken(property:]) vs ";"`), `replaceTypeByNonArrayType[1–4]`
+(e.g. `expected: <class A { long a; }> but was: <class A { long a[][]; }>`). Full list `$O/logs/R24-parent-landedfix.failures.txt`. The middle commit's `ArrayTypeTest` on the parent: **15/15 pass**
+(`$O/logs/R24-parent-middletest.junit.txt`), so the middle commit changes no behaviour.
+
+**Release side.** 3.28.2: `ArrayType.java`, `ConcreteSyntaxModel.java` = parent; `CsmArrayBrackets.java` absent; the two lexical-preservation files hold all removed lines: parent side. No release with the fix.
+
+**Artifacts.** `$O/artifacts/R24-ROLE/` (13 / 12 class digests; e.g. `LexicalPreservingPrinter.class` fix `d681be3cb8be0754d0f515f89f6e062393df4d92afc8a9e99035a7f5e33cf06c`, parent `841f1e7ae1cb2b68b7b443c7f99f7cfc6f1284b3ebb9e1e04ba6f9682334eed8`;
+`CsmArrayBrackets.class` fix only, `f09fbe5932f4f113d146966da4705c720b8a04f3aa3399c441d8c741f4a86f7d`), `core-testing-test-classpath.txt` as R23.
+
+### R48 · assertj #3710 — record component accessor before the `is` alias
+
+**Pins.** Parent `d2257cab92a263fde1159ad5bcc7339de2effbc9`, fix `f3ece963d761d66a7ee31d29ccd9158df3794024` (base `3.x`). Changed: `assertj-core/src/main/java/org/assertj/core/util/introspection/Introspection.java` (+9 −1),
+`assertj-tests/assertj-integration-tests/assertj-core-tests/src/test/java/org/assertj/tests/core/api/recursive/comparison/RecursiveComparisonAssert_isNotEqualTo_with_record_Test.java` (added, +33).
+
+**Build facts.** `org.assertj:assertj-core:3.27.1-SNAPSHOT` (root `assertj-build`), compiled with release 8 (classes **major 52**, `module-info` via release 9). Runtime: `net.bytebuddy:byte-buddy:1.15.11`
+(a separate jar, not shaded). The landed test's module `assertj-core-tests` needs **Java 21** (`assertj-tests` sets `java.version` 21; records). Built on `$J21`. No external snapshot.
+
+**Commands** (in `$W/R48-assertj-ROLE`, `$J21`, report dir `assertj-tests/assertj-integration-tests/assertj-core-tests/target/surefire-reports`):
+- online (67 s, first resolution): `-pl assertj-tests/assertj-integration-tests/assertj-core-tests -am -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dtest=RecursiveComparisonAssert_isNotEqualTo_with_record_Test package`
+- **offline (checked, 17–20 s)**: the same with `-o`.
+
+**Landed tests.** Fix: 1/1. Parent: no such class. Fix's on the parent: **1 failure**, `should_compare_records_with_component_named_as_boolean_accessor`: `java.lang.AssertionError: Expecting actual:
+Record[field=value1, isField=true] not to be equal to: Record[field=value2, isField=true] when recursively comparing field by field …`.
+
+**Release side.** 3.27.0 (2024-12-19) `Introspection.java` = parent; **3.27.1** (2025-01-01) holds all 8 added lines and not the removed one (not byte-equal). Both signed.
+
+**Artifacts.** `$O/artifacts/R48-ROLE/assertj-core-3.27.1-SNAPSHOT.jar`; `Introspection.class` fix `61e7baea5a900f4c4c98591e925f304eb0cacdf79b12c79896c08f9504df6036`, parent `2e583508bf1f87ef0c38496cf05644ea808dbbf9edf8b2c9a9c69a08897d9a4c`;
+`core-tests-test-classpath.txt` = the test classpath of `assertj-core-tests` with the kept jar in place.
+
