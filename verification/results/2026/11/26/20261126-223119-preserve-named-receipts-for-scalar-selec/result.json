@@ -1,0 +1,201 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-223119-preserve-named-receipts-for-scalar-selec",
+  "title": "Preserve named receipts for scalar selection graph and listener replays",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m52s, peak 158.4 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-223119-preserve-named-receipts-for-scalar-selec.json",
+    "sha256": "bbb8ea0905d59ef8cf772b8bc573bb1b9941b5a14fbe2e1584cdfe074f1ca02b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-223119-preserve-named-receipts-for-scalar-selec",
+      "title": "Preserve named receipts for scalar selection graph and listener replays",
+      "description": "The previous development job passed every cold, warm and empty-cache comparison. Its wildcard output declaration was interpreted literally, so the collector retained no archives. Repeat these original-JVM measurements and name every expected ZIP explicitly.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T22:31:19+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Repeat all histories and retain each original JVM receipt",
+          "run": "python3 verification/generated-observers/campaign.py --empty-cache 458 445 J16 J19",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/458-clean.zip",
+        "verification/generated-observers/receipts/445-clean.zip",
+        "verification/generated-observers/receipts/J16-clean.zip",
+        "verification/generated-observers/receipts/J19-clean.zip"
+      ]
+    }
+  },
+  "sourceCommit": "9d2363a8477794e6c02b34ec5c32aaa692eff392",
+  "startedAt": "2026-11-26T22:34:48+00:00",
+  "finishedAt": "2026-11-26T22:38:54+00:00",
+  "wallSeconds": 246.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2559399,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 166100992,
+    "wallSeconds": 232.3,
+    "cpuSeconds": 289.2,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.97
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat all histories and retain each original JVM receipt",
+      "run": "python3 verification/generated-observers/campaign.py --empty-cache 458 445 J16 J19",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 232.348,
+      "cpuSeconds": 289.245,
+      "cpuThrottledSeconds": 36.178,
+      "peakMemoryBytes": 166100992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-all-histories-and-retai.log",
+        "lines": 4,
+        "bytes": 467,
+        "sha256": "41056e7e2eb41e4ddc896eba73272bbdc8240c85d1cb5dab5f866bfd4e6065d3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "458 {'spring-projects/spring-framework#37434.1': 'established', 'spring-projects/spring-framework#37434.2': 'established', 'spring-projects/spring-framework#37434.3': 'established'}",
+        "445 {'vavr-io/vavr#3272.1': 'established', 'vavr-io/vavr#3272.2': 'established', 'vavr-io/vavr#3272.3': 'established'}",
+        "J16 {'disabled-cache-write-through': 'established', 'cached-and-local': 'established'}",
+        "J19 {'repeated-commands': 'established', 'genuine-and-invalid': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/458-clean.zip",
+      "change": "added",
+      "bytes": 86900,
+      "sha256": "87514ec42b713991b07fe0762299e3f04471def8841ad76196d2e0bbf0fac51e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/445-clean.zip",
+      "change": "added",
+      "bytes": 90760,
+      "sha256": "a64057987640169b8db64d1f0c69ee4b57e4fbebfca494fad0152da050e14792",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/J16-clean.zip",
+      "change": "added",
+      "bytes": 75278,
+      "sha256": "05e345833547912a43daff960865f468f44c7ebb32dd1919e11e674139946edb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/J19-clean.zip",
+      "change": "added",
+      "bytes": 79060,
+      "sha256": "19d5f713d473b764400954624fe43141ef72317f86f38759d9e618fe16d15f91",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T22:39:09+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/458-clean.zip",
+      "verification/generated-observers/receipts/445-clean.zip",
+      "verification/generated-observers/receipts/J16-clean.zip",
+      "verification/generated-observers/receipts/J19-clean.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "53e17d263a9418acdd671a4d27e11cbe64a50b5d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53e17d263a9418acdd671a4d27e11cbe64a50b5d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T223854Z-5482253248dd3ebb",
+      "outputs": "20261126T223854Z-5749751b41a26cbf",
+      "diff": "20261126T223854Z-59335256d6bf9a32"
+    }
+  }
+}
