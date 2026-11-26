@@ -8,7 +8,7 @@ fetched or built is outside the checkout.
 `$O` below is `~/.cache/in-the-loop/merged-pr-links-r01-r50`, and `$M` is `~/.cache/in-the-loop/git-mirrors`.
 `source $O/scripts/env.sh` defines `$O`, `$M`, `$W` (= `$O/worktrees`), `TMPDIR` (= `$O/tmp`), `GRADLE_USER_HOME` (= `$O/gradle-home`),
 the JDK homes `$J8` `$J11` `$J17` `$J21` `$J25` (Temurin 8u512, 11.0.33, 17.0.21, 21.0.13, 25.0.5 under `~/.sdkman/candidates/java/`, the
-installations earlier setups used) and `$MVN` (Maven 3.10.0 from `PATH` with `-s $O/maven-settings.xml -t $O/toolchains.xml`,
+installations earlier setups used; and `$J27`, Temurin 27.0.1.1+4 under `$O/tools`, added for Guava) and `$MVN` (Maven 3.10.0 from `PATH` with `-s $O/maven-settings.xml -t $O/toolchains.xml`,
 local repository `$O/m2`, file-lock sync context). **The default `java` on `PATH` is JDK 25.0.5**, so name a JDK by its full path.
 
 Case ids `R01`–`R50` follow the brief's order (and the PR list [`organic-java-merged-pr-links-r01-r50.md`](organic-java-merged-pr-links-r01-r50.md)).
@@ -198,12 +198,14 @@ PR metadata (`gh api`, `$O/upstream/prs/`): base branch, head, commits, changed 
 | Tool | Where | Identity |
 |---|---|---|
 | Temurin 8u512, 11.0.33, 17.0.21, 21.0.13, 25.0.5 | `~/.sdkman/candidates/java/` (`$J8` `$J11` `$J17` `$J21` `$J25`) | earlier setups' installations; none added |
+| Temurin 27.0.1.1+4 | `$O/tools/jdk-27.0.1.1+4` (`$J27`, and a version-27 entry in `$O/toolchains.xml`) | added for Guava's javac toolchain (R05, R09); checks in the fork C section |
+| Apache Ant 1.10.15 | `$O/tools/` | added for fastutil (R04, R14); checks in the fork C section |
 | Maven 3.10.0 | on `PATH` (sdkman, `~/.sdkman/candidates/maven/3.10.0`) | all Maven cases |
 | Gradle distributions | `$O/tools/`, zips in `$O/dl/gradle/` | see the fork D section (Gradle cases) |
 
 Caches and files this work owns:
 - `$O/m2` (Maven local repository, shared by all Maven cases), `$O/gradle-home` (`GRADLE_USER_HOME`, Gradle cases), `$O/maven-settings.xml`
-  (sets only the local repository), `$O/toolchains.xml` (JDKs 8, 11, 17, 21, 25).
+  (sets only the local repository), `$O/toolchains.xml` (JDKs 8, 11, 17, 21, 25, 27).
 - `$O/artifacts/CASE-ROLE/`: built jars, `SHA256SUMS` (jar + every class of each changed production source file), `runtime-classpath.txt`,
   `test-classpath.txt` (`:`-joined, paths into `$O/m2` or `$O/gradle-home`); per-case exceptions are named in the case's section.
 - `$O/releases/A-V/`: released artifacts from Maven Central with their `.sha1` (and `.sha256`/`.sha512` where published) checked and `.asc` beside them.
@@ -219,6 +221,64 @@ in DIR with `JAVA_HOME=JDK`, `MAVEN_OPTS=-Xmx1g`. The Maven commands in the case
 
 The setup was done in four parts at once (A: small Maven projects, B: medium Maven projects, C: large Maven projects and fastutil's Ant build,
 D: Gradle projects); each part's section follows the summary.
+
+
+## Summary by case
+
+"Landed tests" is the landed test class(es) on the fix / the parent's own copy on the parent / the fix's copy on the parent. "Part" names the section below with the detail.
+
+| Case | Part | Built | Release side | Landed tests | Upstream run |
+|---|---|---|---|---|---|
+| R01 eclipse-collections #1786 | C | Maven, JDK 17, eclipse-collections + unit-tests + unit-tests-java8 (-am), maven-settings-ec.xml (repo.eclipse.org 503, mirrored to Central) | 13.0.0 predates (parent form); no release with the fix | fix 120,694/0 failures (map+bimap tests); parent own and parent-landed in the job | inline (fix); job 20261126-173550-setup-run-eclipse-collections-1786-s-lan (parent) |
+| R02 | A | Maven, JDK 17, `package` at both pins | 4.5.0 and 4.6.0 neither pin; 4.6.0 has a different `add()`; no release with the fix's code | `IndexedCollectionTest` 33/33, 32/32, **1 fail** | inline |
+| R03 vavr #3276 | B | Maven, JDK 21, -pl vavr -am, offline 38 s | 1.0.1 lacks; 1.1.0 has the fix line (not byte-equal) | 1900/1900, 1897/1897, 3 fail | inline |
+| R04 fastutil #325 | C | make sources + Ant 1.10.15 (added), JDK 17, both pins | 8.5.13 parent form; 8.5.14 has the fix line (EXPKEYSIG) | 80/0, 78/0, 1 fail (IntImmutableListTest.testOversizedToArray, AIOOBE) | inline |
+| R05 guava #8811 | C | Maven, JDK 25 + JDK 27 toolchain (Temurin 27.0.1.1+4 added), JRE and Android, both pins | 33.7.2 predates; 33.8.0 contains (6/8 files = fix) | JRE and Android: 387/0, 379/0, 8 fail (testRotate_minValueDistance x8) | inline |
+| R06 | A | Maven, JDK 17 | 3.22.0 = parent byte for byte; no release with the fix | `FractionTest` 58/58, 39/39, **10 errors** (the PR's ten) | inline |
+| R07 jts #1168 | B | Maven, JDK 17, -pl modules/core -am, offline 11 s | 1.20.0 lacks; none with it | 4/4, 3/3, 1 fail | inline |
+| R08 jgrapht #1379 | B | Maven, JDK 21, -pl jgrapht-core -am, offline 5-18 s | 1.5.3 lacks; none with it | 10/10, 2/2, 8 errors | inline |
+| R09 guava #8801 | C | as R05 | 33.7.2 parent form; 33.8.0 fix form | JRE and Android: 15/0, 15/0, 1 fail (hasCycle_threeCyclicEdgesAndIsolatedNode) | inline |
+| R10 jgrapht #1376 | B | Maven, JDK 21, -pl jgrapht-core -am, offline 20 s | 1.5.3 = parent; none with it | 10/10, 8/8, 2 errors | inline |
+| R11 | A | Maven, JDK 17 | 2.22.0 parent side (not byte-equal); landed test on 2.22.0 classes: same 16 failures; no release with the fix | `AbstractCharacterFilterReaderTest` (new) 28/28, none, **16 fail** (the PR's sixteen) | inline |
+| R12 | A | Maven, JDK 17 | 2.22.0 parent side; no release with the fix | `BoundedReaderTest` 19/19, 16/16, **3 fail** | inline |
+| R13 | A | Maven, JDK 21, `-pl jimfs` | 1.3.1 parent side; 1.3.2 = fix byte for byte | `JimfsInputStreamTest`+`JimfsUnixLikeFileSystemTest` 116/116, 114/114, **1 fail** | inline |
+| R14 fastutil #384 | C | make sources + Ant, JDK 17, both pins | 8.5.19 (latest) = parent byte for byte; no release with the fix | 5/0, 4/0, 1 fail (bugWriteArray0 expected 3 was 0) | inline |
+| R15 | A | Maven, JDK 17 | 1.22.0 parent side; 1.22.1 and 1.23.0 carry the fix (not byte-equal) | `Base58Test` 27/27, 22/22, **5 fail** | inline |
+| R16 | A | Maven, JDK 17; **commons-io 2.21.0-SNAPSHOT built from source** (gone from Apache snapshots) | 1.28.0 parent's indexing (not byte-equal); no release with the fix | `CpioArchiveInputStreamTest` 10/10, 9/9, **1 error** (CRC Error at byte 155) | inline |
+| R17 | A | Maven, JDK 17 | 1.28.0 parent side; no release with the fix | `TarUtilsTest` 63/63, 62/62, **1 fail** (65 vs 66) | inline |
+| R18 jackson-core #1716 | B | Maven, JDK 17, offline 7 s; vanished jackson-base 2.21.7-SNAPSHOT rebuilt from jackson-bom 7796a7ddb240ce41c1b6c6a3a435b29948a6a727 | 2.21.6 = parent; 2.21.7 = fix | 4/4, none, 4 fail | inline |
+| R19 jts #1092 | B | Maven, JDK 17, -pl modules/core -am, offline 19 s | 1.20.0 = parent; none with it | 13/13, 12/12, 1 error | inline |
+| R20 | A | Maven, JDK 17 | 1.10.0 parent side; 1.11.0 = fix byte for byte | `CSVParserTest` 117/117 (4 skipped), 116/116, **1 error** (EOF in encapsulated token) | inline |
+| R21 | A | Maven, JDK 8 | 1.13.0 (last release) lacks the fix | `AnnotationSpecTest` 11/11, 11/11, **1 fail** (golden `12345678910L`) | inline |
+| R22 | A | Maven, JDK 8 | 1.13.0 = parent byte for byte | `TypeNameTest` 14/14, 12/12, **2 fail + 1 error** | inline |
+| R23 javaparser #5176 | B | Maven, JDK 17, -pl javaparser-core-testing -am, offline 10 s | 3.28.2 = parent; none with it | 16/16, 8/8, 7 fail | inline |
+| R24 javaparser #5207 | B | Maven, JDK 17, -pl javaparser-core-testing -am, offline 14 s | 3.28.2 lacks; none with it | 36/36, 14/14, 11 fail + 4 errors | inline |
+| R25 moshi #1442 | D | Gradle 7.3, JDK 17, :moshi jar + records-tests at both pins | 1.12.0 has no records support; 1.13.0 has the fix (not byte-equal) | 6/6 · 5/5 · 1 of 6 FAILS (indirectGenerics: No JsonAdapter for T) | inline |
+| R26 | A | Maven, JDK 17, `-pl gson` | 2.15.0 parent side; no release with the fix | `PrimitiveTest` 107/107, 106/106, **1 fail** (Long, not Byte) | inline |
+| R27 jackson-core #1816 | B | Maven, JDK 17, offline 8 s; snapshot parent predates pins | 2.21.8 lacks; 2.21.9 has all added lines | 7/7, none, 6 fail | inline |
+| R28 jackson-databind #6407 | B | Maven, JDK 17, offline 17 s; jackson-core/annotations snapshots postdate pins | 3.3.0 = parent; none with it | 8/8, none, 7 fail | inline |
+| R29 jackson-databind #6473 | B | Maven, JDK 17, offline 17 s; as R28 | 3.3.0, 3.1.9 lack; none with it | 10/10, none, 1 fail + 2 errors | inline |
+| R30 jackson-dataformat-xml #895 | B | Maven, JDK 17, offline 8 s; core/annotations/databind snapshots ~2.5 months after pins | 3.2.2, 3.2.3 lack; 3.3.0 has all added lines | 15/15, 11/11, 4 fail | inline |
+| R31 h2database #4034 | C | Maven h2/, JDK 17, both pins | 2.2.224 parent form; 2.3.230 contains (5/6 files = fix) | exit 0, exit 0, exit 1 (expected 1 actual null) | inline |
+| R32 h2database #2614 | C | Maven h2/, JDK 8, both pins (TZ and annotation-processor service file set for TestFunctions) | 1.4.200 older than parent; 2.0.202 first after, reorganized (matches neither) | exit 0, exit 0, exit 1 (ArrayStoreException in testArrayParameters) | inline |
+| R33 calcite #5345 | D | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 predates the parent | by job | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
+| R34 calcite #4942 | D | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 = parent for all 5 changed files | by job | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
+| R35 arrow-java #1518 | C | Maven -pl vector -am, JDK 17, both pins (-Dmaven.gitcommitid.skip, develocity off) | 20.0.0 (latest) = parent; no release with the fix | 4/0 (2x2 executions), new test, 2 fail | inline |
+| R36 arrow-java #1342 | C | as R35 | 19.0.0 = parent; 20.0.0 has the fix hunk | 4/0, new test, 2 errors (ValidateException) | inline |
+| R37 avro #2282 | C | Maven lang/java -pl avro -am, JDK 11, both pins (build cache off) | 1.11.3 lacks API; 1.11.4 and 1.12.0 carry BigDecimalConversion = fix | 104/0, 4/0, does not compile | inline |
+| R38 avro #2520 | C | as R37 | 1.11.x lack it; 1.12.0 TimePeriod = fix, DurationConversion = fix | 49/0, 40/0, does not compile | inline |
+| R39 parquet-java #3830 | C | NOT built: parquet-format-structures needs thrift 0.23.0 (absent; bison/flex missing); release substitute | 1.18.1 DictionaryPageReader = parent blob; 1.18.2 = fix blob | landed method vs releases: 1.18.2 pass, 1.18.1 fail; overlays: fix pass, parent fail | inline |
+| R40 | A | Maven, JDK 17 | 1.11.0 = parent byte for byte; no release with the fix | `TestOffsetDate` 408/408, 402/402, **5 fail + 1 error** | inline |
+| R41 RxJava #5101 | D | Gradle 2.14, JDK 8, standalone clones, 9 jcenter-only build-script modules substituted | 2.0.6 = parent, 2.0.7 = fix (exact) | 150 · 136 · 3 of 150 FAIL (Maybe noSubsequentSubscription*) | inline |
+| R42 reactor-core #937 | D | NOT configurable (propdeps-plugin 0.0.7, spring-io-plugin 0.0.4.RELEASE, dokka integration 0.9.15 only on repo.spring.io, 401/405); slice route on 3.1.1.RELEASE | 3.1.0/3.1.1 = parent, 3.1.2 = fix (code files; Flux.java Javadoc only) | slice: 226/226 · 210/210 · 10 of 226 FAIL (delayError…WithMonoError/FluxError); 3.1.1 alone same 10 fail, 3.1.2 alone all pass | inline (slice) |
+| R43 reactor-core #3783 | D | Gradle 8.6, JDK 8, :reactor-core at both pins | 3.4.37 = parent, 3.4.38 = fix (exact) | 7/7 · 6/6 · 3 of 7 FAIL (testThenManyOnConcatArray, 2× testThenManyRepeated) | inline |
+| R44 RxJava #6664 | D | Gradle 5.6, JDK 8, build-info 2.8.2 substituted | 3.0.0-RC3 = parent; RC4 = fix for ObservableGroupBy, fix + later changes for FlowableGroupBy | 104 · 100 · 1 of 104 FAILS (FlowableGroupByTest#newGroupValueSelectorFails) | inline |
+| R45 resilience4j #2067 | D | Gradle 7.4.2, JDK 17, grolifant 0.10 substituted | 2.1.0 predates, 2.2.0 has the fix (not byte-equal) | 16/16 · 12/12 · 3 of 16 FAIL (×4 with test-retry) | inline |
+| R46 resilience4j #1999 | D | Gradle 7.4.2, JDK 17, same substitution | 2.1.0 (brief) predates, 2.2.0 has the fix | 1/1 · (new test) · 1 of 1 FAILS (IllegalAccessException on Issue560 lambda) | inline |
+| R47 picocli #2036 | D | Gradle 7.6, JDK 11, root jar | 4.7.3 predates, 4.7.4 has the fix | 13/13 · 10/10 · 3 of 13 FAIL (the three new inherited fallback tests) | inline |
+| R48 assertj #3710 | B | Maven, JDK 21, -pl assertj-tests/assertj-integration-tests/assertj-core-tests -am, offline 17 s | 3.27.0 = parent; 3.27.1 has all added lines | 1/1, none, 1 fail | inline |
+| R49 junit #5839 | D | Gradle 9.6.1, JDK 25 (+17,21,24), standalone clones; resolved inline | 6.1.1 (brief) predates; 6.1.2 = 6.1.1 + exactly the fix's 7 lines | by job | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
+| R50 junit #4466 | D | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | by job | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
 
 
 ## Cases R02–R40 (fork A)
@@ -931,6 +991,364 @@ Record[field=value1, isField=true] not to be equal to: Record[field=value2, isFi
 **Artifacts.** `$O/artifacts/R48-ROLE/assertj-core-3.27.1-SNAPSHOT.jar`; `Introspection.class` fix `61e7baea5a900f4c4c98591e925f304eb0cacdf79b12c79896c08f9504df6036`, parent `2e583508bf1f87ef0c38496cf05644ea808dbbf9edf8b2c9a9c69a08897d9a4c`;
 `core-tests-test-classpath.txt` = the test classpath of `assertj-core-tests` with the kept jar in place.
 
+## Cases R01–R39 (fork C)
+
+Fork C covers R01, R04, R05, R09, R14, R31, R32, R35, R36, R37, R38 and R39 (the large Maven builds and fastutil's Ant build).
+Helpers in `$O/scripts/` (all source `env.sh`; Maven runs go through `mvn_case.sh`, 4 GB scope, `choom -n 500`):
+`keep_mvn_C.sh` (single-module jar, classpaths, class digests), `keep_reactor_C.sh` (the same for a module whose siblings are
+unpublished SNAPSHOTs: runs `package dependency:build-classpath` in the reactor, copies the sibling jars to
+`$O/artifacts/CASE-ROLE/tree/` and rewrites the classpaths to them), `h2_test_C.sh`, `guava_C.sh`, `ant_C.sh`, `fastutil_C.sh`,
+`R39_release_C.sh`, `mvn_case_ec_C.sh` + `$O/maven-settings-ec.xml` (R01), `srccmp_C.py` (release `-sources.jar` against the
+pins), `resolve_C.sh` (release graphs under `$O/resolve/NAME/`), `R01_job.sh`. "Landed" below means: the fix's landed tests on the
+fix / the parent's own copy of them on the parent / the fix's changed test files copied onto a copy of the parent
+(`$O/build/CASE-parent-landed`, removed afterwards). Every class digest list is the `SHA256SUMS` beside the jar; release
+signatures are in `$O/logs/C-release-signatures.txt` and release class digests in `$O/logs/C-release-class-digests.txt`.
+The release `-sources.jar`s compared are kept in `$O/releases/sources-C/` (sha1 checked against Central, `SHA256SUMS`).
+
+**Tools fork C added** (both in `$O/tools/`, archives in `$O/dl/`, signatures checked with the keyring `$O/gnupg-C`, keys in
+`$O/keys-C/`, daemons stopped):
+- Temurin JDK **27.0.1.1+4** (`$J27` in `env.sh`, `$O/tools/jdk-27.0.1.1+4`), for Guava, whose pom requires a JDK 27 toolchain for
+  javac. `OpenJDK27U-jdk_x64_linux_hotspot_27.0.1.1_4.tar.gz` sha256 `005e57ee860978acfeeff1be2b30f770664fe2b941e9b803c61c76992086d107`
+  = the Adoptium API's and the release's `.sha256.txt`; `.sig` GOODSIG by Adoptium `3B04D753C9050D9A5D343F39843C48A565F8F04B`
+  (`$O/logs/C-jdk27-signature.txt`). It is in `$O/toolchains.xml` as version 27, vendor temurin.
+- Apache Ant **1.10.15** (`$O/tools/apache-ant-1.10.15`), for fastutil. `apache-ant-1.10.15-bin.tar.gz` sha512
+  `d78427aff207592c024ff1552dc04f7b57065a195c42d398fcffe7a0145e8d00cd46786f5aa52e77ab0fdf81334f065eb8011eecd2b48f7228e97ff4cb20d16c`
+  = archive.apache.org's `.sha512`; `.asc` GOODSIG Jaikiran Pai `0A123C1ED3F13A6A0140E166C71FB765CD9DE313` (Ant KEYS).
+  Ant and ivy were not installed; `gcc`/`cpp`/`make` are (fastutil's `make sources`). No system package was installed.
+
+### R01 · eclipse-collections #1786 — a throwing value update leaves the map usable
+
+**Pins.** Parent `3b3c55a47406ca11ece6c077b96c9564f73dfc53`, fix `4af700cda608e6817d7d17ab340b91442278cf14` (merge; first parent = parent pin,
+second `2d2107d954eaa91060d9103fb0d5a1ccc6c19a16`). Production: `eclipse-collections/src/main/java/org/eclipse/collections/impl/map/mutable/UnifiedMap.java` (+8 −8),
+`eclipse-collections/src/main/java/org/eclipse/collections/impl/map/strategy/mutable/UnifiedMapWithHashingStrategy.java` (+8 −8). Tests (assertions added inside existing
+`updateValue`/`updateValueWith` tests): `unit-tests-java8/.../test/map/mutable/MutableMapIterableTestCase.java` (+37),
+`unit-tests/.../impl/map/mutable/MutableMapIterableTestCase.java` (+40), `UnmodifiableBiMapTest` (+22), `UnmodifiableMutableMapTest` (+24), `UnmodifiableTreeMapTest` (+24).
+
+**Build facts.** `14.0.0-SNAPSHOT` at both pins, Java 17 (`maven.compiler.source/target` 17), built on JDK 17. The pom's plugin repository
+`repo.eclipse.org` (`https://repo.eclipse.org/content/repositories/cbi-releases/`) answered **HTTP 503** on 2026-11-26 and Maven
+waited minutes per request on it, so R01 runs with **`$O/maven-settings-ec.xml`**, which mirrors the repository ids `repo.eclipse.org`
+and `cbi-releases` to Maven Central (upstream files unchanged; nothing the commands below need was missing from Central).
+`mvn_case_ec_C.sh` is `mvn_case.sh` with that settings file. The code generator plugin is a reactor module; as upstream CI does, it is
+installed first into `$O/m2` (`eclipse-collections-code-generator` and `-maven-plugin` 14.0.0-SNAPSHOT, the same source at both pins).
+
+**Commands** (in `$W/R01-eclipse-collections-ROLE`, JDK `$J17`, via `mvn_case_ec_C.sh`):
+- code generator (once, online 9 s; done): `-DskipTests -Denforcer.skip=true -pl eclipse-collections-code-generator,eclipse-collections-code-generator-maven-plugin install`
+- test-compile (online 79 s): `-DskipTests -pl unit-tests,unit-tests-java8 -am test-compile`
+- **landed tests, offline (checked: 83 s for two classes, 114 s for all)**: `-o -pl unit-tests,unit-tests-java8 -am -Dsurefire.failIfNoSpecifiedTests=false -Dtest='org/eclipse/collections/impl/map/**/*Test,org/eclipse/collections/impl/bimap/**/*Test,org/eclipse/collections/test/map/**/*Test,org/eclipse/collections/test/bimap/**/*Test' test`
+  (every module recompiles on each run, about 80 s).
+
+**Landed tests.** Fix: the map and bimap test classes of both modules, **120,694 tests, 0 failures** (inline, online run; offline check
+`UnifiedMapTest,UnifiedMapWithHashingStrategyTest`: 806 tests, 0 failures). Parent own and parent-landed: **job
+`20261126-173550-setup-run-eclipse-collections-1786-s-lan`** (`$O/scripts/R01_job.sh own|keep|landed|clean`; logs
+`$O/logs/R01-parent.own.*`, `$O/logs/R01-parent-landed.*`, full failure lists in `*.junit-all.txt`).
+
+**Artifacts.** `$O/artifacts/R01-fix/`: `eclipse-collections-14.0.0-SNAPSHOT.jar` sha256 `4aebb375c077649e7b7074a88a534cc38d6532666bf419be8f88694500493e82`,
+`tree/eclipse-collections-api/target/eclipse-collections-api-14.0.0-SNAPSHOT.jar` (the only runtime classpath entry), 24 class digests
+(`UnifiedMap*`, `UnifiedMapWithHashingStrategy*`), `runtime-classpath.txt`, `test-classpath.txt`. `$O/artifacts/R01-parent/` comes from the job.
+
+**Release side.** Latest release `13.0.0` predates the fix: both changed files differ from both pins, and all 8 diff hunks of each
+are present in their parent form, none in the fix form (`srccmp_C.py`). No release contains the fix (14.0.0 is not on Central).
+`$O/releases/eclipse-collections-13.0.0/` and `eclipse-collections-api-13.0.0/` (sha1/sha256/sha512 checked): jars sha256
+`4c1d2fc77eeb52325893337f4080c9f73cc53670956f80489b5f375fdc5bb6e1` and `2ede735db355b079fc08b0bc7657bd4f95d045416bdaa7ec5235853cf6f364d2`, both GOODSIG Eclipse Collections
+Project (`D9905D77178BAC979B03C462E46D9A6A3624B8E3`). Release graph: `$O/resolve/eclipse-collections-13.0.0/runtime-classpath.txt`.
+
+### R04 · fastutil #325 — copy a primitive immutable list into a larger array
+
+**Pins.** Parent `faa22ac0b26ec1af680ada5eabf94bdedf9c824f`, fix `a1840bcc81f0fe2fb495856dded719125d869242` (merge; second parent `d054bf30dd0c08ca3642bda600b38ebe3f49346a`).
+Changed: `drv/ImmutableList.drv` (+1 −1: `System.arraycopy(this.a, 0, a, 0, a.length)` → `size()`), `test/it/unimi/dsi/fastutil/ints/IntArrayListTest.java` (+7),
+`test/it/unimi/dsi/fastutil/ints/IntImmutableListTest.java` (+6).
+
+**Build facts.** Version 8.5.14 (`build.properties`) at both pins. `make -j8 sources` (C preprocessor over `drv/`, 4 s, 2,331 Java files
+into `src/`, git-ignored), then `ant compile compile-tests jar` (javac `release="8"`, forked with 2 GB; 25–33 s on JDK 17), giving
+`fastutil-8.5.14.jar` in the worktree. `make sources MINIMAL_TYPES=1` would generate only int/long/double classes (the makefile says
+some tests then don't compile); not used. JUnit 4.13 and hamcrest-all 1.3 are committed in `lib/` (sha1
+`e49ccba652b735c93bd6e6f59760d8254cf597dd` and `63a21ebc981131004ad02e0434e799fd7f3a8d5a` = Maven Central's `.sha1`; the same blobs at all four fastutil pins).
+
+**Commands** (`$O/scripts/fastutil_C.sh DIR TAG CLASS...` = `make -j8 sources`, `ant compile compile-tests jar` on `$J17`, then
+`$J17/bin/java -ea -Xmx3G -cp build:lib/junit-4.13.jar:lib/hamcrest-all-1.3.jar org.junit.runner.JUnitCore CLASS...`; no network needed).
+Whole run under 40 s. `ant junit` would run every `*Test` class; not used.
+
+**Landed tests** (`IntArrayListTest`, `IntImmutableListTest`). Fix: **OK (80 tests)**. Parent own: **OK (78 tests)**. Parent-landed: 80 run,
+**1 failure**: `testOversizedToArray(IntImmutableListTest)`: `java.lang.ArrayIndexOutOfBoundsException: arraycopy: last source index 5 out of bounds for int[4]`
+at `IntImmutableList.toArray(IntImmutableList.java:191)`. The new `IntArrayListTest` check passes on the parent (the mutable list was not changed).
+
+**Artifacts.** `$O/artifacts/R04-ROLE/`: `fastutil-8.5.14.jar` (fix `e41643063842d50ed70ca0b702c9365de994466fdd76c782f970efc1b0e329bd`, parent
+`56baf43368a3246cfe255494d49e77007597aef604ddaac280f300c29e15cc0b`), digests of the 6 `IntImmutableList*` classes (only `IntImmutableList.class` differs:
+fix `32141ce44326b0c10d5e891ee11ebd676ad13a22aa2e4c39d453729a44e62f1e`, parent `88a6311e715fc4dfc77d29aac23d30551cce5c38d36cce7adeab1b11ba82077f`),
+and the generated `generated-src/IntImmutableList.java` (fix `1e853c328996cf8afbdbae4879a45e369dba46fd2922126eacf66bfb3503b1a8`, parent
+`9cbd133bcfb351f9d1947484ffea8247425bad25c8cf2e00c2797a70db2e8737`; they differ only in line 191). No runtime dependencies.
+
+**Release side.** `8.5.13`'s `IntImmutableList.java` has the parent's `arraycopy(..., a.length)`; **`8.5.14` (signed 2024-07-27, after the merge)
+has the fix's `size()`**. The release sources are formatted differently from `make sources` output (Javadoc kept), so blobs differ from
+the generated files. `$O/releases/fastutil-8.5.13/`, `fastutil-8.5.14/` jars sha256 `cc0cc589df9219401f8620fc4454f8f23f1c6d66b9ec915f19b7c42042f62efd`,
+`a242589eef95f377922b5816f3a46c6f2a8efb90e3709e3515b778bb7f76e5a4`; signatures **EXPKEYSIG**: cryptographically valid, by Sebastiano Vigna
+`0CB5871FB7BF3B351614BBF6CA85FFE638D4407A`, whose key the keyserver lists as expired (as an earlier setup also found).
+
+### R05 · guava #8811 — rotating a primitive subarray by Integer.MIN_VALUE
+
+**Pins.** Parent `efae76a11d06cff9bd2a9d0865e0e4cfe554804d`, fix `c0a8a1edc69393e8141424037571d9825f5fc0f4` (one parent). Changed: the eight
+`com/google/common/primitives/{Booleans,Bytes,Chars,Doubles,Floats,Ints,Longs,Shorts}.java` in both `guava/src` and `android/guava/src` (+6 −7 each) and their
+`*Test.java` in `guava-tests/test` and `android/guava-tests/test` (+5, +10 or +11 each: new `testRotate_minValueDistance`).
+
+**Build facts.** `999.0.0-HEAD-jre-SNAPSHOT` (Android: `999.0.0-HEAD-android-SNAPSHOT`, `android/pom.xml`). The pom's
+`maven-toolchains-plugin` **requires a JDK 27 toolchain** for javac (Maven itself runs on JDK 25 here; tests run on the Maven JDK,
+`surefire.toolchain.version`), and the `org.mvnsearch:toolchains-maven-plugin` would download Temurin JDKs into `~/.m2/jdks` and edit
+`~/.m2/toolchains.xml`. So every Guava run passes **`-Dskip=true`** (that plugin's only skip property; it reports "toolchain plugin skipped")
+and `-Duser.home=$O/tmp/C/guava-home` as a guard, and javac comes from the verified Temurin 27 in `$O/toolchains.xml`. Nothing was written to `~/.m2`.
+Classes: `target 1.8` plus a `release 9` multi-release layer.
+
+**Commands** (`$O/scripts/guava_C.sh DIR TAG jre|android TESTS [online]` = `mvn_case.sh DIR TAG $J25 [-f android/pom.xml] -Dskip=true
+-Duser.home=$O/tmp/C/guava-home -pl guava-tests -am -Dsurefire.failIfNoSpecifiedTests=false -Dtest=TESTS test`, offline unless `online`).
+Online test-compile of `guava-tests -am`: 28 s. **Offline landed runs (checked): 35–43 s each.** Jars: `keep_reactor_C.sh` with `-pl guava -am`
+(Android: `-f android/pom.xml -pl guava -am`, module `android/guava`).
+
+**Landed tests** (the 8 `*Test` classes of `com.google.common.primitives`). JRE: fix **387 run, 0 failures**; parent own 379, 0 failures;
+parent-landed 387 run, **8 failures**, exactly `{Booleans,Bytes,Chars,Doubles,Floats,Ints,Longs,Shorts}Test#testRotate_minValueDistance`
+(`IntsTest`: `expected: [3, 1, 2] but was: [2, 3, 1]`; `BooleansTest` expected `[false, true, false]`; `BytesTest` expected `030102`).
+Android: the same numbers (387/0, 379/0, 387 with the same 8 failures). Logs `$O/logs/R05-*`.
+
+**Artifacts.** `$O/artifacts/R05-fix/`, `R05-parent/`, `R05-fix-android/`, `R05-parent-android/`: the guava jar (JRE fix
+`1ed2e564f2240df101673dc5fb78feb701e681db01ec393acb30971cbd4b4ad2`, JRE parent `e1467900eabf03eee940b4122d51a3bc63e68504821baea988f6a875714e819e`, Android fix
+`99df9aa8e7c7be27d62e37d9864f4f638ba5725953472845322926318a4434d7`, Android parent `4e571e66c95f5f1d75c19f6692865eb21a30176fabdddb7fc471a0756cc86355`), 30 class digests each
+(e.g. `Ints.class` JRE fix `a4d8122a32572f2ab80c2d8aadb66d4c8072f2e3d953abf91caa8a2b732f95f1`, JRE parent `b103179683bd3f020a8053d73e97aeb1a30e8cad911d097e5f22f43b013851f3`),
+`runtime-classpath.txt` (5 entries: failureaccess 1.0.3, listenablefuture 9999.0-empty-to-avoid-conflict-with-guava, jspecify 1.0.1, error_prone_annotations 2.51.0, j2objc-annotations 3.1).
+
+**Release side.** **`33.7.2-jre`/`-android` (signed 2026-09-29) predate the fix** (in each of the 8 files, of the diff's 2 hunks 1 is present in its parent
+form and none in its fix form, and 7 of the 7 lines the fix removed are there; the rest of each file differs from the pins). **`33.8.0-jre`/`-android` (signed 2026-11-02) contain it**: 6 of the 8 files `= fix`
+byte for byte (incl. `Ints.java`), `Doubles.java` and `Floats.java` have both hunks in fix form but differ elsewhere. Jars (`$O/releases/guava-V/`):
+33.7.2-jre `b530942257fb935f8b2cfaa5f8eb5bd59c555fd8e8d01b8ce98912e077ea606c`, 33.8.0-jre `97b79ec3f2c0a6313a0c2df51ce1abdf8907e6531803467b81efcaaf99b35161`,
+33.7.2-android `b949fe975a32421c1a2633c07a4f1578b462f2f467668aa0a4023c5ff7c4a808`, 33.8.0-android `c88b3bd93382316b00a387b629d2cc2620119e16c46554b07fa14e9aa07f990e`;
+all GOODSIG Christopher Povirk `BDB5FA4FE719D787FB3D3197F6D4A1D411E9D1AE`. Graphs: `$O/resolve/guava-V/runtime-classpath.txt`.
+
+### R09 · guava #8801 — cycle detection in a disconnected undirected graph
+
+**Pins.** Parent `ae0fa4bdaeef91c6f309c886263eb3b319b21568`, fix `ca8aedb2fdaf40fd6937a0643180aea51ca4154e` (one parent). Changed:
+`guava/src/com/google/common/graph/Graphs.java` and `android/guava/src/com/google/common/graph/Graphs.java` (+1 −1 each),
+`guava-tests/test/com/google/common/graph/GraphPropertiesTest.java` and the Android copy (+1 −2 each: the parent's test asserted the bug,
+`assertThat(hasCycle(undirectedGraph)).isFalse()` under a `TODO ... Fix bug in hasCycle`; the fix asserts `isTrue()`).
+
+**Build facts, commands.** As R05 (`guava_C.sh`, JDK 27 toolchain, `-Dskip=true`). Offline runs 35–43 s.
+
+**Landed tests** (`com.google.common.graph.GraphPropertiesTest`). JRE and Android alike: fix **15 run, 0 failures**; parent own **15, 0
+failures** (its own test encodes the old answer); parent-landed 15 run, **1 failure**: `hasCycle_threeCyclicEdgesAndIsolatedNode:146 expected to be true`.
+
+**Artifacts.** `$O/artifacts/R09-{fix,parent}{,-android}/`: jars (JRE fix `0c6a9b018fb6534d76077368fa2cf5d765fe82edf45444cdf7667e1f03e5571b`, JRE parent
+`9af732623233b1a76f43075b83c807d3bc79a7fd54abadf6183959836c7045ad`, Android fix `8ea51b3222601cb5235cee7d64a557abac96a0c18450f1282a764cef695e2114`, Android parent
+`502d203d10c2c9060a3f5c275295ce8764e4ef68596db597ffe6a890d538075e`), 8 `Graphs*` class digests each (`Graphs.class` JRE fix
+`7226650609ca5fa6edd187fcccffa757abd9471a396f33d51ff4d441df035f6e`, JRE parent `74b7d297c23eb766a2c5093ece2c0b5ce38d37792bc68ecf0394dc6043119260`), classpaths.
+
+**Release side.** `33.7.2` (both flavors) has the parent form of the one hunk; **`33.8.0` has the fix form** (files differ elsewhere). Same jars as R05.
+
+### R14 · fastutil #384 — bulk overwrite advances a repositioned output stream
+
+**Pins.** Parent `a3d44187dca3deb185455274bb877703f2f541fe`, fix `cbf3c2ec706d16c56e6896b13ef0b5361be981c8` (merge; second parent `397d741a07901ef2998e36fc05237fe06394ebe3`).
+Changed: `src/it/unimi/dsi/fastutil/io/FastByteArrayOutputStream.java` (+2 −1, hand-written, not generated), `test/it/unimi/dsi/fastutil/io/FastByteArrayOutputStreamTest.java` (+14: `bugWriteArray0`).
+
+**Build facts, commands.** Version 8.5.19 at both pins; as R04 (`fastutil_C.sh`, JDK 17, under 40 s).
+
+**Landed tests** (`FastByteArrayOutputStreamTest`). Fix **OK (5 tests)**; parent own **OK (4 tests)**; parent-landed 5 run, **1 failure**:
+`bugWriteArray0`: `java.lang.AssertionError: expected:<3> but was:<0>`.
+
+**Artifacts.** `$O/artifacts/R14-ROLE/fastutil-8.5.19.jar` (fix `7cc54ed66ebdf7f122bdccf42de453146ee588a12497fccf4c4a8b5e1e10d2f1`, parent
+`39192ea4f289399af2dceb8c1b4210e4903d936c293411b479087396cb6011ba`); `FastByteArrayOutputStream.class` fix `ec6e4cf7f6cc79ebf956b84303d4587cfdc47f21182b9cdc0c5133f7e24f9dc8`,
+parent `b0ff1b98a957e282215987ab2beb11de0eba785f6f4a53342596f9bf9600a26f`.
+
+**Release side.** The latest release **`8.5.19` (signed 2026-07-22) has the parent's `FastByteArrayOutputStream.java` byte for byte** (as does 8.5.18);
+no release has the fix. `$O/releases/fastutil-8.5.19/fastutil-8.5.19.jar` sha256 `c767a6bdcb7cb52fe1315ca1f4891389a75e63b2a15a6629865d7740dd3a8cf2`, EXPKEYSIG (as R04).
+
+### R31 · h2database #4034 — bound integers through UNNEST and ARRAY_AGG
+
+**Pins.** Parent `e69ff62a4bb5fb84d4f4eee916efa1c432a200c4`, fix `23bf50db54de6ef20877e3ac4e53786d8bea1998` (one parent). Changed under `h2/src/main/org/h2/`:
+`command/Parser.java` (+2 −6), `expression/Expression.java` (+11), `expression/ExpressionList.java` (+15), `expression/Subquery.java` (+10),
+`expression/ValueExpression.java` (+5), `expression/function/CastSpecification.java` (+5); `h2/src/test/org/h2/test/jdbc/TestPreparedStatement.java` (+7,
+in `testUnnestWithArrayParameter`); `h2/src/docsrc/html/changelog.html`.
+
+**Build facts.** Maven project in `h2/` (`h2/pom.xml`), `2.2.229-SNAPSHOT`, `maven.compiler.release` 11, built on JDK 17. H2's own build
+(`h2/build.sh`, `src/tools/org/h2/build/Build.java`, which downloads its jars into `h2/ext/`) was not used; `MAVEN.md` suggests running it first
+for resources, but the Maven build and the test below did not need it. Surefire is configured for `TestAllJunit` only; H2's tests are
+`TestBase` classes with a `main`, so the landed test runs with plain `java` (`$O/scripts/h2_test_C.sh DIR TAG JDK CPFILE CLASS...`: classpath
+`h2/target/classes:h2/target/test-classes:` + the test classpath, 2 GB scope, scratch working directory). H2 tests print only on failure; exit 0 is a pass.
+
+**Commands** (in `$W/R31-h2database-ROLE/h2`, JDK `$J17`): online first resolution (12 s): `-DskipTests package`; **offline (checked, 2–11 s)**:
+`-o -DskipTests package` (or `test-compile`); then `JOPTS=-Duser.timezone=America/Los_Angeles XCP=$O/scripts/h2-test-services $O/scripts/h2_test_C.sh $W/R31-h2database-ROLE TAG $J17 $O/artifacts/R31-ROLE/test-classpath.txt org.h2.test.jdbc.TestPreparedStatement` (1 s).
+
+**Landed tests.** Fix: `TestPreparedStatement` **exit 0**; parent own: exit 0; parent-landed: **exit 1**, `AssertionError: [0]: expected: 1 actual: null`
+at `TestPreparedStatement.testUnnestWithArrayParameter(TestPreparedStatement.java:1819)` (H2 stops at the first failure).
+
+**Artifacts.** `$O/artifacts/R31-ROLE/h2-2.2.229-SNAPSHOT.jar` (fix `9fbe3c68ea2b3488f1a515bf796677b17d2dc3f1b286d20447bcba684e2c83c4`, parent
+`f99b117b95c6bf94f4265f13f21c092e56a5bdc86bac61fbb63209a81a27d59a`), 9 class digests (`SHA256SUMS`), `runtime-classpath.txt` (10 entries: H2's optional
+dependencies, which the engine does not need for this scenario), `test-classpath.txt` (27).
+
+**Release side.** **`2.2.224`** (the brief's named version, signed 2023-09-18) has the parent form of every changed file's hunks (none of the fix
+form). **`2.3.230`** (signed 2024-07-15) is the first release with the fix: 5 of the 6 files `= fix` byte for byte; `Parser.java` has the fix's hunk and
+other later changes. Jars `$O/releases/h2-2.2.224/` `b9d8f19358ada82a4f6eb5b174c6cfe320a375b5a9cb5a4fe456d623e6e55497`, `h2-2.3.230/`
+`d726be7fbb0e3e97adeba298b33932b5bccaf37e01bb3c323f6a5f4c4f86abbd`, GOODSIG Thomas Mueller Graf `0CFA413799E2464C7D7E26220A4B343F2A55FDAE`. H2 has no runtime dependencies.
+
+### R32 · h2database #2614 — nested JDBC arrays reach Java aliases
+
+**Pins.** Parent `3d939b6a4e3d4f60ca7e378bc3af3fc0087d0249`, fix `6940fc30b60af16b06376a6c2ed8c46815820730` (one parent). Changed under `h2/src/main/org/h2/`:
+`engine/FunctionAlias.java` (+57 −30), `jdbc/JdbcResultSet.java` (+14 −94), `util/LegacyDateTimeUtils.java` (+31), `value/DataType.java` (+90 −36);
+`h2/src/test/org/h2/test/db/TestFunctions.java` (+41 −7, in `testArrayParameters`).
+
+**Build facts.** `1.4.201-SNAPSHOT`, source/target 1.8, **built and run on JDK 8** (`$J8`). Two environment needs of `TestFunctions` (both fail on
+parent and fix alike otherwise, unrelated to the PR): the machine's zone is `Etc/UTC`, and `testToCharFromDateTime` expects the zone's long and short
+names to differ (`Expected: E<*>tc/UTC (7) actual: UTC (3)`), so runs set `JOPTS=-Duser.timezone=America/Los_Angeles`; and
+`testAnnotationProcessorsOutput` needs the test annotation processor's service file, which the pom's `testResources` does not copy, so runs add
+`XCP=$O/scripts/h2-test-services` (a copy of the pins' identical `h2/src/test/META-INF/services/javax.annotation.processing.Processor`, naming
+`org.h2.test.ap.TestAnnotationProcessor`).
+
+**Commands** (in `$W/R32-h2database-ROLE/h2`, `$J8`): online (10 s) `-DskipTests package`; **offline (checked, 8–10 s)** `-o -DskipTests package`;
+then `JOPTS=-Duser.timezone=America/Los_Angeles XCP=$O/scripts/h2-test-services $O/scripts/h2_test_C.sh $W/R32-h2database-ROLE TAG $J8 $O/artifacts/R32-ROLE/test-classpath.txt org.h2.test.db.TestFunctions`.
+
+**Landed tests.** Fix `TestFunctions` **exit 0**; parent own exit 0; parent-landed **exit 1**: `org.h2.jdbc.JdbcSQLNonTransientException: General error:
+"java.lang.ArrayStoreException: [Ljava.lang.Object;" [50000-200]` at `JdbcConnection.prepareStatement` from `TestFunctions.testArrayParameters(TestFunctions.java:1222)`,
+the new `SELECT F(ARRAY[ARRAY['1', '2'], ARRAY['3']])` with an alias taking `String[][]`.
+
+**Artifacts.** `$O/artifacts/R32-ROLE/h2-1.4.201-SNAPSHOT.jar` (fix `b1dd3e7294598d3ec9922b4dcd15a8949db31afd454077751c13b9078116f4f4`, parent
+`6c96a60bf9426f6ea5227cd5a97b8702706e4e0a9b01c143aca94fb298fa5262`), 5 class digests, classpaths (runtime 10, test 20 entries).
+
+**Release side.** **`1.4.200`** (signed 2019-10-14, before the merge on 2020-05-08) is older than the parent (3 of 5 `FunctionAlias` hunks and 2 of 6
+`JdbcResultSet` hunks in parent form, none in fix form; no `LegacyDateTimeUtils`). **`2.0.202`** (signed 2021-11-29) is the first release after it, but
+H2 was reorganized in between (`FunctionAlias` moved out of `org.h2.engine`; 4 of 6 `JdbcResultSet` hunks in fix form), so no release matches either pin.
+Jars `$O/releases/h2-1.4.200/` `3ad9ac4b6aae9cd9d3ac1c447465e1ed06019b851b893dd6a8d76ddb6d85bca6`, `h2-2.0.202/` `95090f0609aacb0ee339128ef04077145ef28320ee874ea2e33a692938da5b97`, GOODSIG as R31.
+
+### R35 · arrow-java #1518 — decimal holders read the signed value at the selected position
+
+**Pins.** Parent `a99297ce3ca5c6cd8dc2c5ea3f5541b0788fdd62`, fix `1718ad7aeef4209d3a620541672e1af7fc5cbb1e` (one parent). Changed:
+`vector/src/main/codegen/templates/HolderReaderImpl.java` (+3 −10, an FMPP template), `vector/src/main/java/org/apache/arrow/vector/util/DecimalUtility.java` (+9 −1),
+new `vector/src/test/java/org/apache/arrow/vector/TestDecimalHolderDecoding.java` (+80).
+
+**Build facts.** `20.1.0-SNAPSHOT`, release 17, built on JDK 17; module `vector` with `-pl vector -am` (bom, root, format, memory, memory-core,
+memory-unsafe, memory-netty-buffer-patch, memory-netty, vector). Two command-line properties, upstream files unchanged: **`-Dmaven.gitcommitid.skip=true`**
+(git-commit-id-maven-plugin fails on the shallow worktree: "Missing unknown <commit>") and **`-Ddevelocity.scan.disabled=true`** (`.mvn/extensions.xml`
+loads the Develocity extension; its scans publish only when authenticated, disabled anyway). Surefire runs each test class twice (default execution
+and a `-netty` one) with argLine **`--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED --enable-native-access=io.netty.common`**:
+use the same flags to run vector code by hand on JDK 17+. A memory provider (`arrow-memory-unsafe` or `arrow-memory-netty`) is test scope only,
+so it is on `test-classpath.txt`, not `runtime-classpath.txt`; add one when running.
+
+**Commands** (in `$W/R35-arrow-java-ROLE`, `$J17`, `A="-Ddevelocity.scan.disabled=true -Dmaven.gitcommitid.skip=true -pl vector -am -Dsurefire.failIfNoSpecifiedTests=false"`):
+online `$A -DskipTests package` (75 s, first resolution; surefire's JUnit 6.1.3 launcher is resolved only by a first online `test` run);
+**offline (checked)**: `-o $A -Dtest=TestDecimalHolderDecoding test` (10 s incremental, 57–65 s from clean).
+
+**Landed tests.** Fix: `TestDecimalHolderDecoding` **2 tests × 2 executions, 0 failures** (4 reports). Parent-landed: **2 run, 2 failures** (the netty
+execution did not run): `testDecimalHolderByteOrderAndOffset:46 expected: <1234567.89> but was: <289800550213539428966876423680520355.84>`,
+`testDecimal256HolderByteOrderAndOffset:69 expected: <1234567.89> but was: <98614017161653475547635184770988010552867753948393078682372113668437484503.04>`.
+The test is new, so the parent has no own copy.
+
+**Artifacts.** `$O/artifacts/R35-ROLE/`: `arrow-vector-20.1.0-SNAPSHOT.jar` (fix `c394f2702d8ec29f89bf30295bc3ef01a2b629c495d859cc182f87f74bc44f02`, parent
+`58a8cac9b5c250f541072617c7b1df85ea90767afef7cb5437f7b7013633ba02`), 80 class digests (all generated `*HolderReaderImpl` classes and `DecimalUtility`:
+`NullableDecimalHolderReaderImpl.class` fix `d3465c9c7cd9dfdb35f3bafa1338500076ab215a5380ebecebba869c1a86a90a`, parent `ed72b8c781df37453deb0eaeb857a4f1244004feeb95803b9ed5082b4fa21ce0`;
+`DecimalUtility.class` fix `1a8a63ab9056d8400b70615e41cf2e4f78f6c239c6ebbfacfd6713cf4a28ecea`, parent `cbad2c674842f9e3b19b53ff85d835d5ff83a878a0f8f4e286cce4f0a1c485a1`),
+`generated-src/` (the four `*Decimal*HolderReaderImpl.java` FMPP outputs, with their `SHA256SUMS`), `tree/` (the sibling jars: arrow-format,
+memory-core, memory-unsafe, memory-netty, memory-netty-buffer-patch), `runtime-classpath.txt` (9), `test-classpath.txt` (43).
+
+**Release side.** **`20.0.0`** (signed 2026-11-17, before the merge on 2026-11-23) has the parent's `DecimalUtility.java` byte for byte, and its generated
+`NullableDecimalHolderReaderImpl.java` equals the parent build's (blob `97df0a76e56d76b45bbe92d13ea1c5e1a3e5bba2`, as does 19.0.0's). No release has the fix.
+`$O/releases/arrow-vector-20.0.0/arrow-vector-20.0.0.jar` `a040e27bd6fb4b9e70f03dd763e8fb00e73a1bd1fb8979b018467384f32eb549`, GOODSIG David Li `BE7EF45DBAD38E4EECED390E9CBA4EF977CA20B8`.
+Graphs with a memory provider: `$O/resolve/arrow-20.0.0/` (unsafe) and `$O/resolve/arrow-netty-20.0.0/`.
+
+### R36 · arrow-java #1342 — decimal values valid at exactly the declared precision
+
+**Pins.** Parent `f745a59d4c944ce47c109b89be021915b3484cce`, fix `2f35627084d27e06fcaca800bc05c772e3fc1113` (one parent). Changed:
+`vector/src/main/java/org/apache/arrow/vector/util/DecimalUtility.java` (+1 −1), new `vector/src/test/java/org/apache/arrow/vector/TestDecimalPrecisionBoundary.java` (+53).
+
+**Build facts, commands.** `20.0.0-SNAPSHOT`; as R35. Online first `test` run 78 s; **offline (checked)** `-o $A -Dtest=TestDecimalPrecisionBoundary test`, 11 s incremental, 57 s from clean.
+
+**Landed tests.** Fix **4 reports (2 parameterized invocations × 2 executions), 0 failures**. Parent-landed **2 run, 2 errors**:
+`testValidateScalarsAtDeclaredPrecision(int)[1]` and `[2]`: `ValidateException: Invalid value for DecimalVector at position 0. Value does not fit in
+precision 5 and scale 2.` (and the same for `Decimal256Vector`). No parent copy (new test).
+
+**Artifacts.** `$O/artifacts/R36-ROLE/`: `arrow-vector-20.0.0-SNAPSHOT.jar` (fix `71713ef8aee4e8103f04b3de642c1ca804d62790b543fdf33bf8ae4af0574426`, parent
+`3849d34fbf1187e37db87db8995586c1f766294c04526b2dc1b42f77a2ce287f`), `DecimalUtility.class` (fix `69eadc7ba3c7360e8c18837c390e99e5267b3f9c4a801862e6ee76e5bc3980de`,
+parent `57bbfe4b8af30234d2d9b3dedddc6028d24a531998f94878afe112d685717194`), `tree/`, classpaths (9 / 43).
+
+**Release side.** **`19.0.0`** (signed 2026-03-12) has the parent's `DecimalUtility.java` byte for byte; **`20.0.0`** has the fix's one-line hunk (the file
+differs elsewhere). Jars `$O/releases/arrow-vector-19.0.0/` `113e70317945e780050f13d17027d862d4c5d1cebe06c9fd8a5e922945bb2f8c` (GOODSIG Jean-Baptiste Onofré
+`1AA8CF92D409A73393D0B736BFF2EE42C8282E76`) and 20.0.0 (above). Graphs `$O/resolve/arrow{,-netty}-19.0.0/`.
+
+### R37 · avro #2282 — a decimal's own scale in a bytes field (big-decimal)
+
+**Pins.** Parent `4ec81bd0cdc8615e833582f257684cb61c892578`, fix `3ea027ac26b41edc0f08fd8c042ee918c523bdac` (one parent). Changed: `lang/java/avro/src/main/java/org/apache/avro/Conversions.java` (+65),
+`.../LogicalTypes.java` (+25), new `lang/java/avro/src/test/java/org/apache/avro/TestBigDecimalConversion.java` (+85), `.../specific/TestRecordWithLogicalTypes.java` (+29 −4),
+`.../specific/TestSpecificToFromByteArray.java` (+3 −2), `lang/java/avro/src/test/resources/TestRecordWithLogicalTypes.avsc` (+7 −1),
+`lang/java/compiler/src/main/javacc/org/apache/avro/compiler/idl/idl.jj` (+3), `doc/content/en/docs/++version++/Specification/_index.md` (+14).
+
+**Build facts.** `1.12.0-SNAPSHOT`, source/target 1.8, built on **JDK 11** (`$J11`). Maven runs in `lang/java` with `-pl avro -am` (or from the repository
+root with `-pl lang/java/avro -am`, as `keep_reactor_C.sh` does). `.mvn/extensions.xml` loads the **maven-build-cache-extension**, which caches module
+outputs under `$O/build-cache` keyed by inputs; every run passes **`-Dmaven.build.cache.enabled=false`** so that nothing is restored across pins (the one
+cache it wrote early was deleted). The `idl.jj` change is in the `compiler` module, not built here.
+
+**Commands** (in `$W/R37-avro-ROLE/lang/java`, `$J11`, `AV="-Dmaven.build.cache.enabled=false -pl avro -am -Dsurefire.failIfNoSpecifiedTests=false"`):
+online `$AV -DskipTests package` (28 s); **offline (checked, 9–15 s)**: `-o $AV -Dtest=TestBigDecimalConversion,TestRecordWithLogicalTypes,TestSpecificToFromByteArray test`.
+
+**Landed tests.** Fix **104 run, 0 failures**. Parent own (`TestRecordWithLogicalTypes,TestSpecificToFromByteArray`) **4, 0 failures**. Parent-landed
+(the fix's 3 test files and the `.avsc`): **the tests do not compile**: `cannot find symbol` at `TestBigDecimalConversion.java:[38,62]`, `[40,54]` and
+`TestRecordWithLogicalTypes.java:[161,37]` (the new `Conversions.BigDecimalConversion`/`LogicalTypes.bigDecimal()` API is absent on the parent).
+
+**Artifacts.** `$O/artifacts/R37-ROLE/avro-1.12.0-SNAPSHOT.jar` (fix `231b196a46007639d1de924c4eb2d7ee3386ab189f72f4ca6e12d7eee39b8f4d`, parent
+`38bfa5afef90b837981f7c88592b537db85897ba17d261bc4f782f2254b22240`), class digests of `Conversions*` and `LogicalTypes*` (fix
+`Conversions$BigDecimalConversion.class` `5e0157469daa019bc66f15aeb1fbaed30b6800175ddaa2266effcd5c7520915b`), classpaths (8 / 22).
+The parent already has `DurationConversion` (R38 merged four days earlier).
+
+**Release side.** `1.11.3` (signed 2023-09-17) has no `BigDecimalConversion`. **`1.11.4`** (signed 2024-08-19) **and `1.12.0`** (2024-07-26) carry it: all 54
+lines the fix added to `Conversions.java` and all 21 in `LogicalTypes.java`, and the `BigDecimalConversion` class body equals the fix pin's (whitespace
+ignored) in both; the files differ elsewhere. Jars `$O/releases/avro-V/`: 1.11.3 `4554aa8f8175f999fc56e35d8d294d634480992ce02406a52c650f521997e436` (GOODSIG Ryan
+Skraba `FDEB0769F816CBDFD194CBBEBD463DB5B0CCBDD6`), 1.11.4 `eeba11b77070b9aa6337d886fdf778f6695f6c4c3dcfd2a02389925c885079fa`, 1.12.0
+`1f5fbfff9b7427d6832cc3031a3c81413d3e21d9e2551847d9231c28493f9492` (both GOODSIG Fokko Driesprong `FCD3779E399C53D995FC82A35171BA3E54493550`). Graphs `$O/resolve/avro-V/`.
+
+### R38 · avro #2520 — Avro duration and TimePeriod
+
+**Pins.** Parent `119c3fc99203cf6fb63dda7c3bb307c8841f179a`, fix `abe6d421e82fa1d7e2ff4ae19b8a73f2e75ca396` (one parent). Changed: `lang/java/avro/src/main/java/org/apache/avro/Conversions.java` (+41 −1),
+`.../LogicalTypes.java` (+43 −4), new `.../util/TimePeriod.java` (+393); tests `.../TestLogicalType.java` (+33 −4), `.../generic/TestGenericLogicalTypes.java` (+60 −25),
+new `.../util/TimePeriodTest.java` (+306).
+
+**Build facts, commands.** As R37. **Offline (checked, 10–14 s)**: `-o $AV -Dtest=TestLogicalType,TestGenericLogicalTypes,TimePeriodTest test`.
+
+**Landed tests.** Fix **49 run, 0 failures**. Parent own (`TestLogicalType,TestGenericLogicalTypes`) **40, 0 failures**. Parent-landed: **does not compile**
+(`cannot find symbol` at `TestGenericLogicalTypes.java:[33,28]`, `[69,53]`, `[127,17]`, `TimePeriodTest.java:[219,70]`: `TimePeriod`, `DurationConversion` absent).
+
+**Artifacts.** `$O/artifacts/R38-ROLE/avro-1.12.0-SNAPSHOT.jar` (fix `ba06963db218cf07a3bae2e8ba6447f933ca0d048edd564c555dbed74c36103f`, parent
+`77916e4e2e59132a3293039c15299a376e65b2c0e14d43bc1999790c5120e3c1`), digests incl. `util/TimePeriod.class` (fix `9a7a4efa00432d48564af0a15c31aebe97a0c08a90ed4db5cc06a5962884f0cd`)
+and `Conversions$DurationConversion.class` (fix `7bdc1b64b5a3eb2ac3a7b9652593f7094a81fd12044ed57e0f58b803901ecfc0`), classpaths.
+
+**Release side.** `1.11.3` and `1.11.4` have no `TimePeriod`/`DurationConversion`. **`1.12.0` has `TimePeriod.java` = fix byte for byte**, and its
+`DurationConversion` and `LogicalTypes.Duration` class bodies equal the fix pin's (whitespace ignored). Same jars as R37.
+
+### R39 · parquet-java #3830 — dictionary pages keyed by column path
+
+**Pins.** Parent `6ae2a8f173dcd2a121e41e3dc05d3dfc284d84a5`, fix `bca2eaeac0afc88197c622f0f27c8a55739a5be9` (one parent). Changed:
+`parquet-hadoop/src/main/java/org/apache/parquet/hadoop/DictionaryPageReader.java` (+8 −7), `parquet-hadoop/src/test/java/org/apache/parquet/hadoop/TestParquetWriter.java`
+(+58: `testDictionaryReaderKeepsCollidingDotStringPathsDistinct`).
+
+**Build facts: the pins cannot be built here.** `parquet-hadoop -am` needs `parquet-format-structures`, whose `thrift-maven-plugin` runs a
+`thrift` 0.23.0 compiler (and checks its version). No `thrift` is installed, Apache publishes it only as source, and building it needs bison and flex,
+which are missing (as an earlier setup found for 1.18.0-SNAPSHOT). The pins' `1.19.0-SNAPSHOT` siblings are not published, so the module cannot build
+alone. **Substitute, under the user's standing decision of 2026-11-26: the releases whose changed file matches each pin.**
+`DictionaryPageReader.java` in **`parquet-hadoop-1.18.1-sources.jar` = the parent pin's blob `e1118b60764b725691440f0255fb63e0b196f123`** (also 1.17.1),
+and in **`1.18.2-sources.jar` = the fix pin's blob `1fdaab53fa0adcd5e9b4d9dc7eafbf5701d14b01`** (1.18.2 is a later patch release, signed 2026-11-05, that took the fix).
+The rest of those releases is release code, not the pins'.
+
+**Release graphs.** `$O/resolve/R39-parquet-1.18.1/` and `R39-parquet-1.18.2/` (resolution-only poms): `runtime-classpath.txt` (103 jars:
+parquet-hadoop and its parquet siblings at that version, plus `hadoop-client` 3.3.0, the Hadoop version its POM names as provided) and
+`test-classpath.txt` (114: + JUnit platform console standalone 1.14.4, assertj 3.27.7, guava 33.7.2-jre, zero-allocation-hashing 0.27ea1,
+commons-lang3 3.20.0, the versions the 1.18.2 parent POM names). Jars `$O/releases/parquet-hadoop-1.18.1/` `efbf7b0374a14f075afbad53632fb6ed76d39239ce39d970f581f3512d00ee0b`
+(GOODSIG Fokko Driesprong `2F37FE055E547EDDACD9A633B13C69816C5E13EF`) and `parquet-hadoop-1.18.2/` `746b75a9b3171a6daebe9d1ee4e152fb95f9c0d63f92b5e51790e88bd13b88a1`
+(GOODSIG Apache Parquet Automated Release Signing `DD1E0FA356E5268BE450B2AAA528E51BCE01BCFE`). Release-side jars shade fastutil and thrift.
+
+**Pin sources and overlays.** `$O/artifacts/R39-ROLE/pin-src/org/apache/parquet/hadoop/DictionaryPageReader.java` (parent sha256
+`ac5fa81987827c3fab7e1e7127b9e4bb66dd5446c2ea024ab889daa740d68e66`, fix `dd57a0483080896751d8dc7590bd892cb943b8b8b52b7d6d251aafed009f0f5a`) and that file compiled
+(`javac --release 8`, JDK 17) against the 1.18.2 runtime graph: `R39-ROLE-overlay.jar` (parent `79ba1ea24447294c3a1388fe831f683d89ce328885ad63880e52448a4886dfee`,
+fix `9e2154aca45ae61f51c3b6b4394bfd91603e3b6f222281cc1f9cd97fb5c8e772`; `DictionaryPageReader.class` parent
+`273cfb4f333bbe5e389e6e7baf682f2de09b73559c9053368a7410763121ec88`, fix `7d01df256e3441629ae7aaf902bb6ec1239de3a87aecfe88762976a7abdb27a3`). Put the overlay jar before the release classpath.
+
+**Landed test against releases** (`$O/scripts/R39_release_C.sh VERSION TAG`, optionally `OVERLAY=JAR`: compiles the fix pin's `TestParquetWriter.java`,
+`TestUtils.java` and `crypto/DecryptionKeyRetrieverMock.java` against the graph, runs the one landed method with the JUnit console launcher, JDK 17,
+about 10 s; logs `$O/logs/R39-*.landed.log`). This is evidence about the releases and overlays, not the pinned builds:
+- release 1.18.2 (fix's file): **1 test successful**; release 1.18.1 (parent's file): **1 failed**, `Expecting actual: ["nested-one", "nested-two"]
+  to contain exactly in any order: ["one", "two"]` (the top-level `a.b` descriptor got the nested column's dictionary);
+- 1.18.2 + fix overlay: **successful**; 1.18.2 + parent overlay: **failed** with the same message.
+
+
 ## Cases R25–R50 (fork D, Gradle)
 
 Fork D of the setup did the twelve Gradle cases: R25 (moshi), R33, R34 (Calcite), R41, R44 (RxJava), R42, R43 (Reactor Core), R45, R46 (Resilience4j),
@@ -1524,4 +1942,152 @@ from keyserver.ubuntu.com, keys.openpgp.org or pgp.mit.edu (the last served the 
 
 The JUnit runtime sets and the R42 test libraries resolved through Maven into `$O/m2` were checked against Central's `.sha1` only (`$O/scripts/verify_cp_D.sh`).
 
+
+## Setup Agent Notes
+
+`$O` = `~/.cache/in-the-loop/merged-pr-links-r01-r50`; `source $O/scripts/env.sh` first (it sets `$W`, `$M`, `TMPDIR`, `GRADLE_USER_HOME`, the JDK homes
+`$J8` `$J11` `$J17` `$J21` `$J25` `$J27` and `$MVN`). Case ids R01–R50 are this record's labels in the brief's order, not example ids. Detail for each case is
+in its section above (parts A–D), and the summary table names the part.
+
+### What is ready, and where
+
+- **Revisions.** Both pins of all 50 PRs are in shallow mirrors under `~/.cache/in-the-loop/git-mirrors/`, with one worktree each at
+  `$W/CASE-MIRROR-parent` and `$W/CASE-MIRROR-fix`. They are clean, with no build output. R41, R49 and R50 are standalone depth-1 clones, because
+  their builds read git metadata. Every PR is merged, and its merge commit is the brief's after pin (*Upstream revisions*). The two-commit ranges
+  have their middle commits fetched: R24 `ba880df507664d320f54028810c42e07e429515f` and R50 `f7f1d51d4c57322dece17011a3da540b0f98bfbb`.
+- **Builds.** 49 of the 50 cases are built at both pins. R39 parquet is the exception (see below). For R01's parent side, R33, R34, R49 and R50,
+  the artifacts arrive with the three queued jobs (below). Each built case has, in `$O/artifacts/CASE-ROLE/`:
+  - the jar;
+  - `SHA256SUMS`, covering the jar and every class of each changed production file;
+  - the runtime and test classpaths (`:`-joined, pointing into `$O/m2` or `$O/gradle-home`). Sibling module jars are copied under `tree/` where a
+    classpath needs them.
+
+  Each case section names its exceptions. For example, R23/R24 use `core-testing-test-classpath.txt` and R48 uses `core-tests-test-classpath.txt`.
+- **Offline commands.** Every Maven and Gradle command in the case sections was checked offline and runs from the caches. Maven runs through
+  `$O/scripts/mvn_case.sh` (or the part's `mvn_A.sh`, `case_B.sh`, `*_C.*` helpers); Gradle through `$O/scripts/gradle_case_D.sh DIR TAG GVER JDK RESULTDIR ARGS`.
+- **JDKs by case:**
+
+  | JDK | Cases |
+  |---|---|
+  | `$J8` | R21, R22, R32, R41, R43, R44 |
+  | `$J11` | R37, R38, R47 |
+  | `$J17` | most Maven cases, R25, R45, R46 |
+  | `$J21` | R03, R08, R10, R13, R48, R50; R33/R34 with a 25 toolchain |
+  | `$J25` | R49; R05/R09 with the `$J27` javac toolchain |
+
+  `$J27` is Temurin 27.0.1.1+4, added under `$O/tools` and verified, because Guava's pom requires a JDK 27 toolchain. Apache Ant 1.10.15 is also in
+  `$O/tools`, for fastutil.
+- **Release jars.** Released jars, `-sources.jar`s and POMs are in `$O/releases/ARTIFACT-VERSION/`, checked against Maven Central's
+  `.sha1`/`.sha256`/`.sha512` and their `.asc` signatures. The releases the brief names are among them:
+  - H2 2.2.224 (R31);
+  - Reactor Core 3.1.0.RELEASE (R42);
+  - Resilience4j 2.1.0 (R46);
+  - JUnit 6.1.1 (R49) and 5.12.2 (R50): runtime sets in `$O/releases/junit-set-{6.1.1,6.1.2,5.12.1,5.12.2}/classpath.txt`.
+- **Release pairs.** Releases that match a pin's changed sources, from the *Summary by case*:
+
+  | Kind | Cases and releases |
+  |---|---|
+  | Exact parent/fix pairs | R41 rxjava 2.0.6/2.0.7, R43 reactor-core 3.4.37/3.4.38, R50 junit-jupiter-engine 5.12.1/5.12.2 |
+  | Fix byte for byte | R13 jimfs 1.3.2, R18 jackson-core 2.21.7, R20 commons-csv 1.11.0, R38 avro 1.12.0 (`TimePeriod.java`) |
+  | Fix, not byte for byte | R03 vavr 1.1.0, R04 fastutil 8.5.14, R05/R09 guava 33.8.0, R15 commons-codec 1.22.1/1.23.0, R25 moshi 1.13.0, R27 jackson-core 2.21.9, R30 jackson-dataformat-xml 3.3.0, R31 h2 2.3.230, R36 arrow 20.0.0, R37 avro 1.11.4/1.12.0, R44 rxjava 3.0.0-RC4, R45/R46 resilience4j 2.2.0, R47 picocli 4.7.4, R48 assertj 3.27.1 |
+  | Parent byte for byte | R06 commons-lang3 3.22.0, R14 fastutil 8.5.19, R22 javapoet 1.13.0, R35 arrow 20.0.0, R40 threeten-extra 1.11.0 |
+  | No release has the fix | R01, R02, R06, R07, R08, R10, R11, R12, R14, R16, R17, R19, R21, R23, R24, R26, R28, R29, R33, R34, R35, R40 |
+- **Generated sources** the brief's code lives in: R04 `$O/artifacts/R04-ROLE/generated-src/IntImmutableList.java` (from `drv/ImmutableList.drv`),
+  R35 `$O/artifacts/R35-ROLE/generated-src/*Decimal*HolderReaderImpl.java` (from the FMPP template). For fastutil, `make sources` must run before
+  compiling, because the generated files are git-ignored.
+
+### What was verified on a JVM
+
+- **43 cases (inline).** The landed tests pass on the fix, the parent's own copy passes on the parent, and the fix's landed tests fail on a copy of
+  the parent. They fail where the PR or the brief says. Exact counts, failing tests and messages are in each case's *Landed tests*, and the overlay
+  runs' surefire reports are kept under `$O/logs/surefire/`. Of these:
+  - in R37 and R38 the fix's tests do not compile on the parent (new API);
+  - R11 also gives the same 16 failures against the released commons-io 2.22.0 classes, as the PR says.
+- **R42 (slice route only).** 10 of the 226 landed tests fail on the parent slice and on reactor-core 3.1.1.RELEASE. All pass on the fix slice and
+  on 3.1.2.RELEASE.
+- **R39 (releases and pin-source overlays only).** The landed method passes on parquet-hadoop 1.18.2 and fails on 1.18.1. The fix pin's
+  `DictionaryPageReader.java` compiled onto 1.18.2 passes, and the parent pin's fails.
+- **R01.** The fix side passed inline (120,694 tests). The parent side is a job.
+- **Not yet verified (jobs queued).**
+
+  | Job | Cases |
+  |---|---|
+  | `20261126-173550-setup-run-eclipse-collections-1786-s-lan` | R01 parent's own tests, parent artifacts, the fix's tests on the parent |
+  | `20261126-172339-setup-build-apache-calcite-at-both-pins` | R33, R34 |
+  | `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` | R49, R50 |
+
+  Until their results are recorded here, treat those cases' pin builds as unchecked. The job results go at the `<!-- CASE-job -->` markers in the
+  part D section, and in R01's section.
+- **None of the brief's own scenarios, controls or challenges was run.** That is on purpose.
+
+### What to know before starting
+
+- **R39 parquet pins are not built.** `parquet-format-structures` needs a `thrift` 0.23.0 compiler. None is installed, and bison and flex, needed to
+  build one, are missing. Following the user's standing decision, use one of these and label the evidence as release or overlay evidence:
+  - released parquet-hadoop **1.18.1**, whose `DictionaryPageReader.java` equals the parent pin's blob;
+  - released parquet-hadoop **1.18.2**, which equals the fix pin's blob;
+  - the pins' own `DictionaryPageReader.java` compiled against 1.18.2, in `$O/artifacts/R39-ROLE/R39-ROLE-overlay.jar` (put it first on the classpath).
+
+  The release graphs are in `$O/resolve/R39-parquet-{1.18.1,1.18.2}/`.
+- **R42 reactor-core #937's pinned build cannot be configured from any public source.** Its build-script plugins `propdeps-plugin:0.0.7`,
+  `spring-io-plugin:0.0.4.RELEASE` and dokka `integration:0.9.15` were only on repo.spring.io, which now answers 401/405. Use the slice route or
+  3.1.1.RELEASE (parent) and 3.1.2.RELEASE (fix) for the two code files, and label the evidence so. The change to `Flux.java` is Javadoc only.
+- **R16: substitute snapshot.** Both commons-compress pins depend on `commons-io:commons-io:2.21.0-SNAPSHOT`, which no public repository serves any
+  more. It was built from commons-io's public source at `e19519ad1a61ec6852601d28ffe94a8967e4e3e0` (the last `master` commit before the fix merged)
+  and installed in `$O/m2`. Its jar sha256 is `3740da21bcac36e8cda476d6afc40cc60dd122be1c3df535bf965341c6a9b845`. Label R16's builds as built
+  against that substitute.
+- **R18: rebuilt parent POM.** Its parent POM `jackson-base:2.21.7-SNAPSHOT` is gone. It was rebuilt from FasterXML/jackson-bom at
+  `7796a7ddb240ce41c1b6c6a3a435b29948a6a727`, which predates both pins, and differs from the 2.21.7 release only in version strings and the output
+  timestamp. R27's snapshot parent (`2.21.9-20261017.195440-2`) predates its pins.
+- **R28, R29 and R30 are unstable inputs.** They were built against **later snapshot builds of their Jackson dependencies than the pins used**,
+  because the snapshot repository keeps only the latest build.
+
+  | Cases | Snapshot builds used |
+  |---|---|
+  | R28, R29 | `jackson-core:3.4.0-20261126.043215-13`, `jackson-annotations:2.24-20261124.040648-4` |
+  | R30 | `jackson-core:3.3.0-20261106.043746-116`, `jackson-databind:3.3.0-20261107.181845-176`, `jackson-annotations:2.23-20261106.041643-18` |
+
+  Their sha256 digests are in the part B snapshot table, and copies are in `$O/artifacts/snapshots-B/`. Use the offline commands or the
+  `*-classpath.pinned.txt` files: an online `-U` build may pull newer builds. Say which build a claim ran on when it could depend on them.
+- **Substituted build-plugin dependencies.** jcenter is gone, so the build-plugin dependencies of R41, R44, R45 and R46 were copied with the same
+  coordinates, SHA-1 checked, into `$O/dl/subst-repo-D`. Pass `GINIT=$O/scripts/subst-repo-D.init.gradle` to use them. Nothing on a compile or test
+  classpath comes from there.
+- **R01: Maven settings.** R01 needs `$O/maven-settings-ec.xml`, because repo.eclipse.org answered 503; the file mirrors that repository to Central.
+- **Command-line switches** some builds need (no build file was changed):
+
+  | Cases | Needs |
+  |---|---|
+  | R05, R09 Guava | `-Dskip=true` (or its toolchains plugin downloads JDKs into `~/.m2`) |
+  | R35, R36 Arrow | `-Dmaven.gitcommitid.skip=true -Ddevelocity.scan.disabled=true`; running vector code on JDK 17 needs `--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED` and a memory provider jar (in `tree/`) |
+  | R37, R38 Avro | `-Dmaven.build.cache.enabled=false` |
+  | R32 H2 | `TestFunctions` needs a non-UTC default zone (`-Duser.timezone=America/Los_Angeles`) and the test annotation processor's service file (`$O/scripts/h2-test-services`), the same on both pins; H2 tests stop at their first failure |
+  | R50 | its build rejects unknown `-P` properties: pass setup parameters as `-D` |
+  | R16 | after a `-Dtest=` run, an offline `package` fails jacoco's coverage check: use `clean package` |
+- **Coverage limits of the landed tests.**
+  - R44's landed tests fail on the parent only for the Flowable path; the Observable change is not separated by them.
+  - R12's landed tests do not touch `mark` + `skip`, the brief's #860.3 discrepancy.
+  - R35's historical failure depends on native byte order; this machine is x86_64, little-endian.
+  - R37's parent already has `DurationConversion`, because R38 merged first.
+- **Release details.**
+  - R02: commons-collections4 4.6.0 has a third `IndexedCollection.add()`, equal to neither pin. Check it before treating it as either side.
+  - R32: no release matches either pin (H2 was reorganized before 2.0.202).
+  - R25: no release is on the parent side (1.12.0 has no record support).
+  - R11's test class is new in the fix. Its `[1]`/`[2]` invocations are a boolean parameter, not the two concrete filter classes.
+- **Test counting.**
+  - R26: Gson's `java-time-test` execution always runs `JavaTimeTest`, so read `PrimitiveTest`'s own count (107 fix, 106 parent).
+  - R45/R46 run with test-retry, so each failure appears four times in the XML.
+  - R35/R36's fix-side counts are 2 tests under two surefire configurations.
+- **Signatures.** All release signatures verify. fastutil's are EXPKEYSIG (valid signature, key listed as expired), and the keyserver's Resilience4j
+  2.x key expired before the signing dates. Every keyring is this work's own (`$O/gnupg-A` … `$O/gnupg-D`), and their daemons are stopped.
+- **Rebuilt jars.** The kept jar digests are of those copies. A rebuild changes a jar's digest (timestamps) but not the class digests.
+- **Runtime notes.** R25's records need a JVM of 16 or later and the multi-release jar (the adapter is under `META-INF/versions/16/`).
+
+### What is left for the domain work on purpose
+
+- All claims, fixtures and harnesses: the brief's public scenarios with their controls and challenges, and its predictions (for example R21's
+  compile-and-reflect readback, R37's sliced `ByteBuffer`, R35's neighbour variation, R39's request order, the JUnit `Launcher` runs, a Feign stub
+  server, the CPIO and TAR archives). None was written or run.
+- The choice between pin jars, slice jars, overlay jars and release jars where more than one exists, and how to label the evidence.
+- Rebuilding R28–R30's snapshot inputs as they stood at the pins' dates (not done), and whether R02's 4.6.0 `add()` matters.
+- No full upstream test suites were run beyond the landed classes; R01's fix side is the exception, run whole.
 
