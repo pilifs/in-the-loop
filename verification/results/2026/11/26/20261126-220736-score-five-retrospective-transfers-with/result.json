@@ -1,0 +1,187 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-220736-score-five-retrospective-transfers-with",
+  "title": "Score five retrospective transfers with the sealed observer producer",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m21s, peak 149.4 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-220736-score-five-retrospective-transfers-with.json",
+    "sha256": "45b2c0a53b48c5a86617f53db4ba83056cb8e442b902c164aea6a148da91e46e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-220736-score-five-retrospective-transfers-with",
+      "title": "Score five retrospective transfers with the sealed observer producer",
+      "description": "For each registered transfer, reconstruct the exact source archive frozen before the input packet was opened. Run the producer with no access to predictions, past callers, receipts, tests or retrospective basis. Preserve every unsupported attempt and every compiled profile. Replay supported experiments cold and warm on the original artifacts.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T22:07:36+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "Sealed Lucene, stack, CSS 2.1, reactive and mutable bean first results",
+          "run": "python3 verification/generated-observers/campaign.py --frozen J14 09 06 466 484",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/J14-first.zip",
+        "verification/generated-observers/receipts/09-first.zip",
+        "verification/generated-observers/receipts/06-first.zip",
+        "verification/generated-observers/receipts/466-first.zip",
+        "verification/generated-observers/receipts/484-first.zip"
+      ]
+    }
+  },
+  "sourceCommit": "59ea38c5faf5b48d18e5dd5d37222876683decb8",
+  "startedAt": "2026-11-26T22:11:38+00:00",
+  "finishedAt": "2026-11-26T22:13:09+00:00",
+  "wallSeconds": 91.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2103587,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 156606464,
+    "wallSeconds": 82.0,
+    "cpuSeconds": 101.1,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Sealed Lucene, stack, CSS 2.1, reactive and mutable bean first results",
+      "run": "python3 verification/generated-observers/campaign.py --frozen J14 09 06 466 484",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 81.977,
+      "cpuSeconds": 101.11,
+      "cpuThrottledSeconds": 13.332,
+      "peakMemoryBytes": 156606464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-sealed-lucene-stack-css-2-1-re.log",
+        "lines": 5,
+        "bytes": 973,
+        "sha256": "724dfa04c522d06bb0e2ea28f5f9d0e8d1bf628eca719327c8eacae3affbfa71",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "J14 no construction and readback for org.apache.lucene.search.join.ToParentBlockJoinSortField#<init>(Ljava/lang/String;Lorg/apache/lucene/search/SortField$Type;ZLorg/apache/lucene/search/join/BitSetProducer;Lorg/apache/lucene/search/join/BitSetProducer;)V covering hits.orderedParentIds, hits.sortKey",
+        "09 {'empty': 'established', 'populated': 'established'}",
+        "06 {'viewport': 'established', 'pixel': 'established', 'earlier-change': 'open'}",
+        "466 no construction and readback for org.springframework.web.reactive.function.client.DefaultWebClient$DefaultResponseSpec#bodyToFlux(Lorg/springframework/core/ParameterizedTypeReference;)Lreactor/core/publisher/Flux; covering events.envelopes, terminal.signal, terminal.outer, terminal.cause",
+        "484 no construction and readback for org.springframework.mail.SimpleMailMessage#copyTo(Lorg/springframework/mail/MailMessage;)V covering date.afterEachMutation.messageAndCopy, date.publicGetter, date.constructedCopy, date.target"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/09-first.zip",
+      "change": "added",
+      "bytes": 48487,
+      "sha256": "4acb9e1c9a782fef23fabc4b8df7d4d3fedbf0b00c4d0564a4a4efb61b0e07dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/06-first.zip",
+      "change": "added",
+      "bytes": 65911,
+      "sha256": "4780503c9a51ffd2d04576eba9d68b44a366613e027f681c6ae2ec5bc8aeea0d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T22:13:21+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/09-first.zip",
+      "verification/generated-observers/receipts/06-first.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "53e17d263a9418acdd671a4d27e11cbe64a50b5d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53e17d263a9418acdd671a4d27e11cbe64a50b5d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T221309Z-392710d7ae64212b",
+      "outputs": "20261126T221309Z-4196226c421e78a1",
+      "diff": "20261126T221309Z-4412943ca78b27f5"
+    }
+  }
+}
