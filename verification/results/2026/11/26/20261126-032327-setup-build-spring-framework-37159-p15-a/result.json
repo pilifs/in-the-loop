@@ -1,0 +1,387 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-032327-setup-build-spring-framework-37159-p15-a",
+  "title": "Setup: build Spring Framework #37159 (P15) at both pins offline and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 3 passed, 1 failed step(s) in 55m30s, peak 4.0 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (P15 fix: offline build and landed tests) was held back 1m37s by its 4-CPU quota in 3m09s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (P15 parent: offline build and the parent's tests) was held back 1m28s by its 4-CPU quota in 2m17s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (P15 transplant: the fix's tests on the parent) exited 1, expected 0",
+    "took 55m30s, 2.78× the estimate"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-032327-setup-build-spring-framework-37159-p15-a.json",
+    "sha256": "9862b0c8ebe658737b6b01f604472b3d131e2008baeb7320d1f20d96bb2fadd0",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-032327-setup-build-spring-framework-37159-p15-a",
+      "title": "Setup: build Spring Framework #37159 (P15) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P15 (spring-projects/spring-framework#37159: An interrupted stream read preserves bytes already copied). In the worktrees $P/worktrees/P15-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-core spring-web with the Gradle each checkout's wrapper names, runs the landed test classes (SubscriberInputStreamTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-core spring-web in $P/artifacts/P15-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P15",
+      "submitted": {
+        "at": "2026-11-26T03:23:27+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P15 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P15 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P15 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P15 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P15 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P15 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P15 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P15 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "629f1997d1f51f029e19cbf1f1fefaf3b197dc38",
+  "startedAt": "2026-11-26T03:38:43+00:00",
+  "finishedAt": "2026-11-26T04:34:25+00:00",
+  "wallSeconds": 3342.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2262997,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 4263854080,
+    "wallSeconds": 3330.4,
+    "cpuSeconds": 7230.7,
+    "memoryOfEstimate": 0.66,
+    "durationOfEstimate": 2.78
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P15 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P15 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 189.332,
+      "cpuSeconds": 497.71,
+      "cpuThrottledSeconds": 97.932,
+      "peakMemoryBytes": 3239272448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p15-fix-offline-build-and-land.log",
+        "lines": 39,
+        "bytes": 4338,
+        "sha256": "4da0d045a62fe85f149111bd0dd5a25f30c88b67bd0e4953e1f2c6f856173bb3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P15-fix gradle=9.8.2 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=121 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:jar :spring-web:jar :spring-web:test --tests ",
+        "junit tests=7 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.http.client.SubscriberInputStreamTests junit tests=7 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P15-fix/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P15-fix/spring-core.testRuntimeClasspath.txt 77 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P15-fix/spring-web.runtimeClasspath.txt 106 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P15-fix/spring-web.testRuntimeClasspath.txt 202 entries",
+        "c6fcc56f311a947dd2044ed78e640637817518aa7141e5cec358f3cb96ee8deb  jars/spring-core-7.0.11-SNAPSHOT.jar",
+        "5d749ebf2d690bacf8fb7bafcdfcb7a5c1c810f97f50b7a247c1892129432256  jars/spring-web-7.0.11-SNAPSHOT.jar",
+        "e51f1850a60920637300c107e7b0f2b82bb68ef76cf3e85fca0cfdeee6216b83  tree/spring-aop/build/libs/spring-aop-7.0.11-SNAPSHOT.jar",
+        "9df9d00b6d206ca44fe2fd2dcadf22778ac62152e49af65ed6b67353efad2213  tree/spring-beans/build/libs/spring-beans-7.0.11-SNAPSHOT.jar",
+        "7c1189776729b5f94d765f9f7dcb25e901a5da54d4f85b1e2e60b1ea95005903  tree/spring-beans/build/libs/spring-beans-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "72f588b87daa22a0bd8a875cc5ac5aa98cf694281ee74be4b9aae2e73b7d96e3  tree/spring-context/build/libs/spring-context-7.0.11-SNAPSHOT.jar",
+        "6a67c031d44cb2f135c08625fc1311581c4e62e4bf208677c74280119ef130f0  tree/spring-context/build/libs/spring-context-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "c6fcc56f311a947dd2044ed78e640637817518aa7141e5cec358f3cb96ee8deb  tree/spring-core/build/libs/spring-core-7.0.11-SNAPSHOT.jar",
+        "ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2  tree/spring-core/build/libs/spring-core-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "58fbcca03c126242ae5ba145bc5d8f874af002321c7cf541c5a17e707466b7d2  tree/spring-core-test/build/libs/spring-core-test-7.0.11-SNAPSHOT.jar",
+        "b1995b5a412dad5be282fdc28c1fff64fc77c75bc5bf970e51bba7f15503d08a  tree/spring-expression/build/libs/spring-expression-7.0.11-SNAPSHOT.jar",
+        "9fbf777b5ff58222915b6ec7c78e24527d559b1a94ce926483da9173d1bc7db4  tree/spring-messaging/build/libs/spring-messaging-7.0.11-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-messaging/build/libs/spring-messaging-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "1060309f971e015730b340de5f7bc4042740263287ecf52a49113deeacfe96d3  tree/spring-oxm/build/libs/spring-oxm-7.0.11-SNAPSHOT.jar",
+        "a13a8743e1b2e01c952c0f1cfd58220f318f9bf17d30bc36aafdcd039aa8431e  tree/spring-tx/build/libs/spring-tx-7.0.11-SNAPSHOT.jar",
+        "3c97b502ab77f1b5de3961705b66a666e340ed823d5cd9ed15087b75c17e454b  tree/spring-tx/build/libs/spring-tx-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "5d749ebf2d690bacf8fb7bafcdfcb7a5c1c810f97f50b7a247c1892129432256  tree/spring-web/build/libs/spring-web-7.0.11-SNAPSHOT.jar",
+        "b5aacfe57465056a679995af5e62c21dca273e3883ec6725eedbe36e74d28bf1  tree/spring-web/build/libs/spring-web-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "e3a49bcafe8df57e83bb32f9353e8d06592b8f33f4efb1eb075c12fdf4bf9641  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/core/io/buffer/SubscriberInputStream.class",
+        "73c877171c6c226cfd6ac979b03d614da4f6e74718840afa255bfa4efc2cdf20  spring-web-7.0.11-SNAPSHOT.jar!/org/springframework/http/client/SubscriberInputStream.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P15 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P15 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 137.554,
+      "cpuSeconds": 429.303,
+      "cpuThrottledSeconds": 88.785,
+      "peakMemoryBytes": 3851165696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p15-parent-offline-build-and-t.log",
+        "lines": 39,
+        "bytes": 4352,
+        "sha256": "ed1ed17e2b64526c3d152abc7448ebfd766793c28cbcca5a1dcad90e179786c4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P15-parent gradle=9.8.2 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=93 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:jar :spring-web:jar :spring-web:test --test",
+        "junit tests=5 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.http.client.SubscriberInputStreamTests junit tests=5 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P15-parent/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P15-parent/spring-core.testRuntimeClasspath.txt 77 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P15-parent/spring-web.runtimeClasspath.txt 106 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P15-parent/spring-web.testRuntimeClasspath.txt 202 entries",
+        "c5c479ef500c19f64881867d3a87eefda335baa4f8963cc6ac5b2b7d1417759b  jars/spring-core-7.0.11-SNAPSHOT.jar",
+        "7ebbc777abea3893d4c0cf4107958d322fc27f9a657791eb21fc81bbca7780de  jars/spring-web-7.0.11-SNAPSHOT.jar",
+        "e51f1850a60920637300c107e7b0f2b82bb68ef76cf3e85fca0cfdeee6216b83  tree/spring-aop/build/libs/spring-aop-7.0.11-SNAPSHOT.jar",
+        "9df9d00b6d206ca44fe2fd2dcadf22778ac62152e49af65ed6b67353efad2213  tree/spring-beans/build/libs/spring-beans-7.0.11-SNAPSHOT.jar",
+        "7c1189776729b5f94d765f9f7dcb25e901a5da54d4f85b1e2e60b1ea95005903  tree/spring-beans/build/libs/spring-beans-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "72f588b87daa22a0bd8a875cc5ac5aa98cf694281ee74be4b9aae2e73b7d96e3  tree/spring-context/build/libs/spring-context-7.0.11-SNAPSHOT.jar",
+        "6a67c031d44cb2f135c08625fc1311581c4e62e4bf208677c74280119ef130f0  tree/spring-context/build/libs/spring-context-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "c5c479ef500c19f64881867d3a87eefda335baa4f8963cc6ac5b2b7d1417759b  tree/spring-core/build/libs/spring-core-7.0.11-SNAPSHOT.jar",
+        "ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2  tree/spring-core/build/libs/spring-core-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "58fbcca03c126242ae5ba145bc5d8f874af002321c7cf541c5a17e707466b7d2  tree/spring-core-test/build/libs/spring-core-test-7.0.11-SNAPSHOT.jar",
+        "b1995b5a412dad5be282fdc28c1fff64fc77c75bc5bf970e51bba7f15503d08a  tree/spring-expression/build/libs/spring-expression-7.0.11-SNAPSHOT.jar",
+        "9fbf777b5ff58222915b6ec7c78e24527d559b1a94ce926483da9173d1bc7db4  tree/spring-messaging/build/libs/spring-messaging-7.0.11-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-messaging/build/libs/spring-messaging-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "1060309f971e015730b340de5f7bc4042740263287ecf52a49113deeacfe96d3  tree/spring-oxm/build/libs/spring-oxm-7.0.11-SNAPSHOT.jar",
+        "a13a8743e1b2e01c952c0f1cfd58220f318f9bf17d30bc36aafdcd039aa8431e  tree/spring-tx/build/libs/spring-tx-7.0.11-SNAPSHOT.jar",
+        "3c97b502ab77f1b5de3961705b66a666e340ed823d5cd9ed15087b75c17e454b  tree/spring-tx/build/libs/spring-tx-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "7ebbc777abea3893d4c0cf4107958d322fc27f9a657791eb21fc81bbca7780de  tree/spring-web/build/libs/spring-web-7.0.11-SNAPSHOT.jar",
+        "b5aacfe57465056a679995af5e62c21dca273e3883ec6725eedbe36e74d28bf1  tree/spring-web/build/libs/spring-web-7.0.11-SNAPSHOT-test-fixtures.jar",
+        "2a78db49ed8b674fc7842dfe46279bd493295ce8f36da6b210ff93f1848db40c  spring-core-7.0.11-SNAPSHOT.jar!/org/springframework/core/io/buffer/SubscriberInputStream.class",
+        "5665c81b93048bdf9fc2f5b15f734548e89c54f28d4df71ea25c1f6e8cda0f47  spring-web-7.0.11-SNAPSHOT.jar!/org/springframework/http/client/SubscriberInputStream.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P15 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P15 transplant",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 3000.728,
+      "cpuSeconds": 6302.099,
+      "cpuThrottledSeconds": 90.464,
+      "peakMemoryBytes": 4263854080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p15-transplant-the-fix-s-tests.log",
+        "lines": 15,
+        "bytes": 958,
+        "sha256": "1f4f2d351120b37e15207bc6daa78e1eb83f6e58a974caa600a6abf62bba51e0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-web/src/test/java/org/springframework/http/client/SubscriberInputStreamTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P15-parent-landed gradle=9.8.2 launcher=25.0.5.0+8-tem gradle-exit=124 seconds=3000 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-web:test --tests org.springframework.http",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.http.client.SubscriberInputStreamTests no-result",
+        "TRANSPLANT DID NOT FAIL (gradle-exit=124)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P15 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P15 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 2.809,
+      "cpuSeconds": 1.634,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 175472640,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p15-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "6d5caf2443cef52421791c70ecec7abcdd0f449032c89b8a42c8fd27083e8c95",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P15"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T04:34:56+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T043425Z-5994893bd8eb782a",
+      "workdir": "20261126T043433Z-796693bbd2ba1bf0"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261126-032327-setup-build-spring-framework-37159-p15-a"
+}
