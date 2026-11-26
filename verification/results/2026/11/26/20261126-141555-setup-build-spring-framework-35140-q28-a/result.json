@@ -1,0 +1,362 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-141555-setup-build-spring-framework-35140-q28-a",
+  "title": "Setup: build Spring Framework #35140 (Q28) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 11m37s, peak 3.8 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [
+    "step 3 (Q28 transplant: the fix's tests on the parent) was held back 1m41s by its 4-CPU quota in 2m33s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-141555-setup-build-spring-framework-35140-q28-a.json",
+    "sha256": "ac9e5c8a5353b22b35e982b611193e64f296c5e528621d20f01e0a072720fe80",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-141555-setup-build-spring-framework-35140-q28-a",
+      "title": "Setup: build Spring Framework #35140 (Q28) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, case Q28 (spring-projects/spring-framework#35140: Bound jitter on a reactive retry without changing attempt counts). In the worktrees $P/worktrees/Q28-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-q01-q30), offline (dependencies resolved online beforehand), it builds the jars of spring-aop with the Gradle each checkout's wrapper names, runs the landed test classes (ReactiveRetryInterceptorTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-aop in $P/artifacts/Q28-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned Q28",
+      "submitted": {
+        "at": "2026-11-26T14:15:55+00:00",
+        "session": "56626182-a69a-4945-91c7-07e11b9bb46a",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "Q28 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q28 fix",
+          "cwd": "."
+        },
+        {
+          "name": "Q28 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q28 parent",
+          "cwd": "."
+        },
+        {
+          "name": "Q28 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q28 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "Q28 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q28 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "66e7bf7f706c31472c43a9e68f0cb864ef57c1a9",
+  "startedAt": "2026-11-26T14:22:26+00:00",
+  "finishedAt": "2026-11-26T14:34:26+00:00",
+  "wallSeconds": 720.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1554067,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 4081721344,
+    "wallSeconds": 697.4,
+    "cpuSeconds": 829.1,
+    "memoryOfEstimate": 0.63,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Q28 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q28 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 348.773,
+      "cpuSeconds": 336.882,
+      "cpuThrottledSeconds": 80.153,
+      "peakMemoryBytes": 3415076864,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-q28-fix-offline-build-and-land.log",
+        "lines": 28,
+        "bytes": 2940,
+        "sha256": "812a72cc0e013454e9206d0039c774fa02e0e9dd9e8dd2196a81babdc29cd7c4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q28-fix gradle=8.14.2 launcher=17.0.21.0+9-tem gradle-exit=0 seconds=194 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-aop:jar :spring-aop:test --tests org.springframe",
+        "junit tests=11 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.aop.retry.ReactiveRetryInterceptorTests junit tests=11 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q28-fix/spring-aop.runtimeClasspath.txt 15 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q28-fix/spring-aop.testRuntimeClasspath.txt 57 entries",
+        "8632f48646d0f33403e8bb8c1e23fec39dc8a03d664a14eab71fe61ec872e2dc  jars/spring-aop-7.0.0-SNAPSHOT.jar",
+        "8632f48646d0f33403e8bb8c1e23fec39dc8a03d664a14eab71fe61ec872e2dc  tree/spring-aop/build/libs/spring-aop-7.0.0-SNAPSHOT.jar",
+        "d7a27969afca0f90b11040f200d898826dceb4988b448d98c0e1fe08e2bfc276  tree/spring-aop/build/libs/spring-aop-7.0.0-SNAPSHOT-test-fixtures.jar",
+        "59c6e560fe0d441b9cf64eb4f08f90c9f457fb4e7d5c1478ade6c81615e9c088  tree/spring-beans/build/libs/spring-beans-7.0.0-SNAPSHOT.jar",
+        "f6946a7ec311c94d5d881d24f6d9cc4ce0dacf4354d29bf2c1686ec136dae7a4  tree/spring-beans/build/libs/spring-beans-7.0.0-SNAPSHOT-test-fixtures.jar",
+        "27adb8ffa817da5f58a6cc0f660cad4e450d2e79fa4ce3e9953b00d56f054935  tree/spring-core/build/libs/spring-core-7.0.0-SNAPSHOT.jar",
+        "572861a54c305d7f3c39813717f76eb790733bc6fc1d456fa46c3b9632820a0f  tree/spring-core/build/libs/spring-core-7.0.0-SNAPSHOT-test-fixtures.jar",
+        "a766cf7c17ea382f093e2e9f16f50589afba4b49384900418225bf52c2132389  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "f234fc8c715b740b191f8e5025b79a73082448da20301b62f1296b682e58ce3b  tree/spring-core/build/libs/spring-objenesis-repack-3.4.jar",
+        "bcce8a17d4cba8a050c87e2e86ac585d14182e9530ee873f10edf33b65d8bfbe  tree/spring-core-test/build/libs/spring-core-test-7.0.0-SNAPSHOT.jar",
+        "83ec334d4a7eb53d24329d4a9d09de07d83831d35ec06ca5ea7ac74da88e2318  spring-aop-7.0.0-SNAPSHOT.jar!/org/springframework/aop/retry/AbstractRetryInterceptor$ReactorDelegate.class",
+        "b1d41a42bf85ffaf0013442ce4ceb998a4250098e38aa9812dd22a5ec78da374  spring-aop-7.0.0-SNAPSHOT.jar!/org/springframework/aop/retry/AbstractRetryInterceptor.class",
+        "e1d0568cdfb8899cb70762f01d0e2d74c9921608ebf5865141e4bc514fe8f6be  spring-aop-7.0.0-SNAPSHOT.jar!/org/springframework/aop/retry/AbstractRetryInterceptor$1.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Q28 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q28 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 194.132,
+      "cpuSeconds": 265.971,
+      "cpuThrottledSeconds": 92.99,
+      "peakMemoryBytes": 2988027904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-q28-parent-offline-build-and-t.log",
+        "lines": 28,
+        "bytes": 2947,
+        "sha256": "91b94d6bc351f8f5764394d7e6851890dbfdacb46f3a4021b6c9d2245280da54",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q28-parent gradle=8.14.2 launcher=17.0.21.0+9-tem gradle-exit=0 seconds=132 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-aop:jar :spring-aop:test --tests org.springfr",
+        "junit tests=5 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.aop.retry.ReactiveRetryInterceptorTests junit tests=5 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q28-parent/spring-aop.runtimeClasspath.txt 15 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q28-parent/spring-aop.testRuntimeClasspath.txt 57 entries",
+        "eda75b45514d7ef4174224e9d711fc17b0d376090c572b4195cb8f19c4ac37cf  jars/spring-aop-7.0.0-SNAPSHOT.jar",
+        "eda75b45514d7ef4174224e9d711fc17b0d376090c572b4195cb8f19c4ac37cf  tree/spring-aop/build/libs/spring-aop-7.0.0-SNAPSHOT.jar",
+        "9b46b454965057d1a4368fd38c94796359252c85bd6139e966882325dcec7cd9  tree/spring-aop/build/libs/spring-aop-7.0.0-SNAPSHOT-test-fixtures.jar",
+        "0c4f5942a16ef0da18d347774ecec1256f0c50bc87e56d8ea8b852bea5ab2de6  tree/spring-beans/build/libs/spring-beans-7.0.0-SNAPSHOT.jar",
+        "026cb8be858be52d3597a705167ebc66b66b9c07d3109afb50f252360b9d0872  tree/spring-beans/build/libs/spring-beans-7.0.0-SNAPSHOT-test-fixtures.jar",
+        "8fa5d491dd5f9b86618d711263fed33dc7f885dbf29b458fa9bea9659a2ac812  tree/spring-core/build/libs/spring-core-7.0.0-SNAPSHOT.jar",
+        "500b42d3d5a015132a0046fd62d1967dc5104f339a798e92c6070914f7726475  tree/spring-core/build/libs/spring-core-7.0.0-SNAPSHOT-test-fixtures.jar",
+        "c839c11a4e699093c2fedb79cca1c9ccae3f86de22da825cf3ea72763e430439  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "45e489d4d43ced10b47cc32fd6560567f83f0740dfbee38ac2d697ea48226fe6  tree/spring-core/build/libs/spring-objenesis-repack-3.4.jar",
+        "e76b82c834d2c9ef0fe0db4f66c0125a096760395d7f5718c24f50071ab60fad  tree/spring-core-test/build/libs/spring-core-test-7.0.0-SNAPSHOT.jar",
+        "1ca734cd141874ac92b0aaec7afc131cb8093d4e291cc00d1268becedaf7eac1  spring-aop-7.0.0-SNAPSHOT.jar!/org/springframework/aop/retry/AbstractRetryInterceptor$ReactorDelegate.class",
+        "b1d41a42bf85ffaf0013442ce4ceb998a4250098e38aa9812dd22a5ec78da374  spring-aop-7.0.0-SNAPSHOT.jar!/org/springframework/aop/retry/AbstractRetryInterceptor.class",
+        "e1d0568cdfb8899cb70762f01d0e2d74c9921608ebf5865141e4bc514fe8f6be  spring-aop-7.0.0-SNAPSHOT.jar!/org/springframework/aop/retry/AbstractRetryInterceptor$1.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Q28 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q28 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 153.936,
+      "cpuSeconds": 225.661,
+      "cpuThrottledSeconds": 101.205,
+      "peakMemoryBytes": 4081721344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-q28-transplant-the-fix-s-tests.log",
+        "lines": 17,
+        "bytes": 1340,
+        "sha256": "600f97126906b18bde1cc68d1d75cdcff4575c20fca2c35fc319fe665c854638",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-aop/src/test/java/org/springframework/aop/retry/ReactiveRetryInterceptorTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q28-parent-landed gradle=8.14.2 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=154 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-aop:test --tests org.springframework.aop.r",
+        "junit tests=11 failures=2 errors=0 skipped=0",
+        "junit failed ReactiveRetryInterceptorTests#adaptReactiveResultWithZeroDelayAndJitter()",
+        "junit failed ReactiveRetryInterceptorTests#adaptReactiveResultWithJitterGreaterThanDelay()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.aop.retry.ReactiveRetryInterceptorTests junit tests=11 failures=2 errors=0 skipped=0 junit failed ReactiveRetryInterceptorTests#adaptReactiveResultWithZeroDelayAndJitter() junit failed ReactiveRetryInterceptorTests#adaptReactiveResultWithJitterGreaterThanDelay() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Q28 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q28 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.575,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 15069184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-q28-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "f8d7017d0d94f6c524fe09394897d47e03492cc2d5b84b300dcc99f4a9a499dc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned Q28"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T14:34:36+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T143426Z-2368485a1e06287d"
+    }
+  }
+}
