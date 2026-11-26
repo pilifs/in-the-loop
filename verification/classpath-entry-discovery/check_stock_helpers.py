@@ -1,6 +1,5 @@
 """Check the raw stock command on an active versioned helper and on its unchanged earlier shadow."""
 import argparse
-import json
 import os
 from pathlib import Path
 import subprocess
@@ -11,6 +10,14 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/"lib/benchmark/classpath-entry-discovery"))
 from controls import CHECKER, JDK, compile_sources, jar, java
 from targets import change_evidence
+from checker_output import decode
+
+
+def single_result(proc, command):
+    rows, reason = decode(proc.stdout, command)
+    if rows is None or len(rows) != 1:
+        raise ValueError(f"{command}: {reason or 'expected one wire outcome'}")
+    return rows[0]
 
 
 def run(output):
@@ -35,7 +42,7 @@ def run(output):
                     cmd = [CHECKER,"prove","Caller#read()I","--engine",engine,"--gaps","strict","--classes",files[0],
                            "--classpath",os.pathsep.join(map(str,files[1:])),"--assert",f"result == {asserted}","--json"]
                     result = subprocess.run(cmd,cwd=work,env=env,text=True,capture_output=True,timeout=60)
-                    trial, = json.loads(result.stdout)
+                    trial = single_result(result, "prove")
                     expected = ("unverifiable" if engine=="jbmc" and mode=="active" else
                                 "verified" if asserted == original else "violation")
                     if trial["verdict"]!=expected or (expected=="unverifiable" and "Helper.class" not in result.stdout):
@@ -47,7 +54,7 @@ def run(output):
         cmd = [CHECKER,"equivalence","--before",build/"classes","--after",other/"classes","--target","Caller#read()I",
                "--classpath",versioned,"--engine","jbmc","--gaps","strict","--json"]
         proc = subprocess.run(cmd,cwd=work,env=env,text=True,capture_output=True,timeout=60)
-        result, = json.loads(proc.stdout)
+        result = single_result(proc, "equivalence")
         if result["verdict"]!="unverifiable" or "Helper.class" not in proc.stdout:
             raise ValueError("paired stock launch bypassed the active helper guard")
         rows.append({"profile":"two revisions","engine":"jbmc","target":"Caller#read()I","verdict":result["verdict"],
