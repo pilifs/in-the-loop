@@ -95,8 +95,26 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     - Nothing prunes a setup's build outputs once its brief is verified, and examples' replays may still read from them.
     - **Direction:** a per-batch prune step after the domain run lands, which keeps what the replays reference (grep the repository for the path first).
 
+#### Added 2026-11-26 from the R01-R50 setup
+
+11. **A setup job that passed without running a test.**
+    - `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (R49 and R50) reported `passed`, 8 of 8 steps.
+    - R50's three offline builds had stopped at the Groovy test compile, because 13 Groovy 4.0.26 modules that Gradle fetches only at compile time were not in the cache.
+    - The agent's `junit_job.sh` exited 0 whatever the build did, and the job's expectations did not check that tests ran. The Calcite job's script had the same shape.
+    - The setup agent caught it by reading the logs, fixed the resolution and the script, and queued a rerun (`20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`).
+    - **Direction:**
+      - the setup template and `pipeline.py submit` require each build step to state a test count it must exceed, and a job whose steps ran no tests is not `passed`;
+      - or the pipeline flags a passed step whose log has no test summary.
+12. **Setup builds run inline, not as jobs.**
+    - The R01-R50 setup's subagents ran most of the 48 builds and their upstream tests inside the loop's scope: 26 by 17:2x, with nothing submitted between 16:14 and 17:23, and the scope at 10.1 GB under one shared cap. Only the three largest went to the pipeline.
+    - This is against `CLAUDE.md`'s rule (anything over a minute or 1 GB is a job) and the setup template. Nothing ran out of memory, and the setup was the fastest yet (about 2 min a case).
+    - Observed by the advisor.
+    - **Direction:**
+      - the rule is enforced, not only stated (a memory or time guard on a fork's builds that points to `pipeline.py submit`);
+      - or the user decides that a setup's builds may run inline within its cap, which would make this the standing practice.
+
 - **Needs**: the user, to choose a direction for each item, or dismiss it.
-- **Closes when**: items 2, 3 and 5 to 7 have fixes or are dismissed by the user. Item 1 closes with VF-069, and item 4 is already fixed. Items 8 to 10 close with a recorded decision.
+- **Closes when**: items 2, 3, 5 to 7, 11 and 12 have fixes or are dismissed by the user. Item 1 closes with VF-069, and item 4 is already fixed. Items 8 to 10 close with a recorded decision.
 
 ### VF-069: an agent's wait loop matches its own command line in pgrep and never ends; a hung run needs the user
 
