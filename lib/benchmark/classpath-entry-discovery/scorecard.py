@@ -61,12 +61,13 @@ def main():
     for r in read("log4j-strict"):
         add(1,"Log4j #1173",r["revision"],"strict native","scheduling adapter","supplied caller",r["entry"],
             first=r["firstOpenDependency"],status="open",evidence="log4j-strict.json")
-    for r in read("staged-backend"):
+    backend_file = "final-backend" if (OUT/"final-backend.json").is_file() else "staged-backend"
+    for r in read(backend_file):
         for engine,trials in r["engines"].items():
             for t in trials:
                 add(2,"Entry in B","fixture",r["profile"]+"/"+engine,t["assert"],"supplied entry",r["question"],
                     coverage={"providerIndex":r["entryProvider"],"resourceOrder":r["resourceOrder"]},
-                    agreement=True,public=True,status=t["verdict"],evidence="staged-backend.json")
+                    agreement=True,public=True,status=t["verdict"],evidence=backend_file+".json")
     for r in read("invoice"):
         add(2,"Invoice 312","original",r["profile"],r["question"],"supplied caller",r["question"],
             public=True,coverage={"originalTotals":r["totals"]},evidence="invoice.json")
@@ -77,13 +78,14 @@ def main():
                 panel[slot + "/" + r["question"]] = r["status"]
             add(3,"release panel "+slot,r["revision"],r["profile"],r["question"],"supplied caller",r["entry"],
                 coverage={k:r[k] for k in ("declaredRoots","effectiveProviders","manifestEdges","absences")},
-                agreement=r["binding"]=="bound" if r["binding"] == "bound" else None,public=bool(r["publicHits"]),
+                agreement=r["binding"]=="bound" if r["binding"] == "bound" else None,public=bool(r["publicHits"]) if r["profile"] == "captured" else None,
                 first=r["firstOpenDependency"],status=r["status"] if r["profile"]=="captured" else r["binding"],
                 cache="executed" if r["profile"]=="captured" else "binding only",evidence="panel-"+slot+".json")
     for r in read("optional"):
         for s in ("old","new"):
             add(4,"Optional manifest",s,r["profile"],r["question"],"supplied caller",r["question"],
-                agreement=r["bindings"][s]=="bound",public=s in r["execution"],first=r["firstOpenDependency"],
+                coverage={"independentJvmReturn":r["originalJvm"] if s=="new" else 0},
+                agreement=True if r["bindings"][s]=="bound" else None,public=True if s in r["execution"] else None,first=r["firstOpenDependency"],
                 status=r["claimStatus"],cache=r["execution"].get(s,"open"),evidence="optional.json")
     for file in ("layouts","openjdk"):
         for r in read(file):
@@ -93,8 +95,8 @@ def main():
                 evidence=file+".json")
     for r in read("linkage"):
         add(6,"Lookup", "moved" if r["profile"]=="moved" else "original",r["profile"],r["question"],"supplied original client",r["question"],
-            coverage={"physicalOrigins":r["origins"],"clientSha256":r["originalClientSha256"]},agreement=r["binding"]["status"]=="bound",
-            public=r["observed"]=="42",first=r["binding"].get("firstOpenDependency"),status=r["observed"],evidence="linkage.json")
+            coverage={"physicalOrigins":r["origins"],"clientSha256":r["originalClientSha256"]},agreement=True if r["binding"]["status"]=="bound" else None,
+            public=None if r["profile"]=="unordered" else r["observed"]=="42",first=r["binding"].get("firstOpenDependency"),status=r["observed"],evidence="linkage.json")
     for r in read("original-client"):
         add(6,"Original client",r["revision"],r["profile"],r["entry"],"supplied caller",r["entry"],
             coverage={"clientIndex":r["clientIndex"],"entryProvider":r["providerIndex"],"actual":r["actual"]},
@@ -110,7 +112,7 @@ def main():
     for r in read("bridge"):
         for i,entry in enumerate(r["selectors"]):
             add(7,"Erased bridge 323",r["revision"],"wrong-type input",entry,"supplied caller",entry,
-                coverage={"accessFlags":r["accessFlags"][i]},agreement=True,public=i==0,body=i==0,
+                coverage={"accessFlags":r["accessFlags"][i]},agreement=True,public=i==0,body=False,
                 status="bridge entered" if i==0 else "cast failed before typed body",evidence="bridge.json")
     for r in read("multi-release"):
         mode,side,feature=r["profile"].split("/")
@@ -124,10 +126,12 @@ def main():
         for r in read(filename):
             for engine, trials in r.get("actualProofs", {}).items():
                 for t in trials:
+                    false_verification = t["verdict"] == "verified" and t["asserted"] != r["actual"]
                     add(8,"Gate",r["profile"].split("/")[1],r["profile"]+"/"+engine+"/"+filename,
                         "result == "+str(t["asserted"]),"supplied original member",r["binding"]["entry"],
-                        coverage={"originalReturn":r["actual"],"physicalEntry":r["binding"]["physicalEntry"]},
-                        public=True,status=t["verdict"],first=r["stockRoute"] if engine=="jbmc" and t["verdict"]=="unverifiable" else None,
+                        coverage={"originalReturn":r["actual"],"physicalEntry":r["binding"]["physicalEntry"],"reportedVerdict":t["verdict"]},
+                        agreement=False if false_verification else None, public=True,
+                        status="false verification before repair" if false_verification else t["verdict"],first=r["stockRoute"] if engine=="jbmc" and t["verdict"]=="unverifiable" else None,
                         evidence=filename+".json")
     if (OUT/"stock-helper-guard.json").is_file():
         for r in read("stock-helper-guard"):
@@ -140,6 +144,11 @@ def main():
                 proposed=[r["entry"]],coverage={"providerIndex":r["providerIndex"],"originalTrials":r["originalTrials"],
                 "actualKeys":r["registeredResourceKeys"]},public=True,status="recovered" if r["registeredQuestionRecovered"] else "alternate observation",
                 first=None if r["registeredQuestionRecovered"] else "service enumeration does not reach the nominated PNG observation",evidence=file+".json")
+    if (OUT/"resource-predictions.json").is_file():
+        for r in read("resource-predictions"):
+            add(9,r["slot"],r["revision"],"deliberately wrong populated prediction",r["question"],"supplied registered workflow",r["entry"],
+                coverage={"providerIndex":r["providerIndex"],"observed":r["actual"],"predictedNew":r["predictedNew"]},
+                agreement=True,public=True,status=r["status"],evidence="resource-predictions.json")
     for r in read("resource-descriptor"):
         for side, declarations in r["declarationsBySide"].items():
             add(9,"Changed resource descriptor",side,"neutral","resource lookup","binary-only",r["entry"],
@@ -175,12 +184,20 @@ def main():
         raise ValueError("incomplete qualification panel")
     summary={"historicalFiniteQuestions":archived_panel(),"capturedFiniteQuestions":dict(Counter(panel.values())),
              "historicalBindings":{"graphs":history["graphs"],"matched":history["matched"],"requested":len(history["bindings"])},
-             "frozenTransfer":held["measurements"],"rowsByExercise":dict(sorted(Counter(r["exercise"] for r in rows).items())),
+             "frozenTransfer":read("frozen-replay")["measurements"],"rowsByExercise":dict(sorted(Counter(r["exercise"] for r in rows).items())),
              "statuses":dict(Counter(r["claimStatus"] for r in rows)),"rows":len(rows),
              "publicCalls":{"observedRows":sum(r["publicCallReached"] is True for r in rows),
                             "unreachedRows":sum(r["publicCallReached"] is False for r in rows),
                             "notMeasuredRows":sum(r["publicCallReached"] is None for r in rows)},
              "manualProviderIndices":sum(r["manualBindingInterventions"] for r in rows)}
+    if (OUT/"stock-helper-guard.json").is_file() and (OUT/"mr-guard.json").is_file():
+        negatives = [t["verdict"] for r in read(backend_file) for trials in r["engines"].values() for t in trials[1:]]
+        negatives.extend(t["verdict"] for r in read("mr-guard") for trials in r.get("actualProofs",{}).values()
+                         for t in trials if t["asserted"] != r["actual"])
+        negatives.extend(r["verdict"] for r in read("stock-helper-guard") if "asserted" in r and r["asserted"] != r["originalJvm"])
+        if len(negatives)!=16 or "verified" in negatives:
+            raise ValueError("a false backend assertion was admitted or omitted")
+        summary["finalFalseBackendAssertions"] = {"tested":len(negatives),"verified":0,"outcomes":dict(Counter(negatives))}
     change_evidence.write_json(OUT/"scorecard.json",{"schema":"entry-discovery-scorecard/v1","counts":summary,"rows":rows})
     print(json.dumps(summary,sort_keys=True))
 

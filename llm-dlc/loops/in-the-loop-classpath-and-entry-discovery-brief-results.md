@@ -28,6 +28,14 @@ The [machine-readable scorecard](../../verification/classpath-entry-discovery/sc
 | 11. Frozen Parquet transfer | Three changed writer methods were proposed on the 113-root deployments. The first run scanned 114 distinct artifacts across both sides, used one checker batch and two JVM probes. It missed both the nominated getBytes page history and ParquetWriter.write file history. After scoring, fresh JVMs reproduced all ten registered outcomes. The reversed overlay control has its own ten outcomes. [Untuned first result](../../verification/classpath-entry-discovery/parquet-first.json) · [Exact frozen sources](../../verification/classpath-entry-discovery/transfer-source.zip) · [Counted independent repeat](../../verification/classpath-entry-discovery/frozen-replay.json) · [Measured public histories](../../verification/classpath-entry-discovery/parquet-observations.json) |
 | 12. Historical compatibility | All 283 class bindings on 21 launch graphs agreed with the recorded provider, physical entry and class digest, the fresh JVM and the native resolver. Stock JBMC has its own sentinel evidence in exercise 2. [Per-class measurements](../../verification/classpath-entry-discovery/historical-origins.json) |
 
+## Final release gates
+
+The final independent run repeated the five Log4j comparisons, all twelve questions on the six captured release pairs, and the 283 historical class bindings. It matched the earlier evidence on every compared value, class identity and cache action, finishing in 3m50s with 435 MiB peak memory. The ordinary product required zero manually supplied provider indices. [Release-gate comparisons and reference digests](../../verification/classpath-entry-discovery/release-gate.json)
+
+The final checker verified **zero of sixteen deliberately false backend assertions**. Fourteen produced violations and two stopped at an unqualified stock binding. The paired stock command also refused a versioned helper on the original ordered paths. On the finite resource path, predicting an empty populated result was refuted in both Annotation Indexer and Batik. Both unrelated-marker controls held. [Guarded multi-release assertions](../../verification/classpath-entry-discovery/mr-guard.json) · [Helper and equivalence controls](../../verification/classpath-entry-discovery/stock-helper-guard.json) · [Final ordinary proof invocations](../../verification/classpath-entry-discovery/final-backend.json) · [Public resource predictions](../../verification/classpath-entry-discovery/resource-predictions.json) · [One-sided resource descriptor](../../verification/classpath-entry-discovery/resource-descriptor.json)
+
+Collector revision `0ca120a720ab` contains all eleven job receipts. Seven passed. Four earlier attempts have superseding evidence. Two caught a shared-entry witness attached to the last claim ID. A third compared an archived return string directly to a typed return object. The fourth completed the versioned-subject check and the eight helper properties before its reader mistook equivalence's single object for a property array. The corrected readers and the independently repeated assertions are recorded above. [Final paired-wire job](../../verification/jobs/2026/11/26/20261126-210635-check-the-paired-stock-refusal-with-the.json)
+
 ## Stock JBMC on a versioned class
 
 On JDK 21, the JVM returned 5 from `META-INF/versions/21/Gate.class`. The original direct `jvmcontract prove --engine jbmc` invocation verified `result == 3`, the value of the base member. The native route verified 5 and refuted 3. On the JDK 8 and 17 control profiles, both engines agreed with the original value of 3. These outcomes identify a false verification in the integrated stock route. [Pre-repair assertions on all three JDKs](../../verification/classpath-entry-discovery/mr-proofs.json)
@@ -36,7 +44,7 @@ The checker now inspects the ordered paths before a stock property, equivalence,
 
 ## Reproduction
 
-Stage 3 accepts the two prepared manifests, the pinned JDK, and the frozen questions. With the original Log4j cache available, the following commands write a scaffold and consume it in a public replay. The last command checks the saved evidence offline.
+Stage 3 accepts the two prepared manifests, the pinned JDK, and the frozen questions. With the original Log4j cache available, the following commands write a scaffold and consume it in a public replay. The last command checks the saved evidence offline. It also verified all five archived reports after extraction with the JDK and checker unavailable.
 
 ```sh
 case_dir=lib/benchmark/organic-composition/log4j
