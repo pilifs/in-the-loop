@@ -452,6 +452,15 @@ included) configured for each case (`$P/logs/dryrun-6x.txt`, `$P/logs/dryrun-7x.
 | Q28 | `20261126-141555-setup-build-spring-framework-35140-q28-a` |
 | Q29 | `20261126-144026-setup-build-spring-framework-37465-q29-a` |
 | Q30 | `20261126-141555-setup-build-spring-framework-35732-q30-a` |
+| Q09 (rerun) | `20261126-144401-setup-build-spring-framework-26700-q09-a` |
+| Q11 (rerun) | `20261126-144401-setup-build-spring-framework-27716-q11-a` |
+
+The first Q09 and Q11 jobs failed at every build step, offline, on `:spring-beans:compileGroovy`: "No cached version of
+org.codehaus.groovy:groovy-ant:3.0.8 (3.0.9) available for offline mode". The Groovy compile task resolves `groovy-ant` through a
+detached configuration of its own, which resolving every named configuration does not reach. `resolve-all.init.gradle` gained a
+task `setupResolveCoords -PsetupCoords=G:A:V,...` that resolves given coordinates as a detached configuration; run online for
+`org.codehaus.groovy:groovy-ant` at both pins of both cases (7 files each, logs `$P/logs/CASE-ROLE.groovyant.online.log`), then
+the two jobs were queued again. The Spring 6.1 and 7 builds do not compile Groovy that way.
 
 ## Job results
 
