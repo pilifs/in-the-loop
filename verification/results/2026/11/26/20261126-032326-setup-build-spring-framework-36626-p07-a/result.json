@@ -1,0 +1,370 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-032326-setup-build-spring-framework-36626-p07-a",
+  "title": "Setup: build Spring Framework #36626 (P07) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 5m54s, peak 3.1 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-032326-setup-build-spring-framework-36626-p07-a.json",
+    "sha256": "f9c93e3fb4b9b2d878df731bd0196bf130ae7f1f928ac5b808c54df57394acd3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-032326-setup-build-spring-framework-36626-p07-a",
+      "title": "Setup: build Spring Framework #36626 (P07) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P07 (spring-projects/spring-framework#36626: A mail message owns its sent date across setters, getters and copies). In the worktrees $P/worktrees/P07-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-context-support with the Gradle each checkout's wrapper names, runs the landed test classes (SimpleMailMessageTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-context-support in $P/artifacts/P07-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P07",
+      "submitted": {
+        "at": "2026-11-26T03:23:26+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P07 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P07 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P07 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P07 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P07 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P07 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P07 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P07 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "629f1997d1f51f029e19cbf1f1fefaf3b197dc38",
+  "startedAt": "2026-11-26T03:24:10+00:00",
+  "finishedAt": "2026-11-26T03:30:24+00:00",
+  "wallSeconds": 374.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2262997,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3321466880,
+    "wallSeconds": 354.9,
+    "cpuSeconds": 790.3,
+    "memoryOfEstimate": 0.52,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P07 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P07 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 124.849,
+      "cpuSeconds": 264.813,
+      "cpuThrottledSeconds": 28.18,
+      "peakMemoryBytes": 2812456960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p07-fix-offline-build-and-land.log",
+        "lines": 32,
+        "bytes": 3469,
+        "sha256": "ab6a8b0cc3226529385dfaf569aa5aa762cd20654be31c0a66e69c36fe1bdeb4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P07-fix gradle=9.4.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=77 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context-support:jar :spring-context-support:test --",
+        "junit tests=10 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.mail.SimpleMailMessageTests junit tests=10 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P07-fix/spring-context-support.runtimeClasspath.txt 24 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P07-fix/spring-context-support.testRuntimeClasspath.txt 79 entries",
+        "e88476a386b6f99d0b3b9da82a342d52ac8e6f6261baa3bae530856fa6c407f6  jars/spring-context-support-7.1.0-SNAPSHOT.jar",
+        "36bfadcc37d7b613ec4fa7194541cf5e7d8ae28c40690685f86621ce4a869798  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT.jar",
+        "cec93eaeba5754346e534a8f0a306b1c63077412fe588fe4c635a2154e0743e7  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "7b755984aedc1a9096bffce809ee06cc3c4785ad788a903cd7ab61ab3d417824  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "b2116c3c4daa46f16c276e37c79b715b8af06021a19cfccaf89893771d094a8c  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT.jar",
+        "2dcc492070d859d167bc45226e3065d3fbfec74bf4907f9e90403af01ebe0c61  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "e88476a386b6f99d0b3b9da82a342d52ac8e6f6261baa3bae530856fa6c407f6  tree/spring-context-support/build/libs/spring-context-support-7.1.0-SNAPSHOT.jar",
+        "d12ad7d3075c41a835ff1a87ecf12d5361a59a37e3a445f38023ae561689596c  tree/spring-context-support/build/libs/spring-context-support-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "7f478c5e20dd471fab1f523bf80409a9a09308dbad888a8d2118fce7f359449c  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "6560fb1e640816fba693eda21d528763dd7ac7438d5c84e3d07243b956c3da06  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "b156df464ecf2489a0d81c5bb80814f7bc16f569e41a1652487c95e23bd67f85  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "ba35c980aad8ae494d10e3c26fd13be6ae3d90cde216f7aa8d0710925f1bd0cc  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT.jar",
+        "3c97b502ab77f1b5de3961705b66a666e340ed823d5cd9ed15087b75c17e454b  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "9862522ea9c3357af09ecde9e76ca953e4db2d81b19d377dbf08aace73755c68  spring-context-support-7.1.0-SNAPSHOT.jar!/org/springframework/mail/SimpleMailMessage.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P07 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P07 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 128.526,
+      "cpuSeconds": 256.774,
+      "cpuThrottledSeconds": 16.215,
+      "peakMemoryBytes": 2240266240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p07-parent-offline-build-and-t.log",
+        "lines": 32,
+        "bytes": 3476,
+        "sha256": "7c7944c867fede13968487e625631955d3d4051dc0d18cc09f14af3fe27f32f2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P07-parent gradle=9.4.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=77 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context-support:jar :spring-context-support:test",
+        "junit tests=6 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.mail.SimpleMailMessageTests junit tests=6 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P07-parent/spring-context-support.runtimeClasspath.txt 24 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P07-parent/spring-context-support.testRuntimeClasspath.txt 79 entries",
+        "d81270c6b324010ec58a76a7ffd87f13b37a8c12233cf1b7a82c7035351ff274  jars/spring-context-support-7.1.0-SNAPSHOT.jar",
+        "36bfadcc37d7b613ec4fa7194541cf5e7d8ae28c40690685f86621ce4a869798  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT.jar",
+        "cec93eaeba5754346e534a8f0a306b1c63077412fe588fe4c635a2154e0743e7  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "7b755984aedc1a9096bffce809ee06cc3c4785ad788a903cd7ab61ab3d417824  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "b2116c3c4daa46f16c276e37c79b715b8af06021a19cfccaf89893771d094a8c  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT.jar",
+        "2dcc492070d859d167bc45226e3065d3fbfec74bf4907f9e90403af01ebe0c61  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "d81270c6b324010ec58a76a7ffd87f13b37a8c12233cf1b7a82c7035351ff274  tree/spring-context-support/build/libs/spring-context-support-7.1.0-SNAPSHOT.jar",
+        "d12ad7d3075c41a835ff1a87ecf12d5361a59a37e3a445f38023ae561689596c  tree/spring-context-support/build/libs/spring-context-support-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "7f478c5e20dd471fab1f523bf80409a9a09308dbad888a8d2118fce7f359449c  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "6560fb1e640816fba693eda21d528763dd7ac7438d5c84e3d07243b956c3da06  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "b156df464ecf2489a0d81c5bb80814f7bc16f569e41a1652487c95e23bd67f85  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "ba35c980aad8ae494d10e3c26fd13be6ae3d90cde216f7aa8d0710925f1bd0cc  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT.jar",
+        "3c97b502ab77f1b5de3961705b66a666e340ed823d5cd9ed15087b75c17e454b  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "57e88c782e2f4175745ed66555f0eaf7c044b9fab69e1c675509367bbcf7fa57  spring-context-support-7.1.0-SNAPSHOT.jar!/org/springframework/mail/SimpleMailMessage.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P07 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P07 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 98.066,
+      "cpuSeconds": 267.013,
+      "cpuThrottledSeconds": 38.636,
+      "peakMemoryBytes": 3321466880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p07-transplant-the-fix-s-tests.log",
+        "lines": 19,
+        "bytes": 1469,
+        "sha256": "51fd113a798164cc2294a2f6e0d64971a0274298c6427acfcfd1a34cb7984f2f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-context-support/src/test/java/org/springframework/mail/SimpleMailMessageTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P07-parent-landed gradle=9.4.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=97 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context-support:test --tests org.springframew",
+        "junit tests=10 failures=4 errors=0 skipped=0",
+        "junit failed SimpleMailMessageTests#getSentDateReturnsACopy()",
+        "junit failed SimpleMailMessageTests#copyConstructorCopiesSentDate()",
+        "junit failed SimpleMailMessageTests#copyToCopiesSentDate()",
+        "junit failed SimpleMailMessageTests#setSentDateStoresACopy()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.mail.SimpleMailMessageTests junit tests=10 failures=4 errors=0 skipped=0 junit failed SimpleMailMessageTests#getSentDateReturnsACopy() junit failed SimpleMailMessageTests#copyConstructorCopiesSentDate() junit failed SimpleMailMessageTests#copyToCopiesSentDate() junit failed",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P07 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P07 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 3.411,
+      "cpuSeconds": 1.744,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 135024640,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p07-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "675db409536f07bb355ef987ea08a26b5ab37a15640fa85f2b6f19eddb8e6cd4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P07"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T03:30:37+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T033024Z-464335432a1a07fe"
+    }
+  }
+}
