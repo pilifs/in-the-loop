@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "583",
+  "title": "Invoke a lambda fallback supplied by a Feign fallback factory",
+  "summary": "The real HTTP 400 response invoked an application-package lambda. Two failing GETs received fresh fallback-1 and fallback-2 values, while a successful GET bypassed the factory.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "exceptions",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Resilience4j",
+    "symbol": "Resilience4jFeign.builder"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A factory-created fallback now receives the same reflective method preparation as a directly configured fallback. This matters when the application creates its lambda in a different package from the handler."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/resilience4j/resilience4j",
+    "url": "https://github.com/resilience4j/resilience4j/pull/1999"
+  },
+  "notes": [
+    "The factory contract creates a fallback per exception. A single constant fallback result cannot detect reuse across calls."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

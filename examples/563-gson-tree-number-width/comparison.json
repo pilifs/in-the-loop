@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/google/gson/pull/2998",
+  "revisions": {
+    "parent": "c616243d1d78c0466b53be39f893094ebb7c6918",
+    "fix": "e83ef91dc7614e6f8fb5ea8dd3fd67530602f05c"
+  },
+  "entry": "Gson.toJsonTree",
+  "questions": [
+    {
+      "id": "google/gson#2998.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Serialize the number 1 separately as byte, short and int, then repeat with their wrapper class tokens.",
+      "prediction": "The PR reports Long on the parent. The merge should expose Byte, Short and Integer respectively for both forms, all holding the value 1.",
+      "basis": "The declared type selects a specific narrowing conversion. Distinct Number classes are observable even though each writes the same JSON digit.",
+      "refutation": "The merged tree stores a Long, chooses a class based on primitive versus wrapper spelling, or changes the numeric value.",
+      "expected": {
+        "parent": {
+          "return": "Long:1:1/Long:1:1/Long:1:1/Long:1:1/Long:1:1/Long:1:1"
+        },
+        "fix": {
+          "return": "Byte:1:1/Short:1:1/Integer:1:1/Byte:1:1/Short:1:1/Integer:1:1"
+        }
+      }
+    },
+    {
+      "id": "google/gson#2998.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Serialize 1L as long and Long. Inspect each tree and the ordinary JSON text.",
+      "prediction": "Both revisions should expose Long and emit the numeric token 1.",
+      "basis": "The existing long adapter represents this value directly. Neither type nor spelling requires a conversion.",
+      "refutation": "Either tree class differs from Long, or the scalar becomes a string or changes value.",
+      "expected": {
+        "parent": {
+          "return": "Long:1:1/Long:1:1"
+        },
+        "fix": {
+          "return": "Long:1:1/Long:1:1"
+        }
+      }
+    },
+    {
+      "id": "google/gson#2998.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use an Integer-valued Number 257 with declared Byte.class. Compare the result with a Byte-valued input 1 targeted at the same class, and serialize both trees to plain JSON.",
+      "prediction": "On the merge both tree values must be Byte with value 1 and both texts the numeric token 1. On the parent the width can be wrong even if the JSON agrees.",
+      "basis": "Java Number.byteValue discards higher bits for an Integer; 257 and 1 have the same low eight bits. Text alone erases wrapper width.",
+      "refutation": "The merged values have different classes or values, or a correct tree value reaches the stream with different text.",
+      "expected": {
+        "fix": {
+          "return": "Byte:1:1/Byte:1:1"
+        }
+      }
+    }
+  ]
+}

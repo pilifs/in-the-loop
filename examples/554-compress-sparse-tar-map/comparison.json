@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-compress/pull/775",
+  "revisions": {
+    "parent": "a8cb750e5bdd0fe136d5d9cab38781f9447b2dd3",
+    "fix": "948512a35a9f8ed1f8eac12f743e879aff9266d2"
+  },
+  "entry": "TarArchiveInputStream.getNextEntry",
+  "questions": [
+    {
+      "id": "apache/commons-compress#775.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Call getNextEntry(), then read the sparse member through end of entry.",
+      "prediction": "The parent’s extra-record skip predicts lost data or a read failure. On the merge expect exactly three zero bytes followed by ABCD.",
+      "basis": "Expanding a four-byte extent at logical offset 3 produces those seven bytes. No physical padding lies after an exactly full map record.",
+      "refutation": "An exception, a missing hole or payload byte, or padding appearing in the logical output on the merge.",
+      "expected": {
+        "fix": {
+          "return": "[0, 0, 0, 65, 66, 67, 68]"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-compress#775.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Encode the same extent with the short decimal map and zero-pad the rest of its 512-byte record.",
+      "prediction": "Both revisions should extract the identical seven bytes.",
+      "basis": "The numeric extent and payload are unchanged. Both padding calculations consume the remaining bytes of a partially used record.",
+      "refutation": "The ordinary short map changes the recovered data or its length on either revision.",
+      "expected": {
+        "parent": {
+          "return": "[0, 0, 0, 65, 66, 67, 68]"
+        },
+        "fix": {
+          "return": "[0, 0, 0, 65, 66, 67, 68]"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-compress#775.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the aligned map fixed, change only the four stored bytes to WXYZ and continue to the second member.",
+      "prediction": "On the merge the first readback must become three zeros then WXYZ. The next entry must still be tail with its one byte Z and then the archive must end.",
+      "basis": "The file data and the next member have independent TAR boundaries. Successful delivery of the first file alone does not prove subsequent alignment.",
+      "refutation": "The new data is ignored, or the second name, payload or end-of-archive changes.",
+      "expected": {
+        "fix": {
+          "return": "[0, 0, 0, 87, 88, 89, 90]/tail/Z/true"
+        }
+      }
+    }
+  ]
+}

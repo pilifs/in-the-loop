@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/google/jimfs/pull/435",
+  "revisions": {
+    "parent": "f0dcab50faa6626b9275d6604a89d7debfff3677",
+    "fix": "0e5725b4d44ec51d54fba15336aa23147c1bedc7"
+  },
+  "entry": "Files.newInputStream",
+  "questions": [
+    {
+      "id": "google/jimfs#435.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "After confirmed EOF call read on an eight-byte buffer at offset 2 and length 0.",
+      "prediction": "The parent returns −1 after remembering EOF. The merge returns 0 with all eight cells unchanged.",
+      "basis": "The InputStream contract cited in #434 specifies zero for a zero-length request. The request covers no cells.",
+      "refutation": "A nonzero return, exception or changed buffer cell on the merge.",
+      "expected": {
+        "parent": {
+          "return": "-1/true"
+        },
+        "fix": {
+          "return": "0/true"
+        }
+      }
+    },
+    {
+      "id": "google/jimfs#435.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Before consuming the file, issue the same zero-length read and then read one byte.",
+      "prediction": "Both should return 0 then 1, with all sentinel cells preserved.",
+      "basis": "Reading zero bytes cannot consume the first byte.",
+      "refutation": "A changed array, a nonzero count or a different first byte.",
+      "expected": {
+        "parent": {
+          "return": "0/true/1"
+        },
+        "fix": {
+          "return": "0/true/1"
+        }
+      }
+    },
+    {
+      "id": "google/jimfs#435.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On a fresh empty file confirm EOF with read(), then alternate read(buffer,buffer.length,0), read() and another identical empty slice.",
+      "prediction": "The merge should return 0, −1, 0 in order, with unchanged storage.",
+      "basis": "The endpoint is a valid empty slice. No call can create data in an empty file.",
+      "refutation": "A legal endpoint is rejected, an empty slice reports EOF, or a positive request returns data.",
+      "expected": {
+        "fix": {
+          "return": "0/-1/0/true"
+        }
+      }
+    }
+  ]
+}

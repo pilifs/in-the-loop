@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/square/javapoet/pull/986",
+  "revisions": {
+    "parent": "0d55218ae3b8c8d6fe84132b7867d8c12698ce5e",
+    "fix": "d682f2013751d25725349d79b449870d0e77354c"
+  },
+  "entry": "TypeName.box",
+  "questions": [
+    {
+      "id": "square/javapoet#986.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Box annotated boolean, inspect isBoxedPrimitive(), then unbox it.",
+      "prediction": "The PR reports that boxing an annotated primitive failed on the parent and annotated wrappers failed recognition. On the merge the wrapper is annotated java.lang.Boolean, isBoxedPrimitive() is true and unbox() equals the initial annotated boolean.",
+      "basis": "A type-use annotation changes neither the Java primitive nor its wrapper counterpart. The pinned tests assert boxing and unboxing from independently constructed inputs.",
+      "refutation": "An exception, a false classification of annotated Boolean, or loss of A at either boundary.",
+      "expected": {
+        "fix": {
+          "return": "java.lang.Boolean/[A]/true/boolean/[A]/true"
+        }
+      }
+    },
+    {
+      "id": "square/javapoet#986.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Box canonical TypeName.BOOLEAN and unbox that wrapper.",
+      "prediction": "Both should identify java.lang.Boolean and return the canonical TypeName.BOOLEAN object on unbox, with empty annotation lists.",
+      "basis": "The unannotated control uses the pre-existing primitive constants and mappings.",
+      "refutation": "A different primitive, unexpected annotations or a noncanonical unboxed result.",
+      "expected": {
+        "parent": {
+          "return": "java.lang.Boolean/true/true/[]"
+        },
+        "fix": {
+          "return": "java.lang.Boolean/true/true/[]"
+        }
+      }
+    },
+    {
+      "id": "square/javapoet#986.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Start from an independently built ClassName.get(\"java.lang\",\"Integer\") annotated with A and B in that order. Unbox and box it. Inspect the annotations after each conversion.",
+      "prediction": "On the merge the intermediate type is int and the final type is Integer, with [A,B] in order at both boundaries. Stripping the annotations should recover the corresponding plain type.",
+      "basis": "The two distinct annotations reveal duplication, reversal or loss. Starting with a separately constructed wrapper exercises equality across instances.",
+      "refutation": "The first annotation alone survives, their order changes, or round-trip equality fails.",
+      "expected": {
+        "fix": {
+          "return": "int/[A, B]/java.lang.Integer/[A, B]/true"
+        }
+      }
+    }
+  ]
+}

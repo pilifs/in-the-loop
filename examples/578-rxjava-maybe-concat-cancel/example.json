@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "578",
+  "title": "Cancelling Maybe concatenation prevents later subscription side effects",
+  "summary": "Early cancellation prevented entry into the second successful Maybe. With an empty prefix, both the iterable and array forms entered just the empty and first value sources.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "side-effecting-read",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "RxJava",
+    "symbol": "Maybe.concatArray"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "RxJava 2 rechecks cancellation before moving from an emitted Maybe value to the next source. A downstream that has already accepted its first element can thereby prevent later subscriptions."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/ReactiveX/RxJava",
+    "url": "https://github.com/ReactiveX/RxJava/pull/5101"
+  },
+  "notes": [
+    "An empty source cannot satisfy firstElement. The cancellation point depends on the first actual value and is independent of array versus iterable representation."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

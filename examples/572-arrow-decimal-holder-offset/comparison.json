@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/arrow-java/pull/1518",
+  "revisions": {
+    "parent": "a99297ce3ca5c6cd8dc2c5ea3f5541b0788fdd62",
+    "fix": "1718ad7aeef4209d3a620541672e1af7fc5cbb1e"
+  },
+  "entry": "NullableDecimalHolderReaderImpl.readBigDecimal",
+  "questions": [
+    {
+      "id": "apache/arrow-java#1518.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Read slots 1 and 2 via the generated nullable holder readers.",
+      "prediction": "On little-endian machines the old big-endian interpretation predicts incorrect values. On the merge require the exact positive then negative BigDecimal, both with scale 2. On big-endian hardware the parent may already agree.",
+      "basis": "The caller supplied the decimal objects before encoding. Vector.getObject is a second public path. A signed unscaled value of −123456789 denotes −1234567.89 at scale 2.",
+      "refutation": "The merge loses sign or scale, returns the neighboring slot, or disagrees with the original value.",
+      "expected": {
+        "fix": {
+          "return": "1234567.89=1234567.89/-1234567.89=-1234567.89"
+        }
+      }
+    },
+    {
+      "id": "apache/arrow-java#1518.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Read numeric 0.00 at slot 0 with the holder and vector APIs.",
+      "prediction": "Both revisions should return BigDecimal with unscaled value 0 and scale 2.",
+      "basis": "Zero uses an all-zero fixed-width representation, independent of byte order, at byte offset zero.",
+      "refutation": "A nonzero number, null, or a scale different from 2 on either revision.",
+      "expected": {
+        "parent": {
+          "return": "0.00=0.00"
+        },
+        "fix": {
+          "return": "0.00=0.00"
+        }
+      }
+    },
+    {
+      "id": "apache/arrow-java#1518.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Store the same negative value in the last slot of DecimalVector and Decimal256Vector, changing only adjacent valid values between two runs. Populate a nullable holder through vector.get, copy its buffer, byte start, precision and scale to the matching non-null holder, and compare nullable and non-null reader outputs.",
+      "prediction": "On the merge both widths and both kinds of reader should return exactly −1234567.89 in every run regardless of preceding values.",
+      "basis": "Sign extension changes physical width while preserving the mathematical integer. Slot 2 begins at byte offset 32 or 64 depending on the vector width.",
+      "refutation": "Changing an adjacent value changes the target, or one width or holder class yields a different result.",
+      "expected": {
+        "fix": {
+          "return": "-1234567.89=-1234567.89/-1234567.89=-1234567.89 / -1234567.89=-1234567.89/-1234567.89=-1234567.89"
+        }
+      }
+    }
+  ]
+}

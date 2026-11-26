@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-185342-trace-original-r-series-reader-group-ret",
+  "title": "Trace original R-series reader, group, retry and getter methods",
+  "description": "Bind public outcomes to original JVM method entries twice per revision. Exercise BoundedReader.skip and Observable grouping for all three roles, and the returned-value retry and record getter for their challenges. Check the saved records against the exact source, caller and classpath.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {},
+  "expected": "Four compressed reports covering 32 trials with original method hits and outcomes matching the ordinary public callers.",
+  "submitted": {
+    "at": "2026-11-26T18:53:42+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Trace reader and Observable histories",
+      "run": "python3 verification/merged-pr-links/qualify.py 549 581 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+      "cwd": "."
+    },
+    {
+      "name": "Trace the negative retry event and constant getter",
+      "run": "python3 verification/merged-pr-links/qualify.py 582 585 --gzip --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+      "cwd": "."
+    },
+    {
+      "name": "Check reader and group evidence",
+      "run": "python3 verification/merged-pr-links/qualify.py 549 581 --gzip --check --only Intent --only Control --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+      "cwd": "."
+    },
+    {
+      "name": "Check retry and getter evidence",
+      "run": "python3 verification/merged-pr-links/qualify.py 582 585 --gzip --check --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/r01-r50/qualified"
+  ]
+}

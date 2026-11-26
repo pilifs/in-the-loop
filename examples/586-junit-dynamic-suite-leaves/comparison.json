@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/junit-team/junit-framework/pull/5839",
+  "revisions": {
+    "parent": "f8686f1e6482e41bd40548fd08c5340f414b968f",
+    "fix": "7e7183fe2989400b98c8ef06981ab0ae3e62d6d8"
+  },
+  "entry": "Launcher.execute",
+  "questions": [
+    {
+      "id": "junit-team/junit-framework#5839.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Execute the suite with two dynamic leaves.",
+      "prediction": "Both leaves should finish successfully on both revisions. Issue #5837 reports a separate NoTestsDiscoveredException on the enclosing suite before the fix. The merged suite should finish SUCCESSFUL once.",
+      "basis": "Two successful test-finished events with distinct IDs establish that tests ran. The pinned SuiteEngineTests separately requires both child successes and the suite success.",
+      "refutation": "Either child is missing or runs twice, or the merged suite still reports no tests.",
+      "expected": {
+        "parent": {
+          "return": "leaves=[A, B],unique=2,suite=FAILED/NoTestsDiscoveredException"
+        },
+        "fix": {
+          "return": "leaves=[A, B],unique=2,suite=SUCCESSFUL"
+        }
+      }
+    },
+    {
+      "id": "junit-team/junit-framework#5839.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Return an empty stream from the only factory, with failIfNoTests=true.",
+      "prediction": "Both revisions should give zero test-leaf completions and a suite failure carrying NoTestsDiscoveredException.",
+      "basis": "The annotation defaults to requiring tests, and the pinned emptyDynamicSuiteFails case checks this policy.",
+      "refutation": "A fabricated child test, a successful suite, or a different suite exception.",
+      "expected": {
+        "parent": {
+          "return": "leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException"
+        },
+        "fix": {
+          "return": "leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException"
+        }
+      }
+    },
+    {
+      "id": "junit-team/junit-framework#5839.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Wrap the same A and B factories’ dynamic leaves in a single DynamicContainer. Repeat with that container empty.",
+      "prediction": "The merge should report suite success for the two-leaf container, then NoTestsDiscoveredException for the empty one. Only A and B count as tests in the first run.",
+      "basis": "A container is registered dynamically too. Its node groups children, while the two finished leaves independently establish the count.",
+      "refutation": "An empty registered container makes the suite succeed, or adding a container around real tests makes the suite fail.",
+      "expected": {
+        "fix": {
+          "return": "leaves=[A, B],unique=2,suite=SUCCESSFUL / leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException"
+        }
+      }
+    }
+  ]
+}

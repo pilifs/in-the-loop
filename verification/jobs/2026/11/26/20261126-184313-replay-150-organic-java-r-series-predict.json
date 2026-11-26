@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-184313-replay-150-organic-java-r-series-predict",
+  "title": "Replay 150 organic Java R-series predictions on both revisions",
+  "description": "Recompile examples 538–587 and repeat every public history on both original revisions. Repeat both Guava distributions, the Parquet and Reactor source overlays, and the real SCOTT, Feign and JUnit callers. Check the original class and input hashes and compare the complete audit.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay",
+    "java:original-class-provenance",
+    "java:library-upgrade"
+  ],
+  "links": {},
+  "expected": "312 fresh JVM observations across 52 deployment pairs, 148 of 150 merged predictions confirmed, two competing predictions observed, all 50 merged intents and control predictions matched. The complete audit is byte-identical.",
+  "submitted": {
+    "at": "2026-11-26T18:43:13+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "Replay public histories and check original classes",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign r01-r50 --replay --output verification/merged-pr-links/r01-r50/repeated-audit.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare measured audit",
+      "run": "cmp verification/merged-pr-links/r01-r50/audit.json verification/merged-pr-links/r01-r50/repeated-audit.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/r01-r50/repeated-audit.json"
+  ]
+}

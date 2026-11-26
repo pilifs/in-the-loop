@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "581",
+  "title": "New reactive groups expose their first value or its selector error",
+  "summary": "The delayed one-item Observable group already delivered 7 on the parent. The Flowable challenge distinguished the revisions: the merge exposed the new group and delivered the selector error to both observers.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "RxJava",
+    "symbol": "Observable.groupBy"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Observable.groupBy now queues a first item before an unclaimed group can finish. The Flowable change also exposes a newly created group when selection of that item’s value fails."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/ReactiveX/RxJava",
+    "url": "https://github.com/ReactiveX/RxJava/pull/6664"
+  },
+  "notes": [
+    "The key is known before the value conversion. Independent inner and outer subscribers check where the selector’s failure becomes observable."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

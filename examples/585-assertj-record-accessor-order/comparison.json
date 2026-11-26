@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/assertj/assertj/pull/3710",
+  "revisions": {
+    "parent": "d2257cab92a263fde1159ad5bcc7339de2effbc9",
+    "fix": "f3ece963d761d66a7ee31d29ccd9158df3794024"
+  },
+  "entry": "RecursiveComparisonAssert.isEqualTo",
+  "questions": [
+    {
+      "id": "assertj/assertj#3710.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Change only the string while keeping both booleans true.",
+      "prediction": "The issue reports the analogous revision component difference being missed before. After, isNotEqualTo should pass and isEqualTo should throw AssertionError.",
+      "basis": "The generated field() accessor returns different strings even though isField() agrees. The regression exercises isNotEqualTo on this shape.",
+      "refutation": "The merge accepts equality or rejects inequality for these two values.",
+      "expected": {
+        "parent": {
+          "return": "equal=true,unequal=false"
+        },
+        "fix": {
+          "return": "equal=false,unequal=true"
+        }
+      }
+    },
+    {
+      "id": "assertj/assertj#3710.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use two separately constructed records with components (\"one\",true) on both sides.",
+      "prediction": "Recursive equality should pass on both revisions.",
+      "basis": "Corresponding stored values agree and the ordinary component accessors have no side effects.",
+      "refutation": "Equality throws AssertionError for the identical component values.",
+      "expected": {
+        "parent": {
+          "return": "equal=true"
+        },
+        "fix": {
+          "return": "equal=true"
+        }
+      }
+    },
+    {
+      "id": "assertj/assertj#3710.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On a second record type with the same components, add a public getField() that always returns \"fixed\". Compare the same two different stored strings and independently call field() on both instances.",
+      "prediction": "The merge’s lookup order predicts that recursive equality can still pass although field() returns \"one\" and \"two\". This tests the limit of the fix for records exposing a JavaBeans getter as well.",
+      "basis": "The landed source tries getField() before the bare accessor. Both objects return the same constant. The generated component accessor provides an independent reference.",
+      "refutation": "Reporting a string difference despite the equal JavaBeans getter values refutes the predicted precedence at this public entry.",
+      "expected": {
+        "fix": {
+          "return": "field=one/two,getter=fixed/fixed,equal=true"
+        }
+      }
+    }
+  ]
+}

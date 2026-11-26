@@ -1,0 +1,98 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "a5bb98c6a843a9e3e68c28d3d92950d58ba3b9ae7db71575a25e53104af86bb5",
+  "runtimeSha256": "2bccd6ea6ecde22b9db398022a0a054a87ba04e4da45b05e54cc81bebdb67663",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "6e85339e9b0357eb9990d23bf1906a03e117f2e98ec38e4d426d4d86723f406e"
+  },
+  "deployments": {
+    "overlay": {
+      "callerClasses": {
+        "PublicCaller$1Events.class": "0d07223a336caa7d13b2d54981c39a2b0defb25a2804e672b1b6180072d3645d",
+        "PublicCaller.class": "0f79aa3a075d2f72bebfa4d95999ef6a6a107b36e59c094927769d0d7f233f94",
+        "UpgradeObservation.class": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "reactor/reactor-core#937.1",
+          "outcome": {
+            "return": "[1, 2]/same-error"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "reactor/reactor-core#937.2",
+          "outcome": {
+            "return": "[1, 2, 3, 4]/complete"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "reactor/reactor-core#937.3",
+          "outcome": {
+            "return": "[1, 2]/same-error/demand=true / [1, 2, 3, 4]/same-error/demand=true"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "reactor/reactor-core#937.1",
+          "outcome": {
+            "return": "[1, 2, 3, 4]/same-error"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "reactor/reactor-core#937.2",
+          "outcome": {
+            "return": "[1, 2, 3, 4]/complete"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "reactor/reactor-core#937.3",
+          "outcome": {
+            "return": "[1, 2, 3, 4]/same-error/demand=true / [1, 2, 3, 4]/same-error/demand=true"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "reactor/core/publisher/FlatMapTracker.class": "85ed3f7c88f82bfde753c20bcb75b8bed364c148d70edf01ea92b981e6ea94f6",
+          "reactor/core/publisher/FluxConcatMap$1.class": "12ab679c0e57fc9bdae27523c96a1642aee717cb95e1e6c58deeb97bc3ed3c56",
+          "reactor/core/publisher/FluxConcatMap$ConcatMapDelayed.class": "b4b47e4b9204bcc6b838be06c5f6363e5a84152d4e247ebd9c75af5330052890",
+          "reactor/core/publisher/FluxConcatMap$ConcatMapImmediate.class": "b854123f54d0608ad6d8bb5117d47e3a285611c3eb4cde2df641487da90cd9c3",
+          "reactor/core/publisher/FluxConcatMap$ConcatMapInner.class": "c9d9bd0a8a33a4f7b13cf99e53efefc17de1a06cc4cdfe22bcc0c4ce662349d1",
+          "reactor/core/publisher/FluxConcatMap$ErrorMode.class": "02aae4fc0004f1653bbeaadbb5f670b578a215657c611faf9ab612d457dd18f6",
+          "reactor/core/publisher/FluxConcatMap$FluxConcatMapSupport.class": "d3077ac1485acefec9dcc8c407df7c59246f358fa39317f0d00abe969479cb47",
+          "reactor/core/publisher/FluxConcatMap$WeakScalarSubscription.class": "304220a2539952c4a3fea8e8f0b4c3b1015cafe476a3fd5c1e6dea4fdae6da28",
+          "reactor/core/publisher/FluxConcatMap.class": "b77d2c63a495838fab4e235e56bf3ae27aa19925e996ff925ab134fd9497f16a",
+          "reactor/core/publisher/FluxFlatMap$FlatMapInner.class": "af82b5e7dab897faf502bfc8d98735bbfd689d8c4a563d7fd37dbce6a2502502",
+          "reactor/core/publisher/FluxFlatMap$FlatMapMain.class": "c5e549f509d9cbf9e8cfb71e6a11021163117dc9c08262fa35249022911c3cda",
+          "reactor/core/publisher/FluxFlatMap.class": "804eb94fd5a2cc81d42c3172aa90c579ec53cd747ddd135ef7608c88f0406196"
+        },
+        "fix": {
+          "reactor/core/publisher/FlatMapTracker.class": "0d3a2d54bbb709b3b3a3a958ca0308dd047c5d6d3ff3924166ccfdbe6224da08",
+          "reactor/core/publisher/FluxConcatMap$1.class": "12ab679c0e57fc9bdae27523c96a1642aee717cb95e1e6c58deeb97bc3ed3c56",
+          "reactor/core/publisher/FluxConcatMap$ConcatMapDelayed.class": "a7ac8a0460db5ca7a24c2cb78c12598a7e38ef855696bb09c52c8cc540d89176",
+          "reactor/core/publisher/FluxConcatMap$ConcatMapImmediate.class": "b854123f54d0608ad6d8bb5117d47e3a285611c3eb4cde2df641487da90cd9c3",
+          "reactor/core/publisher/FluxConcatMap$ConcatMapInner.class": "d1089980ddd70eab8e336a31ade251b0cc7428ab3b1261aeb680c2adbcc3963f",
+          "reactor/core/publisher/FluxConcatMap$ErrorMode.class": "02aae4fc0004f1653bbeaadbb5f670b578a215657c611faf9ab612d457dd18f6",
+          "reactor/core/publisher/FluxConcatMap$FluxConcatMapSupport.class": "d3077ac1485acefec9dcc8c407df7c59246f358fa39317f0d00abe969479cb47",
+          "reactor/core/publisher/FluxConcatMap$WeakScalarSubscription.class": "304220a2539952c4a3fea8e8f0b4c3b1015cafe476a3fd5c1e6dea4fdae6da28",
+          "reactor/core/publisher/FluxConcatMap.class": "b77d2c63a495838fab4e235e56bf3ae27aa19925e996ff925ab134fd9497f16a",
+          "reactor/core/publisher/FluxFlatMap$FlatMapInner.class": "a73b4ca2854926650b0d68e4a6eff36379bc0f4a04472a4a9c1991fc102811d7",
+          "reactor/core/publisher/FluxFlatMap$FlatMapMain.class": "aa38690d1a3c329111fd5064599b6c743ef24458d3ea4b20057197dff65129aa",
+          "reactor/core/publisher/FluxFlatMap.class": "804eb94fd5a2cc81d42c3172aa90c579ec53cd747ddd135ef7608c88f0406196"
+        }
+      }
+    }
+  }
+}

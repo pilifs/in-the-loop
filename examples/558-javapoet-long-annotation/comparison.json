@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/square/javapoet/pull/994",
+  "revisions": {
+    "parent": "aaebc488320bd11aab1a6248d6b8058a255c92df",
+    "fix": "c9925e48577e3e74b91eb737b2c2b3c22109cde8"
+  },
+  "entry": "AnnotationSpec.get",
+  "questions": [
+    {
+      "id": "square/javapoet#994.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Generate the annotation use with value 12345678910L. Compile the new class with the annotation declaration on the compiler classpath.",
+      "prediction": "Issue #993 reports a compiler complaint about an oversized integer literal before. After, expect decimal text 12345678910L and successful compilation.",
+      "basis": "The decimal number exceeds Integer.MAX_VALUE and fits in long. An unsuffixed positive decimal integer literal of that magnitude is invalid here.",
+      "refutation": "The literal lacks a long suffix or javac rejects the generated member value on the merge.",
+      "expected": {
+        "parent": {
+          "return": "false/false/-"
+        },
+        "fix": {
+          "return": "true/true/12345678910"
+        }
+      }
+    },
+    {
+      "id": "square/javapoet#994.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Repeat with an annotation member of type int set to 7.",
+      "prediction": "Both should emit an int-compatible literal and compile to a class whose reflected member equals 7.",
+      "basis": "Integer constants already fit the declared type.",
+      "refutation": "The generator adds a long suffix that makes the int member uncompilable, or reflection reads another value.",
+      "expected": {
+        "parent": {
+          "return": "true/7"
+        },
+        "fix": {
+          "return": "true/7"
+        }
+      }
+    },
+    {
+      "id": "square/javapoet#994.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use a long[] member containing 7L and −2147483649L. Compile, load the generated class, retrieve its annotation and read the array.",
+      "prediction": "On the merge the recovered array must contain those two longs in order, including the negative value.",
+      "basis": "Reflecting on the compiled consumer checks the literal type, element order and sign independently of source formatting.",
+      "refutation": "Generated code fails to compile or runtime reflection gives an incorrect element, length or order.",
+      "expected": {
+        "fix": {
+          "return": "true/[7, -2147483649]"
+        }
+      }
+    }
+  ]
+}

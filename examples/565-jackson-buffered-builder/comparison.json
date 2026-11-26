@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/FasterXML/jackson-databind/pull/6407",
+  "revisions": {
+    "parent": "b02acce88765473e3d883c877f1e64e1c1d8910d",
+    "fix": "0736200316cc75d98d38b73622aad09f28a1fc93"
+  },
+  "entry": "JsonMapper.readValue",
+  "questions": [
+    {
+      "id": "FasterXML/jackson-databind#6407.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Deserialize the object with a and b before c, and d last.",
+      "prediction": "The PR reports lost buffered values on the parent. After the change, the four accessors should return (5,6,7,8).",
+      "basis": "Each independent property was supplied exactly once. The pinned builder carries untouched fields into each replacement.",
+      "refutation": "Either pre-creator value becomes zero, or the post-creator d is lost on the merge.",
+      "expected": {
+        "parent": {
+          "return": "0,0,7,8"
+        },
+        "fix": {
+          "return": "5,6,7,8"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-databind#6407.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use the ordinary MutableBean fixture. Read name=value before creator id=7. The setter mutates the bean and returns the String value.",
+      "prediction": "Both should produce the same MutableBean with id 7 and name value.",
+      "basis": "An ordinary setter's return is immaterial to the identity of this bean. The pinned regression checks both fields.",
+      "refutation": "A mapping failure, a String substituted for the target, or a bean lacking its supplied name.",
+      "expected": {
+        "parent": {
+          "return": "7/value"
+        },
+        "fix": {
+          "return": "7/value"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-databind#6407.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Compare creator-first and creator-last object encodings with the array [5,6,7,8]. For the array use the pinned a,b,c,d order and ARRAY format override.",
+      "prediction": "On the merge all three should yield equal Value records. Changing only b to 16 in all three encodings should change only b in each result.",
+      "basis": "Distinct properties describe the same logical value. Comparing independent orderings and shapes exposes stale intermediate builder instances.",
+      "refutation": "Only one ordering or shape succeeds, or changing b affects another accessor.",
+      "expected": {
+        "fix": {
+          "return": "5,6,7,8 / 5,6,7,8 / 5,6,7,8 / 5,16,7,8 / 5,16,7,8 / 5,16,7,8"
+        }
+      }
+    }
+  ]
+}

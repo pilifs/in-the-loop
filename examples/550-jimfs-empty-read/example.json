@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "550",
+  "title": "A zero-length file read still returns zero after observed EOF",
+  "summary": "A zero-length file read returned zero after EOF. An empty slice at the end of the destination still alternated correctly with positive reads and left every sentinel intact.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "special-values",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Jimfs",
+    "symbol": "Files.newInputStream"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Honor a zero-length bulk read after a Jimfs stream has already recorded end of file."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/jimfs",
+    "url": "https://github.com/google/jimfs/pull/435"
+  },
+  "notes": [
+    "The endpoint is a valid empty slice. No call can create data in an empty file."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

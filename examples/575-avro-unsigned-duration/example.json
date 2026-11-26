@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "575",
+  "title": "Avro duration converts three unsigned fixed-width fields without losing their units",
+  "summary": "The logical Avro reader decoded the three independently written duration words in order. Both the logical and raw readers preserved the maximum unsigned millisecond value.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "deserialization",
+    "integer-overflow",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Avro",
+    "symbol": "GenericDatumReader.read"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Java adds LogicalTypes.duration(), TimePeriod and DurationConversion for Avro’s 12-byte fixed duration logical type. Register the conversion on a GenericData instance when requesting logical values."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/avro",
+    "url": "https://github.com/apache/avro/pull/2520"
+  },
+  "notes": [
+    "The maximum unsigned 32-bit word is all ones, distinct from signed −1. A second reader without conversion exposes the physical field boundary."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "562",
+  "title": "Resolve nested record component types before choosing a JSON adapter",
+  "summary": "Moshi resolved nested scalars, lists and map values to Long. Alternating Long, String and Long wrappers in the same adapter cache preserved the type of every component.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "request-binding",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Moshi",
+    "symbol": "Moshi.adapter"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Resolve each record component in its enclosing parameterized type so list and map adapters receive the concrete type argument."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/square/moshi",
+    "url": "https://github.com/square/moshi/pull/1442"
+  },
+  "notes": [
+    "Identical raw component declarations can represent different parameterized types. Reusing the same adapter cache exercises that distinction."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

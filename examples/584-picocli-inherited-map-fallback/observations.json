@@ -1,0 +1,70 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "5cff1811a8d799d13c1fe8987980361aa4ebc6b4c4af2369ee24f8a771565789",
+  "runtimeSha256": "183deaba71d76afaa36f2a116b226f04bedc467061eba54c89619019d173ce23",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "704a3ec40a4447da53d2383e99698213a6a2579dac646cab70842a6a2a8e1db9"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Child.class": "026d090541133714ad805af9a02484f3b131efabc407c3361c69655d7af45ac2",
+        "PublicCaller$EmptyParent.class": "dc5db2087e15d6585e6966ca81e438b51f3fe5ce44cca1040b0818552973035f",
+        "PublicCaller$NullParent.class": "950c05573c75527d8cb4dcd7cd25bf24e06a6051c3c8d70a26cae8351cf783ea",
+        "PublicCaller.class": "b5b4042bd8903f06621e980b6055ecc850b2eed658e5645b3783e0a264227e38",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "remkop/picocli#2036.1",
+          "outcome": {
+            "throws": "picocli.CommandLine$ParameterException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "remkop/picocli#2036.2",
+          "outcome": {
+            "return": "1/true/actual"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "remkop/picocli#2036.3",
+          "outcome": {
+            "throws": "picocli.CommandLine$ParameterException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "remkop/picocli#2036.1",
+          "outcome": {
+            "return": "1/true/<null>"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "remkop/picocli#2036.2",
+          "outcome": {
+            "return": "1/true/actual"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "remkop/picocli#2036.3",
+          "outcome": {
+            "return": "1/true/empty / 1/true/empty / 1/true/<null> / 1/true/<null>"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

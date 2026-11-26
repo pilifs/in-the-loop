@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/locationtech/jts/pull/1092",
+  "revisions": {
+    "parent": "a7597288e551757426015db75c22603c0baeff20",
+    "fix": "034207b1de6605ad3eb8dbf8373b1ad8fab1b1b3"
+  },
+  "entry": "WKBWriter.write",
+  "questions": [
+    {
+      "id": "locationtech/jts#1092.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Write the XYM line with maximum output dimension four.",
+      "prediction": "The parent advertises both extra dimensions by default and attempts a fourth ordinate. The merge should encode a measured line with only M set, returning measures 3 and 7 and no elevation.",
+      "basis": "The fixture has three doubles per point, a five-byte geometry header and four-byte point count, so the no-SRID output is 57 bytes. The pinned test checks the exact M-only encoding.",
+      "refutation": "An exception on the merge, a Z flag, a size other than 57, or decoded M values different from 3 and 7.",
+      "expected": {
+        "fix": {
+          "return": "57/M/[1.0:2.0:NaN:3.0, 5.0:6.0:NaN:7.0]/1"
+        }
+      }
+    },
+    {
+      "id": "locationtech/jts#1092.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Write LINESTRING ZM(1 2 3 4, 5 6 7 8) with the same writer.",
+      "prediction": "Both should round-trip with elevations 3 and 7 and measures 4 and 8.",
+      "basis": "The input has four distinct ordinates per position. The pinned XYZM readback examines all four.",
+      "refutation": "A swapped, missing or altered Z or M, even if XY geometry equality passes.",
+      "expected": {
+        "parent": {
+          "return": "73/ZM/[1.0:2.0:3.0:4.0, 5.0:6.0:7.0:8.0]/1"
+        },
+        "fix": {
+          "return": "73/ZM/[1.0:2.0:3.0:4.0, 5.0:6.0:7.0:8.0]/1"
+        }
+      }
+    },
+    {
+      "id": "locationtech/jts#1092.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge serialize the same XYM geometry in each supported byte order and decode each byte sequence independently.",
+      "prediction": "The byte-order markers differ, but each decoded sequence has one measure per point, equal XY coordinates and M values [3,7].",
+      "basis": "Endianness determines how numbers are encoded, independent of the meaning of the third ordinate.",
+      "refutation": "Only one order decodes, or the decoded values agree in XY while the third ordinate moves into Z.",
+      "expected": {
+        "fix": {
+          "return": "1:57/M/[1.0:2.0:NaN:3.0, 5.0:6.0:NaN:7.0]/1 / 0:57/M/[1.0:2.0:NaN:3.0, 5.0:6.0:NaN:7.0]/1"
+        }
+      }
+    }
+  ]
+}

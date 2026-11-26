@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/avro/pull/2520",
+  "revisions": {
+    "parent": "119c3fc99203cf6fb63dda7c3bb307c8841f179a",
+    "fix": "abe6d421e82fa1d7e2ff4ae19b8a73f2e75ca396"
+  },
+  "entry": "GenericDatumReader.read",
+  "questions": [
+    {
+      "id": "apache/avro#2520.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Read the manually supplied bytes under the logical reader schema.",
+      "prediction": "The parent lacks the new Java DurationConversion and TimePeriod API. On the merge read a TimePeriod with getters 1 month, 2 days and 3 milliseconds.",
+      "basis": "Each independently encoded four-byte word has its own unit. Treating days as months or milliseconds cannot preserve these three getter values.",
+      "refutation": "A GenericFixed escapes the configured reader, a getter changes, or decoding fails on the merge.",
+      "expected": {
+        "parent": {
+          "throws": "java.lang.NoClassDefFoundError"
+        },
+        "fix": {
+          "return": "1/2/3"
+        }
+      }
+    },
+    {
+      "id": "apache/avro#2520.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Read the same fixture with a plain fixed(12) writer and reader schema and an ordinary GenericData instance.",
+      "prediction": "Both revisions should return GenericFixed containing the twelve original bytes unchanged.",
+      "basis": "The unannotated physical representation is a named Avro fixed value of known size. No unit conversion participates.",
+      "refutation": "An altered byte, length or unexpected logical Java type on either revision.",
+      "expected": {
+        "parent": {
+          "return": "010000000200000003000000"
+        },
+        "fix": {
+          "return": "010000000200000003000000"
+        }
+      }
+    },
+    {
+      "id": "apache/avro#2520.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge write TimePeriod.of(1, 2, 4294967295L) with the registered conversion. Read back with both plain-fixed and duration reader schemas.",
+      "prediction": "The first eight bytes must stay identical to the baseline, the last four must all be FF, and the logical getter must return 4294967295L. Replacing the final component with zero may change only the last four bytes.",
+      "basis": "The maximum unsigned 32-bit word is all ones, distinct from signed −1. A second reader without conversion exposes the physical field boundary.",
+      "refutation": "The sign is lost, months or days change, or the raw schema and logical getters disagree.",
+      "expected": {
+        "fix": {
+          "return": "0100000002000000ffffffff/1/2/4294967295 / 010000000200000000000000/1/2/0"
+        }
+      }
+    }
+  ]
+}

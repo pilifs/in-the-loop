@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/calcite/pull/4942",
+  "revisions": {
+    "parent": "3fc5f464ee087f69cd7b1f8dd54ee612050a917d",
+    "fix": "b25114f7c616b6e3fb4007071406f79e765ff66f"
+  },
+  "entry": "RexExecutorImpl.reduce",
+  "questions": [
+    {
+      "id": "apache/calcite#4942.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Reduce the six-digit TIME cast and the analogous TIMESTAMP(6) cast for 2020-01-01 12:34:56.123456.",
+      "prediction": "The PR reports loss of digits past milliseconds on the parent. On the merge the returned time and timestamp strings should each end in .123456 with their whole-second and date components preserved.",
+      "basis": "All six digits fit the declared precision exactly. The pinned reducer tests exercise precisions 1 through 9.",
+      "refutation": "A nonliteral result for the fixture, a .123000 suffix, a changed date, or any other loss of representable digits.",
+      "expected": {
+        "parent": {
+          "return": "12:34:56.123000/2020-01-01 12:34:56.123000"
+        },
+        "fix": {
+          "return": "12:34:56.123456/2020-01-01 12:34:56.123456"
+        }
+      }
+    },
+    {
+      "id": "apache/calcite#4942.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Reduce TIME(3) and TIMESTAMP(3) casts of the same whole-second values with exactly .123 in the inputs.",
+      "prediction": "Both revisions should return .123 when read as TimeString or TimestampString at precision three.",
+      "basis": "These values are exactly representable at millisecond precision.",
+      "refutation": "Either reduced literal loses or changes one of the three significant digits.",
+      "expected": {
+        "parent": {
+          "return": "12:34:56.123/2020-01-01 12:34:56.123"
+        },
+        "fix": {
+          "return": "12:34:56.123/2020-01-01 12:34:56.123"
+        }
+      }
+    },
+    {
+      "id": "apache/calcite#4942.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Reduce a pair of timestamps differing only in the sixth fractional digit, .123456 and .123457. Cast each to VARCHAR(30), then reduce and read the result strings.",
+      "prediction": "On the merge the strings should respectively end .123456 and .123457. They must remain distinguishable after the temporal-to-character conversion.",
+      "basis": "The inputs differ by one representable microsecond. String readback tests the next consumer rather than only a temporal type's declared precision.",
+      "refutation": "Equal strings, a wrong last digit or a changed date on either path.",
+      "expected": {
+        "fix": {
+          "return": "2020-01-01 12:34:56.123456/2020-01-01 12:34:56.123457"
+        }
+      }
+    }
+  ]
+}

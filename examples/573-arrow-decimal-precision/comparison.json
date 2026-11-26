@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/arrow-java/pull/1342",
+  "revisions": {
+    "parent": "f745a59d4c944ce47c109b89be021915b3484cce",
+    "fix": "2f35627084d27e06fcaca800bc05c772e3fc1113"
+  },
+  "entry": "DecimalVector.validateScalars",
+  "questions": [
+    {
+      "id": "apache/arrow-java#1342.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Store 999.99 and −999.99 as defined values, using either width.",
+      "prediction": "Parent validation is predicted to throw ValidateException. The merge should accept both and return BigDecimal values with those digits, signs and scale 2.",
+      "basis": "Both unscaled magnitudes have five digits. The decimal precision counts magnitude digits without the sign. The upstream test validates this pair at 128 and 256 bits.",
+      "refutation": "Validation rejects equality, changes scale, or getObject returns a different value.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "ValidateException"
+          ]
+        },
+        "fix": {
+          "return": "ok/[999.99, -999.99] / ok/[999.99, -999.99]"
+        }
+      }
+    },
+    {
+      "id": "apache/arrow-java#1342.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Store 99.99 with the same declaration. In a separate vector use the raw-buffer helper in the regression to store 1000.00 as a defined value.",
+      "prediction": "Both should validate the four-digit value and reject the six-digit one with ValidateException.",
+      "basis": "The valid magnitude has four digits. The invalid one has six but still fits physically in either buffer width.",
+      "refutation": "A smaller value is rejected, or a physically encodable but out-of-precision value passes.",
+      "expected": {
+        "parent": {
+          "return": "ok/ValidateException / ok/ValidateException"
+        },
+        "fix": {
+          "return": "ok/ValidateException / ok/ValidateException"
+        }
+      }
+    },
+    {
+      "id": "apache/arrow-java#1342.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Populate the boundary pair via public setSafe calls, reversing the signs’ order. Transfer the two values by getObject and setSafe into a separately allocated vector of the other decimal width, with the same declared precision and scale.",
+      "prediction": "On the merge both vectors should validate and return the same signed pair in the new order.",
+      "basis": "Logical decimal precision and scale are unchanged by backing width. Crossing two public setters and readers checks both sign and logical scale.",
+      "refutation": "One width accepts the values but the other rejects them, or the transferred pair changes order, sign or scale.",
+      "expected": {
+        "fix": {
+          "return": "ok/[-999.99, 999.99] / ok/[-999.99, 999.99]"
+        }
+      }
+    }
+  ]
+}

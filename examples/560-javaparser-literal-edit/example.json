@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "560",
+  "title": "Typed literal edits reach the lexical printer",
+  "summary": "The lexical printer emitted the changed literal. A fresh parse recovered the embedded newline and quote and retained the adjacent comment.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "compilers",
+    "stale-messages",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JavaParser",
+    "symbol": "LexicalPreservingPrinter.print"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Typed literal setters now report value changes to observers. A lexical-preserving source edit should reflect the new value while retaining surrounding text."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/javaparser/javaparser",
+    "url": "https://github.com/javaparser/javaparser/pull/5176"
+  },
+  "notes": [
+    "A Java string literal cannot contain an unescaped physical line break. A consumer must recover the logical characters regardless of how the printer escapes them."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

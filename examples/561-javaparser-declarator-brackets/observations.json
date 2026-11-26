@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "98d05870067fb9d36e1947fa4226eebae2e0bf1acbff92a507993760e321059d",
+  "runtimeSha256": "f39bbcd0e98f4b338a57c4b8024860db45af06706291f8953856c82254473d32",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "e42022b2a4bec8905d32a5d192423549b0cad0bd9255f3450a9932419d7a119a"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "2c144a111aec1fac2b30661225c8ff2919a69730154998a493c26b880a1b77e2",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "javaparser/javaparser#5207.1",
+          "outcome": {
+            "throws": "com.github.javaparser.ParseProblemException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "parent",
+          "id": "javaparser/javaparser#5207.2",
+          "outcome": {
+            "return": "class A { void m(String[][] b) {} }/b/2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "javaparser/javaparser#5207.3",
+          "outcome": {
+            "throws": "java.lang.UnsupportedOperationException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "javaparser/javaparser#5207.1",
+          "outcome": {
+            "return": "class A { void m(String[] b[]) {} }/b/2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "javaparser/javaparser#5207.2",
+          "outcome": {
+            "return": "class A { void m(String[][] b) {} }/b/2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "javaparser/javaparser#5207.3",
+          "outcome": {
+            "return": "class A { int b[], keep; }/b:1/keep:0"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

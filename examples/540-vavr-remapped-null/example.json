@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "540",
+  "title": "A remapping that yields null still reports a present key",
+  "summary": "A null remap now returns a defined option. A second callback saw the stored null, restored the value, and left the original persistent map intact.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "special-values",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Vavr",
+    "symbol": "HashMap.computeIfPresent"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A present key whose remapping function returns null now produces a defined result option alongside the updated persistent map."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/vavr-io/vavr",
+    "url": "https://github.com/vavr-io/vavr/pull/3276"
+  },
+  "notes": [
+    "A second lookup distinguishes a stored null from absence. The original receiver provides an independent check of persistent updates."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

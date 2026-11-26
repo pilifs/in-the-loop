@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "e594ccb26b75e479fcc55d1b8922e7a1582d206dcc64f8ae5f660e9078c5b746",
+  "runtimeSha256": "27aef54f503ca8ecb14f91a21fc1f2f3d21fc39184fcaafae6db5dc104884ec0",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "4f67375eda6b51ee39583aeeed4c491640181f612f5ca56d51abc7ba6461068b"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "5565a1fe0495b7f9ed4b3b79b3caf6a77bdfef3122f963fb4976d8cffd25154c",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "h2database/h2database#2614.1",
+          "outcome": {
+            "return": "sqlstate=HY000/JdbcSQLNonTransientException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "h2database/h2database#2614.2",
+          "outcome": {
+            "return": "Object[]:[1, 2]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "h2database/h2database#2614.3",
+          "outcome": {
+            "return": "sqlstate=HY000/JdbcSQLNonTransientException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "h2database/h2database#2614.1",
+          "outcome": {
+            "return": "Integer[][]:[[1, 2], [3]]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "h2database/h2database#2614.2",
+          "outcome": {
+            "return": "Object[]:[1, 2]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "h2database/h2database#2614.3",
+          "outcome": {
+            "return": "Short[][]:[[1, 2], [3]]/[[1, 2], [3]]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

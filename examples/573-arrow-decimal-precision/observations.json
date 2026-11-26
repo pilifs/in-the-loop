@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "06c740e3f3b1f3c9771c04d40fc9c56054b404c06324977531dfbcd22cba6e41",
+  "runtimeSha256": "a1d6707b8c4fd2ea55e8f0668570f9787e0293c0db061411f6494d6b96174be7",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "2983d14f40cd8a9420a1ab82637deb598484d8359cf746e6f40b5e2707bf2ed1"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "c48b66db5848323ad814ab72f4768c2b1f56b7f814506e3599296817c69443c7",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/arrow-java#1342.1",
+          "outcome": {
+            "return": "ValidateException/[999.99, -999.99] / ValidateException/[999.99, -999.99]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/arrow-java#1342.2",
+          "outcome": {
+            "return": "ok/ValidateException / ok/ValidateException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/arrow-java#1342.3",
+          "outcome": {
+            "return": "ValidateException/[-999.99, 999.99] / ValidateException/[-999.99, 999.99]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/arrow-java#1342.1",
+          "outcome": {
+            "return": "ok/[999.99, -999.99] / ok/[999.99, -999.99]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/arrow-java#1342.2",
+          "outcome": {
+            "return": "ok/ValidateException / ok/ValidateException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/arrow-java#1342.3",
+          "outcome": {
+            "return": "ok/[-999.99, 999.99] / ok/[-999.99, 999.99]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "79024c7b6afd0c790238856948870981dee04a90bc3bc9de33e72a2640fa3fac",
+  "runtimeSha256": "839b05ae67af9171dd8b74275d26674022dbbd810ae54d18ff4313c5c1ab5ede",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "89b810a89f5f8e4a91c7d28f911949415c5f7d955f07831aa3eef7c0adab809e"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "1f7c824e3cad90b43ef9c93261e1302afe1638df5c509216552dff2be636e27e",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "resilience4j/resilience4j#2067.1",
+          "outcome": {
+            "return": "calls=1,retries=[0],errors=0,same-error"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "resilience4j/resilience4j#2067.2",
+          "outcome": {
+            "return": "calls=2,retries=[1],errors=0,ok"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "resilience4j/resilience4j#2067.3",
+          "outcome": {
+            "return": "calls=1,retries=[-1],errors=0,again"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "resilience4j/resilience4j#2067.1",
+          "outcome": {
+            "return": "calls=2,retries=[0],errors=1,same-error"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "resilience4j/resilience4j#2067.2",
+          "outcome": {
+            "return": "calls=2,retries=[1],errors=0,ok"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "resilience4j/resilience4j#2067.3",
+          "outcome": {
+            "return": "calls=1,retries=[-1],errors=0,again"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

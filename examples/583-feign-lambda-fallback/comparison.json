@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/resilience4j/resilience4j/pull/1999",
+  "revisions": {
+    "parent": "e328decc50954d70420359acea78491fce539d20",
+    "fix": "17dc97b1c8e472e1c295f112b8b761298cd1321a"
+  },
+  "entry": "Resilience4jFeign.builder",
+  "questions": [
+    {
+      "id": "resilience4j/resilience4j#1999.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Stub HTTP 400. Each fallback factory invocation returns an application-package lambda producing the string fallback.",
+      "prediction": "In the parent the factory path should fail on reflective access. On the merge greeting() should return fallback after one GET and one factory invocation.",
+      "basis": "Issue #2000 describes the factory variant. The new WireMock test checks the returned value and server count.",
+      "refutation": "A reflection failure on the merge, the server’s error body returned as a success, or extra GETs.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "gets=1,factories=1,error="
+          ]
+        },
+        "fix": {
+          "return": "gets=1,factories=1,result=fallback"
+        }
+      }
+    },
+    {
+      "id": "resilience4j/resilience4j#1999.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Have the same endpoint return 200 with body server, leaving the factory installed.",
+      "prediction": "Both revisions should return server after one GET. The factory count should stay zero.",
+      "basis": "A fallback is selected on an eligible exception. This successful response provides the interface result directly.",
+      "refutation": "A successful request invokes the factory or produces a fallback value.",
+      "expected": {
+        "parent": {
+          "return": "gets=1,factories=0,result=server"
+        },
+        "fix": {
+          "return": "gets=1,factories=0,result=server"
+        }
+      }
+    },
+    {
+      "id": "resilience4j/resilience4j#1999.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge issue two identical failing calls in order. Let the factory increment a counter and capture its current number in each new fallback lambda.",
+      "prediction": "The caller should receive fallback-1 then fallback-2. The server and factory should each count exactly two calls.",
+      "basis": "The factory contract creates a fallback per exception. A single constant fallback result cannot detect reuse across calls.",
+      "refutation": "The second result reuses the first marker, either call throws, or either counter differs from two.",
+      "expected": {
+        "fix": {
+          "return": "gets=2,factories=2,results=[fallback-1, fallback-2]"
+        }
+      }
+    }
+  ]
+}

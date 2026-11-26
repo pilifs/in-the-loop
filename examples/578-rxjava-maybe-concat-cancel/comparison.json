@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/ReactiveX/RxJava/pull/5101",
+  "revisions": {
+    "parent": "5a8be22b6501feefe10fb00731c00ce1ad215b89",
+    "fix": "6daf59ebc19f5ef8914086fe466823f51ca628a9"
+  },
+  "entry": "Maybe.concatArray",
+  "questions": [
+    {
+      "id": "ReactiveX/RxJava#5101.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "First and second sources would both succeed immediately, while firstElement consumes only the first.",
+      "prediction": "The PR reports the parent still enters the next source's subscription before cancelling it. The merge should return only 1 successfully, with first counter 1 and second counter 0.",
+      "basis": "firstElement cancels the concatenated Flowable during the first item. An entry-side counter observes external work even if its downstream signals are dropped.",
+      "refutation": "On the merge a second subscription occurs, or the subscriber loses its first success.",
+      "expected": {
+        "parent": {
+          "return": "[1]/complete/1/1"
+        },
+        "fix": {
+          "return": "[1]/complete/1/0"
+        }
+      }
+    },
+    {
+      "id": "ReactiveX/RxJava#5101.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Consume the full concatArray sequence with ordinary positive demand.",
+      "prediction": "Both revisions should subscribe to both sources once, in first/second order, emit [1,2] and complete.",
+      "basis": "A normal concat without early cancellation must consume the second source after the first finishes.",
+      "refutation": "An omitted or duplicate subscription, a reordered item, or a missing completion.",
+      "expected": {
+        "parent": {
+          "return": "[1, 2]/complete/[first, second]"
+        },
+        "fix": {
+          "return": "[1, 2]/complete/[first, second]"
+        }
+      }
+    },
+    {
+      "id": "ReactiveX/RxJava#5101.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Prepend Maybe.empty() and use the iterable overload Maybe.concat on all three. Compare with the array form with the same empty prefix and firstElement.",
+      "prediction": "On the merge the empty source must be entered, then the first value source must supply 1, and the second value source must remain unentered in both representations.",
+      "basis": "An empty source cannot satisfy firstElement. The cancellation point depends on the first actual value and is independent of array versus iterable representation.",
+      "refutation": "An empty prefix suppresses the first value, or the unused source executes only in one representation.",
+      "expected": {
+        "fix": {
+          "return": "[1]/complete/[empty, first] / [1]/complete/[empty, first]"
+        }
+      }
+    }
+  ]
+}

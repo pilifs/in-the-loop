@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/reactor/reactor-core/pull/3783",
+  "revisions": {
+    "parent": "92c8ea05eaa4e009fe5459bd4a1fe51b244bcc52",
+    "fix": "2a664dd587e74793fb473d81e8b26a199ff07d1e"
+  },
+  "entry": "Flux.thenMany",
+  "questions": [
+    {
+      "id": "reactor/reactor-core#3783.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Use the two successful sources and the one-element tail.",
+      "prediction": "Issue #3777 reports the parent-like first observation a. The parent source predicts [a,c], complete. The merge should emit [c], complete.",
+      "basis": "thenMany’s public documentation discards upstream elements. Both a and b belong to the receiver.",
+      "refutation": "An upstream value gets through on the merge, c is missing or duplicated, or the completion signal is absent.",
+      "expected": {
+        "parent": {
+          "return": "[a, c]/complete"
+        },
+        "fix": {
+          "return": "[c]/complete"
+        }
+      }
+    },
+    {
+      "id": "reactor/reactor-core#3783.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Hide the identity of the same concatenation with .hide() immediately before thenMany.",
+      "prediction": "Both revisions should emit only c and complete once.",
+      "basis": "The issue reports this variation passes. Hiding identity preserves the sequence of source signals.",
+      "refutation": "The hidden form emits a or b, or changes the terminal result.",
+      "expected": {
+        "parent": {
+          "return": "[c]/complete"
+        },
+        "fix": {
+          "return": "[c]/complete"
+        }
+      }
+    },
+    {
+      "id": "reactor/reactor-core#3783.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the first source and tail fixed, replace the second source with Flux.error(e), and use a tail subscription counter.",
+      "prediction": "On the merge observe no values, the identical e once and zero tail subscriptions. The parent shortcut predicts a preceding a but likewise no subscription to the tail.",
+      "basis": "The receiver’s completion is the condition for starting the tail. An error terminates that receiver even after earlier values.",
+      "refutation": "The tail is subscribed, a value escapes on the merge, or a different terminal signal replaces e.",
+      "expected": {
+        "fix": {
+          "return": "[]/same-error/tail=0"
+        }
+      }
+    }
+  ]
+}

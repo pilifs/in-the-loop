@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/jgrapht/jgrapht/pull/1379",
+  "revisions": {
+    "parent": "fabfabe6f279c0dd61b417a543d33d94fd039249",
+    "fix": "955e5cfb9b22d7ac2ef956849523d22041baf730"
+  },
+  "entry": "ConnectivityInspector.connectedSetOf",
+  "questions": [
+    {
+      "id": "jgrapht/jgrapht#1379.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Register on an empty graph, add vertices a and b, add their edge, then ask for a’s component.",
+      "prediction": "Issue #1162 reports a NullPointerException on listener updates with uninitialized state. On the merge each mutation must return normally and the component must be {a,b}.",
+      "basis": "There are only two vertices and one connecting edge. The component can be enumerated without any cache.",
+      "refutation": "A merged mutation throws, or querying a omits b or includes anything else.",
+      "expected": {
+        "parent": {
+          "throws": "java.lang.NullPointerException"
+        },
+        "fix": {
+          "return": "[a, b]"
+        }
+      }
+    },
+    {
+      "id": "jgrapht/jgrapht#1379.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Start with vertices a,b,c and edge a–b. Register on that graph, call connectedSets(), then add b–c.",
+      "prediction": "Both revisions should report one component {a,b,c} and pathExists(a,c) should be true.",
+      "basis": "The path a,b,c witnesses connectivity after insertion. Set enumeration order has no bearing on reachability.",
+      "refutation": "A full-cache update throws or any vertex is absent from the component.",
+      "expected": {
+        "parent": {
+          "return": "[[a, b, c]]/true"
+        },
+        "fix": {
+          "return": "[[a, b, c]]/true"
+        }
+      }
+    },
+    {
+      "id": "jgrapht/jgrapht#1379.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "With the same three initial vertices and a–b, query only connectedSetOf(a), add b–c, and query a again. Repeat with the edge directed from c to b on a directed graph.",
+      "prediction": "On the merge a's component should become {a,b,c} in both histories, and agree with a fresh inspector on each final graph.",
+      "basis": "The inspector defines weak connectivity for directed graphs. Query order and edge orientation cannot partition this underlying connected graph.",
+      "refutation": "Only the reused inspector remains at {a,b}, or reversing the edge changes the weak component.",
+      "expected": {
+        "fix": {
+          "return": "[a, b]->[a, b, c]/[a, b, c] / [a, b]->[a, b, c]/[a, b, c]"
+        }
+      }
+    }
+  ]
+}

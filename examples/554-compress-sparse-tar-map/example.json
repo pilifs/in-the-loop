@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "554",
+  "title": "GNU sparse TAR extraction starts at the first data record",
+  "summary": "An aligned sparse TAR map now produced three zeros followed by ABCD. Replacing the data with WXYZ preserved the next member’s name, payload and end of archive.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons Compress",
+    "symbol": "TarArchiveInputStream.getNextEntry"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "An aligned GNU PAX 1.x sparse map occupies complete TAR records. The merge consumes zero padding when the last map byte already ends a 512-byte record."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-compress",
+    "url": "https://github.com/apache/commons-compress/pull/775"
+  },
+  "notes": [
+    "The file data and the next member have independent TAR boundaries. Successful delivery of the first file alone does not prove subsequent alignment."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "579",
+  "title": "Concatenation delivers later values before a delayed inner error",
+  "summary": "Reactor delivered all four items before the identical delayed error. Hiding the callable source preserved the signals with one outstanding request at a time.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Reactor Core",
+    "symbol": "Flux.concatDelayError"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "In delay-until-end mode, errors from a callable inner source are accumulated while concatenation proceeds to the remaining sources."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/reactor/reactor-core",
+    "url": "https://github.com/reactor/reactor-core/pull/937"
+  },
+  "notes": [
+    "Each pin's original FluxConcatMap and FluxFlatMap classes precede the same Reactor Core 3.1.1.RELEASE. The historical Gradle plugins are unavailable.",
+    "The physical callers run on Temurin 8u512, the Java major reported for Reactor 3.1.0.RELEASE."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

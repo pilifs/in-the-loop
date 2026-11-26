@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/javaparser/javaparser/pull/5176",
+  "revisions": {
+    "parent": "a322c502cfac7d97495fc3f41c6b74a06924267f",
+    "fix": "c9c78dd4c965646dd97bbf3108ff1faefa1ae198"
+  },
+  "entry": "LexicalPreservingPrinter.print",
+  "questions": [
+    {
+      "id": "javaparser/javaparser#5176.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Change a to b with setString.",
+      "prediction": "The PR reports old lexical text and an updated pretty-printed value on the parent. On the merge the lexical text must contain the b literal in place of a, and parsing it must yield b.",
+      "basis": "Only this node was edited. A fresh parse observes what was actually emitted, independent of the in-memory node.",
+      "refutation": "The node returns b while the emitted unit still parses to a or fails to parse.",
+      "expected": {
+        "parent": {
+          "return": "b/a/false"
+        },
+        "fix": {
+          "return": "b/b/true"
+        }
+      }
+    },
+    {
+      "id": "javaparser/javaparser#5176.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Start with a and call setString with a again. Preserve unusual spaces around the assignment.",
+      "prediction": "Expect unchanged lexical text on both revisions. The merged same-value path must leave the spelling in place.",
+      "basis": "An idempotent edit changes no token. A byte-for-byte copy of the original source supplies the comparison.",
+      "refutation": "Formatting or literal spelling changes despite an unchanged value.",
+      "expected": {
+        "parent": {
+          "return": "true/a"
+        },
+        "fix": {
+          "return": "true/a"
+        }
+      }
+    },
+    {
+      "id": "javaparser/javaparser#5176.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use a new string whose decoded characters are b, LF and double quote. Place a neighboring comment containing a in the source before setup.",
+      "prediction": "On the merge the printed text must be parseable, with exactly that three-character string and the unchanged neighboring comment. The node and the newly parsed literal must agree.",
+      "basis": "A Java string literal cannot contain an unescaped physical line break. A consumer must recover the logical characters regardless of how the printer escapes them.",
+      "refutation": "A double escape changes the decoded value, the print no longer parses, or the untouched comment changes.",
+      "expected": {
+        "fix": {
+          "return": "true/true/true"
+        }
+      }
+    }
+  ]
+}

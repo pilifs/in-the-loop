@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/parquet-java/pull/3830",
+  "revisions": {
+    "parent": "6ae2a8f173dcd2a121e41e3dc05d3dfc284d84a5",
+    "fix": "bca2eaeac0afc88197c622f0f27c8a55739a5be9"
+  },
+  "entry": "DictionaryPageReadStore.readDictionaryPage",
+  "questions": [
+    {
+      "id": "apache/parquet-java#3830.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Write top-level \"one\"/\"two\" and nested \"nested-one\"/\"nested-two\". Decode all IDs from both dictionary pages.",
+      "prediction": "The issue reports a collision before. The merge must return sets {\"one\",\"two\"} and {\"nested-one\",\"nested-two\"} for the respective descriptors. Dictionary ID order may vary.",
+      "basis": "Each set can be computed independently from the producer’s values at that component path.",
+      "refutation": "Both pages exist but a decoded value belongs to the other column.",
+      "expected": {
+        "fix": {
+          "return": "[one, two]/[nested-one, nested-two]"
+        }
+      }
+    },
+    {
+      "id": "apache/parquet-java#3830.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use otherwise identical rows and a top-level column named \"plain\" instead of \"a.b\".",
+      "prediction": "Both revisions should yield the same two distinct value sets as before for the corresponding columns.",
+      "basis": "The two flattened metadata names are distinct under either representation.",
+      "refutation": "Either dictionary omits one of its two values or contains a sibling value.",
+      "expected": {
+        "parent": {
+          "return": "[one, two]/[nested-one, nested-two]"
+        },
+        "fix": {
+          "return": "[one, two]/[nested-one, nested-two]"
+        }
+      }
+    },
+    {
+      "id": "apache/parquet-java#3830.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Hold all top-level values fixed, replace only the nested values with \"new-one\"/\"new-two\", and open a fresh reader. Request nested, top-level, then nested a second time.",
+      "prediction": "On the merge the top-level set stays {\"one\",\"two\"}. Both nested requests return the new set.",
+      "basis": "Varying only a sibling must not affect a column dictionary, even if the sibling’s page is already cached.",
+      "refutation": "Changing nested values changes the top-level set, or either set depends on request order.",
+      "expected": {
+        "fix": {
+          "return": "[new-one, new-two]/[one, two]/[new-one, new-two]"
+        }
+      }
+    }
+  ]
+}

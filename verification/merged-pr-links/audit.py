@@ -1,10 +1,13 @@
 """Check coverage of the merged-PR brief, source pins, input digests and every finite JVM prediction."""
 import argparse
 from collections import Counter
+import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sys
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "examples/tools"))
@@ -142,6 +145,43 @@ def check_spring_deployment(number, deployment, recorded, setup):
                 and recorded.get("postgresVersionNumber") == 170012, "O11 requires the registered PostgreSQL server")
 
 
+def check_r_build(number, name, deployment, runtime, recorded, classes, section, replay):
+    """Tie a deployment to the setup JAR or the original class table where it lists only classes."""
+    label = f"R{number:02}"
+    overlay = number in (39, 42)
+    require(bool(deployment.get("preparedSlice")) == overlay, f"{label}: wrong build type")
+    cache = Path(os.environ.get("PUBLIC_COMPARISON_CACHE", Path.home() / ".cache/in-the-loop" / runtime["cache"]))
+    cp = deployment["classpath"]
+    require(0 in deployment["providers"].values(), f"{label}: missing original provider")
+    if overlay:
+        require(cp["parent"][1:] == cp["fix"][1:], f"{label}: different overlay companions")
+        base, provider = (("m2/org/apache/parquet/parquet-hadoop/1.18.2/parquet-hadoop-1.18.2.jar",
+                           "org.apache.parquet.hadoop.ParquetFileReader") if number == 39 else
+                          ("m2/io/projectreactor/reactor-core/3.1.1.RELEASE/reactor-core-3.1.1.RELEASE.jar",
+                           "reactor.core.publisher.Flux"))
+        require(cp["fix"][1] == base and deployment["providers"].get(provider) == 1,
+                f"{label}: the released base must supply its original public entry")
+    for side, paths in cp.items():
+        first = paths[0]
+        expected_dir = f"artifacts/{label}-{side}" + ("-android" if name == "android" else "")
+        if number == 42:
+            require(first == f"slices/R42-slice-{side}/slice.jar", f"{label}: wrong Reactor slice")
+        else:
+            require(str(Path(first).parent) == expected_dir, f"{label}: wrong original JAR")
+        members = classes.get(first, {})
+        named_jar = runtime["sha256"][first] in section
+        require(named_jar or (members and all(d in section for d in members.values())),
+                f"{label}: no original build digest in the setup record")
+        if overlay:
+            require(members and recorded["preparedSliceClasses"][side] == members,
+                    f"{label}: different original overlay classes")
+        if replay and members:
+            with zipfile.ZipFile(cache / first) as archive:
+                for member, digest in members.items():
+                    require(hashlib.sha256(archive.read(member)).hexdigest() == digest,
+                            f"{label}: {member} differs from the original build")
+
+
 def audit(replay=False, campaign="original"):
     series = {"original": ("organic-java-merged-pr-links-brief", "M", None),
               "l01-l20": ("organic-java-merged-pr-links-l01-l20-brief", "L", 20),
@@ -149,7 +189,8 @@ def audit(replay=False, campaign="original"):
               "n01-n05": ("organic-java-merged-pr-links-n01-n05-brief", "N", 5),
               "o01-o20": ("spring-framework-pr-links-o01-o20-brief", "O", 20),
               "p01-p30": ("spring-framework-pr-links-p01-p30-brief", "P", 30),
-              "q01-q30": ("spring-framework-pr-links-q01-q30-brief", "Q", 30)}
+              "q01-q30": ("spring-framework-pr-links-q01-q30-brief", "Q", 30),
+              "r01-r50": ("organic-java-merged-pr-links-r01-r50-brief", "R", 50)}
     brief_name, case_prefix, case_count = series[campaign]
     brief = ROOT / "llm-dlc/loops" / (brief_name + ".md")
     setup = brief.with_name(brief.stem + "-setup.md").read_text()
@@ -159,6 +200,9 @@ def audit(replay=False, campaign="original"):
     spring_series = campaign in ("o01-o20", "p01-p30", "q01-q30")
     if spring_series:
         build_table = spring_builds(setup, campaign, case_prefix)
+    r_series = campaign == "r01-r50"
+    if r_series:
+        classes = comparison.read(Path(__file__).with_name(campaign) / "build-classes.json")
     references = {}
     for section in brief.read_text().split("\n## "):
         link = re.search(r"https://github.com/([\w.-]+/[\w.-]+)/compare/([0-9a-f]{40})\.{3}([0-9a-f]{40})", section)
@@ -241,8 +285,15 @@ def audit(replay=False, campaign="original"):
         inventory = folder / "setup/artifacts.sha256"
         if inventory.is_file():
             supplied = dict(line.split(None, 1)[::-1] for line in inventory.read_text().splitlines() if line.strip())
+        if r_series:
+            variants = (["jre", "android"] if number in (5, 9) else
+                        ["overlay"] if number in (39, 42) else ["pins"])
+            require(list(runtime["deployments"]) == variants, prefix + "missing or unexpected deployment")
         for variant, deployment in runtime["deployments"].items():
             result_rows = recorded["deployments"][variant]
+            if r_series:
+                check_r_build(number, variant, deployment, runtime, result_rows, classes, setup_section, replay)
+                counters["pinnedSourcePairs" if variant == "overlay" else "fullBuildPairs"] += 1
             if campaign == "o01-o20":
                 check_spring_deployment(number, deployment, result_rows, setup)
                 counters["pinnedSourcePairs" if "sourceSlice" in deployment else "fullBuildPairs"] += 1
@@ -261,11 +312,16 @@ def audit(replay=False, campaign="original"):
                 for f in files:
                     digest = runtime["sha256"][f]
                     require(re.fullmatch("[0-9a-f]{64}", digest), prefix + "artifact digest")
-                    if f.startswith("artifacts/"):
+                    if r_series and f.startswith("artifacts/snapshots-B/"):
+                        require(number in (28, 29, 30) and digest in setup and Path(f).stem.split("-")[-2] in setup,
+                                prefix + "different dated Jackson dependency")
+                    elif f.startswith("artifacts/"):
                         if case_count:
                             label = re.match(rf"artifacts/{case_prefix}{number:02}[-/].*?\b(parent|fix)\b", f)
                             require(label and label[1] == side, prefix + f"{f} belongs to a different revision")
-                        if spring_series or campaign == "n01-n05":
+                        if r_series:
+                            require(supplied.get(f) == digest, prefix + f"{side} {f} differs from its setup inventory")
+                        elif spring_series or campaign == "n01-n05":
                             require(build_table.get(f) == digest, prefix + f"{side} {f} differs from pin-build table")
                         else:
                             require(digest in setup_section or supplied.get(f) == digest,
@@ -281,7 +337,7 @@ def audit(replay=False, campaign="original"):
                 require(all(type(i) is int and 0 <= i < len(files) for i in indices), prefix + "provider index")
                 require(any(files[i].startswith("artifacts/") for i in indices) or
                         (campaign == "o01-o20" and number in (11, 14) and "sourceSlice" in deployment) or
-                        (campaign in ("p01-p30", "q01-q30") and deployment.get("preparedSlice")),
+                        (campaign in ("p01-p30", "q01-q30", "r01-r50") and deployment.get("preparedSlice")),
                         prefix + "no pin-built provider")
             expected_keys = [(s, q["id"]) for s in comparison.SIDES for q in spec["questions"]
                              if s not in q.get("omit", {})]
@@ -324,10 +380,10 @@ def audit(replay=False, campaign="original"):
                         omittedParentHistories=sum("parent" in q.get("omit", {}) for q in spec["questions"]))
         result["cases"].append({"example": ex["id"], "case": case, "observationsSha256": comparison.upgrade_replay.sha(folder / "observations.json"),
                                 "deployments": list(runtime["deployments"]), "allHistoriesPaired": paired, "fixedRefutations": refuted})
-        if spring_series or campaign in ("m01-m10", "n01-n05"):
+        if spring_series or campaign in ("m01-m10", "n01-n05", "r01-r50"):
             require(paired, prefix + "expected both original revisions for every history")
             for key, desc in questions.items():
-                if desc[0] in ("Intent", "Control"):
+                if desc[0] == "Control" or (desc[0] == "Intent" and not r_series):
                     require(all(sides["parent"]["prediction"] != "observed only" for sides in evidence[key].values()),
                             prefix + key + " missing parent prediction")
             parent_refuted = [key for key, variants in evidence.items()
@@ -337,6 +393,15 @@ def audit(replay=False, campaign="original"):
             counters["controlsMatchedOnBoth"] += sum(all(
                 all(side["prediction"] == "matched" for side in sides.values()) for sides in evidence[key].values()
             ) for key in controls)
+        if r_series:
+            for q in spec["questions"]:
+                counters["parentHistoriesWithoutPrediction"] += int("parent" not in q["expected"])
+                competing = q.get("alternativeExpected", {}).get("fix")
+                require(bool(competing) == (number in (12, 37) and q["role"] == "Challenge"),
+                        prefix + "missing or unexpected competing prediction")
+                if competing:
+                    counters["competingPredictionsMatched"] += int(all(
+                        comparison.agrees(competing, sides["fix"]["outcome"]) for sides in evidence[q["id"]].values()))
         if campaign == "n01-n05":
             for q in spec["questions"]:
                 open_parent = q["id"] == "Esri/geometry-api-java#329.3"
@@ -358,7 +423,7 @@ def audit(replay=False, campaign="original"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10", "n01-n05", "o01-o20", "p01-p30", "q01-q30"), default="original")
+    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10", "n01-n05", "o01-o20", "p01-p30", "q01-q30", "r01-r50"), default="original")
     parser.add_argument("--replay", action="store_true", help="also rebuild every caller and repeat the physical trials")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "585",
+  "title": "Recursive comparison reads a record’s named component before its boolean alias",
+  "summary": "Recursive comparison detected different record components sharing a boolean alias. A constant JavaBeans getter still caused different stored strings to compare equal.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "AssertJ",
+    "symbol": "RecursiveComparisonAssert.isEqualTo"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "When inspecting a record, AssertJ looks for an accessor with the component’s own name before trying an is-prefixed method."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/assertj/assertj",
+    "url": "https://github.com/assertj/assertj/pull/3710"
+  },
+  "notes": [
+    "The landed source tries getField() before the bare accessor. Both objects return the same constant. The generated component accessor provides an independent reference."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

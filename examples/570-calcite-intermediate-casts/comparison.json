@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/calcite/pull/5345",
+  "revisions": {
+    "parent": "c368970b2950903432ed61ecd7ff404a67e16fb1",
+    "fix": "a2e574ec271866eb352f98d7101a386a30dc8bc8"
+  },
+  "entry": "ResultSet.getString",
+  "questions": [
+    {
+      "id": "apache/calcite#5345.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Compare the four columns for DEPTNO 20 and SAL 800.",
+      "prediction": "The issue reports collapsing an integer→double→text conversion to integer text. On the merge the pinned Calcite output is \"20.0\", \"20.00\", \"800.0000\", \"20\", in order.",
+      "basis": "Different intermediate SQL types preserve observable scale. The SQL transcript records exactly these results for this backend.",
+      "refutation": "Any merged string loses the expected fractional digits or acquires extra digits.",
+      "expected": {
+        "fix": {
+          "return": "20.0/20.00/800.0000/20"
+        }
+      }
+    },
+    {
+      "id": "apache/calcite#5345.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Select CAST(DEPTNO AS VARCHAR) alongside the column with the intermediate INTEGER.",
+      "prediction": "Both revisions should return \"20\" for both expressions.",
+      "basis": "The source column is already integral. The repeated integral conversion leaves its value and display type unchanged.",
+      "refutation": "The two strings differ on the same row.",
+      "expected": {
+        "parent": {
+          "return": "20/20"
+        },
+        "fix": {
+          "return": "20/20"
+        }
+      }
+    },
+    {
+      "id": "apache/calcite#5345.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use the fixture’s DOUBLE division DEPTNO/3e0, applying CAST to VARCHAR(3), then DOUBLE. Separately fetch the three-character intermediate string and feed it as a VARCHAR parameter to a second JDBC query that casts it to DOUBLE.",
+      "prediction": "On the merge the nested and two-query results should agree at 6.6. The intermediate string should be \"6.6\". The issue reports length-changing casts could be discarded before.",
+      "basis": "Fetching and rebinding the intermediate prevents the optimizer from eliding it across the two statements. 20/3 has additional fractional digits before truncation.",
+      "refutation": "The intermediate is \"6.6\" but the nested query returns a longer, untruncated numeric value.",
+      "expected": {
+        "fix": {
+          "return": "6.6/6.6/6.6"
+        }
+      }
+    }
+  ]
+}

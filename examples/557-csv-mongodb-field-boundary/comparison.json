@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-csv/pull/412",
+  "revisions": {
+    "parent": "2abebaa74eb413ece7a56d86f826bc690ee26df9",
+    "fix": "5770cc07e351cc124d34a6049c59e9aea8885675"
+  },
+  "entry": "CSVParser.iterator",
+  "questions": [
+    {
+      "id": "apache/commons-csv#412.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Print and reparse [a,b] then [empty,x].",
+      "prediction": "The PR reports failure to parse the printer’s empty first column on the parent. Expect precisely two records of size two, with second record fields empty string and x after the merge.",
+      "basis": "The values passed to the independent printer are the expected reader values. Empty string still occupies a column.",
+      "refutation": "Exception, early EOF, an extra record, or any merged record with the wrong field count or contents.",
+      "expected": {
+        "fix": {
+          "return": "[[a, b], [, x]]"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-csv#412.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use only nonempty unquoted ASCII fields a,b and c,d.",
+      "prediction": "Expect those two records and four corresponding values on both revisions.",
+      "basis": "These records contain no ambiguous quote/escape boundary and the comma separates two nonempty columns.",
+      "refutation": "Either revision drops, merges or changes a field.",
+      "expected": {
+        "parent": {
+          "return": "[[a, b], [c, d]]"
+        },
+        "fix": {
+          "return": "[[a, b], [c, d]]"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-csv#412.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge print [empty,x] twice, changing only the second occurrence’s second field to one value containing both a comma and a literal double quote.",
+      "prediction": "The first occurrence must remain [empty,x], and the second must contain precisely the empty first field and the changed second string, with its comma and quote intact.",
+      "basis": "The printer must protect delimiters and quotes within a field. The caller’s original strings give an oracle independent of the lexer.",
+      "refutation": "A changed trailing field affects the leading empty column or earlier row, or escaping adds or drops a literal character.",
+      "expected": {
+        "fix": {
+          "return": "[[, x], [, comma,\"quote]]"
+        }
+      }
+    }
+  ]
+}

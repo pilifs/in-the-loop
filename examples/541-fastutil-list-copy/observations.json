@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "8f512955489af0e42c6a366e8fcbd193fb8a67c9015cd8325ad13814250e9845",
+  "runtimeSha256": "2383918d345baac9c71fd6e3d94a269d3b51aa01d46c547b029fa5fe668398a4",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "35823285f4a5799ac0cb5e69d6d1bbed94fe3f93cfece106e34c9bf6b820e5cc"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "8304c3497a0a90f28d09ae9b0d5c4353292dda6e91ccebb39eaa4d9ee2051534",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "vigna/fastutil#325.1",
+          "outcome": {
+            "throws": "java.lang.ArrayIndexOutOfBoundsException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "vigna/fastutil#325.2",
+          "outcome": {
+            "return": "false/[0, 1, 2, 3]/[77, 77]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "vigna/fastutil#325.3",
+          "outcome": {
+            "throws": "java.lang.ArrayIndexOutOfBoundsException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "vigna/fastutil#325.1",
+          "outcome": {
+            "return": "true/[0, 1, 2, 3, 77]/0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "vigna/fastutil#325.2",
+          "outcome": {
+            "return": "false/[0, 1, 2, 3]/[77, 77]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "vigna/fastutil#325.3",
+          "outcome": {
+            "return": "true/[0, 1, 2, 3, 77]/0 / true/[0, 1, 2, 3, 88, 88, 88]/0"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

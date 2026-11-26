@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-io/pull/931",
+  "revisions": {
+    "parent": "31cc5e824df9726d08cf5ee8154c1721abc2668d",
+    "fix": "1af75d36371fb56603cccca8bfd8083f5c97d6f2"
+  },
+  "entry": "CharacterFilterReader.read",
+  "questions": [
+    {
+      "id": "apache/commons-io#931.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Bulk-read xx a (the three characters `xxa`) into a two-character array, then read again.",
+      "prediction": "The PR reports an initial zero before the change. On the merge the first read must return 1 with a at index 0, then −1.",
+      "basis": "Filtering the entire input leaves exactly the one-character stream a. A positive-length read at its beginning must make progress.",
+      "refutation": "The merged reader returns zero, exposes x, or signals end before delivering a.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "first=0"
+          ]
+        },
+        "fix": {
+          "return": "first=1:a,next=-1"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-io#931.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Filter x from `abc`. Skip 1, call read(), then read the remaining characters.",
+      "prediction": "Both revisions should report 1 skipped followed by b, then c, then EOF.",
+      "basis": "No input character is removed. This is the ordinary StringReader sequence after consuming its first character.",
+      "refutation": "Either revision leaks a skipped character, drops c or misreports the count.",
+      "expected": {
+        "parent": {
+          "return": "1/b/c/-1"
+        },
+        "fix": {
+          "return": "1/b/c/-1"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-io#931.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Filter x from `xaxb`, skip 1 and call read(). Compare with the same history over an independent StringReader on `ab`. Repeat with extra leading x characters.",
+      "prediction": "The PR reports a on the parent for `xaxb`. On the merge each filtered variant must return skip count 1, then b, then EOF.",
+      "basis": "Deleting x first leaves ab in every case. Skipping its first retained character can only leave b.",
+      "refutation": "Adding discarded input changes the successor, or the reported count is correct while read() still yields a.",
+      "expected": {
+        "fix": {
+          "return": "1/b/-1 / 1/b/-1 / 1/b/-1"
+        }
+      }
+    }
+  ]
+}

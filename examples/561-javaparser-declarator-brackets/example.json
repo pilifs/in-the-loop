@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "561",
+  "title": "Lexical printing preserves array brackets after a renamed identifier",
+  "summary": "Renaming the mixed array parameter produced String[] b[] with rank two. Renaming one field in an int declaration left the sibling scalar.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "compilers",
+    "schema-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JavaParser",
+    "symbol": "LexicalPreservingPrinter.print"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The lexical printer distinguishes brackets belonging to an element type from brackets written after a parameter or variable name. The landed range includes the separate varargs-test change."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/javaparser/javaparser",
+    "url": "https://github.com/javaparser/javaparser/pull/5207"
+  },
+  "notes": [
+    "Comma-separated declarators share a base type while brackets after one name affect only that variable.",
+    "The intermediate commit ba880df50766 changed only a varargs test. Its javaparser-core/src/main tree (14e3b4368c934db208b4447d68bc67bc8220fc77) is identical to the parent’s. The second commit changed that production tree."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

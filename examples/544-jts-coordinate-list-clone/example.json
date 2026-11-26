@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "544",
+  "title": "Deep-clone a coordinate sequence without duplicating its points",
+  "summary": "Cloning preserved the three coordinates in order. Two equal but distinct points in a second fixture remained independent after one cloned coordinate changed.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "array-utilities",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JTS",
+    "symbol": "CoordinateList.clone"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Replace each shallow coordinate reference in the cloned list with a copied coordinate."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/locationtech/jts",
+    "url": "https://github.com/locationtech/jts/pull/1168"
+  },
+  "notes": [
+    "Multiplicity is part of the ordered list. Deep copying must isolate subsequent coordinate mutations."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

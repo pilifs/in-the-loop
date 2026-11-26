@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/reactor/reactor-core/pull/937",
+  "revisions": {
+    "parent": "0ad7976bf1c02bccc28bb478758591bc8108b11a",
+    "fix": "af0cb628ece3c0a543512ea9913c4ff72ba18566"
+  },
+  "entry": "Flux.concatDelayError",
+  "questions": [
+    {
+      "id": "reactor/reactor-core#937.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Use the callable error source between two nonempty sources.",
+      "prediction": "The issue reports early onError after 2 for the publisher-of-publishers form. On the merge expect 1,2,3,4 followed by the single error e.",
+      "basis": "Sequential concatenation fixes source order, and delaying a single error until the end allows the third source to emit.",
+      "refutation": "The merge terminates before 4, changes order, completes normally, or delivers multiple errors.",
+      "expected": {
+        "parent": {
+          "return": "[1, 2]/same-error"
+        },
+        "fix": {
+          "return": "[1, 2, 3, 4]/same-error"
+        }
+      }
+    },
+    {
+      "id": "reactor/reactor-core#937.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Replace Mono.error(e) with Mono.empty().",
+      "prediction": "Both revisions should deliver 1,2,3,4 followed by one completion.",
+      "basis": "An empty inner source contributes neither elements nor errors.",
+      "refutation": "The trailing values disappear, an error appears, or the subscriber never completes.",
+      "expected": {
+        "parent": {
+          "return": "[1, 2, 3, 4]/complete"
+        },
+        "fix": {
+          "return": "[1, 2, 3, 4]/complete"
+        }
+      }
+    },
+    {
+      "id": "reactor/reactor-core#937.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the same sources and e, expose or hide the error publisher with Mono.error(e).hide(), and subscribe separately using concatMapDelayError(identity,true,32). Request one item at a time until the stream terminates.",
+      "prediction": "On the merge both subscriptions should deliver the same ordered four values then e, with no value in excess of demand.",
+      "basis": "Hiding the publisher changes access to the callable optimization while preserving its signals. Prefetch may affect upstream requests but not downstream demand.",
+      "refutation": "Only one representation delivers 3 and 4, the terminal cause differs, or any value arrives without demand.",
+      "expected": {
+        "fix": {
+          "return": "[1, 2, 3, 4]/same-error/demand=true / [1, 2, 3, 4]/same-error/demand=true"
+        }
+      }
+    }
+  ]
+}

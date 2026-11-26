@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "564",
+  "title": "Numeric accessors return the current token at its requested precision",
+  "summary": "After reading decimal 2.5, the integer view of the next token 7.5 now returned 7. Reading a large number as double first preserved all digits on a later BigInteger access.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "rounding",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Jackson Core",
+    "symbol": "JsonParser.getBigIntegerValue"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Jackson clears deferred numeric state across tokens and retains the text needed for later exact conversions on the same token."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-core",
+    "url": "https://github.com/FasterXML/jackson-core/pull/1816"
+  },
+  "notes": [
+    "BigInteger on the original decimal text is an independent exact oracle, unaffected by the consumer’s earlier request for a double."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

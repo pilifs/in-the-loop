@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/FasterXML/jackson-core/pull/1716",
+  "revisions": {
+    "parent": "2a0ea7beeb9eb0a16f04c14e07b5d0804c64433d",
+    "fix": "15591d013c44ef3b2a84bb639df396149a5917f5"
+  },
+  "entry": "JsonFactory.createParser",
+  "questions": [
+    {
+      "id": "FasterXML/jackson-core#1716.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Encode these documents in UTF-32BE. Repeat in UTF-32LE.",
+      "prediction": "The issue reports loss or corruption of a low surrogate when the pair is split. After, every prefix and byte order must produce exactly the two requested supplementary scalars at the tail.",
+      "basis": "U+1F600 has UTF-16 units D83D DE00 and U+10000 has D800 DC00. Endianness changes the input bytes only.",
+      "refutation": "A replacement, missing or unpaired surrogate, different code point, or missing END_ARRAY on the merge.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "wrong=[UTF-32"
+          ]
+        },
+        "fix": {
+          "return": "tested=14,exact=14,wrong=[]"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-core#1716.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Replace the supplementary characters with two BMP letters, retaining byte order and prefix lengths.",
+      "prediction": "Both revisions should return exactly those letters and the same token sequence.",
+      "basis": "Each BMP letter needs just one UTF-16 code unit.",
+      "refutation": "Either parser changes the letters or terminates the array early.",
+      "expected": {
+        "parent": {
+          "return": "tested=14,exact=14,wrong=[]"
+        },
+        "fix": {
+          "return": "tested=14,exact=14,wrong=[]"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-core#1716.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the JSON value fixed, add one leading JSON whitespace character before the array, and compare the UTF-32 parse with a UTF-8 parse of the same document.",
+      "prediction": "On the merge every parser must return the same string and code-point count. Spacing may move a reader refill without changing any string character.",
+      "basis": "Whitespace outside the string is insignificant. The UTF-8 path provides a second decoding route.",
+      "refutation": "The byte encodings disagree, or adding only external whitespace changes the last string character.",
+      "expected": {
+        "fix": {
+          "return": "tested=28,exact=28,wrong=[]"
+        }
+      }
+    }
+  ]
+}

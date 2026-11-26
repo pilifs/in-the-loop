@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "556",
+  "title": "Keep measures distinct from elevations in binary geometry",
+  "summary": "The measured WKB line used 57 bytes with only the M flag. Both byte orders decoded the original measures 3 and 7 and left elevation absent.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "schema-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JTS",
+    "symbol": "WKBWriter.write"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Choose the WKB ordinate flags and payload from the geometry and the ordinates the writer is configured to emit."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/locationtech/jts",
+    "url": "https://github.com/locationtech/jts/pull/1092"
+  },
+  "notes": [
+    "Endianness determines how numbers are encoded, independent of the meaning of the third ordinate."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

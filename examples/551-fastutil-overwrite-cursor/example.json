@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "551",
+  "title": "Bulk overwrite advances a repositioned output stream",
+  "summary": "A three-byte overwrite now advanced the cursor to position three. The next single-byte write left the same five logical bytes as four individual writes.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "array-utilities",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "fastutil",
+    "symbol": "FastByteArrayOutputStream.write"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The byte-array write now moves the position by the number of bytes copied even when the write fits entirely within the existing output."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/vigna/fastutil",
+    "url": "https://github.com/vigna/fastutil/pull/384"
+  },
+  "notes": [
+    "Splitting the same bytes across calls should leave their destination and the following write position unchanged."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

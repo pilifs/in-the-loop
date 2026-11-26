@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "543",
+  "title": "Representable quotients at the signed integer boundary",
+  "summary": "The quotient of Integer.MIN_VALUE by itself now reduces to one. Two representations of the same negative divisor also produced the same exact reduced pair.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "integer-overflow",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons Lang",
+    "symbol": "Fraction.divideBy"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Fraction division reduces the two products before checking whether the resulting numerator and positive denominator fit in int."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/pull/1865"
+  },
+  "notes": [
+    "Dividing the first divisor’s numerator and denominator by two gives the second representation exactly."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

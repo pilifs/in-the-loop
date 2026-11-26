@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "559",
+  "title": "Box and unbox annotated primitive type names",
+  "summary": "Annotated boolean boxed and unboxed successfully. Two distinct type-use annotations on an independently built Integer survived both conversions in their original order.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "compilers",
+    "inert-annotation",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JavaPoet",
+    "symbol": "TypeName.box"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Match primitives and wrappers by their unannotated type, then carry the annotation list to the converted type."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/square/javapoet",
+    "url": "https://github.com/square/javapoet/pull/986"
+  },
+  "notes": [
+    "The two distinct annotations reveal duplication, reversal or loss. Starting with a separately constructed wrapper exercises equality across instances."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/avro/pull/2282",
+  "revisions": {
+    "parent": "4ec81bd0cdc8615e833582f257684cb61c892578",
+    "fix": "3ea027ac26b41edc0f08fd8c042ee918c523bdac"
+  },
+  "entry": "Conversions.BigDecimalConversion.fromBytes",
+  "questions": [
+    {
+      "id": "apache/avro#2282.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Encode and recover the two differently scaled inputs under one schema.",
+      "prediction": "The parent has no BigDecimalConversion API for this logical type. On the merge the pairs should be (123, 1) and (1230, 2), respectively.",
+      "basis": "BigDecimal equality includes scale. The pinned specification puts the scale in the value.",
+      "refutation": "Either decoded scale changes, even if compareTo returns zero.",
+      "expected": {
+        "parent": {
+          "throws": "java.lang.NoClassDefFoundError"
+        },
+        "fix": {
+          "return": "123@1/1230@2"
+        }
+      }
+    },
+    {
+      "id": "apache/avro#2282.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use the separate existing DecimalConversion with a bytes schema annotated decimal(6,2) and input −12.30.",
+      "prediction": "Both revisions should return unscaled −1230 and scale 2.",
+      "basis": "The existing fixed-scale decimal interprets the signed big-endian integer at the schema’s scale.",
+      "refutation": "The sign, integer or scale changes, or a valid value is rejected.",
+      "expected": {
+        "parent": {
+          "return": "-1230@2"
+        },
+        "fix": {
+          "return": "-1230@2"
+        }
+      }
+    },
+    {
+      "id": "apache/avro#2282.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge concatenate the converter’s encoded 7 (scale 0) and 12.30. Present only the latter as a heap ByteBuffer slice, and compare with a standalone copy of those same remaining bytes.",
+      "prediction": "Both views should decode to 12.30 if fromBytes honors the active view. The landed use of value.array() predicts the slice may instead decode the preceding 7.",
+      "basis": "The two views expose the same byte sequence, and the prefix is itself one complete encoding. The comparison needs no assumption about interoperability with another language.",
+      "refutation": "The standalone value is 12.30 while the sliced value is 7, differs in scale, or throws.",
+      "expected": {
+        "fix": {
+          "return": "1230@2/1230@2"
+        }
+      },
+      "alternativeExpected": {
+        "fix": {
+          "return": "1230@2/7@0"
+        }
+      }
+    }
+  ]
+}

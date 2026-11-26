@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "546",
+  "title": "Cycle detection in a disconnected undirected graph",
+  "summary": "Both Guava distributions detected the triangle after an isolated node disabled the edge-count shortcut. Adding another acyclic component preserved the positive result.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Guava",
+    "symbol": "Graphs.hasCycle"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Graphs.hasCycle continues to examine the remaining neighbors after encountering the edge by which it reached a vertex."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/pull/8801"
+  },
+  "notes": [
+    "The triangle remains intact. The extra components change the edge-to-node count, which governs the shortcut described by the PR."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "b9e75c5ad7d86b63971c8bcb9f5c53bcae79bc1f09fbd461ce4b8d93bab0daae",
+  "runtimeSha256": "3fc65b72655c38603f6de3e392e8287c9b13c714642bd492861a802a97ed3fc1",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "133ad12723957f276e31674292d06138847a8398210ad77d58ccfc764de03623"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$1.class": "b807d2322e3bcd7cadaf547bfba514b657b728012457b35986d5fc25b7861b47",
+        "PublicCaller$Factory.class": "4b9fa76e18d5b624618c19b61930b139b72a97d7a09fd3967bbf65d498dd2b32",
+        "PublicCaller$SelectedSuite.class": "0885ef30476bcb1f364a2f4aea9495e6fed60345075555858cd4e76f31ea58bc",
+        "PublicCaller.class": "e987d75cfb9d0566621b0977ba6658bc302dc021927ef9d4aabd9fb338f47a70",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#5839.1",
+          "outcome": {
+            "return": "leaves=[A, B],unique=2,suite=FAILED/NoTestsDiscoveredException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#5839.2",
+          "outcome": {
+            "return": "leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#5839.3",
+          "outcome": {
+            "return": "leaves=[A, B],unique=2,suite=FAILED/NoTestsDiscoveredException / leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#5839.1",
+          "outcome": {
+            "return": "leaves=[A, B],unique=2,suite=SUCCESSFUL"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#5839.2",
+          "outcome": {
+            "return": "leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#5839.3",
+          "outcome": {
+            "return": "leaves=[A, B],unique=2,suite=SUCCESSFUL / leaves=[],unique=0,suite=FAILED/NoTestsDiscoveredException"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

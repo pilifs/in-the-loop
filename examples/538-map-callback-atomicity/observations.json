@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "b416f504626eef1754066e2b1b8e1dcc70cc979d45cc280cae21bc184e7132b7",
+  "runtimeSha256": "92d6a09c8547b0a747aca7f98abe43b4ce330e579083bf2b92578f9a74517e87",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "6d9e26dcf77e748674d0e9f015f97c84ce2cc57aef613f8f05b202596dd7a035"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$1.class": "98bb39b1d84b059e2fc92b26af993900e9d1486ade873a0a1fd3cfff9e307e4f",
+        "PublicCaller.class": "e3d0d09adb215443d3369e18f04276f1b9cdeadb308039f557b1c3c733bce04d",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "eclipse-collections/eclipse-collections#1786.1",
+          "outcome": {
+            "return": "same=true,size=0,key=true,entries={};retry=NullPointerException / same=true,size=0,key=true,entries={};retry=NullPointerException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "eclipse-collections/eclipse-collections#1786.2",
+          "outcome": {
+            "return": "10/0/{4=10} / 10/0/{4=10}"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "eclipse-collections/eclipse-collections#1786.3",
+          "outcome": {
+            "return": "true/{1=7}/7/{1=7, 4=7}"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "eclipse-collections/eclipse-collections#1786.1",
+          "outcome": {
+            "return": "same=true,size=0,key=false,entries={};retry=6/{4=6} / same=true,size=0,key=false,entries={};retry=6/{4=6}"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "eclipse-collections/eclipse-collections#1786.2",
+          "outcome": {
+            "return": "10/0/{4=10} / 10/0/{4=10}"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "eclipse-collections/eclipse-collections#1786.3",
+          "outcome": {
+            "return": "true/{1=7}/7/{1=7, 4=7}"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

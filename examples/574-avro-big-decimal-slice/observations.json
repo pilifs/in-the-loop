@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "1bc98411f4a15c134bb92a2d3ee250048eb5b8c361bf5daa47b9d1afbf1fd0c6",
+  "runtimeSha256": "9b84eee6c0782534522228927d9dac6b19f28566003afdb9dfc1111efcbf349b",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "e255272a38ed4be79f7fe8b5bc65ce6474c82cf9c99160939ac82c8ec5dd7b6c"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Variable.class": "97538a161aa601b1f6e30cccf7223bbe1ac3c95e9e268f6c141c7be3f52b25ae",
+        "PublicCaller.class": "cd3adf96521185dc1acee4a27e1ea9e568391dfe96fda0416377e305f7df334b",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/avro#2282.1",
+          "outcome": {
+            "throws": "java.lang.NoClassDefFoundError"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/avro#2282.2",
+          "outcome": {
+            "return": "-1230@2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/avro#2282.3",
+          "outcome": {
+            "throws": "java.lang.NoClassDefFoundError"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#2282.1",
+          "outcome": {
+            "return": "123@1/1230@2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#2282.2",
+          "outcome": {
+            "return": "-1230@2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#2282.3",
+          "outcome": {
+            "return": "1230@2/7@0"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

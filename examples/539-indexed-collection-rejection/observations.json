@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "df6459459389f4d16d8c68b187cbbf82900832fb969d01e888d9de68f62a4e38",
+  "runtimeSha256": "f2827058c03caab4d44ca254496e17590d08660531bd7d7d1a9f9231afe939fe",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "d6d74b82df33267d7b59270b31bd957abf9ea10c46e4b0eb71711e339d4f7a95"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "eefb5598cd7adabfe626e6f8ccece3270ab4372e24bfe65d297363008b657660",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/commons-collections#688.1",
+          "outcome": {
+            "return": "IllegalArgumentException/[01, 1]/[01, 1]/01"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-collections#688.2",
+          "outcome": {
+            "return": "[01, 2]/[01, 2]/01/2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-collections#688.3",
+          "outcome": {
+            "throws": "java.lang.IllegalArgumentException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-collections#688.1",
+          "outcome": {
+            "return": "IllegalArgumentException/[01]/[01]/01"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-collections#688.2",
+          "outcome": {
+            "return": "[01, 2]/[01, 2]/01/2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-collections#688.3",
+          "outcome": {
+            "return": "ok/[01, 2]/01/2"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

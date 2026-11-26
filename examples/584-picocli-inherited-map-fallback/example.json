@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "584",
+  "title": "Inherited command-line map options retain their fallback values",
+  "summary": "Inherited -Dkey now inserted a present key with a null value. Root and subcommand parsing agreed on both null and an independently configured empty string.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "picocli",
+    "symbol": "CommandLine.parseArgs"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Copying an inherited option or positional parameter into a subcommand now includes its mapFallbackValue. An option entry without an explicit value should therefore reach the parent’s map with the configured value."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/remkop/picocli",
+    "url": "https://github.com/remkop/picocli/pull/2036"
+  },
+  "notes": [
+    "Inheritance changes where the option can be spelled, while fallback belongs to the declared option. The two distinct map values expose an incorrect copy even when parse succeeds."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

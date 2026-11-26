@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/ThreeTen/threeten-extra/pull/433",
+  "revisions": {
+    "parent": "9b5e316f5fad89ef80a05d8cdec522315c2e26ba",
+    "fix": "cad4ef4bdf209d8d76016e9d8322c18eab7c8cb0"
+  },
+  "entry": "OffsetDate.until",
+  "questions": [
+    {
+      "id": "ThreeTen/threeten-extra#433.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Start at 2000-01-01 UTC and end on the same local date at +05:00.",
+      "prediction": "The parent calculation predicts −1 day forward and 0 in reverse. The merge should return 0 in both directions.",
+      "basis": "Subtracting the midnight instants gives −5 and +5 hours. Neither interval contains a whole day.",
+      "refutation": "Either merged count is nonzero, or the parent already returns zero in the forward direction.",
+      "expected": {
+        "parent": {
+          "return": "-1/0:oracle=0/0"
+        },
+        "fix": {
+          "return": "0/0:oracle=0/0"
+        }
+      }
+    },
+    {
+      "id": "ThreeTen/threeten-extra#433.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use UTC on 2000-01-01 and 2000-01-03.",
+      "prediction": "Both revisions should give 2 forward and −2 in reverse.",
+      "basis": "Exactly 48 hours separate the instants and the offset does not change.",
+      "refutation": "A sign error or any magnitude other than 2.",
+      "expected": {
+        "parent": {
+          "return": "2/-2:oracle=2/-2"
+        },
+        "fix": {
+          "return": "2/-2:oracle=2/-2"
+        }
+      }
+    },
+    {
+      "id": "ThreeTen/threeten-extra#433.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Compare OffsetDate.MIN and MAX in both directions, using DAYS and WEEKS.",
+      "prediction": "The parent is expected to throw on offset normalization beyond LocalDate’s bounds. On the merge let D = LocalDate.MAX.toEpochDay() − LocalDate.MIN.toEpochDay() + 1. Expect D and −D days, and D/7 and −(D/7) whole weeks.",
+      "basis": "MIN’s +18:00 and MAX’s −18:00 add 36 hours to the epoch-day interval. A whole week contains seven days.",
+      "refutation": "An exception on the merge, loss of the extra complete day, or disagreement between days and weeks.",
+      "expected": {
+        "fix": {
+          "return": "days=true/weeks=true/antisymmetric=true"
+        }
+      }
+    }
+  ]
+}

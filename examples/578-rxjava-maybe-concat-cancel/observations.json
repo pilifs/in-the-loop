@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "d457a6a9f45125a363b7e5c5132261046d6c5a722c084b94bca445daf0ec0296",
+  "runtimeSha256": "a69c256bec379181374cc1b1d46a271a1842cfaffb96ef14ef28bbbe5cc0d108",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "9fbc83b95e086395f11436906d79724a323a385becb84fdf4ebe4f15803220ad"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "3c9a2a8447eb2231781f32b43c7dc4c5b61e90912155237d403e6b3523b66ca0",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "ReactiveX/RxJava#5101.1",
+          "outcome": {
+            "return": "[1]/complete/1/1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "ReactiveX/RxJava#5101.2",
+          "outcome": {
+            "return": "[1, 2]/complete/[first, second]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "ReactiveX/RxJava#5101.3",
+          "outcome": {
+            "return": "[1]/complete/[empty, first, second] / [1]/complete/[empty, first, second]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "ReactiveX/RxJava#5101.1",
+          "outcome": {
+            "return": "[1]/complete/1/0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "ReactiveX/RxJava#5101.2",
+          "outcome": {
+            "return": "[1, 2]/complete/[first, second]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "ReactiveX/RxJava#5101.3",
+          "outcome": {
+            "return": "[1]/complete/[empty, first] / [1]/complete/[empty, first]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}
