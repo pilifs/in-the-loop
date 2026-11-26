@@ -8,6 +8,7 @@ import io
 import json
 from pathlib import Path
 import zipfile
+from followup_score import score as supplementary_score
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -312,7 +313,7 @@ def score():
                 "newColdDrawPerformed":False},
             "helpers":{"eligiblePublicCases":1,"eligibleQuestions":2,"qualifiedQuestions":2,"admittedRows":helper["derived"]["rows"],
                        "qualification":uses,"falsifiers":helper["variants"],"archive":"receipts/io-helper.zip"},
-            "rows":rows}
+            "supplementary":supplementary_score(), "rows":rows}
 
 
 if __name__=="__main__":
@@ -323,7 +324,6 @@ if __name__=="__main__":
     result=score()
     if args.question:
         rows=[row for row in result["rows"] if row["question"]==args.question]
-        require(rows,"unknown registered question")
         for row in rows:
             tables=result["identities"]
             row["generator"]=tables["generators"][row["generatorRef"]]
@@ -333,6 +333,8 @@ if __name__=="__main__":
                 row["verifier"]=tables["verifiers"][row["verifierRef"]]
             for side in row.get("sides",{}).values():
                 side.update(tables["deploymentProfiles"][side["profileRef"]])
+        rows.extend(r for r in result["supplementary"]["rows"] if r["question"]==args.question)
+        require(rows,"unknown registered question")
         print(json.dumps(rows,indent=2,ensure_ascii=False))
         raise SystemExit(0)
     data=json.dumps(result,ensure_ascii=False,indent=2)+"\n"
@@ -341,4 +343,4 @@ if __name__=="__main__":
         require(p.read_text()==data,"scorecard differs")
     else:
         p.write_text(data)
-    print(json.dumps(result["counts"]))
+    print(json.dumps({**result["counts"], "supplementary":result["supplementary"]["counts"]}))

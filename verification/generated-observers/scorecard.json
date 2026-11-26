@@ -1103,6 +1103,490 @@
     },
     "archive": "receipts/io-helper.zip"
   },
+  "supplementary": {
+    "rows": [
+      {
+        "question": "formatted-number",
+        "history": "Parse 1,5 as BigDecimal with DecimalFormat pattern 0.0 and German decimal symbols.",
+        "inputs": [
+          {
+            "conversions": [
+              {
+                "text": "1,5",
+                "type": "BigDecimal",
+                "format": {
+                  "pattern": "0.0",
+                  "locale": "de-DE",
+                  "parseBigDecimal": true
+                }
+              }
+            ]
+          }
+        ],
+        "entry": "org.springframework.util.NumberUtils#parseNumber(Ljava/lang/String;Ljava/lang/Class;Ljava/text/NumberFormat;)Ljava/lang/Number;",
+        "status": "established",
+        "generated": true,
+        "compiled": true,
+        "reachedBoth": true,
+        "fullyObserved": true,
+        "assertedSides": [
+          "old",
+          "new"
+        ],
+        "sides": {
+          "old": [
+            {
+              "entryCalls": 1,
+              "fields": [
+                [
+                  "return",
+                  "java.math.BigDecimal",
+                  "1.5"
+                ]
+              ],
+              "changedMethodsUnderEntry": []
+            }
+          ],
+          "new": [
+            {
+              "entryCalls": 1,
+              "fields": [
+                [
+                  "return",
+                  "java.math.BigDecimal",
+                  "1.5"
+                ]
+              ],
+              "changedMethodsUnderEntry": []
+            }
+          ]
+        },
+        "compilePolicy": "once against old",
+        "archive": "receipts/458-format-clean.zip",
+        "registration": "bundle/registration.json",
+        "generation": "bundle/generation.json",
+        "receipt": {
+          "member": "receipts/61d1ccecb6a92b7f0d1435c15dd448e466f607379904b2ecd373742998d3b38e.json",
+          "sha256": "9278b9450c0e9582f0aa0aa112727d8626431f3b68e1df4f7c13f7a5def4465f"
+        }
+      },
+      {
+        "question": "decimal-grouping",
+        "history": "Parse the same 1,500 as BigDecimal with German then US symbols and pattern #,##0.000. Start the German formatter in BigDecimal mode and the US formatter outside it.",
+        "inputs": [
+          {
+            "conversions": [
+              {
+                "text": "1,500",
+                "type": "BigDecimal",
+                "format": {
+                  "locale": "de-DE",
+                  "pattern": "#,##0.000",
+                  "parseBigDecimal": true
+                }
+              },
+              {
+                "text": "1,500",
+                "type": "BigDecimal",
+                "format": {
+                  "locale": "en-US",
+                  "pattern": "#,##0.000",
+                  "parseBigDecimal": false
+                }
+              }
+            ]
+          }
+        ],
+        "entry": "org.springframework.util.NumberUtils#parseNumber(Ljava/lang/String;Ljava/lang/Class;Ljava/text/NumberFormat;)Ljava/lang/Number;",
+        "status": "established",
+        "generated": true,
+        "compiled": true,
+        "reachedBoth": true,
+        "fullyObserved": true,
+        "assertedSides": [
+          "old",
+          "new"
+        ],
+        "sides": {
+          "old": [
+            {
+              "entryCalls": 2,
+              "fields": [
+                [
+                  "return",
+                  "java.math.BigDecimal",
+                  "1.500"
+                ],
+                [
+                  "return",
+                  "java.math.BigDecimal",
+                  "1500"
+                ]
+              ],
+              "changedMethodsUnderEntry": []
+            }
+          ],
+          "new": [
+            {
+              "entryCalls": 2,
+              "fields": [
+                [
+                  "return",
+                  "java.math.BigDecimal",
+                  "1.500"
+                ],
+                [
+                  "return",
+                  "java.math.BigDecimal",
+                  "1500"
+                ]
+              ],
+              "changedMethodsUnderEntry": []
+            }
+          ]
+        },
+        "compilePolicy": "once against old",
+        "archive": "receipts/458-format-clean.zip",
+        "registration": "bundle/registration.json",
+        "generation": "bundle/generation.json",
+        "receipt": {
+          "member": "receipts/aed4f01e1f634657d13830019119a132e851b847156d568bae794c75551f8ee0.json",
+          "sha256": "5f9d05eb06579e66b7a018297f4da35fce9a114e02d667df6890e56dd333aeb4"
+        }
+      },
+      {
+        "question": "null-format-delegation",
+        "history": "Pass an explicit null NumberFormat when parsing +0x7f as Integer and BigInteger.",
+        "inputs": [
+          {
+            "conversions": [
+              {
+                "text": "+0x7f",
+                "type": "Integer",
+                "format": null
+              },
+              {
+                "text": "+0x7f",
+                "type": "BigInteger",
+                "format": null
+              }
+            ]
+          }
+        ],
+        "entry": "org.springframework.util.NumberUtils#parseNumber(Ljava/lang/String;Ljava/lang/Class;Ljava/text/NumberFormat;)Ljava/lang/Number;",
+        "status": "established",
+        "generated": true,
+        "compiled": true,
+        "reachedBoth": true,
+        "fullyObserved": true,
+        "assertedSides": [
+          "old",
+          "new"
+        ],
+        "sides": {
+          "old": [
+            {
+              "entryCalls": 2,
+              "fields": [
+                [
+                  "throws",
+                  "java.lang.NumberFormatException"
+                ],
+                [
+                  "throws",
+                  "java.lang.NumberFormatException"
+                ]
+              ],
+              "changedMethodsUnderEntry": [
+                "org.springframework.util.NumberUtils#isHexNumber(Ljava/lang/String;)Z"
+              ]
+            }
+          ],
+          "new": [
+            {
+              "entryCalls": 2,
+              "fields": [
+                [
+                  "return",
+                  "java.lang.Integer",
+                  "127"
+                ],
+                [
+                  "return",
+                  "java.math.BigInteger",
+                  "127"
+                ]
+              ],
+              "changedMethodsUnderEntry": [
+                "org.springframework.util.NumberUtils#decodeBigInteger(Ljava/lang/String;)Ljava/math/BigInteger;",
+                "org.springframework.util.NumberUtils#isHexNumber(Ljava/lang/String;)Z"
+              ]
+            }
+          ]
+        },
+        "compilePolicy": "once against old",
+        "archive": "receipts/458-format-clean.zip",
+        "registration": "bundle/registration.json",
+        "generation": "bundle/generation.json",
+        "receipt": {
+          "member": "receipts/11e88f6a944836d2bff70acc3bb0af0064bdcac83be84b6d8908b98058c0539b.json",
+          "sha256": "d39daa2edcb810d9349d9aac8cb55b3a8a395206069ffa7f38aa2d9f0f7fa42f"
+        }
+      },
+      {
+        "question": "numbered.format-and-malformed",
+        "history": "Parse `1,5` and `oops` as BigDecimal using the registered NumberFormat.",
+        "inputs": [
+          {
+            "conversions": [
+              {
+                "text": "1,5",
+                "type": "BigDecimal",
+                "format": {
+                  "locale": "de-DE",
+                  "pattern": "0.0",
+                  "parseBigDecimal": false
+                }
+              },
+              {
+                "text": "oops",
+                "type": "BigDecimal",
+                "format": {
+                  "locale": "de-DE",
+                  "pattern": "0.0",
+                  "parseBigDecimal": false
+                }
+              }
+            ]
+          }
+        ],
+        "entry": "org.springframework.util.NumberUtils#parseNumber(Ljava/lang/String;Ljava/lang/Class;Ljava/text/NumberFormat;)Ljava/lang/Number;",
+        "status": "established",
+        "generated": true,
+        "compiled": true,
+        "reachedBoth": true,
+        "fullyObserved": true,
+        "assertedSides": [
+          "old",
+          "new"
+        ],
+        "sides": {
+          "old": [
+            {
+              "entryCalls": 2,
+              "fields": [
+                [
+                  "return",
+                  "java.math.BigDecimal",
+                  "1.5"
+                ],
+                [
+                  "throws",
+                  "java.lang.IllegalArgumentException"
+                ]
+              ],
+              "changedMethodsUnderEntry": []
+            }
+          ],
+          "new": [
+            {
+              "entryCalls": 2,
+              "fields": [
+                [
+                  "return",
+                  "java.math.BigDecimal",
+                  "1.5"
+                ],
+                [
+                  "throws",
+                  "java.lang.IllegalArgumentException"
+                ]
+              ],
+              "changedMethodsUnderEntry": []
+            }
+          ]
+        },
+        "compilePolicy": "once against old",
+        "archive": "receipts/numbered-inputs.zip",
+        "registration": "examples/458-spring-positive-hex/records/public-observer/registration.json",
+        "generation": "examples/458-spring-positive-hex/records/public-observer/generation.json",
+        "receipt": {
+          "member": "examples/458-spring-positive-hex/records/receipts/1d9eaafcb200222c298c163512d72b54fbb6a4cbaedb86b38d428477507fe452.json",
+          "sha256": "8cb22b27a746ed8e145008e1ed792585d0d954185162f5c80657189689a3d387"
+        }
+      },
+      {
+        "question": "numbered.selection-order",
+        "history": "Use [1,2,3] twice, first selecting odd values, then selecting values >5.",
+        "inputs": [
+          {
+            "selections": [
+              {
+                "values": [
+                  1,
+                  2,
+                  3
+                ],
+                "predicate": {
+                  "odd": true
+                }
+              },
+              {
+                "values": [
+                  1,
+                  2,
+                  3
+                ],
+                "predicate": {
+                  "greaterThan": 5
+                }
+              }
+            ],
+            "fallback": 99
+          }
+        ],
+        "entry": "io.vavr.collection.Iterator#findLast(Ljava/util/function/Predicate;)Lio/vavr/control/Option;",
+        "status": "established",
+        "generated": true,
+        "compiled": true,
+        "reachedBoth": true,
+        "fullyObserved": true,
+        "assertedSides": [
+          "old",
+          "new"
+        ],
+        "sides": {
+          "old": [
+            {
+              "entryCalls": 2,
+              "fields": [
+                [
+                  true,
+                  3,
+                  0
+                ],
+                [
+                  false,
+                  99,
+                  1
+                ]
+              ],
+              "changedMethodsUnderEntry": [
+                "io.vavr.collection.Iterator#findLast(Ljava/util/function/Predicate;)Lio/vavr/control/Option;"
+              ]
+            }
+          ],
+          "new": [
+            {
+              "entryCalls": 2,
+              "fields": [
+                [
+                  true,
+                  3,
+                  0
+                ],
+                [
+                  false,
+                  99,
+                  1
+                ]
+              ],
+              "changedMethodsUnderEntry": [
+                "io.vavr.collection.Iterator#findLast(Ljava/util/function/Predicate;)Lio/vavr/control/Option;"
+              ]
+            }
+          ]
+        },
+        "compilePolicy": "once against old",
+        "archive": "receipts/numbered-inputs.zip",
+        "registration": "examples/445-vavr-matched-null/records/public-observer/registration.json",
+        "generation": "examples/445-vavr-matched-null/records/public-observer/generation.json",
+        "receipt": {
+          "member": "examples/445-vavr-matched-null/records/receipts/2fd0dcff56798b1bda2d02922b52ee4b4de34419a16475a72fdc57e97632935c.json",
+          "sha256": "912b471e357663aa063624b1e6c187c1474e0555870f28bd2975e4c41680111a"
+        }
+      },
+      {
+        "question": "numbered.formatter-after-return",
+        "history": "Parse `1,5` as BigDecimal using the registered NumberFormat, then read `isParseBigDecimal()` from that formatter.",
+        "entry": "org.springframework.util.NumberUtils#parseNumber(Ljava/lang/String;Ljava/lang/Class;Ljava/text/NumberFormat;)Ljava/lang/Number;",
+        "inputDefaults": {
+          "numberFormat": {
+            "locale": "de-DE",
+            "pattern": "0.0",
+            "parseBigDecimal": false
+          }
+        },
+        "registeredPredicates": {
+          "parent": {
+            "return": "BigDecimal=1.5 parseBigDecimal=false"
+          },
+          "fix": {
+            "return": "BigDecimal=1.5 parseBigDecimal=false"
+          }
+        },
+        "assertedSides": [
+          "old",
+          "new"
+        ],
+        "status": "open",
+        "generated": false,
+        "compiled": false,
+        "reachedBoth": false,
+        "fullyObserved": false,
+        "firstOpenDependency": "unresolved operation after the public conversion: then read `isParseBigDecimal()` from that formatter",
+        "archive": "receipts/numbered-input-stops.zip",
+        "record": "first-stops.json"
+      }
+    ],
+    "counts": {
+      "generated": 5,
+      "compiled": 5,
+      "reachedBoth": 5,
+      "fullyObserved": 5,
+      "questions": 6,
+      "finite": {
+        "established": 5,
+        "open": 1
+      }
+    },
+    "equalOutputInputSubstitutionsRejected": {
+      "text": "actual numeric arguments at public entry differ from the reviewed conversions",
+      "target-class": "actual numeric arguments at public entry differ from the reviewed conversions",
+      "locale": "actual numeric arguments at public entry differ from the reviewed conversions",
+      "pattern": "actual numeric arguments at public entry differ from the reviewed conversions",
+      "parsing-mode": "actual numeric arguments at public entry differ from the reviewed conversions"
+    },
+    "baselineRescores": {
+      "earlier-change": {
+        "adjudications": {
+          "registered": "open",
+          "correctedParent": "established",
+          "wrongFix": "refuted"
+        },
+        "rawSha256": "003de7e499730756e7ea2c24456e8b8c958eda94f16ebc59444ff6261247a4a1"
+      },
+      "spring-projects/spring-framework#37193.1": {
+        "adjudications": {
+          "registered": "open",
+          "correctedParent": "established",
+          "wrongFix": "refuted"
+        },
+        "rawSha256": "3abc8908c137ce9d1f1d17f8b359f6e2dc9b4e9c63e9119f6c925ce82a1d43a0"
+      }
+    },
+    "singleQuestionRescore": "receipts/458-format-rescore.zip",
+    "setupStops": "receipts/numbered-input-stops.zip",
+    "incompleteFixtureAttempt": {
+      "question": "numbered.format-and-malformed",
+      "reason": "which NumberFormat should the numbered caller pass (explicit null or pattern, locale and parsing mode)?"
+    },
+    "smallestUnsupported": {
+      "question": "numbered.formatter-after-return",
+      "operation": "java.text.DecimalFormat#isParseBigDecimal()Z",
+      "reason": "unresolved operation after the public conversion: then read `isParseBigDecimal()` from that formatter"
+    }
+  },
   "rows": [
     {
       "case": "458",
