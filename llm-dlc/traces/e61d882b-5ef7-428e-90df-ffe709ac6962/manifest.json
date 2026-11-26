@@ -12576,138 +12576,146 @@
     },
     {
       "change_id": "pzoytstlvtwqsotxurzxklptxnwsxnky",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "ea77805d5cf3e45207d2458082e8cec0cb14e0e6",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261126-131422-trace-spring-mail-copies-and-r2dbc-loan: passed: 2 passed step(s) in 17.6s, peak 108.4 MiB (estimated 1m00s, 768.0 MiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the spring-framework-pr-links-p01-p30-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "bf5a5f1f074af43a1d6346df2fc9436a70241e18d8eb4fa26b60ae52a57b86eb"
     },
     {
       "change_id": "vnlyxvzprukoxpuvwouvzwurmuvpkvlt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "948ca38b56e78e5595f2170876eeaba82a7c55f5",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261126-131411-replay-94-spring-predictions-across-30-p: passed: 2 passed step(s) in 1m20s, peak 145.2 MiB (estimated 3m00s, 768.0 MiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the spring-framework-pr-links-p01-p30-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "bf5a5f1f074af43a1d6346df2fc9436a70241e18d8eb4fa26b60ae52a57b86eb"
     },
     {
       "change_id": "usnlmlsmxnwvxqtpkvkrkzmxwmtwomom",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9e385b7c19cd37afb30ee3f8fb43c756eec03229",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261126-132138-replay-published-spring-versions-and-the: passed: 7 passed step(s) in 40.1s, peak 145.6 MiB (estimated 2m00s, 768.0 MiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the spring-framework-pr-links-p01-p30-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "7783eb3e12672fd2a7b1ab372adc3e30434191c98bef83603d6be0e5a6c2c0ba"
     },
     {
       "change_id": "qnymuukvvkmumunostmwpsyyktpysmou",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "dd6633ffb6af8105d0d26b55aabb9faef16234c1",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261126-132656-check-bean-overrides-on-direct-and-inher: passed: 2 passed step(s) in 11.6s, peak 102.2 MiB (estimated 30.0s, 512.0 MiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the spring-framework-pr-links-p01-p30-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "97241f4b68a75f76f547cfb7708e3cc39898d3b4984d5e336b8c42d39acb9767"
     },
     {
       "change_id": "tolyqtswkyrvulqpkoxrvkqpwmzwpmto",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e8bf97e91dcce939f747d14a83add4c96de10c5b",
+      "immutable": true,
       "summary": "Leave the allow list out of the sync cache's fingerprint",
       "body": "Every allow-list proposal or approval changed the sync cache's fingerprint, so the next commit in each workspace synced every session again (about 140 s instead of 20 s, 2026-11-26), and setup runs commit allow-list proposals often. process() redacts by the rules alone; an approved entry only leaves a finding out of what check and scan report (Redactor.reviewed), so no manifest depends on the allow list. Removed it from sync_cache's fingerprint (the reviewed findings stay) and from the specification's list. Verified: a new unit test (Fingerprints: writing an allow-list entry leaves the fingerprint as it was); test_costs run --changed, 24 of 24 files pass; lint agrees.",
       "log_sha256": "db972a2d96fca1e073c12b38a76b7afba39cc19208cb767d68b7131a5ae72451"
     },
     {
       "change_id": "vmtzkyqvtxnlqvmywtwyxrxyksxnkxvu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f14a4971f510c0dc0fc795fc150771202c57593c",
+      "immutable": true,
       "summary": "Clear a single loop's scope of what an ended loop left before starting",
       "body": "feature-loop.sh refused to start whenever its systemd scope was still active. On 2026-11-26 a dirmngr that the Spring P setup's signature check started stayed in feature-loop-single-...-setup.scope after the leg ended, single_run.py start refused, the watcher's systemctl stop was refused by the classifier, and the queue stood idle for 7 h 50 min until the user stopped the scope (VF-070, item 2). The loop now does what run-streams.sh's clear_scope does for a stream: before entering the scope it reads the scope's processes, and if none is a feature loop (feature-loop.XXXXXX) or an agent client (claude, codex, agent_client.py), it stops the scope and starts; otherwise it refuses as before. FEATURE_LOOP_CGROUP_ROOT points the reading elsewhere for tests. Verified: a new tool-tier test with stand-ins for systemctl and systemd-run (a leftover dirmngr-named process is stopped and the loop starts; a feature loop at work is refused and its scope left alone); test_costs run --changed, 20 of 20 files pass.",
       "log_sha256": "db972a2d96fca1e073c12b38a76b7afba39cc19208cb767d68b7131a5ae72451"
     },
     {
       "change_id": "plutzpwxwrtyyoyyyszysnvvzkzulrsv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c78ee1413ea3010c80f48062efa18164140a5357",
+      "immutable": true,
       "summary": "Give the setup agent a standing rule for pinned builds no public repository can configure",
       "body": "Spring O11 and O14 and Spring P's seven 5.x cases needed build plugins that only repo.spring.io's private repositories or the closed Bintray served, and each time the setup asked the user what to do (VF-070, item 3). The user decided for P on 2026-11-26: compile the pin's exact changed sources against released jars, labelled as such, which is also what the O domain run did, and P's seven cases were verified that way. The setup template now says so: record it, don't ask, don't change the build or look for credentials, and prepare the released jars whose changed source files match the pin's (by git blob id) plus the pin's changed sources. It also has the agent end its private keyring's daemons with gpgconf --kill all, since a dirmngr left running held a setup scope for 7 h 50 min (item 2). Text only; no test reads it.",
       "log_sha256": "db972a2d96fca1e073c12b38a76b7afba39cc19208cb767d68b7131a5ae72451"
     },
     {
       "change_id": "yqxunxvvtvwumzuklpulypvuxsvpnuqt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9c9886f010b5372ee58bd0b44750f59d730a38a2",
+      "immutable": true,
       "summary": "Refuse a job from a conflicted jj commit, and keep one runner per repository",
       "body": "Two runner faults from the findings. VF-060: a job exported from a conflicted jj change ran on jj's git layout of a conflict (JJ-CONFLICT-README beside a whole-tree copy of each side), 7.3 GB a work folder, and its result said nothing about the intended sources. prepare() now checks the source commit for JJ-CONFLICT-README and records the job as an error that names the conflict, before any step runs. VF-051: each workspace has its own verification/.state and runner lock, so on 2026-11-21 a run's agent started a second runner in its workspace that started the watcher's six jobs again under the same scope names, and systemd stopped the first ones. pipeline.py run now also takes a lock in jj's repository store, which all workspaces share (.jj/repo, or the path a second workspace's .jj/repo names), and a runner in another workspace is refused with the holder's pid and checkout; outside jj nothing changes. Verified: two unit tests (a conflicted commit's job is an error and runs no step; a second workspace's runner is refused while the first holds the lock, and taken once it is free); test_costs run --changed passed (33 of 33 files; test_performance.py failed once and passed on its rerun, being checked).",
       "log_sha256": "db972a2d96fca1e073c12b38a76b7afba39cc19208cb767d68b7131a5ae72451"
     },
     {
       "change_id": "vlpwvrnltsuklxullssrplwtvksowrxs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6d56160281b3d286d497c22b896b5e9948c97cc9",
+      "immutable": true,
       "summary": "List a run's commits after a base change that has turned divergent",
       "body": "VF-049: single_run.py keeps a run's base as a change id, and watch.commits listed BASE..@-. When sync.py commit rewrote the base's trace lines and an agent's bookmark kept the old commit visible, the change was divergent, the revset failed, and the run's commit list went empty in summaries and in a cycle's question, where a watcher would read a cycle with no commit. A change id (letters k to z) is now read as heads(change_id(BASE) & ::@-), its version on the run's line; a commit id is taken as it is. Verified: a tool-tier test that makes a real divergent base with jj (rewritten, the old version bookmarked) and lists the run's commit; it fails without the fix. Covered by the test_costs run --changed above.",
       "log_sha256": "db972a2d96fca1e073c12b38a76b7afba39cc19208cb767d68b7131a5ae72451"
     },
     {
       "change_id": "pwlxrmvvytnvtzztxtqosovuvkozzzxm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "751924a595af06dd94ef700a6ce395c3ac7c3986",
+      "immutable": true,
       "summary": "Give the watcher single_run.py unhang, and bring a restarted run's workspace onto the line",
       "body": "Two setup-phase blockers from VF-070. Item 1 (VF-069): agents waited with until ! pgrep -f 'PATTERN', whose own command line matches PATTERN, so the loop never ended; five times on 2026-11-25 and 26 a setup run sat 36 to 46 minutes until a person ended it, and the classifier refused the watcher's kill. single_run.py unhang NAME ends only such loops: a until/while ... pgrep -f ... sleep loop among the run's processes (the loop's descendants and its scope), at least 10 minutes old (--min-age), whose every pattern no other process matches; it reads the command as typed, undoing the quoting Claude Code wraps commands in, ends each by pid with SIGTERM, records it in the run's unhang.jsonl, and --dry-run only names them. It replaces the user's interim delegation of 2026-11-26; the operating notes and the single-agent-run skill say when to use it. Item 7: the watcher collects a stopped run's job results on the line, not in the run's workspace, so the agent read 'recorded on another head' or waited for a commit already made. start, restarting a run in its own workspace, now moves the workspace onto the line when its commits are landed and nothing is uncommitted (brief_queue's onto_line, moved to brief_run for both), and says why when it can't; jobs says to land first when results came for a workspace run. Verified: a unit test of the detector (self-matching loops 600 s and older are hung; a wait on a live process, a young loop and other processes are not; Claude Code's quoting) and a tool test that starts real loops and ends only the hung one; the workspace test now restarts after a results commit and finds the file; a dry run against the live Spring P run named nothing; test_costs run --changed passed (33 of 33 files).",
       "log_sha256": "db972a2d96fca1e073c12b38a76b7afba39cc19208cb767d68b7131a5ae72451"
     },
     {
       "change_id": "muqymsvsywwnztqvpltwvwlymzununpv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "fcb70e300aa7c2e4e824d29d7905adb90b20d7d6",
+      "immutable": true,
       "summary": "Have review show read only the texts of the sessions a finding is in",
       "body": "sync.py review show decompressed every stored log to show one finding: 356 logs, about 11.5 GB, 50 s in a quiet workspace and over 200 s for each finding a setup agent looked at during a run (VF-070, item 6). It now goes through scan_targets with the check cache, whose stored logs are read lazily, and opens only the texts of the sessions the finding is listed in; the excerpts are the same. Measured on 2026-11-26: 50 s to 5.7 s for a finding in one session, 32 s for one in the watcher's long session. Also: test_the_span_covers_what_jj_counts_as_made counted every commit in the shared repository store that names a session, so in a side workspace it failed once another workspace committed for that session (a watcher's results commit at 13:26); it now counts the commits on this line. This commit also carries the cost rows of the new tests of this line of commits. Verified: a unit test that review show opens only the finding's session's log and prints its excerpt masked; the span test passes; test_costs run --changed (33 of 33 files) and lint agree.",
       "log_sha256": "db972a2d96fca1e073c12b38a76b7afba39cc19208cb767d68b7131a5ae72451"
     },
     {
       "change_id": "owrxryrnwvnxpyozsltzoowqqlyzzkkk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3f907397b31875ad798a3ee9480b93b027a540b5",
+      "immutable": true,
       "summary": "Merge setup-mechanics: setup fixes from VF-070, VF-069, VF-060, VF-051 and VF-049",
       "body": "Merges the advisor's setup-mechanics workspace (7 commits on develop 00800750) into the default line, at the user's request. The allow list leaves the sync cache's fingerprint, so proposing or approving no longer makes every workspace re-sync. A single loop clears a scope that holds only an ended loop's leftovers, such as the dirmngr that blocked the Spring P setup for about 7 h 50 min. The setup template carries the user's rule for pinned builds no public repository can configure (released jars plus the pin's changed sources, labelled), and has setup agents stop their private keyrings' daemons. pipeline.py refuses a job from a conflicted jj commit and keeps one runner per repository. A run whose base change turned divergent still lists its commits. single_run.py unhang ends a run's hung self-matching wait loops by PID, and a restarted run's workspace is moved onto the line. review show reads only the sessions a finding is in (50 s to 6 s). The merge had no conflicts; each side's commits reported 0 errors and test_costs run --changed passed 33/33 on the side. Also the watcher's decision records for the Spring P01-P30 domain run.",
       "log_sha256": "db972a2d96fca1e073c12b38a76b7afba39cc19208cb767d68b7131a5ae72451"
     },
     {
       "change_id": "ulmsvyvtxykoqxkyxtuwlyzytrxrztzl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "540f621d498438c6500088b50a90e046dee60b27",
+      "immutable": true,
       "summary": "Compare 30 Spring changes at public APIs (verification pending)",
       "body": "Register 94 questions and run each caller on the specified parent and landing in a fresh JVM. All 31 intended contrasts and 30 unchanged controls held. Preserve the three merged counterexamples in YAML, mail copying and protobuf JSON Lines, the partially committed SQL script, the lost JDBC descriptor, and independent database readback at Mono completion. Examples 478–507 check 23 module build pairs and all compiled classes in seven pinned historical slices.\n\nAll 30 example validators with replay and all 55 selected suites passed. Five earlier campaign audits stayed byte-identical. Negative checks reject swapped historical class bytes, companions, YAML adapters and a client compiled on the wrong revision. Independent jobs 20261126-131411-replay-94-spring-predictions-across-30-p and 20261126-131422-trace-spring-mail-copies-and-r2dbc-loan repeat the complete comparison and 24 debugger trials at two original methods.",
       "log_sha256": "8aac79db9c6d52e070ae3c41158ee4f40e4957a23626cf1c9b5eb62cb3e41f00"
     },
     {
       "change_id": "uozypxupnssyurvntztsxvoyuspsquot",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "40cff9bd0fe8e187aa314dd4221b744a43fd991d",
+      "immutable": true,
       "summary": "Recheck Spring findings on published releases (verification pending)",
       "body": "The original callers reproduce the three merged counterexamples and a misleading Jupiter diagnostic on published Spring 7.1.0. All 46 outcomes on the seven historical release pairs agree with their pinned class slices. Spring 5.3.18 also reproduces the three original listener histories. Record the 5.1.4 to 5.1.5 JDBC binary break and prepare the upstream reproductions. The P29 maintainer follow-up adds Javadoc and gives the same instructions and six matching JVM histories.\n\nAll 62 published-release observations passed a side-specific check against the original results. Deliberately changed outcomes, bytecode hashes, classpath order and version were rejected. All six selected suites passed and the older Spring release check still agrees. The independent 188-history replay and 24 original-method debugger trials passed. Job 20261126-132138-replay-published-spring-versions-and-the repeats the 62 published histories and the cron follow-up offline and compares the three output files byte for byte.",
       "log_sha256": "8aac79db9c6d52e070ae3c41158ee4f40e4957a23626cf1c9b5eb62cb3e41f00"
     },
     {
       "change_id": "kutlqrrnzstloqlvytqpskvmspkszxmu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8fa89cf97d3fc65486663c3f84728c12b642c82a",
+      "immutable": true,
       "summary": "Check inherited Spring test bean overrides (verification pending)",
       "body": "Follow up the hierarchy failure seen while constructing the P24 fixture. In five separate Jupiter histories, inheriting both application contexts works and declaring each override scope beside the hierarchy works. When the hierarchy is on the superclass, both overrides on the subclass fail before its test method on the landing and published Spring 7.1.0. Keep the follow-up separate from the 94 original predictions and record it for upstream review.\n\nTen pinned JVM runs and five released runs independently repeated with identical caller class bytes and release output. The example 501 validator with replay and all 40 selected suites passed. The earlier seven-step job also passed: its 62 release histories and six cron runs produced three byte-identical files. Job 20261126-132656-check-bean-overrides-on-direct-and-inher repeats the new hierarchy comparison.",
       "log_sha256": "8aac79db9c6d52e070ae3c41158ee4f40e4957a23626cf1c9b5eb62cb3e41f00"
     },
     {
       "change_id": "uqpyoqurwrnqryqyqlstynmvmolulpmt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0c18d2d3bcc4277302072e7a80860290d687e2a0",
+      "immutable": true,
       "summary": "Record the completed Spring P01–P30 verification",
       "body": "All four independent campaign jobs passed. The last job repeated ten pinned and five published Jupiter histories and returned a byte-identical release result. Checked the four collector results and all 44 local links in the campaign report. The documentation-only change selected no further tests.",
       "log_sha256": "8aac79db9c6d52e070ae3c41158ee4f40e4957a23626cf1c9b5eb62cb3e41f00"
     },
     {
       "change_id": "mpqtkmltwzrsxsnpslrrxlyxzllmywtp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "32d3a22cfbae921d272649eaaae608d60ae89ecf",
+      "immutable": true,
       "summary": "Merge the single-agent run spring-framework-pr-links-p01-p30-brief into the line",
       "body": "The single-agent run spring-framework-pr-links-p01-p30-brief (session c3caedf3-7925-4cdf-aaa2-f3c5885dabb1) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "8aac79db9c6d52e070ae3c41158ee4f40e4957a23626cf1c9b5eb62cb3e41f00"
+    },
+    {
+      "change_id": "ypvvpmsntstutnmvymzwqpwtqsqrlyll",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "8aac79db9c6d52e070ae3c41158ee4f40e4957a23626cf1c9b5eb62cb3e41f00"
     }
   ],
