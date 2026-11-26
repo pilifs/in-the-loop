@@ -1,0 +1,213 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-232218-replay-complete-numbered-literal-and-cal",
+  "title": "Replay complete numbered literal and callback histories",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 25.4s, peak 189.4 MiB (estimated 2m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-232218-replay-complete-numbered-literal-and-cal.json",
+    "sha256": "68da1d665829e8a83a9f9b877c4b7952775e2b96c8f2dd1a7b220a1a81dfedb3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-232218-replay-complete-numbered-literal-and-cal",
+      "title": "Replay complete numbered literal and callback histories",
+      "description": "Start Spring 458 and Vavr 445 in a fresh checkout with supplementary numbered registrations. Measure a locale-formatted numeric input and malformed text, then a reversed order of odd and greater-than callback searches. Resume by number with unchanged compiled classes. Also require ordinary setup to stop on an unspecified formatter or an unobserved post-call getter, and prevent reuse after the reviewed fixture or predicates change.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T23:22:18+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Scaffold, preflight, resume and exercise four review controls",
+          "run": "python3 verification/generated-observers/numbered_inputs.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/numbered-inputs.zip",
+        "verification/generated-observers/receipts/numbered-input-stops.zip"
+      ]
+    }
+  },
+  "sourceCommit": "9fd8b3b552c646f7ec11ed8943e09fe2b067bfdd",
+  "startedAt": "2026-11-26T23:29:05+00:00",
+  "finishedAt": "2026-11-26T23:33:17+00:00",
+  "wallSeconds": 252.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3559980,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 198582272,
+    "wallSeconds": 25.4,
+    "cpuSeconds": 32.8,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 217.881,
+      "cpuSeconds": 218.073,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2363973632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "43b259e048be764d9ddc0706cf06a71e884a9516ddae5c7359d781c48e9c8733",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261126-232218-replay-complete-numbered-literal-and-cal/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 37s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Scaffold, preflight, resume and exercise four review controls",
+      "run": "python3 verification/generated-observers/numbered_inputs.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 25.446,
+      "cpuSeconds": 32.764,
+      "cpuThrottledSeconds": 2.359,
+      "peakMemoryBytes": 198582272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-scaffold-preflight-resume-and.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/numbered-inputs.zip",
+      "change": "added",
+      "bytes": 72501,
+      "sha256": "a197c3b11e819c087685bf4f65b4bdbf798832c4d21293778635ceb35773f4d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/numbered-input-stops.zip",
+      "change": "added",
+      "bytes": 5340,
+      "sha256": "323fc4e2e1d612ba1a2ec370d308a39e34e5f30cbd5e140f2e5ebacc02d833bb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T23:33:49+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/numbered-inputs.zip",
+      "verification/generated-observers/receipts/numbered-input-stops.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f6b90fafcd2bab477c1f69238b0353c671b5d58a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f6b90fafcd2bab477c1f69238b0353c671b5d58a/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T233317Z-0461826a03650fce",
+      "outputs": "20261126T233317Z-070006f2d3d4a430",
+      "diff": "20261126T233317Z-090666b21ad6a60b"
+    }
+  }
+}
