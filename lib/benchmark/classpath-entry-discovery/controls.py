@@ -117,6 +117,8 @@ def ordered(work, prove=False):
                     env = {**os.environ,"JAVA_HOME":str(JDK),"JVMCONTRACT_JAR_RELEASE":"21"}
                     if engine == "native":
                         runtime._launch_guard(plan,CHECKER,env,sides,invocation,runtime_jdk.identity(JDK),attempt,attempt)
+                    else:
+                        runtime._stock_launch_guard(CHECKER,env,sides,invocation,runtime_jdk.identity(JDK),attempt)
                     result = subprocess.run(invocation.argv,cwd=attempt,env=env,text=True,capture_output=True,timeout=90)
                     outputs = json.loads(result.stdout)
                     verdict = outputs[0]["verdict"]
@@ -248,15 +250,23 @@ def multirelease(work, check_proofs=False):
             if [r["verdict"] for r in answers["native"]] != ["verified", "violation"]:
                 raise ValueError(f"{key}: actual native proof used a different physical class: {answers}")
             rows[-1]["actualProofs"]=answers
-            prepared = SimpleNamespace(source={"target":{"loadedFrom":files[1].name,"class":"Gate",
-                                                           "classObservation":record["jvm"]}})
-            recipe=recipes.ProofRecipe("direct-method","prove",entry,entry,(),{})
+            dirs = {"side": (work, None, [])}
+            invocation = SimpleNamespace(entries={"side":{}},classpaths={"side":[{"path":str(f)} for f in files]})
+            feature = key.split("/")[-1]
+            env = {**os.environ,"JAVA_HOME":str(jdk),"JVMCONTRACT_JAR_RELEASE":feature}
             try:
-                recipe.bind(SimpleNamespace(engine="jbmc"),str(CHECKER),{"side":(work,prepared,[])},str(work),60)
+                runtime._stock_launch_guard(CHECKER,env,dirs,invocation,runtime_jdk.identity(jdk),work)
             except runtime.Refused as stop:
                 rows[-1]["stockRoute"]=stop.diagnostic
+                if feature != "21" or "multi-release" not in stop.diagnostic:
+                    raise
             else:
-                raise ValueError("stock JBMC was qualified by native multi-release observations")
+                rows[-1]["stockRoute"]="ordinary class members"
+                if feature == "21":
+                    raise ValueError("stock recipe admitted the active versioned class")
+            expected_stock = ["unverifiable", "unverifiable"] if feature=="21" else ["verified","violation"]
+            if [r["verdict"] for r in answers["jbmc"]] != expected_stock:
+                raise ValueError(f"{key}: direct stock command bypassed its byte qualification: {answers}")
     return rows
 
 

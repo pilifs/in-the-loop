@@ -62,8 +62,21 @@ class ChangePlanTest(unittest.TestCase):
             self.assertEqual(found["unresolved"], [])
             self.assertTrue(change_inventory.absences_hold(found["absent"]))
             self.assertTrue(change_inventory.manifest_classpath([jar], 17)["unresolved"])
+            from types import SimpleNamespace
+            from unittest.mock import patch
+            from targets import runtime
+            staged = SimpleNamespace(entries={"new": {"scaffoldGraph": "stage-3", "scaffoldAbsences": [str(extra)],
+                                                      "scaffoldJdk": "pinned"}},
+                                     classpaths={"new": [{"path": jar.name, "sha256": change_inventory.file_digest(jar)}]})
+            proof = ({"new": (base, None, None)}, staged, {"home": str(base), "feature": "21"})
+            with patch.object(change_inventory, "jdk_binding", return_value="pinned"):
+                runtime._staged_launch_guard(*proof)
+            self.assertEqual(staged.entries["new"]["proofManifestAbsences"], [str(extra)])
             with zipfile.ZipFile(extra, "w") as archive:
                 archive.writestr("marker.txt", "local provider")
+            with patch.object(change_inventory, "jdk_binding", return_value="pinned"):
+                with self.assertRaisesRegex(runtime.Refused, "assumed absent"):
+                    runtime._staged_launch_guard(*proof)
             self.assertFalse(change_inventory.absences_hold(found["absent"]))
             self.assertEqual(change_inventory.manifest_classpath([jar], 21)["unresolved"][0]["reason"], "present implicit provider")
             paired = change_inventory.manifest_classpath([jar, extra], 21)

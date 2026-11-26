@@ -175,6 +175,7 @@ fn a_multi_release_jar_binds_by_the_release_and_is_refused_without_one() {
     let path = jar(&dir, "plain", &format!("{HEAD}Multi-Release: true\r\n\r\n"), b"base", b"for 17");
     for (release, entry, bytes) in [(Some(8), "fixture/Gate.class", &b"base"[..]), (Some(11), "fixture/Gate.class", b"base"), (Some(17), "META-INF/versions/17/fixture/Gate.class", b"for 17"), (Some(21), "META-INF/versions/17/fixture/Gate.class", b"for 17")] {
         let cp = class_path(&[&path], release, None, &dir);
+        assert_eq!(cp.jbmc_multi_release_gap().is_some(), release >= Some(17));
         let binding = cp.bind(GATE).unwrap();
         assert_eq!((binding.selected.entry.as_str(), binding.selected.sha256.as_str(), binding.selected_by), (entry, digest(bytes).as_str(), SelectedBy::Rule), "{release:?}");
         assert_eq!(binding.candidates.iter().map(|c| (c.entry.as_str(), c.release)).collect::<Vec<_>>(), [("fixture/Gate.class", None), ("META-INF/versions/17/fixture/Gate.class", Some(17))]);
@@ -186,6 +187,12 @@ fn a_multi_release_jar_binds_by_the_release_and_is_refused_without_one() {
     assert_eq!(refused.candidates.iter().map(|c| c.sha256.clone()).collect::<Vec<_>>(), [digest(b"base"), digest(b"for 17")], "both digests, with where each is");
     assert!(unbound.refused(GATE).is_some_and(|why| why.contains("fixture.Gate is a class of a multi-release JAR") && why.contains("for Java 17")));
     assert!(unbound.application_bytes(GATE).is_err());
+    assert!(unbound.jbmc_multi_release_gap().is_some());
+    let earlier = dir.join("ordinary.jar");
+    zip(&earlier, &[("fixture/Gate.class", b"ordinary")]);
+    assert!(class_path(&[&earlier, &path], Some(21), None, &dir).jbmc_multi_release_gap().is_none());
+    assert!(class_path(&[&path, &earlier], Some(21), None, &dir).jbmc_multi_release_gap().is_some());
+
 }
 
 #[test]

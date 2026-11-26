@@ -824,6 +824,27 @@ impl ClassPath {
         refused
     }
 
+    /// A class whose effective multi-release member stock JBMC is not qualified to read. The ordinary JAR
+    /// passed to JBMC still contains its base member. This applies to helpers as well as to the named subject.
+    pub fn jbmc_multi_release_gap(&self) -> Option<String> {
+        for (index, root) in self.entries.iter().enumerate() {
+            let Entry::Jar(_, path, versions) = root else { continue };
+            for (file, releases) in &versions.entries {
+                if !file.ends_with(".class") || file == "module-info.class" { continue; }
+                let Some(version) = releases.iter().copied().filter(|v| self.jar_release.is_none_or(|feature| *v <= feature)).max() else { continue };
+                // An earlier base class wins in both readers. A version-only earlier class is not sufficient
+                // evidence of that, since its release may be ineligible or its manifest ambiguous.
+                if self.entries[..index].iter().any(|earlier| match earlier {
+                    Entry::Dir(dir) => dir.join(file).is_file(),
+                    Entry::Jar(zip, _, _) => zip.contains(file),
+                }) { continue; }
+                let profile = self.jar_release.map_or_else(|| "unbound JDK".to_string(), |v| format!("JDK {v}"));
+                return Some(format!("stock JBMC has no qualified multi-release class binding for {file} in provider {index} ({}, {profile}): the deployed class may be META-INF/versions/{version}/{file} while the stock command can inspect the base member", path.display()));
+            }
+        }
+        None
+    }
+
     /// The SHA-256 a JVM of the bound release was seen to load for `name`, when one was given.
     fn observation(&self, name: &str) -> Option<&str> {
         (self.jar_release.is_some() && self.observations.feature == self.jar_release).then(|| self.observations.classes.get(name).map(String::as_str)).flatten()

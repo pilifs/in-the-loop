@@ -709,6 +709,9 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
     // 2. The statement. A declared exception is named as in Java, `java.lang.ArithmeticException`, or by its simple
     // name when it is in java.lang or the target's package.
     let cp = cp.with_default_jdk();
+    if options.engine == crate::Engine::Jbmc || options.confirm {
+        if let Some(problem) = cp.jbmc_multi_release_gap() { return refuse(&mut out, line, problem); }
+    }
     let mut signals = Vec::new();
     for clause in &options.throws {
         let mut signal = match Signal::parse(clause) {
@@ -1144,6 +1147,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
             last = Some(result);
         } else {
             let _ = writeln!(out, "note: the tool's own checker gave no verdict ({}); JBMC", result.problem.as_deref().unwrap_or("no reason"));
+            if let Some(problem) = cp.jbmc_multi_release_gap() { return refuse(&mut out, line, problem); }
             fallback = Some(result.problem.clone().unwrap_or_else(|| "no reason".into()));
         }
     }

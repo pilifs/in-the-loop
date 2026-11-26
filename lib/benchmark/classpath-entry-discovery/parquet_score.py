@@ -55,7 +55,7 @@ def score(destination):
                 entry=nominated if observation["args"][0]=="page" else WRITER
                 record=selected[key][entry]
                 if record["status"]!="bound":raise ValueError(f"{key} {entry}: {record['firstOpenDependency']}")
-                rows.append({"case":11,"revision":side,"profile":order,"question":observation["question"],"entry":entry,
+                rows.append({"case":11,"revision":side,"profile":order,"question":observation["question"],"input":observation["args"],"entry":entry,
                              "firstUnaidedRank":ranked.index(entry)+1 if entry in ranked else None,
                              "provider":record["providerIndex"],"classSha256":record["classSha256"],
                              "physicalEntry":record["physicalEntry"],"shadowed":record["checker"]["shadowed"],

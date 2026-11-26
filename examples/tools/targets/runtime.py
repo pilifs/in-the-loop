@@ -1835,6 +1835,64 @@ def bound_class(where, prepared, path, cls):
 CLASSES = "classes"  # under the verifier's work directory: each side's original JAR, extracted for equivalence
 
 
+def _staged_launch_guard(sides, invocation, jdk):
+    """Recheck the actual proof classpath and assumed absences after moving staged artifacts to a proof attempt."""
+    from targets import change_inventory, deployment_graph
+    image = None
+    for side, (where, _, _) in sides.items():
+        record = invocation.entries[side]
+        if not record.get("scaffoldGraph"):
+            continue
+        if image is None:
+            image = change_inventory.jdk_binding(Path(jdk["home"]))
+        if image != record["scaffoldJdk"]:
+            raise Refused("verifier", f"{side}: verifier JDK differs from the independently bound scaffold profile")
+        if not change_inventory.absences_hold(record["scaffoldAbsences"]):
+            raise Refused("verifier", f"{side}: a manifest URL assumed absent in the scaffold is now present")
+        roots = [where / a["path"] for a in invocation.classpaths[side]]
+        document = {"classpath": [{"file": str(path), "sha256": artifact["sha256"]}
+                                 for path, artifact in zip(roots, invocation.classpaths[side], strict=True)]}
+        try:
+            files, _, graph = deployment_graph.resolve(document, where, int(jdk["feature"]), change_inventory.file_digest)
+        except (OSError, ValueError) as error:
+            raise Refused("verifier", f"{side}: staged proof deployment changed: {error}") from None
+        problems = graph["manifestClassPath"]["unresolved"]
+        if problems or files != roots:
+            raise Refused("verifier", f"{side}: proof launch manifest lookup differs from the bound provider order: "
+                                      f"{problems[0] if problems else list(map(str, files))}")
+        record["proofManifestAbsences"] = graph["manifestClassPath"]["absent"]
+
+
+def _stock_launch_guard(exe, env, sides, invocation, jdk, attempt):
+    """Ask about the actual stock route before equivalence extracts any subject JAR into a directory."""
+    _staged_launch_guard(sides, invocation, jdk)
+    requests = {side: {"classpath": [str(where / a["path"]) for a in invocation.classpaths[side]],
+                       "qualifyStock": True}
+                for side, (where, _, _) in sides.items()}
+    try:
+        results, _ = class_binding.ask(exe, env, attempt, requests)
+    except (ValueError, OSError, subprocess.SubprocessError) as error:
+        raise Refused("verifier", f"stock classpath qualification failed: {error}") from None
+    for side, result in results.items():
+        answer = result.get("stockQualification", {})
+        if not answer:
+            # A legacy batch answer still qualifies ordinary byte layout when no archive physically contains
+            # a versioned application class. A modern answer is required to distinguish active variants.
+            import zipfile
+            def versioned(path):
+                if path.is_dir():
+                    return False
+                with zipfile.ZipFile(path) as archive:
+                    return any(match and match[2].endswith(".class") and match[2] != "module-info.class"
+                               for match in (class_binding.VERSIONED.fullmatch(n) for n in archive.namelist()))
+            if not any(versioned(Path(name)) for name in requests[side]["classpath"]):
+                answer = {"status": "ordinary class members", "basis": "no versioned application class in the original archives"}
+        if answer.get("status") != "ordinary class members":
+            reason = answer.get("reason", "checker has no stock classpath qualification for this deployment")
+            raise Refused("verifier", f"{side}: {reason}")
+        invocation.entries[side]["stockClassPath"] = answer
+
+
 def _launch_guard(plan, exe, env, sides, invocation, jdk, workdir, attempt):
     """Before the native checker is launched: the class file it will inspect for the checked entry and for the
     subject of each side must be the one the preparation bound, by provider and by digest. The checker says which it
@@ -1845,13 +1903,9 @@ def _launch_guard(plan, exe, env, sides, invocation, jdk, workdir, attempt):
 
     Returns, for an equivalence, each side's logical entries of its original JAR as the checker sees them under the
     bound release (`_class_dirs` extracts by them); None for a property proof."""
+    _staged_launch_guard(sides, invocation, jdk)
     seen, differing = {}, set()
     for side, (_, side_prepared, _) in sides.items():
-        scoped_jdk = invocation.entries[side].get("scaffoldJdk")
-        if scoped_jdk:
-            from targets import change_inventory
-            if change_inventory.jdk_binding(Path(jdk["home"])) != scoped_jdk:
-                raise Refused("verifier", f"{side}: verifier JDK differs from the independently bound scaffold profile")
         bound = side_prepared.source["target"]
         if bound.get("classObservation"):
             if str(jdk["feature"]) not in bound["classObservation"]["jdks"]:
@@ -2063,9 +2117,11 @@ def _run_verifier(plan, prepared, workdir, *, before_launch, timeout, certify_lr
             env["JVMCONTRACT_TRANSCRIPTS"] = str((workdir / "solver-traces").resolve())
             env["JVMCONTRACT_LRAT_MODELS"] = "1"
         logical = None
-        if plan.engine == "native":
-            env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]
+        env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]
+        if plan.engine in ("native", "auto"):
             logical = _launch_guard(plan, exe, env, sides, invocation, jdk, workdir, attempt)
+        else:
+            _stock_launch_guard(exe, env, sides, invocation, jdk, attempt)
         identities.update({
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],
             "engine": plan.engine, "gaps": plan.gaps, "bounds": dict(plan.claim.get("bounds") or {}),
@@ -2101,10 +2157,16 @@ def _run_verifier(plan, prepared, workdir, *, before_launch, timeout, certify_lr
     identities["usage"] = usage
     observations, problem = (None, f"the verifier {status}" + (f" (signal {-code})" if status == "killed" else "")) \
         if status != "exited" else _outcomes(out.read_text(errors="replace"), VERIFIER_KINDS[plan.kind])
+    publication_reason = None
+    try:
+        _staged_launch_guard(sides, invocation, jdk)
+    except Refused as refused:
+        observations = None
+        publication_reason = problem = refused.diagnostic
     record = interfaces.ExecutionRecord(kind="verifier", revision=revision, argv=argv, status=status, exitCode=code,
                                         seconds=seconds, stdout=rel(out), stderr=rel(err), identities=identities,
                                         observations=observations, directory=str(attempt),
-                                        record=rel(workdir / VERIFIER), reason=_not_started(status, err))
+                                        record=rel(workdir / VERIFIER), reason=publication_reason or _not_started(status, err))
     log = {"cwd": str(attempt), **({"problem": problem} if problem else {})}
     (workdir / VERIFIER).write_text(json.dumps({"task": plan.task, "record": record.as_dict(), "log": log}, indent=2,
                                                ensure_ascii=False) + "\n")

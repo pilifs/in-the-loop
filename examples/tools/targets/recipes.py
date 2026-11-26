@@ -60,9 +60,6 @@ class ProofRecipe:
         for revision, (_, prepared, artifacts) in sides.items():
             upstream = prepared.source["target"]
             original = upstream["loadedFrom"]
-            if plan.engine == "jbmc" and upstream.get("classObservation"):
-                raise runtime.Refused("verifier", f"{revision}: stock JBMC has no measured physical member for "
-                                      f"{upstream.get('class', self.subject)} in this multi-release deployment")
             digest = upstream.get("classSha256")
             selected = [a for a in artifacts if a.path == original or a.role in ("original", "dependency", "stub")
                         or (self.correspondence and a.role == "adapter")]
@@ -102,7 +99,10 @@ class ProofRecipe:
                     if not matching:
                         raise runtime.Refused("classpath", f"{revision}: the prepared proof inputs differ from the scaffold binding for {plan.target}")
                     entries[revision]["scaffoldBindingRefs"] = sorted(ref for ref,_ in matching)
-                    entries[revision]["scaffoldJdk"] = staged["graphs"][matching[0][1]["graph"]]["jdk"]
+                    staged_graph = staged["graphs"][matching[0][1]["graph"]]
+                    entries[revision]["scaffoldGraph"] = staged_graph["key"]
+                    entries[revision]["scaffoldJdk"] = staged_graph["jdk"]
+                    entries[revision]["scaffoldAbsences"] = staged_graph.get("manifestClassPath", {}).get("absent", [])
             if upstream.get("entryBinding"):
                 entries[revision]["entryBinding"] = upstream["entryBinding"]
             paths[revision] = [dict(path=a.path, sha256=a.sha256, role=a.role) for a in selected]

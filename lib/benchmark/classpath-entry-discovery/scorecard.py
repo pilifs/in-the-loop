@@ -51,7 +51,7 @@ def main():
         refs = [b for b in ranking["entryBindings"].values() if b["side"] == side]
         for b in refs:
             add(1,"Log4j #1173",side,"cold shortlist",b["entry"],"binary-only",b["entry"],
-                proposed=names,coverage={"rank":names.index(b["entry"])+1,"candidates":inv["candidateCount"],
+                proposed=[b["entry"]],coverage={"rank":names.index(b["entry"])+1,"candidates":inv["candidateCount"],
                 "archiveScans":inv["coverage"]["archiveScans"]},agreement=b["status"]=="bound",status=b["status"],
                 first=b.get("firstOpenDependency"),evidence="log4j-first-ranking.json")
     for r in read("log4j-replays")["rows"]:
@@ -118,12 +118,32 @@ def main():
             coverage={"entry":r["binding"]["physicalEntry"],"sha256":r["binding"]["classSha256"]},
             agreement=r["binding"]["status"]=="bound",public=True,status=r["binding"]["status"],first=r["binding"].get("firstOpenDependency"),
             evidence="multi-release.json")
+    for filename in ("mr-proofs", "mr-guard"):
+        if not (OUT/(filename+".json")).is_file():
+            continue
+        for r in read(filename):
+            for engine, trials in r.get("actualProofs", {}).items():
+                for t in trials:
+                    add(8,"Gate",r["profile"].split("/")[1],r["profile"]+"/"+engine+"/"+filename,
+                        "result == "+str(t["asserted"]),"supplied original member",r["binding"]["entry"],
+                        coverage={"originalReturn":r["actual"],"physicalEntry":r["binding"]["physicalEntry"]},
+                        public=True,status=t["verdict"],first=r["stockRoute"] if engine=="jbmc" and t["verdict"]=="unverifiable" else None,
+                        evidence=filename+".json")
+    if (OUT/"stock-helper-guard.json").is_file():
+        for r in read("stock-helper-guard"):
+            add(8,"Versioned helper","fixture",r["profile"]+"/"+r["engine"],"result == "+str(r["asserted"]) if "asserted" in r else "equivalence",
+                "supplied entry",r["target"],coverage={"originalReturn":r.get("originalJvm")},public=True,
+                first=r.get("firstOpenDependency"),status=r["verdict"],evidence="stock-helper-guard.json")
     for file in ("index","index-second","batik"):
         for r in read(file):
             add(9,r["slot"],r["revision"],r["profile"],"registered resource observation","binary-only",r["entry"],
                 proposed=[r["entry"]],coverage={"providerIndex":r["providerIndex"],"originalTrials":r["originalTrials"],
                 "actualKeys":r["registeredResourceKeys"]},public=True,status="recovered" if r["registeredQuestionRecovered"] else "alternate observation",
                 first=None if r["registeredQuestionRecovered"] else "service enumeration does not reach the nominated PNG observation",evidence=file+".json")
+    for r in read("resource-descriptor"):
+        for side, declarations in r["declarationsBySide"].items():
+            add(9,"Changed resource descriptor",side,"neutral","resource lookup","binary-only",r["entry"],
+                coverage={"declarations":declarations},first=r["firstScaffoldStop"],status="open",evidence="resource-descriptor.json")
     for r in read("loaders"):
         for revision in ([r["revision"]] if "revision" in r else ["old","new"]):
             add(10,"Context loaders",revision,r["profile"],r["question"],"supplied caller",r["question"],
@@ -132,12 +152,19 @@ def main():
                 evidence="loaders.json")
     held = read("parquet-first")
     shortlist=[r["entry"] for r in held["candidates"]]
+    histories = {}
     for r in read("parquet-observations"):
-        add(11,"Parquet #3638",r["revision"],r["profile"],r["question"],"frozen transfer then supplied-caller qualification",r["entry"],
+        key = r["revision"], r["profile"], r["question"]
+        histories.setdefault(key, []).append(r)
+    for (revision, profile, question), group in histories.items():
+        r = group[0]
+        add(11,"Parquet #3638",revision,profile,question,"frozen transfer then supplied-caller qualification",r["entry"],
             proposed=shortlist,coverage={"firstScan":held["measurements"],"roots":113,"provider":r["provider"],
-            "firstUnaidedRank":r["firstUnaidedRank"]},agreement=True,public=True,
+            "firstUnaidedRank":r["firstUnaidedRank"],"inputs":[t["input"] for t in group],
+            "registeredOrderMatches":sum(t["matchesRegisteredOrder"] for t in group)},agreement=True,public=True,
             first="no supported static path from this observation to the changed reset methods" if r["firstUnaidedRank"] is None else None,
-            status="original outcome matched" if r["matchesRegisteredOrder"] else "order control changed the outcome",evidence="parquet-observations.json")
+            status="original outcome matched" if all(t["matchesRegisteredOrder"] for t in group) else "order control changed the outcome",
+            evidence="parquet-observations.json")
     history=read("historical-origins")
     for graph in sorted({r["graph"] for r in history["bindings"]}):
         bindings=[r for r in history["bindings"] if r["graph"]==graph]
@@ -149,7 +176,11 @@ def main():
     summary={"historicalFiniteQuestions":archived_panel(),"capturedFiniteQuestions":dict(Counter(panel.values())),
              "historicalBindings":{"graphs":history["graphs"],"matched":history["matched"],"requested":len(history["bindings"])},
              "frozenTransfer":held["measurements"],"rowsByExercise":dict(sorted(Counter(r["exercise"] for r in rows).items())),
-             "statuses":dict(Counter(r["claimStatus"] for r in rows)),"rows":len(rows)}
+             "statuses":dict(Counter(r["claimStatus"] for r in rows)),"rows":len(rows),
+             "publicCalls":{"observedRows":sum(r["publicCallReached"] is True for r in rows),
+                            "unreachedRows":sum(r["publicCallReached"] is False for r in rows),
+                            "notMeasuredRows":sum(r["publicCallReached"] is None for r in rows)},
+             "manualProviderIndices":sum(r["manualBindingInterventions"] for r in rows)}
     change_evidence.write_json(OUT/"scorecard.json",{"schema":"entry-discovery-scorecard/v1","counts":summary,"rows":rows})
     print(json.dumps(summary,sort_keys=True))
 

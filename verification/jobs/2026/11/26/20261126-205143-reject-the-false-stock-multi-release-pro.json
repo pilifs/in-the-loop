@@ -1,0 +1,51 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-205143-reject-the-false-stock-multi-release-pro",
+  "title": "Reject the false stock multi-release proof at the actual checker boundary",
+  "description": "The original JVM returned 5 from META-INF/versions/21/Gate.class while the unguarded JBMC-backed command verified the base value 3. Repeat both assertions on JDK 8, 17 and 21. Require the direct property and equivalence routes to refuse an active versioned helper, with a plain earlier definition as a positive stock control. Re-run the ordinary staged proof recipe on both original orders.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T20:51:43+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Compare deployed versioned subjects on three JDKs",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py mr-proofs verification/classpath-entry-discovery/mr-guard.json",
+      "cwd": "."
+    },
+    {
+      "name": "Check an active helper and an earlier ordinary winner",
+      "run": "python3 verification/classpath-entry-discovery/check_stock_helpers.py verification/classpath-entry-discovery/stock-helper-guard.json",
+      "cwd": "."
+    },
+    {
+      "name": "Repeat unchanged ordered and staged controls",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/final-backend.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/classpath-entry-discovery/mr-guard.json",
+    "verification/classpath-entry-discovery/stock-helper-guard.json",
+    "verification/classpath-entry-discovery/final-backend.json"
+  ]
+}

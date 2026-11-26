@@ -139,7 +139,11 @@ def original_client(work):
     spec = json.loads((work/"scope.json").read_bytes())
     spec["invocationVia"] = "Client#run()I"
     WRITE(work/"scope.json", spec)
-    _, result = plan(work,work/"old.json",work/"new.json","comparison",workflow,run=True)
+    saved, result = plan(work,work/"old.json",work/"new.json","comparison",workflow,run=True)
+    from targets.change_plan import saved_bindings
+    offline = saved_bindings(result, saved.parent)
+    if {r["deploymentQuestion"] for r in offline["claims"]} != {"original-client", "adapted"}:
+        raise ValueError("offline accounting dropped the original-client launch")
     adapted = result["claims"][0]
     original = result["deploymentQuestions"]["originalBinary"]["claims"][0]
     expected = [("adapted",adapted,102),("original-client",original,12)]

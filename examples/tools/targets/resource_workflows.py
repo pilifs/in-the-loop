@@ -195,7 +195,17 @@ def discover(before, after, jdk, dest):
         row = {"entry": name, "origins": {s: views[s].origins(name.split("#")[0].replace(".", "/")) for s in sides}}
         unresolved = {s: graphs[s]["manifestClassPath"]["unresolved"] for s in sides if graphs[s]["manifestClassPath"]["unresolved"]}
         if len(sides) == 1 or unresolved:
-            row.update(stage="open", firstScaffoldStop=unresolved or f"exact descriptor present only on {sides[0]}")
+            owner, method, descriptor = runtime_jar.parse_target(name)
+            internal = runtime_jar.internal(owner)
+            declarations = {}
+            for side, view in views.items():
+                winning = view.winners.get(internal)
+                members = winning[1].methods() if winning else {}
+                declarations[side] = [{"descriptor": desc, **entry_discovery.access(flags)}
+                                      for (n, desc), (flags, _) in sorted(members.items()) if n == method]
+            row.update(stage="open", declarationsBySide=declarations,
+                       firstScaffoldStop=unresolved or f"exact descriptor {descriptor} present only on {sides[0]}")
+
         else:
             child = f"candidate-{i + 1}"
             result = discover_entry(name, selected["old"][name], paths, jdk, dest / child)

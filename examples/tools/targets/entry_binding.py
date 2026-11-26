@@ -73,7 +73,7 @@ def qualify(checker, graphs, entries, *, measurements=None, resolve_inherited=Tr
             observations = observe(jdk, compiled, files, queries)
             for entry, seen in zip(selectors, observations, strict=True):
                 records[side][entry]["jvm"] = seen
-            groups.setdefault(jdk, {})[side] = {"classpath": list(map(str, files)), "classes": queries}
+            groups.setdefault(jdk, {})[side] = {"classpath": list(map(str, files)), "classes": queries, "qualifyStock": True}
         for jdk, batch in groups.items():
             feature = int(runtime_jdk.identity(jdk)["feature"])
             env = {**os.environ, "JAVA_HOME": str(jdk), "JVMCONTRACT_JAR_RELEASE": str(feature)}
@@ -98,6 +98,7 @@ def qualify(checker, graphs, entries, *, measurements=None, resolve_inherited=Tr
                 for (entry, record), selected in zip(pairs, response["bindings"], strict=True):
                     seen = record["jvm"]
                     record["checker"] = selected
+                    record["stockClassPath"] = response.get("stockQualification", {"status": "unmeasured"})
                     if "method" in selected and selected["method"].get("access") is not None:
                         record["declarationFlags"] = entry_discovery.access(selected["method"]["access"])
                     owner = seen["owner"]

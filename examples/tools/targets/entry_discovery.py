@@ -301,11 +301,16 @@ def discover(views, declared=(), changed=(), limit=64):
     missing = sorted(set(declared) - ranking.keys())
     retained.extend({"entry": e, "sides": {}, "independentlyDiscovered": False,
                      "basis": ["supplied public question"]} for e in missing)
+    question = None
+    if not declared and len(ordered) > 1:
+        first, second = (r["entry"] for r in ordered[:2])
+        question = (f"Should the claim observe {first} or {second}?" if len(ordered) == 2 else
+                    f"Which of the {len(ordered)} public observations is intended, including {first} and {second}?")
     return {"method": "Exact changed bytecode declarations and reverse invocation references on the effective owners",
             "inputMode": "changed selectors supplied" if changed else "binary-only", "changedDefinitions": rows,
             "changedClasses": [r["owner"] for r in rows if r["effectiveBytesChanged"]], "classLevelCandidates": class_only,
             "changedResources": sorted(k for k in old.resources.keys() | new.resources.keys() if old.resources.get(k) != new.resources.get(k)),
             "candidates": retained, "candidateCount": len(ordered), "displayLimit": limit, "truncated": len(ordered) > limit,
             "classesExaminedForCalls": scanned, "discoveryMisses": missing,
-            "intentQuestion": "Which public result should this change preserve or alter?" if len(ordered) > 1 else None,
+            "intentQuestion": question,
             "unknownEdges": "Static chains describe symbolic calls. Virtual dispatch, initialization, reflection, factory state and resource lookups require an original caller."}

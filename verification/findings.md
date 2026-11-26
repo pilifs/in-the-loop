@@ -18,6 +18,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-071: stock JBMC requires qualification for an active versioned application class
+
+- **Status**: open for stock support on active multi-release members. The ordinary native route is qualified.
+- **Raised**: 2026-11-26 on vm-1. Job `20261126-203730-verify-multi-release-entry-binding-acros` at `9a2aa43232d1` ran both assertions on JDKs 8, 17 and 21.
+- **Found**: the JDK 21 application returned 5 from its versioned Gate class. The unguarded direct JBMC-backed property command verified `result == 3`. The native engine refuted that assertion. Both engines agreed on 3 on the two profiles where only the base member was eligible.
+- **Needs**: the backend owner can enable active multi-release proofs when the actual stock invocation can identify and consume the selected bytes for its subject and helpers. The demonstrated verdict belongs to this repository's integrated stock route.
+- **Closes when**: the stock route verifies the versioned value 5 and refutes the base value 3 for both a direct subject and a versioned helper on JDK 21, while retaining the JDK 8, JDK 17 and earlier-shadow controls.
+- **Tracked in**: [Original assertions and physical bindings](classpath-entry-discovery/mr-proofs.json) and the [classpath discovery report](../llm-dlc/loops/in-the-loop-classpath-and-entry-discovery-brief-results.md).
+
 ### VF-070: what stops or slows an unattended setup phase: a register from the organic PR queue of 2026-11-25 and 26
 
 - **Status**: open, a register to address later (the user, 2026-11-26). Each item says what happened, what it cost and a direction for a fix; none is chosen yet. Items with a finding of their own point to it.

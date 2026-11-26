@@ -167,6 +167,9 @@ def compare(args, *, original_binary=True, archive_index=None):
             "claims": [], "preparationSeconds": round(time.monotonic() - started, 4)}
     plan["discovery"] = {"mode": "supplied entry" if declared else inventory["inputMode"], "probed": sorted(selected_entries),
                          "totalCandidates": inventory["candidateCount"], "manualProviderIndices": 0, **measurements}
+    eligible = sorted(e for e in selected_entries if all(bindings[s][e]["status"] == "bound" for s in graphs))
+    plan["discovery"]["boundOnBothRevisions"] = eligible
+    plan["discovery"]["selectedEntries"] = (eligible if declared or inventory["candidateCount"] == 1 else [])
     previous = json.loads(args.previous.read_text()) if args.previous else None
     if previous is not None:
         plan["resumedBindings"] = {key: "requalified" if previous.get("entryBindings", {}).get(key) == value else "new binding"
@@ -305,7 +308,8 @@ def compare(args, *, original_binary=True, archive_index=None):
             plan["entryBindings"].update(binary["entryBindings"])
             plan["graphs"].update(binary["graphs"])
         plan["deploymentQuestions"]["originalBinary"] = {"launch": binary["launches"]["new"]["production"],
-                                                        "claims": binary["claims"], "counts": binary["counts"]}
+                                                        "claims": binary["claims"], "counts": binary["counts"],
+                                                        "bindingWitnesses": binary["bindingWitnesses"]}
     plan["wallSeconds"] = round(time.monotonic() - started, 4)
     if args.run:
         plan["executionState"] = "complete"
@@ -389,12 +393,16 @@ def saved_bindings(report, receipt_root=None):
         if key != digest(record) or record.get("graph") not in graphs:
             raise ValueError("saved entry binding or its graph reference differs")
     rows = []
-    for claim in report.get("claims", []):
+    groups = [("adapted", c, report.get("bindingWitnesses", {})) for c in report.get("claims", [])]
+    alternate = report.get("deploymentQuestions", {}).get("originalBinary")
+    if isinstance(alternate, dict) and "bindingWitnesses" in alternate:
+        groups.extend(("original-client", c, alternate["bindingWitnesses"]) for c in alternate.get("claims", []))
+    for profile, claim, witnesses_by_binding in groups:
         for side, ref in claim.get("entryBindings", {}).items():
             record = records.get(ref)
             if not record or record["side"] != side or record["entry"] != claim["entry"]:
                 raise ValueError("saved question points to a different side or selector")
-            witnesses = [w for w in report.get("bindingWitnesses", {}).get(ref, []) if w["claim"] == claim["id"]]
+            witnesses = [w for w in witnesses_by_binding.get(ref, []) if w["claim"] == claim["id"]]
             if report.get("executionState") == "complete" and claim["status"] in ("refuted", "established") and not witnesses:
                 raise ValueError("completed question has no original witness at its bound entry")
             if receipt_root is not None:
@@ -404,7 +412,7 @@ def saved_bindings(report, receipt_root=None):
                     if (not file.is_relative_to(receipt_root.resolve()) or upgrade_replay.sha(file) != receipt["sha256"]
                             or json.loads(file.read_bytes())["sides"][side].get("entryBinding") != ref):
                         raise ValueError("original witness receipt differs from the saved entry binding")
-            rows.append({"claim": claim["id"], "claimKey": claim["claimKey"], "side": side, "entry": record["entry"],
+            rows.append({"deploymentQuestion": profile, "claim": claim["id"], "claimKey": claim["claimKey"], "side": side, "entry": record["entry"],
                          "binding": ref, "status": record["status"], "providerIndex": record.get("providerIndex"),
                          "classSha256": record.get("classSha256"), "physicalEntry": record.get("physicalEntry"),
                          "firstOpenDependency": record.get("firstOpenDependency"),
@@ -439,6 +447,8 @@ def main(argv=None):
     for command in (example, upgrade):
         command.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
+    if getattr(args, "probe_limit", 0) < 0:
+        parser.error("--probe-limit must be nonnegative")
     try:
         if args.command == "bindings":
             account = saved_bindings(json.loads(args.report.read_bytes()), args.report.parent if args.verify_receipts else None)
