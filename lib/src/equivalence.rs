@@ -1116,6 +1116,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let before_dir = work.join("before-classes");
     let before_cp = version_classpath(&options.before, options.before_entries())?;
     let after_cp = version_classpath(&options.after, &options.classpath)?;
+    let stock_binding_gap = || before_cp.jbmc_multi_release_gap().map(|p| format!("before: {p}"))
+        .or_else(|| after_cp.jbmc_multi_release_gap().map(|p| format!("after: {p}")));
+    if options.engine == crate::Engine::Jbmc || options.confirm {
+        if let Some(problem) = stock_binding_gap() { return refuse(&mut out, 1, problem); }
+    }
     let old_classes: BTreeSet<String> = before_cp.application_class_names()?.into_iter().collect();
     let new_classes = after_cp.application_class_names()?;
     let relocated = match &options.before_classpath {
@@ -2050,6 +2055,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             last = Some(result);
         } else {
             let _ = writeln!(out, "note: the tool's own checker gave no verdict ({}); JBMC", result.problem.as_deref().unwrap_or("no reason"));
+            if let Some(problem) = stock_binding_gap() { return refuse(&mut out, line, problem); }
             fallback = Some(result.problem.clone().unwrap_or_else(|| "no reason".into()));
         }
     }

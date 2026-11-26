@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 import hashlib
 import json
+from pathlib import Path
 from typing import Optional
 
 from targets.interfaces import RUNTIME, TaskPlan, Unsupported
@@ -49,11 +50,19 @@ class ProofRecipe:
         from targets import runtime, runtime_jar
         entry = runtime.java_target(self.entry)
         paths, entries, originals, dependencies = {}, {}, {}, {}
+        staged = None
+        if getattr(plan, "folder", None):
+            record = Path(plan.folder) / "records/entry-bindings.json"
+            if record.is_file():
+                from targets.change_plan import saved_bindings
+                staged = json.loads(record.read_bytes())
+                saved_bindings(staged)
         for revision, (_, prepared, artifacts) in sides.items():
             upstream = prepared.source["target"]
             original = upstream["loadedFrom"]
             digest = upstream.get("classSha256")
-            selected = [a for a in artifacts if a.path == original or a.role in ("dependency", "stub")]
+            selected = [a for a in artifacts if a.path == original or a.role in ("original", "dependency", "stub")
+                        or (self.correspondence and a.role == "adapter")]
             if self.correspondence:
                 adapter = next((a for a in artifacts if a.role == "adapter"), None)
                 if adapter is None or not prepared.source["target"].get("adapterCallsTarget"):
@@ -64,11 +73,38 @@ class ProofRecipe:
                     raise runtime.Refused("claim", "the prepared adapter has no declared checked entry")
                 digest = hashlib.sha256(data).hexdigest()
                 original = adapter.path
-                selected.insert(0, adapter)
+
             entries[revision] = {"entry": self.entry, "classSha256": digest, "loadedFrom": original,
                                  "subject": self.subject, "subjectClassSha256": upstream.get("classSha256")}
-            originals[revision] = original
-            dependencies[revision] = [a for a in selected if a.path != original]
+            first = selected[0].path
+            if self.command != "prove" and first != original:
+                raise runtime.Refused("verifier", f"{revision}: equivalence needs the entry in its extracted subject directory; "
+                                      f"extracting {original} before {first} changes the deployment order")
+            originals[revision] = first
+            dependencies[revision] = selected[1:]
+            if staged is not None:
+                from targets.change_inventory import digest as record_digest
+                candidates = [(ref, r) for ref, r in staged.get("entryBindings", {}).items()
+                              if r.get("entry") == plan.target and r.get("profile") == "production"
+                              and r.get("revision") == prepared.commit]
+                if candidates:
+                    hashes = [a.sha256 for a in selected if a.role != "adapter"]
+                    matching = []
+                    for ref, record in candidates:
+                        graph = staged.get("graphs", {}).get(record.get("graph"), {})
+                        if (record_digest(record) == ref and record.get("status") == "bound"
+                                and record.get("classSha256") == upstream.get("classSha256")
+                                and hashes == [r["sha256"] for r in graph.get("classpath", [])]):
+                            matching.append((ref, record))
+                    if not matching:
+                        raise runtime.Refused("classpath", f"{revision}: the prepared proof inputs differ from the scaffold binding for {plan.target}")
+                    entries[revision]["scaffoldBindingRefs"] = sorted(ref for ref,_ in matching)
+                    staged_graph = staged["graphs"][matching[0][1]["graph"]]
+                    entries[revision]["scaffoldGraph"] = staged_graph["key"]
+                    entries[revision]["scaffoldJdk"] = staged_graph["jdk"]
+                    entries[revision]["scaffoldAbsences"] = staged_graph.get("manifestClassPath", {}).get("absent", [])
+            if upstream.get("entryBinding"):
+                entries[revision]["entryBinding"] = upstream["entryBinding"]
             paths[revision] = [dict(path=a.path, sha256=a.sha256, role=a.role) for a in selected]
             if self.observed_initializers:
                 entries[revision]["initializerClasses"] = initializer_classes(self.observed_initializers, sides[revision][0], paths[revision])

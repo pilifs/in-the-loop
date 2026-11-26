@@ -20,7 +20,7 @@ import tempfile
 import time
 from urllib.parse import unquote, urlsplit
 
-from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_jdbc, upgrade_linkage, upgrade_receiver
+from targets import class_binding, runtime_jar, runtime_jdk, upgrade_claims, upgrade_jdbc, upgrade_linkage, upgrade_receiver
 
 
 LAUNCHER = Path(__file__).with_name("java") / "UpgradeObservation.java"
@@ -39,7 +39,8 @@ def checked_classpath(path, doc, dependency):
     files = []
     for item in doc["classpath"]:
         jar = (path.parent / item["file"]).resolve()
-        if sha(jar) != item["sha256"]:
+        from targets.change_inventory import file_digest
+        if file_digest(jar) != item["sha256"]:
             raise ValueError(f"changed classpath artifact {jar.name}")
         files.append(jar)
     hashes = [row["sha256"] for row in doc["classpath"]]
@@ -48,16 +49,51 @@ def checked_classpath(path, doc, dependency):
     return files, files[hashes.index(dependency)], hashes
 
 
-def check_input(path, entry, dependency):
+def check_input(path, entry, dependency, *, qualified=None, effective=None):
     doc = json.loads(path.read_text())
     files, operand, hashes = checked_classpath(path, doc, dependency)
     owner, method, descriptor = runtime_jar.parse_target(entry)
-    data = runtime_jar.read_class(files[0], runtime_jar.internal(owner))
-    if not data or (method, descriptor) not in runtime_jar.methods(data):
-        raise ValueError("the selected method and descriptor must belong to the original client JAR")
-    binding = {"commit": doc["commit"], "sourceSha256": doc["sourceSha256"],
-            "callerClassSha256": hashlib.sha256(data).hexdigest(), "classpath": hashes, "dependency": dependency,
-            "preparation": doc.get("scope"), "compiledClasses": doc.get("compiledClasses"), "resources": doc.get("resources")}
+    client_index = next((i for i, row in enumerate(doc["classpath"]) if row.get("role") == "client"), 0)
+    effective_client = client_index
+    operand_index = hashes.index(dependency)
+    if effective is not None:
+        operand_root = hashes.index(dependency)
+        files, launch = effective
+        effective_client = launch["clientIndex"]
+        operand_url = launch["orderedRoots"][operand_root]
+        operand_index = next(i for i, row in enumerate(launch["classpath"]) if row["deploymentPath"] == operand_url)
+        operand = files[operand_index].resolve()
+        hashes = [r["sha256"] for r in launch["classpath"]]
+        from targets.change_inventory import file_digest
+        if len(files) != len(hashes) or any(file_digest(f) != h for f, h in zip(files, hashes, strict=True)):
+            raise ValueError("effective classpath changed since entry qualification")
+    if qualified is None:
+        internal = runtime_jar.internal(owner)
+        for index, file in enumerate(files):
+            data = class_binding.read(file, internal)
+            if data is not None:
+                break
+        else:
+            raise ValueError("the selected method owner is absent from the original deployment")
+    else:
+        index = qualified["providerIndex"]
+        if (qualified["status"] != "bound" or qualified["entry"] != entry or files[index] != Path(qualified["provider"])
+                or hashes[index] != qualified["artifactSha256"]):
+            raise ValueError("entry binding does not describe this deployment")
+        data = class_binding.entry_bytes(files[index], qualified["physicalEntry"])
+        if hashlib.sha256(data).hexdigest() != qualified["classSha256"]:
+            raise ValueError("entry bytes changed since qualification")
+    if (method, descriptor) not in runtime_jar.methods(data):
+        raise ValueError("the winning original class does not declare the selected method and descriptor")
+    binding = {"commit": doc.get("commit"), "sourceSha256": doc.get("sourceSha256"),
+               "callerClassSha256": hashlib.sha256(data).hexdigest(), "classpath": hashes, "dependency": dependency,
+               "clientIndex": effective_client, "dependencyIndex": operand_index, "entryProviderIndex": index, "entryArtifactSha256": hashes[index], "clientArtifactSha256": doc["classpath"][client_index]["sha256"],
+               "preparation": doc.get("scope"), "compiledClasses": doc.get("compiledClasses"), "resources": doc.get("resources")}
+    if qualified is not None:
+        from targets.change_inventory import digest
+        binding["entryBinding"] = digest(qualified)
+        if "resolvedEntry" in qualified:
+            binding["resolvedEntry"] = qualified["resolvedEntry"]
     for key in ("operandScope", "declaredDependencyScope", "modulePomSha256"):
         if key in doc:
             binding[key] = doc[key]
@@ -104,7 +140,7 @@ def exception_types(escaping, causes):
 def parse_output(text, caller, original, dependency, observation_text=None, *, escape=None):
     loaded = class_origins(text)
     if loaded.get(caller.split("#")[0]) != {original}:
-        raise ValueError("the JVM did not load the declared caller from the selected original client JAR")
+        raise ValueError("the JVM did not load the declared caller from the bound entry provider")
     records = (observation_text if observation_text is not None else text).splitlines()
     outcome = typed_outcome(records)
     if "throws" in outcome and (not escape or escape["entry"] != caller or escape["throws"] != outcome["throws"]):
@@ -112,7 +148,7 @@ def parse_output(text, caller, original, dependency, observation_text=None, *, e
     return outcome, sorted(name for name, origins in loaded.items() if origins == {dependency})
 
 
-def throw_evidence(debugger_marks, loaded, files, artifact_hashes, dependency, records):
+def throw_evidence(debugger_marks, loaded, files, artifact_hashes, dependency, records, *, client_index=0, entry_index=None):
     """Bind the JVM's live throw stack to unambiguous files on this side's ordered classpath."""
     evidence = {"causes": [s.removeprefix("UPGRADE-CAUSE ") for s in records if s.startswith("UPGRADE-CAUSE ")],
                 "frames": [], "observerCodeIndex": None}
@@ -121,18 +157,18 @@ def throw_evidence(debugger_marks, loaded, files, artifact_hashes, dependency, r
         evidence["lastCauseMessage"] = base64.b64decode(last_message, validate=True).decode("utf-16-be", "surrogatepass")[:500]
     stacks = [s.removeprefix("UPGRADE-THROW-STACK ") for s in debugger_marks if s.startswith("UPGRADE-THROW-STACK ")]
     if len(stacks) == 1:
-        evidence.update(bound_throw_stack(stacks[0], loaded, files, artifact_hashes, dependency))
+        evidence.update(bound_throw_stack(stacks[0], loaded, files, artifact_hashes, dependency, client_index=client_index, entry_index=entry_index))
     if len(evidence["causes"]) > 1:
         marker = "UPGRADE-ROOT-STACK " + evidence["causes"][-1] + " "
         roots = [line[len(marker):] for line in debugger_marks if line.startswith(marker)]
         if len(roots) == 1:
-            root = bound_throw_stack(roots[0], loaded, files, artifact_hashes, dependency, include_first=True)
+            root = bound_throw_stack(roots[0], loaded, files, artifact_hashes, dependency, include_first=True, client_index=client_index, entry_index=entry_index)
             if root.get("firstObserved"):
                 evidence["rootThrow"] = root["firstObserved"]
     return evidence
 
 
-def bound_throw_stack(encoded, loaded, files, artifact_hashes, dependency, *, include_first=False):
+def bound_throw_stack(encoded, loaded, files, artifact_hashes, dependency, *, include_first=False, client_index=0, entry_index=None):
     evidence = {"frames": [], "observerCodeIndex": None}
     events = []
     for line in base64.b64decode(encoded, validate=True).decode("utf-8").splitlines():
@@ -166,7 +202,7 @@ def bound_throw_stack(encoded, loaded, files, artifact_hashes, dependency, *, in
             continue
         index = files.index(jar)
         frame = {"entry": entry, "codeIndex": int(code_index), "sourceLine": int(source_line),
-                 "artifact": "client" if index == 0 else "upgrade" if jar == dependency else "classpath",
+                 "artifact": "client" if index == client_index else "upgrade" if jar == dependency else "entry" if index == entry_index else "classpath",
                  "classpathIndex": index, "jarSha256": artifact_hashes[index]}
         events[-1]["frames"].append(frame)
         if is_location:
@@ -176,12 +212,12 @@ def bound_throw_stack(encoded, loaded, files, artifact_hashes, dependency, *, in
             evidence["firstObserved"] = events[0]
         for event in events:
             for frame in event["frames"]:
-                if frame["artifact"] == "client" and frame["entry"] == event.get("escapingMember"):
+                if frame["entry"] == event.get("escapingMember"):
                     evidence["escapingInvocation"] = {**frame, "observerCodeIndex": event["observerCodeIndex"]}
         # Keep the last attributed throw and show any subsequent propagation of the
         # identical object after those frames unwound. A replacement gets its own stack.
         attributed = [i for i, event in enumerate(events)
-                      if any(f["artifact"] in ("client", "upgrade") for f in event["frames"])]
+                      if any(f["artifact"] in ("client", "upgrade", "entry") for f in event["frames"])]
         selected = attributed[-1] if attributed else len(events) - 1
         evidence.update(events[selected])
         evidence["subsequentRethrows"] = events[selected + 1:]
@@ -198,7 +234,7 @@ def compare_before_entry(sides, domain):
         if old.get("repeatableBeforeEntry") and new.get("repeatableBeforeEntry"):
             result["status"] = "stopped before entry on both revisions"
         elif (new.get("repeatableBeforeEntry") and observed[0]["observerCodeIndex"] is not None
-              and any(f["artifact"] in ("client", "upgrade") for f in observed[0]["frames"])
+              and any(f["artifact"] in ("client", "upgrade", "entry") for f in observed[0]["frames"])
               and old["qualifiedMethodEntries"] == 2 and old["observations"] == [case["expected"]] * 2
               and old["loadedUpgradeOnEachReplay"] and new["loadedUpgradeOnEachReplay"]):
             result.update(status="reproduced earlier failure", before=case["expected"], after={"throws": observed[0]["throws"]})
@@ -209,7 +245,8 @@ def compare_before_entry(sides, domain):
             runtime_count = binding.get("frameworkFixtures", {}).get("runtimeCount", len(binding["classpath"]))
             frame = root.get("throwLocation") if root else None
             if (frame and root["observerCodeIndex"] is not None and binding.get("operandScope", "runtime") == "runtime"
-                    and 0 < frame["classpathIndex"] < runtime_count and frame["jarSha256"] not in sides["old"]["classpath"]):
+                    and frame["classpathIndex"] != binding.get("clientIndex", 0) and frame["classpathIndex"] < runtime_count
+                    and frame["jarSha256"] not in sides["old"]["classpath"]):
                 result["changedRuntimeCause"] = {"type": observed[0]["causes"][-1], "frame": frame,
                                                  "observerCodeIndex": root["observerCodeIndex"]}
         comparisons.append(result)
@@ -245,7 +282,7 @@ def run_observation(run_dir, launch, subject_cp, sites, main, encoded, trace_exc
 
 def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None,
              inspect_receiver=False, native_caller=None, native_seconds=60, receipts=None, search_startup_witness=False,
-             side_cache=None, after_jdk=None, application_change=False, checked_helper=None):
+             side_cache=None, after_jdk=None, application_change=False, checked_helper=None, entry_bindings=None, effective_files=None, trace_changes=()):
     jdk, probe = jdk.resolve(), probe.resolve()
     after_jdk = after_jdk.resolve() if after_jdk else jdk
     if after_jdk != jdk and native_caller:
@@ -266,7 +303,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                 any(value is not None and not isinstance(value,str) for value in expected.values())):
             raise ValueError("every input needs an independently specified return or exception")
     caller = spec["entry"]
-    prepared = {side: check_input(path, caller, digest) for side,path,digest in zip(("old","new"),(before,after),dependencies)}
+    prepared = {side: check_input(path, caller, digest, qualified=(entry_bindings or {}).get(side),
+                                  effective=(effective_files or {}).get(side)) for side,path,digest in zip(("old","new"),(before,after),dependencies)}
     operand_scope = spec.get("operandScope", "runtime")
     if operand_scope not in ("runtime", "provided", "test"):
         raise ValueError("unknown dependency environment in the caller scope")
@@ -374,13 +412,16 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         first_early = None
         old_loaded = {}
         for side,(files,dependency,side_record) in prepared.items():
+            live_entry = side_record.get("resolvedEntry", caller)
             subject_jdk = jdk if side == "old" else after_jdk
             subject_feature = int(runtime_jdk.identity(subject_jdk)["feature"])
             if after_jdk != jdk:
                 side_record["jdk"] = runtime_jdk.identity(subject_jdk)["release"]
             subject_tools = [subject_jdk/"lib/tools.jar"] if (subject_jdk/"lib/tools.jar").is_file() else []
             launch = [str(subject_jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*subject_tools]),
-                      "UpgradeTrace", caller, str(subject_jdk)]
+                      "UpgradeTrace", live_entry, str(subject_jdk)]
+            if trace_changes:
+                launch.insert(1, "-Dupgrade.trace.changed=" + "|".join(trace_changes))
             if inspect_receiver or native_caller:
                 launch.insert(1, "-Dupgrade.trace.receivers=true")
             trial_env = {**env, "PATH": str(subject_jdk/"bin")+":/usr/bin:/bin"}
@@ -429,14 +470,14 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if early:
                         trace_exception = exception_types(trace_exception, early[0]["causes"])
                     child_output, marks, observation_text = run(run_dir, trace_exception)
-                    if (inspect_receiver or native_caller) and "UPGRADE-HIT " + caller in marks:
+                    if (inspect_receiver or native_caller) and "UPGRADE-HIT " + live_entry in marks:
                         trial_record.setdefault("receiverAtEntry", []).append(upgrade_receiver.at_entry(marks))
                     detail = next((line[len("UPGRADE-DETAIL "):] for line in observation_text.splitlines()
                                    if line.startswith("UPGRADE-DETAIL ")), "")
                     if detail:
                         detail = base64.b64decode(detail, validate=True).decode("utf-16-be", "surrogatepass")
                         report["stoppedAt"]["exception"] = detail[:750]
-                    if "UPGRADE-HIT " + caller not in marks:
+                    if "UPGRADE-HIT " + live_entry not in marks:
                         outcome = typed_outcome(observation_text.splitlines())
                         if "throws" not in outcome:
                             raise ValueError(f"{side} input {index}: the original caller method was never entered. {detail}")
@@ -447,7 +488,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                             cause_names = [line[len("UPGRADE-CAUSE "):] for line in observation_text.splitlines()
                                            if line.startswith("UPGRADE-CAUSE ")] or [outcome["throws"]]
                             child_output, marks, observation_text = run(run_dir, exception_types(outcome["throws"], cause_names))
-                        if (typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + caller in marks
+                        if (typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + live_entry in marks
                                 or (trace_exception and trace_exception.split(",")[0] != outcome["throws"])):
                             raise ValueError(f"{side} input {index}: inconsistent failure before the original caller")
                         loaded = class_origins(child_output)
@@ -455,7 +496,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         operand_classes.update(classes)
                         loaded_each_time = loaded_each_time and bool(classes)
                         evidence = throw_evidence(marks, loaded, files, side_record["classpath"],
-                                                  dependency, observation_text.splitlines())
+                                                  dependency, observation_text.splitlines(),
+                                                  client_index=side_record["clientIndex"], entry_index=side_record["entryProviderIndex"])
                         upgrade_linkage.observed_member(evidence, loaded, files, side_record, subject_feature)
                         early.append({**outcome, **evidence})
                         trial_record["beforeEntry"] = early
@@ -467,10 +509,11 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if "throws" in outcome:
                         if not trace_exception:
                             child_output, marks, observation_text = run(temp / f"{side}-{index}-{trial}-escape", outcome["throws"])
-                        if typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + caller not in marks:
+                        if typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + live_entry not in marks:
                             raise ValueError(f"{side} input {index}: inconsistent exception across original caller replays")
                         evidence = throw_evidence(marks, class_origins(child_output), files, side_record["classpath"],
-                                                  dependency, observation_text.splitlines())
+                                                  dependency, observation_text.splitlines(),
+                                                  client_index=side_record["clientIndex"], entry_index=side_record["entryProviderIndex"])
                         escape = evidence.get("escapingInvocation")
                         if escape:
                             escape["throws"] = outcome["throws"]
@@ -485,10 +528,18 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if proof:
                         application = change_helpers.applications(marks, class_origins(child_output), config, proof, files, case["args"])
                         trial_record.setdefault("checkedApplications", []).append(application)
-                    trial_record.setdefault("entryInvocations", []).append(
-                        {"observerCodeIndex": int(pc), "dispatchedTo": dispatched})
+                    implementations = [line.removeprefix("UPGRADE-IMPLEMENTATION ").split("\t") for line in marks
+                                       if line.startswith("UPGRADE-IMPLEMENTATION ")]
+                    invocation = {"observerCodeIndex": int(pc), "dispatchedTo": dispatched}
+                    if len(implementations) == 1:
+                        invocation["implementation"], invocation["receiver"] = implementations[0]
+                    trial_record.setdefault("entryInvocations", []).append(invocation)
+                    if trace_changes:
+                        chains = [base64.b64decode(line.removeprefix("UPGRADE-CHANGED "), validate=True).decode().splitlines()
+                                  for line in marks if line.startswith("UPGRADE-CHANGED ")]
+                        trial_record.setdefault("changedBodyChains", []).append(chains)
                     trial_record["qualifiedMethodEntries"] += 1
-                    observation,classes=parse_output(child_output,caller,files[0],dependency,observation_text,escape=escape)
+                    observation,classes=parse_output(child_output,live_entry,files[side_record["entryProviderIndex"]],dependency,observation_text,escape=escape)
                     trials.append(observation)
                     operand_classes.update(classes)
                     loaded_each_time = loaded_each_time and bool(classes)

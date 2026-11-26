@@ -41,6 +41,9 @@ pub struct Side {
     /// Positions in `classpath` of the JARs whose logical entries are wanted.
     #[serde(default, rename = "listEntries")]
     pub list_entries: Vec<usize>,
+    /// Ask whether the stock command can inspect the same application members on this release.
+    #[serde(default, rename = "qualifyStock")]
+    pub qualify_stock: bool,
 }
 
 #[derive(Deserialize)]
@@ -73,9 +76,16 @@ pub fn answer(request: &Request) -> Result<Value, Error> {
             };
             entries.insert(index.to_string(), json!({ "manifest": manifest, "entries": logical }));
         }
-        sides.insert(name.clone(), json!({ "bindings": bindings, "entries": entries }));
+        let mut side_answer = json!({ "bindings": bindings, "entries": entries });
+        if side.qualify_stock {
+            side_answer["stockQualification"] = match cp.jbmc_multi_release_gap() {
+                Some(problem) => json!({"status": "unqualified", "reason": problem}),
+                None => json!({"status": "ordinary class members"}),
+            };
+        }
+        sides.insert(name.clone(), side_answer);
     }
-    let home = crate::jimage::JImage::find_java_home().map(|h| h.display().to_string());
+    let home = crate::classpath::binding_java_home().map(|h| h.display().to_string());
     Ok(json!({ "schema": SCHEMA, "bound_release": bound, "java_home": home, "sides": sides }))
 }
 

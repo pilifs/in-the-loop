@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-201853-recheck-both-log4j-claim-witnesses-acros",
+  "title": "Recheck both Log4j claim witnesses across cold warm and substituted deployments",
+  "description": "Repeat the unchanged explicit and omitted zone claims with per-claim witness references. Compare every original observation to independent campaign evidence, check same-path core replacement against a fresh cache, and require that both unchanged parent sides are reused.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T20:18:53+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Scaffold and replay both frozen claims",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/log4j.py verification/classpath-entry-discovery/log4j-replays.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/classpath-entry-discovery/log4j-replays.json",
+    "verification/classpath-entry-discovery/log4j-plans.zip"
+  ]
+}

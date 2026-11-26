@@ -123,7 +123,11 @@ def check_receipt(entry, questions, pins, runtime, variant, physical, report):
         raise ValueError(f"{variant}: different method, question arguments or parent observations")
     sources = {"probeSha256": Path(__file__).with_name("UpgradeProbe.java"), "launcherSha256": upgrade_replay.LAUNCHER,
                "tracerSha256": upgrade_replay.TRACER, "lookupSha256": upgrade_replay.LOOKUP}
-    if any(report[key] != upgrade_replay.sha(path) for key, path in sources.items()):
+    current = {key: upgrade_replay.sha(path) for key, path in sources.items()}
+    # Receipts made before ordered entry discovery identify this exact pair of observers (d3ff87053d).
+    historical = {**current, "tracerSha256": "60580c7a8f6cce3e4254e2855016ef92a64812888f34aa9958b5be1c7a5e0f50",
+                  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08"}
+    if {key: report[key] for key in sources} not in (current, historical):
         raise ValueError(f"{variant}: changed debugger or launcher")
     if report["originalFixtures"] != registered_fixtures(physical):
         raise ValueError(f"{variant}: different public caller source or fixture")

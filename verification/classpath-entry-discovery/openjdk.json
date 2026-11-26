@@ -1,0 +1,65 @@
+[
+  {
+    "case": 5,
+    "profile": "pinned OpenJDK original",
+    "measurements": [
+      "OK\tpass\texit=0\tjava -cp A.jar:. Main",
+      "OK\tpass\texit=0\tjava -cp B.zip:. Main",
+      "OK\tpass\texit=0\tjava -cp jars/A.jar:. Main",
+      "OK\tpass\texit=0\tjava -cp jars/B.zip:. Main",
+      "OK\tfail\texit=1\tjava -Xbootclasspath/a:jars/B.zip -cp . Main",
+      "OK\tpass\texit=0\tjava -jar Main.jar"
+    ]
+  },
+  {
+    "case": 5,
+    "profile": "A.jar",
+    "edges": [
+      {
+        "provider": 0,
+        "entry": "B.zip",
+        "url": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-entry-controls-9_ajfqaj/B.zip",
+        "state": "bound",
+        "revisited": false,
+        "classpathIndex": 1
+      },
+      {
+        "provider": 1,
+        "entry": "A.jar",
+        "url": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-entry-controls-9_ajfqaj/A.jar",
+        "state": "bound",
+        "revisited": true,
+        "classpathIndex": 0
+      }
+    ]
+  },
+  {
+    "case": 5,
+    "profile": "B.zip",
+    "edges": [
+      {
+        "provider": 0,
+        "entry": "A.jar",
+        "url": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-entry-controls-9_ajfqaj/A.jar",
+        "state": "bound",
+        "revisited": false,
+        "classpathIndex": 1
+      },
+      {
+        "provider": 1,
+        "entry": "B.zip",
+        "url": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-entry-controls-9_ajfqaj/B.zip",
+        "state": "bound",
+        "revisited": true,
+        "classpathIndex": 0
+      }
+    ]
+  },
+  {
+    "case": 5,
+    "profile": "broken original edge",
+    "absent": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-entry-controls-9_ajfqaj/B.zip",
+    "exit": 1,
+    "firstOpenDependency": "Exception in thread \"main\" java.lang.NoClassDefFoundError: pkg/B"
+  }
+]

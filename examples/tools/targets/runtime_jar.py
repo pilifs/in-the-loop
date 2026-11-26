@@ -36,6 +36,9 @@ def classes(jar):
 
 def read_class(jar, name):
     """The bytes of class `name` (internal form) in `jar`, or None."""
+    if Path(jar).is_dir():
+        file = Path(jar) / (name + ".class")
+        return file.read_bytes() if file.is_file() else None
     with zipfile.ZipFile(jar) as z:
         try:
             return z.read(name + ".class")

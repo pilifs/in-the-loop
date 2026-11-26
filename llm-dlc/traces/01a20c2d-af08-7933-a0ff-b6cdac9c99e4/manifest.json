@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize q",
   "client": {
@@ -12,29 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T19:16:57.023Z",
-  "duration_seconds": 219966,
+  "ended": "2026-11-26T21:11:22.888Z",
+  "duration_seconds": 226832,
   "stats": {
-    "turns": 33,
-    "api_calls": 5278,
-    "tool_calls": 13335,
-    "tool_errors": 280,
+    "turns": 34,
+    "api_calls": 5559,
+    "tool_calls": 13894,
+    "tool_errors": 298,
     "compactions": 23,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 7015045,
-      "output_tokens": 2991540,
-      "cache_read_input_tokens": 1433700096,
+      "input_tokens": 7447520,
+      "output_tokens": 3174658,
+      "cache_read_input_tokens": 1516003840,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 7482,
-    "exec": 5030,
-    "apply_patch": 630,
+    "Bash": 7759,
+    "exec": 5308,
+    "apply_patch": 631,
     "wait": 108,
-    "sleep": 79,
-    "send_message_to_user_async": 5,
+    "sleep": 81,
+    "send_message_to_user_async": 6,
     "request_user_input_async": 1
   },
   "files_touched": [
@@ -167,6 +167,7 @@
     "examples/tools/targets/change_inventory.py",
     "examples/tools/targets/change_plan.py",
     "examples/tools/targets/java/ResourceObserver.java.template",
+    "examples/tools/targets/java/UpgradeClassLookup.java",
     "examples/tools/targets/public_comparison.py",
     "examples/tools/targets/public_mysql.py",
     "examples/tools/targets/public_postgres.py",
@@ -851,24 +852,24 @@
     {
       "index": 23,
       "started": "2026-11-26T19:14:11.495Z",
-      "ended": "2026-11-26T19:16:57.023Z",
-      "turns": 1,
-      "api_calls": 8,
+      "ended": "2026-11-26T21:11:22.888Z",
+      "turns": 2,
+      "api_calls": 289,
       "usage": {
-        "input_tokens": 38895,
-        "output_tokens": 6576,
-        "cache_read_input_tokens": 342656,
+        "input_tokens": 471370,
+        "output_tokens": 189694,
+        "cache_read_input_tokens": 82646400,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 56614
+      "peak_context_tokens": 443888
     }
   ],
   "log": {
-    "sha256": "663d2ba7ce7c2c12058800ab668c82d29c123d578b4dfa4a763d044f7f88771b",
-    "bytes": 82816227,
-    "lines": 41715,
-    "gzip_bytes": 15251663,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/663d2ba7ce7c2c12058800ab668c82d29c123d578b4dfa4a763d044f7f88771b.jsonl.gz"
+    "sha256": "d5477a83b3cf942b2d87aa9f4acf88b2fb00cec8de44af0ea65da617588161b4",
+    "bytes": 87586157,
+    "lines": 43829,
+    "gzip_bytes": 16087930,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/d5477a83b3cf942b2d87aa9f4acf88b2fb00cec8de44af0ea65da617588161b4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2527,6 +2528,94 @@
       "summary": "Record the completed organic Java R-series verification",
       "body": "All three independent jobs passed. The final job repeated the 132 published-release and 60 additional histories in five steps. Its two JSON files and the full original audit matched the committed measurements byte for byte. Checked all three collector receipts, the 32 debugger trials and all 65 local links in the final report. The documentation change selected no additional tests.",
       "log_sha256": "e62ffc9a3ab2c091db172248bf916b692e2bcf44595b0a8da8bb803d3509a1ba"
+    },
+    {
+      "change_id": "yxmryumztrpyvnmtskqtoomsxpynnppu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "ec216cceb14cfb4a47f080d8532d82949d74071babe428894efa8557a3ef1a3d"
+    },
+    {
+      "change_id": "nwzwkxvktlrzttxsotmsxoottlmvtnxt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on classpath-and-entry-discovery-setup",
+      "body": "The watcher's verdicts on the single-agent run classpath-and-entry-discovery-setup (llm-dlc/decisions/single-classpath-and-entry-discovery-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "ec216cceb14cfb4a47f080d8532d82949d74071babe428894efa8557a3ef1a3d"
+    },
+    {
+      "change_id": "xuzownyysnxllunslsltzsnzwyloqnym",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up the class-path and entry-discovery brief",
+      "body": "Mechanical setup for llm-dlc/loops/in-the-loop-classpath-and-entry-discovery-brief.md, recorded in its -setup.md. Every input the brief reuses was checked by digest at the path its reader uses: the Log4j #1173 api/core jars, the 113-entry Parquet J08 graphs, the 21 semantics-gap graphs (283 bindings), and the scaffold-first records (372/372 archives). The 480 release-panel packet jars were chained to signed Ubuntu indexes, and the original /usr/share/java layouts of slots 03, 04, 08, 10, 13, 15 and 16 were extracted to ~/.cache/in-the-loop/classpath-entry-discovery/layouts. The OpenJDK jdk-21+35 ClassPath.java fixture was fetched into the jdk21u mirror.\n\nVerified on JDK 21: the OpenJDK A.jar/B.zip manifest cycle (6/6 as the test expects), the Log4j getNextTime rows and PatternProcessor origins on the built jars in api-then-core order, and the ten J08 physical observations (10/10). Examples 312, 323 and 333 validate, the class-binding tests pass, and jvmcontract was rebuilt at this head. No verification job was needed. Product runs, generated layouts and scoring are left to the domain work.",
+      "log_sha256": "ec216cceb14cfb4a47f080d8532d82949d74071babe428894efa8557a3ef1a3d"
+    },
+    {
+      "change_id": "wownntutwzyqvzlwomylysrtuvzxrtnx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run classpath-and-entry-discovery-setup into the line",
+      "body": "The single-agent run classpath-and-entry-discovery-setup (session 01fd3dbc-1836-4014-895c-be367dac747a) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "ec216cceb14cfb4a47f080d8532d82949d74071babe428894efa8557a3ef1a3d"
+    },
+    {
+      "change_id": "pmyolknmtqxnnwnptnyoltlrnokmvqwr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of classpath-and-entry-discovery into its brief",
+      "body": "The setup run classpath-and-entry-discovery-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/in-the-loop-classpath-and-entry-discovery-brief.md and ~/code/scripts/analysis/in-the-loop-classpath-and-entry-discovery-brief.md, for the domain agent.",
+      "log_sha256": "ec216cceb14cfb4a47f080d8532d82949d74071babe428894efa8557a3ef1a3d"
+    },
+    {
+      "change_id": "rtnrqlykxvxnqqwyzrluspoormnpkqso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Discover public entries and bind their original ordered deployments (verification pending)",
+      "body": "Stage 3 and the change planner now resolve each public selector against its original JVM and the native checker, keeping the original client, upgrade operand and entry provider separate. Preserve the full search order in property recipes, resolve signed local manifest layouts and their absences, and record per-side binding, cache and original-call evidence. Historical debugger receipts retain their original tool identities.\n\nLog4j's two unchanged questions reached core at position one and all eight finite inputs matched. The first unaided ranking put getNextTime second of 22. The frozen Parquet transfer scanned 114 distinct artifacts and found three changed writer declarations, missing the higher-level file history. All 283 historical class origins on 21 graphs matched. Checked recursive manifest, missing-descriptor, order, and eight multi-release controls. The changed suite passed 55 of 57 on the first attempt, then both corrected suites passed separately.\n\nVerification jobs 20261126-200411-qualify-the-captured-deployment-layouts, 20261126-200411-replay-log4j-public-entry-bindings-and-s and 20261126-200854-verify-the-helper-chosen-by-ordinary-ord repeat the signed release panel, same-path replays and actual backend sentinels.",
+      "log_sha256": "ec216cceb14cfb4a47f080d8532d82949d74071babe428894efa8557a3ef1a3d"
+    },
+    {
+      "change_id": "upzsukqqsqlzxkurqxnktrllrlkmmrpv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify public callers, observable resources and scoped reuse (verification pending)",
+      "body": "Attach each original JVM witness to its own frozen question, trace the runtime receiver and changed-body stack, and carry saved scaffold identities into proof recipes and an offline receipt reader. Recheck declared absences and file identities before publishing. The physical index shares archived manifest contents across revisions and distinguishes accessible public factories and shadowed selector changes.\n\nThe two unaided facade candidates both reached the private helper, and the unrelated method stayed out. The resource generator recovered Annotation Indexer including in provider two and identified Batik's distinct service iterator. Original controls reproduced the eight optional-provider transitions, all ten Parquet histories and their reversed orders, the erased bridge, four nonzero invoices under reversal, eight JDK 17/21 multi-release views, and isolated context resources. All 58 selected suites passed. The first native and stock JBMC sentinel job passed all twelve positive and negative assertions.\n\nThe first Log4j and panel jobs exposed the shared-entry witness labeling error. Jobs 20261126-201852-recheck-all-twelve-release-questions-wit and 20261126-201853-recheck-both-log4j-claim-witnesses-acros repeat their independent checks after repair. Job 20261126-202434-carry-staged-entry-records-into-native-a exercises the actual staged proof routes and repeats the strict scheduling boundary.",
+      "log_sha256": "f74db1da5a52e88b57a8d60442d29310844bc71e3b328bafa79bc54ee2ceda91"
+    },
+    {
+      "change_id": "rlslxpptxmkpwnwrmrwmywmnrrsklxny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind inherited entries and qualify legacy Java deployment profiles (verification pending)",
+      "body": "Resolve the winning symbolic owner before following an inherited public declaration, and use that declaration for the actual JVM breakpoint. The original-client comparison swaps only the named client even when a helper and the defining entry lie on either side of it. Ordinary target preparation consumes the staged deployment order and independently observes duplicate classes. Legacy JVM selection now checks the pinned release against the boot archive's Object class. Stock JBMC's multi-release physical binding stays separately scoped.\n\nAll twelve captured release questions passed on the original JVMs, including the ten originally blocked by manifests. All 51 changed suites passed. Also checked twelve original multi-release calls across JDK 8, 17 and 21, the inherited caller on both revisions, equal-byte shadowing, two duplicate lib.jar URLs and the original-client 11/102/12 control. Native and stock staged sentinels passed, and the independent strict Log4j run reproduced the timezone boundary.\n\nThe prior Log4j comparison completed both original cold claims but compared encoded return objects to the archive's raw strings. All 32 frozen returns matched after normalization. Job 20261126-203416-compare-typed-log4j-returns-with-the-ind repeats its cache matrix. Job 20261126-203730-verify-multi-release-entry-binding-acros runs the actual multi-release assertions and ordinary staged launches.",
+      "log_sha256": "bccd858650f5eabf1bee5756e4120efa7c1759e10c9d9993c0911ba594b4caef"
+    },
+    {
+      "change_id": "yntqnsrnsqqxsuxrttlyzxqxywqpwlsx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Prevent stock proofs over the wrong multi-release class (verification pending)",
+      "body": "A JDK 21 JVM returned 5 from its versioned Gate. The unguarded JBMC-backed property invocation verified the base value 3. Guard the direct property, equivalence, confirmation and fallback routes for a potentially active versioned subject or helper. Keep ordinary earlier winners and below-version JDK profiles eligible. The staged stock route consults the same ordered resolver before extraction. Recheck staged manifest absences before publishing proof observations and retain exact client and entry roles in exception frames.\n\nThe independently collected Log4j matrix matched all frozen returns. At same-path substitution, both parent claims hit the cache, both landing claims reran, all four explicit predictions were refuted and all four omitted controls held. Archived plans and original receipts pass offline checks. The independent frozen Parquet replay reproduced the untouched ranking and all bindings with 114 content scans, one checker batch and two JVM probes. All 55 selected suites and the targeted Rust binding test passed.\n\nJob 20261126-205143-reject-the-false-stock-multi-release-pro tests the direct subject, helper and paired route against deployed JVM observations. Job 20261126-205648-repeat-the-final-entry-discovery-release repeats the full scheduling cache matrix, the six signed release pairs and all 283 historical origins on the final implementation.",
+      "log_sha256": "e8d6b46b546f0eefd29f0eb7181c002aac83224ddc5d20668886e1064fb143ba"
+    },
+    {
+      "change_id": "kylmvxnvtxsyylwynzypmosrywvzllro",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Read paired stock qualifications through the shared wire decoder (verification pending)",
+      "body": "The independent JDK matrix confirmed that the raw stock command now refuses both JDK 21 assertions. Its helper step passed all eight property controls before treating the paired command's JSON object as a property-result array. Decode both command formats with the existing wire reader. A capped single-claim run verified the paired refusal and its exact Helper.class provider.\n\nJob 20261126-210635-check-the-paired-stock-refusal-with-the repeats the helper, equivalence and staged controls. This change is confined to the qualification driver.",
+      "log_sha256": "3cd38b9275e7d97156064102dda3ce647a479437406f0ae4f09b1d148abfb65a"
+    },
+    {
+      "change_id": "spomttpsktkwmxxlylkonkpyymrzrtvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the completed deployment and entry-discovery qualification",
+      "body": "The final release gate repeated both frozen Log4j claims across five cache comparisons, all twelve captured release questions and every one of the 283 original class bindings. The raw stock property and equivalence commands now refuse the unsafe JDK 21 member, still accept an earlier ordinary shadow, and produced zero false verifications on sixteen deliberately false assertions. Two additional wrong populated resource predictions were refuted while the unrelated-marker controls held.\n\nThe scorecard includes all twelve exercises and distinguishes unexecuted calls, actual counterexamples, backend refusals and the pre-repair false verdict. Verified all eleven collector receipts at 0ca120a720ab, eight independent reference digests, ten archived Log4j receipt references and all 37 local report links. The 243-row scorecard regenerated byte for byte. All 53 selected suites passed.",
+      "log_sha256": "d5477a83b3cf942b2d87aa9f4acf88b2fb00cec8de44af0ea65da617588161b4"
     }
   ],
   "logs": {
@@ -2674,6 +2763,12 @@
       "gzip_bytes": 13199286,
       "url": null
     },
+    "3cd38b9275e7d97156064102dda3ce647a479437406f0ae4f09b1d148abfb65a": {
+      "bytes": 87396766,
+      "lines": 43721,
+      "gzip_bytes": 16063783,
+      "url": null
+    },
     "44ddc5a74b25e66cf97de34e4fee32a0d55e90cb68158384b21a2b4b08398a15": {
       "bytes": 11722768,
       "lines": 6299,
@@ -2781,12 +2876,6 @@
       "lines": 17470,
       "gzip_bytes": 5576316,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/64b8f20159e2e9b10c47968a54940572c4910335e9a736d9fe002a861060db96.jsonl.gz"
-    },
-    "663d2ba7ce7c2c12058800ab668c82d29c123d578b4dfa4a763d044f7f88771b": {
-      "bytes": 82816227,
-      "lines": 41715,
-      "gzip_bytes": 15251663,
-      "url": null
     },
     "68ff61f4ff7966d6f91506761ff8870245fbd6ba7eee84e6d89b926edf6389a0": {
       "bytes": 49998203,
@@ -2980,6 +3069,12 @@
       "gzip_bytes": 2097961,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/bca23d07e5430ee0394ca7c25dbd3de9db43dafedcb88598eb3b951b42d245cc.jsonl.gz"
     },
+    "bccd858650f5eabf1bee5756e4120efa7c1759e10c9d9993c0911ba594b4caef": {
+      "bytes": 86360777,
+      "lines": 43123,
+      "gzip_bytes": 15913817,
+      "url": null
+    },
     "bfb8ffb75873cc6968cc2fd0137f0c9f04a8877d8f707b8458ae26d2c6b16da5": {
       "bytes": 28337168,
       "lines": 15806,
@@ -3009,6 +3104,12 @@
       "lines": 21574,
       "gzip_bytes": 7060049,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/cae5cd96503ca6c481daffb1e8badc47df103c1ddee0c3ee89382d2309b795f8.jsonl.gz"
+    },
+    "d5477a83b3cf942b2d87aa9f4acf88b2fb00cec8de44af0ea65da617588161b4": {
+      "bytes": 87586157,
+      "lines": 43829,
+      "gzip_bytes": 16087930,
+      "url": null
     },
     "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8": {
       "bytes": 37321622,
@@ -3058,10 +3159,22 @@
       "gzip_bytes": 8515751,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/e8c0d66133dd6e87f006a7ac8e590704add4deda321d35cdf689626b100c3933.jsonl.gz"
     },
+    "e8d6b46b546f0eefd29f0eb7181c002aac83224ddc5d20668886e1064fb143ba": {
+      "bytes": 87082635,
+      "lines": 43519,
+      "gzip_bytes": 16021780,
+      "url": null
+    },
     "ebca8814fca272506039acce8722d0f896b26850480d0cf90231815d1a5e9cb4": {
       "bytes": 69481736,
       "lines": 36352,
       "gzip_bytes": 12723352,
+      "url": null
+    },
+    "ec216cceb14cfb4a47f080d8532d82949d74071babe428894efa8557a3ef1a3d": {
+      "bytes": 84918295,
+      "lines": 42356,
+      "gzip_bytes": 15698378,
       "url": null
     },
     "ef011116bfc665ea66f6aaf78850ac8a2607698fcfca9fcbca6067c15c381c7a": {
@@ -3117,6 +3230,12 @@
       "lines": 13426,
       "gzip_bytes": 4319907,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/f5b9672c0e3ee1b1f028ef2dbd0032d033f9bdc6854e1b287fb83ae84e55c57c.jsonl.gz"
+    },
+    "f74db1da5a52e88b57a8d60442d29310844bc71e3b328bafa79bc54ee2ceda91": {
+      "bytes": 85829082,
+      "lines": 42824,
+      "gzip_bytes": 15837263,
+      "url": null
     },
     "f8d05167bb08cb9d446781eb22b14323252adb4adcd7b6394f4ed7b47c8a6ce8": {
       "bytes": 67670925,

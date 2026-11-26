@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-200854-verify-the-helper-chosen-by-ordinary-ord",
+  "title": "Verify the helper chosen by ordinary ordered proof recipes",
+  "description": "On unmodified two-JAR fixtures, use the product proof recipe with the entry in the second JAR. Run native and stock JBMC on A,B, the reversed order, and B alone. Check both the matching sentinel and a deliberately false one against an independent JVM and resource enumeration.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T20:08:54+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Exercise both backend invocations",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/backend.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/classpath-entry-discovery/backend.json"
+  ]
+}

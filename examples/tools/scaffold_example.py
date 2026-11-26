@@ -109,10 +109,47 @@ def scaffold(number: str, plan_path: Path, write: bool, root: Path = REPO) -> di
             (folder / name).write_text(json.dumps(claims[name], indent=1, ensure_ascii=False) + "\n")
         if out["added"]:
             target_path.write_text(json.dumps(candidate, indent=2, ensure_ascii=False) + "\n")
+    deployments = entry.get("preparedDeployments")
+    if deployments:
+        record = folder / "records" / "entry-bindings.json"
+        out["entryBindings"] = str(record)
+        if write:
+            paths = {k: plan_path.parent / value for k, value in deployments.items()}
+            bind_deployments(paths["before"], paths["after"], paths["jdk"], record,
+                             workflows=paths.get("workflows"),
+                             entries=[t["target"] for t in tasks if "#" in t.get("target", "")])
+            report = json.loads(record.read_text())
+            for binding in report["entryBindings"].values():
+                if binding["status"] != "bound":
+                    out["leftForSetup"].append(f"{binding['side']} {binding['entry']}: {binding['firstOpenDependency']}")
     return out
 
 
+def bind_deployments(before, after, jdk, output, *, workflows=None, entries=(), checker=None):
+    """Stage 3 accepts the prepared manifests. The shared planner owns byte selection and the receipt."""
+    from targets import change_plan
+    arguments = ["application", "--before", str(before), "--after", str(after), "--jdk", str(jdk), "--output", str(output)]
+    if workflows:
+        arguments.extend(["--workflows", str(workflows)])
+    if checker:
+        arguments.extend(["--checker", str(checker)])
+    for entry in entries:
+        arguments.extend(["--entry", entry])
+    return change_plan.main(arguments)
+
+
 def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] == "bind":
+        parser = argparse.ArgumentParser(description="Bind approved public entries on the two prepared deployments")
+        for name in ("before", "after", "jdk", "output"):
+            parser.add_argument("--" + name, type=Path, required=True)
+        parser.add_argument("--workflows", type=Path)
+        parser.add_argument("--checker", type=Path)
+        parser.add_argument("--entry", action="append", default=[])
+        args = parser.parse_args(argv[1:])
+        return bind_deployments(args.before, args.after, args.jdk, args.output, workflows=args.workflows,
+                                entries=args.entry, checker=args.checker)
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("number")
     ap.add_argument("--plan", type=Path, default=PLAN)

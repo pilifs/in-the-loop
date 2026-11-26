@@ -62,8 +62,21 @@ class ChangePlanTest(unittest.TestCase):
             self.assertEqual(found["unresolved"], [])
             self.assertTrue(change_inventory.absences_hold(found["absent"]))
             self.assertTrue(change_inventory.manifest_classpath([jar], 17)["unresolved"])
+            from types import SimpleNamespace
+            from unittest.mock import patch
+            from targets import runtime
+            staged = SimpleNamespace(entries={"new": {"scaffoldGraph": "stage-3", "scaffoldAbsences": [str(extra)],
+                                                      "scaffoldJdk": "pinned"}},
+                                     classpaths={"new": [{"path": jar.name, "sha256": change_inventory.file_digest(jar)}]})
+            proof = ({"new": (base, None, None)}, staged, {"home": str(base), "feature": "21"})
+            with patch.object(change_inventory, "jdk_binding", return_value="pinned"):
+                runtime._staged_launch_guard(*proof)
+            self.assertEqual(staged.entries["new"]["proofManifestAbsences"], [str(extra)])
             with zipfile.ZipFile(extra, "w") as archive:
                 archive.writestr("marker.txt", "local provider")
+            with patch.object(change_inventory, "jdk_binding", return_value="pinned"):
+                with self.assertRaisesRegex(runtime.Refused, "assumed absent"):
+                    runtime._staged_launch_guard(*proof)
             self.assertFalse(change_inventory.absences_hold(found["absent"]))
             self.assertEqual(change_inventory.manifest_classpath([jar], 21)["unresolved"][0]["reason"], "present implicit provider")
             paired = change_inventory.manifest_classpath([jar, extra], 21)
@@ -72,7 +85,16 @@ class ChangePlanTest(unittest.TestCase):
             gap = base / "other.jar"
             gap.write_bytes(extra.read_bytes())
             reordered = change_inventory.manifest_classpath([jar, gap, extra], 21)
-            self.assertEqual(reordered["unresolved"][0]["reason"], "manifest can change declared search order")
+            self.assertEqual(reordered["unresolved"], [])
+            self.assertEqual([r["classpathIndex"] for r in reordered["bound"]], [1, 1])
+            from targets import deployment_graph
+            implicit = {"classpath": [{"file": str(jar), "sha256": change_inventory.file_digest(jar)}],
+                        "manifestProviders": [{"file": str(extra), "sha256": change_inventory.file_digest(extra)}]}
+            files, _, graph = deployment_graph.resolve(implicit, base, 21, change_inventory.file_digest)
+            self.assertEqual(files, [jar, extra])
+            self.assertFalse(graph["manifestClassPath"]["unresolved"])
+            _, _, unknown = deployment_graph.resolve({**implicit, "layoutKnown": False}, base, 21, change_inventory.file_digest)
+            self.assertEqual(unknown["manifestClassPath"]["unresolved"][0]["reason"], "original deployment location required")
             manifest("Class-Path: https://example.invalid/extra.jar a%20b.jar //host/share.jar")
             self.assertEqual(len(change_inventory.manifest_classpath([jar], 21)["unresolved"]), 3)
             with zipfile.ZipFile(jar, "w") as archive:
@@ -161,6 +183,26 @@ class ChangePlanTest(unittest.TestCase):
             damaged["evidence"]["trials"].pop()
             stored.write_text(json.dumps(damaged))
             self.assertIsNone(cache.lookup("old", files, self.binding, info))
+
+    def test_offline_shared_entry_requires_each_completed_claims_own_witness(self):
+        from targets import change_plan
+        graph = {"kind": "production", "classpath": ["a", "b"]}
+        key = change_inventory.digest(graph)
+        record = {"side": "new", "entry": self.entry, "status": "bound", "graph": key}
+        ref = change_inventory.digest(record)
+        claims = [{"id": name, "claimKey": name, "entry": self.entry, "entryBindings": {"new": ref},
+                   "status": "established"} for name in ("explicit", "omitted")]
+        report = {"schema": change_plan.SCHEMA, "graphs": {key: {**graph, "key": key}},
+                  "entryBindings": {ref: record}, "claims": claims, "executionState": "complete",
+                  "bindingWitnesses": {ref: [{"claim": c["id"]} for c in claims]}}
+        read = change_plan.saved_bindings(report)
+        self.assertEqual([r["witnesses"] for r in read["claims"]], [[{"claim": "explicit"}], [{"claim": "omitted"}]])
+        report["bindingWitnesses"][ref].pop(0)
+        with self.assertRaisesRegex(ValueError, "no original witness"):
+            change_plan.saved_bindings(report)
+        report["graphs"][key]["classpath"].reverse()
+        with self.assertRaisesRegex(ValueError, "graph differs"):
+            change_plan.saved_bindings(report)
 
     def test_added_removed_and_unknown_designated_methods_are_accounted_for(self):
         common = ("a/Client", "call", "()I")

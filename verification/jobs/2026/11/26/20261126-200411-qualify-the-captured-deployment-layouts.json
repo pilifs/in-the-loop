@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-200411-qualify-the-captured-deployment-layouts",
+  "title": "Qualify the captured deployment layouts of the six release-panel pairs",
+  "description": "Run the previously frozen primary and control callers for Sisu Plexus, Batik, ISCWT, HtmlCleaner, OpenCensus and dom4j on both signed package layouts. Require original JVM method hits, checker agreement and the registered finite outcomes. Withhold deployment names in a second input and require explicit refusals for manifest-dependent profiles.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T20:04:11+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "8m"
+  },
+  "steps": [
+    {
+      "name": "Six paired launches",
+      "run": "for slot in 03 04 08 10 13 16; do python3 lib/benchmark/classpath-entry-discovery/panel.py \"$slot\" \"verification/classpath-entry-discovery/panel-$slot.json\" || exit 1; done",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/classpath-entry-discovery/panel-*.json"
+  ]
+}

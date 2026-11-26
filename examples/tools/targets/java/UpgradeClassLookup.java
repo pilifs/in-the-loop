@@ -6,6 +6,15 @@ import java.lang.invoke.MethodType;
 /** Check which original JAR supplies a reported missing type, without initializing it. */
 public final class UpgradeClassLookup {
     public static void main(String[] args) throws Exception {
+        if (args.length == 1 && args[0].equals("--entries")) {
+            java.io.BufferedReader requests = new java.io.BufferedReader(new java.io.InputStreamReader(System.in, "UTF-8"));
+            for (String line; (line = requests.readLine()) != null;) {
+                String[] fields = line.split("\\t", -1);
+                if (fields.length != 3) throw new IllegalArgumentException("expected owner, name and descriptor");
+                observeEntry(fields);
+            }
+            return;
+        }
         if (args.length == 1 && args[0].equals("--jdbc-driver")) {
             String url = new java.io.BufferedReader(new java.io.InputStreamReader(System.in, "UTF-8")).readLine();
             try {
@@ -33,6 +42,58 @@ public final class UpgradeClassLookup {
         } catch (LinkageError error) {
             System.out.println("UPGRADE-LOOKUP linkage " + error.getClass().getName());
         }
+    }
+
+    private static void observeEntry(String[] request) throws Exception {
+        String owner = request[0], name = request[1], descriptor = request[2];
+        ClassLoader loader = UpgradeClassLookup.class.getClassLoader();
+        String source = "-", member = "-", hash = "-", defining = "-", implementation = "-", kind = "-", status = "bound";
+        try {
+            Class<?> type = Class.forName(owner, false, loader);
+            defining = type.getClassLoader() == null ? "bootstrap" : type.getClassLoader().getClass().getName();
+            CodeSource origin = type.getProtectionDomain().getCodeSource();
+            if (origin == null) throw new IllegalArgumentException("no application code source");
+            source = origin.getLocation().toURI().toASCIIString();
+            member = owner.replace('.', '/') + ".class";
+            URL resource = type.getResource("/" + member);
+            java.net.URLConnection connection = resource.openConnection();
+            if (connection instanceof java.net.JarURLConnection) {
+                java.net.JarURLConnection jar = (java.net.JarURLConnection) connection;
+                if (!jar.getJarFileURL().toURI().equals(origin.getLocation().toURI()))
+                    throw new IllegalArgumentException("class resource and definition have different origins");
+                member = jar.getEntryName();
+            }
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            try (java.io.InputStream in = connection.getInputStream()) {
+                byte[] buffer = new byte[8192];
+                for (int n; (n = in.read(buffer)) != -1;) digest.update(buffer, 0, n);
+            }
+            StringBuilder hex = new StringBuilder();
+            for (byte b : digest.digest()) hex.append(String.format("%02x", b & 255));
+            hash = hex.toString();
+            if (!name.isEmpty()) {
+                MethodType signature = MethodType.fromMethodDescriptorString(descriptor, loader);
+                MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+                java.lang.invoke.MethodHandle handle;
+                if (name.equals("<init>")) {
+                    kind = "invokespecial";
+                    handle = lookup.findConstructor(type, signature);
+                } else {
+                    try {
+                        kind = type.isInterface() ? "invokeinterface" : "invokevirtual";
+                        handle = lookup.findVirtual(type, name, signature);
+                    } catch (IllegalAccessException wrongKind) {
+                        kind = "invokestatic";
+                        handle = lookup.findStatic(type, name, signature);
+                    }
+                }
+                implementation = lookup.revealDirect(handle).getDeclaringClass().getName();
+            }
+        } catch (Exception | LinkageError e) {
+            status = e.getClass().getName();
+        }
+        System.out.println(String.join("\t", "ENTRY", owner, name, descriptor, status, source, member, hash,
+                                       defining, implementation, kind, loader.getClass().getName()));
     }
 
     private static void lookupMember(String owner, String name, String descriptor, String opcode) throws Exception {

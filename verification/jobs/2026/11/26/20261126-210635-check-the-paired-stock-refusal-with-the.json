@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-210635-check-the-paired-stock-refusal-with-the",
+  "title": "Check the paired stock refusal with the shared proof wire reader",
+  "description": "The subject and helper property controls passed, then the first audit treated the equivalence command's single JSON object as a property-result array. Use the repository's wire reader for each command. Check the refusal on both original paths, the earlier ordinary shadow and both actual staged engines.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T21:06:35+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Check raw stock helper and paired routes",
+      "run": "python3 verification/classpath-entry-discovery/check_stock_helpers.py verification/classpath-entry-discovery/stock-helper-guard.json",
+      "cwd": "."
+    },
+    {
+      "name": "Check the ordinary staged proof controls",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/final-backend.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/classpath-entry-discovery/stock-helper-guard.json",
+    "verification/classpath-entry-discovery/final-backend.json"
+  ]
+}

@@ -326,6 +326,10 @@ your plan asks for.
      (`misstates`, which the setup corrects as you state it) or where something is missing or too narrow
      (`suggestion`, which is the user's);
    - **designed** (a catalog entry, or a change with no example): nothing states its claims yet. Design them.
+   When prepared artifacts are already available, run `build.py --change-plan application` with their
+   `--before` and `--after` manifests, the pinned `--jdk` and a new `--output`. Without a workflow this ranks
+   accessible callers from the compiled declarations. Supply `--changed-selector` for a known method or
+   `--entry` for an approved public entry. The report records alternative entries and their construction paths.
 3. **Each change.** Record its two exact commits and its public GitHub or supplied local source locator. Read the caller and the dependency change to identify what a client can observe and what the change is meant to preserve.
 4. **Its size.** The closest past examples and what they cost (`examples/tools/find.py`, their notes and receipts,
    `pipeline.py report`), set against the budget: whether a proof is plausible here and what will be hard.
@@ -365,6 +369,20 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    its notes hold what the plan learned and why the change sits where it does in the order.
 3. The revisions prepared: their JARs fetched or built, pinned and locked (`build.py --plan NNN`), as the plan's
    preparation recipe says.
+   When ordered manifests exist, set `preparedDeployments` in the setup plan. The normal scaffold writes
+   `records/entry-bindings.json` and reports each open lookup. If the builds became available after scaffolding,
+   run `python3 examples/tools/scaffold_example.py bind --before OLD --after NEW --jdk JDK --workflows WORKFLOWS --output RECORD`.
+   Both forms check each pinned deployment on its own JVM and ask the native resolver for the exact descriptor.
+   Stage 2 can omit workflows to discover public callers from the compiled change. Review competing observations
+   with the claim owner. During replay, pass the saved record as `--previous` to `build.py --change-plan application --run`.
+   The manifest's `classpath` lists the declared roots in JVM order. Each root carries `file` and `sha256`.
+   Set `role: client` on the original caller artifact when it occupies a later slot. For a renamed storage file,
+   give the manifest a `deploymentRoot` and each mapped artifact its original absolute `deploymentPath` within
+   that capture. Pin additional local URL targets in `manifestProviders` with the same fields. A known missing
+   optional target is checked again before publication. Use `layoutKnown: false` when deployment locations
+   are missing, and `ordered: false` for an unordered collection. A custom loader can describe its `scope` and
+   `delegation` in `loader`. The default binder qualifies the application loader's parent-first search.
+   Read an archived comparison with `build.py --change-plan bindings REPORT --verify-receipts`.
 4. The change run once on a JVM (the replay task), with the plan's controls, and the mutant's replay.
 5. **How each proof task is invoked,** confirmed without attempting the proof and recorded on the task as
    `invocation` ([`target.schema.json`](../examples/schema/target.schema.json)), with the date and what showed it:
