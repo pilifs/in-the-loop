@@ -461,14 +461,167 @@ detached configuration of its own, which resolving every named configuration doe
 task `setupResolveCoords -PsetupCoords=G:A:V,...` that resolves given coordinates as a detached configuration; run online for
 `org.codehaus.groovy:groovy-ant` at both pins of both cases (7 files each, logs `$P/logs/CASE-ROLE.groovyant.online.log`), then
 the two jobs were queued again. The Spring 6.1 and 7 builds do not compile Groovy that way.
+| Q11 (second rerun) | `20261126-151047-setup-build-spring-framework-27716-q11-a` |
+
+The Q09 rerun passed. The first Q11 rerun (`20261126-144401-setup-build-spring-framework-27716-q11-a`) failed again on the
+same task. Gradle 7.3 (Q11), unlike 6.8.3 (Q09), puts the whole Groovy runtime into that detached configuration. In
+`org.gradle.api.tasks.GroovyRuntime` of `$P/tools/gradle-7.3/lib/plugins/gradle-plugins-7.3.jar` these are `groovy-ant`,
+`-astbuilder`, `-console`, `-datetime`, `-dateutil`, `-groovydoc`, `-json`, `-nio`, `-sql`, `-templates`, `-test` and `-xml`.
+Offline, the build missed `groovy-astbuilder`, `-console`, `-datetime`, `-dateutil`, `-docgenerator`, `-json`, `-nio` and `-sql`
+3.0.9, plus `com.github.javaparser:javaparser-core:3.23.0`. `setupResolveCoords` resolved those twelve modules and
+`groovy-docgenerator` at 3.0.9 online at both Q11 pins (23 files each, logs `$P/logs/Q11-ROLE.groovyruntime.online.log`).
+It then resolved them again with `--offline` (`$P/logs/Q11-ROLE.groovyruntime.offline.log`), and Q11 was queued a third time.
 
 ## Job results
 
-*Pending.*
+Each job builds the case's jars at both pins offline (`case_job.sh`). It runs the landed test classes at the fix, and those
+of them the parent has at the parent. Then it compiles and runs the fix's changed test files on a copy of the parent tree
+("transplant"). Counts come from the JUnit XML (`$P/logs/CASE-ROLE.test.offline.junit.txt`; transplant
+`$P/logs/CASE-parent-landed.test.offline.*`). Every job ran with 4 CPUs and peaked below 4.6 GiB.
+
+| Case | Fix: landed tests | Parent: the parent's versions | Fix's tests on the parent |
+|---|---|---|---|
+| Q01 | exit 0, 12 tests, 0 failures, 0 errors (96 s) | exit 0, 11 tests, 0 failures, 0 errors (128 s) | **fails**: 12 tests, 1 failures, 0 errors; `GeneratedClassTests#reserveMethodNamesWhenMultipleNamesReservesEachName()` |
+| Q02 | exit 0, 37 tests, 0 failures, 0 errors (90 s) | exit 0, 36 tests, 0 failures, 0 errors (74 s) | **fails**: 37 tests, 1 failures, 0 errors; `ProfilesTests#malformedExpressionsWithUnbalancedParentheses()` |
+| Q03 | exit 0, 18 tests, 0 failures, 0 errors (91 s) | exit 0, 17 tests, 0 failures, 0 errors (141 s) | **fails**: 18 tests, 1 failures, 0 errors; `RepeatableContainersTests$StandardRepeatableContainersTests#standardRepeatablesWhenContainerNotReferencedByRepeatableReturnsNull()` |
+| Q05 | exit 0, 192 tests, 0 failures, 0 errors (139 s) | exit 0, 190 tests, 0 failures, 0 errors (105 s) | **does not compile**: `DefaultListableBeanFactoryTests.java:1693` incompatible types: Object cannot be converted to Template<String>; `DefaultListableBeanFactoryTests.java:1694` incompatible types: Object cannot be converted to Template<Number> |
+| Q06 | exit 0, 14 tests, 0 failures, 0 errors (52 s) | exit 0, 14 tests, 0 failures, 0 errors (61 s) | **fails**: 14 tests, 1 failures, 0 errors; `CompositeCollectionTests#remove()` |
+| Q07 | exit 0, 63 tests, 0 failures, 0 errors (73 s) | exit 0, 63 tests, 0 failures, 0 errors (58 s) | **fails**: 63 tests, 3 failures, 0 errors; `ConcurrentReferenceHashMapTests#compute()`, `ConcurrentReferenceHashMapTests#computeIfPresent()`, `ConcurrentReferenceHashMapTests#merge()` |
+| Q08 | exit 0, 2 tests, 0 failures, 0 errors (66 s) | exit 0, 0 tests, 0 failures, 0 errors (55 s) | **fails**: 2 tests, 2 failures, 0 errors; `SqlParameterSourceUtilsTests#createBatchWithMapBeanAndSqlParameterSource()`, `SqlParameterSourceUtilsTests#createBatchWithSqlParameterSourceVarargs()` |
+| Q09 | exit 0, 20 tests, 0 failures, 0 errors (49 s) | exit 0, 14 tests, 0 failures, 0 errors (57 s) | **fails**: 20 tests, 3 failures, 0 errors; `ThreadPoolTaskExecutorTests#modifyCorePoolSizeWithInvalidValueWhileRunning()`, `ThreadPoolTaskExecutorTests#modifyKeepAliveSecondsWithInvalidValueWhileRunning()`, `ThreadPoolTaskExecutorTests#modifyMaxPoolSizeWithInvalidValueWhileRunning()` |
+| Q11 | *pending*: job `20261126-151047-setup-build-spring-framework-27716-q11-a` | *pending* | *pending* |
+| Q12 | exit 0, 10 tests, 0 failures, 0 errors (177 s) | exit 0, 10 tests, 0 failures, 0 errors (150 s) | **does not compile**: `DataAccessUtilsTests.java:52` method singleResult in class DataAccessUtils cannot be applied to given types;; `DataAccessUtilsTests.java:53` method singleResult in class DataAccessUtils cannot be applied to given types; |
+| Q13 | exit 0, 56 tests, 0 failures, 0 errors (223 s) | exit 0, 53 tests, 0 failures, 0 errors (104 s) | **fails**: 56 tests, 3 failures, 0 errors; `JdbcTemplateTests#testDiscardFurtherRowsOnceMaxRowsHasBeenReachedForRowCallbackHandler()`, `JdbcTemplateTests#testDiscardFurtherRowsOnceMaxRowsHasBeenReachedForStream()`, `JdbcTemplateTests#testSkipFurtherRowsOnceMaxRowsHasBeenReachedForRowMapper()` |
+| Q14 | exit 0, 21 tests, 0 failures, 0 errors (91 s) | exit 0, 17 tests, 0 failures, 0 errors (107 s) | **fails**: 21 tests, 4 failures, 0 errors; `JdbcClientIntegrationTests#queryWithDuplicateColumnLabels()`, `SimplePropertyRowMapperTests#mapRowWithDuplicateColumnLabelForDataRecord()`, `SimplePropertyRowMapperTests#mapRowWithDuplicateColumnLabelForFinalFields()`, `SimplePropertyRowMapperTests#mapRowWithDuplicateColumnLabelForReadOnlyProperty()` |
+| Q15 | exit 0, 11 tests, 0 failures, 0 errors (86 s) | exit 0, 3 tests, 0 failures, 0 errors (133 s) | **fails**: 11 tests, 2 failures, 0 errors; `LazyConnectionDataSourceProxyTests#lazyHandlingClientInfoForKV()`, `LazyConnectionDataSourceProxyTests#lazyHandlingNetworkTimeoutExecutor()` |
+| Q16 | exit 0, 413 tests, 0 failures, 0 errors (88 s) | exit 0, 393 tests, 0 failures, 0 errors (152 s) | **fails**: 413 tests, 118 failures, 0 errors; `DataBufferUtilsTests#[1]`, `DataBufferUtilsTests#[2]`, `DataBufferUtilsTests#[3]`, `DataBufferUtilsTests#[4]` and 4 more |
+| Q21 | exit 0, 67 tests, 0 failures, 0 errors (162 s) | exit 0, 61 tests, 0 failures, 0 errors (126 s) | **fails**: 67 tests, 5 failures, 0 errors; `RequestMappingHandlerMappingTests#[1]`, `RequestMappingHandlerMappingTests#[2]`, `RequestMappingHandlerMappingTests#httpExchangeWithVersion()` |
+| Q22 | exit 0, 12 tests, 0 failures, 0 errors (133 s) | exit 0, 10 tests, 0 failures, 0 errors (120 s) | **fails**: 12 tests, 2 failures, 0 errors; `DefaultApiVersionStrategiesTests#resolveVersionPropagatesErrorFromEarlierResolver()`, `DefaultApiVersionStrategiesTests#resolveVersionWithResolversInOrder()` |
+| Q23 | exit 0, 3 tests, 0 failures, 0 errors (129 s) | exit 0, 2 tests, 0 failures, 0 errors (88 s) | **fails**: 3 tests, 1 failures, 0 errors; `HttpServiceProxyFactoryTests#builderChangesAfterBuildDoNotAffectFactory()` |
+| Q24 | exit 0, 50 tests, 0 failures, 0 errors (91 s) | exit 0, 48 tests, 0 failures, 0 errors (93 s) | **does not compile**: `JmsTemplateTests.java:737` no suitable method found for sendAndReceive(Queue,Queue,MessageCreator); `JmsTemplateTests.java:740` no suitable method found for sendAndReceive(String,String,MessageCreator) |
+| Q27 | exit 0, 23 tests, 0 failures, 0 errors (106 s) | exit 0, 22 tests, 0 failures, 0 errors (103 s) | **fails**: 23 tests, 1 failures, 0 errors; `RetryInterceptorTests#withPostProcessorForMethodWithTimeUnit()` |
+| Q28 | exit 0, 11 tests, 0 failures, 0 errors (194 s) | exit 0, 5 tests, 0 failures, 0 errors (132 s) | **fails**: 11 tests, 2 failures, 0 errors; `ReactiveRetryInterceptorTests#adaptReactiveResultWithJitterGreaterThanDelay()`, `ReactiveRetryInterceptorTests#adaptReactiveResultWithZeroDelayAndJitter()` |
+| Q29 | exit 0, 31 tests, 0 failures, 0 errors (58 s) | exit 0, 31 tests, 0 failures, 0 errors (79 s) | **does not compile**: `CompositeRetryListenerTests.java:82` method onRetrySuccess in class CompositeRetryListener cannot be applied to given types;; `CompositeRetryListenerTests.java:84` method onRetrySuccess in interface RetryListener cannot be applied to given types; |
+| Q30 | exit 0, 21 tests, 0 failures, 0 errors (191 s) | exit 0, 20 tests, 0 failures, 0 errors (118 s) | **fails**: 21 tests, 1 failures, 0 errors; `PathMatchingResourcePatternResolverTests$ClassPathManifestEntries#javaDashJarFindsAbsoluteClassPathManifestEntries()` |
+
+Every Gradle case behaves as a regression should: the landed tests pass at both pins, and the fix's tests fail on the parent
+or do not compile there. Some rows need a note:
+
+- **Q08**: `SqlParameterSourceUtilsTests` is new in the landing, so the parent runs no test (0 tests). On the parent its
+  two tests fail.
+- **Q16**: there are 14 direct failures on the parent. Two are `StringDecoderTests#decodePreservesCharacterBeforeLoneNewlineAfterCarriageReturn()`
+  and `#decodePreservesCharacterAcrossBuffersAfterCarriageReturn()`. The other twelve are
+  `DataBufferUtilsTests#matcherDoesNotMatchAcrossNonContiguousDelimiterBytes` and
+  `#matcherDoesNotMatchAfterRepeatedFirstDelimiterByte`, each on all six buffer factories.
+  The other 104 failures are consequences: for the two pooled Netty factories ([3] and [4]), every later test in the class
+  fails `AbstractDataBufferAllocatingTests.java:153`. That is the pooled allocator's leak check, tripped by buffers the
+  failing tests left unreleased. At the fix all 413 pass, and the parent's own 393 pass.
+- **Q21**: four of the failures are in spring-webmvc's `RequestMappingHandlerMappingTests`: `versionWithHttpExchange` and
+  `versionInvalidWithHttpExchange`, each with `PathPatternParser` [1] and `AntPathMatcher` [2]. The fifth is spring-webflux's
+  `httpExchangeWithVersion()`.
+- **Q09**: the first job (`20261126-141555-setup-build-spring-framework-26700-q09-a`) failed offline on `groovy-ant`. The rerun
+  passed ([Jobs](#jobs)).
+- **Q11**: the first two jobs failed offline on the Groovy runtime's modules, before any test ran. The third is queued
+  ([Jobs](#jobs)).
 
 ## Digests of the built artifacts
 
-*Pending.*
+**Built jars and changed classes (sha256)**, from `$P/artifacts/CASE-ROLE/SHA256SUMS`. That file also lists every nested class
+and every class of the case's other modules. The classes are those compiled from the landing's changed production files. A
+parent row lists the same classes in the same order (a class that is new in the fix has no parent digest). Q11 is pending
+its job.
+
+| Case | Pin | Jars | Changed classes |
+|---|---|---|---|
+| Q01 | fix | `spring-core-7.0.10-SNAPSHOT.jar` `285e19ba120703758bc051698e1314c34b01d3fe7677dcea6341e34f2dc3d940` | `GeneratedClass.class` `17d8bbe023416bdd6eca819c2a353c11ee2c82fa858731493410ec47e41e7c94` |
+| Q01 | parent | `spring-core-7.0.10-SNAPSHOT.jar` `6aad3a73a66f1b352b32ea5d55789ee807da1310a8682b86ed25c4ffe8f26ffc` | `69076d69f49c535e3a5e992b12adf74bd56d723121ccc6bd634dfe3a236681ed` (same order) |
+| Q02 | fix | `spring-context-7.1.0-SNAPSHOT.jar` `31109f54631c0ff1fea93e6d1cfa544fc827f1ba1a3c5635cb5c5f47c01f86b5`, `spring-core-7.1.0-SNAPSHOT.jar` `41c3572648f40f2e7fd8654c45b5194e80651b48b42a007f79478ce95a6e0699` | `ProfilesParser.class` `16847e6783266945dd0aa9b8f0e6c470f9531319dc2acba7fdf21d28363f7cc7` (+3 nested) |
+| Q02 | parent | `spring-context-7.1.0-SNAPSHOT.jar` `31109f54631c0ff1fea93e6d1cfa544fc827f1ba1a3c5635cb5c5f47c01f86b5`, `spring-core-7.1.0-SNAPSHOT.jar` `8a9845d3037dd041748ca81d6c5db2ea7c478b1bb32ff877872fe52bdba9b655` | `bc23ce8f00d88de75c799c371a325676a79a564d838a1c549ff9d8a084174493` (same order) |
+| Q03 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `e974bcef9471591ea2474351e0101e8428f2c95deeddd4cf435b67e805a2db8c` | `RepeatableContainers.class` `85bd037a56164cf8a75cdb1eff33f9753a17aaddaecd1cf1af9bcb82fb862a71` (+3 nested) |
+| Q03 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `eb00d3a10edc4d79c896fe362dd989eb140c20e4026218d462b45f01d3899f71` | `85bd037a56164cf8a75cdb1eff33f9753a17aaddaecd1cf1af9bcb82fb862a71` (same order) |
+| Q05 | fix | `spring-beans-7.1.0-SNAPSHOT.jar` `cf7c9a4171e01723c1d3f66f0d1c8449a3e2c432f5d24811acd44148e20d3e96`, `spring-context-7.1.0-SNAPSHOT.jar` `bb6b0f10da3f6966fef8fa6e11f2356a7eb51c3e18fb486c146c9d54e9203c01`, `spring-test-7.1.0-SNAPSHOT.jar` `c1b89fa26e5ba71273ba7b11ff5c8d9ded272e3e7d9672e2303b05209602b286` | `spring-beans BeanFactory.class` `f854419afa69cc873893524ba6ba9636ec97e86f73b8f49db54df85781f8ddca`, `spring-beans BeanFactoryExtensionsKt.class` `13cc5aef69dd0f82976089ae6a7216a8c5b065c3f25b54be1c8418d8c8d9e821` (+4 nested), `spring-beans BeanNotOfRequiredTypeException.class` `9d209ff6a36c6ef5b9f81a33fbefb4490411cee56f80f685636492dd639874a7`, `spring-beans AbstractBeanFactory.class` `01ba53e93447ed90deb9b84d5be37a1672ede19350b2079565eadb99e6cb6612` (+3 nested), `spring-beans StaticListableBeanFactory.class` `c39d4eaa646424dd26b89c96bcbfa71d034314e6867f7e004c32d78cbff475d0` (+1 nested), `spring-context AbstractApplicationContext.class` `ebf5aaf2b7e7d4d30a0e8283afe25bbe994ac60a7c6236bcc9804c6ba38f7574` (+1 nested), `spring-context SimpleJndiBeanFactory.class` `ce03f0f2938010bf8523fcc48d3118b3da5c0ddadaf143c552c4786a18db0ace` (+1 nested), `spring-test StubWebApplicationContext.class` `84ade618ce312b7ab88aef3abe20ce60449e83a1574d2372e068cc44a147bd1a` (+1 nested) |
+| Q05 | parent | `spring-beans-7.1.0-SNAPSHOT.jar` `5eb7cd466c0dc720ef85704407546ac4ecbeede320b1c3e5dd119df1b3e103d5`, `spring-context-7.1.0-SNAPSHOT.jar` `7d397600ba9995093222982cf3d8dcf71de067eb75fd497a9f948b8c964559d5`, `spring-test-7.1.0-SNAPSHOT.jar` `ae78d8e7e9c3322089aff6093eec3d382a54b387b0e06e6f4e1cc9bc068987e8` | `9c5f013df26f4669242c4bcc5c093f15b921778bce5675c79863e69c1a1820f9`, `05fcf387463f799bfd6d3be68b1f0e343c65ce482ed97d08fa6308f8999c893d`, `55fae87a04ddc7987b6871cd3ba29b14f9a85745997fd8dda3d111566f51d4d2`, `1fa3c3e7c0e8ae16bbbddf1543b8e228e0a6cfc6529d83efd4521c976d176df3`, `6ba5e232306936ffaf8a444dee552ff6ae64aae3b19b3df82634db800af7232b`, `ed50cb1b236f12f963b814e4f632adb0da0d3bef2589e4f71b6fc4cfc1d6e3e3`, `87ee471b0eedae0752c0b1620be018933e97a953d148c1a1b144cfcff0db1fa3`, `8ccef2e9b4fb834866d5157af553b02a7a7aeefdcafd0e56314502aea13f913c` (same order) |
+| Q06 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `8166ea28c6ba97427226debb5ebe4558b999267318912b1e1c1d997f26cb2947` | `CompositeCollection.class` `2dc3e1718533e006ddc91418a930449370f38597cd42b9f3c6c323bf9891ddc2` |
+| Q06 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `fa852824d5c17177be399479f26193b4a3ed45950a8d7693bb3b01bf211cb620` | `a8b31d864e90862c750bfb4d4da98be36f50dba7a1e487f88c9dc2adb649637b` (same order) |
+| Q07 | fix | `spring-core-7.0.11-SNAPSHOT.jar` `8a39f90f3d342285e466dff2b3028c6bcb177e06a9c70e414d02d5debd0bcd3d` | `ConcurrentReferenceHashMap.class` `da9dd61492184d68e081fba52dc803a06baeaaa5f2617e88fcf7ab1e317f6aa8` (+26 nested) |
+| Q07 | parent | `spring-core-7.0.11-SNAPSHOT.jar` `be1f664dc9cd3db983909f1b9146cd8e6a75e538120d7b13428541cbe5843b40` | `ff0daea4b8877ba84c17262cb88926ce347ba92beb3aed3856e83860a96666b2` (same order) |
+| Q08 | fix | `spring-jdbc-7.1.0-SNAPSHOT.jar` `5797b1ca723f8f4cd839f1de98e33fe85628b20d10dd0bcdad2ef73c221f7d30` | `SqlParameterSourceUtils.class` `762acf55ee377681c07e9a3584fb8c93355073f46c0b37e91b95ba28484e81ca` |
+| Q08 | parent | `spring-jdbc-7.1.0-SNAPSHOT.jar` `0f431cd4addb0bbbb69c0d172511015b56aaa28f5961c61897eccc5d6d5be26b` | `28a2479bea448acd3ee478cd8a1654e531eefce2946f8aebb7a427c90ac2de99` (same order) |
+| Q09 | fix | `spring-context-5.3.9-SNAPSHOT.jar` `0ed8b5c83982048d15d52d1cfb6d12d8faad5740a70da0368cdcbeba09bd717f` | `ThreadPoolTaskExecutor.class` `9c4d1bb8c84d97ba21ff623e85fec60e82351869e35f6b0e583517939c0359fd` (+1 nested) |
+| Q09 | parent | `spring-context-5.3.9-SNAPSHOT.jar` `5d5f6e23d203a33cdfec303a08f18775dda9bd47f050bed0761943b1aabcc6d2` | `fa5c4e24d6f910487cdbf13de293f1a0466d03a36e6dc7a923efe6906de77ccb` (same order) |
+| Q12 | fix | `spring-tx-6.1.0-SNAPSHOT.jar` `c79bbd37645c75a58f765793f02c5bd303af227c3efc846dad0f8f73695e78e0` | `DataAccessUtils.class` `7818bf6f12e35beda323174b18a1b3322acafcca9911364d46469dae98554bf5` |
+| Q12 | parent | `spring-tx-6.1.0-SNAPSHOT.jar` `dc722b7c82a3af1dcd6086e8943bc9f777398b95835f16ef8589dd96f2325ba8` | `b4bd79c4307cdf75751f2bb97623789bc03c8461297e59b4fde03745e7ee1d6b` (same order) |
+| Q13 | fix | `spring-jdbc-7.0.0-SNAPSHOT.jar` `a5fbee4ef9e300ceca0db062c73326ca15b7f3faeee16cf2899cf95556f08e6e` | `JdbcTemplate.class` `5a1bc60f9fa8da4783d46cd4204b14ac87b2564ad27072036a20078eee7cc0f2` (+11 nested), `RowMapperResultSetExtractor.class` `e35053d853def8a3cf439626d499af5e4aa19d2c7eaaf8aa97bf94d71ddd59f7` |
+| Q13 | parent | `spring-jdbc-7.0.0-SNAPSHOT.jar` `fc942e26e9482cbc84ed6e216fdbc23bcb19b9677a201bb3fae8bd5ef4d18876` | `a6dcd1e0b3e6892508bcdb122de5e0e6b8c8669912bde3d7965d7b0d29a9bfdb`, `444c8656b18f12210cb0e4a00204d62ae823e75f80a926596dc1df7043595429` (same order) |
+| Q14 | fix | `spring-jdbc-7.0.11-SNAPSHOT.jar` `f37857ae1351613ec8888fef070c11a958b6114b50cef81638b87833c5974236` | `SimplePropertyRowMapper.class` `d0e7e3b37af7b7ce86aeb5d79a71b3053abf0ffbd60e4a2b495500b46dc52577` |
+| Q14 | parent | `spring-jdbc-7.0.11-SNAPSHOT.jar` `0e3a69fef7240648f847b4f75ddd9f86056f9231e962177af408f8e09c4734e2` | `c9b227a325cace7888cd27630e7a8d694ea25fa628be9da29efaaddbb9a00649` (same order) |
+| Q15 | fix | `spring-jdbc-7.0.10-SNAPSHOT.jar` `345682802ca1d24275f9934d954f6fd5be5f8161a61e46525300efb35e60e129` | `LazyConnectionDataSourceProxy.class` `3004a8b9bda4ee58cfc3a292c51a832291632ae18c7617dad19725df1ec934f3` (+1 nested) |
+| Q15 | parent | `spring-jdbc-7.0.10-SNAPSHOT.jar` `7e69c73a681f83185809ce97477a69eb626f616188333fb074f797d832dfba33` | `1951a94c08ed44c6d9d0bb67be4941c10a543be4d376de142ea0738604312bc2` (same order) |
+| Q16 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `d36170dd39e88910a94dad7bbff0bed0d4cfa86e5c725f290d7e51d4a133cec0` | `DataBufferUtils.class` `a67b79ca7da6dc952b444560f61700cc3c2c0a8b4b0e6d9e34a877fcde399a08` (+15 nested) |
+| Q16 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `a2fb53ad4b5eda11829ce151a36e6a55cec81032b3e1a344a6c6fab507a08035` | `a67b79ca7da6dc952b444560f61700cc3c2c0a8b4b0e6d9e34a877fcde399a08` (same order) |
+| Q21 | fix | `spring-webflux-7.0.10-SNAPSHOT.jar` `b5a57e47ea88a8ecabf669b11e8795521b2e5cf959cd289c983d54824ebe3218`, `spring-webmvc-7.0.10-SNAPSHOT.jar` `24cb91ec2cc9c8488a3e24c04a288d3c17f9de4c71ec6596d5d0c32cc61316b5` | `spring-webflux RequestMappingHandlerMapping.class` `1ced3e3192097361a37b6212111aabdfd5d188d0d50de6fbb977076a717e8b1b` (+1 nested), `spring-webmvc RequestMappingHandlerMapping.class` `ebea7c91b360de2cc71c4442bb843d2ae65d7e407b64a6a7795c8871c3d10be3` (+1 nested) |
+| Q21 | parent | `spring-webflux-7.0.10-SNAPSHOT.jar` `88239dd7548d74533fb4dad36d2d19e884d94d56330ac075e64b6b6b70dbf5dd`, `spring-webmvc-7.0.10-SNAPSHOT.jar` `d59708542c7a3d80b529bf390fae97696ed3d8a445487811ed8b4799b25c0126` | `28e76f3d60b17257e18818e4a9d6619d314bf97c152772e7e9dab2c15c08d9fb`, `a06e5abb2f55987533245c92d3eb5c81c47051b07d39f7cefde237e737ef47e0` (same order) |
+| Q22 | fix | `spring-webflux-7.0.10-SNAPSHOT.jar` `df8792c477dd8947def6c67a4a5cdb81518f83c1ad3d16e9c482efad723b9aa9` | `DefaultApiVersionStrategy.class` `8112791d052979d79e8048bec1d893563c5d44f70f770ae5b4a1ac0ec463e13c` |
+| Q22 | parent | `spring-webflux-7.0.10-SNAPSHOT.jar` `b10f14a84fa4ac1e6126611276e82ad62da5fa49efb46fa02e1cac87863d48c0` | `83e061d7561f773c2af5409f34ebb68ed1664e77639b446ebae2a608873033ce` (same order) |
+| Q23 | fix | `spring-web-7.1.0-SNAPSHOT.jar` `4e8ee059ed94cdb86fe0e1cd017d1dab01acfc12858e3fae2ebdb67eb0243a07` | `HttpServiceProxyFactory.class` `dc21ddfecdf09440fa58f455bb47f7b62dcffdd3da2f935ed3cd39f8cb905fab` (+4 nested) |
+| Q23 | parent | `spring-web-7.1.0-SNAPSHOT.jar` `ce6dcf80fefca587a85b8cdd61f9894cc912408fd765f8c2b925a975cd6cd137` | `dc21ddfecdf09440fa58f455bb47f7b62dcffdd3da2f935ed3cd39f8cb905fab` (same order) |
+| Q24 | fix | `spring-jms-7.0.4-SNAPSHOT.jar` `3c62010619aaacba11f52348ea2bdb1a590a63541fe0550abed9b8bbb304993e` | `JmsOperations.class` `1a594f7c0f152b5c4c71d3b93b9a65ef5cfaae5b72d0a285d95da7453c896778`, `JmsTemplate.class` `23457f9a47793d41e052548d6c12f2d6d825a2c061054c36af54c5c08bdfbd7d` (+2 nested) |
+| Q24 | parent | `spring-jms-7.0.4-SNAPSHOT.jar` `145fb14c00d802d8a1a17d19742d71a53ff265e75588dd3159b743a1d4382761` | `b4d46945c6675fcbc0807b3bd24eb145f0c2f56601abf173b0a1bdc616411cb2`, `4eea3ea0770781123b450e89cb2c1e53d127a66e35c61fba7cefd8752c34c173` (same order) |
+| Q27 | fix | `spring-context-7.0.11-SNAPSHOT.jar` `72f588b87daa22a0bd8a875cc5ac5aa98cf694281ee74be4b9aae2e73b7d96e3` | `RetryAnnotationBeanPostProcessor.class` `ecd96a36c67edebf2839fc5bca50dc5c24793e7f8a87dccef8bd0b8e06bbe2ba` (+1 nested) |
+| Q27 | parent | `spring-context-7.0.11-SNAPSHOT.jar` `6181393017f63de46c6c8279bb9d98447c714e2ec625dedf7a85e12f48a4ba2d` | `ecd96a36c67edebf2839fc5bca50dc5c24793e7f8a87dccef8bd0b8e06bbe2ba` (same order) |
+| Q28 | fix | `spring-aop-7.0.0-SNAPSHOT.jar` `8632f48646d0f33403e8bb8c1e23fec39dc8a03d664a14eab71fe61ec872e2dc` | `AbstractRetryInterceptor.class` `b1d41a42bf85ffaf0013442ce4ceb998a4250098e38aa9812dd22a5ec78da374` (+2 nested) |
+| Q28 | parent | `spring-aop-7.0.0-SNAPSHOT.jar` `eda75b45514d7ef4174224e9d711fc17b0d376090c572b4195cb8f19c4ac37cf` | `b1d41a42bf85ffaf0013442ce4ceb998a4250098e38aa9812dd22a5ec78da374` (same order) |
+| Q29 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `f3b9d4a635f4f692e5321603b46801d154e8e86abfb5aef42835d618f14c7d1a` | `RetryListener.class` `bf39fbe04424dc8d339d5e5bae7be05fd75fe285d99e0e7edbcc5e799373277e`, `RetryTemplate.class` `2c1e3c9e1a5d769ed6395b823f14e6e1a5b382625804484473643a400a5eb1a4` (+4 nested), `CompositeRetryListener.class` `bebef62722d9ed395edb529ea510a452dd01cddd43414caddbbff0e2b1624134` |
+| Q29 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `3d5e0896f4c86f0edbb264c12b3a74dd8ef3be06323f5a5e0e292354dc083cbd` | `dbc99f8c2a71f035156fc219d7c7995dcb37d5e9b94326c940323701d3f4d1cc`, `7e1299b546cdb6d433e0a0a0c6023c90ffa05f0bcb721d3565d52796af69d830`, `ffd88c6f534ea9ec610766b0f787f59bd77ad9e1eb9db2a60babbcc33acdca12` (same order) |
+| Q30 | fix | `spring-core-6.2.13-SNAPSHOT.jar` `2ad8180d8b271c177073e38f9df981dbc5d48645e8701613e21cfe591b295b1e` | `PathMatchingResourcePatternResolver.class` `8ee6bccf047abf88282fb516dbb6be17ec09d7b6b84fe76b1e12af55700b2855` (+3 nested) |
+| Q30 | parent | `spring-core-6.2.13-SNAPSHOT.jar` `4f2fb285f43119e01b2a60a51421f706d17ef6cec62474b08785185419ee3b4e` | `5ca5fb67b271b08dc02e7fca6c95c0e032d8126bbd59ca0de6d78d08c404f9c8` (same order) |
+
+In several cases the top-level class has **the same digest at both pins**, and only its nested classes differ: that is
+where the changed code compiles to.
+
+- **Q03**: `RepeatableContainers.class`. The difference is in `$ExplicitRepeatableContainer`, `$NoRepeatableContainers` and `$StandardRepeatableContainers`.
+- **Q16**: `DataBufferUtils.class`. The difference is in `$KnuthMorrisPrattMatcher` and other nested classes.
+- **Q23**: `HttpServiceProxyFactory.class`. The difference is in `$Builder`.
+- **Q27**: `RetryAnnotationBeanPostProcessor.class`. The difference is in `$RetryAnnotationInterceptor`.
+- **Q28**: `AbstractRetryInterceptor.class`. The difference is in `$ReactorDelegate` (fix
+  `83ec334d4a7eb53d24329d4a9d09de07d83831d35ec06ca5ea7ac74da88e2318`, parent
+  `1ca734cd141874ac92b0aaec7afc131cb8093d4e291cc00d1268becedaf7eac1`).
+
+In Q02 the spring-context jar is the same at both pins (`31109f54631c0ff1fea93e6d1cfa544fc827f1ba1a3c5635cb5c5f47c01f86b5`),
+because the landing changes only spring-core's production code.
+
+**Classpaths** are in `$P/artifacts/CASE-ROLE/MODULE.runtimeClasspath.txt` and `MODULE.testRuntimeClasspath.txt`, `:`-joined.
+The project's own jars in them are copies under `$P/artifacts/CASE-ROLE/tree/`, so they outlive the build trees that `clean`
+removes. The Gradle paths are in `*.raw.txt`. Every entry of every classpath exists on disk. Entry counts, as fix/parent:
+
+| Case | Module | runtimeClasspath | testRuntimeClasspath |
+|---|---|---|---|
+| Q01 | spring-core | 23/23 | 77/77 |
+| Q02 | spring-context | 33/33 | 92/92 |
+| Q02 | spring-core | 23/23 | 78/78 |
+| Q03 | spring-core | 23/23 | 77/77 |
+| Q05 | spring-beans | 13/13 | 50/50 |
+| Q06 | spring-core | 23/23 | 77/77 |
+| Q07 | spring-core | 23/23 | 77/77 |
+| Q08 | spring-jdbc | 22/22 | 56/56 |
+| Q09 | spring-context | 7/7 | 70/70 |
+| Q12 | spring-tx | 28/28 | 71/71 |
+| Q13 | spring-jdbc | 22/22 | 64/64 |
+| Q14 | spring-jdbc | 22/22 | 56/56 |
+| Q15 | spring-jdbc | 22/22 | 56/56 |
+| Q16 | spring-core | 23/23 | 77/77 |
+| Q21 | spring-webflux | 109/109 | 207/207 |
+| Q21 | spring-webmvc | 74/74 | 196/196 |
+| Q22 | spring-webflux | 109/109 | 195/195 |
+| Q23 | spring-web | 106/106 | 202/202 |
+| Q24 | spring-jms | 28/28 | 110/110 |
+| Q27 | spring-context | 33/33 | 92/92 |
+| Q28 | spring-aop | 15/15 | 57/57 |
+| Q29 | spring-core | 23/23 | 77/77 |
+| Q30 | spring-core | 24/24 | 80/80 |
+
+Q24's spring-jms test runtime classpath has Apache ActiveMQ Artemis 2.42.0's embedded broker: `artemis-server`,
+`artemis-jms-server`, `artemis-jakarta-client` and `artemis-junit-5`, with `jakarta.jms-api-3.1.0`. The module's own tests use it.
 
 ## Commands for a rerun by hand
 
@@ -488,6 +641,9 @@ SETUP_INIT="-I $P/scripts/subst-grails.init.gradle" $P/scripts/gradle_case.sh $W
 # a classpath of any project and configuration, offline
 $P/scripts/gradle_case.sh $W/Q30-fix TAG "" --offline -I $P/scripts/resolve-all.init.gradle \
   :spring-core:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$TMPDIR/cp.txt
+# more coordinates into the cache (online once, then the same with --offline): a detached configuration, transitive
+$P/scripts/gradle_case.sh $W/Q11-fix TAG "" -I $P/scripts/resolve-all.init.gradle \
+  :spring-beans:setupResolveCoords -PsetupCoords=org.codehaus.groovy:groovy-astbuilder:3.0.9,...
 # the slice route for an old case (CASE in Q04, Q10, Q17, Q18, Q19, Q20, Q25, Q26; seconds each, inline in the probe cap)
 systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 choom -n 500 -- timeout 300 $P/scripts/slice_case.sh CASE
 # chosen test classes of a pin on a slice (after slice_case.sh): CASE SLICEROLE TESTROLE TAG CLASS...
@@ -521,6 +677,9 @@ cached). Every project's every compile and test configuration was resolved, so m
 - Unchecked signatures: Spring's and Reactor's release key `9A2C7A98E457C53D` and the 4.0/5.0 milestones' `23EF3D2F93185045` cannot be
   imported from keyserver.ubuntu.com or keys.openpgp.org; the 5.2/5.3 milestones and RCs publish no `.asc`. Their sha1s match the
   repositories'. Byte-buddy's key is revoked since. Grails core publishes no `.asc` for grolifant.
+- **Jobs that failed and were rerun**: Q09's first job and Q11's first two, all offline on modules that Gradle's Groovy compile
+  resolves by itself (`groovy-ant` for both; the rest of the Groovy 3.0.9 runtime for Q11's Gradle 7.3). Those modules were
+  resolved online and the jobs rerun ([Jobs](#jobs)). Q09 then passed. Q11's third job is pending.
 - Snapshot dependencies are the newest builds, not the builds of the pins' dates ([Snapshot dependencies](#snapshot-dependencies)).
 - Not fetched: Spring Boot 4.0.8 (Q27's report; the scenario uses Framework only); a PostgreSQL server for Q11 and a RabbitMQ or other
   JMS broker beyond the embedded Artemis on spring-jms's test classpath for Q24 (choices for the domain work).
@@ -542,7 +701,8 @@ cached). Every project's every compile and test configuration was resolved, so m
   `$P/scripts/case_job.sh CASE STEP` reruns a case's job steps. Q09 needs `SETUP_INIT="-I $P/scripts/subst-grails.init.gradle"`.
 - **Built jars, class digests and classpaths** for the 22 cases at both pins in `$P/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
   `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`), once their jobs ran;
-  digests in full in [Digests of the built artifacts](#digests-of-the-built-artifacts).
+  digests in full in [Digests of the built artifacts](#digests-of-the-built-artifacts). The jobs
+  ran for 21 cases; Q11's artifacts come with its pending job.
 - **Slices for the eight old cases** at both pins: `$P/slices/CASE-ROLE/CASE-ROLE-slice.jar` (the pin's changed production classes,
   JDK 8), to put ahead of the base release's `$P/releases/SET/classpath.txt` (set per case in [the slice route](#the-slice-route));
   `$P/scripts/slice_case.sh CASE` rebuilds them and reruns the landed tests in seconds.
@@ -558,7 +718,12 @@ cached). Every project's every compile and test configuration was resolved, so m
   parent slice (Q18's six base-release failures aside). The fix's tests **fail** on the parent slice for Q17 (7), Q25 (1), Q26 (5),
   Q10 (`CronTriggerTests` alone, 2) and Q18 (`ResourceWebHandlerTests` alone, the 7 range tests); they **do not compile** there for Q04
   and Q19 (API the landing adds); Q20's landed test passes on both. Every failing test is named in [the slice route](#the-slice-route).
-- **The 22 Gradle cases**: jobs queued, results pending ([Jobs](#jobs)).
+- **21 of the 22 Gradle cases ran offline in verification jobs** ([Job results](#job-results)). The landed test classes
+  pass at the fix (0 failures, 0 errors) and the parent's versions pass at the parent. The fix's changed test files fail on
+  the parent for Q01, Q02, Q03, Q06, Q07, Q08, Q09, Q13, Q14, Q15, Q16, Q21, Q22, Q23, Q27, Q28 and Q30. They do not compile
+  there for Q05, Q12, Q24 and Q29, which use API the landing adds. Every failing test is named in the results table.
+- **Q11 is pending**: two jobs failed offline in the Groovy compile before any test ran. The modules it lacked are now
+  resolved, and job `20261126-151047-setup-build-spring-framework-27716-q11-a` is queued ([Jobs](#jobs)).
 - No scenario or prediction of the brief was run anywhere.
 
 ### What to know before starting
@@ -585,12 +750,20 @@ cached). Every project's every compile and test configuration was resolved, so m
   serves, mostly dated after the pins ([Snapshot dependencies](#snapshot-dependencies), digests there). Build `--offline` to keep them.
 - **JDKs.** Q13 and Q28 compile with toolchain 24 (`$J24`), Q30 with Liberica 17 (`$JL17`), the other 7.x builds with toolchain 25 and
   `release` 17, Q11/Q12 with 17, Q09 and the slices with JDK 8. Default `java` on `PATH` is 25.0.5.
+- **Q11 (Gradle 7.3) compiles spring-beans' Groovy through a detached configuration** that holds the whole Groovy 3.0.9
+  runtime. Those modules were resolved separately ([Jobs](#jobs)). A new build in an older worktree that fails offline with
+  "No cached version" needs the same: `setupResolveCoords`, online once ([Commands](#commands-for-a-rerun-by-hand)).
+- **Some changed top-level classes compile identically at both pins** (Q03, Q16, Q23, Q27, Q28). The change is in their nested
+  classes ([Digests](#digests-of-the-built-artifacts)).
+- **Q16's transplant reports 118 failures, of which 14 are direct.** The rest is the pooled-buffer leak check failing later tests
+  ([Job results](#job-results)).
 - **Q09** configures only with `$P/scripts/subst-grails.init.gradle` (grolifant 0.14 from Grails core); `case_job.sh` passes it.
-- **Databases and brokers**: spring-jdbc's test runtime classpaths have H2, HSQLDB and Derby (check
-  `$P/artifacts/CASE-ROLE/spring-jdbc.testRuntimeClasspath.txt`); spring-r2dbc's has r2dbc-h2. No PostgreSQL server was set up for
+- **Databases and brokers**: spring-jdbc's test runtime classpaths have H2 (2.4.240; 2.3.232 for Q13), HSQLDB 2.7.4 and
+  Derby 10.16.1.1 (`$P/artifacts/CASE-ROLE/spring-jdbc.testRuntimeClasspath.txt`); spring-r2dbc's has r2dbc-h2. No PostgreSQL server was set up for
   Q11: Docker answers and already holds `postgres:16` and `postgres:17` images from other work; the R2DBC driver is in
   `$P/releases/r2dbc-postgresql-arabba-sr10` (it brings reactor-core 3.3.17 and reactor-netty 0.9.20, older than the pins' Reactor
-  2020.0.14-SNAPSHOT line). Q24's spring-jms test classpath has the embedded Artemis broker the module's tests use.
+  2020.0.14-SNAPSHOT line). Q24's spring-jms test classpath has the embedded Artemis 2.42.0 broker (`artemis-server`,
+  `artemis-jms-server`, `artemis-jakarta-client`, `artemis-junit-5`) that the module's tests use.
 - **Pins shared with other briefs**: Q08's fix `a38ebf4b7cffe5946e07d0fb8ef2d7dc0ec9bbe3` is the P01–P30 brief's P10 parent; its
   worktrees here are separate.
 - **Q23's `later` revision** (`64861cb395e415bf1452d30f54f8e2c0ecc9cb46`) is checked out and resolved, not built.
