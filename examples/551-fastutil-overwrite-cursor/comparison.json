@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/vigna/fastutil/pull/384",
+  "revisions": {
+    "parent": "a3d44187dca3deb185455274bb877703f2f541fe",
+    "fix": "cbf3c2ec706d16c56e6896b13ef0b5361be981c8"
+  },
+  "entry": "FastByteArrayOutputStream.write",
+  "questions": [
+    {
+      "id": "vigna/fastutil#384.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Observe immediately after the three-byte overwrite.",
+      "prediction": "Issue #367 reports position 0 for a three-byte overwrite at zero on the parent. The merge should give position 3, length 5 and bytes [7,8,9,4,5].",
+      "basis": "An overwrite consumes three positions and stops before the last two bytes. The high-water mark remains five.",
+      "refutation": "Merged bytes look correct but the cursor is zero, or the logical length is truncated.",
+      "expected": {
+        "parent": {
+          "return": "0/5/[7, 8, 9, 4, 5]"
+        },
+        "fix": {
+          "return": "3/5/[7, 8, 9, 4, 5]"
+        }
+      }
+    },
+    {
+      "id": "vigna/fastutil#384.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "From position 5 in a fresh five-byte stream, append two bytes [6,7].",
+      "prediction": "Both revisions should give position 7, length 7 and contents [1,2,3,4,5,6,7].",
+      "basis": "Appending starts at the previous end and extends the stream by precisely two.",
+      "refutation": "Wrong end, missing bytes or corruption of the old prefix.",
+      "expected": {
+        "parent": {
+          "return": "7/7/[1, 2, 3, 4, 5, 6, 7]"
+        },
+        "fix": {
+          "return": "7/7/[1, 2, 3, 4, 5, 6, 7]"
+        }
+      }
+    },
+    {
+      "id": "vigna/fastutil#384.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Follow the three-byte overwrite immediately with write(6). Compare against a fresh stream receiving the same three overwritten bytes via three individual write(int) calls and then write(6).",
+      "prediction": "On the merge both histories should leave [7,8,9,6,5], position 4 and length 5. The parent's stale cursor predicts the last write overwrites index 0 in the bulk history.",
+      "basis": "Splitting the same bytes across calls should leave their destination and the following write position unchanged.",
+      "refutation": "The two merged streams differ in any logical byte, position or length.",
+      "expected": {
+        "fix": {
+          "return": "4/5/[7, 8, 9, 6, 5] / 4/5/[7, 8, 9, 6, 5]"
+        }
+      }
+    }
+  ]
+}

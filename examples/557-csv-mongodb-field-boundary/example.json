@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "557",
+  "title": "Round-trip MongoDB CSV records with an empty leading field",
+  "summary": "The MongoDB CSV preset reparsed the printer’s empty leading column. A later field retained its embedded comma and literal double quote through the public iterator.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons CSV",
+    "symbol": "CSVParser.iterator"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The MongoDB CSV preset uses the same character for quoting and escaping. The lexer now recognizes a quote at the boundary of a quoted field before interpreting it as an escape."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-csv",
+    "url": "https://github.com/apache/commons-csv/pull/412"
+  },
+  "notes": [
+    "The printer must protect delimiters and quotes within a field. The caller’s original strings give an oracle independent of the lexer.",
+    "With identical compiled caller bytes, 1.10.0 matched the parent and 1.11.0 matched the landing on all three histories."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

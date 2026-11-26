@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "572",
+  "title": "Decimal holders read the signed value at the selected buffer position",
+  "summary": "Both Arrow widths and both holder readers recovered the negative decimal regardless of its neighbors. On this little-endian host the parent holder and vector reads disagreed.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Arrow",
+    "symbol": "NullableDecimalHolderReaderImpl.readBigDecimal"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The generated decimal holder readers now decode using native byte order and take the holder’s start as a byte offset. The vector utility also keeps its existing index-based entry."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/arrow-java",
+    "url": "https://github.com/apache/arrow-java/pull/1518"
+  },
+  "notes": [
+    "The measured host is little-endian. The parent prediction depends on byte order."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

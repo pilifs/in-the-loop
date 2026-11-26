@@ -82,6 +82,13 @@ ENTRIES = {
     "535": ("Q28", "spring-aop/src/main/java", "org.springframework.aop.retry.AbstractRetryInterceptor$ReactorDelegate#adaptReactiveResult"
             "(Ljava/lang/Object;Lorg/springframework/core/ReactiveAdapter;Lorg/springframework/aop/retry/MethodRetrySpec;"
             "Ljava/lang/reflect/Method;)Ljava/lang/Object;"),
+    "549": ("R12-commons-io", "src/main/java", "org.apache.commons.io.input.BoundedReader#skip(J)J"),
+    "581": ("R44-RxJava", "src/main/java",
+            "io.reactivex.rxjava3.internal.operators.observable.ObservableGroupBy$GroupByObserver#onNext(Ljava/lang/Object;)V"),
+    "582": ("R45-resilience4j", "resilience4j-retry/src/main/java",
+            "io.github.resilience4j.retry.internal.RetryImpl$AsyncContextImpl#onResult(Ljava/lang/Object;)J"),
+    "585": ("R48-assertj", "assertj-core/src/main/java",
+            "org.assertj.core.util.introspection.Introspection#findGetter(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/reflect/Method;"),
 }
 
 

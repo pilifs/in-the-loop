@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "565",
+  "title": "Carry immutable builder replacements through buffered property assignment",
+  "summary": "Buffered properties survived replacement of the immutable builder. Creator-first, creator-last and array encodings returned the same record, including after changing only b.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "lost-committed-data",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Jackson Databind",
+    "symbol": "JsonMapper.readValue"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "When a creator property arrives after regular properties, retain each new builder returned by applying the buffered values."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-databind",
+    "url": "https://github.com/FasterXML/jackson-databind/pull/6407"
+  },
+  "notes": [
+    "Both builds use the timestamped Jackson Core 3.4.0 and annotations 2.24 snapshots listed in runtime.json.",
+    "Replacing the dated snapshots with Jackson Core 3.3.0 and annotations 2.23 reproduced all six returns or exceptions with the original caller bytes."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

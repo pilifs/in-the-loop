@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "539",
+  "title": "A rejected unique key leaves both collection views intact",
+  "summary": "A rejected duplicate left the original list, iterator and lookup in agreement. Rebuilding the index then admitted a distinct key.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "dual-write",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons Collections",
+    "symbol": "IndexedCollection.add"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Adding a value with an occupied transformed key used to mutate the caller’s collection before rejecting it. A unique index now checks the key first."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-collections",
+    "url": "https://github.com/apache/commons-collections/pull/688"
+  },
+  "notes": [
+    "Rebuilding solely from the caller-owned collection independently checks whether the earlier exception left a valid unique index.",
+    "With identical compiled caller bytes, 4.5.0 matched the parent and 4.6.0 matched the landing on all three histories. Release 4.6.0 also evaluated the key transformer when a nonunique backing set rejected an identical element. Both PR pins accepted the same first insert and skipped this extra callback."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

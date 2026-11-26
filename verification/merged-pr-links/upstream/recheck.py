@@ -39,7 +39,8 @@ def jars_for(project, cache, fetch, digests=None, setup=SETUP, snapshot_urls=Non
         rel = Path(group.replace(".", "/")) / artifact / version / name
         local = cache / "maven" / rel
         gradle = setup / "gradle-home/caches/modules-2/files-2.1" / group / artifact / version
-        candidates = [local, setup / "m2" / rel, Path.home() / ".m2/repository" / rel, *gradle.glob("*/" + name)]
+        candidates = [local, setup / "m2" / rel, Path.home() / ".m2/repository" / rel, *gradle.glob("*/" + name),
+                      setup / "releases" / f"{artifact}-{version}" / name]
         digest = digests[key]
         snapshot_url = (snapshot_urls or {}).get(key)
         dest = cache / "snapshots" / digest / name if snapshot_url else local
@@ -55,6 +56,9 @@ def jars_for(project, cache, fetch, digests=None, setup=SETUP, snapshot_urls=Non
             found = next((p for p in candidates if p.is_file() and sha(p) == digest), None)
         else:
             found = next((p for p in candidates if p.is_file()), None)
+            if found is None:
+                # Gradle can store a variant under a different name than its Maven download.
+                found = next((p for p in gradle.glob("*/*.jar") if sha(p) == digest), None)
         if found is None:
             if not fetch:
                 raise ValueError(f"missing {key}; --fetch retrieves the locked inputs")

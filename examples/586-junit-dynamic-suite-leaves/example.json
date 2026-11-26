@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "586",
+  "title": "Report the suite outcome when all tests are registered dynamically",
+  "summary": "Two dynamically registered successful leaves now made the enclosing suite succeed. An empty dynamic container still failed the suite with NoTestsDiscoveredException.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JUnit",
+    "symbol": "Launcher.execute"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The suite engine counts dynamic tests at registration when deciding whether a suite discovered any tests. A Jupiter factory can produce successful child tests after the initial discovery plan has been counted."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/junit-team/junit-framework",
+    "url": "https://github.com/junit-team/junit-framework/pull/5839"
+  },
+  "notes": [
+    "A container is registered dynamically too. Its node groups children, while the two finished leaves independently establish the count.",
+    "With identical compiled caller bytes, 6.1.1 matched the parent and 6.1.2 matched the landing on all three histories."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

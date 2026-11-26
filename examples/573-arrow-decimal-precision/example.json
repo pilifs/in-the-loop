@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "573",
+  "title": "Decimal values are valid at exactly the declared precision",
+  "summary": "Both vector widths accepted magnitude 999.99 at precision five. The four-digit and six-digit controls remained distinct, and values transferred by public setters preserved sign and scale.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Arrow",
+    "symbol": "DecimalVector.validateScalars"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Scalar validation accepts a value whose precision equals the vector precision when the scales match."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/arrow-java",
+    "url": "https://github.com/apache/arrow-java/pull/1342"
+  },
+  "notes": [
+    "Logical decimal precision and scale are unchanged by backing width. Crossing two public setters and readers checks both sign and logical scale."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

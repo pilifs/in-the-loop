@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "582",
+  "title": "A retry interval of zero and a negative stopping interval have different outcomes",
+  "summary": "The asynchronous retry scheduled the zero-delay attempt and stopped on a negative exceptional interval. With a retryable result, it announced a negative-delay retry even though the supplier ran only once.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "stale-messages",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Resilience4j",
+    "symbol": "Retry.decorateCompletionStage"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Asynchronous retry schedules another call for a zero delay. For exceptional outcomes, the retry context reports a negative delay as a terminal error event."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/resilience4j/resilience4j",
+    "url": "https://github.com/resilience4j/resilience4j/pull/2067"
+  },
+  "notes": [
+    "The exceptional path branches on the sign before event publication. AsyncContext.onResult publishes RetryOnRetryEvent before returning its interval, and the async decorator stops at a negative value.",
+    "The caller ran on Resilience4j 2.1.0, 2.2.0. A negative interval for a retryable result ended the stage after one call on both releases. Only 2.2.0 emitted the −1 ms retry event. Both original PR pins also emitted it."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

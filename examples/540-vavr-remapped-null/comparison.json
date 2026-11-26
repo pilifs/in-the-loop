@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/vavr-io/vavr/pull/3276",
+  "revisions": {
+    "parent": "f74004d3cef44fcccc7996783d34f734ba25ffd3",
+    "fix": "2b77936d4788fee24b99e8a372fd93923d8b6c12"
+  },
+  "entry": "HashMap.computeIfPresent",
+  "questions": [
+    {
+      "id": "vavr-io/vavr#3276.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Remap key 1 to null.",
+      "prediction": "Before, the first component is `None`. After, `isDefined()` is true and `get()` is null. Both resulting maps contain key 1 with a null value.",
+      "basis": "The public map contract returns Some for an associated value. The pinned regression compares both tuple components.",
+      "refutation": "The merge returns an empty option, drops key 1, or supplies a non-null value.",
+      "expected": {
+        "parent": {
+          "return": "false/-/true/null"
+        },
+        "fix": {
+          "return": "true/null/true/null"
+        }
+      }
+    },
+    {
+      "id": "vavr-io/vavr#3276.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use missing key 2 and a callback that counts invocations.",
+      "prediction": "On both, the option is empty, the count stays zero, and the returned map still contains exactly the original entry.",
+      "basis": "The callback is conditional on key membership.",
+      "refutation": "The callback runs, key 2 appears, or key 1 changes.",
+      "expected": {
+        "parent": {
+          "return": "false/0/1/v"
+        },
+        "fix": {
+          "return": "false/0/1/v"
+        }
+      }
+    },
+    {
+      "id": "vavr-io/vavr#3276.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the map returned by the null remap, call `computeIfPresent(1, ...)` again. Record its callback arguments and return \"restored\".",
+      "prediction": "On both, the second callback receives (1,null) once, both its option and the final map contain \"restored\", and the original map still yields \"v\".",
+      "basis": "A second lookup distinguishes a stored null from absence. The original receiver provides an independent check of persistent updates.",
+      "refutation": "The second callback is skipped, receives the old value, or lookup on the original now yields null.",
+      "expected": {
+        "fix": {
+          "return": "(1,null)/1/restored/restored/v"
+        }
+      }
+    }
+  ]
+}

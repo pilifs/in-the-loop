@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "580",
+  "title": "Discard every concatenated source value before thenMany emits its tail",
+  "summary": "thenMany emitted only the tail after successful concatenation. When the second source failed, the identical error reached the subscriber without an earlier value or a tail subscription.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Reactor Core",
+    "symbol": "Flux.thenMany"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The merged Flux.thenMany discards the complete receiver’s values before subscribing to the supplied publisher. The old concatenation shortcut discarded values from only the last constituent."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/reactor/reactor-core",
+    "url": "https://github.com/reactor/reactor-core/pull/3783"
+  },
+  "notes": [
+    "The receiver’s completion is the condition for starting the tail. An error terminates that receiver even after earlier values.",
+    "With identical compiled caller bytes, 3.4.37 matched the parent and 3.4.38 matched the landing on all three histories."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

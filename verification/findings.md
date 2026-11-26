@@ -298,6 +298,18 @@ All three entries above reproduced on published Spring 7.1.0 with the original c
 
 All four Q-series cases reproduced on published Spring Framework 7.1.0. The reactive jitter fixture used the relocated interceptor package in spring-context. [Release witnesses and reporting scope](merged-pr-links/q01-q30/upstream.md)
 
+**25. Apache Commons IO, PR #860. A bounded reader can skip past the read-ahead limit of a mark.** After mark(2), individual reads stopped after two characters. A skip on an identically marked reader consumed four, confirmed by reading its delegate. The PR describes the narrower guarantee. [Reproduction and global-bound control](merged-pr-links/r01-r50/upstream.md#commons-io-marks-and-skips)
+
+**26. Apache Avro, PR #2282. BigDecimalConversion reads a preceding value outside a heap buffer slice.** A standalone copy decoded to 12.30. A slice exposing the same bytes decoded to the preceding 7, changing both the integer and its scale. [Two independent decodes](merged-pr-links/r01-r50/upstream.md#avro-big-decimal-buffer-slices)
+
+**27. Resilience4j, PR #2067. An asynchronous result-based stop publishes a negative-delay retry event.** The stage returned its retryable value after one supplier call. A retry listener observed a −1 ms wait, with no second attempt. Both original revisions exhibited this behavior. [Supplier and listener counts](merged-pr-links/r01-r50/upstream.md#resilience4j-retry-notifications)
+
+**28. AssertJ, PR #3710. A constant JavaBeans getter can conceal unequal record components in recursive comparison.** The generated component accessors returned different strings. Equality passed with the extra getter and failed as expected without it on the landing. The reporting decision depends on the intended getter precedence. [Record fixtures and controls](merged-pr-links/r01-r50/upstream.md#assertj-record-accessor-precedence)
+
+**29. Apache Commons IO. A fresh mark(2) at offset two makes a bounded reader report immediate EOF.** With a six-character global bound, moving the mark from offset zero to one and two shortened the available read window from two characters to one and zero. The independent delegate read returned the same third character every time. This occurred on Commons IO 2.22.0 and both PR #860 pins. [Offset and reset measurements](merged-pr-links/r01-r50/upstream.md#mark-position-shortens-a-fresh-commons-io-read-window)
+
+For entries 25–28, released callers reproduced the marked skip on Commons IO 2.22.0, the sliced decimal on Avro 1.11.4 and 1.12.0, the negative retry notification on Resilience4j 2.2.0, and the record getter precedence on AssertJ 3.27.1. Resilience4j 2.1.0 stopped silently for the same returned value. [Release comparisons](merged-pr-links/r01-r50/upstream.md#what-reproduced-on-published-versions)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

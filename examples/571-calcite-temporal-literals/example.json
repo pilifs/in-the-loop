@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "571",
+  "title": "Preserve sub-millisecond digits when reducing temporal literals",
+  "summary": "The planner retained six fractional digits in TIME and TIMESTAMP. Two timestamps one microsecond apart remained distinct after reduction to VARCHAR.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "rounding",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Calcite",
+    "symbol": "RexExecutorImpl.reduce"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Keep representable high-precision temporal literals intact through planner constant reduction and conversion to character data."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/calcite",
+    "url": "https://github.com/apache/calcite/pull/4942"
+  },
+  "notes": [
+    "The inputs differ by one representable microsecond. String readback tests the next consumer rather than only a temporal type's declared precision."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

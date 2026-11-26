@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "538",
+  "title": "A throwing value update leaves the map usable",
+  "summary": "Both Eclipse Collections maps discarded the missing key when the value factory threw. A later update succeeded, including when two unequal keys shared the same hash.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "write-ahead-ordering",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Eclipse Collections",
+    "symbol": "UnifiedMap.updateValue"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Compute the proposed value before publishing the missing key in both mutable map implementations."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/eclipse-collections/eclipse-collections",
+    "url": "https://github.com/eclipse-collections/eclipse-collections/pull/1786"
+  },
+  "notes": [
+    "Colliding keys are distinct under equality. A fresh update after failure must still take the absent-key path."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

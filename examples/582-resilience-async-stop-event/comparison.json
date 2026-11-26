@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/resilience4j/resilience4j/pull/2067",
+  "revisions": {
+    "parent": "12f66a31d7b4619ed0ffd1fddee9da683c41b9b7",
+    "fix": "a1a4acb85c83dbd1b1a67cd97dac994fb8bb034c"
+  },
+  "entry": "Retry.decorateCompletionStage",
+  "questions": [
+    {
+      "id": "resilience4j/resilience4j#2067.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Every call fails with the same exception. Have intervalFunction return 0 on its first call and −1 on its second.",
+      "prediction": "The parent stops the asynchronous call at zero. On the merge expect two supplier invocations, one retry event, one error event and an exceptionally completed stage carrying the failure.",
+      "basis": "Zero admits one immediately scheduled attempt. The next interval is a stop decision. The landed async test counts calls and events.",
+      "refutation": "The merge stops after one invocation, schedules a third, or announces a retry for the stopping interval.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "calls=1"
+          ]
+        },
+        "fix": {
+          "return": "calls=2,retries=[0],errors=1,same-error"
+        }
+      }
+    },
+    {
+      "id": "resilience4j/resilience4j#2067.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "The first call fails, the second succeeds with \"ok\", and the interval function always returns a positive one millisecond.",
+      "prediction": "Both revisions should return \"ok\" after two invocations and one retry event.",
+      "basis": "A positive delay is eligible for scheduling on either revision. The eventual success ends the history.",
+      "refutation": "A final error, a third invocation, or a missing retry event.",
+      "expected": {
+        "parent": {
+          "return": "calls=2,retries=[1],errors=0,ok"
+        },
+        "fix": {
+          "return": "calls=2,retries=[1],errors=0,ok"
+        }
+      }
+    },
+    {
+      "id": "resilience4j/resilience4j#2067.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep maxAttempts(3) but configure retryOnResult for the value \"again\". Return a completed stage containing \"again\" and an immediate interval of −1, with failAfterMaxAttempts disabled.",
+      "prediction": "The merged code predicts one supplier call and a final value \"again\", while the result path publishes a retry event with delay −1 despite scheduling no second attempt.",
+      "basis": "The exceptional path branches on the sign before event publication. AsyncContext.onResult publishes RetryOnRetryEvent before returning its interval, and the async decorator stops at a negative value.",
+      "refutation": "A second supplier call or absence of the predicted negative-delay retry event refutes the corresponding part of the reading.",
+      "expected": {
+        "fix": {
+          "return": "calls=1,retries=[-1],errors=0,again"
+        }
+      }
+    }
+  ]
+}

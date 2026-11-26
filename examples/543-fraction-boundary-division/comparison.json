@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-lang/pull/1865",
+  "revisions": {
+    "parent": "ef7586831c7842c97ad4be8693ddef6f94bb8b64",
+    "fix": "355f246760cad21ca597424b49bb1151c0a63a96"
+  },
+  "entry": "Fraction.divideBy",
+  "questions": [
+    {
+      "id": "apache/commons-lang#1865.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Divide m/1 by m/1.",
+      "prediction": "The PR reports ArithmeticException before. After, the result has numerator 1 and denominator 1.",
+      "basis": "A nonzero rational divided by itself is one, although its reciprocal alone needs a denominator of 2³¹.",
+      "refutation": "An exception or any pair other than (1,1) on the merge.",
+      "expected": {
+        "parent": {
+          "return": "ArithmeticException"
+        },
+        "fix": {
+          "return": "1/1"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-lang#1865.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Divide 1/1 by m/1, then separately divide 3/4 by 1/2.",
+      "prediction": "Both revisions should throw ArithmeticException for the first and return 3/2 for the second.",
+      "basis": "The first exact denominator exceeds Integer.MAX_VALUE. Twice three quarters is three halves.",
+      "refutation": "A wrapped denominator, an exception on the small inputs, or different reduced components.",
+      "expected": {
+        "parent": {
+          "return": "ArithmeticException;3/2"
+        },
+        "fix": {
+          "return": "ArithmeticException;3/2"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-lang#1865.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Hold the dividend at 1/1. Express the same divisor as m/2 and as −1073741824/1.",
+      "prediction": "After, both give (−1,1073741824). Before, the first representation is predicted to throw while the second succeeds.",
+      "basis": "Dividing the first divisor’s numerator and denominator by two gives the second representation exactly.",
+      "refutation": "Equal rational divisors produce different merged outcomes, or both silently round to zero.",
+      "expected": {
+        "fix": {
+          "return": "-1/1073741824;-1/1073741824"
+        }
+      }
+    }
+  ]
+}

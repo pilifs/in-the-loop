@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "566",
+  "title": "Updating an EnumMap merges the values already owned by the caller",
+  "summary": "Updating the EnumMap modified the externally held A value. Reading the serialized bean back showed that changing C’s initial state affected only C.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Jackson Databind",
+    "symbol": "ObjectReader.readValue"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Updating an existing EnumMap now passes an existing value into deserialization when content merging is enabled. Fresh maps and explicitly nonmergeable values continue to use replacement semantics."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-databind",
+    "url": "https://github.com/FasterXML/jackson-databind/pull/6473"
+  },
+  "notes": [
+    "Both builds use the timestamped Jackson Core 3.4.0 and annotations 2.24 snapshots listed in runtime.json.",
+    "Replacing the dated snapshots with Jackson Core 3.3.0 and annotations 2.23 reproduced all six returns or exceptions with the original caller bytes."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

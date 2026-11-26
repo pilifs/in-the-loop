@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "576",
+  "title": "Dictionary pages belong to a sequence of column names",
+  "summary": "The Parquet reader kept the literal field a.b distinct from b nested under a. Reading the changed nested dictionary twice around the unchanged top-level dictionary preserved both identities.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "caching",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Parquet",
+    "symbol": "DictionaryPageReadStore.readDictionaryPage"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The Parquet reader keys column metadata and dictionary pages by individual path components. A literal dot inside a field name retains its identity."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/parquet-java",
+    "url": "https://github.com/apache/parquet-java/pull/3830"
+  },
+  "notes": [
+    "The pin's compiled DictionaryPageReader precedes the same Parquet 1.18.2/Hadoop dependencies on both sides. The complete pinned module needs Thrift 0.23.0.",
+    "With identical compiled caller bytes, 1.18.1 matched the parent and 1.18.2 matched the landing on all three histories."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

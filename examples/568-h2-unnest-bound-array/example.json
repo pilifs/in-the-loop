@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "568",
+  "title": "Keep bound integers through UNNEST and ARRAY_AGG",
+  "summary": "H2 returned the bound integers instead of two nulls. Aggregate and scalar queries agreed after rebinding the same statements, including duplicate 7 and a later negative value.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "stale-messages",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "H2",
+    "symbol": "PreparedStatement.executeQuery"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Derive the array element type during preparation without replacing values that will arrive at execution."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/h2database/h2database",
+    "url": "https://github.com/h2database/h2database/pull/4034"
+  },
+  "notes": [
+    "The scalar-row query independently exposes the current bindings. Changing both values detects a result frozen at prepare time or cached on reuse.",
+    "With identical compiled caller bytes, 2.2.224 matched the parent and 2.3.230 matched the landing on all three histories."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

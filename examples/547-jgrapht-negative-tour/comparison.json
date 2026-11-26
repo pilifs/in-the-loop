@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/jgrapht/jgrapht/pull/1376",
+  "revisions": {
+    "parent": "e5bc1c06804bd90c5cf549954587728fc8dae101",
+    "fix": "9fc7edbcc3d1e753bc1863bda0cf1c2f652e083a"
+  },
+  "entry": "FarthestInsertionHeuristicTSP.getTour",
+  "questions": [
+    {
+      "id": "jgrapht/jgrapht#1376.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Run the default heuristic on the all-negative triangle.",
+      "prediction": "The PR reports NullPointerException on the parent. The merge should produce a closed three-edge cycle of weight −6 with each vertex present once before closure.",
+      "basis": "Every Hamiltonian tour of a triangle uses all three edges exactly once, independent of start or direction.",
+      "refutation": "An exception, missing vertex, open walk or returned weight other than −6.",
+      "expected": {
+        "parent": {
+          "throws": "java.lang.NullPointerException"
+        },
+        "fix": {
+          "return": "vertices=true,edges=true,weight=-6.0,sum=-6.0"
+        }
+      }
+    },
+    {
+      "id": "jgrapht/jgrapht#1376.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Add five to each edge to get weights 2, 3 and 4.",
+      "prediction": "Both revisions should produce a closed tour of weight 9.",
+      "basis": "The three positive edges admit the same triangle traversal. The independent sum is 9.",
+      "refutation": "Either revision fails or reports a tour other than a traversal of all three edges.",
+      "expected": {
+        "parent": {
+          "return": "vertices=true,edges=true,weight=9.0,sum=9.0"
+        },
+        "fix": {
+          "return": "vertices=true,edges=true,weight=9.0,sum=9.0"
+        }
+      }
+    },
+    {
+      "id": "jgrapht/jgrapht#1376.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use the PR's K4 with weights 01=10, 02=−3, 03=−2, 12=−5, 13=−4, 23=−1. Reconstruct the weight from the returned vertex sequence and the input graph.",
+      "prediction": "The PR reports an index exception on the parent. On the merge the walk should contain all four vertices once before closure and its four traversed edge weights should sum to getWeight(). Any such tour is eligible.",
+      "basis": "The positive edge allows initialization and leaves only negative candidates for expansion. Public graph readback checks the reported tour independently.",
+      "refutation": "A repeated interior vertex, absent edge or disagreement between reported and reconstructed weight.",
+      "expected": {
+        "fix": {
+          "return": "vertices=true,edges=true,weightAgrees=true"
+        }
+      }
+    }
+  ]
+}

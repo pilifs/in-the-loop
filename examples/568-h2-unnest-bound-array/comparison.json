@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/h2database/h2database/pull/4034",
+  "revisions": {
+    "parent": "e69ff62a4bb5fb84d4f4eee916efa1c432a200c4",
+    "fix": "23bf50db54de6ef20877e3ac4e53786d8bea1998"
+  },
+  "entry": "PreparedStatement.executeQuery",
+  "questions": [
+    {
+      "id": "h2database/h2database#4034.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Execute the two-cast aggregate query with bindings 1 and 2.",
+      "prediction": "Issue #4033 reports two nulls on H2 2.2.224. On the merge both reads should yield two non-null integers with multiset {1,2}. The pinned test expects [1,2] for this execution.",
+      "basis": "UNNEST exposes the two bound values and ARRAY_AGG collects each once. The multiset avoids depending on SQL ordering without ORDER BY.",
+      "refutation": "A null element, incorrect multiplicity or a noninteger value on the merge.",
+      "expected": {
+        "parent": {
+          "return": "[null, null]/[null, null]"
+        },
+        "fix": {
+          "return": "[1, 2]/[1, 2]"
+        }
+      }
+    },
+    {
+      "id": "h2database/h2database#4034.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use literal ARRAY[1,2] in the same query with an ordinary Statement.",
+      "prediction": "Both should give two non-null values 1 and 2 in either order.",
+      "basis": "The issue reports the literal control works. Neither expression depends on parameter binding time.",
+      "refutation": "An empty or null-padded result, or a different element multiset.",
+      "expected": {
+        "parent": {
+          "return": "[1, 2]/[1, 2]"
+        },
+        "fix": {
+          "return": "[1, 2]/[1, 2]"
+        }
+      }
+    },
+    {
+      "id": "h2database/h2database#4034.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Reuse the same PreparedStatement, first with 7 and 7, then −4 and 9. For each execution compare JDBC array elements with values read from the separate SELECT V FROM UNNEST(...) using identical bindings.",
+      "prediction": "On the merge the aggregated and unaggregated multisets should agree in each execution, including two copies of 7 and no stale 7 on the second.",
+      "basis": "The scalar-row query independently exposes the current bindings. Changing both values detects a result frozen at prepare time or cached on reuse.",
+      "refutation": "A second execution repeats an old element, duplicate 7 is collapsed, or the two public queries disagree.",
+      "expected": {
+        "fix": {
+          "return": "[7, 7]/[7, 7]/[7, 7] / [-4, 9]/[-4, 9]/[-4, 9]"
+        }
+      }
+    }
+  ]
+}

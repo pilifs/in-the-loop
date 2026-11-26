@@ -1,0 +1,70 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-io/pull/860",
+  "revisions": {
+    "parent": "cfe19ad9dcc9d0c7308e2dc187b2f8b57de21af0",
+    "fix": "e806e6b5926993ec6348a78542b1e1377a765e88"
+  },
+  "entry": "BoundedReader.skip",
+  "questions": [
+    {
+      "id": "apache/commons-io#860.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "On a fresh wrapper, call skip(5), read() on the wrapper, then read() directly from the retained delegate.",
+      "prediction": "Before, expect 5, EOF, and the character 5. After, expect 3, EOF, and the character 3.",
+      "basis": "Positions in the six distinct input characters identify exactly how many were consumed. The bound leaves the suffix starting at 3.",
+      "refutation": "The wrapper reports 3 yet the delegate now starts at 5, or the wrapper reads past the limit.",
+      "expected": {
+        "parent": {
+          "return": "5/-1/5"
+        },
+        "fix": {
+          "return": "3/-1/3"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-io#860.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Ask the one-character skip delegate to skip(1), then read() twice and once more.",
+      "prediction": "Both revisions should return skip count 1, characters 1 and 2, then EOF. Asking it to skip(3) instead should still leave 1 and 2 on the merge.",
+      "basis": "Only one character was actually skipped. The bound admits exactly two more.",
+      "refutation": "An early EOF, a repeated character, or an extra fourth character.",
+      "expected": {
+        "parent": {
+          "return": "1/1/2/-1;request3=1/-1/-1/-1"
+        },
+        "fix": {
+          "return": "1/1/2/-1;request3=1/1/2/-1"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-io#860.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "With a new maximum of 5, mark(2) at position zero. Compare three single-character reads against skip(4) on a separately marked identical reader.",
+      "prediction": "The read path on both should yield 0, 1, EOF. The PR describes a matching read-ahead cap for skip, but landed source predicts a skip count of 4 and a delegate positioned at character 4.",
+      "basis": "The read predicate checks markedAt and readAheadLimit. The landed skip predicate uses only the global remaining count. Direct delegate read distinguishes positions 2 and 4.",
+      "refutation": "A merged skip count of 2 with delegate readback 2 refutes the predicted discrepancy. A count of 4 contradicts the PR’s stated mark guarantee.",
+      "expected": {
+        "fix": {
+          "return": "0/1/-1;2/2"
+        }
+      },
+      "alternativeExpected": {
+        "fix": {
+          "return": "0/1/-1;4/4"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/vigna/fastutil/pull/325",
+  "revisions": {
+    "parent": "faa22ac0b26ec1af680ada5eabf94bdedf9c824f",
+    "fix": "a1840bcc81f0fe2fb495856dded719125d869242"
+  },
+  "entry": "IntImmutableList.toArray",
+  "questions": [
+    {
+      "id": "vigna/fastutil#325.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Pass the five-element array to the four-element immutable list.",
+      "prediction": "The PR reports ArrayIndexOutOfBoundsException before. Afterward the result is the destination and begins [0,1,2,3].",
+      "basis": "Four source elements fit into five slots. The primitive driver returns its chosen array.",
+      "refutation": "An exception, a different returned reference, or the wrong prefix on the merge.",
+      "expected": {
+        "parent": {
+          "throws": "java.lang.ArrayIndexOutOfBoundsException"
+        },
+        "fix": {
+          "return": "true/[0, 1, 2, 3, 77]/0"
+        }
+      }
+    },
+    {
+      "id": "vigna/fastutil#325.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Pass a two-element array filled with 77.",
+      "prediction": "Both should return a separate four-element [0,1,2,3] and leave the short destination intact.",
+      "basis": "The existing branch allocates when the supplied array cannot hold the list.",
+      "refutation": "A truncated list, reuse of the short array or a changed caller sentinel.",
+      "expected": {
+        "parent": {
+          "return": "false/[0, 1, 2, 3]/[77, 77]"
+        },
+        "fix": {
+          "return": "false/[0, 1, 2, 3]/[77, 77]"
+        }
+      }
+    },
+    {
+      "id": "vigna/fastutil#325.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge compare five- and seven-element destinations with different nonzero suffixes. Mutate destination[0] after each copy.",
+      "prediction": "Each suffix retains its original values under the pinned copy implementation. The list still returns 0 at index 0.",
+      "basis": "The copied interval is [0,4). Later writes to a caller-owned copy cannot mutate immutable list storage.",
+      "refutation": "A zeroed or overwritten spare cell, or getInt(0) follows the caller's write.",
+      "expected": {
+        "fix": {
+          "return": "true/[0, 1, 2, 3, 77]/0 / true/[0, 1, 2, 3, 88, 88, 88]/0"
+        }
+      }
+    }
+  ]
+}

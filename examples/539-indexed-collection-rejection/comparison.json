@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-collections/pull/688",
+  "revisions": {
+    "parent": "dad2ff61e516a601da8179708959263e38af8d68",
+    "fix": "ca83f8699e10403be6987b92fb1a877743df8262"
+  },
+  "entry": "IndexedCollection.add",
+  "questions": [
+    {
+      "id": "apache/commons-collections#688.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Add the two distinct strings in that order under unique indexing.",
+      "prediction": "Both should throw IllegalArgumentException on the second add. The PR reports that the parent nevertheless appends the second string. On the merge the list and iteration must contain only `\"01\"`, and `get(1)` must return `\"01\"`.",
+      "basis": "Both spellings denote integer key 1. The caller-owned list reveals a write even if the old index still returns its original value.",
+      "refutation": "Merged code accepts the second string, changes either view, or loses the original mapping.",
+      "expected": {
+        "parent": {
+          "return": "IllegalArgumentException/[01, 1]/[01, 1]/01"
+        },
+        "fix": {
+          "return": "IllegalArgumentException/[01]/[01]/01"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-collections#688.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use distinct keys by adding `\"01\"` and `\"2\"` to a fresh unique wrapper.",
+      "prediction": "Both adds succeed on each revision. The list is precisely those two strings, and lookups at 1 and 2 return the corresponding original spellings.",
+      "basis": "The two transformed keys are mathematically distinct, and the backing list preserves insertion order.",
+      "refutation": "A valid add is rejected, or iteration and lookup disagree.",
+      "expected": {
+        "parent": {
+          "return": "[01, 2]/[01, 2]/01/2"
+        },
+        "fix": {
+          "return": "[01, 2]/[01, 2]/01/2"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-collections#688.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "After the rejected add, call `reindex()` on the same wrapper and then add `\"2\"`.",
+      "prediction": "On the merge reindex should finish, add should succeed and both lookups should match the two values in the list. A leftover duplicate on the parent predicts another rejection during reindex.",
+      "basis": "Rebuilding solely from the caller-owned collection independently checks whether the earlier exception left a valid unique index.",
+      "refutation": "On the merge reindex throws, a spurious entry reappears, or either surviving value is unreachable.",
+      "expected": {
+        "fix": {
+          "return": "ok/[01, 2]/01/2"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/remkop/picocli/pull/2036",
+  "revisions": {
+    "parent": "7c7c8b954277b6e18c57ff5ea1791b59569c0511",
+    "fix": "5984589f57bcf2bb716e3dee21025ddaa387c3da"
+  },
+  "entry": "CommandLine.parseArgs",
+  "questions": [
+    {
+      "id": "remkop/picocli#2036.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Parse sub followed by -Dkey with null as the configured fallback.",
+      "prediction": "Issue #2035 reports a KEY=VALUE parse error before the change. On the merge parsing should succeed and produce a one-entry map containing key with null value.",
+      "basis": "The option explicitly assigns a fallback to a present key. Map.get alone cannot distinguish that result from an absent entry.",
+      "refutation": "Parsing fails, key is absent, or the value is the empty string instead of null.",
+      "expected": {
+        "parent": {
+          "throws": "picocli.CommandLine$ParameterException"
+        },
+        "fix": {
+          "return": "1/true/<null>"
+        }
+      }
+    },
+    {
+      "id": "remkop/picocli#2036.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Give an explicit value as sub, -Dkey=actual.",
+      "prediction": "Both revisions should leave only key→actual in the parent map.",
+      "basis": "An explicitly supplied right-hand side does not consult mapFallbackValue.",
+      "refutation": "The parser uses the fallback anyway, drops the key or stores a modified value.",
+      "expected": {
+        "parent": {
+          "return": "1/true/actual"
+        },
+        "fix": {
+          "return": "1/true/actual"
+        }
+      }
+    },
+    {
+      "id": "remkop/picocli#2036.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Change the fallback to the empty string and compare otherwise identical root and subcommand invocations on fresh parents. Repeat with Option.NULL_VALUE.",
+      "prediction": "On the merge root and inherited parsing should agree for each setting. Both maps must contain key, with length-zero text under the first setting and null under the second.",
+      "basis": "Inheritance changes where the option can be spelled, while fallback belongs to the declared option. The two distinct map values expose an incorrect copy even when parse succeeds.",
+      "refutation": "The child silently substitutes null for the empty string, or either presence/value differs by invocation depth.",
+      "expected": {
+        "fix": {
+          "return": "1/true/empty / 1/true/empty / 1/true/<null> / 1/true/<null>"
+        }
+      }
+    }
+  ]
+}

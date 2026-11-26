@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/locationtech/jts/pull/1168",
+  "revisions": {
+    "parent": "45744222b0b8a861c44dbc2c03dcf4f1e85c27fd",
+    "fix": "c406f5abe914d471ceb9cf0b872e8a634a1a1be6"
+  },
+  "entry": "CoordinateList.clone",
+  "questions": [
+    {
+      "id": "locationtech/jts#1168.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Clone the three-point list and enumerate in forward order.",
+      "prediction": "Issue #1163 reports a doubled list, predicting six entries for these three inputs on the parent. The merge should return exactly the original three coordinate values in order.",
+      "basis": "Copying a sequence preserves its number of positions. The issue identifies the shallow list followed by indexed insertions.",
+      "refutation": "The merge returns six points, drops a point or reorders unequal coordinates.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "size=6"
+          ]
+        },
+        "fix": {
+          "return": "size=3,points=[0:0, 1:1, 2:2],original=1"
+        }
+      }
+    },
+    {
+      "id": "locationtech/jts#1168.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Clone an empty list and append (4,5) to the clone.",
+      "prediction": "On both revisions the original remains empty and the clone contains only (4,5).",
+      "basis": "An empty list has no coordinate references to duplicate. The two list containers are independent.",
+      "refutation": "The original changes size or the clone gains a second entry.",
+      "expected": {
+        "parent": {
+          "return": "0/[4:5]"
+        },
+        "fix": {
+          "return": "0/[4:5]"
+        }
+      }
+    },
+    {
+      "id": "locationtech/jts#1168.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Clone a list containing two distinct Coordinate objects with equal XY values, preserving repetitions. Write x=9 to the first coordinate of the clone.",
+      "prediction": "On the merge the clone still has two positions. Only its first x changes. Both original points and the second cloned point keep their prior x.",
+      "basis": "Multiplicity is part of the ordered list. Deep copying must isolate subsequent coordinate mutations.",
+      "refutation": "An equal-valued point is collapsed, or changing one position changes any original or the other cloned coordinate.",
+      "expected": {
+        "fix": {
+          "return": "[9:1, 1:1]/[1:1, 1:1]"
+        }
+      }
+    }
+  ]
+}

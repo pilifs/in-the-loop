@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "577",
+  "title": "Count complete units between offset dates in either direction",
+  "summary": "Two midnights five hours apart now counted as zero whole days in either direction. DAYS and WEEKS also agreed with independent epoch-day arithmetic at the supported extremes.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "rounding",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "ThreeTen-Extra",
+    "symbol": "OffsetDate.until"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "OffsetDate.until adjusts an end date to the start offset and counts whole date units. The change corrects negative partial days and extends date arithmetic across the extreme supported offsets and years."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/ThreeTen/threeten-extra",
+    "url": "https://github.com/ThreeTen/threeten-extra/pull/433"
+  },
+  "notes": [
+    "MIN’s +18:00 and MAX’s −18:00 add 36 hours to the epoch-day interval. A whole week contains seven days."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

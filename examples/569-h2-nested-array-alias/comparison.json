@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/h2database/h2database/pull/2614",
+  "revisions": {
+    "parent": "3d939b6a4e3d4f60ca7e378bc3af3fc0087d0249",
+    "fix": "6940fc30b60af16b06376a6c2ed8c46815820730"
+  },
+  "entry": "ResultSet.getObject",
+  "questions": [
+    {
+      "id": "h2database/h2database#2614.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Call F with those two rows of lengths two and one.",
+      "prediction": "The PR targets unsupported multi-dimensional alias input before the change. The precise parent JDBC failure remains open. The merge should return an Integer[][] deeply equal to [[1,2],[3]].",
+      "basis": "The function parses exactly the three input strings and never pads a row. Ragged shape and element classes are observable beyond outer array length.",
+      "refutation": "Alias invocation or typed read fails on the merge, or a row is flattened, padded, mistyped or reordered.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "sqlstate="
+          ]
+        },
+        "fix": {
+          "return": "Integer[][]:[[1, 2], [3]]"
+        }
+      }
+    },
+    {
+      "id": "h2database/h2database#2614.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use a separate one-dimensional Integer[] identity alias and bind new Integer[]{1,2} using PreparedStatement.setObject.",
+      "prediction": "On both revisions the default ResultSet.getObject read should produce an Object[] with numeric contents 1 and 2 in order.",
+      "basis": "The existing one-dimensional test checks the default array class. The identity function supplies the expected contents.",
+      "refutation": "Class or values differ, or a working one-dimensional binding fails.",
+      "expected": {
+        "parent": {
+          "return": "Object[]:[1, 2]"
+        },
+        "fix": {
+          "return": "Object[]:[1, 2]"
+        }
+      }
+    },
+    {
+      "id": "h2database/h2database#2614.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Call F with nested BIGINT arrays [[1,2],[3]] and call ResultSet.getObject(1, Short[][].class). Also register a second public static Java alias INSPECT(Integer[][]) that returns Arrays.deepToString of its argument. Query INSPECT(F(...)) separately and read it with ResultSet.getString(1).",
+      "prediction": "On the merge the typed read should be a ragged Short[][] with rows [1,2] and [3]. The scalar read should be the text `[[1, 2], [3]]`.",
+      "basis": "All values fit both Java numeric types. The second alias independently observes the SQL result as its own argument and returns a scalar that bypasses JDBC nested-array result conversion.",
+      "refutation": "The typed result and scalar read disagree about row boundaries or values, or the requested Java component type is lost.",
+      "expected": {
+        "fix": {
+          "return": "Short[][]:[[1, 2], [3]]/[[1, 2], [3]]"
+        }
+      }
+    }
+  ]
+}

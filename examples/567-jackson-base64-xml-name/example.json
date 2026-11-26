@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "567",
+  "title": "Always-on Base64 XML names remain parseable across encodings",
+  "summary": "The writer emitted a legal underscore-prefixed Base64 name for the Chinese key. The JDK StAX reader and a fresh Jackson mapper recovered both sides of the adjacent Unicode boundary.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Jackson XML",
+    "symbol": "XmlMapper.writeValueAsString"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The always-on name processor puts an underscore before base64url names whose initial encoded character cannot start an XML name and strips that marker during decoding."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-dataformat-xml",
+    "url": "https://github.com/FasterXML/jackson-dataformat-xml/pull/895"
+  },
+  "notes": [
+    "Both builds use the later timestamped Jackson 3.3.0 and annotations 2.23 snapshots listed in runtime.json.",
+    "Replacing the dated snapshots with Jackson Core 3.3.0 and annotations 2.23, plus Databind 3.3.0, reproduced all six returns or exceptions with the original caller bytes."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

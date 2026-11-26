@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "553",
+  "title": "Verify a CPIO entry checksum when the caller reads into a slice",
+  "summary": "The CPIO reader accepted checksum 132 after delivering unsigned bytes 1, 128 and 3 at a nonzero offset. Both one-byte read patterns preserved their prefix and reached the following entry.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons Compress",
+    "symbol": "CpioArchiveInputStream.read"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Accumulate unsigned entry bytes from the destination offset supplied to CpioArchiveInputStream.read."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-compress",
+    "url": "https://github.com/apache/commons-compress/pull/725"
+  },
+  "notes": [
+    "Both pins use the same Commons IO snapshot rebuilt from e19519ad1a61ec6852601d28ffe94a8967e4e3e0."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

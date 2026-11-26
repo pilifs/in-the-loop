@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/ReactiveX/RxJava/pull/6664",
+  "revisions": {
+    "parent": "c2dc134221ad6bd623f6160ec5338ad4496c5112",
+    "fix": "cb7ff83a2444731dd7eca4760e9410a6c2980b6d"
+  },
+  "entry": "Observable.groupBy",
+  "questions": [
+    {
+      "id": "ReactiveX/RxJava#6664.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Subscribe to the saved Observable group only after the one-item outer sequence ends.",
+      "prediction": "The PR describes first-item loss from premature abandonment. On the merge the single K group must deliver 7 exactly once and complete.",
+      "basis": "Only one source item exists. Delaying the subscription to this abandoned group cannot give it a second source item. The value already assigned to it is the one observable distinction.",
+      "refutation": "The merge yields an empty completed group, a duplicated 7, or a different key.",
+      "expected": {
+        "fix": {
+          "return": "K/[7]/complete/complete"
+        }
+      }
+    },
+    {
+      "id": "ReactiveX/RxJava#6664.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "For Observable.just(7,8) with the same constant key and no failing selector, subscribe to the group synchronously inside outer onNext.",
+      "prediction": "Both revisions should yield one group with [7,8] and normal completion.",
+      "basis": "The synchronous inner observer claims the group before abandonment. Each source item maps unchanged to the same key.",
+      "refutation": "A missing or duplicate item, extra group, or error on either revision.",
+      "expected": {
+        "parent": {
+          "return": "1/K/[7, 8]/complete/complete"
+        },
+        "fix": {
+          "return": "1/K/[7, 8]/complete/complete"
+        }
+      }
+    },
+    {
+      "id": "ReactiveX/RxJava#6664.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "For a single item 7, retain key K but make the value selector throw a particular exception instance. Subscribe immediately to each emitted group. Run the same fixture as a Flowable with unbounded demand and as an Observable.",
+      "prediction": "On the merge both outer observers should emit one K group and terminate with the thrown error. Each inner observer should receive that same exception with zero values. The parent Flowable can suppress the group on this path.",
+      "basis": "The key is known before the value conversion. Independent inner and outer subscribers check where the selector’s failure becomes observable.",
+      "refutation": "The outer error is correct but no group arrives, any inner succeeds, or either subscriber gets a replacement exception.",
+      "expected": {
+        "fix": {
+          "return": "1/K/[]/same-error/same-error / 1/K/[]/same-error/same-error"
+        }
+      }
+    }
+  ]
+}

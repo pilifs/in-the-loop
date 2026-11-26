@@ -1,0 +1,75 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "fc1c939ed1f1197e2dcfe1cb6106ed4936f05b4a515f5662fe3a305c9db6b806",
+  "runtimeSha256": "1e82c17ed9fa62984f224e3e29199a023af4274ec7441fd468bfa20b55ab2687",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "bdbf489e9b9185ebe072f5f7ab3d113f0077e451da5a0f742080ab0d7464271f"
+  },
+  "deployments": {
+    "overlay": {
+      "callerClasses": {
+        "PublicCaller.class": "4c8b98cdf31ad270b5ecfc603feb78e7198b1896f2056ff6ab6e3baf4d6739ac",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/parquet-java#3830.1",
+          "outcome": {
+            "return": "[nested-one, nested-two]/[nested-one, nested-two]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "parent",
+          "id": "apache/parquet-java#3830.2",
+          "outcome": {
+            "return": "[one, two]/[nested-one, nested-two]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/parquet-java#3830.3",
+          "outcome": {
+            "return": "[new-one, new-two]/[new-one, new-two]/[new-one, new-two]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/parquet-java#3830.1",
+          "outcome": {
+            "return": "[one, two]/[nested-one, nested-two]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/parquet-java#3830.2",
+          "outcome": {
+            "return": "[one, two]/[nested-one, nested-two]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/parquet-java#3830.3",
+          "outcome": {
+            "return": "[new-one, new-two]/[one, two]/[new-one, new-two]"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/apache/parquet/hadoop/DictionaryPageReader.class": "273cfb4f333bbe5e389e6e7baf682f2de09b73559c9053368a7410763121ec88"
+        },
+        "fix": {
+          "org/apache/parquet/hadoop/DictionaryPageReader.class": "7d01df256e3441629ae7aaf902bb6ec1239de3a87aecfe88762976a7abdb27a3"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/javaparser/javaparser/pull/5207",
+  "revisions": {
+    "parent": "7bb33415ec75aa3fe01c1b3741cbe9ee48413739",
+    "fix": "ae2e9400810933b1523f3182acc69bf8998e26ca"
+  },
+  "entry": "LexicalPreservingPrinter.print",
+  "questions": [
+    {
+      "id": "javaparser/javaparser#5207.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Rename only a to b in the mixed declaration.",
+      "prediction": "The PR reports malformed output or lost brackets for C-style edits before. After, the emitted parameter must be `String[] b[]` with the surrounding text unchanged. Reparsing must find name b and two dimensions.",
+      "basis": "Each bracket pair contributes one dimension. A name edit changes only the identifier’s token.",
+      "refutation": "Printing fails, moves a bracket pair, or produces a parameter whose reparsed type has rank one.",
+      "expected": {
+        "fix": {
+          "return": "class A { void m(String[] b[]) {} }/b/2"
+        }
+      }
+    },
+    {
+      "id": "javaparser/javaparser#5207.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Rename the parameter in `void m(String[][] a)` using the same path.",
+      "prediction": "Both revisions should keep the complete type before b and preserve the surrounding declaration.",
+      "basis": "Both dimensions were attached to the type and the edit touches only the name.",
+      "refutation": "The emitted form changes rank or relocates brackets on either revision.",
+      "expected": {
+        "parent": {
+          "return": "class A { void m(String[][] b) {} }/b/2"
+        },
+        "fix": {
+          "return": "class A { void m(String[][] b) {} }/b/2"
+        }
+      }
+    },
+    {
+      "id": "javaparser/javaparser#5207.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Parse `class A { int a[], keep; }`. Rename a to b, print, reparse and inspect both field declarators separately.",
+      "prediction": "The merge should print `class A { int b[], keep; }`. B has one array dimension and keep remains scalar int.",
+      "basis": "Comma-separated declarators share a base type while brackets after one name affect only that variable.",
+      "refutation": "The text parses and b is an array, but keep also acquires a dimension, disappears, or changes name.",
+      "expected": {
+        "fix": {
+          "return": "class A { int b[], keep; }/b:1/keep:0"
+        }
+      }
+    }
+  ]
+}

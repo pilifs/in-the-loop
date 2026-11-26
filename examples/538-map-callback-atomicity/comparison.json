@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/eclipse-collections/eclipse-collections/pull/1786",
+  "revisions": {
+    "parent": "3b3c55a47406ca11ece6c077b96c9564f73dfc53",
+    "fix": "4af700cda608e6817d7d17ab340b91442278cf14"
+  },
+  "entry": "UnifiedMap.updateValue",
+  "questions": [
+    {
+      "id": "eclipse-collections/eclipse-collections#1786.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Update absent key 4 in an empty map with the throwing factory.",
+      "prediction": "The parent can publish key 4 before the throw. On the merge the same exception object escapes, size is zero, containsKey(4) is false and iteration is empty.",
+      "basis": "An update that supplies no value should leave the original mapping intact. Both pinned implementations move the key write.",
+      "refutation": "A caught sentinel accompanied by a visible key, an entry or a nonzero size on the merge.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "same=true,size=0,key=true"
+          ]
+        },
+        "fix": {
+          "return": "same=true,size=0,key=false,entries={};retry=6/{4=6} / same=true,size=0,key=false,entries={};retry=6/{4=6}"
+        }
+      }
+    },
+    {
+      "id": "eclipse-collections/eclipse-collections#1786.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Start with 4 mapped to 9. Supply a factory that counts calls and an updater returning its argument plus one.",
+      "prediction": "Both return 10, retain exactly 4→10 and leave the factory count at zero.",
+      "basis": "A present key supplies its current value directly.",
+      "refutation": "Either map invokes the factory, inserts another entry or returns a value different from get(4).",
+      "expected": {
+        "parent": {
+          "return": "10/0/{4=10} / 10/0/{4=10}"
+        },
+        "fix": {
+          "return": "10/0/{4=10} / 10/0/{4=10}"
+        }
+      }
+    },
+    {
+      "id": "eclipse-collections/eclipse-collections#1786.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Seed a strategy map with 1→7. Use a constant hash and integer equality. For absent key 4, let updateValueWith obtain 5 and then throw in its binary function. Retry with parameter 2 and addition.",
+      "prediction": "On the merge the catch sees only 1→7. The retry returns 7 and entry iteration then yields exactly 1→7 and 4→7, in either order.",
+      "basis": "Colliding keys are distinct under equality. A fresh update after failure must still take the absent-key path.",
+      "refutation": "The original key changes, retry sees a phantom value, or size and entries disagree.",
+      "expected": {
+        "fix": {
+          "return": "true/{1=7}/7/{1=7, 4=7}"
+        }
+      }
+    }
+  ]
+}

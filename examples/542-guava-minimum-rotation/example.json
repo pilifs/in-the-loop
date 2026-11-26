@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "542",
+  "title": "Rotating a primitive subarray by the smallest integer distance",
+  "summary": "Both Guava distributions rotated by Integer.MIN_VALUE in the same direction as the independently rotated boxed list. Changing the cells outside the subrange preserved its five values.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "array-utilities",
+    "integer-overflow",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Guava",
+    "symbol": "Ints.rotate"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Guava changes distance normalization in its primitive array rotation methods so the most negative int has its mathematical meaning."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/guava",
+    "url": "https://github.com/google/guava/pull/8811"
+  },
+  "notes": [
+    "The distance is congruent to 2 modulo 5. Only the subrange participates in its period and its permutation."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

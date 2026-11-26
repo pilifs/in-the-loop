@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "587",
+  "title": "Temporary-directory retention follows the owning Jupiter test’s outcome",
+  "summary": "The successful Jupiter owner’s temporary directory disappeared even after a sibling failed. Reversing their order left only the failed owner’s marker after launcher completion.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "stale-messages",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JUnit",
+    "symbol": "Launcher.execute"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Jupiter now scopes recorded child failures to their own extension context, so an earlier failure does not prevent an unrelated successful test’s ON_SUCCESS temporary directory from being cleaned up."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/junit-team/junit-framework",
+    "url": "https://github.com/junit-team/junit-framework/pull/4466"
+  },
+  "notes": [
+    "An independently successful owner’s cleanup policy does not depend on whether a sibling has already failed. Files.exists is an observation outside the test engine.",
+    "The intermediate commit f7f1d51d4c57 changed only release notes. Its junit-jupiter-engine/src/main tree (bf0e7ee77cdfc878a8075699153823292105238e) is identical to the parent’s. The second commit changed that production tree.",
+    "With identical compiled caller bytes, 5.12.1 matched the parent and 5.12.2 matched the landing on all three histories."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

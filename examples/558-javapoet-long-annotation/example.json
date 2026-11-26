@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "558",
+  "title": "Reflected long annotation members compile in generated Java",
+  "summary": "The generated long annotation compiled and reflected back as 12345678910. Reflection on a compiled long array also preserved the negative out-of-int-range element and its position.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "compilers",
+    "integer-overflow",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JavaPoet",
+    "symbol": "AnnotationSpec.get"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "JavaPoet appends a long literal suffix when serializing a reflected annotation member of type long."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/square/javapoet",
+    "url": "https://github.com/square/javapoet/pull/994"
+  },
+  "notes": [
+    "Reflecting on the compiled consumer checks the literal type, element order and sign independently of source formatting."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

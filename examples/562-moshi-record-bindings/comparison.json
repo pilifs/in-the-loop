@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/square/moshi/pull/1442",
+  "revisions": {
+    "parent": "751e8219e992a9aecd286aac830fef81da790baa",
+    "fix": "cdcf0da4ee260b72d7e1ea2be691a568e03720b3"
+  },
+  "entry": "Moshi.adapter",
+  "questions": [
+    {
+      "id": "square/moshi#1442.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Look up the outer adapter and decode the three component shapes into the Long binding.",
+      "prediction": "The PR reports IllegalArgumentException for unresolved T on the parent. The merge should yield Long values 1, [2,3,4] and 5 for key five.",
+      "basis": "The declaration fixes T at Long at every position. The pinned regression checks the complete record in both directions.",
+      "refutation": "An adapter lookup error on the merge, an element of another numeric type or a lost binding.",
+      "expected": {
+        "parent": {
+          "throws": "java.lang.IllegalArgumentException"
+        },
+        "fix": {
+          "return": "Long:1/[Long:2, Long:3, Long:4]/Long:5/true"
+        }
+      }
+    },
+    {
+      "id": "square/moshi#1442.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Request an adapter for the nested GenericRecord<String> using Types.newParameterizedTypeWithOwner(RecordsTest.class, GenericRecord.class, String.class) and decode a single string component.",
+      "prediction": "Both revisions should return a record whose value equals the input string.",
+      "basis": "The direct generic record test predates the nested-record change.",
+      "refutation": "Adapter creation fails or the plain string changes.",
+      "expected": {
+        "parent": {
+          "return": "String:plain"
+        },
+        "fix": {
+          "return": "String:plain"
+        }
+      }
+    },
+    {
+      "id": "square/moshi#1442.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use a second wrapper binding the same IndirectGenerics<T> to String. Request Long, then String, then Long adapters from one Moshi instance. Round-trip values with distinct strings and numbers.",
+      "prediction": "On the merge each decoded component retains the type of its enclosing wrapper on all three lookups. No record from the String history introduces a String into the Long result.",
+      "basis": "Identical raw component declarations can represent different parameterized types. Reusing the same adapter cache exercises that distinction.",
+      "refutation": "The second lookup inherits a Long adapter, the repeated lookup reads strings as numbers, or any nested list/map element has the wrong type.",
+      "expected": {
+        "fix": {
+          "return": "Long:1/[Long:2, Long:3, Long:4]/Long:5/true / String:x/[String:y, String:z]/String:w/true / Long:1/[Long:2, Long:3, Long:4]/Long:5/true"
+        }
+      }
+    }
+  ]
+}

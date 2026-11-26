@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "555",
+  "title": "A UTF-32 supplementary character survives a parser refill",
+  "summary": "All seven prefix lengths recovered both supplementary characters in both UTF-32 byte orders. Shifting the input by one space also agreed with the independent UTF-8 parse.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Jackson Core",
+    "symbol": "JsonFactory.createParser"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The UTF32Reader saves the computed low surrogate when only the high surrogate fits in the current character buffer."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-core",
+    "url": "https://github.com/FasterXML/jackson-core/pull/1716"
+  },
+  "notes": [
+    "The unavailable snapshot parent POM was rebuilt from Jackson BOM 7796a7ddb240ce41c1b6c6a3a435b29948a6a727.",
+    "With identical compiled caller bytes, 2.21.6 matched the parent and 2.21.7 matched the landing on all three histories."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

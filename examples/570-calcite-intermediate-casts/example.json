@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "570",
+  "title": "Nested SQL casts retain intermediate precision and formatting",
+  "summary": "Calcite preserved the four SCOTT.EMP display strings. The nested truncating cast now returned 6.6, matching the separately fetched and rebound VARCHAR.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "expression-evaluation",
+    "rounding",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Calcite",
+    "symbol": "ResultSet.getString"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The simplifier preserves an intermediate cast when removing it would alter the final conversion, including text formatting and truncation."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/calcite",
+    "url": "https://github.com/apache/calcite/pull/5345"
+  },
+  "notes": [
+    "Fetching and rebinding the intermediate prevents the optimizer from eliding it across the two statements. 20/3 has additional fractional digits before truncation."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

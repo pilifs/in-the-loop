@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/google/guava/pull/8811",
+  "revisions": {
+    "parent": "efae76a11d06cff9bd2a9d0865e0e4cfe554804d",
+    "fix": "c0a8a1edc69393e8141424037571d9825f5fc0f4"
+  },
+  "entry": "Ints.rotate",
+  "questions": [
+    {
+      "id": "google/guava#8811.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Rotate [1,2,3] by Integer.MIN_VALUE.",
+      "prediction": "The PR reports [2,3,1] on the parent. Expect [3,1,2] on the merge.",
+      "basis": "−2147483648 has remainder 1 modulo 3 in the mathematical sense. A right rotation by one moves the last element to the front.",
+      "refutation": "Any merged array differing from [3,1,2], even if it retains all three values.",
+      "expected": {
+        "parent": {
+          "return": "[2, 3, 1]/[3, 1, 2]"
+        },
+        "fix": {
+          "return": "[3, 1, 2]/[3, 1, 2]"
+        }
+      }
+    },
+    {
+      "id": "google/guava#8811.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Rotate a fresh [1,2,3] by −1.",
+      "prediction": "Both revisions should produce [2,3,1].",
+      "basis": "The value at index 1 moves to index 0 under a one-place left rotation. This distance can be negated exactly.",
+      "refutation": "A reversed direction, lost element, or exception on either revision.",
+      "expected": {
+        "parent": {
+          "return": "[2, 3, 1]/[2, 3, 1]"
+        },
+        "fix": {
+          "return": "[2, 3, 1]/[2, 3, 1]"
+        }
+      }
+    },
+    {
+      "id": "google/guava#8811.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "In [9,1,2,3,4,5,8], rotate only the half-open range [1,6) by Integer.MIN_VALUE. Box the original middle five and rotate that list independently.",
+      "prediction": "On the merge expect [9,4,5,1,2,3,8]. Vary the two outside sentinels independently and the five middle results must stay fixed.",
+      "basis": "The distance is congruent to 2 modulo 5. Only the subrange participates in its period and its permutation.",
+      "refutation": "The boxed and primitive middle ranges disagree, or an outside value moves or affects a middle slot.",
+      "expected": {
+        "fix": {
+          "return": "[9, 4, 5, 1, 2, 3, 8]/[4, 5, 1, 2, 3] / [-7, 4, 5, 1, 2, 3, 42]/[4, 5, 1, 2, 3]"
+        }
+      }
+    }
+  ]
+}

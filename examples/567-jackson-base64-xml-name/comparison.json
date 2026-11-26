@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/FasterXML/jackson-dataformat-xml/pull/895",
+  "revisions": {
+    "parent": "f560daa9ecb75c50de084c5a57559f84134554b3",
+    "fix": "c3584c7120d6a11e3d417a081d8600be47103fe9"
+  },
+  "entry": "XmlMapper.writeValueAsString",
+  "questions": [
+    {
+      "id": "FasterXML/jackson-dataformat-xml#895.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Set the map entry \"中文\" to \"cjk\". Serialize, parse the XML, then deserialize the DTO.",
+      "prediction": "The PR reports Woodstox can write an invalid digit-leading XML name before, followed by parse failure. After, the child element is named _5Lit5paH and the recovered key is exactly 中文.",
+      "basis": "The UTF-8 base64url spelling starts with 5. An XML name may start with underscore, while a digit is allowed only later.",
+      "refutation": "Writing succeeds but an XML parser rejects the document, or the recovered key/value differs.",
+      "expected": {
+        "fix": {
+          "return": "{_5Lit5paH=cjk}/true"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-dataformat-xml#895.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use the key \"abc\" and value \"ascii\".",
+      "prediction": "Both should use the existing wire name YWJj and recover the original pair.",
+      "basis": "YWJj is the base64 representation of those three bytes and begins with a letter.",
+      "refutation": "An extra prefix changes the established wire name, or map readback changes.",
+      "expected": {
+        "parent": {
+          "return": "{YWJj=ascii}/true"
+        },
+        "fix": {
+          "return": "{YWJj=ascii}/true"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-dataformat-xml#895.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Write both U+03FF and U+0400 as separate keys with values \"below\" and \"at\". Also parse the document with JDK XMLStreamReader and collect the two dynamic local names and text values.",
+      "prediction": "On the merge these associations must be z78→below and _0IA→at in either order. A separately built mapper with the same processor must recover both distinct keys.",
+      "basis": "Adjacent Unicode scalars produce base64url initials z and 0. An independent XML consumer checks legal element names and the serialized associations.",
+      "refutation": "A parser rejects either element, the marker appears on the wrong name, or the keys collide on independent readback.",
+      "expected": {
+        "fix": {
+          "return": "{_0IA=at, z78=below}/true"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "547",
+  "title": "Return a closed tour when edge weights are negative",
+  "summary": "The negative-weight triangle produced a closed tour of weight −6. The four-vertex tour visited every vertex once and its reported weight equaled the sum along the returned path.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "special-values",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JGraphT",
+    "symbol": "FarthestInsertionHeuristicTSP.getTour"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Let the farthest-insertion heuristic select a finite negative edge and a finite negative distance to the current tour."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/jgrapht/jgrapht",
+    "url": "https://github.com/jgrapht/jgrapht/pull/1376"
+  },
+  "notes": [
+    "The positive edge allows initialization and leaves only negative candidates for expansion. Public graph readback checks the reported tour independently."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

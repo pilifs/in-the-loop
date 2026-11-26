@@ -28325,6 +28325,1984 @@
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/35732",
       "target": null
+    },
+    {
+      "id": "538",
+      "path": "examples/538-map-callback-atomicity",
+      "title": "A throwing value update leaves the map usable",
+      "summary": "Both Eclipse Collections maps discarded the missing key when the value factory threw. A later update succeeded, including when two unequal keys shared the same hash.",
+      "origin": "real-world",
+      "system": "Eclipse Collections",
+      "symbol": "UnifiedMap.updateValue",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "write-ahead-ordering"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Colliding keys are distinct under equality. A fresh update after failure must still take the absent-key path."
+      ],
+      "source": "https://github.com/eclipse-collections/eclipse-collections/pull/1786",
+      "target": null
+    },
+    {
+      "id": "539",
+      "path": "examples/539-indexed-collection-rejection",
+      "title": "A rejected unique key leaves both collection views intact",
+      "summary": "A rejected duplicate left the original list, iterator and lookup in agreement. Rebuilding the index then admitted a distinct key.",
+      "origin": "real-world",
+      "system": "Apache Commons Collections",
+      "symbol": "IndexedCollection.add",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dual-write"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Rebuilding solely from the caller-owned collection independently checks whether the earlier exception left a valid unique index.",
+        "With identical compiled caller bytes, 4.5.0 matched the parent and 4.6.0 matched the landing on all three histories. Release 4.6.0 also evaluated the key transformer when a nonunique backing set rejected an identical element. Both PR pins accepted the same first insert and skipped this extra callback."
+      ],
+      "source": "https://github.com/apache/commons-collections/pull/688",
+      "target": null
+    },
+    {
+      "id": "540",
+      "path": "examples/540-vavr-remapped-null",
+      "title": "A remapping that yields null still reports a present key",
+      "summary": "A null remap now returns a defined option. A second callback saw the stored null, restored the value, and left the original persistent map intact.",
+      "origin": "real-world",
+      "system": "Vavr",
+      "symbol": "HashMap.computeIfPresent",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A second lookup distinguishes a stored null from absence. The original receiver provides an independent check of persistent updates."
+      ],
+      "source": "https://github.com/vavr-io/vavr/pull/3276",
+      "target": null
+    },
+    {
+      "id": "541",
+      "path": "examples/541-fastutil-list-copy",
+      "title": "Copy a primitive immutable list into a larger array",
+      "summary": "The primitive list copied four values into the caller’s oversized array. Spare cells retained their sentinels and changing the array left the list intact.",
+      "origin": "real-world",
+      "system": "fastutil",
+      "symbol": "IntImmutableList.toArray",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The copied interval is [0,4). Later writes to a caller-owned copy cannot mutate immutable list storage.",
+        "With identical compiled caller bytes, 8.5.13 matched the parent and 8.5.14 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/vigna/fastutil/pull/325",
+      "target": null
+    },
+    {
+      "id": "542",
+      "path": "examples/542-guava-minimum-rotation",
+      "title": "Rotating a primitive subarray by the smallest integer distance",
+      "summary": "Both Guava distributions rotated by Integer.MIN_VALUE in the same direction as the independently rotated boxed list. Changing the cells outside the subrange preserved its five values.",
+      "origin": "real-world",
+      "system": "Guava",
+      "symbol": "Ints.rotate",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The distance is congruent to 2 modulo 5. Only the subrange participates in its period and its permutation."
+      ],
+      "source": "https://github.com/google/guava/pull/8811",
+      "target": null
+    },
+    {
+      "id": "543",
+      "path": "examples/543-fraction-boundary-division",
+      "title": "Representable quotients at the signed integer boundary",
+      "summary": "The quotient of Integer.MIN_VALUE by itself now reduces to one. Two representations of the same negative divisor also produced the same exact reduced pair.",
+      "origin": "real-world",
+      "system": "Apache Commons Lang",
+      "symbol": "Fraction.divideBy",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Dividing the first divisor’s numerator and denominator by two gives the second representation exactly."
+      ],
+      "source": "https://github.com/apache/commons-lang/pull/1865",
+      "target": null
+    },
+    {
+      "id": "544",
+      "path": "examples/544-jts-coordinate-list-clone",
+      "title": "Deep-clone a coordinate sequence without duplicating its points",
+      "summary": "Cloning preserved the three coordinates in order. Two equal but distinct points in a second fixture remained independent after one cloned coordinate changed.",
+      "origin": "real-world",
+      "system": "JTS",
+      "symbol": "CoordinateList.clone",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Multiplicity is part of the ordered list. Deep copying must isolate subsequent coordinate mutations."
+      ],
+      "source": "https://github.com/locationtech/jts/pull/1168",
+      "target": null
+    },
+    {
+      "id": "545",
+      "path": "examples/545-jgrapht-connectivity-listener",
+      "title": "Edits to a listened-to graph keep connectivity queries current",
+      "summary": "A graph listener accepted edits before the first full connectivity query. Reused and fresh inspectors agreed after adding an edge to a partially queried directed or undirected graph.",
+      "origin": "real-world",
+      "system": "JGraphT",
+      "symbol": "ConnectivityInspector.connectedSetOf",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "caching"
+        ],
+        "defect": [
+          "stale-messages"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The inspector defines weak connectivity for directed graphs. Query order and edge orientation cannot partition this underlying connected graph."
+      ],
+      "source": "https://github.com/jgrapht/jgrapht/pull/1379",
+      "target": null
+    },
+    {
+      "id": "546",
+      "path": "examples/546-guava-disconnected-cycle",
+      "title": "Cycle detection in a disconnected undirected graph",
+      "summary": "Both Guava distributions detected the triangle after an isolated node disabled the edge-count shortcut. Adding another acyclic component preserved the positive result.",
+      "origin": "real-world",
+      "system": "Guava",
+      "symbol": "Graphs.hasCycle",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The triangle remains intact. The extra components change the edge-to-node count, which governs the shortcut described by the PR."
+      ],
+      "source": "https://github.com/google/guava/pull/8801",
+      "target": null
+    },
+    {
+      "id": "547",
+      "path": "examples/547-jgrapht-negative-tour",
+      "title": "Return a closed tour when edge weights are negative",
+      "summary": "The negative-weight triangle produced a closed tour of weight −6. The four-vertex tour visited every vertex once and its reported weight equaled the sum along the returned path.",
+      "origin": "real-world",
+      "system": "JGraphT",
+      "symbol": "FarthestInsertionHeuristicTSP.getTour",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The positive edge allows initialization and leaves only negative candidates for expansion. Public graph readback checks the reported tour independently."
+      ],
+      "source": "https://github.com/jgrapht/jgrapht/pull/1376",
+      "target": null
+    },
+    {
+      "id": "548",
+      "path": "examples/548-commons-filtered-reader",
+      "title": "Bulk reads and skip count the characters that survive a filter",
+      "summary": "A positive-length read skipped a fully discarded chunk and returned the surviving character. Extra leading discarded characters did not change the value following a skip.",
+      "origin": "real-world",
+      "system": "Apache Commons IO",
+      "symbol": "CharacterFilterReader.read",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Deleting x first leaves ab in every case. Skipping its first retained character can only leave b.",
+        "With identical compiled caller bytes, 2.22.0 matched the parent on all three histories."
+      ],
+      "source": "https://github.com/apache/commons-io/pull/931",
+      "target": null
+    },
+    {
+      "id": "549",
+      "path": "examples/549-commons-bounded-reader-skip",
+      "title": "Skipped characters, bounds, and the underlying reader position",
+      "summary": "The global bound now limits the underlying skip to three. A mark with a two-character read-ahead limit stopped reads at two, but skip advanced the same delegate to four.",
+      "origin": "real-world",
+      "system": "Apache Commons IO",
+      "symbol": "BoundedReader.skip",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The read predicate checks markedAt and readAheadLimit. The landed skip predicate uses only the global remaining count. Direct delegate read distinguishes positions 2 and 4.",
+        "With identical compiled caller bytes, 2.22.0 matched the parent on all three histories. With the same mark(2) at offsets zero, one and two, the read windows contained two, one and zero characters. The direct delegate read confirmed the cursor position, and reset returned to the same restricted window on both pins and 2.22.0."
+      ],
+      "source": "https://github.com/apache/commons-io/pull/860",
+      "target": null
+    },
+    {
+      "id": "550",
+      "path": "examples/550-jimfs-empty-read",
+      "title": "A zero-length file read still returns zero after observed EOF",
+      "summary": "A zero-length file read returned zero after EOF. An empty slice at the end of the destination still alternated correctly with positive reads and left every sentinel intact.",
+      "origin": "real-world",
+      "system": "Jimfs",
+      "symbol": "Files.newInputStream",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The endpoint is a valid empty slice. No call can create data in an empty file.",
+        "With identical compiled caller bytes, 1.3.1 matched the parent and 1.3.2 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/google/jimfs/pull/435",
+      "target": null
+    },
+    {
+      "id": "551",
+      "path": "examples/551-fastutil-overwrite-cursor",
+      "title": "Bulk overwrite advances a repositioned output stream",
+      "summary": "A three-byte overwrite now advanced the cursor to position three. The next single-byte write left the same five logical bytes as four individual writes.",
+      "origin": "real-world",
+      "system": "fastutil",
+      "symbol": "FastByteArrayOutputStream.write",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Splitting the same bytes across calls should leave their destination and the following write position unchanged."
+      ],
+      "source": "https://github.com/vigna/fastutil/pull/384",
+      "target": null
+    },
+    {
+      "id": "552",
+      "path": "examples/552-codec-base58-alphabet",
+      "title": "The configured Base58 alphabet determines the wire bytes",
+      "summary": "The swapped Base58 alphabet emitted 221 for two zero bytes followed by one. A fresh decoder recovered those bytes from the literal, and the independent base-58 carry fixture also matched.",
+      "origin": "real-world",
+      "system": "Apache Commons Codec",
+      "symbol": "Base58.encode",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "58 is one times 58 plus zero. The leading zero byte adds a separate zero digit before those two positional digits."
+      ],
+      "source": "https://github.com/apache/commons-codec/pull/437",
+      "target": null
+    },
+    {
+      "id": "553",
+      "path": "examples/553-compress-cpio-offset",
+      "title": "Verify a CPIO entry checksum when the caller reads into a slice",
+      "summary": "The CPIO reader accepted checksum 132 after delivering unsigned bytes 1, 128 and 3 at a nonzero offset. Both one-byte read patterns preserved their prefix and reached the following entry.",
+      "origin": "real-world",
+      "system": "Apache Commons Compress",
+      "symbol": "CpioArchiveInputStream.read",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both pins use the same Commons IO snapshot rebuilt from e19519ad1a61ec6852601d28ffe94a8967e4e3e0."
+      ],
+      "source": "https://github.com/apache/commons-compress/pull/725",
+      "target": null
+    },
+    {
+      "id": "554",
+      "path": "examples/554-compress-sparse-tar-map",
+      "title": "GNU sparse TAR extraction starts at the first data record",
+      "summary": "An aligned sparse TAR map now produced three zeros followed by ABCD. Replacing the data with WXYZ preserved the next member’s name, payload and end of archive.",
+      "origin": "real-world",
+      "system": "Apache Commons Compress",
+      "symbol": "TarArchiveInputStream.getNextEntry",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The file data and the next member have independent TAR boundaries. Successful delivery of the first file alone does not prove subsequent alignment."
+      ],
+      "source": "https://github.com/apache/commons-compress/pull/775",
+      "target": null
+    },
+    {
+      "id": "555",
+      "path": "examples/555-jackson-utf32-refill",
+      "title": "A UTF-32 supplementary character survives a parser refill",
+      "summary": "All seven prefix lengths recovered both supplementary characters in both UTF-32 byte orders. Shifting the input by one space also agreed with the independent UTF-8 parse.",
+      "origin": "real-world",
+      "system": "Jackson Core",
+      "symbol": "JsonFactory.createParser",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The unavailable snapshot parent POM was rebuilt from Jackson BOM 7796a7ddb240ce41c1b6c6a3a435b29948a6a727.",
+        "With identical compiled caller bytes, 2.21.6 matched the parent and 2.21.7 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/FasterXML/jackson-core/pull/1716",
+      "target": null
+    },
+    {
+      "id": "556",
+      "path": "examples/556-jts-measured-wkb",
+      "title": "Keep measures distinct from elevations in binary geometry",
+      "summary": "The measured WKB line used 57 bytes with only the M flag. Both byte orders decoded the original measures 3 and 7 and left elevation absent.",
+      "origin": "real-world",
+      "system": "JTS",
+      "symbol": "WKBWriter.write",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "schema-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Endianness determines how numbers are encoded, independent of the meaning of the third ordinate."
+      ],
+      "source": "https://github.com/locationtech/jts/pull/1092",
+      "target": null
+    },
+    {
+      "id": "557",
+      "path": "examples/557-csv-mongodb-field-boundary",
+      "title": "Round-trip MongoDB CSV records with an empty leading field",
+      "summary": "The MongoDB CSV preset reparsed the printer’s empty leading column. A later field retained its embedded comma and literal double quote through the public iterator.",
+      "origin": "real-world",
+      "system": "Apache Commons CSV",
+      "symbol": "CSVParser.iterator",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The printer must protect delimiters and quotes within a field. The caller’s original strings give an oracle independent of the lexer.",
+        "With identical compiled caller bytes, 1.10.0 matched the parent and 1.11.0 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/apache/commons-csv/pull/412",
+      "target": null
+    },
+    {
+      "id": "558",
+      "path": "examples/558-javapoet-long-annotation",
+      "title": "Reflected long annotation members compile in generated Java",
+      "summary": "The generated long annotation compiled and reflected back as 12345678910. Reflection on a compiled long array also preserved the negative out-of-int-range element and its position.",
+      "origin": "real-world",
+      "system": "JavaPoet",
+      "symbol": "AnnotationSpec.get",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Reflecting on the compiled consumer checks the literal type, element order and sign independently of source formatting."
+      ],
+      "source": "https://github.com/square/javapoet/pull/994",
+      "target": null
+    },
+    {
+      "id": "559",
+      "path": "examples/559-javapoet-annotated-boxing",
+      "title": "Box and unbox annotated primitive type names",
+      "summary": "Annotated boolean boxed and unboxed successfully. Two distinct type-use annotations on an independently built Integer survived both conversions in their original order.",
+      "origin": "real-world",
+      "system": "JavaPoet",
+      "symbol": "TypeName.box",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "inert-annotation"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The two distinct annotations reveal duplication, reversal or loss. Starting with a separately constructed wrapper exercises equality across instances."
+      ],
+      "source": "https://github.com/square/javapoet/pull/986",
+      "target": null
+    },
+    {
+      "id": "560",
+      "path": "examples/560-javaparser-literal-edit",
+      "title": "Typed literal edits reach the lexical printer",
+      "summary": "The lexical printer emitted the changed literal. A fresh parse recovered the embedded newline and quote and retained the adjacent comment.",
+      "origin": "real-world",
+      "system": "JavaParser",
+      "symbol": "LexicalPreservingPrinter.print",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "stale-messages"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A Java string literal cannot contain an unescaped physical line break. A consumer must recover the logical characters regardless of how the printer escapes them."
+      ],
+      "source": "https://github.com/javaparser/javaparser/pull/5176",
+      "target": null
+    },
+    {
+      "id": "561",
+      "path": "examples/561-javaparser-declarator-brackets",
+      "title": "Lexical printing preserves array brackets after a renamed identifier",
+      "summary": "Renaming the mixed array parameter produced String[] b[] with rank two. Renaming one field in an int declaration left the sibling scalar.",
+      "origin": "real-world",
+      "system": "JavaParser",
+      "symbol": "LexicalPreservingPrinter.print",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "schema-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Comma-separated declarators share a base type while brackets after one name affect only that variable.",
+        "The intermediate commit ba880df50766 changed only a varargs test. Its javaparser-core/src/main tree (14e3b4368c934db208b4447d68bc67bc8220fc77) is identical to the parent’s. The second commit changed that production tree."
+      ],
+      "source": "https://github.com/javaparser/javaparser/pull/5207",
+      "target": null
+    },
+    {
+      "id": "562",
+      "path": "examples/562-moshi-record-bindings",
+      "title": "Resolve nested record component types before choosing a JSON adapter",
+      "summary": "Moshi resolved nested scalars, lists and map values to Long. Alternating Long, String and Long wrappers in the same adapter cache preserved the type of every component.",
+      "origin": "real-world",
+      "system": "Moshi",
+      "symbol": "Moshi.adapter",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "request-binding"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Identical raw component declarations can represent different parameterized types. Reusing the same adapter cache exercises that distinction.",
+        "With identical compiled caller bytes, 1.13.0 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/square/moshi/pull/1442",
+      "target": null
+    },
+    {
+      "id": "563",
+      "path": "examples/563-gson-tree-number-width",
+      "title": "Gson tree numbers retain the requested integral wrapper type",
+      "summary": "The tree retained Byte, Short and Integer for primitive and wrapper declarations. Narrowing integer 257 and byte 1 produced identical Byte values and numeric JSON text.",
+      "origin": "real-world",
+      "system": "Gson",
+      "symbol": "Gson.toJsonTree",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "schema-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Java Number.byteValue discards higher bits for an Integer; 257 and 1 have the same low eight bits. Text alone erases wrapper width."
+      ],
+      "source": "https://github.com/google/gson/pull/2998",
+      "target": null
+    },
+    {
+      "id": "564",
+      "path": "examples/564-jackson-numeric-access-order",
+      "title": "Numeric accessors return the current token at its requested precision",
+      "summary": "After reading decimal 2.5, the integer view of the next token 7.5 now returned 7. Reading a large number as double first preserved all digits on a later BigInteger access.",
+      "origin": "real-world",
+      "system": "Jackson Core",
+      "symbol": "JsonParser.getBigIntegerValue",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "BigInteger on the original decimal text is an independent exact oracle, unaffected by the consumer’s earlier request for a double.",
+        "With identical compiled caller bytes, 2.21.8 matched the parent and 2.21.9 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/FasterXML/jackson-core/pull/1816",
+      "target": null
+    },
+    {
+      "id": "565",
+      "path": "examples/565-jackson-buffered-builder",
+      "title": "Carry immutable builder replacements through buffered property assignment",
+      "summary": "Buffered properties survived replacement of the immutable builder. Creator-first, creator-last and array encodings returned the same record, including after changing only b.",
+      "origin": "real-world",
+      "system": "Jackson Databind",
+      "symbol": "JsonMapper.readValue",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "lost-committed-data"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both builds use the timestamped Jackson Core 3.4.0 and annotations 2.24 snapshots listed in runtime.json.",
+        "Replacing the dated snapshots with Jackson Core 3.3.0 and annotations 2.23 reproduced all six returns or exceptions with the original caller bytes."
+      ],
+      "source": "https://github.com/FasterXML/jackson-databind/pull/6407",
+      "target": null
+    },
+    {
+      "id": "566",
+      "path": "examples/566-jackson-enum-map-update",
+      "title": "Updating an EnumMap merges the values already owned by the caller",
+      "summary": "Updating the EnumMap modified the externally held A value. Reading the serialized bean back showed that changing C’s initial state affected only C.",
+      "origin": "real-world",
+      "system": "Jackson Databind",
+      "symbol": "ObjectReader.readValue",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both builds use the timestamped Jackson Core 3.4.0 and annotations 2.24 snapshots listed in runtime.json.",
+        "Replacing the dated snapshots with Jackson Core 3.3.0 and annotations 2.23 reproduced all six returns or exceptions with the original caller bytes."
+      ],
+      "source": "https://github.com/FasterXML/jackson-databind/pull/6473",
+      "target": null
+    },
+    {
+      "id": "567",
+      "path": "examples/567-jackson-base64-xml-name",
+      "title": "Always-on Base64 XML names remain parseable across encodings",
+      "summary": "The writer emitted a legal underscore-prefixed Base64 name for the Chinese key. The JDK StAX reader and a fresh Jackson mapper recovered both sides of the adjacent Unicode boundary.",
+      "origin": "real-world",
+      "system": "Jackson XML",
+      "symbol": "XmlMapper.writeValueAsString",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both builds use the later timestamped Jackson 3.3.0 and annotations 2.23 snapshots listed in runtime.json.",
+        "Replacing the dated snapshots with Jackson Core 3.3.0 and annotations 2.23, plus Databind 3.3.0, reproduced all six returns or exceptions with the original caller bytes."
+      ],
+      "source": "https://github.com/FasterXML/jackson-dataformat-xml/pull/895",
+      "target": null
+    },
+    {
+      "id": "568",
+      "path": "examples/568-h2-unnest-bound-array",
+      "title": "Keep bound integers through UNNEST and ARRAY_AGG",
+      "summary": "H2 returned the bound integers instead of two nulls. Aggregate and scalar queries agreed after rebinding the same statements, including duplicate 7 and a later negative value.",
+      "origin": "real-world",
+      "system": "H2",
+      "symbol": "PreparedStatement.executeQuery",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "stale-messages"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The scalar-row query independently exposes the current bindings. Changing both values detects a result frozen at prepare time or cached on reuse.",
+        "With identical compiled caller bytes, 2.2.224 matched the parent and 2.3.230 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/h2database/h2database/pull/4034",
+      "target": null
+    },
+    {
+      "id": "569",
+      "path": "examples/569-h2-nested-array-alias",
+      "title": "Nested JDBC arrays reach Java aliases with their row structure intact",
+      "summary": "H2 passed two ragged rows to the Java alias. Both a typed Short[][] result and a second alias returning scalar text preserved the row boundaries.",
+      "origin": "real-world",
+      "system": "H2",
+      "symbol": "ResultSet.getObject",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "schema-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "All values fit both Java numeric types. The second alias independently observes the SQL result as its own argument and returns a scalar that bypasses JDBC nested-array result conversion."
+      ],
+      "source": "https://github.com/h2database/h2database/pull/2614",
+      "target": null
+    },
+    {
+      "id": "570",
+      "path": "examples/570-calcite-intermediate-casts",
+      "title": "Nested SQL casts retain intermediate precision and formatting",
+      "summary": "Calcite preserved the four SCOTT.EMP display strings. The nested truncating cast now returned 6.6, matching the separately fetched and rebound VARCHAR.",
+      "origin": "real-world",
+      "system": "Apache Calcite",
+      "symbol": "ResultSet.getString",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "expression-evaluation"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Fetching and rebinding the intermediate prevents the optimizer from eliding it across the two statements. 20/3 has additional fractional digits before truncation."
+      ],
+      "source": "https://github.com/apache/calcite/pull/5345",
+      "target": null
+    },
+    {
+      "id": "571",
+      "path": "examples/571-calcite-temporal-literals",
+      "title": "Preserve sub-millisecond digits when reducing temporal literals",
+      "summary": "The planner retained six fractional digits in TIME and TIMESTAMP. Two timestamps one microsecond apart remained distinct after reduction to VARCHAR.",
+      "origin": "real-world",
+      "system": "Apache Calcite",
+      "symbol": "RexExecutorImpl.reduce",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The inputs differ by one representable microsecond. String readback tests the next consumer rather than only a temporal type's declared precision."
+      ],
+      "source": "https://github.com/apache/calcite/pull/4942",
+      "target": null
+    },
+    {
+      "id": "572",
+      "path": "examples/572-arrow-decimal-holder-offset",
+      "title": "Decimal holders read the signed value at the selected buffer position",
+      "summary": "Both Arrow widths and both holder readers recovered the negative decimal regardless of its neighbors. On this little-endian host the parent holder and vector reads disagreed.",
+      "origin": "real-world",
+      "system": "Apache Arrow",
+      "symbol": "NullableDecimalHolderReaderImpl.readBigDecimal",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The measured host is little-endian. The parent prediction depends on byte order."
+      ],
+      "source": "https://github.com/apache/arrow-java/pull/1518",
+      "target": null
+    },
+    {
+      "id": "573",
+      "path": "examples/573-arrow-decimal-precision",
+      "title": "Decimal values are valid at exactly the declared precision",
+      "summary": "Both vector widths accepted magnitude 999.99 at precision five. The four-digit and six-digit controls remained distinct, and values transferred by public setters preserved sign and scale.",
+      "origin": "real-world",
+      "system": "Apache Arrow",
+      "symbol": "DecimalVector.validateScalars",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Logical decimal precision and scale are unchanged by backing width. Crossing two public setters and readers checks both sign and logical scale."
+      ],
+      "source": "https://github.com/apache/arrow-java/pull/1342",
+      "target": null
+    },
+    {
+      "id": "574",
+      "path": "examples/574-avro-big-decimal-slice",
+      "title": "Preserve a decimal’s individual scale in an Avro bytes field",
+      "summary": "Avro’s new converter preserved the scale difference between 12.3 and 12.30. It read a standalone encoding as 12.30 but decoded a slice exposing identical bytes as the preceding 7.",
+      "origin": "real-world",
+      "system": "Apache Avro",
+      "symbol": "Conversions.BigDecimalConversion.fromBytes",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "deserialization"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The two views expose the same byte sequence, and the prefix is itself one complete encoding. The comparison needs no assumption about interoperability with another language.",
+        "With identical compiled caller bytes, 1.11.3 matched the parent and 1.11.4, 1.12.0 matched the landing on all three histories. The identical active bytes decoded to 12.30 from a standalone copy and 7 from a heap slice on 1.11.4 and 1.12.0. A read-only view and a direct buffer raised ReadOnlyBufferException and UnsupportedOperationException respectively."
+      ],
+      "source": "https://github.com/apache/avro/pull/2282",
+      "target": null
+    },
+    {
+      "id": "575",
+      "path": "examples/575-avro-unsigned-duration",
+      "title": "Avro duration converts three unsigned fixed-width fields without losing their units",
+      "summary": "The logical Avro reader decoded the three independently written duration words in order. Both the logical and raw readers preserved the maximum unsigned millisecond value.",
+      "origin": "real-world",
+      "system": "Apache Avro",
+      "symbol": "GenericDatumReader.read",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "deserialization"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The maximum unsigned 32-bit word is all ones, distinct from signed −1. A second reader without conversion exposes the physical field boundary.",
+        "With identical compiled caller bytes, 1.11.3 matched the parent and 1.12.0 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/apache/avro/pull/2520",
+      "target": null
+    },
+    {
+      "id": "576",
+      "path": "examples/576-parquet-dictionary-path",
+      "title": "Dictionary pages belong to a sequence of column names",
+      "summary": "The Parquet reader kept the literal field a.b distinct from b nested under a. Reading the changed nested dictionary twice around the unchanged top-level dictionary preserved both identities.",
+      "origin": "real-world",
+      "system": "Apache Parquet",
+      "symbol": "DictionaryPageReadStore.readDictionaryPage",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "caching"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The pin's compiled DictionaryPageReader precedes the same Parquet 1.18.2/Hadoop dependencies on both sides. The complete pinned module needs Thrift 0.23.0.",
+        "With identical compiled caller bytes, 1.18.1 matched the parent and 1.18.2 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/apache/parquet-java/pull/3830",
+      "target": null
+    },
+    {
+      "id": "577",
+      "path": "examples/577-threeten-offset-day-count",
+      "title": "Count complete units between offset dates in either direction",
+      "summary": "Two midnights five hours apart now counted as zero whole days in either direction. DAYS and WEEKS also agreed with independent epoch-day arithmetic at the supported extremes.",
+      "origin": "real-world",
+      "system": "ThreeTen-Extra",
+      "symbol": "OffsetDate.until",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "MIN’s +18:00 and MAX’s −18:00 add 36 hours to the epoch-day interval. A whole week contains seven days."
+      ],
+      "source": "https://github.com/ThreeTen/threeten-extra/pull/433",
+      "target": null
+    },
+    {
+      "id": "578",
+      "path": "examples/578-rxjava-maybe-concat-cancel",
+      "title": "Cancelling Maybe concatenation prevents later subscription side effects",
+      "summary": "Early cancellation prevented entry into the second successful Maybe. With an empty prefix, both the iterable and array forms entered just the empty and first value sources.",
+      "origin": "real-world",
+      "system": "RxJava",
+      "symbol": "Maybe.concatArray",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "An empty source cannot satisfy firstElement. The cancellation point depends on the first actual value and is independent of array versus iterable representation.",
+        "With identical compiled caller bytes, 2.0.6 matched the parent and 2.0.7 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/ReactiveX/RxJava/pull/5101",
+      "target": null
+    },
+    {
+      "id": "579",
+      "path": "examples/579-reactor-deferred-inner-error",
+      "title": "Concatenation delivers later values before a delayed inner error",
+      "summary": "Reactor delivered all four items before the identical delayed error. Hiding the callable source preserved the signals with one outstanding request at a time.",
+      "origin": "real-world",
+      "system": "Reactor Core",
+      "symbol": "Flux.concatDelayError",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each pin's original FluxConcatMap and FluxFlatMap classes precede the same Reactor Core 3.1.1.RELEASE. The historical Gradle plugins are unavailable.",
+        "The physical callers run on Temurin 8u512, the Java major reported for Reactor 3.1.0.RELEASE.",
+        "With identical compiled caller bytes, 3.1.0.RELEASE, 3.1.1.RELEASE matched the parent and 3.1.2.RELEASE matched the landing on all three histories."
+      ],
+      "source": "https://github.com/reactor/reactor-core/pull/937",
+      "target": null
+    },
+    {
+      "id": "580",
+      "path": "examples/580-reactor-then-many-tail",
+      "title": "Discard every concatenated source value before thenMany emits its tail",
+      "summary": "thenMany emitted only the tail after successful concatenation. When the second source failed, the identical error reached the subscriber without an earlier value or a tail subscription.",
+      "origin": "real-world",
+      "system": "Reactor Core",
+      "symbol": "Flux.thenMany",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The receiver’s completion is the condition for starting the tail. An error terminates that receiver even after earlier values.",
+        "With identical compiled caller bytes, 3.4.37 matched the parent and 3.4.38 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/reactor/reactor-core/pull/3783",
+      "target": null
+    },
+    {
+      "id": "581",
+      "path": "examples/581-rxjava-group-first-signal",
+      "title": "New reactive groups expose their first value or its selector error",
+      "summary": "The delayed one-item Observable group already delivered 7 on the parent. The Flowable challenge distinguished the revisions: the merge exposed the new group and delivered the selector error to both observers.",
+      "origin": "real-world",
+      "system": "RxJava",
+      "symbol": "Observable.groupBy",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The key is known before the value conversion. Independent inner and outer subscribers check where the selector’s failure becomes observable.",
+        "With identical compiled caller bytes, 3.0.0-RC3 matched the parent and 3.0.0-RC4, 3.0.0-RC5 matched the landing on all three histories. A synchronous outer observer changed a value used by the selector. The parent and RC3 selected the changed value. The landing, RC4 and RC5 selected the initial value before publishing the group."
+      ],
+      "source": "https://github.com/ReactiveX/RxJava/pull/6664",
+      "target": null
+    },
+    {
+      "id": "582",
+      "path": "examples/582-resilience-async-stop-event",
+      "title": "A retry interval of zero and a negative stopping interval have different outcomes",
+      "summary": "The asynchronous retry scheduled the zero-delay attempt and stopped on a negative exceptional interval. With a retryable result, it announced a negative-delay retry even though the supplier ran only once.",
+      "origin": "real-world",
+      "system": "Resilience4j",
+      "symbol": "Retry.decorateCompletionStage",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "stale-messages"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The exceptional path branches on the sign before event publication. AsyncContext.onResult publishes RetryOnRetryEvent before returning its interval, and the async decorator stops at a negative value.",
+        "The caller ran on Resilience4j 2.1.0, 2.2.0. A negative interval for a retryable result ended the stage after one call on both releases. Only 2.2.0 emitted the −1 ms retry event. Both original PR pins also emitted it."
+      ],
+      "source": "https://github.com/resilience4j/resilience4j/pull/2067",
+      "target": null
+    },
+    {
+      "id": "583",
+      "path": "examples/583-feign-lambda-fallback",
+      "title": "Invoke a lambda fallback supplied by a Feign fallback factory",
+      "summary": "The real HTTP 400 response invoked an application-package lambda. Two failing GETs received fresh fallback-1 and fallback-2 values, while a successful GET bypassed the factory.",
+      "origin": "real-world",
+      "system": "Resilience4j",
+      "symbol": "Resilience4jFeign.builder",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "exceptions"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The factory contract creates a fallback per exception. A single constant fallback result cannot detect reuse across calls.",
+        "With identical compiled caller bytes, 2.1.0 matched the parent and 2.2.0 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/resilience4j/resilience4j/pull/1999",
+      "target": null
+    },
+    {
+      "id": "584",
+      "path": "examples/584-picocli-inherited-map-fallback",
+      "title": "Inherited command-line map options retain their fallback values",
+      "summary": "Inherited -Dkey now inserted a present key with a null value. Root and subcommand parsing agreed on both null and an independently configured empty string.",
+      "origin": "real-world",
+      "system": "picocli",
+      "symbol": "CommandLine.parseArgs",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Inheritance changes where the option can be spelled, while fallback belongs to the declared option. The two distinct map values expose an incorrect copy even when parse succeeds."
+      ],
+      "source": "https://github.com/remkop/picocli/pull/2036",
+      "target": null
+    },
+    {
+      "id": "585",
+      "path": "examples/585-assertj-record-accessor-order",
+      "title": "Recursive comparison reads a record’s named component before its boolean alias",
+      "summary": "Recursive comparison detected different record components sharing a boolean alias. A constant JavaBeans getter still caused different stored strings to compare equal.",
+      "origin": "real-world",
+      "system": "AssertJ",
+      "symbol": "RecursiveComparisonAssert.isEqualTo",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The landed source tries getField() before the bare accessor. Both objects return the same constant. The generated component accessor provides an independent reference.",
+        "With identical compiled caller bytes, 3.27.0 matched the parent and 3.27.1 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/assertj/assertj/pull/3710",
+      "target": null
+    },
+    {
+      "id": "586",
+      "path": "examples/586-junit-dynamic-suite-leaves",
+      "title": "Report the suite outcome when all tests are registered dynamically",
+      "summary": "Two dynamically registered successful leaves now made the enclosing suite succeed. An empty dynamic container still failed the suite with NoTestsDiscoveredException.",
+      "origin": "real-world",
+      "system": "JUnit",
+      "symbol": "Launcher.execute",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A container is registered dynamically too. Its node groups children, while the two finished leaves independently establish the count.",
+        "With identical compiled caller bytes, 6.1.1 matched the parent and 6.1.2 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/junit-team/junit-framework/pull/5839",
+      "target": null
+    },
+    {
+      "id": "587",
+      "path": "examples/587-junit-tempdir-ownership",
+      "title": "Temporary-directory retention follows the owning Jupiter test’s outcome",
+      "summary": "The successful Jupiter owner’s temporary directory disappeared even after a sibling failed. Reversing their order left only the failed owner’s marker after launcher completion.",
+      "origin": "real-world",
+      "system": "JUnit",
+      "symbol": "Launcher.execute",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "stale-messages"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "An independently successful owner’s cleanup policy does not depend on whether a sibling has already failed. Files.exists is an observation outside the test engine.",
+        "The intermediate commit f7f1d51d4c57 changed only release notes. Its junit-jupiter-engine/src/main tree (bf0e7ee77cdfc878a8075699153823292105238e) is identical to the parent’s. The second commit changed that production tree.",
+        "With identical compiled caller bytes, 5.12.1 matched the parent and 5.12.2 matched the landing on all three histories."
+      ],
+      "source": "https://github.com/junit-team/junit-framework/pull/4466",
+      "target": null
     }
   ]
 }

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/junit-team/junit-framework/pull/4466",
+  "revisions": {
+    "parent": "96d0c6dae456021a664a2283ab30fca28c4fbae2",
+    "fix": "48276fd094821f79afb3cd384b8c70946d73350b"
+  },
+  "entry": "Launcher.execute",
+  "questions": [
+    {
+      "id": "junit-team/junit-framework#4466.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "The failing method precedes the passing method in the same class.",
+      "prediction": "Issue #4464 reports successful directories persisting after a failure. Expect one failure and one success on both revisions. On the merge only the failed method’s directory and marker should remain.",
+      "basis": "Each method owns its own path and cleanup mode. The execution summary independently identifies which owner succeeded.",
+      "refutation": "The passing path survives or the failed owner loses its marker on the merge.",
+      "expected": {
+        "parent": {
+          "return": "1/1,failed=F,passed=P"
+        },
+        "fix": {
+          "return": "1/1,failed=F,passed=absent"
+        }
+      }
+    },
+    {
+      "id": "junit-team/junit-framework#4466.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Run a fresh class containing only a passing method with an ON_SUCCESS temp directory.",
+      "prediction": "Both revisions should report a success and remove its recorded path after execution.",
+      "basis": "No failure exists in the test or its children. The cleanup condition is satisfied.",
+      "refutation": "The recorded path still exists after the engine finishes on either revision.",
+      "expected": {
+        "parent": {
+          "return": "0/1,passed=absent"
+        },
+        "fix": {
+          "return": "0/1,passed=absent"
+        }
+      }
+    },
+    {
+      "id": "junit-team/junit-framework#4466.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep method outcomes, markers and annotations fixed, but reverse the order in a second fresh run. Group final paths by which method owned them.",
+      "prediction": "On the merge the failed owner alone must retain its directory in both orders. Compare ownership and marker contents rather than generated directory names.",
+      "basis": "An independently successful owner’s cleanup policy does not depend on whether a sibling has already failed. Files.exists is an observation outside the test engine.",
+      "refutation": "Only reordering the methods changes which owner’s directory remains, or the wrong marker survives.",
+      "expected": {
+        "fix": {
+          "return": "1/1,failed=F,passed=absent / 1/1,failed=F,passed=absent"
+        }
+      }
+    }
+  ]
+}

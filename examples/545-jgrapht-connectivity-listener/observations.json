@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "86a78f4502a0993aac79390efa966ec6b98678c5b2be5792b692103171274b44",
+  "runtimeSha256": "62464eb2a654bce4b31bd7761cea7585e435897f76afcdb43f11430055016b1b",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "daffcde59a6643fe2d2bf72406e3273e08401db597f073aa207dd3483d9b3d6b"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "d1e195f1ad6a18457c46c6216eb3245bdf4e9d066e2f160310587846f1251772",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "jgrapht/jgrapht#1379.1",
+          "outcome": {
+            "throws": "java.lang.NullPointerException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "jgrapht/jgrapht#1379.2",
+          "outcome": {
+            "return": "[[a, b, c]]/true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "jgrapht/jgrapht#1379.3",
+          "outcome": {
+            "throws": "java.lang.NullPointerException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "jgrapht/jgrapht#1379.1",
+          "outcome": {
+            "return": "[a, b]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "jgrapht/jgrapht#1379.2",
+          "outcome": {
+            "return": "[[a, b, c]]/true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "jgrapht/jgrapht#1379.3",
+          "outcome": {
+            "return": "[a, b]->[a, b, c]/[a, b, c] / [a, b]->[a, b, c]/[a, b, c]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

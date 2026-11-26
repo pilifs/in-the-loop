@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "a09829c896ee7c2eea86226fa900d60e9ba1224828dfb16e73470458cfc42ae7",
+  "runtimeSha256": "a90a0229cbd4e2fea4ed2c02482f3eb45f2d3162917960b9b34234c1b3f25e69",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "9bf87165056ca9d64b5d031417a6d63fec0e9637107f5a381ca9e77744299f05"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Duration.class": "31d5676dcaa24ccc2c1fec78bf87601b300f7bd59d149b35bf0fe6069a2fea7e",
+        "PublicCaller.class": "d739d5d9d5dcfbd978db34b9f77b64f856d73f1e399a08f0f8c31976bafda1d1",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/avro#2520.1",
+          "outcome": {
+            "throws": "java.lang.NoClassDefFoundError"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/avro#2520.2",
+          "outcome": {
+            "return": "010000000200000003000000"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/avro#2520.3",
+          "outcome": {
+            "throws": "java.lang.NoClassDefFoundError"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#2520.1",
+          "outcome": {
+            "return": "1/2/3"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#2520.2",
+          "outcome": {
+            "return": "010000000200000003000000"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/avro#2520.3",
+          "outcome": {
+            "return": "0100000002000000ffffffff/1/2/4294967295 / 010000000200000000000000/1/2/0"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

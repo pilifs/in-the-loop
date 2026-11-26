@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/FasterXML/jackson-databind/pull/6473",
+  "revisions": {
+    "parent": "66ade176743438d3b8247348465aa31eb95e24f7",
+    "fix": "949188f567b60b88851f4898eeb9bc82d098cfbe"
+  },
+  "entry": "ObjectReader.readValue",
+  "questions": [
+    {
+      "id": "FasterXML/jackson-databind#6473.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Update A.count to 3 while omitting A.data and key C.",
+      "prediction": "The PR and issue report InvalidDefinitionException while constructing the value before the fix. On the merge the returned bean must be the input, its A value must still be the saved object, its count 3 and data init-A, and C must retain init-C.",
+      "basis": "Updating an existing object needs no creator. The externally saved alias shows which instance actually received the write.",
+      "refutation": "The merge attempts construction, loses an omitted field, replaces A, or changes C.",
+      "expected": {
+        "parent": {
+          "throws": "tools.jackson.databind.exc.InvalidDefinitionException"
+        },
+        "fix": {
+          "return": "true/true/3/init-A/init-C"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-databind#6473.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Read a fresh EnumMap of creatable beans from one JSON object containing only key A with field a equal to x.",
+      "prediction": "Both revisions should construct one entry A with a=x.",
+      "basis": "No old map value exists to merge. The new entry is determined entirely by this input.",
+      "refutation": "Either revision fails, adds keys, or supplies a different field value.",
+      "expected": {
+        "parent": {
+          "return": "1/x"
+        },
+        "fix": {
+          "return": "1/x"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-databind#6473.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the same existing A and count update. Run two fresh histories differing only in the initial data string and count of the untouched C. Serialize the updated bean and inspect its tree with an independent reader.",
+      "prediction": "On the merge the serialized A has count 3 and initial data in both histories, and C serializes its own original data and count each time. The retained A alias observes the same 3.",
+      "basis": "An update scoped to A cannot depend on another key’s value. Writing and reading back distinguishes a visible mutation of the bean from a change only to a temporary result.",
+      "refutation": "Changing C changes serialized A, the alias stays stale, or serialization loses C’s untouched data.",
+      "expected": {
+        "fix": {
+          "return": "3/init-A/3/first/4 / 3/init-A/3/second/8"
+        }
+      }
+    }
+  ]
+}

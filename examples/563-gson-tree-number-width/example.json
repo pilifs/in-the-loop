@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "563",
+  "title": "Gson tree numbers retain the requested integral wrapper type",
+  "summary": "The tree retained Byte, Short and Integer for primitive and wrapper declarations. Narrowing integer 257 and byte 1 produced identical Byte values and numeric JSON text.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "schema-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Gson",
+    "symbol": "Gson.toJsonTree"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The byte, short and integer adapters now select a JsonWriter overload that preserves the narrowed Number class when the destination is a tree."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/gson",
+    "url": "https://github.com/google/gson/pull/2998"
+  },
+  "notes": [
+    "Java Number.byteValue discards higher bits for an Integer; 257 and 1 have the same low eight bits. Text alone erases wrapper width."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

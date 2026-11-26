@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/FasterXML/jackson-core/pull/1816",
+  "revisions": {
+    "parent": "682b4062b60d8317956ca80a28c3c92cf46d93ce",
+    "fix": "b251524f3a857fd5960548ea12d4ba2dc92f8c43"
+  },
+  "entry": "JsonParser.getBigIntegerValue",
+  "questions": [
+    {
+      "id": "FasterXML/jackson-core#1816.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Read 2.5 as decimal, then inspect 7.5 in the stated order.",
+      "prediction": "Issue #1815 reports a stale conversion of the previous number. After, getNumberType() gives DOUBLE, then the accessors give 7, decimal 7.5, and double 7.5.",
+      "basis": "BigInteger conversion truncates the current token toward zero. Both displayed halves are exactly representable as doubles.",
+      "refutation": "The integer is 2, the decimal comes from the earlier token, or a later accessor loses the value.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "DOUBLE/2/"
+          ]
+        },
+        "fix": {
+          "return": "DOUBLE/7/7.5/7.5"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-core#1816.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Parse [7] and read the only number first as BigInteger, then as double.",
+      "prediction": "Both revisions should give 7 and 7.0 and then END_ARRAY.",
+      "basis": "The one-token input lacks a preceding numeric cache, and seven is exactly representable in both types.",
+      "refutation": "Any different value, exception, or missing terminal token.",
+      "expected": {
+        "parent": {
+          "return": "7/7.0/END_ARRAY"
+        },
+        "fix": {
+          "return": "7/7.0/END_ARRAY"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-core#1816.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Hold 12345678901234567890123 fixed. In independent parses, request double before BigInteger and BigInteger before double. Compare the integer with one constructed from the original decimal digits.",
+      "prediction": "On the merge both integer results must be exact and both double results may have normal IEEE rounding. The PR reports that double-first could previously round away the final digits of the integer.",
+      "basis": "BigInteger on the original decimal text is an independent exact oracle, unaffected by the consumer’s earlier request for a double.",
+      "refutation": "Only the double-first order changes the exact result, or exact conversion after approximate access throws.",
+      "expected": {
+        "fix": {
+          "return": "12345678901234567890123:true/12345678901234567890123:true"
+        }
+      }
+    }
+  ]
+}

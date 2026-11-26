@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-codec/pull/437",
+  "revisions": {
+    "parent": "ac982579962c32ee28be1e80cdb514a829e3366f",
+    "fix": "98986558dc1c0e2013b76bea92d75bde80568a00"
+  },
+  "entry": "Base58.encode",
+  "questions": [
+    {
+      "id": "apache/commons-codec#437.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Encode [0,0,1] and independently decode the literal \"221\".",
+      "prediction": "The parent uses the default digits on the affected paths. The merge should emit \"221\" and decode that literal to [0,0,1].",
+      "basis": "Each leading zero byte gets one zero symbol. The remaining magnitude 1 gets one symbol for digit one.",
+      "refutation": "Either exact sequence differs, even if an encoder/decoder round trip succeeds.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "wire=112"
+          ]
+        },
+        "fix": {
+          "return": "wire=221,decoded=[0, 0, 1]"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-codec#437.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use an unconfigured Base58 for [0,0,1].",
+      "prediction": "Both should encode to \"112\" and reconstruct [0,0,1] from those ASCII bytes.",
+      "basis": "The default alphabet begins with \"12\".",
+      "refutation": "The default representation or recovered leading-zero count changes.",
+      "expected": {
+        "parent": {
+          "return": "wire=112,decoded=[0, 0, 1]"
+        },
+        "fix": {
+          "return": "wire=112,decoded=[0, 0, 1]"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-codec#437.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Hold the swapped table fixed. Encode [0,58] and let a newly constructed codec decode the independently predicted text.",
+      "prediction": "On the merge the ASCII must be \"212\", and decoding that literal must yield [0,58].",
+      "basis": "58 is one times 58 plus zero. The leading zero byte adds a separate zero digit before those two positional digits.",
+      "refutation": "The prefix is correct but the internal zero digit is wrong, or the second codec reads a different magnitude.",
+      "expected": {
+        "fix": {
+          "return": "wire=212,decoded=[0, 58]"
+        }
+      }
+    }
+  ]
+}

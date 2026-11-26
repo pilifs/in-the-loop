@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "552",
+  "title": "The configured Base58 alphabet determines the wire bytes",
+  "summary": "The swapped Base58 alphabet emitted 221 for two zero bytes followed by one. A fresh decoder recovered those bytes from the literal, and the independent base-58 carry fixture also matched.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons Codec",
+    "symbol": "Base58.encode"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The builder derives its inverse alphabet from the configured 58 distinct bytes. The encoder and decoder also use that alphabet’s zero digit."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-codec",
+    "url": "https://github.com/apache/commons-codec/pull/437"
+  },
+  "notes": [
+    "58 is one times 58 plus zero. The leading zero byte adds a separate zero digit before those two positional digits."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

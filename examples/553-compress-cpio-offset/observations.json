@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "f6d28e9e48ed0f44b05581f441bacf04510a2f2a968ae4f2d6e442a5bb94ba1a",
+  "runtimeSha256": "3d524795029f32e4034afab786967044cfb38cb85dd9ac45d628788e2cce8a87",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "e286242268f20abc4dd7d745d8c1a5706c2e608515add31e9ae638899c163128"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "67fffb3326330488cf5c77b619c20feaf4c9f393d26bedfe4abf369d9970e5bd",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/commons-compress#725.1",
+          "outcome": {
+            "return": "IOException (ArchiveException, checksum=true)/[1, 128, 3]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-compress#725.2",
+          "outcome": {
+            "return": "a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-compress#725.3",
+          "outcome": {
+            "return": "IOException (ArchiveException, checksum=true)/[1, 128, 3] / IOException (ArchiveException, checksum=true)/[1, 128, 3]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-compress#725.1",
+          "outcome": {
+            "return": "a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-compress#725.2",
+          "outcome": {
+            "return": "a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-compress#725.3",
+          "outcome": {
+            "return": "a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true / a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

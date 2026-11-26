@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/google/guava/pull/8801",
+  "revisions": {
+    "parent": "ae0fa4bdaeef91c6f309c886263eb3b319b21568",
+    "fix": "ca8aedb2fdaf40fd6937a0643180aea51ca4154e"
+  },
+  "entry": "Graphs.hasCycle",
+  "questions": [
+    {
+      "id": "google/guava#8801.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Triangle plus isolated vertex, as in the pinned test.",
+      "prediction": "The PR reports a possible false negative on the parent when a vertex enumerates its parent first. The merge must return true for every neighbor order.",
+      "basis": "The three edges form the explicit closed walk 1–2–3–1 with no repeated edge.",
+      "refutation": "The merged call returns false for this triangle.",
+      "expected": {
+        "fix": {
+          "return": "true"
+        }
+      }
+    },
+    {
+      "id": "google/guava#8801.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Remove only (3,1), leaving the isolated vertex and path 1–2–3.",
+      "prediction": "Both revisions should return false.",
+      "basis": "A return traversal on this path would necessarily reuse an undirected edge.",
+      "refutation": "Either call reports a cycle after removing the closing edge.",
+      "expected": {
+        "parent": {
+          "return": "false"
+        },
+        "fix": {
+          "return": "false"
+        }
+      }
+    },
+    {
+      "id": "google/guava#8801.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Reinsert (3,1). Compare the same graph first without vertex 4, then with 4 and a separate acyclic edge (5,6).",
+      "prediction": "The merged answer stays true in both states. The parent may produce true for the connected triangle yet miss the cycle after unrelated vertices are added.",
+      "basis": "The triangle remains intact. The extra components change the edge-to-node count, which governs the shortcut described by the PR.",
+      "refutation": "Adding the disconnected components changes the merged answer to false.",
+      "expected": {
+        "fix": {
+          "return": "true/true"
+        }
+      }
+    }
+  ]
+}

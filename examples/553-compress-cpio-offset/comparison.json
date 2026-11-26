@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-compress/pull/725",
+  "revisions": {
+    "parent": "a7a749f028a38a07c6b3765a4b2c3607b1ab6e71",
+    "fix": "befbfe070270f61c29e032b51363dfc8c8ef51f1"
+  },
+  "entry": "CpioArchiveInputStream.read",
+  "questions": [
+    {
+      "id": "apache/commons-compress#725.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Fill the destination with 9, reserve enough room at offset 2, and read the three bytes of a. Request another byte to finish the entry.",
+      "prediction": "The parent can return the correct payload and then report a checksum error. On the merge a yields [1,128,3], entry EOF, then entry b.",
+      "basis": "The new-CRC checksum is the unsigned byte sum, 1+128+3=132. The two prefix bytes belong to the caller.",
+      "refutation": "A correct payload followed by a checksum error, wrong payload, or failure to advance to b on the merge.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "IOException"
+          ]
+        },
+        "fix": {
+          "return": "a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-compress#725.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Read a into offset zero and consume through entry EOF.",
+      "prediction": "Both revisions should accept checksum 132 and let the caller read 7 from b.",
+      "basis": "The old and new checksum intervals coincide at offset zero.",
+      "refutation": "Either stream rejects the archive, changes the payload, or loses the following entry.",
+      "expected": {
+        "parent": {
+          "return": "a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true"
+        },
+        "fix": {
+          "return": "a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-compress#725.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Hold archive bytes fixed. Read a one byte at a time at offset 1, once with prefix 0 and once with prefix 255. Reassemble the bytes and read b in each run.",
+      "prediction": "Afterward both histories should finish cleanly and yield identical entries and payloads. Prefix sentinels remain unchanged.",
+      "basis": "Varying destination padding or splitting a read cannot alter the entry's bytes or checksum.",
+      "refutation": "The outcome depends on the prefix, chunk size or entry order, although the archive is identical.",
+      "expected": {
+        "fix": {
+          "return": "a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true / a:[1, 128, 3]/eof=-1/b:7/end=true/prefix=true"
+        }
+      }
+    }
+  ]
+}

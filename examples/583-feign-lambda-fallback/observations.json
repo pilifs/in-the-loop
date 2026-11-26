@@ -1,0 +1,70 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "bf99ffe3f6a6c9fe07df562b5749078366229d7c9b0119ca89afc6966af0aa31",
+  "runtimeSha256": "a83362a7e528a3886c73f270d14ac6db0826c92055c8522e6077fc60be735fbf",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/FallbackApplication.java": "cfcb06bfe071887bbaaf8e435d0a3d62250a17958cd6f44cfde9de38ced0f008",
+    "caller/PublicCaller.java": "81d363b57caae29044d204766c114cdb744ae98df9a540aefdc7a14c254cd36d"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "0d90f81d2cffc1eb2b3c96e9fa683f1841ce446fe368de9b7c830d15cb758684",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13",
+        "app/FallbackApplication$Service.class": "a2827a58e37ad602a35660dcd4b67fc5e271f6d349046a7f98bbeb230f7c956f",
+        "app/FallbackApplication.class": "6f49e2b8439e0e5498c7cf4169222463af34d9b4339ca9ed7a95816c4e88a98d"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "resilience4j/resilience4j#1999.1",
+          "outcome": {
+            "return": "gets=1,factories=1,error=java.lang.IllegalAccessException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "resilience4j/resilience4j#1999.2",
+          "outcome": {
+            "return": "gets=1,factories=0,result=server"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "resilience4j/resilience4j#1999.3",
+          "outcome": {
+            "return": "gets=1,factories=1,error=java.lang.IllegalAccessException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "resilience4j/resilience4j#1999.1",
+          "outcome": {
+            "return": "gets=1,factories=1,result=fallback"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "resilience4j/resilience4j#1999.2",
+          "outcome": {
+            "return": "gets=1,factories=0,result=server"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "resilience4j/resilience4j#1999.3",
+          "outcome": {
+            "return": "gets=2,factories=2,results=[fallback-1, fallback-2]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}
