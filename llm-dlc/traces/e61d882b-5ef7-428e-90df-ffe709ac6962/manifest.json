@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-26T17:53:49.698Z",
-  "duration_seconds": 796566,
+  "ended": "2026-11-26T18:23:27.135Z",
+  "duration_seconds": 798344,
   "stats": {
     "turns": 296,
-    "api_calls": 2663,
-    "tool_calls": 2365,
+    "api_calls": 2664,
+    "tool_calls": 2366,
     "tool_errors": 27,
     "compactions": 10,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 105725,
-      "output_tokens": 1704958,
-      "cache_read_input_tokens": 833648233,
-      "cache_creation_input_tokens": 6548678
+      "input_tokens": 105729,
+      "output_tokens": 1705622,
+      "cache_read_input_tokens": 833947798,
+      "cache_creation_input_tokens": 6549157
     }
   },
   "tools": {
-    "Bash": 2066,
+    "Bash": 2067,
     "Edit": 80,
     "SendMessage": 73,
     "Read": 55,
@@ -251,24 +251,24 @@
     {
       "index": 10,
       "started": "2026-11-26T13:12:13.083Z",
-      "ended": "2026-11-26T17:53:49.698Z",
+      "ended": "2026-11-26T18:23:27.135Z",
       "turns": 9,
-      "api_calls": 144,
+      "api_calls": 145,
       "usage": {
-        "input_tokens": 334,
-        "output_tokens": 77975,
-        "cache_read_input_tokens": 33245169,
-        "cache_creation_input_tokens": 263343
+        "input_tokens": 338,
+        "output_tokens": 78639,
+        "cache_read_input_tokens": 33544734,
+        "cache_creation_input_tokens": 263822
       },
-      "peak_context_tokens": 299232
+      "peak_context_tokens": 300048
     }
   ],
   "log": {
-    "sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6",
-    "bytes": 46528960,
-    "lines": 21486,
-    "gzip_bytes": 7988579,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6.jsonl.gz"
+    "sha256": "11ab9b9a71a01083768b0c9dc6719df8ebd23f5043b073235e9e99a2b4142d13",
+    "bytes": 46551007,
+    "lines": 21497,
+    "gzip_bytes": 7990909,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/11ab9b9a71a01083768b0c9dc6719df8ebd23f5043b073235e9e99a2b4142d13.jsonl.gz"
   },
   "subagents": [
     {
@@ -13015,14 +13015,6 @@
       "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
     },
     {
-      "change_id": "tzkllworxlsvqkyyqtlrlxvrwzntlqvk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the watcher's decisions on organic-java-merged-pr-links-r01-r50-brief-setup",
-      "body": "The watcher's verdicts on the single-agent run organic-java-merged-pr-links-r01-r50-brief-setup (llm-dlc/decisions/single-organic-java-merged-pr-links-r01-r50-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
-      "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
-    },
-    {
       "change_id": "uzltyvxzxtnyxpplzksrnsulwukqtxox",
       "commit_id": null,
       "immutable": false,
@@ -13063,6 +13055,46 @@
       "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
     },
     {
+      "change_id": "pswrnvulummlwrrtqpksowqoplzymlur",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the R01-R50 setup jobs' results and rerun R50 (verification pending)",
+      "body": "Three setup jobs came back passed, and their results are now in the setup record. R01: the parent's own map and bimap tests pass (120,694, 0 failures), and the fix's five test files give 15 failures on a copy of the parent, all the new throwing-callback assertions. R33 and R34 (Calcite): the landed tests pass on the fix and fail on the parent (4 and 9 failures). R49 (JUnit suite engine): SuiteEngineTests#dynamicSuite fails on the parent with NoTestsDiscoveredException. The record now also has the parent jar digests, the classpaths (every entry checked to exist) and the summary rows. 47 of the 50 cases are now checked at both pins on a JVM.\n\nR50 (JUnit #4466) was not verified, although its job reported passed. All three offline builds stopped at :jupiter-tests:compileTestGroovy, because 13 Groovy 4.0.26 modules that GroovyCompile infers at compile time were missing from the Gradle cache, and the job script exited 0 whatever happened. An init script in the setup cache now resolves that classpath. All 47 Groovy 4.0.26 files equal Maven Central's .sha1, and they resolve offline at both pins. The JUnit job script now fails a step whose outcome is wrong.\n\nJob 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins reruns R50's fix, parent and landed tests.",
+      "log_sha256": "11ab9b9a71a01083768b0c9dc6719df8ebd23f5043b073235e9e99a2b4142d13"
+    },
+    {
+      "change_id": "rmnoroynptqrnkmxnlwsorqywxzotynw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record R50's rerun and finish the R01-R50 setup",
+      "body": "Job 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins came back passed, and its logs confirm it: JUnit #4466's TempDirectoryCleanupTests ran 18 tests with 0 failures on the fix and the parent's own 16 with 0 failures, and the fix's test file on a copy of the parent failed exactly the three ON_SUCCESS failing-then-passing tests (the passing test's directory was not cleaned). The result is recorded on another head and was read from there, not merged. The setup record gains R50's test counts, the rebuilt jar digests at both pins, a class-by-class comparison (only junit-jupiter-engine differs between the pins), the checked classpaths (every entry exists) and a note that JUnit's @TempDir uses java.io.tmpdir (/tmp by default). The Setup Agent Notes now count 48 cases checked at both pins on a JVM, with R39 and R42 checked by their release, overlay or slice routes, and state that setup is complete.",
+      "log_sha256": "11ab9b9a71a01083768b0c9dc6719df8ebd23f5043b073235e9e99a2b4142d13"
+    },
+    {
+      "change_id": "qlyqtssszurupulwmvnyzxzzsuqzywwu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-070: a setup job that passed without running tests, and setup builds run inline",
+      "body": "Two items added to the setup register from the R01-R50 setup. Item 11: a JUnit setup job reported passed although R50's offline builds had stopped at the Groovy test compile and no test ran, because the agent's job script exited 0 whatever the build did and the job's expectations did not check that tests ran; the agent caught it from the logs and queued a rerun. Item 12: the setup's subagents ran most of their builds and upstream tests inline in the loop's scope rather than as verification jobs, against CLAUDE.md's rule; nothing ran out of memory. Each has a direction; none is chosen.",
+      "log_sha256": "11ab9b9a71a01083768b0c9dc6719df8ebd23f5043b073235e9e99a2b4142d13"
+    },
+    {
+      "change_id": "zmtmwmzvyrnnmvulqqywtznvzqvvptww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins: passed: 4 passed step(s) in 3m28s, peak 3.5 GiB (estimated 25m00s, 6.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-r01-r50-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "11ab9b9a71a01083768b0c9dc6719df8ebd23f5043b073235e9e99a2b4142d13"
+    },
+    {
+      "change_id": "tzkllworxlsvqkyyqtlrlxvrwzntlqvk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on organic-java-merged-pr-links-r01-r50-brief-setup",
+      "body": "The watcher's verdicts on the single-agent run organic-java-merged-pr-links-r01-r50-brief-setup (llm-dlc/decisions/single-organic-java-merged-pr-links-r01-r50-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
+    },
+    {
       "change_id": "uyspovqpnmxutkzvupwumvmmyputwwvq",
       "commit_id": null,
       "immutable": false,
@@ -13077,6 +13109,14 @@
       "summary": "Put the setup notes of organic-java-merged-pr-links-r01-r50-brief into its brief",
       "body": "The setup run organic-java-merged-pr-links-r01-r50-brief-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md and ~/code/scripts/analysis/organic-java-merged-pr-links-r01-r50-brief.md, for the domain agent.",
       "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
+    },
+    {
+      "change_id": "tmwqvlxwwzzlnzlmvkylmtkpwnozktqr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "11ab9b9a71a01083768b0c9dc6719df8ebd23f5043b073235e9e99a2b4142d13"
     }
   ],
   "logs": {
@@ -13157,6 +13197,12 @@
       "lines": 13840,
       "gzip_bytes": 5777477,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/112f73dce390c46e50659156e88648e57e2cd9c36e9474390c1866140e9897f4.jsonl.gz"
+    },
+    "11ab9b9a71a01083768b0c9dc6719df8ebd23f5043b073235e9e99a2b4142d13": {
+      "bytes": 46551007,
+      "lines": 21497,
+      "gzip_bytes": 7990909,
+      "url": null
     },
     "12a2e11ddf2f5e3ac80b73be965cc341a583effbcf18abb17321ab7edd14ea2f": {
       "bytes": 16589580,
