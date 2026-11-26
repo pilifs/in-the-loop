@@ -1,0 +1,246 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-231202-re-score-a-lone-open-baseline-from-its-o",
+  "title": "Re-score a lone open baseline from its original JVM receipts",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 14.2s, peak 161.9 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-231202-re-score-a-lone-open-baseline-from-its-o.json",
+    "sha256": "d8337e8a28ba1a152fd363119fe6595394607443d297e9afa7236fe8f5939d93",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-231202-re-score-a-lone-open-baseline-from-its-o",
+      "title": "Re-score a lone open baseline from its original JVM receipts",
+      "description": "Run the ordinary generated caller with a wrong parent prediction for the reviewed German DecimalFormat, on both pinned Spring JARs. Its lone claim must remain open, while offline correction asks the original receipt again and establishes the separate evaluation. Also reproduce the CSS and SSE baseline corrections and the negative controls for deployment, registration and incomplete evidence.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T23:12:02+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Historical counterfactuals and invalidation controls",
+          "run": "python3 verification/generated-observers/rescoring.py --check",
+          "cwd": "."
+        },
+        {
+          "name": "Newly measured single-claim baseline through the public rescore command",
+          "run": "python3 verification/generated-observers/rescoring.py --live",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/458-format-rescore.zip"
+      ]
+    }
+  },
+  "sourceCommit": "aa3f86d46385354fcc52d962c2c35714a16ed318",
+  "startedAt": "2026-11-26T23:19:57+00:00",
+  "finishedAt": "2026-11-26T23:23:35+00:00",
+  "wallSeconds": 218.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3374368,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 169750528,
+    "wallSeconds": 14.2,
+    "cpuSeconds": 17.3,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 195.544,
+      "cpuSeconds": 195.63,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2351095808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "6034cf2feca24d8d7b42916a4d8453078dbed409a99e017378867842a5c08ed8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261126-231202-re-score-a-lone-open-baseline-from-its-o/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 15s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Historical counterfactuals and invalidation controls",
+      "run": "python3 verification/generated-observers/rescoring.py --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.401,
+      "cpuSeconds": 0.188,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 18550784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-historical-counterfactuals-and.log",
+        "lines": 1,
+        "bytes": 84,
+        "sha256": "6181da3e6f1ab959b1dc1adf76ebfa3c40941b23f2a16cd9de98bc74187c3fb1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Two original open baselines, two established corrections, two refuted fix controls."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Newly measured single-claim baseline through the public rescore command",
+      "run": "python3 verification/generated-observers/rescoring.py --live",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 13.826,
+      "cpuSeconds": 17.111,
+      "cpuThrottledSeconds": 1.016,
+      "peakMemoryBytes": 169750528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-newly-measured-single-claim-ba.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/458-format-rescore.zip",
+      "change": "added",
+      "bytes": 26767,
+      "sha256": "7ce3df7aa5d007dca26fa68dda880bba7ce9bda631a5c55c9643c2f797f17a6d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T23:23:40+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/458-format-rescore.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7bfd2bd1af1c4662c49cb137b6cad0b516205dda",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7bfd2bd1af1c4662c49cb137b6cad0b516205dda/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T232335Z-920204a9d9a66374",
+      "outputs": "20261126T232335Z-948809c67e225990",
+      "diff": "20261126T232335Z-9722459f02cb835b"
+    }
+  }
+}
