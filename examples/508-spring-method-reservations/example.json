@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "508",
+  "title": "Reserve each generated method name separately",
+  "summary": "Reserving two generated method names now produces apply1 and test1. A peer reserved one name at a time and returned the same four names, including the free applyTest spelling.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "compilers",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "GeneratedClass.reserveMethodNames"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "An AOT contribution can reserve several interface method names in one call. The parent combines the arguments into a single suggested name while checking the first reservation."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36912"
+  },
+  "notes": [
+    "Both callers obtained a fresh GeneratedClass through DefaultGenerationContext. The parent threw while reserving the pair."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

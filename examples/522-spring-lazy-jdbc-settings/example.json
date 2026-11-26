@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "522",
+  "title": "Defer JDBC session settings while preserving physical connection state",
+  "summary": "Individual client-info and timeout settings now wait for first physical use. One consuming read applied the latest value, preserved the driver's unrelated key, and left the unused handle unmaterialized.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "LazyConnectionDataSourceProxy.getConnection"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "LazyConnectionDataSourceProxy defers per-name client info and network timeouts until first physical use. Bulk client info and reads of client info still require the driver."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37261"
+  },
+  "notes": [
+    "Each physical connection owns separate settings. The control observed an immediate checkout for both a driver-supplied value and a bulk Properties write."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

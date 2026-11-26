@@ -169,7 +169,7 @@ def upstream_test_inputs(cache, spec, deployment, work):
     sources = []
     resources = work / "resources"
     for name, digest in fixtures["sha256"].items():
-        match = re.fullmatch(r"[\w-]+/src/test/(java|resources)/(.+)", name)
+        match = re.fullmatch(r"[\w-]+/src/(?:test|testFixtures)/(java|resources)/(.+)", name)
         if not match or any(p in ("", ".", "..") for p in name.split("/")):
             raise ValueError(f"invalid upstream test fixture path: {name}")
         data = subprocess.check_output(["git", "-C", tree, "show", f"{revision}:{name}"])
@@ -194,6 +194,19 @@ def caller_invocations(jdk, folder, owner):
     if not sites:
         raise ValueError(f"compiled caller has no direct calls to {owner}")
     return sites
+
+
+def compile_kotlin(jdk, cache, compiler, sources, classpath, classes):
+    """Compile the same Kotlin client against each library's inline extension bodies."""
+    jars = []
+    for name, digest in compiler.items():
+        jar = (cache / name).resolve(strict=True)
+        if not jar.is_relative_to(cache) or upgrade_replay.sha(jar) != digest:
+            raise ValueError(f"changed Kotlin compiler dependency {jar.name}")
+        jars.append(str(jar))
+    subprocess.run([jdk / "bin/java", "-XX:-UsePerfData", "-Xmx384m", "-cp", os.pathsep.join(jars),
+                    "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler", "-no-stdlib", "-no-reflect", "-jvm-target", "17",
+                    "-classpath", str(classes) + os.pathsep + classpath, "-d", classes, *sources], check=True)
 
 
 def compile_source_slice(cache, jdk, deployment, revisions, side, cp, work):
@@ -229,13 +242,14 @@ def replay(folder, record=False):
     if sha(jdk / "release") != runtime["jdkReleaseSha256"]:
         raise ValueError("JDK release differs from the registered deployment")
     sources = sorted((folder / "caller").rglob("*.java"))
+    kotlin = sorted((folder / "caller").rglob("*.kt"))
     adapters = {side: sorted((folder / "adapters" / side).rglob("*.java")) for side in SIDES}
     fixtures = sorted(p for p in (folder / "fixtures").rglob("*") if p.is_file())
     if not sources:
         raise ValueError("missing public caller")
     result = {"schema": "public-observations/v1", "comparisonSha256": sha(folder / "comparison.json"),
               "runtimeSha256": sha(folder / "runtime.json"), "launcherSha256": sha(upgrade_replay.LAUNCHER),
-              "inputs": {str(p.relative_to(folder)): sha(p) for p in sources + fixtures +
+              "inputs": {str(p.relative_to(folder)): sha(p) for p in sources + kotlin + fixtures +
                          adapters["parent"] + adapters["fix"]}, "deployments": {}}
     with tempfile.TemporaryDirectory(prefix="public-comparison-") as tmp, ExitStack() as services:
         work = Path(tmp)
@@ -270,6 +284,14 @@ def replay(folder, record=False):
                              ["-parameters"] if deploy.get("parameterNames") else [])
             if not per_side:
                 classes = dict.fromkeys(SIDES, classes[compile_side])
+            if bool(kotlin) != bool(deploy.get("kotlinCompiler")):
+                raise ValueError("Kotlin caller sources require a locked compiler")
+            if kotlin:
+                for side in SIDES:
+                    dest = work / "kotlin" / name / side
+                    shutil.copytree(classes[side], dest)
+                    compile_kotlin(jdk, cache, deploy["kotlinCompiler"], kotlin, cp[side], dest)
+                    classes[side] = dest
             runs = []
             for side in SIDES:
                 providers = {cls: cache / deploy["classpath"][side][index] for cls, index in deploy["providers"].items()}
@@ -292,7 +314,7 @@ def replay(folder, record=False):
                                      "prediction": "observed only" if expected is None else
                                      ("matched" if agrees(expected, actual) else "refuted")})
             record_entry = {"callerClasses": class_digests(classes["fix"]), "observations": runs}
-            if per_side:
+            if per_side or kotlin:
                 record_entry["callerClassesBySide"] = {side: class_digests(classes[side]) for side in SIDES}
             if "callOwner" in deploy:
                 record_entry["callerInvocations"] = {

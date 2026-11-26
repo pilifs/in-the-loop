@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "526",
+  "title": "Assert servlet redirect and forward destinations with Ant patterns",
+  "summary": "The new MockMvc matchers accepted the intended redirect and forward. A single star rejected the extra path segment and a double star accepted it.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "MockMvcResultMatchers.redirectedUrlPattern"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Two new MockMvcResultMatchers factories accept Ant patterns while the existing exact URL assertions retain literal semantics. The comparison uses the merge commit and its first parent."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/374"
+  },
+  "notes": [
+    "A separate exact forward assertion retained its literal question mark. The caller checked the actual dispatched destination before applying each matcher.",
+    "Each pin supplies its changed production classes on spring-test-4.0.0.M3-q19. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

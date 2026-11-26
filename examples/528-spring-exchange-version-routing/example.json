@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "528",
+  "title": "Dispatch versioned HTTP exchange controllers",
+  "summary": "Versioned HTTP exchange controllers now dispatch to v1.1 on MVC and WebFlux. Both stacks rejected version 99 with HTTP 400 and zero controller invocations.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "HttpExchange.version"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "MVC and WebFlux now transfer the version declared on an HTTP exchange annotation to the server-side request mapping."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36602"
+  },
+  "notes": [
+    "MockMvc and WebTestClient used the same published Spring Test 7.0.10 client companion with both original server revisions. Standard request mappings provided the control."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

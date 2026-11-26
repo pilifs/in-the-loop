@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/35808",
+  "revisions": {
+    "parent": "a5579614d9ff079560c321a6cc80ed7de2c72002",
+    "fix": "0eba6f0da3fbd879326226c9310791ceb329bb82"
+  },
+  "entry": "BeanFactory.getBean",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#35808.1",
+      "role": "Intent",
+      "args": [
+        "java"
+      ],
+      "history": "Look up text and then count using the `Box<String>` type reference. Check for the exact method signature on the parent.",
+      "prediction": "The exact overload is absent before. After, text returns the text singleton. count throws with bean name count, required class Box, generic required type equal to the captured Type and actual class CountBox.",
+      "basis": "The concrete subclasses retain their generic superclass at runtime. The other correctly typed bean has a different name.",
+      "refutation": "count silently returns either bean, or its exception loses the generic argument.",
+      "expected": {
+        "fix": {
+          "return": "text/count:Box:true:CountBox"
+        },
+        "parent": {
+          "return": "absent"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#35808.2",
+      "role": "Control",
+      "args": [
+        "raw"
+      ],
+      "history": "Call getBean(\"count\", Box.class), getBean(\"text\") and getBean(\"absent\") on a fresh factory.",
+      "prediction": "Both revisions return the count singleton on the raw lookup, the text singleton on the plain lookup and NoSuchBeanDefinitionException for the absent name.",
+      "basis": "These existing contracts select by name and the raw check cannot distinguish Box's arguments.",
+      "refutation": "Either bean changes identity, or the missing name resolves to another Box.",
+      "expected": {
+        "fix": {
+          "return": "count/text/NoSuchBeanDefinitionException"
+        },
+        "parent": {
+          "return": "count/text/NoSuchBeanDefinitionException"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#35808.3",
+      "role": "Challenge",
+      "args": [
+        "kotlin"
+      ],
+      "history": "On the merge call Kotlin's beanFactory.getBean<`Box<String>`>(\"count\") with text still registered. Compare with the Java failure, then retrieve count as `Box<Number>` through both languages.",
+      "prediction": "Both failing calls expose the `Box<String>` requirement and CountBox actual class. Both successful calls return the same count singleton. Before, the Kotlin extension uses the raw Box class and is expected to accept count.",
+      "basis": "The reified Kotlin and anonymous Java type tokens describe the same type. The independent singleton read detects a by-type fallback.",
+      "refutation": "Only Kotlin accepts the mismatched object, or success returns a different singleton.",
+      "expected": {
+        "fix": {
+          "return": "java=count:Box:true:CountBox kotlin=count:Box:true:CountBox success=true/true"
+        },
+        "parent": {
+          "return": "kotlin=count"
+        }
+      }
+    }
+  ]
+}

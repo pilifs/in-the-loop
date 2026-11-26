@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "531",
+  "title": "Request a JMS reply on a caller-owned queue",
+  "summary": "An embedded Artemis responder acknowledged both object- and name-addressed requests through the caller's reply queue. An independent exchange on the same queue then delivered C.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "JmsTemplate.sendAndReceive"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "JmsOperations and JmsTemplate gain sendAndReceive overloads taking explicit request and reply destinations or their names. The caller can retain the reply destination across calls."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36162"
+  },
+  "notes": [
+    "The existing overload returned its acknowledgement via a temporary queue on both revisions. The broker ran in-process with finite receives and one outstanding request."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

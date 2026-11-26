@@ -1,0 +1,86 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "eceb2a82e2640a2663272265d232a84d7219b54d850f039b76cb0be088ebb18e",
+  "runtimeSha256": "57d08c55c0eb7f48e0e35ee1e96f01a7103f8670aabc4c56e2f31994b4470aa4",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "473cda47246b7be59c9022bded981c03b460973e1561874160fdec69cb1665de"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Config.class": "7cc4a3cd938557531dce87e60ed257af5394a88cd37402f162291a0d6ecb45f7",
+        "PublicCaller$Consumer.class": "7d07b3955753df6d88acd80ba2beaef4ebd0cbb85490532220eab6f726e0910d",
+        "PublicCaller$Listener.class": "10294e3d44b906d133370b07a5d618d7e9f1fad6f54eb3e2556aa5c0d0491e0a",
+        "PublicCaller$Observer.class": "3715100ca507dd6843661724cb7af0ca492811d5e3a41b459ec3ec279816e3cf",
+        "PublicCaller$TestEvent.class": "88f56cfbd59cff0bd13b41fe959d733af8d570adf51c1217f915093aced52fda",
+        "PublicCaller.class": "be4966e90b9d3b11288a42c9e8077ec69fe96d24249ce7e1c613f7f91e34797f",
+        "UpgradeObservation.class": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#23784.1",
+          "outcome": {
+            "return": "empty:IllegalStateException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#23784.2",
+          "outcome": {
+            "return": "present:[E1]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#23784.3",
+          "outcome": {
+            "return": "IllegalStateException:[]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#23784.1",
+          "outcome": {
+            "return": "empty:ok"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#23784.2",
+          "outcome": {
+            "return": "present:[E1]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#23784.3",
+          "outcome": {
+            "return": "ok:[E1, E2]"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/context/event/ApplicationListenerMethodAdapter$1.class": "69cbf9533416656f6370131e18426e5f10a032c76e5d2693e5d689bee2d77836",
+          "org/springframework/context/event/ApplicationListenerMethodAdapter$EventPublicationSubscriber.class": "4210a357c66e4a45d71d11716371ab73a9030d96bf8b413132b74014b86c0037",
+          "org/springframework/context/event/ApplicationListenerMethodAdapter$ReactiveResultHandler.class": "eca749719ac671c6f465e9981ff777ec13b115118d02b5f958b480ef42bcb24f",
+          "org/springframework/context/event/ApplicationListenerMethodAdapter.class": "0d5c8c9a04dba9b2baa4e9f0aad976852f2d11e8181b6e9ea1e84603a696333a"
+        },
+        "fix": {
+          "org/springframework/context/event/ApplicationListenerMethodAdapter$1.class": "69cbf9533416656f6370131e18426e5f10a032c76e5d2693e5d689bee2d77836",
+          "org/springframework/context/event/ApplicationListenerMethodAdapter$EventPublicationSubscriber.class": "38673679c7a1c6cb14fd3f3d6b2871dac2fbc1a0c2cc5360b34becf9b0034e9e",
+          "org/springframework/context/event/ApplicationListenerMethodAdapter$ReactiveResultHandler.class": "d77868a497071ed5fb2ffe6d57f921fae56bb29ebea2c14176bf4357f9fbc987",
+          "org/springframework/context/event/ApplicationListenerMethodAdapter.class": "5532a9e70b284fe0c77e301566341a28cc67059a27f79abc001c339c073be581"
+        }
+      }
+    }
+  }
+}

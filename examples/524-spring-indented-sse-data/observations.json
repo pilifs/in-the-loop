@@ -1,0 +1,84 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "f0623f541ceb66b48b705d2b9ec0410d73d732ec0202d976f6c40a882e7f861b",
+  "runtimeSha256": "aa5b4207d892882f3806bbd467b2355608f4ed24dbe624103028ecc6cebaf64c",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "49969774b7ca5f050a0574afa70f224391527bddd42ee961126d9a925cf923ec"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Bean.class": "cf4e0cc4b403c68eea29403f35f8895ab7610f2f8e4e4105597c84174d9942fc",
+        "PublicCaller.class": "0c3c7e96f7bae634b34445f4d85a8e520090f8dd1b099fe7f36c1d435be53b76",
+        "UpgradeObservation.class": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+        "org/springframework/core/io/buffer/support/DataBufferTestUtils.class": "11d1ac48275c12cb6562466fdac60f4b42f02d830bb6b1cb2e3597f39e61541a",
+        "org/springframework/mock/http/server/reactive/test/MockServerHttpResponse.class": "967b785d2ca7405caca08b08d431922e3193202e9dc43dd32bc1a1526c7cd91c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1251.1",
+          "outcome": {
+            "return": "events=2:invalid,invalid"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1251.2",
+          "outcome": {
+            "return": "events=2:A/one,B/two"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1251.3",
+          "outcome": {
+            "return": "events=2:invalid,invalid"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1251.1",
+          "outcome": {
+            "return": "events=2:A/one,B/two"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1251.2",
+          "outcome": {
+            "return": "events=2:A/one,B/two"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1251.3",
+          "outcome": {
+            "return": "events=2:A<LF>B/one,B/nested"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/http/ReactiveHttpOutputMessage.class": "cbaef1650b61501d9eea130e83a0578c66ba02b94c0fef674981a089e6d9b9fc",
+          "org/springframework/http/codec/ServerSentEventHttpMessageWriter.class": "a5f07e8639576a734c0cc6843eda186c8120f2473d9900fc4664473193c9fff5",
+          "org/springframework/http/codec/json/Jackson2JsonEncoder.class": "7c4a67be4943ed088e7ddb9ab6bfe5fa8aa685099df69ff2a1f2a2f3f796f99e",
+          "org/springframework/http/converter/json/AbstractJackson2HttpMessageConverter.class": "0991c45c52599ef8839bbc9bbaa5fe43f1b38714d1c0d2dad3398211694eface"
+        },
+        "fix": {
+          "org/springframework/http/ReactiveHttpOutputMessage.class": "cbaef1650b61501d9eea130e83a0578c66ba02b94c0fef674981a089e6d9b9fc",
+          "org/springframework/http/codec/ServerSentEventHttpMessageWriter.class": "c4eda64255f5b6761127b31c69ec6c45d740a3e471e50e89ab03c33120367d00",
+          "org/springframework/http/codec/json/Jackson2JsonEncoder.class": "e323262edfa19cabee4306092f1da60bc547b588c8417914e2aef435b99aa022",
+          "org/springframework/http/converter/json/AbstractJackson2HttpMessageConverter.class": "86f26f11618d17ccd6749fc1a48a6232f76573e85a090093012b800681fb2e67"
+        }
+      }
+    }
+  }
+}

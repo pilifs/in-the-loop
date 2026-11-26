@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37601",
+  "revisions": {
+    "parent": "74f0bcfef6a5eb7a47d71e046eca507d3a959142",
+    "fix": "40c69ef5bb3a1a5fcc3aef63dba682a9ad971bed"
+  },
+  "entry": "HttpServiceProxyFactory.createClient",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37601.1",
+      "role": "Intent",
+      "args": [
+        "advice"
+      ],
+      "history": "After building F1 add a proxyFactoryCustomizer that installs advice returning \"late\" before the adapter is reached. Install the interceptor with proxyFactory.addAdvice(0, interceptor) to run it before the service invocation advice.",
+      "prediction": "Parent should return \"late\" through both factories. The merge should return \"base\" through F1 and \"late\" through F2.",
+      "basis": "The same service method and adapter expose which factory received the added advice.",
+      "refutation": "The old factory returns \"late\", or the later factory still calls the adapter.",
+      "expected": {
+        "fix": {
+          "return": "[base, late]:[[]]"
+        },
+        "parent": {
+          "return": "[late, late]:[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37601.2",
+      "role": "Control",
+      "args": [
+        "same"
+      ],
+      "history": "Build F1 and F2 without editing the builder between builds.",
+      "prediction": "Both revisions should return \"base\" for each client and record one adapter call for each invocation.",
+      "basis": "Both snapshots have the same configuration.",
+      "refutation": "A result differs or either client bypasses or calls the adapter twice.",
+      "expected": {
+        "fix": {
+          "return": "[base, base]:[[], []]"
+        },
+        "parent": {
+          "return": "[base, base]:[[], []]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37601.3",
+      "role": "Challenge",
+      "args": [
+        "header"
+      ],
+      "history": "Start again. After building F1 add only httpRequestValuesProcessor that adds header X-Stage=late. Call F1, F2, then a fresh F1 client.",
+      "prediction": "Parent should send the header three times. The merge should record header values absent, [\"late\"], absent, while all three calls return \"base\".",
+      "basis": "The transport sees the request after processing. No short-circuiting advice can mask whether the processor leaked.",
+      "refutation": "All return values look correct but any of the three transport header observations differ.",
+      "expected": {
+        "fix": {
+          "return": "[base, base, base]:[[], [late], []]"
+        },
+        "parent": {
+          "return": "[base, base, base]:[[late], [late], [late]]"
+        }
+      }
+    }
+  ]
+}

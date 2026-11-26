@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37261",
+  "revisions": {
+    "parent": "803517c0cb950e6647926ece40412ca4442eb8a7",
+    "fix": "d571c4097da575c1546a211d410caddefb38d060"
+  },
+  "entry": "LazyConnectionDataSourceProxy.getConnection",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37261.1",
+      "role": "Intent",
+      "args": [
+        "defer"
+      ],
+      "history": "Apply both individual setters before creating any statement",
+      "prediction": "The parent should check out a connection at the first setter. On the merge the setter calls and timeout getter should leave the count at zero and return 125 from the getter. Statement creation should raise the count to one, with blue and 125 already applied.",
+      "basis": "The pool is an independent observer of physical acquisition. State recorded on its issued connection shows whether the settings ever reached the driver.",
+      "refutation": "A merge setter borrows eagerly, a second checkout occurs, or the first statement sees stale state.",
+      "expected": {
+        "fix": {
+          "return": "0/0/0:125/1:blue:125"
+        },
+        "parent": {
+          "return": "1/1/1:125/1:blue:125"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37261.2",
+      "role": "Control",
+      "args": [
+        "bulk"
+      ],
+      "history": "On a fresh proxy read a driver-supplied client-info key, or use setClientInfo(Properties) on a separate fresh proxy",
+      "prediction": "On both revisions each operation should immediately obtain one target. The read should expose that driver's value and the bulk write should follow its own driver semantics.",
+      "basis": "Both are explicit exceptions in the merged proxy Javadoc. Driver defaults and bulk replacement behavior belong to the underlying connection.",
+      "refutation": "The getter returns an invented value, the bulk call is deferred, or a different Properties payload reaches the driver.",
+      "expected": {
+        "fix": {
+          "return": "1:driver / 1:{bulk=set}"
+        },
+        "parent": {
+          "return": "1:driver / 1:{bulk=set}"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37261.3",
+      "role": "Challenge",
+      "args": [
+        "handles"
+      ],
+      "history": "On one proxy set app to blue then green. On a second proxy set app to red and close before first use. Materialize the first by calling getClientInfo(\"app\")",
+      "prediction": "The merge should make exactly one checkout across both proxies and return green, preserving an unrelated driver-supplied key on the first connection. Closing the unused second proxy should leave its settings unapplied.",
+      "basis": "A consuming read must yield the latest per-connection value. Setting one named property does not clear other keys, and an unused handle needs no connection.",
+      "refutation": "Red or blue leaks into the result, the unrelated key vanishes, or closing the second proxy consumes a checkout.",
+      "expected": {
+        "fix": {
+          "return": "before=0 after=1 value=green other=driver"
+        }
+      }
+    }
+  ]
+}

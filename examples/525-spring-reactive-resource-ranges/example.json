@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "525",
+  "title": "Read the exact requested bytes of a static reactive HTTP resource",
+  "summary": "The merged resource handler returned exactly So for bytes 0–1. A multipart response decoded with its advertised boundary returned So and t., matching the two separate range requests.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ResourceWebHandler.handle"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Four consecutive commits add a region encoder, a region writer, reactive static-resource handling and final refinements. The range begins before the encoder and ends after the final commit."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/1175"
+  },
+  "notes": [
+    "The ten-byte upstream resource and the historical mock exchanges are read by Git revision and digest. The parent returned the complete representation to range requests.",
+    "Each pin supplies its changed production classes on spring-5.0.0.M2-q18. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

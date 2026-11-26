@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "535",
+  "title": "Bound jitter on a reactive retry without changing attempt counts",
+  "summary": "Reactive retry now tolerates jitter larger than its five-millisecond delay and recovers on subscription two. A 107000-day jitter still overflowed during adaptation before the target publisher had any subscription.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "integer-overflow",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "SimpleRetryInterceptor"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The AOP interceptor derives Reactor’s jitter factor from nanoseconds, substitutes zero for zero delay, and caps the ratio at one."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/35140"
+  },
+  "notes": [
+    "The large and small jitter inputs were both exercised with an immediately successful cold target. No long backoff was needed."
+  ],
+  "verdictLabel": "2/3 merged predictions matched"
+}

@@ -1,0 +1,90 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "4eeffb3c78f5f8865087a93923096ce9a7478755353528e98be145e751219e84",
+  "runtimeSha256": "7679c10fe9f932ab9ac225a4539bb16621c5a3ecec5f301f7d92f3d683a1814a",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "55555623765f632c14e789bd6f0d80c0db2ccfccc122a51884e332b6f61d4e1d"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Manager.class": "86e3dd669ac707bfcb00c0e0cf96a500a1278aa73063fa7d311d4bd5978248eb",
+        "PublicCaller.class": "ceac438b16e97973a17f9c3e3e6f5fe6ed066c67779ab13e896f74e70a159725",
+        "UpgradeObservation.class": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#22881.1",
+          "outcome": {
+            "return": "[1, 2, 3, 4]:complete:c1:r0:released0:available=false"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#22881.2",
+          "outcome": {
+            "return": "[7]:complete:c0:r0:released0:available=false"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#22881.3",
+          "outcome": {
+            "return": "[1]:early=true:waiting=false:sentinel=true:c0:r1:released0:available=false"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#22881.1",
+          "outcome": {
+            "return": "[1, 2, 3, 4]:complete:c1:r0:released1:available=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#22881.2",
+          "outcome": {
+            "return": "[7]:complete:c0:r0:released0:available=false"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#22881.3",
+          "outcome": {
+            "return": "[1]:early=false:waiting=true:sentinel=true:c0:r1:released1:available=true"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$1.class": "9a38e39e73920ee904a76dea42e80c0568a8199a89b1e24f2038d60499d43ff3",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$ErrorPredicates$1.class": "0e9530616b2f5d0517c94ecbcbd3e010950cd18cd6f5f9454a9e776da887b71c",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$ErrorPredicates$2.class": "e1c352dd11b0229829dd6c86d87309c4f482954221030d6b8005ea521e9f4d7b",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$ErrorPredicates$3.class": "7a5f805d21e970f0b728c14a608c8ae353c5e9f86f3fdeb14f6bd7b4a0612fbb",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$ErrorPredicates.class": "4e4575b24bfc46ed942dbd60c6540316a7e480694634ae48d763a7a064466da7",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$SuspendedResourcesHolder.class": "cc76d5347cb57554aabf59343fd49f58c77ce8dd75bdfa50703b4f94fef7d4f9",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager.class": "ce05936b569ad0c79253c403d3735bffec9d780ccf299b3b1b365535842e9b4d",
+          "org/springframework/transaction/reactive/TransactionalOperatorImpl.class": "58d327d3b3592dcee913891f1f7c93f13133c65efe849e29b47b84a1527b4ad1"
+        },
+        "fix": {
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$1.class": "9a38e39e73920ee904a76dea42e80c0568a8199a89b1e24f2038d60499d43ff3",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$ErrorPredicates$1.class": "a2502542598676608aa54e49444c38ccb948cb4c7e22b24631f8077ab4f77171",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$ErrorPredicates$2.class": "72222c753d745c00ad66d9c20623d8e5a83fa9c1f70d0a1972ea4cebcb22f448",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$ErrorPredicates$3.class": "8178625caaa5bfc272e3346d52353ace61617ba79b08ac66c8c3981699e76dba",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$ErrorPredicates.class": "5cca2910c313f308ab915aafffadcd0d3727f88e4f90bc9ec5905653c716b969",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager$SuspendedResourcesHolder.class": "5dd891d6c799bc0868932a161717bcd78c500fc3a3c07217abfe981481332bd6",
+          "org/springframework/transaction/reactive/AbstractReactiveTransactionManager.class": "e6c7d1806562db45e143c065c23ea8fee7f55968b95c94661e9d785854fff651",
+          "org/springframework/transaction/reactive/TransactionalOperatorImpl.class": "0b2e43050e8c0c4018ef1ae8a885d28710a784de44f747b9056764a39de48dca"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/26700",
+  "revisions": {
+    "parent": "564c6f7f86467e1f831d107d571ec34501104b18",
+    "fix": "531174258c123920a36e183ce63946f38d07e45a"
+  },
+  "entry": "ThreadPoolTaskExecutor.setCorePoolSize",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#26700.1",
+      "role": "Intent",
+      "args": [
+        "reject"
+      ],
+      "history": "In three fresh instances try core=-1, max=0, and keepAliveSeconds=-10 respectively.",
+      "prediction": "Both revisions should throw IllegalArgumentException. The parent predicts the rejected number in the Spring getter while the JDK retains 1, 1, or 60. The merge should leave both getters at the corresponding original value.",
+      "basis": "A rejected operation never became an effective setting. A second public object exposes the retained configuration.",
+      "refutation": "The merged call throws but either getter advertises the rejected value, or the exception is missing.",
+      "expected": {
+        "fix": {
+          "return": "IllegalArgumentException:1/1 IllegalArgumentException:1/1 IllegalArgumentException:60/60"
+        },
+        "parent": {
+          "return": "IllegalArgumentException:-1/1 IllegalArgumentException:0/1 IllegalArgumentException:-10/60"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#26700.2",
+      "role": "Control",
+      "args": [
+        "accept"
+      ],
+      "history": "On one initialized instance set max=3, then core=2, then keepAliveSeconds=10.",
+      "prediction": "Both revisions should accept the sequence and agree on (2,3,10) through both objects.",
+      "basis": "Every intermediate configuration respects the JDK pool bounds.",
+      "refutation": "A legal setter throws or the two sets of getters disagree.",
+      "expected": {
+        "fix": {
+          "return": "2,3,10/2,3,10"
+        },
+        "parent": {
+          "return": "2,3,10/2,3,10"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#26700.3",
+      "role": "Challenge",
+      "args": [
+        "recover"
+      ],
+      "history": "Start again at core=max=1. Try core=3, catch the exception, set max=2, then request core equal to the live Spring core getter plus one.",
+      "prediction": "On the merge this recovery should succeed and end at core=max=2 on both objects. On the parent the stale value 3 predicts an attempt to set core=4 and another rejection.",
+      "basis": "A management client making a one-worker increase after a rejected update must compute from the actually accepted setting.",
+      "refutation": "The merge passes the first exception check but the follow-up throws or the JDK pool still has core 1.",
+      "expected": {
+        "fix": {
+          "return": "IllegalArgumentException/ok:2,2/2,2"
+        },
+        "parent": {
+          "return": "IllegalArgumentException/IllegalArgumentException:4,2/1,2"
+        }
+      }
+    }
+  ]
+}

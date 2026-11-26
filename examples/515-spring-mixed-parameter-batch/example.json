@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "515",
+  "title": "Mixed named-parameter batches preserve an existing SQL parameter source",
+  "summary": "The mixed JDBC batch retained its supplied parameter source. Editing that source before binding committed (3,revised) alongside the map and bean rows.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "SqlParameterSourceUtils.createBatch"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Both overloads of SqlParameterSourceUtils.createBatch now retain a supplied SqlParameterSource, alongside conversion of maps and bean objects."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37524"
+  },
+  "notes": [
+    "Each successful batch used a real transaction and a separate H2 connection for ordered readback. Both conversion overloads preserved the ordinary two-row input."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

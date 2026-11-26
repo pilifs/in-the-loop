@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36162",
+  "revisions": {
+    "parent": "2b96a61063f3008ce268271bc947272b178c3bf7",
+    "fix": "3f390d55f0434608d64d02a0478a17d80ed9eb8d"
+  },
+  "entry": "JmsTemplate.sendAndReceive",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36162.1",
+      "role": "Intent",
+      "args": [
+        "owned"
+      ],
+      "history": "Send text A with sendAndReceive(requestQueue, replyQueue, creator).",
+      "prediction": "Parent lacks the overload. On the merge the responder should observe replies as JMSReplyTo and the caller should receive a TextMessage with body \"ack-A\".",
+      "basis": "The responder routes using the request header and generates the body from the received text.",
+      "refutation": "The header names another destination, the result is null, or its type or text is wrong.",
+      "expected": {
+        "fix": {
+          "return": "replies:ack-A"
+        },
+        "parent": {
+          "return": "absent"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36162.2",
+      "role": "Control",
+      "args": [
+        "temporary"
+      ],
+      "history": "Use the pre-existing two-argument sendAndReceive(requestQueue, creator) with the same responder.",
+      "prediction": "Both revisions should obtain \"ack-A\" via a temporary JMSReplyTo in this controlled exchange.",
+      "basis": "This overload supplies and cleans up a temporary queue. The responder follows that destination without configuration for replies.",
+      "refutation": "The responder sees the caller-owned queue or the caller misses a reply that was sent within the timeout.",
+      "expected": {
+        "fix": {
+          "return": "temporary:ack-A"
+        },
+        "parent": {
+          "return": "temporary:ack-A"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36162.3",
+      "role": "Challenge",
+      "args": [
+        "repeat"
+      ],
+      "history": "On the merge send A with Destination objects, then B with names resolved to the same queues. After both receives use a separate producer and consumer on replies to exchange marker C.",
+      "prediction": "The calls should yield \"ack-A\" then \"ack-B\", and the independent consumer should receive C.",
+      "basis": "Message text ties replies to these sequential requests. Reusing replies after completion tests ownership across the JMS boundary.",
+      "refutation": "A name resolves to the wrong queue, a reply crosses requests, or closing the template’s consumer makes the caller-owned queue unusable.",
+      "expected": {
+        "fix": {
+          "return": "replies:ack-A/replies:ack-B/C"
+        }
+      }
+    }
+  ]
+}

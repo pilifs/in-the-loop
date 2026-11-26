@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "518",
+  "title": "Bind a named R2DBC parameter immediately inside SQL array brackets",
+  "summary": "PostgreSQL returned the bound array for tight brackets and preserved the order and multiplicity of [7,2,7]. The parent required a space after the parameter name.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "DatabaseClient.sql"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The R2DBC named-parameter parser treats each square bracket as a separator. The closing bracket remains part of the SQL array expression."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/27716"
+  },
+  "notes": [
+    "Each history subscribed through Spring DatabaseClient against PostgreSQL 17 and compared the driver's Integer[] with an independently executed literal array."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

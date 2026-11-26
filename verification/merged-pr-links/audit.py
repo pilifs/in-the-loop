@@ -38,15 +38,15 @@ def spring_builds(setup, campaign, prefix):
     return builds
 
 
-def check_prepared_spring_pair(number, deployment, recorded, setup):
-    case = f"P{number:02}"
-    if number == 4:
+def check_prepared_spring_pair(number, deployment, recorded, setup, series="P"):
+    case = f"{series}{number:02}"
+    if case == "P04":
         classes = recorded["callerClassesBySide"]
         require(deployment.get("compilePerSide") and classes["fix"] == recorded["callerClasses"] and
                 classes["parent"]["PublicCaller.class"] == classes["fix"]["PublicCaller.class"] and
                 classes["parent"]["Flatten.class"] != classes["fix"]["Flatten.class"],
                 "P04 needs the same caller with separately compiled YAML adapters")
-    if number == 16:
+    if case == "P16":
         descriptor = "(Ljava/io/LineNumberReader;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
         sites = recorded["callerInvocations"]
         require(deployment.get("compileAgainst") == "parent" and not deployment.get("compilePerSide")
@@ -56,7 +56,19 @@ def check_prepared_spring_pair(number, deployment, recorded, setup):
     if "upstreamTestInputs" in deployment:
         require(deployment["upstreamTestInputs"]["tree"] == f"worktrees/{case}-fix",
                 f"{case}: wrong original test fixture tree")
-    if number not in (5, 9, 11, 16, 18, 19, 23):
+    if case == "Q05":
+        classes = recorded["callerClassesBySide"]
+        require(deployment.get("kotlinCompiler") and classes["fix"] == recorded["callerClasses"]
+                and classes["parent"]["PublicCaller.class"] == classes["fix"]["PublicCaller.class"]
+                and classes["parent"]["KotlinCallsKt.class"] != classes["fix"]["KotlinCallsKt.class"],
+                "Q05 needs Kotlin calls inlined from each revision with the same Java caller")
+    if case == "Q11":
+        image = deployment.get("postgresImage", "")
+        require(deployment.get("service") == "postgres" and re.fullmatch(r"postgres@sha256:[0-9a-f]{64}", image)
+                and image.split(":")[-1][:12] in setup and recorded.get("postgresVersionNumber") == 170012,
+                "Q11 requires the setup's PostgreSQL 17 instance")
+    slices = (5, 9, 11, 16, 18, 19, 23) if series == "P" else (4, 10, 17, 18, 19, 20, 25, 26)
+    if number not in slices:
         require(not deployment.get("preparedSlice") and "preparedSliceClasses" not in recorded,
                 f"{case}: expected the complete module builds")
         return
@@ -67,6 +79,21 @@ def check_prepared_spring_pair(number, deployment, recorded, setup):
         label = f"{case}-{side}"
         require(cp[side][0] == f"slices/{label}/{label}-slice.jar" and 0 in deployment["providers"].values(),
                 f"{label}: source slice must supply a loaded class")
+    if series == "Q":
+        # The setup prints the top-level class rows. Its independent build also
+        # writes every nested class digest to the per-pin main.SHA256SUMS.
+        inventory = comparison.read(Path(__file__).with_name("q01-q30") / "slice-classes.json")
+        expected = {side: inventory[cp[side][0]] for side in comparison.SIDES}
+        require(recorded["preparedSliceClasses"] == expected and expected["parent"] != expected["fix"],
+                f"{case}: compiled slice differs from setup's class inventory")
+        rows = re.findall(rf"^\| {case} \| `([\w$]+\.class)` \| (.*?) \| (.*?) \|$", setup, re.M)
+        require(rows, f"{case}: missing independent class digests")
+        for name, parent, fix in rows:
+            for side, value in (("parent", parent), ("fix", parent if fix == "the same" else fix)):
+                matches = [d for member, d in expected[side].items() if Path(member).name == name]
+                require(matches == ([] if value == "absent" else [value.strip("`")]),
+                        f"{case} {side}: {name} differs from the upstream build table")
+        return
     expected = {side: {} for side in comparison.SIDES}
     table = setup.split("**Slice class digests (sha256).**", 1)[1].split("**What the slice route", 1)[0]
     for member, parent, fix in re.findall(rf"^\| {case} \| `([^`]+)` \| `([0-9a-f]{{64}})` \| (.*?) \|$", table, re.M):
@@ -121,14 +148,15 @@ def audit(replay=False, campaign="original"):
               "m01-m10": ("organic-java-merged-pr-links-m01-m10-brief", "M", 10),
               "n01-n05": ("organic-java-merged-pr-links-n01-n05-brief", "N", 5),
               "o01-o20": ("spring-framework-pr-links-o01-o20-brief", "O", 20),
-              "p01-p30": ("spring-framework-pr-links-p01-p30-brief", "P", 30)}
+              "p01-p30": ("spring-framework-pr-links-p01-p30-brief", "P", 30),
+              "q01-q30": ("spring-framework-pr-links-q01-q30-brief", "Q", 30)}
     brief_name, case_prefix, case_count = series[campaign]
     brief = ROOT / "llm-dlc/loops" / (brief_name + ".md")
     setup = brief.with_name(brief.stem + "-setup.md").read_text()
     # N01–N05's build record puts every module in one table, including the nested Spring JARs.
     build_table = {f"artifacts/{case}-{side}/{path}": digest for case, side, path, digest in re.findall(
         r"^\| (N\d\d) \| (parent|fix) \| `([^`]+)` \| `([0-9a-f]{64})` \|$", setup, re.MULTILINE)}
-    spring_series = campaign in ("o01-o20", "p01-p30")
+    spring_series = campaign in ("o01-o20", "p01-p30", "q01-q30")
     if spring_series:
         build_table = spring_builds(setup, campaign, case_prefix)
     references = {}
@@ -167,6 +195,8 @@ def audit(replay=False, campaign="original"):
                     roles.insert(1, "Intent")
                 elif pr in ("22392", "34723", "30020"):
                     roles.append({"22392": "Compatibility", "34723": "Challenge", "30020": "Configuration"}[pr])
+            if campaign == "q01-q30" and case.endswith(("#37332", "#37465")):
+                roles.append("Challenge" if case.endswith("#37332") else "Compatibility challenge")
             require([row[0] for row in rows.values()] == roles,
                     f"{case}: incomplete or reordered questions")
     fields = ("role", "history", "prediction", "basis")
@@ -198,6 +228,7 @@ def audit(replay=False, campaign="original"):
                           ("launcherSha256", comparison.upgrade_replay.LAUNCHER)]:
             require(comparison.upgrade_replay.sha(path) == recorded[key], prefix + key)
         sources = sorted((folder / "caller").rglob("*.java")) + sorted((folder / "adapters").rglob("*.java"))
+        sources += sorted((folder / "caller").rglob("*.kt"))
         fixtures = [p for p in (folder / "fixtures").rglob("*") if p.is_file()]
         require(recorded["inputs"] == {p.relative_to(folder).as_posix(): comparison.upgrade_replay.sha(p)
                                        for p in sources + fixtures}, prefix + "caller or fixtures")
@@ -215,8 +246,8 @@ def audit(replay=False, campaign="original"):
             if campaign == "o01-o20":
                 check_spring_deployment(number, deployment, result_rows, setup)
                 counters["pinnedSourcePairs" if "sourceSlice" in deployment else "fullBuildPairs"] += 1
-            if campaign == "p01-p30":
-                check_prepared_spring_pair(number, deployment, result_rows, setup)
+            if campaign in ("p01-p30", "q01-q30"):
+                check_prepared_spring_pair(number, deployment, result_rows, setup, case_prefix)
                 counters["pinnedSourcePairs" if deployment.get("preparedSlice") else "fullBuildPairs"] += 1
             if campaign == "n01-n05" and case == "spring-projects/spring-framework#37322":
                 require(deployment.get("service") == "mysql" and
@@ -250,7 +281,7 @@ def audit(replay=False, campaign="original"):
                 require(all(type(i) is int and 0 <= i < len(files) for i in indices), prefix + "provider index")
                 require(any(files[i].startswith("artifacts/") for i in indices) or
                         (campaign == "o01-o20" and number in (11, 14) and "sourceSlice" in deployment) or
-                        (campaign == "p01-p30" and deployment.get("preparedSlice")),
+                        (campaign in ("p01-p30", "q01-q30") and deployment.get("preparedSlice")),
                         prefix + "no pin-built provider")
             expected_keys = [(s, q["id"]) for s in comparison.SIDES for q in spec["questions"]
                              if s not in q.get("omit", {})]
@@ -327,7 +358,7 @@ def audit(replay=False, campaign="original"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10", "n01-n05", "o01-o20", "p01-p30"), default="original")
+    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10", "n01-n05", "o01-o20", "p01-p30", "q01-q30"), default="original")
     parser.add_argument("--replay", action="store_true", help="also rebuild every caller and repeat the physical trials")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()

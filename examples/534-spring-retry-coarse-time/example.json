@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "534",
+  "title": "Invoke retry-annotated methods with coarse time units",
+  "summary": "Both coarse retry units now allow an immediately successful call. A real retry also recovered at attempt two with the very large seconds bound and its millisecond equivalent.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "integer-overflow",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "RetryAnnotationBeanPostProcessor"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Retry annotation processing converts millisecond and coarser numeric attributes with saturation. The default unlimited maximum delay can therefore coexist with a seconds or minutes setting."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37525"
+  },
+  "notes": [
+    "The parent seconds conversion raised ArithmeticException before target entry. A representable explicit maximum worked through the advised bean on both revisions."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

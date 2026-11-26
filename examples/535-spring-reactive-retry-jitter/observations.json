@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "c7007b668c24f18b8bb03ccfaab35c74d781dd5c2f480cd07651ec61e0c8489c",
+  "runtimeSha256": "2b5101efbfc5b9561cfc8937caf33fc8af9b35a9f37b8ec126640b955624b93a",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "abb76aa7344e5e30eb3568226da5b19a9c20b1c1b00d65a364443c351eca0705"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Target.class": "8cf740c2bf3f936c263069dc35c5930476f3791763f64b341b5b8a63949c6f59",
+        "PublicCaller.class": "bab4aaae977d4ff07d8139098cf1b2337489e2bb4205350025c537db70e147e5",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#35140.1",
+          "outcome": {
+            "return": "IllegalArgumentException:0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#35140.2",
+          "outcome": {
+            "return": "ok:1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#35140.3",
+          "outcome": {
+            "return": "IllegalArgumentException:0/IllegalArgumentException:0"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#35140.1",
+          "outcome": {
+            "return": "ok:2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#35140.2",
+          "outcome": {
+            "return": "ok:1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#35140.3",
+          "outcome": {
+            "return": "ok:1/ArithmeticException:0"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

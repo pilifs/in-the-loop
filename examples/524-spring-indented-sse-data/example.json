@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "524",
+  "title": "Serialize indented JSON as complete server-sent event data",
+  "summary": "The independent event reader now reconstructs both indented JSON objects. Nested structure and a newline inside a field survived transport and parsed into the intended events.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ServerSentEventHttpMessageWriter.write"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Spring adds SSE-aware pretty printing to the Jackson converter and reactive encoder. In the landed revision the reactive writer passes SSE_CONTENT_HINT while the servlet converter checks the response media type."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/1251"
+  },
+  "notes": [
+    "The caller consumed each flush group and its buffers in order, dispatched data at blank lines, then parsed the complete payload. The compact control passed on both revisions.",
+    "Each pin supplies its changed production classes on spring-web-5.0.0.M3-q17. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

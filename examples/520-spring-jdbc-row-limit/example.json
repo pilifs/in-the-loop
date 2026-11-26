@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "520",
+  "title": "Honor a JDBC row limit when the driver returns additional rows",
+  "summary": "At limit two, list, callback, and stream queries all delivered just 11 and 22 from an overlong JDBC cursor. At explicit zero the landing delivered no rows through any of the three APIs.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "JdbcTemplate.query"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "JdbcTemplate applies maxRows while delivering rows to its list, callback and stream consumers. This addresses a driver that accepts Statement.setMaxRows yet supplies a longer result."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/34709"
+  },
+  "notes": [
+    "The connection delegates to H2 and records the limit call without enforcing it. The parent returned all three rows at zero, the JDBC unlimited setting. The default limit left the driver alone."
+  ],
+  "verdictLabel": "2/3 merged predictions matched"
+}

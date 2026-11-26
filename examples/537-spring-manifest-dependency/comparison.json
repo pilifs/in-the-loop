@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/35732",
+  "revisions": {
+    "parent": "f89737e398452f4e5c15f3d8d7ca52683a582845",
+    "fix": "97586b525f0d20836c6ab319d9d68d396218340e"
+  },
+  "entry": "PathMatchingResourcePatternResolver.getResources",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#35732.1",
+      "role": "Intent",
+      "args": [
+        "absolute"
+      ],
+      "history": "List the asset JAR by its absolute native path, using test paths containing no spaces. The asset exists only in that dependency.",
+      "prediction": "Parent is expected to miss the asset in a root-wildcard scan. The merge should return one matching resource whose bytes decode to amber.",
+      "basis": "The manifest names the JAR, and the known archive entry and bytes identify the required result independently of the resolver.",
+      "refutation": "The merge finds no match, reports two copies, or returns different contents.",
+      "expected": {
+        "fix": {
+          "return": "[amber]"
+        },
+        "parent": {
+          "return": "[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#35732.2",
+      "role": "Control",
+      "args": [
+        "relative"
+      ],
+      "history": "Put the dependency under lib beside the launcher and use the relative manifest entry lib/asset.jar.",
+      "prediction": "Both revisions should return the unique amber resource.",
+      "basis": "The pre-existing java -jar relative-path fixture exercises this supported layout.",
+      "refutation": "The resolver misses or duplicates this conventional manifest entry, or its stream yields different bytes.",
+      "expected": {
+        "fix": {
+          "return": "[amber]"
+        },
+        "parent": {
+          "return": "[amber]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#35732.3",
+      "role": "Challenge",
+      "args": [
+        "replace"
+      ],
+      "history": "Hold the absolute path in the manifest fixed. In a separate fresh deployment replace the dependency with one whose same entry contains cobalt. Keep another same-named JAR containing amber outside the runtime class path.",
+      "prediction": "On the merge both launches should find one resource. Readback should change from amber to cobalt even though the matched resource filename is unchanged.",
+      "basis": "Only the declared dependency changed. Its known bytes distinguish the intended archive from a same-named decoy or the wrong resource root.",
+      "refutation": "The reported URL ends with the expected archive suffix but the data still reads amber, both versions of the resource appear, or the second scan is empty.",
+      "expected": {
+        "fix": {
+          "return": "[amber]/[cobalt]"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/25656",
+  "revisions": {
+    "parent": "e34c8004676d6ed3caddd1ef8eef8608518175a9",
+    "fix": "603d7e93b9ec78d202d643a7c3c53b1e8fa06354"
+  },
+  "entry": "WebHttpHandlerBuilder.clone",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#25656.1",
+      "role": "Intent",
+      "args": [
+        "clone"
+      ],
+      "history": "Send one request through the original and one through the clone",
+      "prediction": "Both originals should deliver [A]. The parent clone should deliver no X-Step value, while the merged clone should deliver [A], each reaching the terminal handler exactly once.",
+      "basis": "Cloning a configured builder is expected to retain the original handler behavior. The downstream header observation demonstrates that the decorator ran.",
+      "refutation": "The merged clone loses or duplicates A or completion occurs without the terminal handler observing its request.",
+      "expected": {
+        "fix": {
+          "return": "/probe:[A] / /probe:[A]"
+        },
+        "parent": {
+          "return": "/probe:[A] / /probe:[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#25656.2",
+      "role": "Control",
+      "args": [
+        "empty"
+      ],
+      "history": "Build an undecorated builder and its untouched clone and call both",
+      "prediction": "On both revisions neither handler adds X-Step and each reaches the terminal handler once.",
+      "basis": "In the absence of a decorator the same public chain handles both requests.",
+      "refutation": "Either handler acquires a spurious marker or drops a request.",
+      "expected": {
+        "fix": {
+          "return": "/probe:[] / /probe:[]"
+        },
+        "parent": {
+          "return": "/probe:[] / /probe:[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#25656.3",
+      "role": "Challenge",
+      "args": [
+        "extend"
+      ],
+      "history": "After cloning the A-configured builder, register B only on the clone and C only on the original. Send a fresh request through each",
+      "prediction": "On the merge the clone should deliver [A,B] and the original [A,C], in that order, each once. Another independent clone of the original should observe [A,C].",
+      "basis": "Composition applies the previously registered outer decorator first. Extending one builder replaces its composed function without changing its sibling.",
+      "refutation": "Either builder loses A, inherits its sibling’s private marker, reverses the markers or invokes the terminal handler twice.",
+      "expected": {
+        "fix": {
+          "return": "/probe:[A, B] / /probe:[A, C] / /probe:[A, C]"
+        }
+      }
+    }
+  ]
+}

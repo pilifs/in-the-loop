@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37525",
+  "revisions": {
+    "parent": "fe783a0efcd58a31fd0c185f0fff34658a4060c6",
+    "fix": "76a800d9806b9af93ebeb0f9d3cf7500d9df939d"
+  },
+  "entry": "RetryAnnotationBeanPostProcessor",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37525.1",
+      "role": "Intent",
+      "args": [
+        "units"
+      ],
+      "history": "@Retryable(delay=1, timeUnit=SECONDS), default maxDelay, target returns \"sent\" on its first call. Repeat in a fresh context with MINUTES.",
+      "prediction": "The PR reports ArithmeticException before target entry on the parent. Each merged proxy call should return \"sent\" with one target invocation.",
+      "basis": "An unused upper bound should not prevent immediate success. The pinned tests exercise both coarse units.",
+      "refutation": "A merged call fails constructing the retry policy, enters zero times, or retries a successful target.",
+      "expected": {
+        "fix": {
+          "return": "sent:1/sent:1"
+        },
+        "parent": {
+          "return": "ArithmeticException:0/ArithmeticException:0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37525.2",
+      "role": "Control",
+      "args": [
+        "finite"
+      ],
+      "history": "With delay=1, maxDelay=3 and timeUnit=SECONDS, return \"sent\" immediately.",
+      "prediction": "Both revisions should return \"sent\" once.",
+      "basis": "1,000 and 3,000 milliseconds fit in a signed long, so the old conversion can represent both inputs exactly.",
+      "refutation": "Either proxy throws before entry, returns another value, or invokes the target twice.",
+      "expected": {
+        "fix": {
+          "return": "sent:1"
+        },
+        "parent": {
+          "return": "sent:1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37525.3",
+      "role": "Challenge",
+      "args": [
+        "retry"
+      ],
+      "history": "Fail once, then return \"recovered\" with maxRetries=1, delay=1 second and an explicit numeric maxDelay of Long.MAX_VALUE / 2 seconds. Compare on the merge with identical targets configured with delay=1000 and maxDelay=Long.MAX_VALUE milliseconds.",
+      "prediction": "Both merged calls should return \"recovered\" after two target invocations. The parent’s seconds variant is expected to overflow before entry. No exact wall-clock duration is required.",
+      "basis": "Both upper bounds exceed the only backoff needed. The target counter proves that actual retry works when policy construction succeeds.",
+      "refutation": "One configuration fails before entry, the retry never executes, or the two results or counts differ.",
+      "expected": {
+        "fix": {
+          "return": "recovered:2/recovered:2"
+        },
+        "parent": {
+          "return": "ArithmeticException:0/recovered:2"
+        }
+      }
+    }
+  ]
+}

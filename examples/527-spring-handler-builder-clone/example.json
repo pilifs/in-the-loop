@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "527",
+  "title": "Keep HTTP handler decorators when cloning a WebFlux handler builder",
+  "summary": "A clone retained its configured HTTP decorator. Independently extending the two builders produced ordered markers A,B and A,C, including A,C on another clone of the original.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "WebHttpHandlerBuilder.clone"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The builder copy constructor now carries the composed HttpHandler decorator function into clone(). Existing builds of the original builder still use its configured decorator."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/25656"
+  },
+  "notes": [
+    "Each fresh request completed at a terminal WebHandler that recorded the full path and every header value.",
+    "Each pin supplies its changed production classes on spring-web-5.3.0-RC1-q20. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

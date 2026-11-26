@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-154438-trace-spring-composite-removal-row-limit",
+  "title": "Trace Spring composite removal, row limits and reactive jitter",
+  "description": "Stop the original JVM at CompositeCollection.remove, JdbcTemplate.queryForStream, and ReactorDelegate.adaptReactiveResult for the registered public callers. Repeat each of ten input histories twice per pin and bind the resulting report to the original source, caller, classpath, and public observation.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {},
+  "expected": "Three debugger reports, 40 qualified original-method trials, and exact agreement with the registered physical public observations.",
+  "submitted": {
+    "at": "2026-11-26T15:44:38+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Repeat the ten histories under the debugger",
+      "run": "python3 verification/merged-pr-links/qualify.py 513 520 535 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/q01-q30/qualified",
+      "cwd": "."
+    },
+    {
+      "name": "Validate the original-method evidence",
+      "run": "python3 verification/merged-pr-links/qualify.py 513 520 535 --gzip --only Intent --only Control --only Challenge --check --output verification/merged-pr-links/q01-q30/qualified",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/q01-q30/qualified"
+  ]
+}

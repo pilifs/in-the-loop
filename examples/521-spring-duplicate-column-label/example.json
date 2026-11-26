@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "521",
+  "title": "Keep constructor values when a join returns duplicate column labels",
+  "summary": "With duplicate id labels, both the record and the final-field class now retain the first id, 1. Changing the decoy to 200 left the counting id setter untouched and still populated note.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "JdbcClient.query"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "SimplePropertyRowMapper suppresses setters and fields for properties already filled by the constructor, including when the same label occurs at a later column index."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37602"
+  },
+  "notes": [
+    "On the parent the record threw and the final-field class silently retained 100. Each positional oracle and typed projection executed through JdbcClient against H2."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

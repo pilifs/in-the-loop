@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "533",
+  "title": "Complete reactive resource cleanup before reporting transaction completion",
+  "summary": "The merged reactive operator releases its owned lease before completion. On rollback it withheld the original application error until the cleanup gate opened and another caller could acquire the lease.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "TransactionalOperator.transactional"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The two landed commits subscribe to cleanup for a newly owned transaction and move the transactional publisher to Reactor usingWhen."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/22881"
+  },
+  "notes": [
+    "The parent committed or rolled back but left the lease held. A participating transaction on both revisions kept its owner's lease and made no commit.",
+    "Each pin supplies its changed production classes on spring-tx-5.2.0.M2-q26. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

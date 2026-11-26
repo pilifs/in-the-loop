@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "284c96ac3ef14b5214fcb8fde9acf76ce8a4526c27fce9385923249d786c18b7",
+  "runtimeSha256": "89d16e9bdfc1c603e25ead5780c5a7b3a41e4b0c42c5cce59c99ccbafe73d2b3",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "cefa435a2ccded649930d57b91ee08487a27a6e3a0f1f9996d00600a190f1f9e"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Bean.class": "69f6cb194f6f459142177e8166026e59748380de691a9358fba9b44ca8f29983",
+        "PublicCaller.class": "b3da7e72512af966430138686802d743594cf813b57080924c0864efac706fa5",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37524.1",
+          "outcome": {
+            "return": "false:false:IllegalArgumentException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37524.2",
+          "outcome": {
+            "return": "[map, bean]:[1=map, 2=bean] / [map, bean]:[1=map, 2=bean]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37524.3",
+          "outcome": {
+            "throws": "org.springframework.dao.InvalidDataAccessApiUsageException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37524.1",
+          "outcome": {
+            "return": "true:true:source"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37524.2",
+          "outcome": {
+            "return": "[map, bean]:[1=map, 2=bean] / [map, bean]:[1=map, 2=bean]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37524.3",
+          "outcome": {
+            "return": "[1=map, 2=bean, 3=revised]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

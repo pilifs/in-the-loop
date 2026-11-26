@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/34709",
+  "revisions": {
+    "parent": "d957f8bb5dee73c4fb2b00eb4596ce273e074b68",
+    "fix": "88257f7dfd686671036e0dd12862f27b57d4148c"
+  },
+  "entry": "JdbcTemplate.query",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#34709.1",
+      "role": "Intent",
+      "args": [
+        "two"
+      ],
+      "history": "Set the template limit to 2 and drain each of the three query forms",
+      "prediction": "The parent should deliver all three rows with this driver. The merge should deliver exactly [11,22] and invoke each consumer twice.",
+      "basis": "Independent cursor contents give the expected prefix. Issue #34666 describes a driver limit as a hint that may be ignored.",
+      "refutation": "The third value reaches a merge consumer, a value is substituted, or fewer than two values arrive.",
+      "expected": {
+        "fix": {
+          "return": "[11, 22]/[11, 22]/[11, 22] set=[2, 2, 2]"
+        },
+        "parent": {
+          "return": "[11, 22, 33]/[11, 22, 33]/[11, 22, 33] set=[2, 2, 2]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34709.2",
+      "role": "Control",
+      "args": [
+        "default"
+      ],
+      "history": "Leave the default template limit of -1 and repeat with fresh cursors",
+      "prediction": "Expect [11,22,33] from all three paths on both revisions.",
+      "basis": "JdbcTemplate documents -1 as leaving the driver setting alone. The fixture supplies all three rows by default.",
+      "refutation": "The last value disappears or a default query starts setting a positive limit.",
+      "expected": {
+        "fix": {
+          "return": "[11, 22, 33]/[11, 22, 33]/[11, 22, 33] set=[]"
+        },
+        "parent": {
+          "return": "[11, 22, 33]/[11, 22, 33]/[11, 22, 33] set=[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34709.3",
+      "role": "Challenge",
+      "args": [
+        "zero"
+      ],
+      "history": "Set the limit explicitly to 0 on a JDBC driver fixture where Statement.setMaxRows(0) means unlimited",
+      "prediction": "The JDBC-compatible result is [11,22,33], as on the parent. The merged loops special-case -1 and compare the row count against zero, predicting an empty result on this revision. Check all three APIs.",
+      "basis": "The JDBC contract for Statement.setMaxRows defines zero as no limit and JdbcTemplate links to that method. The recorded setter and cursor fix the provider interpretation.",
+      "refutation": "One merge path delivers no rows despite this driver contract, or different query forms deliver different rows.",
+      "expected": {
+        "fix": {
+          "return": "[11, 22, 33]/[11, 22, 33]/[11, 22, 33] set=[0, 0, 0]"
+        },
+        "parent": {
+          "return": "[11, 22, 33]/[11, 22, 33]/[11, 22, 33] set=[0, 0, 0]"
+        }
+      }
+    }
+  ]
+}

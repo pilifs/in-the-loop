@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/22881",
+  "revisions": {
+    "parent": "ec8689d1fc2dbc40bb345a256db988c312b15381",
+    "fix": "83046531da12dde914fb677b65c2d2b449e039df"
+  },
+  "entry": "TransactionalOperator.transactional",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#22881.1",
+      "role": "Intent",
+      "args": [
+        "owned"
+      ],
+      "history": "A fresh transaction emits 1, 2, 3, 4 and completes.",
+      "prediction": "Both should deliver [1,2,3,4] and commit once. Parent should leave the lease held after completion. The merge should release it once and allow independent acquisition.",
+      "basis": "The operator test counts four values. A successful acquisition after termination distinguishes actually subscribing to cleanup from merely obtaining its Mono.",
+      "refutation": "Values are lost or reordered, or on the merge the terminal signal arrives while the lease is still held.",
+      "expected": {
+        "fix": {
+          "return": "[1, 2, 3, 4]:complete:c1:r0:released1:available=true"
+        },
+        "parent": {
+          "return": "[1, 2, 3, 4]:complete:c1:r0:released0:available=false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#22881.2",
+      "role": "Control",
+      "args": [
+        "participate"
+      ],
+      "history": "Use a manager reporting an already active transaction and REQUIRED propagation. Complete a participating operation with value 7.",
+      "prediction": "Both should return 7 without committing the owner’s transaction or releasing its lease.",
+      "basis": "The participant did not start the transaction. The existing-transaction commit test checks the ownership distinction.",
+      "refutation": "The participant commits or releases the existing resource, or 7 is lost.",
+      "expected": {
+        "fix": {
+          "return": "[7]:complete:c0:r0:released0:available=false"
+        },
+        "parent": {
+          "return": "[7]:complete:c0:r0:released0:available=false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#22881.3",
+      "role": "Challenge",
+      "args": [
+        "rollback"
+      ],
+      "history": "In a fresh owned transaction emit one marker, then the same sentinel application exception on both revisions. Gate the completion of the rollback cleanup publisher.",
+      "prediction": "Both should roll back instead of commit. The merge should release once and propagate the original application error only after the gate opens, assuming rollback and cleanup succeed. On the parent cleanup is expected to remain unsubscribed.",
+      "basis": "A new error path also owes the resource. The sentinel identity and a separate acquisition test both exception propagation and cleanup ordering.",
+      "refutation": "The merge signals the error early, replaces the sentinel, commits, or leaves the lease occupied.",
+      "expected": {
+        "fix": {
+          "return": "[1]:early=false:waiting=true:sentinel=true:c0:r1:released1:available=true"
+        }
+      }
+    }
+  ]
+}

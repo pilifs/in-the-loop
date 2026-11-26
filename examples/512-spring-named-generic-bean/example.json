@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "512",
+  "title": "Check the named bean's generic type before returning it",
+  "summary": "Named generic lookup now rejects the count bean as Box<String> in Java and Kotlin. Both languages report the bean name, raw and generic requirement, and actual class, and both retrieve the same Box<Number> singleton.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "validation-gap",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "BeanFactory.getBean"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "The new BeanFactory.getBean(String, `ParameterizedTypeReference<T>`) checks the object found by name and exposes a parameterized required type on failure. Kotlin's reified named lookup now passes a type reference."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/35808"
+  },
+  "notes": [
+    "The Kotlin client was compiled against each revision because the extension is inline. The parent Kotlin binary accepted the mismatched count singleton."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

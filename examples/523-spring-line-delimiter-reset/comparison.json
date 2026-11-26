@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37053",
+  "revisions": {
+    "parent": "c17b4ad7874a6e544d09ebaec32c543f1e755577",
+    "fix": "4b5c92703c63966c3471242c621c4a63b382638d"
+  },
+  "entry": "StringDecoder.decode",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37053.1",
+      "role": "Intent",
+      "args": [
+        "lone"
+      ],
+      "history": "Decode a single buffer containing a\\rXY\\nb",
+      "prediction": "The PR reports first string a\\rX on the parent. The merge should emit [a\\rXY, b] and complete.",
+      "basis": "The LF ends the first line. X and Y separate it from the earlier CR, so no CRLF occurs there.",
+      "refutation": "The first merged string loses Y, the CR disappears, or the unterminated tail b is lost.",
+      "expected": {
+        "fix": {
+          "return": "[a<CR>XY, b]"
+        },
+        "parent": {
+          "return": "[a<CR>X, b]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37053.2",
+      "role": "Control",
+      "args": [
+        "standard"
+      ],
+      "history": "Decode a\\r\\nb and a\\nb in separate subscriptions",
+      "prediction": "Both revisions should yield [a, b] in each case.",
+      "basis": "Contiguous CRLF and a single LF are both configured separators. No payload bytes lie between the two bytes of the CRLF.",
+      "refutation": "A delimiter byte remains in the decoded string, a character disappears, or an extra line appears.",
+      "expected": {
+        "fix": {
+          "return": "[a, b] / [a, b]"
+        },
+        "parent": {
+          "return": "[a, b] / [a, b]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37053.3",
+      "role": "Challenge",
+      "args": [
+        "chunks"
+      ],
+      "history": "Keep the UTF-8 bytes of é\\r\\r\\nZ fixed. Compare a single buffer with buffers split at every byte, including within é",
+      "prediction": "The merge should produce the same two strings [é\\r, Z] for both segmentations.",
+      "basis": "Only the second CR and following LF are adjacent. Neither the first CR nor either UTF-8 byte of é belongs to the delimiter.",
+      "refutation": "Segmentation changes a string, an encoding replacement appears, or both carriage returns are stripped.",
+      "expected": {
+        "fix": {
+          "return": "[é<CR>, Z] / [é<CR>, Z]"
+        }
+      }
+    }
+  ]
+}

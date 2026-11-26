@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37096",
+  "revisions": {
+    "parent": "6e5cf0ce451ad6fa6f65184b603154d85f817df1",
+    "fix": "74a4b1a694f78bc1a04540c748cabe73c239b099"
+  },
+  "entry": "DefaultApiVersionStrategy.resolveApiVersion",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37096.1",
+      "role": "Intent",
+      "args": [
+        "first"
+      ],
+      "history": "A emits \"1.0\" after subscription and B has \"2.0\" ready.",
+      "prediction": "Parent is expected to yield \"2.0\" under this gate. The merge should yield only \"1.0\" and complete.",
+      "basis": "The configured order gives A first refusal. The landed test controls emission without using a timer.",
+      "refutation": "\"2.0\" arrives before A’s decision or the subscriber gets two results.",
+      "expected": {
+        "fix": {
+          "return": "[1.0]:complete"
+        },
+        "parent": {
+          "return": "[2.0]:complete"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37096.2",
+      "role": "Control",
+      "args": [
+        "empty"
+      ],
+      "history": "Replace A by an immediately empty Mono. B emits \"2.0\".",
+      "prediction": "Both versions should produce exactly \"2.0\" then completion.",
+      "basis": "Empty means no version was resolved, so B is the first resolver with an answer.",
+      "refutation": "The result stays empty, fails, or contains any other version.",
+      "expected": {
+        "fix": {
+          "return": "[2.0]:complete"
+        },
+        "parent": {
+          "return": "[2.0]:complete"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37096.3",
+      "role": "Challenge",
+      "args": [
+        "error"
+      ],
+      "history": "Keep B ready but count subscriptions to it with Mono.defer. After subscription make A fail with a distinct sentinel exception.",
+      "prediction": "Parent can return \"2.0\" and cancel A. The merge should propagate the sentinel and leave B’s subscription count at zero.",
+      "basis": "The earlier resolver can reject an invalid value. Instrumenting B reveals speculative work even if the final error happens to be correct.",
+      "refutation": "A value masks the error, a different exception escapes, or B’s counter advances on the merge.",
+      "expected": {
+        "fix": {
+          "return": "[]:sentinel:B=0"
+        },
+        "parent": {
+          "return": "[2.0]:complete:B=1"
+        }
+      }
+    }
+  ]
+}

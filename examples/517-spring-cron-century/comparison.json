@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/25464",
+  "revisions": {
+    "parent": "c17f2047f62af92ac41ab419b2c3e027fd8ade25",
+    "fix": "87c3bb579739aa4892f3b647f8eef7e2dc16a7f5"
+  },
+  "entry": "CronTrigger.nextExecutionTime",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#25464.1",
+      "role": "Intent",
+      "args": [
+        "impossible"
+      ],
+      "history": "Set completion to 2021-03-10T00:00:00Z and request \"0 0 0 31 6 *\".",
+      "prediction": "Expect construction to succeed on both. The parent trigger test expects IllegalArgumentException during nextExecutionTime. The merged trigger and new direct expression should return null.",
+      "basis": "June has 30 days every year. The old and new trigger regressions explicitly distinguish failure at search time from the merged no-future-match result.",
+      "refutation": "The merge rejects construction, throws during search, or invents a date.",
+      "expected": {
+        "fix": {
+          "return": "null/null"
+        },
+        "parent": {
+          "return": "IllegalArgumentException/absent"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#25464.2",
+      "role": "Control",
+      "args": [
+        "june"
+      ],
+      "history": "Replace day 31 with 30 in the same June expression and use the same start. Use the corresponding UTC ZonedDateTime for the direct call in this control.",
+      "prediction": "Both triggers should yield 2021-06-30T00:00:00Z. On the merge, next on a UTC ZonedDateTime should return that same instant and zone.",
+      "basis": "June 30 is the first matching date after March 10. Fixed UTC removes daylight-saving ambiguity.",
+      "refutation": "A null, exception, different instant, or a direct temporal in a different zone.",
+      "expected": {
+        "fix": {
+          "return": "2021-06-30T00:00:00Z"
+        },
+        "parent": {
+          "return": "2021-06-30T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#25464.3",
+      "role": "Challenge",
+      "args": [
+        "leap"
+      ],
+      "history": "Complete a Feb 29 schedule exactly at 2096-02-29T00:00:00Z, then ask for the next \"0 0 0 29 2 *\" through both public APIs where available.",
+      "prediction": "The next valid date is 2104-02-29T00:00:00Z. The parent’s four-year search guard predicts a trigger exception. On the merge expect that instant through Date and its matching LocalDateTime directly.",
+      "basis": "The next match must be strictly later. Year 2100 is divisible by 100 but not 400, so the next leap day lies eight years ahead.",
+      "refutation": "The merge returns the starting instant, treats 2100 as a leap year, returns null, or gives different next dates through the two APIs.",
+      "expected": {
+        "fix": {
+          "return": "2104-02-29T00:00:00Z/2104-02-29T00:00"
+        },
+        "parent": {
+          "return": "IllegalArgumentException/absent"
+        }
+      }
+    }
+  ]
+}

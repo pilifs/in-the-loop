@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37326",
+  "revisions": {
+    "parent": "9289f71ad78323b95c08106f17d2fa4c23d9b115",
+    "fix": "5e7630469c7b665dc272f820de9def70adb6fe56"
+  },
+  "entry": "MergedAnnotations.from",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37326.1",
+      "role": "Intent",
+      "args": [
+        "lookalike"
+      ],
+      "history": "Put only @Bundle({@Tag(\"a\"), @Tag(\"b\")}) on the class.",
+      "prediction": "The PR reports false container detection on the parent. Predict the Spring stream yields a,b before and is empty after. JDK lookup is empty on both.",
+      "basis": "@Repeatable names Tags. Bundle merely stores Tag values as attributes.",
+      "refutation": "The merged stream exposes either nested tag as a repeated declaration.",
+      "expected": {
+        "fix": {
+          "return": "[]/[]"
+        },
+        "parent": {
+          "return": "[a, b]/[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37326.2",
+      "role": "Control",
+      "args": [
+        "official"
+      ],
+      "history": "Put @Tag(\"a\") @Tag(\"b\") directly on a class.",
+      "prediction": "On both revisions the JDK returns a,b in declaration order. The Spring stream must expose exactly one a and one b. Either order suffices for this claim.",
+      "basis": "The compiler emits the official container for this spelling and JDK lookup expands it.",
+      "refutation": "Either lookup loses or duplicates a tag, or JDK lookup reverses the declared order.",
+      "expected": {
+        "fix": {
+          "return": "[a, b]/[a, b]"
+        },
+        "parent": {
+          "return": "[a, b]/[a, b]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37326.3",
+      "role": "Challenge",
+      "args": [
+        "mixed"
+      ],
+      "history": "Keep a real @Tag(\"live\") and add @Bundle({@Tag(\"decoy\")}) beside it. Also read Bundle.value()[0].value() with Java reflection.",
+      "prediction": "On the merge Spring and JDK each expose only live as a repeated annotation. The explicit Bundle read still returns decoy.",
+      "basis": "Changing an unrelated annotation's contents cannot add declarations to the Tag lookup. Reading Bundle independently proves the decoy is present.",
+      "refutation": "The Spring result changes from one to two tags, loses live, or the fixture lacks decoy.",
+      "expected": {
+        "fix": {
+          "return": "[live]/[live]/decoy"
+        }
+      }
+    }
+  ]
+}

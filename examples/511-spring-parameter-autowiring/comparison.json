@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/2060",
+  "revisions": {
+    "parent": "3a42f1154d8c85bae1ece307ee286fb52e7bf160",
+    "fix": "d77b36bf3b3689cc6dca999e432e3979fb49859a"
+  },
+  "entry": "AutowireUtils.resolveDependency",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#2060.1",
+      "role": "Intent",
+      "args": [
+        "qualified"
+      ],
+      "history": "Compile an external Java consumer of both exact static signatures. On the merge, classify and resolve the qualified parameter.",
+      "prediction": "The parent has no accessible pair. The merged consumer compiles, classification is true and resolution returns the west singleton.",
+      "basis": "The qualifier selects between two otherwise eligible instances. Bean identity independently records which candidate won.",
+      "refutation": "The external calls cannot link on the merge, classification is false, or east or null comes back.",
+      "expected": {
+        "fix": {
+          "return": "true/west"
+        },
+        "parent": {
+          "return": "inaccessible"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#2060.2",
+      "role": "Control",
+      "args": [
+        "extension"
+      ],
+      "history": "Run a Jupiter test with SpringExtension and the same qualified test-method parameter against the two-bean context.",
+      "prediction": "Both revisions inject west.",
+      "basis": "The utility was extracted from the extension's existing supported parameter path. Neither bean wins just from its raw type.",
+      "refutation": "The old or new test receives the wrong instance or encounters ambiguous resolution.",
+      "expected": {
+        "fix": {
+          "return": "west"
+        },
+        "parent": {
+          "return": "west"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#2060.3",
+      "role": "Challenge",
+      "args": [
+        "containing"
+      ],
+      "history": "On the merge use the same reflected `Base<T>`.accept(@Autowired T value) parameter and factory twice, passing WestFixture extends `Base<West>` and EastFixture extends `Base<East>` as containingClass. Register one singleton of each concrete class.",
+      "prediction": "Resolution follows the containing class and returns the corresponding singleton each time.",
+      "basis": "The reflected declaration stays fixed. Generic substitution alone turns T into West or East.",
+      "refutation": "Both invocations pick one object, either resolves to Object, or resolution is ambiguous.",
+      "expected": {
+        "fix": {
+          "return": "west/east"
+        }
+      }
+    }
+  ]
+}

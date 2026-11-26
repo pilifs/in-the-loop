@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/35140",
+  "revisions": {
+    "parent": "eeedeb3b10d0a23eff39c9fb08ba990d94ce42ac",
+    "fix": "009b880e929f3267a99e8e0b66d8482696f0ba67"
+  },
+  "entry": "SimpleRetryInterceptor",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#35140.1",
+      "role": "Intent",
+      "args": [
+        "oversized"
+      ],
+      "history": "Set delay to 5 ms and jitter to 20 ms.",
+      "prediction": "The parent passes a factor of 4 to Reactor and can reject the policy at subscription. The merge should recover \"ok\" on the second target subscription without a jitter configuration error.",
+      "basis": "Four exceeds Reactor’s jitter-factor upper bound of one. The upstream Flux/Mono fixtures check attempts and final exceptions.",
+      "refutation": "On the merge the subscriber sees a jitter error, the operation does not recover, or the attempt count differs from two.",
+      "expected": {
+        "fix": {
+          "return": "ok:2"
+        },
+        "parent": {
+          "return": "IllegalArgumentException:0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#35140.2",
+      "role": "Control",
+      "args": [
+        "small"
+      ],
+      "history": "Use 10 ms delay, 5 ms jitter, and a target whose cold publisher succeeds immediately.",
+      "prediction": "Both revisions should produce \"ok\" with one subscription to the target.",
+      "basis": "Both conversions give a factor of 0.5. An initial success requires no retry.",
+      "refutation": "The successful value disappears or the target is resubscribed.",
+      "expected": {
+        "fix": {
+          "return": "ok:1"
+        },
+        "parent": {
+          "return": "ok:1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#35140.3",
+      "role": "Challenge",
+      "args": [
+        "duration"
+      ],
+      "history": "Compare two otherwise identical first-attempt successes on the merge. Keep the base delay at 5 ms and vary only jitter from 20 ms to Duration.ofDays(107000).",
+      "prediction": "Clamping predicts the same successful result and one subscription. The landed arithmetic predicts that the large option overflows toNanos() during adaptation, before any subscription.",
+      "basis": "Both jitter values already exceed the base delay. The larger is representable as a Duration and in milliseconds, while 107000 × 86400 × 10⁹ exceeds Long.MAX_VALUE. No retry or long wait is needed.",
+      "refutation": "A synchronous ArithmeticException and zero target subscriptions for the larger input refute preservation. Successful readback from both refutes the overflow prediction for this public path.",
+      "expected": {
+        "fix": {
+          "return": "ok:1/ok:1"
+        }
+      }
+    }
+  ]
+}

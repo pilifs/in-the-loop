@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "530",
+  "title": "Isolate HTTP clients built from a reused service-proxy builder",
+  "summary": "Factories built from one service-proxy builder now isolate both late advice and request processors. Only the later factory added the transport header, even when a fresh client came from the first factory afterward.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "HttpServiceProxyFactory.createClient"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Each built factory now snapshots its request processor and proxy customizer lists. Later builder mutations should affect clients created from later factories only."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37601"
+  },
+  "notes": [
+    "The advice test counted actual adapter calls. The header test ran all three service methods to the adapter without short-circuiting."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

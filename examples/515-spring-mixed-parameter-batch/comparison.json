@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37524",
+  "revisions": {
+    "parent": "78276e4cd07d421063162c2b6164499331d4506c",
+    "fix": "a38ebf4b7cffe5946e07d0fb8ef2d7dc0ec9bbe3"
+  },
+  "entry": "SqlParameterSourceUtils.createBatch",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37524.1",
+      "role": "Intent",
+      "args": [
+        "source"
+      ],
+      "history": "Pass the existing source as the third element. Inspect identity, hasValue(\"name\") and getValue(\"name\") on that element.",
+      "prediction": "The parent wraps it as a bean and fails to expose its named parameter. The merge should return the same source object with name present and equal to source.",
+      "basis": "The Javadoc promises use as-is. The supplied object independently defines its own values, and its JavaBean property names do not include name.",
+      "refutation": "The returned element is a wrapper, reports the name absent, or yields a different value.",
+      "expected": {
+        "fix": {
+          "return": "true:true:source"
+        },
+        "parent": {
+          "return": "false:false:IllegalArgumentException"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37524.2",
+      "role": "Control",
+      "args": [
+        "ordinary"
+      ],
+      "history": "Submit just the map and the bean, exercising both collection and Object-varargs overloads on fresh tables.",
+      "prediction": "Both revisions should yield two parameters in input order, with names map and bean, then store (1,map) and (2,bean).",
+      "basis": "Map keys and bean getters independently supply distinct values for the same SQL parameters.",
+      "refutation": "An overload loses an element, reorders the names, or stores a different row.",
+      "expected": {
+        "fix": {
+          "return": "[map, bean]:[1=map, 2=bean] / [map, bean]:[1=map, 2=bean]"
+        },
+        "parent": {
+          "return": "[map, bean]:[1=map, 2=bean] / [map, bean]:[1=map, 2=bean]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37524.3",
+      "role": "Challenge",
+      "args": [
+        "mutate"
+      ],
+      "history": "On the merge, keep the mixed array and change the original source’s name to revised after createBatch but before batchUpdate.",
+      "prediction": "A successful commit should leave exactly (1,map), (2,bean), (3,revised). The precise JDBC success counts may be driver-dependent.",
+      "basis": "Object identity means a subsequent mutation is visible. Independent row readback tests how the actual named-parameter binder consumes that object.",
+      "refutation": "Conversion passes its identity check but binding fails or readback shows source, a missing row, or a different id-to-name pairing.",
+      "expected": {
+        "fix": {
+          "return": "[1=map, 2=bean, 3=revised]"
+        }
+      }
+    }
+  ]
+}

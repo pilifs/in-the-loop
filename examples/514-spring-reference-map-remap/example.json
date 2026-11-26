@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "514",
+  "title": "Remapping deletion changes the reference-map count immediately",
+  "summary": "All three null-producing remaps immediately report an empty singleton map. In a one-segment map with a second key, the count now agrees with the surviving iterator entry.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "agreement",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ConcurrentReferenceHashMap.compute"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Removing a live entry by returning null from compute, computeIfPresent or merge now updates the count before the operation returns."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37577"
+  },
+  "notes": [
+    "The caller keeps the entry objects reachable and reads size and emptiness before any lookup or purge. Replacing the value kept size one."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

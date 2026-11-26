@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/1175",
+  "revisions": {
+    "parent": "1d46b8d7e1dc94b14d2cd913906f5f99054d112d",
+    "fix": "e3da8b5e9cb96eb3cc007197c50d2dd6cc68d34f"
+  },
+  "entry": "ResourceWebHandler.handle",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#1175.1",
+      "role": "Intent",
+      "args": [
+        "range"
+      ],
+      "history": "GET with Range bytes=0-1",
+      "prediction": "The parent handler should send the full ten-byte representation. The merge should respond 206, Content-Range bytes 0-1/10, Content-Length 2 and body So.",
+      "basis": "Inclusive byte positions 0 and 1 in the fixture are S and o. Header arithmetic and a slice of the original file provide independent checks.",
+      "refutation": "The parent already sends this partial representation, or the merged status, endpoints, length or body disagree.",
+      "expected": {
+        "fix": {
+          "return": "206:bytes 0-1/10:2:So"
+        },
+        "parent": {
+          "return": "200:null:10:Some text."
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1175.2",
+      "role": "Control",
+      "args": [
+        "full"
+      ],
+      "history": "GET the same file without a Range header",
+      "prediction": "On both revisions the caller should receive the full ten original bytes as a successful complete response.",
+      "basis": "Adding partial retrieval leaves the existing full representation available.",
+      "refutation": "The full response is truncated or still carries a partial-content status.",
+      "expected": {
+        "fix": {
+          "return": "200:null:10:Some text."
+        },
+        "parent": {
+          "return": "200:null:10:Some text."
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1175.3",
+      "role": "Challenge",
+      "args": [
+        "parts"
+      ],
+      "history": "On the merge request bytes=0-1,8-9, parse the multipart boundary from the actual Content-Type and compare each part with a separate single-range GET",
+      "prediction": "Expect two parts with Content-Range bytes 0-1/10 and bytes 8-9/10, carrying So and t. respectively. Each payload must equal the corresponding single-range response. Boundary strings may vary per request.",
+      "basis": "Independent slicing agrees with both subresponses. A syntactically correct range header on an incorrect body could fool a header-only test.",
+      "refutation": "A range is missing, appears twice, cannot be parsed with the advertised boundary, or contains neighboring bytes.",
+      "expected": {
+        "fix": {
+          "return": "bytes 0-1/10=So,bytes 8-9/10=t. singles=true"
+        }
+      }
+    }
+  ]
+}

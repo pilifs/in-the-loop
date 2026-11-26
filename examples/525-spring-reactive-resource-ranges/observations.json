@@ -1,0 +1,94 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "b0469115a662c86db36aea183b3edfad662f933cb4080226dc3248387975f6d8",
+  "runtimeSha256": "f776333be18a51d4b9cdabeedb2b2c219641b91bb504d12e82f745f6878793e3",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "15a710f6b35056299c6d9ba620069f24b8f48f46fcb38144d08591a5555dfe46"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Reply.class": "e8b0515fbcc3c42cbe96e4d86afe56856af2340576e8ae4a88f8e547d983a91c",
+        "PublicCaller.class": "54fe11296ec6bf0f8661139bc0f7253af513d652425dc7a31a29abf1485e399d",
+        "UpgradeObservation.class": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+        "org/springframework/mock/http/server/reactive/test/MockServerHttpRequest.class": "6fe331ff4a152f9a82193081ceee32c195cc7015e874780e7c2911e72dde8d46",
+        "org/springframework/mock/http/server/reactive/test/MockServerHttpResponse.class": "e7124bfb1a144febac013509d8bdc57872c26aed5298b8821ecfaa1b042793a7"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1175.1",
+          "outcome": {
+            "return": "200:null:10:Some text."
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1175.2",
+          "outcome": {
+            "return": "200:null:10:Some text."
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1175.3",
+          "outcome": {
+            "return": "ordinary:Some text."
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1175.1",
+          "outcome": {
+            "return": "206:bytes 0-1/10:2:So"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1175.2",
+          "outcome": {
+            "return": "200:null:10:Some text."
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1175.3",
+          "outcome": {
+            "return": "bytes 0-1/10=So,bytes 8-9/10=t. singles=true"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/core/codec/ResourceEncoder.class": "938723aabc8d6d52056cda85360e859a4fb71f3af5e9cfbcdd7541d7c2d80724",
+          "org/springframework/core/io/buffer/DataBufferUtils$ReadableByteChannelGenerator.class": "835cc5e1574b81d99e92b79d37a4c68c1c3b60921060178e7f6cb8efd5e26e8e",
+          "org/springframework/core/io/buffer/DataBufferUtils.class": "0c613ce31d1cf20a0b48b905fef6aaf7629d0b002360e6fafd35394590402732",
+          "org/springframework/http/codec/AbstractServerHttpMessageWriter.class": "41d01d68d911990c8b7c6364c4a793ec2eace2e5f1fb55c0773fdaabb0d34dce",
+          "org/springframework/http/codec/ResourceHttpMessageWriter.class": "98a2447a3a752e0933cf85482bfff56876be23b032bf4aef1e8c1842fe11cbd8",
+          "org/springframework/util/ResourceUtils.class": "6b11f41420ed15a1fd65d4af5b0a12d9baa7495f92a278cbfa26fc88f56e73bb",
+          "org/springframework/web/reactive/resource/ResourceWebHandler.class": "1c8c3ca5eefbc13ec1b86ae83c0a0f4da9f8a27975b64831a8495221faef6eea",
+          "org/springframework/web/servlet/resource/ResourceHttpRequestHandler.class": "e20a0ca319abc7bef7eddcc8fe59b14aa0780f7a5ae63bfaf2d7eb8ade65ae6a"
+        },
+        "fix": {
+          "org/springframework/core/codec/ResourceEncoder.class": "8886ca1500e238e1165c6449ad5f6b1b020bcaa26ecba478ceb3f2993af2b5a5",
+          "org/springframework/core/codec/ResourceRegionEncoder.class": "60be009b7320f9d6889c7972d3b76e5b93040caadaf0b574144d302c76013674",
+          "org/springframework/core/io/buffer/DataBufferUtils$ReadableByteChannelGenerator.class": "782c54f682358194737d64f2757f79f2f2b5b2cbfd0c073cf1c488846a5994b8",
+          "org/springframework/core/io/buffer/DataBufferUtils.class": "d1e342f2d1ddcc0890cb47a4b36305a424d9552f8de68e266cc5b375e064e027",
+          "org/springframework/http/codec/AbstractServerHttpMessageWriter.class": "41d01d68d911990c8b7c6364c4a793ec2eace2e5f1fb55c0773fdaabb0d34dce",
+          "org/springframework/http/codec/ResourceHttpMessageWriter.class": "1dbaf5dc625e2977dcc01fef66c53ad0ad38cce70e6208ea34872960ec5f8c00",
+          "org/springframework/http/codec/ResourceRegionHttpMessageWriter.class": "310367bbc78bc5cab5a597627f53263cc72b163a9c7ec970da9e2117d47ac45a",
+          "org/springframework/util/ResourceUtils.class": "a87e110b3679be00876123abb168464d75c7e98504c1e78abf70acab195845e0",
+          "org/springframework/web/reactive/resource/ResourceWebHandler.class": "cb55455db8d2b84019c405cc4a9dd630d20e2b617856bf48e3070283eb2c6056",
+          "org/springframework/web/servlet/resource/ResourceHttpRequestHandler.class": "e20a0ca319abc7bef7eddcc8fe59b14aa0780f7a5ae63bfaf2d7eb8ade65ae6a"
+        }
+      }
+    }
+  }
+}

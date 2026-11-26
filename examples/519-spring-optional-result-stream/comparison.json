@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/27735",
+  "revisions": {
+    "parent": "793581ebdeb875ebc13e5a485a0b887db9f5379d",
+    "fix": "4b80b0f490d43cbb449befa9d2cb8bdd45efee9d"
+  },
+  "entry": "DataAccessUtils.optionalResult",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#27735.1",
+      "role": "Intent",
+      "args": [
+        "cardinality"
+      ],
+      "history": "On the merge pass the same zero, one and two-element sequences separately as Collection, Iterator and Stream",
+      "prediction": "The new optionalResult methods should give Optional.empty(), the original sole object inside Optional, and IncorrectResultSizeDataAccessException with expected size 1 respectively. The parent lacks these overloads.",
+      "basis": "The linked request specifies the three representations. Cardinality follows from the supplied input irrespective of representation.",
+      "refutation": "An overload is missing on the merge, a singleton is copied or lost, or duplicates are accepted.",
+      "expected": {
+        "fix": {
+          "return": "empty,identical,too-many(1) / empty,identical,too-many(1) / empty,identical,too-many(1)"
+        },
+        "parent": {
+          "return": "absent"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#27735.2",
+      "role": "Control",
+      "args": [
+        "old"
+      ],
+      "history": "Call the pre-existing singleResult(Collection) with an empty list, a singleton and two copies of the same object",
+      "prediction": "Both revisions should return null, return the identical object, and throw IncorrectResultSizeDataAccessException respectively.",
+      "basis": "The unit of cardinality is the result row. Equal elements are still two results.",
+      "refutation": "Duplicate equal rows produce one result or the singleton changes identity.",
+      "expected": {
+        "fix": {
+          "return": "null,identical,too-many(1)"
+        },
+        "parent": {
+          "return": "null,identical,too-many(1)"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#27735.3",
+      "role": "Challenge",
+      "args": [
+        "closing"
+      ],
+      "history": "On the merge call optionalResult on a sequential, unsized stream that yields two equal references and would throw an AssertionError if asked for a third, with onClose incrementing a counter",
+      "prediction": "Expect IncorrectResultSizeDataAccessException and one close. A separate singleton stream should return its value and also close once.",
+      "basis": "Two observations suffice to establish non-uniqueness. The consumer owns completion of the terminal operation and the landed Stream overload uses try-with-resources.",
+      "refutation": "A third element is requested, the wrong failure escapes, or either stream remains open.",
+      "expected": {
+        "fix": {
+          "return": "too-many(1):read=2:closed=1 / identical:closed=1"
+        }
+      }
+    }
+  ]
+}
