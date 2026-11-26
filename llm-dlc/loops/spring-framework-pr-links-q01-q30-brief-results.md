@@ -62,3 +62,5 @@ For Q04, javac rejected the unchanged external caller on the original parent wit
 ## Independent verification
 
 The complete replay reproduced all 184 observations and a byte-identical audit. A second job ran 40 debugger trials at the original composite removal, JDBC stream query, and reactive retry adaptation methods. Every selected history reached the method twice per revision and agreed with its public observation. [Full replay job](../../verification/jobs/2026/11/26/20261126-154429-replay-92-spring-q-series-predictions-at.json) · [Original-method job](../../verification/jobs/2026/11/26/20261126-154438-trace-spring-composite-removal-row-limit.json)
+
+The third job passed all five steps. It repeated 32 original-binary histories on published releases, 16 release-specific controls, and six factory runs on the landing and later revision. Both output files matched the committed measurements byte for byte. All three campaign jobs passed. The collector recorded their receipts through revision `75b73e815c56`. [Release and maintainer replay job](../../verification/jobs/2026/11/26/20261126-155839-repeat-spring-q-series-release-and-maint.json)

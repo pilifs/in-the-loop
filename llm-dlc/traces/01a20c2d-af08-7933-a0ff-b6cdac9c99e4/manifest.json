@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T16:03:41.238Z",
-  "duration_seconds": 208370,
+  "ended": "2026-11-26T16:07:20.161Z",
+  "duration_seconds": 208589,
   "stats": {
     "turns": 30,
-    "api_calls": 5051,
-    "tool_calls": 12656,
+    "api_calls": 5065,
+    "tool_calls": 12685,
     "tool_errors": 267,
     "compactions": 21,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 6664692,
-      "output_tokens": 2860675,
-      "cache_read_input_tokens": 1375620992,
+      "input_tokens": 6668112,
+      "output_tokens": 2864769,
+      "cache_read_input_tokens": 1379617664,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 7040,
-    "exec": 4821,
-    "apply_patch": 614,
-    "wait": 99,
-    "sleep": 76,
+    "Bash": 7054,
+    "exec": 4833,
+    "apply_patch": 615,
+    "wait": 100,
+    "sleep": 77,
     "send_message_to_user_async": 5,
     "request_user_input_async": 1
   },
@@ -318,6 +318,7 @@
     "llm-dlc/loops/organic-java-pr-capability-composition-fast-follow-results.md",
     "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-results.md",
     "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-results.md",
+    "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-results.md",
     "verification/beyond-jbmc/integer-codecs/RESULTS.md",
     "verification/beyond-jbmc/resource-postconditions/RESULTS.md",
     "verification/beyond-jbmc/scaffold-first/RESULTS.md",
@@ -814,24 +815,24 @@
     {
       "index": 21,
       "started": "2026-11-26T13:39:11.658Z",
-      "ended": "2026-11-26T16:03:41.238Z",
+      "ended": "2026-11-26T16:07:20.161Z",
       "turns": 2,
-      "api_calls": 130,
+      "api_calls": 144,
       "usage": {
-        "input_tokens": 190674,
-        "output_tokens": 87046,
-        "cache_read_input_tokens": 27284992,
+        "input_tokens": 194094,
+        "output_tokens": 91140,
+        "cache_read_input_tokens": 31281664,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 281984
+      "peak_context_tokens": 288795
     }
   ],
   "log": {
-    "sha256": "a0060fc631dee8b5f98679a27a930d3069b9fd73bc8869ebc830c2dd69a6d7c3",
-    "bytes": 78561820,
-    "lines": 39857,
-    "gzip_bytes": 14411630,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/a0060fc631dee8b5f98679a27a930d3069b9fd73bc8869ebc830c2dd69a6d7c3.jsonl.gz"
+    "sha256": "8f60f5e8439a2ede058e291471774ca78e597bc1782674ae28269696a696c054",
+    "bytes": 78646995,
+    "lines": 39951,
+    "gzip_bytes": 14422350,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/8f60f5e8439a2ede058e291471774ca78e597bc1782674ae28269696a696c054.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2458,6 +2459,14 @@
       "summary": "Recheck Spring Q findings on releases (verification pending)",
       "body": "Replay 32 histories with the original application binaries on published Spring releases. All four Q-series counterexamples reproduce on Spring 7.1.0, with one import change for the relocated retry API. On Artemis, Spring JMS 7.0.4 leaves uncorrelated replies waiting on the owned queue. Echoing either the request message ID or an explicit application correlation ID restores both replies and queue reuse. Confirm the historical servlet SSE report, the published parameter delegate, and both defensive copies in the later HTTP proxy factory.\n\nSixteen release-specific controls and six executions of the later and original factories repeated offline. Six negative checks rejected altered evidence. The older P-series release audit, all ten affected example validators and all 35 selected suites passed. The full Q replay and 40 original-method debugger trials also passed independently. Job 20261126-155839-repeat-spring-q-series-release-and-maint repeats the released callers and follow-ups and requires byte-identical results.",
       "log_sha256": "a0060fc631dee8b5f98679a27a930d3069b9fd73bc8869ebc830c2dd69a6d7c3"
+    },
+    {
+      "change_id": "vtmzxvrwollqrnutswyqywxrnsnruuxv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the completed Spring Q-series verification",
+      "body": "All three independent jobs passed. The final job repeated 32 original-caller release observations, 16 released comparison variants and six original or later factory histories. Its two JSON files matched the committed measurements byte for byte. Checked all three collector receipts and all 43 final-report links. The documentation change selected no further tests.",
+      "log_sha256": "8f60f5e8439a2ede058e291471774ca78e597bc1782674ae28269696a696c054"
     }
   ],
   "logs": {
@@ -2784,6 +2793,12 @@
       "lines": 30358,
       "gzip_bytes": 10166053,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/8b677d26673de01eb4939859f7a54f32036ce9bb3a547fcc7c981257f9d8f693.jsonl.gz"
+    },
+    "8f60f5e8439a2ede058e291471774ca78e597bc1782674ae28269696a696c054": {
+      "bytes": 78646995,
+      "lines": 39951,
+      "gzip_bytes": 14422350,
+      "url": null
     },
     "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62": {
       "bytes": 56064038,
