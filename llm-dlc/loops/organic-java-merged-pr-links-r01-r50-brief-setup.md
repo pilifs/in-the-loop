@@ -229,7 +229,7 @@ D: Gradle projects); each part's section follows the summary.
 
 | Case | Part | Built | Release side | Landed tests | Upstream run |
 |---|---|---|---|---|---|
-| R01 eclipse-collections #1786 | C | Maven, JDK 17, eclipse-collections + unit-tests + unit-tests-java8 (-am), maven-settings-ec.xml (repo.eclipse.org 503, mirrored to Central) | 13.0.0 predates (parent form); no release with the fix | fix 120,694/0 failures (map+bimap tests); parent own and parent-landed in the job | inline (fix); job 20261126-173550-setup-run-eclipse-collections-1786-s-lan (parent) |
+| R01 eclipse-collections #1786 | C | Maven, JDK 17, eclipse-collections + unit-tests + unit-tests-java8 (-am), maven-settings-ec.xml (repo.eclipse.org 503, mirrored to Central) | 13.0.0 predates (parent form); no release with the fix | 120,694/0 failures · 120,694/0 failures · 15 of 120,694 FAIL (updateValue/updateValueWith throwing-callback assertions) | inline (fix); job 20261126-173550-setup-run-eclipse-collections-1786-s-lan (parent) |
 | R02 | A | Maven, JDK 17, `package` at both pins | 4.5.0 and 4.6.0 neither pin; 4.6.0 has a different `add()`; no release with the fix's code | `IndexedCollectionTest` 33/33, 32/32, **1 fail** | inline |
 | R03 vavr #3276 | B | Maven, JDK 21, -pl vavr -am, offline 38 s | 1.0.1 lacks; 1.1.0 has the fix line (not byte-equal) | 1900/1900, 1897/1897, 3 fail | inline |
 | R04 fastutil #325 | C | make sources + Ant 1.10.15 (added), JDK 17, both pins | 8.5.13 parent form; 8.5.14 has the fix line (EXPKEYSIG) | 80/0, 78/0, 1 fail (IntImmutableListTest.testOversizedToArray, AIOOBE) | inline |
@@ -261,8 +261,8 @@ D: Gradle projects); each part's section follows the summary.
 | R30 jackson-dataformat-xml #895 | B | Maven, JDK 17, offline 8 s; core/annotations/databind snapshots ~2.5 months after pins | 3.2.2, 3.2.3 lack; 3.3.0 has all added lines | 15/15, 11/11, 4 fail | inline |
 | R31 h2database #4034 | C | Maven h2/, JDK 17, both pins | 2.2.224 parent form; 2.3.230 contains (5/6 files = fix) | exit 0, exit 0, exit 1 (expected 1 actual null) | inline |
 | R32 h2database #2614 | C | Maven h2/, JDK 8, both pins (TZ and annotation-processor service file set for TestFunctions) | 1.4.200 older than parent; 2.0.202 first after, reorganized (matches neither) | exit 0, exit 0, exit 1 (ArrayStoreException in testArrayParameters) | inline |
-| R33 calcite #5345 | D | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 predates the parent | by job | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
-| R34 calcite #4942 | D | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 = parent for all 5 changed files | by job | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
+| R33 calcite #5345 | D | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 predates the parent | 698 · 696 · 4 of 698 FAIL (2 RexLosslessCastTest, testBigQueryCast, cast.iq) | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
+| R34 calcite #4942 | D | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 = parent for all 5 changed files | 606 · 598 · 9 of 606 FAIL (8 RexExecutorTest, testConcatWSFunc) | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
 | R35 arrow-java #1518 | C | Maven -pl vector -am, JDK 17, both pins (-Dmaven.gitcommitid.skip, develocity off) | 20.0.0 (latest) = parent; no release with the fix | 4/0 (2x2 executions), new test, 2 fail | inline |
 | R36 arrow-java #1342 | C | as R35 | 19.0.0 = parent; 20.0.0 has the fix hunk | 4/0, new test, 2 errors (ValidateException) | inline |
 | R37 avro #2282 | C | Maven lang/java -pl avro -am, JDK 11, both pins (build cache off) | 1.11.3 lacks API; 1.11.4 and 1.12.0 carry BigDecimalConversion = fix | 104/0, 4/0, does not compile | inline |
@@ -277,8 +277,8 @@ D: Gradle projects); each part's section follows the summary.
 | R46 resilience4j #1999 | D | Gradle 7.4.2, JDK 17, same substitution | 2.1.0 (brief) predates, 2.2.0 has the fix | 1/1 · (new test) · 1 of 1 FAILS (IllegalAccessException on Issue560 lambda) | inline |
 | R47 picocli #2036 | D | Gradle 7.6, JDK 11, root jar | 4.7.3 predates, 4.7.4 has the fix | 13/13 · 10/10 · 3 of 13 FAIL (the three new inherited fallback tests) | inline |
 | R48 assertj #3710 | B | Maven, JDK 21, -pl assertj-tests/assertj-integration-tests/assertj-core-tests -am, offline 17 s | 3.27.0 = parent; 3.27.1 has all added lines | 1/1, none, 1 fail | inline |
-| R49 junit #5839 | D | Gradle 9.6.1, JDK 25 (+17,21,24), standalone clones; resolved inline | 6.1.1 (brief) predates; 6.1.2 = 6.1.1 + exactly the fix's 7 lines | by job | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
-| R50 junit #4466 | D | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | by job | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
+| R49 junit #5839 | D | Gradle 9.6.1, JDK 25 (+17,21,24), standalone clones; resolved inline | 6.1.1 (brief) predates; 6.1.2 = 6.1.1 + exactly the fix's 7 lines | 59 · 59 · 1 of 59 FAILS (SuiteEngineTests#dynamicSuite: NoTestsDiscoveredException) | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
+| R50 junit #4466 | D | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | **not yet**: the first job stopped at the Groovy test compile (cache gap, now resolved) | rerun job 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins |
 
 
 ## Cases R02–R40 (fork A)
@@ -1042,9 +1042,23 @@ installed first into `$O/m2` (`eclipse-collections-code-generator` and `-maven-p
 `20261126-173550-setup-run-eclipse-collections-1786-s-lan`** (`$O/scripts/R01_job.sh own|keep|landed|clean`; logs
 `$O/logs/R01-parent.own.*`, `$O/logs/R01-parent-landed.*`, full failure lists in `*.junit-all.txt`).
 
+**Job result (passed, 4 steps, 4m12s; results in `verification/results/2026/11/26/20261126-173550-setup-run-eclipse-collections-1786-s-lan/`).**
+Offline on JDK 17 with `$O/maven-settings-ec.xml`, the same `-Dtest` set as the fix:
+- **Parent, its own tests: 120,694 tests, 0 failures, 0 errors** (100 s; `$O/logs/R01-parent.own.junit.txt`).
+- **Parent with the fix's five test files: 120,694 tests, 15 failures, 0 errors** (101 s; `$O/logs/R01-parent-landed.junit-all.txt`). All 15 are the new
+  throwing-callback assertions (`expected: <false> but was: <true>` at `MutableMapIterableTestCase.updateValue:817` and `.updateValueWith:863`):
+  `updateValue` and `updateValueWith` in `UnifiedMapTest`, `UnifiedMapOverridesTest`, `UnifiedMapWithHashingStrategyTest`,
+  `UnifiedMapWithHashingStrategyOverridesTest`, `SynchronizedMutableMapTest`, `SynchronizedMutableMapCustomLockTest` (12), and
+  `MutableMapIterable_updateValue` in `UnifiedMapTest`, `UnifiedMapWithHashingStrategyTest`, `SynchronizedMutableMapTest` (3). So the landed tests
+  pass on the fix and fail on the parent, as the PR says.
+- The build copy and build output were then deleted (step 4).
+
 **Artifacts.** `$O/artifacts/R01-fix/`: `eclipse-collections-14.0.0-SNAPSHOT.jar` sha256 `4aebb375c077649e7b7074a88a534cc38d6532666bf419be8f88694500493e82`,
 `tree/eclipse-collections-api/target/eclipse-collections-api-14.0.0-SNAPSHOT.jar` (the only runtime classpath entry), 24 class digests
-(`UnifiedMap*`, `UnifiedMapWithHashingStrategy*`), `runtime-classpath.txt`, `test-classpath.txt`. `$O/artifacts/R01-parent/` comes from the job.
+(`UnifiedMap*`, `UnifiedMapWithHashingStrategy*`), `runtime-classpath.txt`, `test-classpath.txt`. `$O/artifacts/R01-parent/` (from the job): the same layout,
+`eclipse-collections-14.0.0-SNAPSHOT.jar` sha256 `ea5a1e16144970d59cee5b33a3b5fc5ab54277adc00f75cf72b09994799603b2`, 24 class digests in `SHA256SUMS`.
+The API jar is the same at both pins: `eclipse-collections-api-14.0.0-SNAPSHOT.jar` sha256 `dd4cefe8785ea90dcf940a3f11c7c8f3897e9ffc9309108e42c1740c2cb9e76c`.
+Every entry of the four classpath files exists (checked after the job).
 
 **Release side.** Latest release `13.0.0` predates the fix: both changed files differ from both pins, and all 8 diff hunks of each
 are present in their parent form, none in the fix form (`srccmp_C.py`). No release contains the fix (14.0.0 is not on Central).
@@ -1354,7 +1368,8 @@ about 10 s; logs `$O/logs/R39-*.landed.log`). This is evidence about the release
 Fork D of the setup did the twelve Gradle cases: R25 (moshi), R33, R34 (Calcite), R41, R44 (RxJava), R42, R43 (Reactor Core), R45, R46 (Resilience4j),
 R47 (picocli), R49, R50 (JUnit). Eight ran inline (each Gradle run under a minute once resolved); **R42's pinned build cannot be configured** from public
 sources and took the slice route; **R33, R34, R49 and R50 build and test by two jobs**, `20261126-172339-setup-build-apache-calcite-at-both-pins` (Calcite) and `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (JUnit), queued by
-`$O/scripts/submit_D.py` after everything they need was resolved online into `$O/gradle-home`.
+`$O/scripts/submit_D.py` after everything they need was resolved online into `$O/gradle-home`. Both came back: R33, R34 and R49 behave as their PRs say. **R50's tests never ran**: its
+Groovy test compile needed files the online resolution had missed. They are now resolved and checked, and R50 reruns in job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`.
 
 ### Toolchain (fork D)
 
@@ -1389,13 +1404,13 @@ offline unless `ONLINE=1`, `-Dorg.gradle.caching=false`, toolchain auto-detect/d
 `$O/logs/TAG.log` and JUnit summary `TAG.junit.txt`), `junit_gradle_D.sh`, `overlay_D.sh CASE` (copy of the parent with the fix's changed test files, `$O/build/CASE-parent-landed`),
 `standalone_D.sh`, `cp_D.sh` (classpaths), `digests_D.sh`, `classdiff_D.py`, `failmsgs_D.py`, `relcmp_D.sh` (git blob ids of released sources vs the pins), `linecmp_D.py`
 (the PR's added/removed lines found in a release), `subst_add_D.sh`, `subst_find_D.sh`, `write-classpath-old.init.gradle` (Gradle < 4.9), `resolve-all-D.init.gradle`,
-`slice_D.sh` with `slice-R42.conf`, `verify_cp_D.sh`, `sigs_D.sh`, `calcite_job.sh`, `junit_job.sh`, `submit_D.py`.
+`slice_D.sh` with `slice-R42.conf`, `verify_cp_D.sh`, `sigs_D.sh`, `calcite_job.sh`, `junit_job.sh` (first run's copy `junit_job.sh.first-run`), `resolve-groovy-D.init.gradle` (R50), `submit_D.py`.
 
 | Case | Built | Release side | Landed tests (fix / parent's own / fix's tests on the parent) | Upstream run |
 |---|---|---|---|---|
 | R25 moshi #1442 | Gradle 7.3, JDK 17, :moshi jar + records-tests at both pins | 1.12.0 has no records support; 1.13.0 has the fix (not byte-equal) | 6/6 · 5/5 · 1 of 6 FAILS (indirectGenerics: No JsonAdapter for T) | inline |
-| R33 calcite #5345 | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 predates the parent | by job | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
-| R34 calcite #4942 | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 = parent for all 5 changed files | by job | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
+| R33 calcite #5345 | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 predates the parent | 698 · 696 · 4 of 698 FAIL (2 RexLosslessCastTest, testBigQueryCast, cast.iq) | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
+| R34 calcite #4942 | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 = parent for all 5 changed files | 606 · 598 · 9 of 606 FAIL (8 RexExecutorTest, testConcatWSFunc) | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
 | R41 RxJava #5101 | Gradle 2.14, JDK 8, standalone clones, 9 jcenter-only build-script modules substituted | 2.0.6 = parent, 2.0.7 = fix (exact) | 150 · 136 · 3 of 150 FAIL (Maybe noSubsequentSubscription*) | inline |
 | R42 reactor-core #937 | NOT configurable (propdeps-plugin 0.0.7, spring-io-plugin 0.0.4.RELEASE, dokka integration 0.9.15 only on repo.spring.io, 401/405); slice route on 3.1.1.RELEASE | 3.1.0/3.1.1 = parent, 3.1.2 = fix (code files; Flux.java Javadoc only) | slice: 226/226 · 210/210 · 10 of 226 FAIL (delayError…WithMonoError/FluxError); 3.1.1 alone same 10 fail, 3.1.2 alone all pass | inline (slice) |
 | R43 reactor-core #3783 | Gradle 8.6, JDK 8, :reactor-core at both pins | 3.4.37 = parent, 3.4.38 = fix (exact) | 7/7 · 6/6 · 3 of 7 FAIL (testThenManyOnConcatArray, 2× testThenManyRepeated) | inline |
@@ -1403,8 +1418,8 @@ offline unless `ONLINE=1`, `-Dorg.gradle.caching=false`, toolchain auto-detect/d
 | R45 resilience4j #2067 | Gradle 7.4.2, JDK 17, grolifant 0.10 substituted | 2.1.0 predates, 2.2.0 has the fix (not byte-equal) | 16/16 · 12/12 · 3 of 16 FAIL (×4 with test-retry) | inline |
 | R46 resilience4j #1999 | Gradle 7.4.2, JDK 17, same substitution | 2.1.0 (brief) predates, 2.2.0 has the fix | 1/1 · (new test) · 1 of 1 FAILS (IllegalAccessException on Issue560 lambda) | inline |
 | R47 picocli #2036 | Gradle 7.6, JDK 11, root jar | 4.7.3 predates, 4.7.4 has the fix | 13/13 · 10/10 · 3 of 13 FAIL (the three new inherited fallback tests) | inline |
-| R49 junit #5839 | Gradle 9.6.1, JDK 25 (+17,21,24), standalone clones; resolved inline | 6.1.1 (brief) predates; 6.1.2 = 6.1.1 + exactly the fix's 7 lines | by job | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
-| R50 junit #4466 | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | by job | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
+| R49 junit #5839 | Gradle 9.6.1, JDK 25 (+17,21,24), standalone clones; resolved inline | 6.1.1 (brief) predates; 6.1.2 = 6.1.1 + exactly the fix's 7 lines | 59 · 59 · 1 of 59 FAILS (SuiteEngineTests#dynamicSuite: NoTestsDiscoveredException) | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
+| R50 junit #4466 | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | **not yet**: the first job's builds stopped at the Groovy test compile (cache gap, now resolved) | rerun job 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins |
 
 ### R25 · moshi #1442 — nested record components resolved in the enclosing parameterized type (upstream Gradle 7.3 build at both pins, inline)
 
@@ -1471,6 +1486,19 @@ offline, `GRADLE_WORKERS=3`, `GOPTS=-Xmx512m`). The offline task graph was check
 **Landed tests and artifacts:** produced by job `20261126-172339-setup-build-apache-calcite-at-both-pins` (steps 1–4); results go to `$O/logs/R33-{fix,parent,parent-landed}.test-offline.{log,junit.txt,failures.txt}`,
 jars (`calcite-core`, `-linq4j`, `-testkit` `1.43.0-SNAPSHOT`), `SHA256SUMS` and `core.{runtime,testRuntime}Classpath.txt` to `$O/artifacts/R33-{parent,fix}/`.
 <!-- R33-job -->
+**Job result** (job `20261126-172339-setup-build-apache-calcite-at-both-pins`, passed, 8 steps in 13m58s, peak 4.4 GiB; results in `verification/results/2026/11/26/20261126-172339-setup-build-apache-calcite-at-both-pins/`). Offline, Gradle 8.14.4 on JDK 21:
+- **Fix: 698 tests, 0 failures** (136 s; `$O/logs/R33-fix.test-offline.junit.txt`).
+- **Parent, its own test files: 696 tests, 0 failures** (108 s).
+- **Parent with the fix's three test files** (`RexLosslessCastTest.java`, `RelToSqlConverterTest.java`, `cast.iq`): **698 tests, 4 failures**:
+  `RexLosslessCastTest#keepInnerCastThatChangesResult()`, `RexLosslessCastTest#testLosslessCastApproximateToChar()`,
+  `RelToSqlConverterTest#testBigQueryCast()` and `CoreQuidemTest#[31] sql/cast.iq` (`$O/logs/R33-parent-landed.test-offline.failures.txt`).
+  So the landed tests pass on the fix and fail on the parent.
+- **Jars**, sha256: fix `calcite-core-1.43.0-SNAPSHOT.jar` `695fc04c5c811cc6ba28c13b62d1087ad0c47d41b82ba32ddb41a9bb262f55aa`, parent `calcite-core-1.43.0-SNAPSHOT.jar`
+  `7614e56dae4fa86ffcca4536363c8bf19c114eed39e3086a95d68b287efde9e6`. `calcite-linq4j-1.43.0-SNAPSHOT.jar` `8d9fa7070a3f0fb6b4e3fb792bd3e7c4d8db10682601741a2501d70cef0a9206` and
+  `calcite-testkit-1.43.0-SNAPSHOT.jar` `7b9282c246f3e802cc22616b8cf515212b29a8571b65a9861e8a692d19e2313a` are the same at both pins.
+  The class digests are in `$O/artifacts/R33-{fix,parent}/SHA256SUMS` (50 lines each).
+- **Classpaths**: `core.runtimeClasspath.txt` (45 entries) and `core.testRuntimeClasspath.txt` (90 entries) in each artifacts folder; every entry exists.
+- The build trees were then deleted (`git clean -fdxq`, step 4).
 
 **Release side.** **No release has the fix**: Central's newest `calcite-core` is **1.42.0** (2026-05-28), older than the parent; its `RexSimplify.java` and
 `RexUtil.java` are on neither side byte for byte and lack the fix's added code (`$O/scripts/linecmp_D.py`). `calcite-core-1.42.0.jar`
@@ -1492,6 +1520,26 @@ The overlay for the landed run copies `RexExecutorTest.java` and the testkit `Sq
 
 **Landed tests and artifacts:** produced by job `20261126-172339-setup-build-apache-calcite-at-both-pins` (steps 5–8), into `$O/logs/R34-*.test-offline.*` and `$O/artifacts/R34-{parent,fix}/` (the testkit jar's `SqlOperatorTest` classes are in `SHA256SUMS` as a changed file).
 <!-- R34-job -->
+**Job result** (same job, steps 5–8). Offline, as R33:
+- **Fix: 606 tests, 0 failures, 1 skipped** (129 s; `$O/logs/R34-fix.test-offline.junit.txt`).
+- **Parent, its own test files: 598 tests, 0 failures, 1 skipped** (109 s).
+- **Parent with the fix's `RexExecutorTest.java` and testkit `SqlOperatorTest.java`: 606 tests, 9 failures**:
+  `RexExecutorTest#testReduceTimeCastWithFractionalSeconds()`, `#testReduceTimeToVarcharWithFractionalSeconds()`,
+  `#testReduceTimestampToVarcharWithFractionalSeconds()`, `#testReduceTimestampCastWithFractionalSeconds()`, `#testReduceTimeToVarcharWithMilliseconds()`,
+  `#testReduceLiteralWithMicroseconds()`, `#testReduceTimestampToVarcharWithZeroMilliseconds()`, `#testReduceTimeToVarcharWithZeroMilliseconds()`
+  and `CalciteSqlOperatorTest#testConcatWSFunc()` (the changed expected `VARCHAR` string) (`$O/logs/R34-parent-landed.test-offline.failures.txt`).
+  So the landed tests pass on the fix and fail on the parent.
+- **Jars**, sha256:
+
+  | Jar | Fix | Parent |
+  |---|---|---|
+  | `calcite-core-1.43.0-SNAPSHOT.jar` | `bcae09062b08b28864d177d72168318d9c6b5d18d9d1942abb8d0e9bdcb4052e` | `762297160d3a185c458e46894931dba0e07dfa50096ad4f4823755daaea47a65` |
+  | `calcite-testkit-1.43.0-SNAPSHOT.jar` | `04a5a73d87f57bb05035bf154ca7173c1278bf33edc47f98ad6da527e02bfcc5` | `7737b9e616b7cce4bf0359c8fe8cee4f0736f809c3702b86cabfd86f1f42b34d` |
+
+  `calcite-linq4j-1.43.0-SNAPSHOT.jar` is the same at both pins: `aebdc77ec5dab482155a0179858ccd895b721f7cd289a51050c449cc03624ecb`.
+  The class digests are in `$O/artifacts/R34-{fix,parent}/SHA256SUMS` (27 lines each).
+- **Classpaths**: 45 and 90 entries, as R33; every entry exists.
+- The build trees were then deleted (step 8).
 
 **Release side.** **No release has the fix.** **1.42.0 is a parent stand-in for every changed file**: `RexBuilder.java`, `RexExecutorImpl.java`,
 `RexToLixTranslator.java`, `BuiltInMethod.java` in `calcite-core-1.42.0-sources.jar` and `SqlOperatorTest.java` in `calcite-testkit-1.42.0-sources.jar` are
@@ -1887,6 +1935,30 @@ only `:nmcpAggregation` (the publishing aggregate of the project's own modules) 
 **Landed tests and artifacts:** produced by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (steps 1–4), into `$O/logs/R49-*.test-offline.*` and `$O/artifacts/R49-{parent,fix}/` (module jars,
 `SHA256SUMS`, `junit-platform-suite-engine.runtimeClasspath.txt`, `platform-tests.testRuntimeClasspath.txt`).
 <!-- R49-job -->
+**Job result** (job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`, steps 1–4 passed; results in `verification/results/2026/11/26/20261126-172339-setup-build-junit-at-both-pins-of-5839-a/`). Offline, Gradle 9.6.1 on JDK 25:
+- **Fix: 59 tests, 0 failures** (81 s; `$O/logs/R49-fix.test-offline.junit.txt`).
+- **Parent, its own test files: 59 tests, 0 failures** (77 s).
+- **Parent with the fix's three test files: 59 tests, 1 failure**: `SuiteEngineTests#dynamicSuite()`. The suite descriptor
+  `[engine:junit-platform-suite]/[suite:org.junit.platform.suite.engine.testsuites.DynamicSuite]` finishes FAILED with
+  `NoTestsDiscoveredException: Suite [org.junit.platform.suite.engine.testsuites.DynamicSuite] did not discover any tests`, where the test expects SUCCESSFUL
+  (`$O/logs/R49-parent-landed.test-offline.failures.txt`). This is the failure issue #5837 reports. So the landed tests pass on the fix and fail on the parent.
+- **Module jars** (`6.2.0-SNAPSHOT`), sha256:
+
+  | Jar | Fix | Parent |
+  |---|---|---|
+  | `junit-platform-suite-engine-6.2.0-SNAPSHOT.jar` | `f211c6e7c2ca40878df4397b46c04675b011c4e4c639458b2836feaf8a55cfcb` | `a149e25f902b6a134775365f3efa2ad92109916e0791ad8d7edcd835a089091a` |
+  | `junit-platform-suite-api-6.2.0-SNAPSHOT.jar` | `b7b87a57ffa9799d7ca3367e06f803eca667cc8cc3f2fb8362d0817988f2cb1e` | `372c7c066c2744aa8d357478c3ff7a019b40fbdfeb259f2171582f110cbde96b` |
+  | `junit-platform-launcher-6.2.0-SNAPSHOT.jar` | `d552ff76b66152b19a5a616edd8b16ccd8a715a5d1b2fd0b4425bd53480926fd` | `7997b75331019cb834aa3ec57cb6db28f41a35237dfb29c6a1e3d0d5dc4949f7` |
+  | `junit-platform-engine-6.2.0-SNAPSHOT.jar` | `ad48ec0b4d1f960d4b18016fa6163e4ed392627f01230c1e7a312ed86ac88554` | `d9f545afc562ee640c5c11400e3ecfb5136bf4cb8cea431ddd1e152fee4d6f8f` |
+  | `junit-platform-commons-6.2.0-SNAPSHOT.jar` | `5ba0991da6ea86e4b90957106f3aa08f5da3c31bc56d857b9b5805ab1b6a56f7` | `657bf653384444ba8b9851ff7cfc03bff4b4abb176d441acd6bb0ce5bbb92626` |
+  | `junit-jupiter-api-6.2.0-SNAPSHOT.jar` | `8d28d0419874bdeecbda58ad5db6b2e939c37ee83ba29d415e180d9d7197c191` | `b0320d94fa2925e535556b8c7226b68e6f17a99fdf78d4c552ca4c4b384dd962` |
+  | `junit-jupiter-engine-6.2.0-SNAPSHOT.jar` | `81540ceeb803a1d8e3e3c24a9ce9bda04c0c765a82815f9f650ea5997b210b1a` | `eefcdace00f2801c16811b0b8609a20a53f43a0047b7cc3f4f874018d3db7b77` |
+  | `junit-jupiter-params-6.2.0-SNAPSHOT.jar` | `ae946f953fcac9811493e9f7ac34d2ec763e73a70fbf059754c77d89d250ebac` | `cc62946571735c29389c46bb29cb713c69c2c490355e32aafb44a3257b3a27f0` |
+
+  Every jar differs between the pins, unchanged modules included: each manifest carries `Build-Revision` (the pin) and `Build-Time` (checked in `junit-platform-commons`), so jar digests are not comparable across builds; compare the class digests. Only `SuiteTestDescriptor`'s source changed.
+  `SHA256SUMS` (12 lines each) is in `$O/artifacts/R49-{fix,parent}/`.
+- **Classpaths**: `junit-platform-suite-engine.runtimeClasspath.txt` (5 entries), `platform-tests.testRuntimeClasspath.txt` (63 entries); every entry exists.
+- The build trees were then deleted (step 4).
 
 **Release side** (`$O/releases/junit-platform-suite-engine-{6.1.1,6.1.2,6.2.0-M1}/` with `-sources.jar`; full runtime sets `$O/releases/junit-set-{6.1.1,6.1.2}/classpath.txt`,
 13 jars each — platform suite/suite-api/suite-engine/launcher/engine/commons, jupiter/-api/-params/-engine, opentest4j 1.3.0, apiguardian 1.1.2, jspecify 1.0.0 —
@@ -1895,7 +1967,7 @@ resolved from Central into `$O/m2`, each jar equal to its `.sha1`):
   (the 6.1.x maintenance line; neither is byte-equal to a pin, whose `main` file has 44 more lines of 6.2 work). 6.2.0-M1 also has the fix.
 - `junit-platform-suite-engine-6.1.1.jar` `cc8e80d44a13e8734d1ef85bf87a7f8dc3182b24d772a001851f3c5be8f67c60`, `-6.1.2.jar` `2f478dfd1ccda57c576c761d07d5417f9048d5d97ae27d334ebdc76caaebcfda`.
 
-### R50 · JUnit #4466 — @TempDir ON_SUCCESS cleanup follows the owning test (upstream Gradle 8.13 build; jars and landed tests by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`)
+### R50 · JUnit #4466 — @TempDir ON_SUCCESS cleanup follows the owning test (upstream Gradle 8.13 build; jars by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`, landed tests by rerun job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`)
 
 **Pins.** Parent `96d0c6dae456021a664a2283ab30fca28c4fbae2`, fix `48276fd094821f79afb3cd384b8c70946d73350b`; the range is two commits, as the brief says: middle
 `f7f1d51d4c57322dece17011a3da540b0f98bfbb` ("Add 5.12.2 release notes from template", documentation only), then the fix ("Fix handling of `CleanupMode.ON_SUCCESS`").
@@ -1909,7 +1981,7 @@ Changed production file: `junit-jupiter-engine/src/main/java/org/junit/jupiter/e
 plugin rejects any unknown `-P` property** (`Unknown build parameter: …`), so for R50 the Kotlin strategy is `-Dkotlin.compiler.execution.strategy=in-process` and the setup's
 init-script parameters are system properties (`$O/scripts/resolve-all-D.init.gradle`, `-DsetupResolve=ALL`, `-DsetupCpConf`, `-DsetupCpOut`). `gradle.properties` sets
 `org.gradle.warning.mode=fail`; the init script's resolution trips it at the end (the resolution itself completed, 501 configurations, none failed), so the classpath export passes
-`--warning-mode=summary`. Online resolution inline: `$O/logs/R50-{fix,parent}.resolve-online.log`. Offline task graph checked with `-m` (29 s). No substitution.
+`--warning-mode=summary`. Online resolution inline: `$O/logs/R50-{fix,parent}.resolve-online.log`, plus the Groovy compile classpath (`setupResolveGroovy`, see the job result below). Offline task graph checked with `-m` (29 s). No substitution.
 
 **Commands** (`$O/scripts/junit_job.sh R50 fix|parent|landed|clean`): `:junit-jupiter-engine:jar :junit-jupiter-api:jar :junit-jupiter-params:jar :junit-platform-launcher:jar
 :junit-platform-engine:jar :junit-platform-commons:jar :jupiter-tests:test --tests org.junit.jupiter.engine.extension.TempDirectoryCleanupTests` offline.
@@ -1917,6 +1989,25 @@ init-script parameters are system properties (`$O/scripts/resolve-all-D.init.gra
 **Landed tests and artifacts:** produced by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (steps 5–8), into `$O/logs/R50-*.test-offline.*` and `$O/artifacts/R50-{parent,fix}/`
 (`junit-jupiter-engine.runtimeClasspath.txt`, `jupiter-tests.testRuntimeClasspath.txt`).
 <!-- R50-job -->
+**First job run: the tests never ran** (job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`, steps 5–8; results in `verification/results/2026/11/26/20261126-172339-setup-build-junit-at-both-pins-of-5839-a/`).
+- **What happened.** All three offline builds (fix, parent, parent-landed) stopped at `:jupiter-tests:compileTestGroovy`, before any test ran (`junit tests=0`):
+  `Could not resolve all files for configuration ':jupiter-tests:detachedConfiguration8'`, with `No cached version of org.apache.groovy:groovy-ant:4.0.26 available for
+  offline mode` and the same for 12 more Groovy 4.0.26 modules (`$O/logs/R50-{fix,parent,parent-landed}.test-offline.log`).
+  `GroovyCompile` infers that classpath at execution time in a detached configuration (`GroovyRuntime.inferGroovyClasspath`), so `setupResolveAll` never saw it, and the
+  `-m` dry run doesn't resolve it.
+- **Why the job still said "passed".** The first `junit_job.sh` exited 0 in every case (kept as `$O/scripts/junit_job.sh.first-run`). The landed step printed no
+  `LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED`. The module jars and classpaths were still built and kept (fix `junit-jupiter-engine-5.13.0-SNAPSHOT.jar`
+  `4bd0026871c013b22fa601cb5f619762e5d8b042967dc0586ee75e80793f8709`, parent `cf4e59e914c5b93325a7ea5f2221881480ea0e1b08db797c1eb15180518e4cbb`); the rerun rebuilds them.
+- **Fix.** `$O/scripts/resolve-groovy-D.init.gradle` adds `setupResolveGroovy`, which resolves that inferred classpath for each source set with a Groovy jar
+  (`:jupiter-tests:test`, 29 files, Groovy 4.0.26; `:jupiter-tests:templates`, 13 files, Groovy 3.0.22). It changes no upstream file.
+  - Online at both pins (12–13 s each; `$O/logs/R50-{fix,parent}.resolve-groovy-online.log`), then **offline at both pins with the same file counts**
+    (`$O/logs/R50-{fix,parent}.resolve-groovy-offline.log`). Command: `GINIT=$O/scripts/resolve-groovy-D.init.gradle $O/scripts/junit_gradle_D.sh R50 DIR TAG "" --warning-mode=summary :jupiter-tests:setupResolveGroovy`, with `ONLINE=1` for the online form.
+  - **All 47 Groovy 4.0.26 files** (jars, poms, Gradle module files) in `$O/gradle-home` equal Maven Central's `.sha1` (`$O/logs/R50-groovy-4.0.26-sha1.txt`).
+  - `junit_job.sh` now exits with the test run's status for fix and parent. Its landed step exits 0 only when tests ran (`tests>0`) and some failed. The test run now
+    also passes `--warning-mode=summary`, because the build's `gradle.properties` sets `org.gradle.warning.mode=fail`. That changes no test.
+- **Rerun: job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`** (steps `junit_job.sh R50 fix|parent|landed|clean`). Until its result is recorded
+  here, R50's pin builds are built but **their tests are unchecked**.
+<!-- R50-rerun -->
 
 **Release side** (`$O/releases/junit-jupiter-engine-{5.12.1,5.12.2,5.13.0}/` with `-sources.jar`; runtime sets `$O/releases/junit-set-{5.12.1,5.12.2}/classpath.txt`, 13 jars each, platform 1.12.x):
 **an exact published pair**: `TempDirectory.java` of **5.12.1 = the parent's**, of **5.12.2 (named by the brief) = the fix's** (git blob ids). 5.13.0 has the fix plus later changes (30 lines).
@@ -1955,8 +2046,9 @@ in its section above (parts A–D), and the summary table names the part.
   `$W/CASE-MIRROR-parent` and `$W/CASE-MIRROR-fix`. They are clean, with no build output. R41, R49 and R50 are standalone depth-1 clones, because
   their builds read git metadata. Every PR is merged, and its merge commit is the brief's after pin (*Upstream revisions*). The two-commit ranges
   have their middle commits fetched: R24 `ba880df507664d320f54028810c42e07e429515f` and R50 `f7f1d51d4c57322dece17011a3da540b0f98bfbb`.
-- **Builds.** 49 of the 50 cases are built at both pins. R39 parquet is the exception (see below). For R01's parent side, R33, R34, R49 and R50,
-  the artifacts arrive with the three queued jobs (below). Each built case has, in `$O/artifacts/CASE-ROLE/`:
+- **Builds.** 49 of the 50 cases are built at both pins. R39 parquet is the exception (see below). R01's parent side, R33, R34 and R49 were built
+  by jobs, and their artifacts are in place. R50's artifacts from the first job are in place too, and its rerun job
+  `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins` rebuilds them. Each built case has, in `$O/artifacts/CASE-ROLE/`:
   - the jar;
   - `SHA256SUMS`, covering the jar and every class of each changed production file;
   - the runtime and test classpaths (`:`-joined, pointing into `$O/m2` or `$O/gradle-home`). Sibling module jars are copied under `tree/` where a
@@ -2007,17 +2099,26 @@ in its section above (parts A–D), and the summary table names the part.
   on 3.1.2.RELEASE.
 - **R39 (releases and pin-source overlays only).** The landed method passes on parquet-hadoop 1.18.2 and fails on 1.18.1. The fix pin's
   `DictionaryPageReader.java` compiled onto 1.18.2 passes, and the parent pin's fails.
-- **R01.** The fix side passed inline (120,694 tests). The parent side is a job.
-- **Not yet verified (jobs queued).**
+- **4 more cases by verification jobs**, which came back passed. Each landed test set passes on the fix, the parent's own copy passes on the parent, and
+  the fix's landed tests fail on a copy of the parent where the PR says:
 
-  | Job | Cases |
-  |---|---|
-  | `20261126-173550-setup-run-eclipse-collections-1786-s-lan` | R01 parent's own tests, parent artifacts, the fix's tests on the parent |
-  | `20261126-172339-setup-build-apache-calcite-at-both-pins` | R33, R34 |
-  | `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` | R49, R50 |
+  | Case | Fix · parent's own · fix's tests on the parent | Job |
+  |---|---|---|
+  | R01 | 120,694/0 · 120,694/0 · 15 fail (the throwing-callback `updateValue`/`updateValueWith` assertions) | `20261126-173550-setup-run-eclipse-collections-1786-s-lan` (the fix side ran inline) |
+  | R33 | 698/0 · 696/0 · 4 fail | `20261126-172339-setup-build-apache-calcite-at-both-pins` |
+  | R34 | 606/0 · 598/0 · 9 fail | `20261126-172339-setup-build-apache-calcite-at-both-pins` |
+  | R49 | 59/0 · 59/0 · 1 fails (`SuiteEngineTests#dynamicSuite`, `NoTestsDiscoveredException`) | `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` |
 
-  Until their results are recorded here, treat those cases' pin builds as unchecked. The job results go at the `<!-- CASE-job -->` markers in the
-  part D section, and in R01's section.
+  So **47 cases** are checked at both pins on a JVM.
+- **R50: not yet verified.** In job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`, its three offline builds stopped at
+  `:jupiter-tests:compileTestGroovy`: 13 Groovy 4.0.26 modules that the Groovy plugin resolves at compile time were missing from the cache. No test ran.
+  The job still reported passed, because its script exited 0 whatever the build did.
+  - **Fixed since.** The modules are resolved now (`$O/scripts/resolve-groovy-D.init.gradle`), all 47 files equal Central's `.sha1`, and they resolve
+    offline at both pins. The script now fails a step whose outcome is wrong.
+  - **Rerun: job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`.** Until its result is recorded in R50's section (`<!-- R50-rerun -->`),
+    treat R50's pin tests as unchecked.
+  - `calcite_job.sh` also exits 0 in every case, so R33 and R34 above were read from their logs (`test rc=0` with tests > 0, and the landed marker), not from
+    the job status alone. `R01_job.sh` fails its landed step when nothing fails.
 - **None of the brief's own scenarios, controls or challenges was run.** That is on purpose.
 
 ### What to know before starting
@@ -2061,7 +2162,7 @@ in its section above (parts A–D), and the summary table names the part.
   | R35, R36 Arrow | `-Dmaven.gitcommitid.skip=true -Ddevelocity.scan.disabled=true`; running vector code on JDK 17 needs `--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED` and a memory provider jar (in `tree/`) |
   | R37, R38 Avro | `-Dmaven.build.cache.enabled=false` |
   | R32 H2 | `TestFunctions` needs a non-UTC default zone (`-Duser.timezone=America/Los_Angeles`) and the test annotation processor's service file (`$O/scripts/h2-test-services`), the same on both pins; H2 tests stop at their first failure |
-  | R50 | its build rejects unknown `-P` properties: pass setup parameters as `-D` |
+  | R50 | its build rejects unknown `-P` properties: pass setup parameters as `-D`. `gradle.properties` sets `org.gradle.warning.mode=fail`, so the setup passes `--warning-mode=summary`. The Groovy test compile classpath is resolved by `setupResolveGroovy` (`$O/scripts/resolve-groovy-D.init.gradle`) |
   | R16 | after a `-Dtest=` run, an offline `package` fails jacoco's coverage check: use `clean package` |
 - **Coverage limits of the landed tests.**
   - R44's landed tests fail on the parent only for the Flowable path; the Observable change is not separated by them.

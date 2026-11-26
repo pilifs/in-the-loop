@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-180537-setup-rerun-junit-4466-r50-at-both-pins",
+  "title": "Setup: rerun JUnit #4466 (R50) at both pins with its Groovy test classpath resolved",
+  "description": "Setup for case R50 (junit-team/junit-framework#4466, @TempDir ON_SUCCESS cleanup scoped to the owning test) of llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md; no claims, no verifier. The first run, in job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a (steps 5-8), never reached the tests: offline, :jupiter-tests:compileTestGroovy could not resolve the Groovy 4.0.26 modules (groovy-ant, groovy-astbuilder, ... 13 in all) that GroovyCompile infers in a detached configuration, which the online resolution had not covered. That job still reported passed because its script exited 0 whatever the build did. The setup has since resolved that classpath online with an init script in the cache (resolve-groovy-D.init.gradle; all 47 Groovy 4.0.26 jars, poms and modules equal Maven Central's .sha1) and checked that it resolves offline at both pins. The script now exits with the test run's status for fix and parent, and for the landed step exits 0 only when the tests ran and some failed. In the standalone clones under ~/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees, offline with Gradle 8.13 on JDK 21: builds the jupiter and platform module jars at the fix (48276fd094821f79afb3cd384b8c70946d73350b) and parent (96d0c6dae456021a664a2283ab30fca28c4fbae2) pins, runs TempDirectoryCleanupTests, keeps jars, class digests and classpaths under $O/artifacts/R50-ROLE/, then runs the fix's TempDirectoryCleanupTests on a copy of the parent, where the new tests are expected to fail. Each build compiles jupiter-tests (Java, Kotlin, Groovy), over a minute, so it is a job.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: fix and parent print 'R50 fix test rc=0' and 'R50 parent test rc=0' with tests>0; landed prints LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED with the failing tests in $O/logs/R50-parent-landed.test-offline.failures.txt; clean prints 'cleaned'",
+  "submitted": {
+    "at": "2026-11-26T18:05:37+00:00",
+    "session": "955141f5-9ccb-41fa-9e12-8a9dfab2ca8b",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "6G",
+    "duration": "25m",
+    "notes": "3 offline JUnit 5.13 builds of 6 modules plus jupiter-tests compilation; the first run's failed builds took 46-71 s before the Groovy compile, R49's comparable builds 77-128 s"
+  },
+  "steps": [
+    {
+      "name": "R50 fix: JUnit 5.13.0-SNAPSHOT module jars, TempDirectoryCleanupTests, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 fix",
+      "cwd": "."
+    },
+    {
+      "name": "R50 parent: the same with the parent's own test file",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 parent",
+      "cwd": "."
+    },
+    {
+      "name": "R50 landed: the fix's TempDirectoryCleanupTests on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 landed",
+      "cwd": "."
+    },
+    {
+      "name": "R50 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

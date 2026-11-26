@@ -12,51 +12,70 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-26T16:14:29.015Z",
-  "ended": "2026-11-26T17:53:37.784Z",
-  "duration_seconds": 5949,
+  "ended": "2026-11-26T18:09:38.863Z",
+  "duration_seconds": 6910,
   "stats": {
-    "turns": 6,
-    "api_calls": 56,
-    "tool_calls": 51,
+    "turns": 11,
+    "api_calls": 109,
+    "tool_calls": 102,
     "tool_errors": 0,
-    "compactions": 0,
-    "peak_context_tokens": 217611,
+    "compactions": 1,
+    "peak_context_tokens": 223815,
     "usage": {
-      "input_tokens": 128,
-      "output_tokens": 43712,
-      "cache_read_input_tokens": 9148228,
-      "cache_creation_input_tokens": 203958
+      "input_tokens": 236,
+      "output_tokens": 83249,
+      "cache_read_input_tokens": 17130485,
+      "cache_creation_input_tokens": 415413
     }
   },
   "tools": {
-    "Bash": 42,
+    "Bash": 87,
+    "ScheduleWakeup": 5,
     "Agent": 4,
-    "ScheduleWakeup": 4,
-    "Read": 1
+    "Read": 4,
+    "Edit": 1,
+    "Write": 1
   },
-  "files_touched": [],
+  "files_touched": [
+    "~/.cache/in-the-loop/merged-pr-links-r01-r50/notes/30-fork-C.md",
+    "~/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/resolve-groovy-D.init.gradle"
+  ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-26T16:14:29.015Z",
-      "ended": "2026-11-26T17:53:37.784Z",
+      "ended": "2026-11-26T17:55:00.975Z",
       "turns": 6,
-      "api_calls": 56,
+      "api_calls": 58,
       "usage": {
-        "input_tokens": 128,
-        "output_tokens": 43712,
-        "cache_read_input_tokens": 9148228,
-        "cache_creation_input_tokens": 203958
+        "input_tokens": 132,
+        "output_tokens": 45166,
+        "cache_read_input_tokens": 9584490,
+        "cache_creation_input_tokens": 205251
       },
-      "peak_context_tokens": 217611
+      "peak_context_tokens": 218904
+    },
+    {
+      "index": 1,
+      "started": "2026-11-26T17:55:57.083Z",
+      "ended": "2026-11-26T18:09:38.863Z",
+      "turns": 5,
+      "api_calls": 51,
+      "usage": {
+        "input_tokens": 104,
+        "output_tokens": 38083,
+        "cache_read_input_tokens": 7545995,
+        "cache_creation_input_tokens": 210162
+      },
+      "peak_context_tokens": 223815
     }
   ],
   "log": {
-    "sha256": "da04f1aad0ddd4a6d74c9de61217d524cff809e0d89de478d2e76db21138ffce",
-    "bytes": 1754653,
-    "lines": 794,
-    "gzip_bytes": 371625,
-    "path": "llm-dlc/traces/955141f5-9ccb-41fa-9e12-8a9dfab2ca8b/logs/da04f1aad0ddd4a6d74c9de61217d524cff809e0d89de478d2e76db21138ffce.jsonl.gz"
+    "sha256": "c0b523aec8de50012c3655f1fc8675e769397714b056d2cee13a3df5a4dd5cc2",
+    "bytes": 3377221,
+    "lines": 1264,
+    "gzip_bytes": 703368,
+    "path": "llm-dlc/traces/955141f5-9ccb-41fa-9e12-8a9dfab2ca8b/logs/c0b523aec8de50012c3655f1fc8675e769397714b056d2cee13a3df5a4dd5cc2.jsonl.gz"
   },
   "subagents": [
     {
@@ -208,6 +227,14 @@
       "summary": "Record the R01-R50 setup of the large cases and the setup notes (verification pending)",
       "body": "Setup for llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. Built both pins of eclipse-collections, guava (JRE and Android, with an added Temurin 27 javac toolchain), h2, arrow-java, avro and fastutil (make sources and an added Ant 1.10.15) with their landed tests run inline. They pass on the fix and fail on the parent as the PRs say; R37/R38's fix tests don't compile on the parent. parquet-java's pins cannot be built here (no thrift 0.23.0 compiler), so R39 uses parquet-hadoop 1.18.1/1.18.2, whose DictionaryPageReader.java match the parent and fix pins, plus overlay jars of the pins' own file. The record now has a summary by case and the Setup Agent Notes for the domain agent.\n\nJob queued: 20261126-173550-setup-run-eclipse-collections-1786-s-lan (R01's parent-side own tests, parent artifacts and the fix's tests on the parent). Still pending from before: 20261126-172339-setup-build-apache-calcite-at-both-pins and 20261126-172339-setup-build-junit-at-both-pins-of-5839-a.",
       "log_sha256": "da04f1aad0ddd4a6d74c9de61217d524cff809e0d89de478d2e76db21138ffce"
+    },
+    {
+      "change_id": "pswrnvulummlwrrtqpksowqoplzymlur",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the R01-R50 setup jobs' results and rerun R50 (verification pending)",
+      "body": "Three setup jobs came back passed, and their results are now in the setup record. R01: the parent's own map and bimap tests pass (120,694, 0 failures), and the fix's five test files give 15 failures on a copy of the parent, all the new throwing-callback assertions. R33 and R34 (Calcite): the landed tests pass on the fix and fail on the parent (4 and 9 failures). R49 (JUnit suite engine): SuiteEngineTests#dynamicSuite fails on the parent with NoTestsDiscoveredException. The record now also has the parent jar digests, the classpaths (every entry checked to exist) and the summary rows. 47 of the 50 cases are now checked at both pins on a JVM.\n\nR50 (JUnit #4466) was not verified, although its job reported passed. All three offline builds stopped at :jupiter-tests:compileTestGroovy, because 13 Groovy 4.0.26 modules that GroovyCompile infers at compile time were missing from the Gradle cache, and the job script exited 0 whatever happened. An init script in the setup cache now resolves that classpath. All 47 Groovy 4.0.26 files equal Maven Central's .sha1, and they resolve offline at both pins. The JUnit job script now fails a step whose outcome is wrong.\n\nJob 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins reruns R50's fix, parent and landed tests.",
+      "log_sha256": "c0b523aec8de50012c3655f1fc8675e769397714b056d2cee13a3df5a4dd5cc2"
     }
   ],
   "logs": {
@@ -239,6 +266,12 @@
       "bytes": 766170,
       "lines": 239,
       "gzip_bytes": 114537,
+      "url": null
+    },
+    "c0b523aec8de50012c3655f1fc8675e769397714b056d2cee13a3df5a4dd5cc2": {
+      "bytes": 3377221,
+      "lines": 1264,
+      "gzip_bytes": 703368,
       "url": null
     },
     "c883a5ee3d355b1d2661db086aae4809450b8e798722d03d524e47e9ca1d80dd": {
