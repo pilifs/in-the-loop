@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-26T13:47:46.434Z",
-  "ended": "2026-11-26T15:13:38.962Z",
-  "duration_seconds": 5153,
+  "ended": "2026-11-26T15:19:05.094Z",
+  "duration_seconds": 5479,
   "stats": {
-    "turns": 6,
-    "api_calls": 207,
-    "tool_calls": 207,
+    "turns": 11,
+    "api_calls": 230,
+    "tool_calls": 228,
     "tool_errors": 7,
-    "compactions": 1,
+    "compactions": 2,
     "peak_context_tokens": 418365,
     "usage": {
-      "input_tokens": 416,
-      "output_tokens": 168586,
-      "cache_read_input_tokens": 49390807,
-      "cache_creation_input_tokens": 568615
+      "input_tokens": 464,
+      "output_tokens": 180434,
+      "cache_read_input_tokens": 51703659,
+      "cache_creation_input_tokens": 684896
     }
   },
   "tools": {
-    "Bash": 196,
-    "Read": 10,
+    "Bash": 216,
+    "Read": 11,
     "Write": 1
   },
   "files_touched": [
@@ -54,24 +54,38 @@
     {
       "index": 1,
       "started": "2026-11-26T14:46:31.661Z",
-      "ended": "2026-11-26T15:13:38.962Z",
+      "ended": "2026-11-26T15:14:39.355Z",
       "turns": 5,
-      "api_calls": 54,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 110,
-        "output_tokens": 28583,
-        "cache_read_input_tokens": 6875669,
-        "cache_creation_input_tokens": 161973
+        "input_tokens": 114,
+        "output_tokens": 29933,
+        "cache_read_input_tokens": 7228320,
+        "cache_creation_input_tokens": 163758
       },
-      "peak_context_tokens": 175626
+      "peak_context_tokens": 177411
+    },
+    {
+      "index": 2,
+      "started": "2026-11-26T15:15:40.306Z",
+      "ended": "2026-11-26T15:19:05.094Z",
+      "turns": 5,
+      "api_calls": 21,
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 10498,
+        "cache_read_input_tokens": 1960201,
+        "cache_creation_input_tokens": 114496
+      },
+      "peak_context_tokens": 128149
     }
   ],
   "log": {
-    "sha256": "2a1bd94c7e03a687d20954e04abc0c5fb9fbe24fa0757d494e5406d9a6eea83b",
-    "bytes": 4469808,
-    "lines": 1543,
-    "gzip_bytes": 807698,
-    "path": "llm-dlc/traces/56626182-a69a-4945-91c7-07e11b9bb46a/logs/2a1bd94c7e03a687d20954e04abc0c5fb9fbe24fa0757d494e5406d9a6eea83b.jsonl.gz"
+    "sha256": "cdf03391a985a51492cd6cada7e393d5bb71e886c78803c632468abc6821fb2a",
+    "bytes": 5426743,
+    "lines": 1769,
+    "gzip_bytes": 1026836,
+    "path": "llm-dlc/traces/56626182-a69a-4945-91c7-07e11b9bb46a/logs/cdf03391a985a51492cd6cada7e393d5bb71e886c78803c632468abc6821fb2a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -106,6 +120,14 @@
       "summary": "Record Spring Q01-Q30 setup build results; requeue Q11 (verification pending)",
       "body": "The setup record for the Spring Q01-Q30 brief now has the results of 21 of its 22 offline Gradle setup jobs. Each landed test class passes at its fix pin and the parent's versions pass at the parent. The fix's tests fail on the parent (17 cases) or do not compile there (Q05, Q12, Q24, Q29). The record also has the sha256 of every built jar and changed class, the classpath entry counts, and notes on Q16's leak-check cascade and on top-level classes that compile identically at both pins.\n\nQ11 failed offline twice in spring-beans' Groovy compile: Gradle 7.3 resolves the whole Groovy 3.0.9 runtime in a detached configuration. Those modules and javaparser-core were resolved online at both pins and confirmed offline, and job 20261126-151047-setup-build-spring-framework-27716-q11-a is queued. The jobs' own results are recorded on the runner's line (b4cff56869fd).",
       "log_sha256": "2a1bd94c7e03a687d20954e04abc0c5fb9fbe24fa0757d494e5406d9a6eea83b"
+    },
+    {
+      "change_id": "lvkztvpwpotvmxrmmukpnpynopkoxzyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record Spring Q11 setup build result; Q01-Q30 setup complete",
+      "body": "Q11 (Spring Framework #27716) passed its third verification job, 20261126-151047-setup-build-spring-framework-27716-q11-a, after the Gradle 7.3 Groovy runtime modules were resolved into the offline cache. At the fix pin NamedParameterUtilsUnitTests passes (25 tests), the parent's own version passes at the parent (24 tests), and the fix's test file run on the parent fails exactly the landed parseSqlStatementWithSquareBracket(). The setup record now has Q11's jar and class sha256 digests, its spring-r2dbc classpath counts (18 runtime, 61 test, equal at both pins), and disk use; all 22 Gradle cases and the 8 slice cases are verified, and the record no longer says in progress.",
+      "log_sha256": "cdf03391a985a51492cd6cada7e393d5bb71e886c78803c632468abc6821fb2a"
     }
   ],
   "logs": {
@@ -131,6 +153,12 @@
       "bytes": 2940127,
       "lines": 1016,
       "gzip_bytes": 511558,
+      "url": null
+    },
+    "cdf03391a985a51492cd6cada7e393d5bb71e886c78803c632468abc6821fb2a": {
+      "bytes": 5426743,
+      "lines": 1769,
+      "gzip_bytes": 1026836,
       "url": null
     }
   },

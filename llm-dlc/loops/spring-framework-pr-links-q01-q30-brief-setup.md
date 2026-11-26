@@ -5,8 +5,6 @@ Mechanical setup for [`spring-framework-pr-links-q01-q30-brief.md`](spring-frame
 sidecars, adapters or checker code, allocates no example ids, and runs neither the project verifier nor JBMC. Everything
 fetched or built is outside the checkout.
 
-**Status: in progress.** Sections marked *pending* are filled in as the work goes on.
-
 `$P` below is `~/.cache/in-the-loop/spring-pr-links-q01-q30`, and `$M` is `~/.cache/in-the-loop/git-mirrors`.
 `source $P/scripts/env.sh` defines `$P`, `$M`, `$W` (= `$P/worktrees`), `TMPDIR` (= `$P/tmp`), `GRADLE_USER_HOME` (= `$P/gradle-home`),
 the JDK homes `$J8` `$J11` `$J17` `$J21` `$J25` (Temurin 8u512, 11.0.33, 17.0.21, 21.0.13, 25.0.5 under `~/.sdkman/candidates/java/`),
@@ -461,7 +459,7 @@ detached configuration of its own, which resolving every named configuration doe
 task `setupResolveCoords -PsetupCoords=G:A:V,...` that resolves given coordinates as a detached configuration; run online for
 `org.codehaus.groovy:groovy-ant` at both pins of both cases (7 files each, logs `$P/logs/CASE-ROLE.groovyant.online.log`), then
 the two jobs were queued again. The Spring 6.1 and 7 builds do not compile Groovy that way.
-| Q11 (second rerun) | `20261126-151047-setup-build-spring-framework-27716-q11-a` |
+| Q11 (second rerun) | `20261126-151047-setup-build-spring-framework-27716-q11-a` (passed) |
 
 The Q09 rerun passed. The first Q11 rerun (`20261126-144401-setup-build-spring-framework-27716-q11-a`) failed again on the
 same task. Gradle 7.3 (Q11), unlike 6.8.3 (Q09), puts the whole Groovy runtime into that detached configuration. In
@@ -470,7 +468,7 @@ same task. Gradle 7.3 (Q11), unlike 6.8.3 (Q09), puts the whole Groovy runtime i
 Offline, the build missed `groovy-astbuilder`, `-console`, `-datetime`, `-dateutil`, `-docgenerator`, `-json`, `-nio` and `-sql`
 3.0.9, plus `com.github.javaparser:javaparser-core:3.23.0`. `setupResolveCoords` resolved those twelve modules and
 `groovy-docgenerator` at 3.0.9 online at both Q11 pins (23 files each, logs `$P/logs/Q11-ROLE.groovyruntime.online.log`).
-It then resolved them again with `--offline` (`$P/logs/Q11-ROLE.groovyruntime.offline.log`), and Q11 was queued a third time.
+It then resolved them again with `--offline` (`$P/logs/Q11-ROLE.groovyruntime.offline.log`), and Q11 was queued a third time. That job passed all four steps in 1m57s at a peak of 2.5 GiB.
 
 ## Job results
 
@@ -489,7 +487,7 @@ of them the parent has at the parent. Then it compiles and runs the fix's change
 | Q07 | exit 0, 63 tests, 0 failures, 0 errors (73 s) | exit 0, 63 tests, 0 failures, 0 errors (58 s) | **fails**: 63 tests, 3 failures, 0 errors; `ConcurrentReferenceHashMapTests#compute()`, `ConcurrentReferenceHashMapTests#computeIfPresent()`, `ConcurrentReferenceHashMapTests#merge()` |
 | Q08 | exit 0, 2 tests, 0 failures, 0 errors (66 s) | exit 0, 0 tests, 0 failures, 0 errors (55 s) | **fails**: 2 tests, 2 failures, 0 errors; `SqlParameterSourceUtilsTests#createBatchWithMapBeanAndSqlParameterSource()`, `SqlParameterSourceUtilsTests#createBatchWithSqlParameterSourceVarargs()` |
 | Q09 | exit 0, 20 tests, 0 failures, 0 errors (49 s) | exit 0, 14 tests, 0 failures, 0 errors (57 s) | **fails**: 20 tests, 3 failures, 0 errors; `ThreadPoolTaskExecutorTests#modifyCorePoolSizeWithInvalidValueWhileRunning()`, `ThreadPoolTaskExecutorTests#modifyKeepAliveSecondsWithInvalidValueWhileRunning()`, `ThreadPoolTaskExecutorTests#modifyMaxPoolSizeWithInvalidValueWhileRunning()` |
-| Q11 | *pending*: job `20261126-151047-setup-build-spring-framework-27716-q11-a` | *pending* | *pending* |
+| Q11 | exit 0, 25 tests, 0 failures, 0 errors (30 s) | exit 0, 24 tests, 0 failures, 0 errors (29 s) | **fails**: 25 tests, 1 failures, 0 errors; `NamedParameterUtilsUnitTests#parseSqlStatementWithSquareBracket()` |
 | Q12 | exit 0, 10 tests, 0 failures, 0 errors (177 s) | exit 0, 10 tests, 0 failures, 0 errors (150 s) | **does not compile**: `DataAccessUtilsTests.java:52` method singleResult in class DataAccessUtils cannot be applied to given types;; `DataAccessUtilsTests.java:53` method singleResult in class DataAccessUtils cannot be applied to given types; |
 | Q13 | exit 0, 56 tests, 0 failures, 0 errors (223 s) | exit 0, 53 tests, 0 failures, 0 errors (104 s) | **fails**: 56 tests, 3 failures, 0 errors; `JdbcTemplateTests#testDiscardFurtherRowsOnceMaxRowsHasBeenReachedForRowCallbackHandler()`, `JdbcTemplateTests#testDiscardFurtherRowsOnceMaxRowsHasBeenReachedForStream()`, `JdbcTemplateTests#testSkipFurtherRowsOnceMaxRowsHasBeenReachedForRowMapper()` |
 | Q14 | exit 0, 21 tests, 0 failures, 0 errors (91 s) | exit 0, 17 tests, 0 failures, 0 errors (107 s) | **fails**: 21 tests, 4 failures, 0 errors; `JdbcClientIntegrationTests#queryWithDuplicateColumnLabels()`, `SimplePropertyRowMapperTests#mapRowWithDuplicateColumnLabelForDataRecord()`, `SimplePropertyRowMapperTests#mapRowWithDuplicateColumnLabelForFinalFields()`, `SimplePropertyRowMapperTests#mapRowWithDuplicateColumnLabelForReadOnlyProperty()` |
@@ -521,15 +519,15 @@ or do not compile there. Some rows need a note:
   `httpExchangeWithVersion()`.
 - **Q09**: the first job (`20261126-141555-setup-build-spring-framework-26700-q09-a`) failed offline on `groovy-ant`. The rerun
   passed ([Jobs](#jobs)).
-- **Q11**: the first two jobs failed offline on the Groovy runtime's modules, before any test ran. The third is queued
-  ([Jobs](#jobs)).
+- **Q11**: the first two jobs failed offline on the Groovy runtime's modules, before any test ran. The third
+  (`20261126-151047-setup-build-spring-framework-27716-q11-a`) passed all four steps in 1m57s, peak 2.5 GiB ([Jobs](#jobs)).
+  The one failure on the parent is the landed `parseSqlStatementWithSquareBracket()`, which parses `SELECT ARRAY[:ext]`.
 
 ## Digests of the built artifacts
 
 **Built jars and changed classes (sha256)**, from `$P/artifacts/CASE-ROLE/SHA256SUMS`. That file also lists every nested class
 and every class of the case's other modules. The classes are those compiled from the landing's changed production files. A
-parent row lists the same classes in the same order (a class that is new in the fix has no parent digest). Q11 is pending
-its job.
+parent row lists the same classes in the same order (a class that is new in the fix has no parent digest).
 
 | Case | Pin | Jars | Changed classes |
 |---|---|---|---|
@@ -549,6 +547,8 @@ its job.
 | Q08 | parent | `spring-jdbc-7.1.0-SNAPSHOT.jar` `0f431cd4addb0bbbb69c0d172511015b56aaa28f5961c61897eccc5d6d5be26b` | `28a2479bea448acd3ee478cd8a1654e531eefce2946f8aebb7a427c90ac2de99` (same order) |
 | Q09 | fix | `spring-context-5.3.9-SNAPSHOT.jar` `0ed8b5c83982048d15d52d1cfb6d12d8faad5740a70da0368cdcbeba09bd717f` | `ThreadPoolTaskExecutor.class` `9c4d1bb8c84d97ba21ff623e85fec60e82351869e35f6b0e583517939c0359fd` (+1 nested) |
 | Q09 | parent | `spring-context-5.3.9-SNAPSHOT.jar` `5d5f6e23d203a33cdfec303a08f18775dda9bd47f050bed0761943b1aabcc6d2` | `fa5c4e24d6f910487cdbf13de293f1a0466d03a36e6dc7a923efe6906de77ccb` (same order) |
+| Q11 | fix | `spring-r2dbc-6.0.0-SNAPSHOT.jar` `9ab3eb58fe6be090c6be1d8b7553874100cc07facae50b262ea3d654aaef21ed` | `NamedParameterUtils.class` `b32b0a1ac072cbc568ecfb62ff64acd292dbc2bf14240fdf1ad1f484bdc7e963` (+4 nested) |
+| Q11 | parent | `spring-r2dbc-6.0.0-SNAPSHOT.jar` `df63a83deb77a6ecb53acf1e63d80fc7bfaa74627578394e4f983983ee895933` | `a5a8c22ed45193b4440b5203a306366c02b4d7d916b3f39c912d67f335381d3a` (same order) |
 | Q12 | fix | `spring-tx-6.1.0-SNAPSHOT.jar` `c79bbd37645c75a58f765793f02c5bd303af227c3efc846dad0f8f73695e78e0` | `DataAccessUtils.class` `7818bf6f12e35beda323174b18a1b3322acafcca9911364d46469dae98554bf5` |
 | Q12 | parent | `spring-tx-6.1.0-SNAPSHOT.jar` `dc722b7c82a3af1dcd6086e8943bc9f777398b95835f16ef8589dd96f2325ba8` | `b4bd79c4307cdf75751f2bb97623789bc03c8461297e59b4fde03745e7ee1d6b` (same order) |
 | Q13 | fix | `spring-jdbc-7.0.0-SNAPSHOT.jar` `a5fbee4ef9e300ceca0db062c73326ca15b7f3faeee16cf2899cf95556f08e6e` | `JdbcTemplate.class` `5a1bc60f9fa8da4783d46cd4204b14ac87b2564ad27072036a20078eee7cc0f2` (+11 nested), `RowMapperResultSetExtractor.class` `e35053d853def8a3cf439626d499af5e4aa19d2c7eaaf8aa97bf94d71ddd59f7` |
@@ -605,6 +605,7 @@ removes. The Gradle paths are in `*.raw.txt`. Every entry of every classpath exi
 | Q07 | spring-core | 23/23 | 77/77 |
 | Q08 | spring-jdbc | 22/22 | 56/56 |
 | Q09 | spring-context | 7/7 | 70/70 |
+| Q11 | spring-r2dbc | 18/18 | 61/61 |
 | Q12 | spring-tx | 28/28 | 71/71 |
 | Q13 | spring-jdbc | 22/22 | 64/64 |
 | Q14 | spring-jdbc | 22/22 | 56/56 |
@@ -679,7 +680,7 @@ cached). Every project's every compile and test configuration was resolved, so m
   repositories'. Byte-buddy's key is revoked since. Grails core publishes no `.asc` for grolifant.
 - **Jobs that failed and were rerun**: Q09's first job and Q11's first two, all offline on modules that Gradle's Groovy compile
   resolves by itself (`groovy-ant` for both; the rest of the Groovy 3.0.9 runtime for Q11's Gradle 7.3). Those modules were
-  resolved online and the jobs rerun ([Jobs](#jobs)). Q09 then passed. Q11's third job is pending.
+  resolved online and the jobs rerun ([Jobs](#jobs)). Q09 then passed. Q11's third job passed.
 - Snapshot dependencies are the newest builds, not the builds of the pins' dates ([Snapshot dependencies](#snapshot-dependencies)).
 - Not fetched: Spring Boot 4.0.8 (Q27's report; the scenario uses Framework only); a PostgreSQL server for Q11 and a RabbitMQ or other
   JMS broker beyond the embedded Artemis on spring-jms's test classpath for Q24 (choices for the domain work).
@@ -702,7 +703,7 @@ cached). Every project's every compile and test configuration was resolved, so m
 - **Built jars, class digests and classpaths** for the 22 cases at both pins in `$P/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
   `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`), once their jobs ran;
   digests in full in [Digests of the built artifacts](#digests-of-the-built-artifacts). The jobs
-  ran for 21 cases; Q11's artifacts come with its pending job.
+  ran for all 22 cases.
 - **Slices for the eight old cases** at both pins: `$P/slices/CASE-ROLE/CASE-ROLE-slice.jar` (the pin's changed production classes,
   JDK 8), to put ahead of the base release's `$P/releases/SET/classpath.txt` (set per case in [the slice route](#the-slice-route));
   `$P/scripts/slice_case.sh CASE` rebuilds them and reruns the landed tests in seconds.
@@ -718,12 +719,12 @@ cached). Every project's every compile and test configuration was resolved, so m
   parent slice (Q18's six base-release failures aside). The fix's tests **fail** on the parent slice for Q17 (7), Q25 (1), Q26 (5),
   Q10 (`CronTriggerTests` alone, 2) and Q18 (`ResourceWebHandlerTests` alone, the 7 range tests); they **do not compile** there for Q04
   and Q19 (API the landing adds); Q20's landed test passes on both. Every failing test is named in [the slice route](#the-slice-route).
-- **21 of the 22 Gradle cases ran offline in verification jobs** ([Job results](#job-results)). The landed test classes
+- **All 22 Gradle cases ran offline in verification jobs** ([Job results](#job-results)). The landed test classes
   pass at the fix (0 failures, 0 errors) and the parent's versions pass at the parent. The fix's changed test files fail on
-  the parent for Q01, Q02, Q03, Q06, Q07, Q08, Q09, Q13, Q14, Q15, Q16, Q21, Q22, Q23, Q27, Q28 and Q30. They do not compile
+  the parent for Q01, Q02, Q03, Q06, Q07, Q08, Q09, Q11, Q13, Q14, Q15, Q16, Q21, Q22, Q23, Q27, Q28 and Q30. They do not compile
   there for Q05, Q12, Q24 and Q29, which use API the landing adds. Every failing test is named in the results table.
-- **Q11 is pending**: two jobs failed offline in the Groovy compile before any test ran. The modules it lacked are now
-  resolved, and job `20261126-151047-setup-build-spring-framework-27716-q11-a` is queued ([Jobs](#jobs)).
+- **Q11 passed on its third job** (`20261126-151047-setup-build-spring-framework-27716-q11-a`), after the first two failed
+  offline in the Groovy compile before any test ran ([Jobs](#jobs)).
 - No scenario or prediction of the brief was run anywhere.
 
 ### What to know before starting
@@ -759,7 +760,7 @@ cached). Every project's every compile and test configuration was resolved, so m
   ([Job results](#job-results)).
 - **Q09** configures only with `$P/scripts/subst-grails.init.gradle` (grolifant 0.14 from Grails core); `case_job.sh` passes it.
 - **Databases and brokers**: spring-jdbc's test runtime classpaths have H2 (2.4.240; 2.3.232 for Q13), HSQLDB 2.7.4 and
-  Derby 10.16.1.1 (`$P/artifacts/CASE-ROLE/spring-jdbc.testRuntimeClasspath.txt`); spring-r2dbc's has r2dbc-h2. No PostgreSQL server was set up for
+  Derby 10.16.1.1 (`$P/artifacts/CASE-ROLE/spring-jdbc.testRuntimeClasspath.txt`); Q11's spring-r2dbc test runtime classpath has r2dbc-h2 0.8.4.RELEASE, H2 1.4.200 and r2dbc-spi 0.8.5.RELEASE. No PostgreSQL server was set up for
   Q11: Docker answers and already holds `postgres:16` and `postgres:17` images from other work; the R2DBC driver is in
   `$P/releases/r2dbc-postgresql-arabba-sr10` (it brings reactor-core 3.3.17 and reactor-netty 0.9.20, older than the pins' Reactor
   2020.0.14-SNAPSHOT line). Q24's spring-jms test classpath has the embedded Artemis 2.42.0 broker (`artemis-server`,
@@ -767,6 +768,8 @@ cached). Every project's every compile and test configuration was resolved, so m
 - **Pins shared with other briefs**: Q08's fix `a38ebf4b7cffe5946e07d0fb8ef2d7dc0ec9bbe3` is the P01–P30 brief's P10 parent; its
   worktrees here are separate.
 - **Q23's `later` revision** (`64861cb395e415bf1452d30f54f8e2c0ecc9cb46`) is checked out and resolved, not built.
+- **Disk**: `$P` takes 22 GB, of which `$P/gradle-home` 13 GB, `$P/worktrees` 5.2 GB and `$P/artifacts` 292 MB. Tracked files
+  are clean in every worktree, and each job's last step removed its build output.
 
 ### What is left for the domain work on purpose
 
