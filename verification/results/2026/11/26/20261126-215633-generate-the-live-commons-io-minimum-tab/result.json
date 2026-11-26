@@ -1,0 +1,182 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-215633-generate-the-live-commons-io-minimum-tab",
+  "title": "Generate the live Commons IO minimum table and falsify broken derivations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m55s, peak 170.3 MiB (estimated 7m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-215633-generate-the-live-commons-io-minimum-tab.json",
+    "sha256": "466c8bae6e29b7a53b79d3026921e3f9f94b2826c1ebb9304d9734e114c28797",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-215633-generate-the-live-commons-io-minimum-tab",
+      "title": "Generate the live Commons IO minimum table and falsify broken derivations",
+      "description": "Freeze the public UTF-8 rewind and preservation histories and measure their caller-owned bytes. Discover every tuple directly at the stream read, check an independent minimum and its original consumer. Repeat with a wrong result, missing tuple, different binding, and no marked consumption, then measure public outputs independently.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T21:56:33+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "7m"
+      },
+      "steps": [
+        {
+          "name": "Real two-release public observations, checked helper and four falsifiers",
+          "run": "python3 verification/generated-observers/campaign.py io --checked-helper",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/io.zip",
+        "verification/generated-observers/receipts/io-helper.zip"
+      ]
+    }
+  },
+  "sourceCommit": "3b7e7161e5640b418855a0657653367fe010fdb9",
+  "startedAt": "2026-11-26T22:03:32+00:00",
+  "finishedAt": "2026-11-26T22:06:45+00:00",
+  "wallSeconds": 193.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1891241,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 178577408,
+    "wallSeconds": 175.5,
+    "cpuSeconds": 258.2,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.42
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Real two-release public observations, checked helper and four falsifiers",
+      "run": "python3 verification/generated-observers/campaign.py io --checked-helper",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 175.451,
+      "cpuSeconds": 258.18,
+      "cpuThrottledSeconds": 19.966,
+      "peakMemoryBytes": 178577408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-real-two-release-public-observ.log",
+        "lines": 2,
+        "bytes": 130,
+        "sha256": "eefd653f2169287931b8899dc9226ea5a126f6473f04cdfe97a3f4510f9997df",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/tmp/generated-observers-aoh_clng/io/operator/bundle/generation.json",
+        "io {'rewinds': 'established', 'preservation': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/io.zip",
+      "change": "added",
+      "bytes": 56341,
+      "sha256": "0d97bc99eecf7fc77c22d5bd1b9005c6359a8bb762f6c3896e36d3e1d39777f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/io-helper.zip",
+      "change": "added",
+      "bytes": 197302,
+      "sha256": "a5df3f3ca794533897f41c59ceea181e5890c3219f99d38ea1f6ff0e7e66d09e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T22:07:01+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/io.zip",
+      "verification/generated-observers/receipts/io-helper.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "53e17d263a9418acdd671a4d27e11cbe64a50b5d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53e17d263a9418acdd671a4d27e11cbe64a50b5d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T220645Z-14836857c91429c8",
+      "outputs": "20261126T220645Z-176865129aa41790",
+      "diff": "20261126T220645Z-192771dd820a4fce"
+    }
+  }
+}
