@@ -119,3 +119,69 @@ Hand back the shared implementation, one ordinary scaffold-only and resumed-run 
 [spring-p]: https://github.com/pilifs/in-the-loop/blob/32d3a22cfbae921d272649eaaae608d60ae89ecf/llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-results.md
 [mail]: https://github.com/pilifs/in-the-loop/blob/32d3a22cfbae921d272649eaaae608d60ae89ecf/examples/484-spring-mail-date-copy/comparison.json
 [mail-results]: https://github.com/pilifs/in-the-loop/blob/32d3a22cfbae921d272649eaaae608d60ae89ecf/examples/484-spring-mail-date-copy/README.md
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- All 13 campaign cases are prepared and checked; nothing new was fetched. Deployments, pins and readers are listed in
+  [Cases: inputs, pins and digests](#cases-inputs-pins-and-digests). In short: examples 445, 458, 466 and 484 read
+  `runtime.json` against `~/.cache/in-the-loop/{merged-pr-links-m01-m10,spring-pr-links-o01-o20,spring-pr-links-o01-o20,spring-pr-links-p01-p30}`;
+  J06, J10, J14, J16, J17 and J19 read `bindings.json` against `~/.cache/in-the-loop/organic-pr-20`; Commons IO reads
+  `lib/benchmark/organic-composition/io/{old,new}/prepared.json`, which point at
+  `~/.cache/in-the-loop/organic-composition-ff/artifacts/E-commons-io-{parent,fix}.jar`; successor slots 06 and 09
+  rebuild their jars with `successor.packet(slot, dest)`. A copy is already at
+  `~/.cache/in-the-loop/generated-observers-and-callers/probes/successor/packets/{06,09}/{old,new}/NNN.jar` (digests in
+  the [successor table](#successor-slots-06-css-parser-and-09-conversant-stack-brief--11--10)).
+- Source worktrees at every pin, clean: `<cache>/worktrees/{O01,O09,P07,M03-vavr,E-commons-io}-{parent,fix}` and
+  `~/.cache/in-the-loop/organic-pr-20/worktrees/<case>-<project>-{parent,fix}`.
+- The changed production files of every pair, with old and new blob ids: [Changed production files](#changed-production-files).
+- JDKs 8, 11, 17, 21 and 25, with `release` digests equal to every case's recorded one: [Tools](#tools). The default
+  `java` on `PATH` is JDK 25; give the others by full path.
+- `lib/target/release/jvmcontract` rebuilt at `4b3fe27267e8756c756730e2f17b15f262b360ee`, sha256
+  `d0bcabc8fe2cc1af89d2e999c55bbc5995231a47fe8b8b3cfb91090ba8895258` (`construct`, `sites`, `class-bindings`).
+  Rebuild it if `lib/src` changes again.
+
+### What was verified on a JVM
+
+- Every case's registered public observation was re-run on its original deployment in fresh JVMs and equals the
+  committed receipt: examples 445, 458, 466, 484 (`observations.json`), J06, J10, J14, J16, J17, J19 (`physical.json`),
+  Commons IO (the `rewinds` and `preservation` scopes' registered values), successor 06 and 09 (`scaffolds/SLOT.json.gz`).
+- Each agrees with the outcome the brief states for it, including Spring 458's four width outcomes, Vavr's
+  `false/99/1` against `true/null/0`, Lucene's fixed-side `A/null`, J19's `1,1,2,2,3,3`, and Commons IO's second rewind
+  (`b8 ad 5a` on the parent, `c3 a9 e4` on the fix). The row-by-row comparison is in
+  [What was run on a JVM](#what-was-run-on-a-jvm). These are the historical authored observers, not generated ones:
+  the numbers are the evaluator's reference, and nothing about generation was tested.
+- Commands that reproduce each check in seconds are in the same section. Run `public_comparison` as
+  `PYTHONPATH=examples/tools python3 -m targets.public_comparison NNN`: the plain script path fails on its import.
+
+### What to know before starting
+
+- **Keep the evaluator material away from the operator.** The worked campaign's historical callers
+  (`examples/NNN/caller/PublicCaller.java`, `verification/product-behaviour/cases/J*/UpgradeProbe.java` and helpers,
+  `lib/benchmark/organic-composition/io/UpgradeProbe.java`, `lib/benchmark/beyond-jbmc/blind/successor/{06,09}/Reference*.java`),
+  their receipts, and this setup's `~/.cache/in-the-loop/generated-observers-and-callers/probes/` and `logs/replay-*`,
+  `physical-*`, `io-observe.txt`, `successor-06-09.txt` all hold callers or actual outcomes. The worktrees also hold the
+  upstream tests; the brief counts their use as assisted.
+- The J10, J14, J16, J17 and J19 deployments are pinned-source overlays over released jars, not full builds at the
+  pin; J06 is a pinned source build. The [product-behaviour setup](organic-java-pr-product-behaviour-20-additional-cases-setup.md#summary-by-case)
+  records how each was made and which upstream tests ran. Their JDKs differ: J10 and J19 are JDK 8, J14 is JDK 25.
+- The Spring deployments are `7.1.0-SNAPSHOT` jars built at the pins by the O and P setups, with their dependencies in
+  those caches' `gradle-home`. They are fixed bytes, digest-checked, not a snapshot resolution that can move.
+- Successor slot 09's deployment lists `libslf4j-java` as unavailable on both sides; its classpath is the single
+  Conversant jar.
+- The brief's "companion entry-discovery brief" link is private; the repository copy is
+  `llm-dlc/loops/in-the-loop-classpath-and-entry-discovery-brief.md`, and that work is merged at this head.
+- No verification job was queued or is pending for this setup.
+
+### What is left for the domain work on purpose
+
+- Everything the brief asks to build or measure: the generator, its seam with `scaffold_example.py` and
+  `register.py`, generated callers, observers, fixtures, manifests, scopes and helper tables, the
+  `--scaffold-only`/resume demonstration, the planted false greens, the mutation and wrong-expectation controls,
+  the isolated authorship experiment and the scorecard.
+- Running the product's change plan, `jvmcontract construct`, the resource and integer-codec generators and the
+  helper checker on any case.
+- Choosing what goes into each operator input packet (registered meanings, changed selectors, permitted API evidence)
+  and what stays with the evaluator.
+- Any new example ids or registrations.
