@@ -1,0 +1,227 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-131422-trace-spring-mail-copies-and-r2dbc-loan",
+  "title": "Trace Spring mail copies and R2DBC loan cleanup at original methods",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 17.6s, peak 108.4 MiB (estimated 1m00s, 768.0 MiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-131422-trace-spring-mail-copies-and-r2dbc-loan.json",
+    "sha256": "7c430284131c80db0a7c3f5e9f03b93acee886ecdaffcb8da3bf7371a6d19f32",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-131422-trace-spring-mail-copies-and-r2dbc-loan",
+      "title": "Trace Spring mail copies and R2DBC loan cleanup at original methods",
+      "description": "Use original-method debugger breakpoints on SimpleMailMessage.copyTo and R2dbcTransactionManager.doCleanupAfterCompletion. Repeat each intent, control and challenge twice per revision, then verify the complete debugger reports against the registered callers, original classpaths and physical observations.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "examples": [
+          "484",
+          "497"
+        ]
+      },
+      "expected": "Both saved reports bind to the registered public caller at the specified original method in all 24 trials.",
+      "submitted": {
+        "at": "2026-11-26T13:14:22+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Trace the two original methods",
+          "run": "python3 verification/merged-pr-links/qualify.py 484 497 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/p01-p30/qualified",
+          "cwd": "."
+        },
+        {
+          "name": "Verify both debugger reports",
+          "run": "python3 verification/merged-pr-links/qualify.py 484 497 --gzip --only Intent --only Control --only Challenge --check --output verification/merged-pr-links/p01-p30/qualified",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/p01-p30/qualified"
+      ]
+    }
+  },
+  "sourceCommit": "6b2ec5727305df7ae63f0c2ada321aa89e075cbf",
+  "startedAt": "2026-11-26T13:18:41+00:00",
+  "finishedAt": "2026-11-26T13:19:09+00:00",
+  "wallSeconds": 28.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 527719,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 113717248,
+    "wallSeconds": 17.6,
+    "cpuSeconds": 18.9,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.29
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Trace the two original methods",
+      "run": "python3 verification/merged-pr-links/qualify.py 484 497 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/p01-p30/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 17.432,
+      "cpuSeconds": 18.844,
+      "cpuThrottledSeconds": 1.989,
+      "peakMemoryBytes": 113717248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-trace-the-two-original-methods.log",
+        "lines": 2,
+        "bytes": 368,
+        "sha256": "f30076c9bec8ed0062f001b9ecf501099ccec5d13e2ca0bc80c3ec45e9dc4a65",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "484 pins org.springframework.mail.SimpleMailMessage#copyTo(Lorg/springframework/mail/MailMessage;)V 12 qualified JVM trials",
+        "497 pins org.springframework.r2dbc.connection.R2dbcTransactionManager#doCleanupAfterCompletion(Lorg/springframework/transaction/reactive/TransactionSynchronizationManager;Ljava/lang/Object;)Lreactor/core/publisher/Mono; 12 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Verify both debugger reports",
+      "run": "python3 verification/merged-pr-links/qualify.py 484 497 --gzip --only Intent --only Control --only Challenge --check --output verification/merged-pr-links/p01-p30/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.059,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13295616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-verify-both-debugger-reports.log",
+        "lines": 2,
+        "bytes": 378,
+        "sha256": "342162813d2d2dfc35bddf36c6521f2c4b9f2f90698f255dcfd76d26ef360793",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "484 pins org.springframework.mail.SimpleMailMessage#copyTo(Lorg/springframework/mail/MailMessage;)V 12 verified saved JVM trials",
+        "497 pins org.springframework.r2dbc.connection.R2dbcTransactionManager#doCleanupAfterCompletion(Lorg/springframework/transaction/reactive/TransactionSynchronizationManager;Ljava/lang/Object;)Lreactor/core/publisher/Mono; 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/p01-p30/qualified/484-pins.json.gz",
+      "change": "added",
+      "bytes": 2315,
+      "sha256": "5b95c20fb31afa010fee8ea21e04d4787a2eafb2cf7b23c0f7e3043da01c7b43",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/p01-p30/qualified/497-pins.json.gz",
+      "change": "added",
+      "bytes": 2859,
+      "sha256": "8830103c60cbf4dc41075840b4a4fa15081ae7ab1f817133fcc1ba868bf940bc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T13:19:21+00:00",
+    "applied": [
+      "verification/merged-pr-links/p01-p30/qualified/484-pins.json.gz",
+      "verification/merged-pr-links/p01-p30/qualified/497-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T131909Z-217118e74af26076",
+      "outputs": "20261126T131909Z-238050c6086ad79e",
+      "diff": "20261126T131909Z-257041ad0b9f2a6e"
+    }
+  }
+}
