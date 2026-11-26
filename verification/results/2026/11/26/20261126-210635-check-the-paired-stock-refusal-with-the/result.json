@@ -1,0 +1,229 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-210635-check-the-paired-stock-refusal-with-the",
+  "title": "Check the paired stock refusal with the shared proof wire reader",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 13.0s, peak 109.4 MiB (estimated 1m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-210635-check-the-paired-stock-refusal-with-the.json",
+    "sha256": "35fc2f2132a7d0cadebcd89a942b5f5a8c010c8463e5cf67313c5c2244eb93e2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-210635-check-the-paired-stock-refusal-with-the",
+      "title": "Check the paired stock refusal with the shared proof wire reader",
+      "description": "The subject and helper property controls passed, then the first audit treated the equivalence command's single JSON object as a property-result array. Use the repository's wire reader for each command. Check the refusal on both original paths, the earlier ordinary shadow and both actual staged engines.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T21:06:35+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Check raw stock helper and paired routes",
+          "run": "python3 verification/classpath-entry-discovery/check_stock_helpers.py verification/classpath-entry-discovery/stock-helper-guard.json",
+          "cwd": "."
+        },
+        {
+          "name": "Check the ordinary staged proof controls",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/final-backend.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/classpath-entry-discovery/stock-helper-guard.json",
+        "verification/classpath-entry-discovery/final-backend.json"
+      ]
+    }
+  },
+  "sourceCommit": "61e77eff516e65943d7b18a7d2fa72a3c8cd8362",
+  "startedAt": "2026-11-26T21:07:54+00:00",
+  "finishedAt": "2026-11-26T21:08:16+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 895996,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 114749440,
+    "wallSeconds": 13.0,
+    "cpuSeconds": 19.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check raw stock helper and paired routes",
+      "run": "python3 verification/classpath-entry-discovery/check_stock_helpers.py verification/classpath-entry-discovery/stock-helper-guard.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 2.405,
+      "cpuSeconds": 3.725,
+      "cpuThrottledSeconds": 0.114,
+      "peakMemoryBytes": 94605312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-raw-stock-helper-and-pai.log",
+        "lines": 1,
+        "bytes": 105,
+        "sha256": "89aa94b3a7c11143beedfd70928d56e7f30000049359aed46bef2ffc8216395c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Active stock property and equivalence routes refused; native and earlier-shadow controls matched the JVM"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the ordinary staged proof controls",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/final-backend.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 10.62,
+      "cpuSeconds": 15.319,
+      "cpuThrottledSeconds": 0.74,
+      "peakMemoryBytes": 114749440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-ordinary-staged-proo.log",
+        "lines": 4,
+        "bytes": 285,
+        "sha256": "121b332525afbfbd84a85f5ec8b10f6352b4c0aeaa918aeaec17b351fe4cf5d7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0 claims in /tmp/entry-controls-70ed0kid/scaffold-A,B/records/entry-bindings.json",
+        "0 claims in /tmp/entry-controls-70ed0kid/scaffold-B,A/records/entry-bindings.json",
+        "0 claims in /tmp/entry-controls-70ed0kid/scaffold-B/records/entry-bindings.json",
+        "backend: 3 qualified deployment controls"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/classpath-entry-discovery/stock-helper-guard.json",
+      "change": "added",
+      "bytes": 1591,
+      "sha256": "04f0a0472d15efe6eb5f9acdad9d1602df257d52b5d6a35ccebf16f44699b6bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/classpath-entry-discovery/final-backend.json",
+      "change": "added",
+      "bytes": 17596,
+      "sha256": "5bae046017f3ebead4db7084ae3500691e110484c2dbfb8e601e82936f716c88",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T21:08:33+00:00",
+    "applied": [
+      "verification/classpath-entry-discovery/stock-helper-guard.json",
+      "verification/classpath-entry-discovery/final-backend.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "de13d8c5948e6f5abf5cab7a1224deece43f7946",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/de13d8c5948e6f5abf5cab7a1224deece43f7946/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T210816Z-676048819ff98f83",
+      "outputs": "20261126T210816Z-69756044bcb3852e",
+      "diff": "20261126T210816Z-719515e5b7d88c39"
+    }
+  }
+}
