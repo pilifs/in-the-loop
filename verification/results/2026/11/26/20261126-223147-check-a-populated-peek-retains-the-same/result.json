@@ -1,0 +1,171 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-223147-check-a-populated-peek-retains-the-same",
+  "title": "Check a populated peek retains the same top for the following pop",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.2s, peak 124.2 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-223147-check-a-populated-peek-retains-the-same.json",
+    "sha256": "0de07433dbd40f6d66e78d730d06f31d28839e14d5ca44b5bc249cb231e8d4a8",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-223147-check-a-populated-peek-retains-the-same",
+      "title": "Check a populated peek retains the same top for the following pop",
+      "description": "On both original Conversant releases use a fresh single-threaded stack. Push the registered 42, observe peek, and then measure the following pop on the same receiver to detect a destructive peek. Repeat cold, warm and from an empty cache.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T22:31:47+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Public non-consumption control",
+          "run": "python3 verification/generated-observers/campaign.py --empty-cache 09-retained",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/09-retained-clean.zip"
+      ]
+    }
+  },
+  "sourceCommit": "9d2363a8477794e6c02b34ec5c32aaa692eff392",
+  "startedAt": "2026-11-26T22:34:48+00:00",
+  "finishedAt": "2026-11-26T22:35:22+00:00",
+  "wallSeconds": 34.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2559399,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 130252800,
+    "wallSeconds": 20.2,
+    "cpuSeconds": 29.1,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.34
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Public non-consumption control",
+      "run": "python3 verification/generated-observers/campaign.py --empty-cache 09-retained",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 20.244,
+      "cpuSeconds": 29.111,
+      "cpuThrottledSeconds": 2.757,
+      "peakMemoryBytes": 130252800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-public-non-consumption-control.log",
+        "lines": 1,
+        "bytes": 56,
+        "sha256": "ab9bc2107cf523b3589e4a75b31b414d048f19912141e55ed15ee2df36324018",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "09-retained {'populated-nonconsumption': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/09-retained-clean.zip",
+      "change": "added",
+      "bytes": 45238,
+      "sha256": "ed3e7dd14ff5f01cfa409092b4ecbda9f4da369a207c4b56c148e6e7a810c369",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T22:35:30+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/09-retained-clean.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "53e17d263a9418acdd671a4d27e11cbe64a50b5d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53e17d263a9418acdd671a4d27e11cbe64a50b5d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T223522Z-767520be6423f45f",
+      "outputs": "20261126T223522Z-788500bd1551ddd8",
+      "diff": "20261126T223522Z-806600faece4598f"
+    }
+  }
+}
