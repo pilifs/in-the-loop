@@ -1,0 +1,80 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-172339-setup-build-apache-calcite-at-both-pins",
+  "title": "Setup: build Apache Calcite at both pins of #5345 and #4942 and run their landed tests",
+  "description": "Setup for cases R33 (apache/calcite#5345, RexSimplify keeps semantics-changing nested casts) and R34 (apache/calcite#4942, sub-millisecond temporal literals survive constant reduction) of llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md; no claims, no verifier. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees, with the Gradle cache resolved online there already (inline, 2026-11-26), offline Gradle 8.14.4 on JDK 21 with the build's default JDK 25 compile toolchain: for each case, builds calcite-core, -linq4j and -testkit at the fix and the parent pins, runs the PR's landed test classes (R33: RexLosslessCastTest, RelToSqlConverterTest, CoreQuidemTest with cast.iq; R34: RexExecutorTest, CalciteSqlOperatorTest for the one-line testkit change), keeps the jars with class digests and the core runtime and test classpaths under $O/artifacts/CASE-ROLE/, then overlays the fix's changed test files on a copy of the parent and runs them again, where the new tests are expected to fail. Each Calcite core build takes several minutes, so the runs are a job. The last steps delete the build trees.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md"
+    ]
+  },
+  "expected": "every step exits 0; the fix and parent steps print 'test rc=0' with their junit summaries in $O/logs/CASE-ROLE.test-offline.junit.txt; each landed step prints LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED and names the failing tests in $O/logs/CASE-parent-landed.test-offline.failures.txt; the clean steps print 'cleaned'",
+  "submitted": {
+    "at": "2026-11-26T17:23:39+00:00",
+    "session": "955141f5-9ccb-41fa-9e12-8a9dfab2ca8b",
+    "by": "setup agent (Claude Opus 5.5), fork D"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "6G",
+    "duration": "75m",
+    "notes": "6 offline Calcite builds (core compile ~4-6 min each with buildSrc cached) plus CoreQuidemTest and CalciteSqlOperatorTest runs; Gradle client 512m, daemon 2g, test JVM ~1-2g"
+  },
+  "steps": [
+    {
+      "name": "R33 fix: calcite core/linq4j/testkit jars, RexLosslessCastTest + RelToSqlConverterTest + CoreQuidemTest, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 fix",
+      "cwd": "."
+    },
+    {
+      "name": "R33 parent: the same with the parent's own test files",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 parent",
+      "cwd": "."
+    },
+    {
+      "name": "R33 landed: the fix's three test files on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 landed",
+      "cwd": "."
+    },
+    {
+      "name": "R33 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R33 clean",
+      "cwd": "."
+    },
+    {
+      "name": "R34 fix: calcite jars, RexExecutorTest + CalciteSqlOperatorTest, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 fix",
+      "cwd": "."
+    },
+    {
+      "name": "R34 parent: the same with the parent's own test files",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 parent",
+      "cwd": "."
+    },
+    {
+      "name": "R34 landed: the fix's test files (RexExecutorTest, testkit SqlOperatorTest) on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 landed",
+      "cwd": "."
+    },
+    {
+      "name": "R34 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/calcite_job.sh R34 clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

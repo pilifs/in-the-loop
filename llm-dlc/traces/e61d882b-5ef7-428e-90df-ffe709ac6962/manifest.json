@@ -13021,6 +13021,54 @@
       "summary": "Record the watcher's decisions on organic-java-merged-pr-links-r01-r50-brief-setup",
       "body": "The watcher's verdicts on the single-agent run organic-java-merged-pr-links-r01-r50-brief-setup (llm-dlc/decisions/single-organic-java-merged-pr-links-r01-r50-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
+    },
+    {
+      "change_id": "uzltyvxzxtnyxpplzksrnsulwukqtxox",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Pin the 50 revision pairs of the R01-R50 brief",
+      "body": "Setup for llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. Fetched the 100 pinned commits (and the two middle commits of the two-commit ranges R24 and R50) into shallow mirrors under ~/.cache/in-the-loop/git-mirrors, created one worktree per revision in ~/.cache/in-the-loop/merged-pr-links-r01-r50, and checked with gh api that every PR is merged, its merge commit is the brief's after revision, the after revision's first parent is the before revision (R24 and R50 apart, as the brief says), and the landed diff names exactly the PR's files. Builds and landed-test checks follow.",
+      "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
+    },
+    {
+      "change_id": "loxnmknutyywpwpvwuvomuomyxllznvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the R01-R50 setup of 13 small Maven cases",
+      "body": "Setup for llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. Built both pins of R02, R06, R11, R12, R13, R15, R16, R17, R20, R21, R22, R26 and R40 with Maven (online, then offline), kept the jars, class digests and classpaths, and ran each PR's landed tests: they pass on the fix, the parent's own copies pass on the parent, and the fix's tests fail on the parent as the brief says. Release sides were compared with each pin and their checksums and signatures checked. R16 builds against a commons-io 2.21.0-SNAPSHOT that is gone, rebuilt from its public source and recorded as a substitute.",
+      "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
+    },
+    {
+      "change_id": "wslqrlnzxlsoxmryoromkqvmltkvtvvo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the R01-R50 setup of 13 medium Maven cases",
+      "body": "Setup for llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. Built both pins of R03, R07, R08, R10, R18, R19, R23, R24, R27, R28, R29, R30 and R48 with Maven (online, then offline), kept jars, class digests and classpaths, and ran each PR's landed tests inline: they pass on the fix and the fix's tests fail on the parent as the PRs say. R18's gone jackson-base snapshot parent was rebuilt from public jackson-bom source; R28-R30 resolved later snapshot builds of their Jackson 3 dependencies than the pins used, recorded with digests and saved copies. Release sides compared and their checksums and signatures checked.",
+      "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
+    },
+    {
+      "change_id": "yyyvtrowwuwrvwyotnrvtmxqonutlkuz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the R01-R50 setup of 12 Gradle cases (verification pending)",
+      "body": "Setup for llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. Gradle distributions and wrapper jars were checked against services.gradle.org. Then moshi, RxJava 2 and 3, reactor-core 3.4, resilience4j and picocli were built at both pins, and their landed tests were run inline: they pass on the fix and fail on the parent as the PRs say. jcenter-only build plugins were substituted from a local, SHA-1 checked repository in the cache. Reactor-core #937's pinned build needs plugins that only repo.spring.io served, so it cannot be configured; its evidence comes from the 3.1.1/3.1.2 release jars and the pin's changed sources instead (the slice route). Release sides were compared and their checksums and signatures checked.\n\nJobs queued: 20261126-172339-setup-build-apache-calcite-at-both-pins (calcite R33 and R34 at both pins with their landed tests) and 20261126-172339-setup-build-junit-at-both-pins-of-5839-a (junit-framework R49 and R50).",
+      "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
+    },
+    {
+      "change_id": "rrostokuuzkqxmnmolquywyqommxxrpu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the R01-R50 setup of the large cases and the setup notes (verification pending)",
+      "body": "Setup for llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. Built both pins of eclipse-collections, guava (JRE and Android, with an added Temurin 27 javac toolchain), h2, arrow-java, avro and fastutil (make sources and an added Ant 1.10.15) with their landed tests run inline. They pass on the fix and fail on the parent as the PRs say; R37/R38's fix tests don't compile on the parent. parquet-java's pins cannot be built here (no thrift 0.23.0 compiler), so R39 uses parquet-hadoop 1.18.1/1.18.2, whose DictionaryPageReader.java match the parent and fix pins, plus overlay jars of the pins' own file. The record now has a summary by case and the Setup Agent Notes for the domain agent.\n\nJob queued: 20261126-173550-setup-run-eclipse-collections-1786-s-lan (R01's parent-side own tests, parent artifacts and the fix's tests on the parent). Still pending from before: 20261126-172339-setup-build-apache-calcite-at-both-pins and 20261126-172339-setup-build-junit-at-both-pins-of-5839-a.",
+      "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
+    },
+    {
+      "change_id": "uyspovqpnmxutkzvupwumvmmyputwwvq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run organic-java-merged-pr-links-r01-r50-brief-setup into the line",
+      "body": "The single-agent run organic-java-merged-pr-links-r01-r50-brief-setup (session 955141f5-9ccb-41fa-9e12-8a9dfab2ca8b) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "6e4c72a3f4c9295e8b3f97846b81ce7c62b01497870988806e60d31d5765e8a6"
     }
   ],
   "logs": {

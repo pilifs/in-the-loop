@@ -1,0 +1,80 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-172339-setup-build-junit-at-both-pins-of-5839-a",
+  "title": "Setup: build JUnit at both pins of #5839 and #4466 and run their landed tests",
+  "description": "Setup for cases R49 (junit-team/junit-framework#5839, the suite engine counts dynamically registered tests) and R50 (junit-team/junit-framework#4466, @TempDir ON_SUCCESS cleanup scoped to the owning test) of llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md; no claims, no verifier. In standalone depth-1 clones under ~/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees (JUnit's build reads git metadata), with the Gradle cache resolved online there already (inline, 2026-11-26), offline: R49 with Gradle 9.6.1 on JDK 25, R50 with Gradle 8.13 on JDK 21, no build cache, no build scan, no test retries or predictive test selection. For each case: builds the platform and jupiter module jars at the fix and parent pins, runs the landed test classes (R49: platform-tests SuiteEngineTests, BeforeAndAfterSuiteTests; R50: jupiter-tests TempDirectoryCleanupTests), keeps jars, class digests and classpaths under $O/artifacts/CASE-ROLE/, then overlays the fix's changed test files on a copy of the parent and runs them again, where the new tests are expected to fail. JUnit's builds take several minutes each, so the runs are a job. The last steps delete the build trees.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md"
+    ]
+  },
+  "expected": "every step exits 0; the fix and parent steps print 'test rc=0'; each landed step prints LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED with the failing tests in $O/logs/CASE-parent-landed.test-offline.failures.txt; the clean steps print 'cleaned'",
+  "submitted": {
+    "at": "2026-11-26T17:23:39+00:00",
+    "session": "955141f5-9ccb-41fa-9e12-8a9dfab2ca8b",
+    "by": "setup agent (Claude Opus 5.5), fork D"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "6G",
+    "duration": "60m",
+    "notes": "6 offline JUnit builds of 8 or 6 modules plus platform-tests/jupiter-tests compilation (an earlier setup's JUnit 6.2 jars took 4m18s online); Gradle daemon 1g, Kotlin in process, test JVMs"
+  },
+  "steps": [
+    {
+      "name": "R49 fix: JUnit 6.2.0-SNAPSHOT module jars, SuiteEngineTests + BeforeAndAfterSuiteTests, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 fix",
+      "cwd": "."
+    },
+    {
+      "name": "R49 parent: the same with the parent's own test files",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 parent",
+      "cwd": "."
+    },
+    {
+      "name": "R49 landed: the fix's suite-engine test files on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 landed",
+      "cwd": "."
+    },
+    {
+      "name": "R49 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 clean",
+      "cwd": "."
+    },
+    {
+      "name": "R50 fix: JUnit 5.13.0-SNAPSHOT module jars, TempDirectoryCleanupTests, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 fix",
+      "cwd": "."
+    },
+    {
+      "name": "R50 parent: the same with the parent's own test file",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 parent",
+      "cwd": "."
+    },
+    {
+      "name": "R50 landed: the fix's TempDirectoryCleanupTests on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 landed",
+      "cwd": "."
+    },
+    {
+      "name": "R50 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

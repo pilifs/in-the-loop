@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-173550-setup-run-eclipse-collections-1786-s-lan",
+  "title": "Setup: run eclipse-collections #1786's landed map tests on the parent revision",
+  "description": "Setup for case R01 of llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. eclipse-collections PR #1786 moves the value computation in UnifiedMap and UnifiedMapWithHashingStrategy updateValue/updateValueWith before the key is published, and adds assertions to five test files (MutableMapIterableTestCase in unit-tests and unit-tests-java8, UnmodifiableBiMapTest, UnmodifiableMutableMapTest, UnmodifiableTreeMapTest). In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-r01-r50 (Maven local repository resolved there already, JDK 17, offline, settings maven-settings-ec.xml which mirrors the 503-ing repo.eclipse.org plugin repository to Maven Central), at the parent pin 3b3c55a47406ca11ece6c077b96c9564f73dfc53: runs the parent's own map and bimap tests (all *Test classes under impl/map, impl/bimap, test/map, test/bimap; about 120,000 tests, about 2 minutes), keeps the parent jars and class digests, then runs the same tests on a copy of the parent with the fix's five test files, where the new throwing-callback assertions are expected to fail. The fix side (4af700cda608e6817d7d17ab340b91442278cf14) ran inline: 120,694 tests, 0 failures. Each run recompiles the modules, so the runs are a job.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "maven"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: the parent's own tests pass; the landed step prints LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED and names the failing tests; the copy and build output are removed",
+  "submitted": {
+    "at": "2026-11-26T17:35:50+00:00",
+    "session": "955141f5-9ccb-41fa-9e12-8a9dfab2ca8b",
+    "by": "setup agent (Claude Opus 5.5), fork C"
+  },
+  "requires": [
+    "java",
+    "mvn",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "4G",
+    "duration": "15m"
+  },
+  "steps": [
+    {
+      "name": "R01 parent: its own map and bimap tests in unit-tests and unit-tests-java8 (offline, JDK 17)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh own",
+      "cwd": "."
+    },
+    {
+      "name": "R01 parent: jars, classpaths and class digests",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh keep",
+      "cwd": "."
+    },
+    {
+      "name": "R01 parent with the fix's five changed test files: the same tests, expected to fail",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh landed",
+      "cwd": "."
+    },
+    {
+      "name": "remove the R01 build copy and build output",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh clean",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
