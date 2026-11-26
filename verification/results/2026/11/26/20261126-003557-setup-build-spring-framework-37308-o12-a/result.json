@@ -1,0 +1,393 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-003557-setup-build-spring-framework-37308-o12-a",
+  "title": "Setup: build Spring Framework #37308 (O12) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m35s, peak 3.2 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [
+    "step 3 (O12 transplant: the fix's tests on the parent) was held back 54.0s by its 4-CPU quota in 1m42s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-003557-setup-build-spring-framework-37308-o12-a.json",
+    "sha256": "cbcbf375569fc2663deec506bd78acbf47a798fcb81b7ed8690579fd1407fdbd",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-003557-setup-build-spring-framework-37308-o12-a",
+      "title": "Setup: build Spring Framework #37308 (O12) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md, case O12 (spring-projects/spring-framework#37308: first batch row bound once with generated keys). In the worktrees $O/worktrees/O12-{fix,parent} (O = ~/.cache/in-the-loop/spring-pr-links-o01-o20), offline (dependencies resolved online beforehand), it builds the jars of spring-jdbc with the Gradle each checkout's wrapper names, runs the landed test classes (NamedParameterJdbcTemplateTests JdbcClientIndexedParameterTests JdbcClientNamedParameterTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-jdbc in $O/artifacts/O12-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $O/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned O12",
+      "submitted": {
+        "at": "2026-11-26T00:35:57+00:00",
+        "session": "bfc9aed1-6b9f-409a-9ed4-c5515dca4d80",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "O12 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O12 fix",
+          "cwd": "."
+        },
+        {
+          "name": "O12 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O12 parent",
+          "cwd": "."
+        },
+        {
+          "name": "O12 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O12 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "O12 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O12 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "132ae3386c8914da894d7a90e5eb592dcf083f6b",
+  "startedAt": "2026-11-26T00:43:16+00:00",
+  "finishedAt": "2026-11-26T00:50:02+00:00",
+  "wallSeconds": 406.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1123013,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3391217664,
+    "wallSeconds": 395.4,
+    "cpuSeconds": 918.0,
+    "memoryOfEstimate": 0.53,
+    "durationOfEstimate": 0.33
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "O12 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O12 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 138.567,
+      "cpuSeconds": 337.577,
+      "cpuThrottledSeconds": 22.341,
+      "peakMemoryBytes": 2301571072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-o12-fix-offline-build-and-land.log",
+        "lines": 41,
+        "bytes": 5332,
+        "sha256": "e52e1c2a21caf14ce30ec28a7f03916749932a388966cee8433427f30124c243",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "junit tests=53 failures=0 errors=0 skipped=1",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplateTests junit tests=23 failures=0 errors=0 skipped=1 ",
+        "class org.springframework.jdbc.core.simple.JdbcClientIndexedParameterTests junit tests=14 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.jdbc.core.simple.JdbcClientNamedParameterTests junit tests=16 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O12-fix/spring-jdbc.runtimeClasspath.txt 22 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O12-fix/spring-jdbc.testRuntimeClasspath.txt 56 entries",
+        "ad2a45d3760e5fea45a79a9a3f64ac7ca20f3bab865b029519d37045366453d2  jars/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "05f4bdfb8983cccc9b20a0e473a4c14c69299cf7d50a997506b62bc70dfd206d  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT.jar",
+        "a6eb1201f069ad2ba609044ca29c637b38ba279e3a166463f1846a2c9e19de2a  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "9443400c105af35e107c2b09cc5024feed5ac597b16f460905e7c6d103d8bf66  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "36edb0dbcc7e4da533bcf2f4cd5308b9180c6a5f46e6f72d8b334938d664ad8b  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT.jar",
+        "185d0ee76dabf2530e1dd868cf6552c1617b147755d9a76fe49ad099b89d6439  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "109cb16397279e0a6b3346ca062b9d2aeef5089893059e1984ff53d37eb03f87  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "ad2a45d3760e5fea45a79a9a3f64ac7ca20f3bab865b029519d37045366453d2  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "9dbdf828b963a471f6976b5e80d7176ed4b5d5ebccd3c73e424f2ea292744971  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT.jar",
+        "c8da6545237734e063b265abe70abd06fe8e4cdfdc45e9cd85586a7290a8f6e3  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate$1.class",
+        "e5f133b09054209052baabc00b11fe173776caaf27481a618f0c3789738f2cbc  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate$2.class",
+        "f75ab0ad2513426c9a7793acf5c85d0d2ba81bdbb51f89792df221cc3ead60d5  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate.class",
+        "0f9d417faf382f414fac5426456e1231e12acf0ff2c923aedcad05dc9e265130  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$DefaultBatchSpec$1.class",
+        "90d47f254df66c7a399ce24704af4a242d52fef6d53944f7aa25b09516792b49  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$DefaultBatchSpec.class",
+        "77e9764f3ac6ce052b0cbd032b137d612ad4022ffd1c33d6987945a0a9f5aaba  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$IndexedParamMappedQuerySpec.class",
+        "111e5f0692e84777cd9ef319d817889228de9df7e6f59fa696c55bdfb7335d94  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$IndexedParamResultQuerySpec.class",
+        "9ca5b9548154480d5ab612ed12d1315a8b8f16ed57bb5094afad9f8ac9927f9b  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$NamedParamMappedQuerySpec.class",
+        "e730e2102625075e1feba740dd14d2a2d775b93fe7f99d3907498acdde560608  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$NamedParamResultQuerySpec.class",
+        "7426d924d7e27ef45298babd0240a335f4713f44d7136e49feb20f01d2f80a92  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec.class",
+        "39f906a8238b1f00efc4ca72043d6a2c2bcbf5573369ef762cf60ad35acca90b  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "O12 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O12 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 150.901,
+      "cpuSeconds": 299.457,
+      "cpuThrottledSeconds": 27.745,
+      "peakMemoryBytes": 2745094144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-o12-parent-offline-build-and-t.log",
+        "lines": 41,
+        "bytes": 5341,
+        "sha256": "41fd16f8b7bb9fd2fa72a7bf0f49d7c5284d7c4baab6c2284c81d0c905cbea14",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "junit tests=48 failures=0 errors=0 skipped=1",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplateTests junit tests=22 failures=0 errors=0 skipped=1 ",
+        "class org.springframework.jdbc.core.simple.JdbcClientIndexedParameterTests junit tests=12 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.jdbc.core.simple.JdbcClientNamedParameterTests junit tests=14 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O12-parent/spring-jdbc.runtimeClasspath.txt 22 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O12-parent/spring-jdbc.testRuntimeClasspath.txt 56 entries",
+        "cabf379ce542fc2b1ef46aaab4df95e3ed4eb750b1ceff898036b27b47fe6e64  jars/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "05f4bdfb8983cccc9b20a0e473a4c14c69299cf7d50a997506b62bc70dfd206d  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT.jar",
+        "a6eb1201f069ad2ba609044ca29c637b38ba279e3a166463f1846a2c9e19de2a  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "9443400c105af35e107c2b09cc5024feed5ac597b16f460905e7c6d103d8bf66  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "36edb0dbcc7e4da533bcf2f4cd5308b9180c6a5f46e6f72d8b334938d664ad8b  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT.jar",
+        "185d0ee76dabf2530e1dd868cf6552c1617b147755d9a76fe49ad099b89d6439  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "109cb16397279e0a6b3346ca062b9d2aeef5089893059e1984ff53d37eb03f87  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "cabf379ce542fc2b1ef46aaab4df95e3ed4eb750b1ceff898036b27b47fe6e64  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "9dbdf828b963a471f6976b5e80d7176ed4b5d5ebccd3c73e424f2ea292744971  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT.jar",
+        "d33b15e81a70a092cf5e52b8db13cc105488ee2cf91973df9f9a43c595a4dfaf  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate$1.class",
+        "4a2e63f22a648b9e25341e3d47034f8d9e7f1182c7ddb73c8f7fcd5fc9cfbac5  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate$2.class",
+        "7be9e63f24c781a1694193ceff5e8f45779052e147b22798ef218458a2d0f305  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplate.class",
+        "3246cd9595ab0db059b7c624d08f0a77cc9c473c94cda6c6795c5556a3de0c7d  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$DefaultBatchSpec$1.class",
+        "743be5158a7d6eab755bd45a132e41d071fed07031dfc3774085f67960018b4b  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$DefaultBatchSpec.class",
+        "10fd3575ebf0384cc3e17ba3dea276d4b557357eaa8499abf6f8db276a5fea73  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$IndexedParamMappedQuerySpec.class",
+        "325ba5f0fefc2b6fa5b2523da48e73442857e0389cfe151730460ef3a4b9d78b  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$IndexedParamResultQuerySpec.class",
+        "ed23171334a931acaaee41bcb52b6ea77a86f43e19f692cf324cebc7ba129c52  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$NamedParamMappedQuerySpec.class",
+        "b983946d8da5333fc13b3dbdc16a84be3fd372dd40e133bac662c9d0bd0cf7ec  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec$NamedParamResultQuerySpec.class",
+        "7426d924d7e27ef45298babd0240a335f4713f44d7136e49feb20f01d2f80a92  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient$DefaultStatementSpec.class",
+        "39f906a8238b1f00efc4ca72043d6a2c2bcbf5573369ef762cf60ad35acca90b  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/simple/DefaultJdbcClient.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "O12 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O12 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 102.092,
+      "cpuSeconds": 278.809,
+      "cpuThrottledSeconds": 53.976,
+      "peakMemoryBytes": 3391217664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-o12-transplant-the-fix-s-tests.log",
+        "lines": 24,
+        "bytes": 2459,
+        "sha256": "da72320a1037a70131f2659303f643c65c7272818c06c2e5134a264a7a39a4a9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-jdbc/src/test/java/org/springframework/jdbc/core/namedparam/NamedParameterJdbcTemplateTests.java",
+        "transplanted spring-jdbc/src/test/java/org/springframework/jdbc/core/simple/JdbcClientIndexedParameterTests.java",
+        "transplanted spring-jdbc/src/test/java/org/springframework/jdbc/core/simple/JdbcClientNamedParameterTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O12-parent-landed gradle=9.7.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=101 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-jdbc:test --tests org.springframework.jdbc.c",
+        "junit tests=53 failures=5 errors=0 skipped=1",
+        "junit failed NamedParameterJdbcTemplateTests#batchUpdateWithGeneratedKeys()",
+        "junit failed JdbcClientIndexedParameterTests#batchUpdateWithGeneratedKeysAndKeyColumnNames()",
+        "junit failed JdbcClientIndexedParameterTests#batchUpdateWithGeneratedKeys()",
+        "junit failed JdbcClientNamedParameterTests#batchUpdateWithGeneratedKeysAndKeyColumnNames()",
+        "junit failed JdbcClientNamedParameterTests#batchUpdateWithGeneratedKeys()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplateTests junit tests=23 failures=1 errors=0 skipped=1 junit failed NamedParameterJdbcTemplateTests#batchUpdateWithGeneratedKeys() ",
+        "class org.springframework.jdbc.core.simple.JdbcClientIndexedParameterTests junit tests=14 failures=2 errors=0 skipped=0 junit failed JdbcClientIndexedParameterTests#batchUpdateWithGeneratedKeysAndKeyColumnNames() junit failed JdbcClientIndexedParameterTests#batchUpdateWithGeneratedKeys() ",
+        "class org.springframework.jdbc.core.simple.JdbcClientNamedParameterTests junit tests=16 failures=2 errors=0 skipped=0 junit failed JdbcClientNamedParameterTests#batchUpdateWithGeneratedKeysAndKeyColumnNames() junit failed JdbcClientNamedParameterTests#batchUpdateWithGeneratedKeys() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "O12 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O12 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 3.807,
+      "cpuSeconds": 2.123,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 167075840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-o12-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "25ef11da822974ed5d9d0b84fce53d4ede85e1d51b56b8757c3014d0119ff023",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned O12"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T00:50:33+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T005002Z-78047725f9a4cde2"
+    }
+  }
+}
