@@ -1,0 +1,385 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-032211-setup-build-spring-framework-32469-p25-a",
+  "title": "Setup: build Spring Framework #32469 (P25) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 7m12s, peak 2.9 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-032211-setup-build-spring-framework-32469-p25-a.json",
+    "sha256": "708e9b9e8216c3f51f1f94751e43a512cd5c9e2b301f769c5dacd45d82cea98b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-032211-setup-build-spring-framework-32469-p25-a",
+      "title": "Setup: build Spring Framework #32469 (P25) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P25 (spring-projects/spring-framework#32469: CGLIB advice sees a checked exception before the caller receives its wrapper (rerun: nested test classes selected with ProxyExceptionHandlingTests*)). In the worktrees $P/worktrees/P25-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-aop spring-core with the Gradle each checkout's wrapper names, runs the landed test classes (ProxyExceptionHandlingTests* ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-aop spring-core in $P/artifacts/P25-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P25",
+      "submitted": {
+        "at": "2026-11-26T03:22:11+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P25 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P25 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P25 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P25 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P25 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P25 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P25 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P25 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "629f1997d1f51f029e19cbf1f1fefaf3b197dc38",
+  "startedAt": "2026-11-26T03:24:10+00:00",
+  "finishedAt": "2026-11-26T03:31:42+00:00",
+  "wallSeconds": 452.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2262997,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3098497024,
+    "wallSeconds": 432.3,
+    "cpuSeconds": 772.0,
+    "memoryOfEstimate": 0.48,
+    "durationOfEstimate": 0.36
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P25 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P25 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 224.585,
+      "cpuSeconds": 288.135,
+      "cpuThrottledSeconds": 18.796,
+      "peakMemoryBytes": 2984374272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p25-fix-offline-build-and-land.log",
+        "lines": 51,
+        "bytes": 6480,
+        "sha256": "861384d3c89310a524296f45ad70a7e42a6010fbc6c661a5a45fc5270ecc5e0b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :spring-beans:checkKotlinGradlePluginConfigurationErrors",
+        "class org.springframework.aop.framework.ProxyExceptionHandlingTests* junit tests=12 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P25-fix/spring-aop.runtimeClasspath.txt 17 entries",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-fix/spring-aop/build/classes/kotlin/testFixtures",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-fix/spring-aop/build/classes/kotlin/main",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-fix/spring-aop/build/resources/testFixtures",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P25-fix/spring-aop.testRuntimeClasspath.txt 66 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P25-fix/spring-core.runtimeClasspath.txt 23 entries",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-fix/spring-core/build/classes/kotlin/testFixtures",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-fix/spring-core/build/resources/testFixtures",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P25-fix/spring-core.testRuntimeClasspath.txt 79 entries",
+        "f5485ec9040f62e4906e95bea50b7a4998c1fb02fc5961128e2fa1d55ada34f9  jars/spring-aop-6.2.0-SNAPSHOT.jar",
+        "b6321db847ac24a25b399698fd7867468682262c2a7442b29af2c80dd36ff9f5  jars/spring-core-6.2.0-SNAPSHOT.jar",
+        "f5485ec9040f62e4906e95bea50b7a4998c1fb02fc5961128e2fa1d55ada34f9  tree/spring-aop/build/libs/spring-aop-6.2.0-SNAPSHOT.jar",
+        "241d22fa32906a831a0247ef5a34ce23b756385dbd8e4c802ede1f82ab9db943  tree/spring-aop/build/libs/spring-aop-6.2.0-SNAPSHOT-test-fixtures.jar",
+        "3de219b6410c74ce952387cc423f454df3e70f29cbde5b277a479e47c96bda74  tree/spring-beans/build/libs/spring-beans-6.2.0-SNAPSHOT.jar",
+        "49fdb57e261cf9e3c1acfab4ab5934ab1ca08f24cf6db40b0d49f1c69fe2f3ef  tree/spring-beans/build/libs/spring-beans-6.2.0-SNAPSHOT-test-fixtures.jar",
+        "b6321db847ac24a25b399698fd7867468682262c2a7442b29af2c80dd36ff9f5  tree/spring-core/build/libs/spring-core-6.2.0-SNAPSHOT.jar",
+        "ae4ddc9212bea00341f9f2eedca4322707b78ff813bd8f752f40c9a76f0f60c5  tree/spring-core/build/libs/spring-core-6.2.0-SNAPSHOT-test-fixtures.jar",
+        "3b658ce38346fabcbdbae18460c4273c9f9f0588de85f6b38d60b332dfe0c371  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "8c61f1b5aaaa8a9d3a3a17a531af7df927ff0f75812d7112014bc2d01ac27f88  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "990d747669ef813beca5c08f9196066fa2f89e308ed737cc1e2a0bfdb08d95fc  tree/spring-core-test/build/libs/spring-core-test-6.2.0-SNAPSHOT.jar",
+        "9562d8f6d9d71064521926f0aed0339dafe24ba357965d90995eddbb318560da  tree/spring-jcl/build/libs/spring-jcl-6.2.0-SNAPSHOT.jar",
+        "da7b2e09365da6772a0e92e4115f40aa2d481196c95fe33b56eee079d7a7f74a  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$HashCodeInterceptor.class",
+        "eade86757e036d653c23ecefe3081532f97913a38b43c6474843e8a990c40bdc  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$ProxyCallbackFilter.class",
+        "8dab09fccc5ddf8d34ebbe5268410209f3857ce952ac7585854939ea9e455e4e  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$StaticUnadvisedInterceptor.class",
+        "b87b7d645f5538c0c130e5ab8bc4ee75261000beed2a16a290b4d7870a4e2f2e  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy.class",
+        "7b0cef9a4bfef3cd478d31fa9cf689531b23fa4aff2f19d6eb95cc90c8efe92e  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$AdvisedDispatcher.class",
+        "afc93accbf717fcfb69d5586578c06fec5316dfc33d0e1caad5728dc57c36d0a  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$DynamicUnadvisedInterceptor.class",
+        "98c2a082d4d70d23cd162912c3a08c4d8390cee43297808f903947c06b5414b5  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$CglibMethodInvocation.class",
+        "1d06e69cf279987f82264139007192b1cf01c430273f9861b8fcb4310c9dea5b  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$DynamicAdvisedInterceptor.class",
+        "20c3bacdf2b4ec249d5e9a33e52e37e3a603aaa4fdda6552a3d0cdade584ca8d  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$SerializableNoOp.class",
+        "9ad0537c19113de50405336a24e465af466c0600de614e531ebf6c920152c379  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$StaticUnadvisedExposedInterceptor.class",
+        "32a8cf8c0d426acbabdef9c25fa6af517f1e6bf933a20a03d4b12705050caa2b  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$EqualsInterceptor.class",
+        "4377c16359f2a236ff249d82bbbb1ebed43e4099b0dac82f3f5f22c39871828e  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$DynamicUnadvisedExposedInterceptor.class",
+        "c5835f2be467233492fa35e36c390394dcc97f8d19acc2029e94cad457fdda72  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$StaticDispatcher.class",
+        "0c03baec8885187dc8bdfe13e174fdad2a774c22f93652d114ab5521e271e5ba  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$FixedChainStaticTargetInterceptor.class",
+        "c7a6ec4b8ab9a40dedc1090b160c4a2294ff61023decd2aedbc3540d1f498550  spring-core-6.2.0-SNAPSHOT.jar!/org/springframework/cglib/core/ClassLoaderAwareGeneratorStrategy.class",
+        "fb48768fd049b1c9926b4ee24e69b864c257e1c52b4136921b3764ad0fad4b63  spring-core-6.2.0-SNAPSHOT.jar!/org/springframework/cglib/transform/impl/UndeclaredThrowableTransformer$1.class",
+        "61125e5e32d6edaa392324be859b7adc794b2c4c1447492d5e9262be2be8852e  spring-core-6.2.0-SNAPSHOT.jar!/org/springframework/cglib/transform/impl/UndeclaredThrowableTransformer.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P25 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P25 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 141.908,
+      "cpuSeconds": 294.434,
+      "cpuThrottledSeconds": 25.341,
+      "peakMemoryBytes": 2071289856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p25-parent-offline-build-and-t.log",
+        "lines": 51,
+        "bytes": 6384,
+        "sha256": "135f18227405b2dd9c1c3578f7ef72626e38dc8c7b0a8afea43a9a280e615199",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :spring-beans:checkKotlinGradlePluginConfigurationErrors",
+        "class org.springframework.aop.framework.ProxyExceptionHandlingTests* no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P25-parent/spring-aop.runtimeClasspath.txt 17 entries",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-parent/spring-aop/build/classes/kotlin/testFixtures",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-parent/spring-aop/build/classes/kotlin/main",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-parent/spring-aop/build/resources/testFixtures",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P25-parent/spring-aop.testRuntimeClasspath.txt 66 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P25-parent/spring-core.runtimeClasspath.txt 23 entries",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-parent/spring-core/build/classes/kotlin/testFixtures",
+        "missing /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P25-parent/spring-core/build/resources/testFixtures",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P25-parent/spring-core.testRuntimeClasspath.txt 79 entries",
+        "79e183e9d5ace65a07b00cb8750399ad048938081b71ecd0ee0e77e44e7d50bf  jars/spring-aop-6.2.0-SNAPSHOT.jar",
+        "2c1769a0a15f17b79e080ac659ffd88e6b9738b9097eeb54d6687c022bcc339e  jars/spring-core-6.2.0-SNAPSHOT.jar",
+        "79e183e9d5ace65a07b00cb8750399ad048938081b71ecd0ee0e77e44e7d50bf  tree/spring-aop/build/libs/spring-aop-6.2.0-SNAPSHOT.jar",
+        "1a542f73df01bb7540d6bd5a4e1cbad3e2b7d78dba7a465218db630a5d3cdac4  tree/spring-aop/build/libs/spring-aop-6.2.0-SNAPSHOT-test-fixtures.jar",
+        "ed8e1fd05e8b8c16dd4999c56e1243ff8a9959d1ef9bdd5522c093e8c2568762  tree/spring-beans/build/libs/spring-beans-6.2.0-SNAPSHOT.jar",
+        "700dd9b9ce92d04b6576abe1ed7ce2324a1e3c6097fbe4b861b67192ab82182a  tree/spring-beans/build/libs/spring-beans-6.2.0-SNAPSHOT-test-fixtures.jar",
+        "2c1769a0a15f17b79e080ac659ffd88e6b9738b9097eeb54d6687c022bcc339e  tree/spring-core/build/libs/spring-core-6.2.0-SNAPSHOT.jar",
+        "0e8760d5e01fa2433d26d32c74daaab86014c498d745d3d2fcad2e81ae81ad1d  tree/spring-core/build/libs/spring-core-6.2.0-SNAPSHOT-test-fixtures.jar",
+        "03e4a9fb4e249b534cff42bdbf6658b6eea39801af6af3cd13f319e7a28887ff  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "c12576e33f7149a8177afb1a96949a5b3ea4b3edb3f3841a6a51bb589bdb5e35  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "9f068c20941ae3e1bccaa90bd47c39570110adfb50cec8cd23eab94e0eb001be  tree/spring-core-test/build/libs/spring-core-test-6.2.0-SNAPSHOT.jar",
+        "b75a4e84a98293424dbaa2c402778d782c8622aa8c42f778be69fa4d325a2266  tree/spring-jcl/build/libs/spring-jcl-6.2.0-SNAPSHOT.jar",
+        "1819ff6a6de8f15b9d05dc0c4d0a1b6233bcd2a15c56a0d25636b652461ba4ff  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$HashCodeInterceptor.class",
+        "6c2c44a635a9f3ddd838c226f4a29cd5ec0581b181e41f8d24edfea5e5f515a5  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$ProxyCallbackFilter.class",
+        "edc1bd344cd467f378a126928bbc0ae37eabd2eb828fd4ecd234333e7a52cacb  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$StaticUnadvisedInterceptor.class",
+        "61d1a6adcd3ebe20135e57ca4dd68d2befe24a4b6b88550ecb4538a3acea658e  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy.class",
+        "6df29f268440f578f10477d19d93435062e58180653a4aa802643203f7895895  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$AdvisedDispatcher.class",
+        "a9ce337b51a97b97c43039349a56d2b9635c9c6657e8fa96f4171ec516414201  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$DynamicUnadvisedInterceptor.class",
+        "dbb727a91dff40cb2bc9ed6e6f86cf0534739240fbd4fa75b1503afb0cc3b94a  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$CglibMethodInvocation.class",
+        "60d4890e23b270e44d165ef13bbfb92ffeaaa29745366faa59772994e6079639  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$DynamicAdvisedInterceptor.class",
+        "6b881d13d72f386bebc6be532c5b99083ec9cef81c87afbf5674da406e85f910  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$SerializableNoOp.class",
+        "4ec6fa25f93526b62aa8f4d6e052124c6cc2f12a832633001e00a6a3afed9009  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$StaticUnadvisedExposedInterceptor.class",
+        "f688742f133191f17033969522f94d3036aaa63dddd00041431ac69e2d09e811  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$EqualsInterceptor.class",
+        "632bc6dfb5ae9147e84ca9708abd39e04d80498ad88c04f9b390fbc0a98ee491  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$DynamicUnadvisedExposedInterceptor.class",
+        "1d53463d04b715e0c143900f16f4dc14498e70bd79121780c1b6a76a09cf833f  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$StaticDispatcher.class",
+        "7f9b676ed6d73e90d763855bbf3b0f0f5f311fcc251b8b13ae9d42d0f63ab365  spring-aop-6.2.0-SNAPSHOT.jar!/org/springframework/aop/framework/CglibAopProxy$FixedChainStaticTargetInterceptor.class",
+        "06b2112ac5c8b49adb6465ae6aa0b8d350871f93355e213d59cc50b83fa8f381  spring-core-6.2.0-SNAPSHOT.jar!/org/springframework/cglib/core/ClassLoaderAwareGeneratorStrategy.class",
+        "9b2a283ab93deb7b8dbaa5b3448cf938d9ecfe0a83aa7ef5d7cafbf1baf94e4a  spring-core-6.2.0-SNAPSHOT.jar!/org/springframework/cglib/transform/impl/UndeclaredThrowableTransformer$1.class",
+        "c0917db8de6d653597fbde6cfc912021df588891b4684dea0a177287dda90eb5  spring-core-6.2.0-SNAPSHOT.jar!/org/springframework/cglib/transform/impl/UndeclaredThrowableTransformer.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P25 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P25 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 65.195,
+      "cpuSeconds": 188.891,
+      "cpuThrottledSeconds": 29.515,
+      "peakMemoryBytes": 3098497024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p25-transplant-the-fix-s-tests.log",
+        "lines": 18,
+        "bytes": 1590,
+        "sha256": "14c7caf59681015b1d97ddc2a7996f9be7e3207cf0326e47d702e82504f87841",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "removed spring-aop/src/test/java/org/springframework/aop/framework/ClassWithConstructor.java (deleted by the landing)",
+        "transplanted spring-aop/src/test/java/org/springframework/aop/framework/ProxyExceptionHandlingTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P25-parent-landed gradle=8.7 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=65 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-aop:test --tests org.springframework.aop.frame",
+        "junit tests=12 failures=2 errors=0 skipped=0",
+        "junit failed ProxyExceptionHandlingTests$WhenThereAreNoInterceptors#targetThrowsUndeclaredCheckedException()",
+        "junit failed ProxyExceptionHandlingTests$WhenThereIsOneInterceptor#targetThrowsUndeclaredCheckedException()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:jar",
+        "> Configure project :framework-docs",
+        "> Task :spring-core:checkKotlinGradlePluginConfigurationErrors",
+        "> Task :spring-aop:checkKotlinGradlePluginConfigurationErrors",
+        "> Task :spring-beans:checkKotlinGradlePluginConfigurationErrors",
+        "class org.springframework.aop.framework.ProxyExceptionHandlingTests* junit tests=12 failures=2 errors=0 skipped=0 junit failed ProxyExceptionHandlingTests$WhenThereAreNoInterceptors#targetThrowsUndeclaredCheckedException() junit failed ProxyExceptionHandlingTests$WhenThereIsOneInterceptor#targetThro",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P25 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P25 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.503,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 12488704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p25-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "4fafbbee42beeb9a1f386436cf845fe05a001d9b80b2c9b94e9fc608981c9efb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P25"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T03:31:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T033142Z-2147650e0fbca3ed"
+    }
+  }
+}

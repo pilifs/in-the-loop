@@ -1,0 +1,362 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-032326-setup-build-spring-framework-36207-p04-a",
+  "title": "Setup: build Spring Framework #36207 (P04) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m51s, peak 3.4 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-032326-setup-build-spring-framework-36207-p04-a.json",
+    "sha256": "08cf0da2575a5ce03fb7dfcbf57b615d2f62f20cd1d423c8f8b9dccb53703944",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-032326-setup-build-spring-framework-36207-p04-a",
+      "title": "Setup: build Spring Framework #36207 (P04) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P04 (spring-projects/spring-framework#36207: Choosing a value for empty YAML entries). In the worktrees $P/worktrees/P04-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-beans with the Gradle each checkout's wrapper names, runs the landed test classes (YamlProcessorTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-beans in $P/artifacts/P04-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P04",
+      "submitted": {
+        "at": "2026-11-26T03:23:26+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P04 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P04 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P04 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P04 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P04 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P04 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P04 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P04 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "629f1997d1f51f029e19cbf1f1fefaf3b197dc38",
+  "startedAt": "2026-11-26T03:24:10+00:00",
+  "finishedAt": "2026-11-26T03:31:21+00:00",
+  "wallSeconds": 431.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2262997,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3688165376,
+    "wallSeconds": 411.4,
+    "cpuSeconds": 771.4,
+    "memoryOfEstimate": 0.57,
+    "durationOfEstimate": 0.46
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P04 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P04 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 193.089,
+      "cpuSeconds": 271.608,
+      "cpuThrottledSeconds": 21.237,
+      "peakMemoryBytes": 2706214912,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p04-fix-offline-build-and-land.log",
+        "lines": 29,
+        "bytes": 3236,
+        "sha256": "846e2c97855f3afee11243a4e909d8abdbbc7cb11a4da8e1d36fb6217587b395",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P04-fix gradle=9.3.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=133 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-beans:jar :spring-beans:test --tests org.springfra",
+        "junit tests=15 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.beans.factory.config.YamlProcessorTests junit tests=15 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P04-fix/spring-beans.runtimeClasspath.txt 13 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P04-fix/spring-beans.testRuntimeClasspath.txt 50 entries",
+        "2d52f5c264bce95ee57f5e2adc765020797f6b73c4effec72271dafb5e2f073c  jars/spring-beans-7.0.4-SNAPSHOT.jar",
+        "2d52f5c264bce95ee57f5e2adc765020797f6b73c4effec72271dafb5e2f073c  tree/spring-beans/build/libs/spring-beans-7.0.4-SNAPSHOT.jar",
+        "13835272e0836bbbd95c1296b3a2a9c33c67a94c1ad66ec3bdc7e904e34de4e4  tree/spring-beans/build/libs/spring-beans-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "391e0978f6a3c1db2dc92b04a19adf8b5ed78edd2624236145a0466d51ae7e8f  tree/spring-core/build/libs/spring-core-7.0.4-SNAPSHOT.jar",
+        "e12d2cf0639ef51c8c4cc242fd38bb4b146c34265d95bf416ca212ab0768e01c  tree/spring-core/build/libs/spring-core-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "57e0b510a1b67b4b3af7e88b433600ddf134d3f7e8299edca2bd550521a74665  tree/spring-core/build/libs/spring-javapoet-repack-0.7.0.jar",
+        "3cf8f4b544f2a336fe4ab4503f535587a560a6a90ba6b3439e9aa437e0546d5f  tree/spring-core/build/libs/spring-objenesis-repack-3.4.jar",
+        "2be37c39d427793997a66422d163f78f6e414d72bf730981e3521c1a21f7ff60  tree/spring-core-test/build/libs/spring-core-test-7.0.4-SNAPSHOT.jar",
+        "025b0d7e21b701794071c0c1554586c81dbc71468fc72ce34ffa4e2cef77437a  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$DocumentMatcher.class",
+        "9357fc97b66211413eb724eade066a2cc8e7da0f85b14fb3e8f5b78c1fca47c6  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$MatchCallback.class",
+        "fa3661464b32a7a8a8c1ca75e5691d08f1c8c91aaadf6c8cffbf6623d40702ee  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$MatchStatus.class",
+        "fef70916cb7c13f3efea05422a7c6ff645e274fd9d14d629ec2a50de42d578ec  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$ResolutionMethod.class",
+        "97544a04f693d98a4682e64942966864cb068ecc136ae8230a47398a8b761034  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$SupportedTagInspector.class",
+        "9c0db1d6f43534f2290724398998e6a2f77aa7220765b55a0be872f35df71378  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P04 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P04 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 119.172,
+      "cpuSeconds": 240.804,
+      "cpuThrottledSeconds": 13.244,
+      "peakMemoryBytes": 2436591616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p04-parent-offline-build-and-t.log",
+        "lines": 29,
+        "bytes": 3244,
+        "sha256": "261d1aa39c594f2bc1483bac2829b28c1b372b6e997d562756ef84dfe463444c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P04-parent gradle=9.3.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=73 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-beans:jar :spring-beans:test --tests org.springf",
+        "junit tests=14 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.beans.factory.config.YamlProcessorTests junit tests=14 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P04-parent/spring-beans.runtimeClasspath.txt 13 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P04-parent/spring-beans.testRuntimeClasspath.txt 50 entries",
+        "5730b939595d97cea9fc65a460afd0529a7d1f9787a08d6143b78b73866efb34  jars/spring-beans-7.0.4-SNAPSHOT.jar",
+        "5730b939595d97cea9fc65a460afd0529a7d1f9787a08d6143b78b73866efb34  tree/spring-beans/build/libs/spring-beans-7.0.4-SNAPSHOT.jar",
+        "13835272e0836bbbd95c1296b3a2a9c33c67a94c1ad66ec3bdc7e904e34de4e4  tree/spring-beans/build/libs/spring-beans-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "391e0978f6a3c1db2dc92b04a19adf8b5ed78edd2624236145a0466d51ae7e8f  tree/spring-core/build/libs/spring-core-7.0.4-SNAPSHOT.jar",
+        "e12d2cf0639ef51c8c4cc242fd38bb4b146c34265d95bf416ca212ab0768e01c  tree/spring-core/build/libs/spring-core-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "57e0b510a1b67b4b3af7e88b433600ddf134d3f7e8299edca2bd550521a74665  tree/spring-core/build/libs/spring-javapoet-repack-0.7.0.jar",
+        "3cf8f4b544f2a336fe4ab4503f535587a560a6a90ba6b3439e9aa437e0546d5f  tree/spring-core/build/libs/spring-objenesis-repack-3.4.jar",
+        "2be37c39d427793997a66422d163f78f6e414d72bf730981e3521c1a21f7ff60  tree/spring-core-test/build/libs/spring-core-test-7.0.4-SNAPSHOT.jar",
+        "025b0d7e21b701794071c0c1554586c81dbc71468fc72ce34ffa4e2cef77437a  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$DocumentMatcher.class",
+        "9357fc97b66211413eb724eade066a2cc8e7da0f85b14fb3e8f5b78c1fca47c6  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$MatchCallback.class",
+        "efd84815ac33469c564104610e415b5d7d6d285b11ccac22c2866e895533e9e0  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$MatchStatus.class",
+        "8a48eccbd154ae4f6f6a73284324db63e6d9fbd3cabe6b520ec339155553f20f  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$ResolutionMethod.class",
+        "8b90d15192a787515bcfff52bdbb419b04474d21afbf1930d0d54dc744ca7400  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor$SupportedTagInspector.class",
+        "44316441ba5b11854bade50e56f06ae8753f44ca18c1f41699611de8474226d8  spring-beans-7.0.4-SNAPSHOT.jar!/org/springframework/beans/factory/config/YamlProcessor.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P04 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P04 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 93.759,
+      "cpuSeconds": 256.674,
+      "cpuThrottledSeconds": 38.058,
+      "peakMemoryBytes": 3688165376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p04-transplant-the-fix-s-tests.log",
+        "lines": 17,
+        "bytes": 1487,
+        "sha256": "0c2a7198c61514c46023027272183119dae579a5f4e3a5dd347219637dc37eec",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-beans/src/test/java/org/springframework/beans/factory/config/YamlProcessorTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P04-parent-landed gradle=9.3.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=93 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-beans:test --tests org.springframework.beans.",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.beans.factory.config.YamlProcessorTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P04-parent-landed/spring-beans/src/test/java/org/springframework/beans/factory/config/YamlProcessorTests.java:224: error: no suitable method found for getFlattenedMap(Map<String,Object>,boolean,Object)",
+        "  /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P04-parent-landed/spring-beans/src/test/java/org/springframework/beans/factory/config/YamlProcessorTests.java:224: error: no suitable method found for getFlattenedMap(Map<String,Object>,boolean,Object)",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P04 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P04 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 5.419,
+      "cpuSeconds": 2.278,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 181145600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p04-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "337c4e52d043376f6e37af1f7e04c18b299937d98c4c4291e9a092862fe8b9b8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P04"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T03:31:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T033121Z-179535844b0eae4c"
+    }
+  }
+}
