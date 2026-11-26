@@ -224,7 +224,8 @@ JitPack: **404 everywhere**, 401 at `repo.spring.io/release` and `plugins-releas
 ones). The one exception is `build-info-extractor:2.13.10`, which Grails core serves; P19 still lacks the asciidoctor
 extensions. Without these the root build script does not compile, so no init script can route around the 401s, and nothing
 was substituted. P18's build also imports `reactor-bom:2020.0.0-SNAPSHOT`, which `repo.spring.io/snapshot` serves only as its
-last build (the O01–O20 setup found the same for its O14). Not built, not tested; the worktrees are there for reading.
+last build (the O01–O20 setup found the same for its O14). The Gradle builds were not run; the pins' changed files are built and
+their landed tests run on the [slice route](#the-5x-cases-on-the-slice-route) instead.
 
 **Released artifacts whose changed sources match the pins.** For each case, the git blob id of the changed production file
 in released `-sources.jar`s (Maven Central; milestones from `repo.spring.io/milestone`; jar sha1s equal the repositories'),
@@ -242,8 +243,73 @@ sources jars in `$P/dl/sources/`):
 | P19 | `spring-tx/.../reactive/TransactionalOperatorImpl.java` | **5.2.0.RC2** (`3162525a4ea5dbf58c0dfb81ca2c16ffd506f9b0`) | none: 5.2.0.RELEASE differs in one line, the `Mono.usingWhen` call: `this.transactionManager::commit, (res, err) -> Mono.empty(), s -> Mono.empty())` against the pin's `this.transactionManager::commit, s -> Mono.empty())` |
 | P23 | `spring-orm/.../hibernate5/SpringBeanContainer.java` | **5.1.4.RELEASE** (`9280d382309e77f5448fac7fa9ba1686344b7334`) | none exactly: 5.1.5.RELEASE differs **only in the copyright year and one blank line**; 5.1.6 and 5.2.0.M1/M2 add a fallback-producer `try`/`catch` |
 
-The rest of each module (and of spring-core, spring-beans) moved between these releases and the pins; which route, if any,
-stands in for a pin is the domain work's call. The source tree of each pin is in its worktree either way.
+The rest of each module (and of spring-core, spring-beans) moved between these releases and the pins; the slice route below
+takes only the changed files from the pins. The source tree of each pin is in its worktree.
+
+## The 5.x cases on the slice route
+
+The route the first Spring setup (`spring-and-java-data-setup.md`, its A4) used for a 5.2 build that could not be configured, run
+here as the user asked on 2026-11-26 ("stuff that cannot be built should be verified against pinned JARs"). For each case and
+pin (`$P/scripts/slice_case.sh CASE`, table `$P/scripts/slices.tsv`, all seven in 30 s inline in the probe cap, log
+`$P/logs/slices.txt`):
+
+1. **Slice.** The pin's changed production files (`src/main/java` lines of `$P/logs/CASE-landed-files.txt`, nothing else) compiled
+   by `javac` 1.8.0_512 (`$J8`, `-source 8 -target 8 -parameters -proc:none -implicit:none`) against the **base release**, the
+   release whose copy of those files equals the parent pin's ([table above](#the-5x-builds-cannot-be-configured)), into
+   `$P/slices/CASE-ROLE/main/`, jarred as `$P/slices/CASE-ROLE/CASE-ROLE-slice.jar`, class digests in
+   `$P/slices/CASE-ROLE/main.SHA256SUMS` (identical over two runs). Both pins use the same base, so the two slices differ only in
+   the changed files.
+2. **Tests.** The landed test class compiled from the pin's own test tree (`-sourcepath` of the module's `src/test/java`, then the
+   shared test sources the 5.x builds put on test classpaths: `spring-core`/`spring-beans` `src/test/java`, or `src/testFixtures`
+   for P18), with the test libraries at the versions that pin's `build.gradle` declares (`$P/releases/tests-CASE/`, resolved with
+   checksums like the other sets: JUnit 4.12 and Hamcrest 1.3 for the 5.0/5.1 pins, Jupiter 5.6.2 or 5.5.2 for P18 and P19, and
+   their Mockito, AssertJ and Log4j), then run on JDK 8 with the JUnit Platform console launcher (1.6.2, P19 1.5.2; its vintage
+   engine runs the JUnit 4 classes the 5.0/5.1 builds ran with Gradle's JUnit 4 runner). Classpath: slice, test classes, the
+   module's `src/test/resources`, base release, test libraries. Results per run in `$P/slices/CASE-RUN/` (`junit.log` with every
+   test, `reports/` JUnit XML, `javac-*.log`).
+3. **Runs.** `fix`: the fix pin's tests on the fix slice. `parent`: the parent pin's own version of the test class on the parent
+   slice (none where the class is new). `transplant`: the fix pin's tests on the parent slice. `release`: the fix pin's tests on
+   the base release alone, without a slice (a control: there the parent's changed files are the release's own classes).
+
+| Case | Base release (and extras) | Test classes | Fix | Parent | Transplant (fix tests on the parent slice) |
+|---|---|---|---|---|---|
+| P05 | spring-beans 5.1.6.RELEASE | `BeanWrapperTests`, `DirectFieldAccessorTests` (the two concrete subclasses of the landed abstract `AbstractPropertyAccessorTests`) | 197 pass, 2 aborted | 197 pass, 2 aborted | **fails**: 2 of 199, `getAndSetIndexedProperties` in both classes, "Invalid property 'map[key5[foo]' of bean class [org.springframework.tests.sample.beans.IndexedTestBean]: Value of nested property 'map[key5[foo]' is null" |
+| P09 | spring-test 5.1.0.RC1, javax.servlet-api 4.0.1 | `MockHttpSessionTests` | 17 pass | 13 pass | **fails**: 2 of 17, `bindingListenerBindSameListenerTwice` (expected:<2> but was:<1>), `bindingListenerBindListenerOverwrite` (expected:<1> but was:<0>) |
+| P11 | spring-web 5.0.0.RC4 with protobuf-java-util 3.4.0, and protobuf-java-format 1.4 (both optional in the pins' `spring-web.gradle`, so on its compile and test classpaths; the converter does not compile without the second) | `ProtobufHttpMessageConverterTests` | 11 pass | 9 pass | **fails**: 1 of 11, `writeJsonWithGoogleProtobuf`, "body is empty" |
+| P16 | spring-jdbc 5.1.4.RELEASE | `ScriptUtilsUnitTests` | 10 pass | 9 pass | **fails**: 1 of 10, `readAndSplitScriptContainingMultiLineNestedComments`, "statement 2 not split correctly": the parent's statement 2 begins with the comment text `but it's still a single-line comment` |
+| P18 | spring-jdbc 5.2.7.RELEASE | `DatabaseStartupValidatorTests` (new in the landing) | 6 pass | n/a | **fails**: 3 of 6, `shouldUseJdbc4IsValidByDefault`, `shouldCallValidatonTwiceWhenNotValid`, `shouldCallValidatonTwiceInCaseOfException`, "Property 'validationQuery' is required" |
+| P19 | spring-tx 5.2.0.RC2 with reactor-core and reactor-test 3.3.0.RC1 | `TransactionalOperatorTests` | 5 pass | 4 pass | **fails**: 1 of 5, `monoSubscriptionNotCancelled` |
+| P23 | spring-orm 5.1.4.RELEASE with spring-context 5.1.4, hibernate-core 5.4.1.Final, HSQLDB 2.4.1 | `HibernateNativeEntityManagerFactorySpringBeanContainerIntegrationTests` (new in the landing), plus the test-tree classes its Spring XML names (`org.springframework.orm.jpa.domain.*`, `PersistenceInjectionTests`) | 8 pass | n/a | **fails**: 4 of 8, `testCanRetrieveBeanByNameWithJpaCompliantOptions` (expected the application context, was `null`), `testCanRetrieveFallbackBeanByNameWithJpaCompliantOptions` (expected:<0> but was:<1>), `testCanRetrieveFallbackBeanByTypeWithJpaCompliantOptions` (expected:<1> but was:<0>), `testCanRetrieveFallbackBeanByNameWithNativeOptions` (expected:<0> but was:<1>) |
+
+The two P05 aborts are `setPrimitiveArrayPropertyLargeMatching` in each class, which assumes test group `PERFORMANCE`, off by
+default as in the upstream build. The `release` control gives exactly the transplant's failures for all seven cases. Two earlier
+runs were set up wrongly and are superseded: P11 without protobuf-java-format (the converter did not compile) and P23 without the
+XML-named test classes (`Could not find class [org.springframework.orm.jpa.domain.DriversLicense]`).
+
+**Slice class digests (sha256).** Compiled from the pins' files, so they are what the domain work can compare. They are not the
+released jars' bytes: those were compiled by another JDK.
+
+| Case | Class | Parent pin | Fix pin |
+|---|---|---|---|
+| P05 | `org/springframework/beans/AbstractNestablePropertyAccessor.class` | `c62e29cc51fd53c0236bbb6497391b6f6b887e5fa1805586812c73c5d4ae63b8` | `52278528ce9897784d1b5ef8a6f2cbfa86db66afd9e47f755b9c7c7def39041c` |
+| P05 | `…/AbstractNestablePropertyAccessor$PropertyHandler.class` | `3a2e9b2976ce7be4f5463b73f0e681b1e7b9c5386cc860f9c67f0e096538ea2a` | `27c93db10dfc2c4dc3ccf59c4134bac177753fd29748d595fbcabbacf96a7154` |
+| P05 | `…/AbstractNestablePropertyAccessor$PropertyTokenHolder.class` | `dd2ee2425606d4ba5342788831b190ec4253690617ca2de8060de10b48d1c7af` | `d14de0d8419d4668106dbc34b67a0534ff1a64a428130d5d2ee368b4f9540cd3` |
+| P09 | `org/springframework/mock/web/MockHttpSession.class` | `247f81a7ab626355a9395e395e0fa9eff574b31442f9185f8df4db7ced97d29f` | `29551a44bf2ab6c24a01af0a2b869852c1ad0777dc0d9c7e29b1f2fdbc122081` |
+| P11 | `org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter.class` | `a9838230279a078492dcbaa64c1cadb0da5bc808d78d05137c2b1dc93e8bb41f` | the same |
+| P11 | `…/ProtobufHttpMessageConverter$ProtobufJavaUtilSupport.class` | `039eace814fc9291fe05d6d96be3d20ae90f185c3ed301469ad22068e2fa7d4e` | `3b3a46ea1f7e3c622c65133f23c71ce5113ad6f8817cde669f0513d8115a6b4d` (the only class the landing changes) |
+| P11 | `…/ProtobufHttpMessageConverter$ProtobufJavaFormatSupport.class` | `2d6e9d84e5da9f130e64f5820b200850d35deca11e096be43c270493991937c2` | the same |
+| P11 | `…/ProtobufHttpMessageConverter$ProtobufFormatSupport.class` | `92941c7a4b397f4bd157df1c020d85a3f53f37df6c8fab7158e499dd66f14ac3` | the same |
+| P16 | `org/springframework/jdbc/datasource/init/ScriptUtils.class` | `6a98d2deafc602b2aca6073f872ff60a2a797ffe9aded2a09e33ca5fe1d121a9` | `3d9add8dcfedd58a2e027496c3c957de81890b5fd9970673a64e7e18e3d0c6a8` |
+| P18 | `org/springframework/jdbc/support/DatabaseStartupValidator.class` | `2538bd6aa665dbe554ff6ddb06aa836d39df4900ea694b5d849225d5e84a4813` | `28f4e3424067adf63ecf5a3326cf3b733cb5b11fa95d5f6cfae09472884b0945` |
+| P19 | `org/springframework/transaction/reactive/TransactionalOperator.class` | `d0858b8a685b905087ec427e4f7c377b231f1a35bfcbcdfa6d4ac3559e08f250` | `ac76908876452b9f3e9b5e0428e7a6d23259bf28cabc901a97e3bf6c6ba2427f` |
+| P19 | `org/springframework/transaction/reactive/TransactionalOperatorImpl.class` | `7e5d0207ba512a62fc4cd4a10b823ba58894d18afda741a488adb6e7a93453ac` | `90ebcb8bad4b6c7aed5b0695fdef4ad612c1cb4bd8a71a7f5f0f5716627d6347` |
+| P23 | `org/springframework/orm/hibernate5/SpringBeanContainer.class` | `40c924668c26b9de5d50cb69cbb088174eb487e2bd9e991c0ac7bc22bbf77b0e` | `740e7216f2e4c6b82d7b1d50a1873c36c2d8b90a1a7f202af1fa7dfb305b58c0` |
+| P23 | `…/SpringBeanContainer$SpringContainedBean.class` | `0ae26807bce99441222a7158462792659a3df1cbd864de7ac265d7ef590ba50a` | `367d9cc4df368610715a6767fea86ac9ca1e554a0458781419e9fc9ee1a808c7` |
+
+**What the slice route does not give.** Every other class of the module and its dependencies is the base release's, not the
+pin's, so a test or scenario touching code that moved between that release and the pin sees the release. The fix slices of P05,
+P16, P18, P19 and P23 are the only builds of their fix pins' changed files (no release equals them). Only the landed test classes
+ran, not the module suites.
 
 ## Released artifacts
 
@@ -268,12 +334,16 @@ dependencies are not in its 5.x poms, so the versions below come from the pins' 
 | `spring-orm-5.1.4.RELEASE`, `spring-orm-5.1.5.RELEASE` | P23 parent and nearest fix, with spring-context of the same version, `hibernate-core:5.4.1.Final` (the version the brief and the pins' `spring-orm.gradle` name) and hsqldb 2.4.1 (the pins' test database) | 5.1.4 `12cd51b65b2781a6a35403dc82d7b261688706a0f8543c087ec483ddbf8ec77a`, 5.1.5 `cdc0ce57e0a1c76732e2ee2299ec78501a0c925ccebf9e856bf4066acc44f291` | unchecked (key) |
 | `spring-context-5.3.18` | P26: the issue reports 5.3.18 or earlier; with aspectjweaver 1.9.7 (the `v5.3.18` tag's AspectJ) | `6f307ea6e140d7f6f7fcffc7bb8c1540dd244c1039d8f7e7b8f3ddec6c73f59c` | unchecked (key) |
 | `jasync-r2dbc-mysql-2.1.19`, `jasync-r2dbc-mysql-2.1.20` | P20: the two driver versions the PR discussion names (2.1.20 carries the driver-side mitigation) | 2.1.19 `88f4af3755238104fe576e44fd72fee94caabdfc52c1477c766881f57ce31939`, 2.1.20 `9e755bbb5427f5e77bf940935a3d638449612c707e5f0fc3a2537d48a65ba659` | good, `36D4E9618F3ADAB5` |
+| `tests-P05`, `tests-P09`, `tests-P11`, `tests-P16`, `tests-P18`, `tests-P19`, `tests-P23` | the [slice route](#the-5x-cases-on-the-slice-route)'s test libraries, at the versions each 5.x pin's `build.gradle` declares, with `junit-platform-console-standalone` 1.6.2 (P19: 1.5.2) | (68 jars, sha256 in the log) | 56 good, 2 by a key expired since (assertj-core 3.11.0 and 3.13.2, `E2B3D84202B812D9`), 10 by the revoked byte-buddy key below |
 
-Signature summary over all 125 jars: 44 carry Spring's (and Reactor's) key `9A2C7A98E457C53D`, which keyserver.ubuntu.com and
+
+Signature summary over the first 125 jars: 44 carry Spring's (and Reactor's) key `9A2C7A98E457C53D`, which keyserver.ubuntu.com and
 keys.openpgp.org return without a user id, so gpg cannot import it (unchecked; the O01–O20 setup could not get it either);
 reactive-streams 1.0.3's key `1364C5E2DF3E99C5` likewise; 29 have no `.asc` (Spring milestones and RCs, Reactor RCs and some
 Hibernate dependencies); byte-buddy 1.9.5 is signed by a key revoked since (`REVKEYSIG BB2914C1FA0811C3`); 50 are good
 signatures (39, plus 11 by keys expired since). The jasync sets pull `r2dbc-spi:1.0.0.RELEASE`, Kotlin 1.6.21 and Netty 4.1.86.
+With the test sets, 193 jars: every sha1 matches, 95 good signatures, 13 by keys expired since, 11 by a revoked key, 45 unchecked
+(key not importable), 29 without `.asc` (`$P/logs/release-verify.txt`, rerun 2026-11-26 after the test sets were added).
 
 ## Snapshot dependencies
 
@@ -364,14 +434,45 @@ copy kept it). No other case's landed test class is abstract.
 
 ## Job results
 
-Read from the step logs in `$P/logs/` after the runner finished the jobs on 2026-11-26 (it recorded the results on another
-head, commit `a31e51b72c46`, not in this record's commits). Fix and parent columns: the landed test classes at that pin (a
+Read from the step logs in `$P/logs/` after the runner finished the jobs on 2026-11-26. The runner recorded the results on
+another head, not in this record's commits: the 6.x jobs first in commit `a31e51b72c46`, all 24 now in commit `933de3d18d34`
+(`python3 verification/pipeline.py status` lists them as "recorded on another head"). Fix and parent columns: the landed test classes at that pin (a
 class the landing adds is absent at the parent, so that step builds the jars only). Transplant: the fix's changed test files on
 a copy of the parent.
 
-**Spring 7.x cases**: jobs queued (table above), results to follow.
+**Spring 7.x cases.** Fourteen jobs passed every step. P15's job (`20261126-032327-setup-build-spring-framework-37159-p15-a`)
+is recorded as failed, at its transplant step only: fix, parent and clean passed.
 
-**Spring 6.x cases.** Seven jobs passed every step; P25's first job failed (above) and was resubmitted.
+| Case | Fix | Parent | Transplant |
+|---|---|---|---|
+| P01 | exit 0, 95 tests, 0 failures, 0 errors (127 s) | exit 0, 86 tests, 0 failures, 0 errors (67 s) | **fails**: 95 tests, 3 failures, 0 errors; `StringUtilsTests#[1]`, `StringUtilsTests#[7]`, `StringUtilsTests#[8]` |
+| P02 | exit 0, 13 tests, 0 failures, 0 errors (67 s) | exit 0, 12 tests, 0 failures, 0 errors (61 s) | **fails**: 13 tests, 1 failures, 0 errors; `TypeMappedAnnotationTests#adaptFromSingleValueToArray()` |
+| P03 | exit 0, 24 tests, 0 failures, 0 errors (127 s) | exit 0, 23 tests, 0 failures, 0 errors (59 s) | **fails**: 24 tests, 1 failures, 0 errors; `GenericTypeResolverTests#resolveTypeFromNestedParameterizedType()` |
+| P04 | exit 0, 15 tests, 0 failures, 0 errors (133 s) | exit 0, 14 tests, 0 failures, 0 errors (73 s) | **does not compile**: `YamlProcessorTests.java:224` no suitable method found for getFlattenedMap(Map<String,Object>,boolean,Object); `YamlProcessorTests.java:224` no suitable method found for getFlattenedMap(Map<String,Object>,boolean,Object) |
+| P06 | exit 0, 23 tests, 0 failures, 0 errors (66 s) | exit 0, 18 tests, 0 failures, 0 errors (63 s) | **fails**: 23 tests, 3 failures, 0 errors; `LinkedCaseInsensitiveMapTests#computeIfAbsentAfterNullComputedValueUsesGivenKey()`, `LinkedCaseInsensitiveMapTests#computeIfAbsentWithFailingMappingFunction()`, `LinkedCaseInsensitiveMapTests#computeIfAbsentWithNullComputedValue()` |
+| P07 | exit 0, 10 tests, 0 failures, 0 errors (77 s) | exit 0, 6 tests, 0 failures, 0 errors (77 s) | **fails**: 10 tests, 4 failures, 0 errors; `SimpleMailMessageTests#copyConstructorCopiesSentDate()`, `SimpleMailMessageTests#copyToCopiesSentDate()`, `SimpleMailMessageTests#getSentDateReturnsACopy()`, `SimpleMailMessageTests#setSentDateStoresACopy()` |
+| P08 | exit 0, 24 tests, 0 failures, 0 errors (68 s) | exit 0, 23 tests, 0 failures, 0 errors (72 s) | **fails**: 24 tests, 1 failures, 0 errors; `RetryPolicyTests$BuilderTests#includesAndExcludesNotChangedByBuilderAfterBuild()` |
+| P10 | exit 0, 23 tests, 0 failures, 0 errors (124 s) | exit 0, 21 tests, 0 failures, 0 errors (120 s) | **fails**: 23 tests, 1 failures, 0 errors; `MultipartHttpMessageConverterTests$ReadingTests#[1]` |
+| P12 | exit 0, 7 tests, 0 failures, 0 errors (118 s) | exit 0, 6 tests, 0 failures, 0 errors (114 s) | **fails**: 7 tests, 1 failures, 0 errors; `ProtobufJsonEncoderTests#canEncode()` |
+| P13 | exit 0, 21 tests, 0 failures, 0 errors (126 s) | exit 0, 19 tests, 0 failures, 0 errors (109 s) | **fails**: 21 tests, 2 failures, 0 errors; `MultipartHttpMessageConverterTests$ReadingTests#readMultipartEmptyLastPart()`, `MultipartHttpMessageConverterTests$ReadingTests#readMultipartEmptyPart()` |
+| P14 | exit 0, 18 tests, 0 failures, 0 errors (125 s) | exit 0, 17 tests, 0 failures, 0 errors (102 s) | **fails**: 18 tests, 1 failures, 0 errors; `JacksonJsonEncoderTests#releasesBufferRecyclerToPool()` |
+| P15 | exit 0, 7 tests, 0 failures, 0 errors (121 s) | exit 0, 5 tests, 0 failures, 0 errors (93 s) | **fails, then hangs**: `SubscriberInputStreamTests > interruptWhileAwaitingData() FAILED`, `AssertionFailedError` at `SubscriberInputStreamTests.java:278`; the test task then made no progress until the step's 3000 s Gradle timeout (exit 124), so no JUnit XML was written and the job reports the step failed (see below) |
+| P17 | exit 0, 5 tests, 0 failures, 0 errors (79 s) | exit 0, 2 tests, 0 failures, 0 errors (74 s) | **fails**: 5 tests, 2 failures, 0 errors; `TableMetaDataContextTests#overlappingDeclaredAndGeneratedKeyColumnsAreRejected()`, `TableMetaDataContextTests#overlappingDeclaredAndGeneratedKeyColumnsAreRejectedRegardlessOfCase()` |
+| P29 | exit 0, 8 tests, 0 failures, 0 errors (92 s) | exit 0, 7 tests, 0 failures, 0 errors (82 s) | **does not compile**: `ScheduledTaskRegistrarTests.java:89` no suitable method found for addCronTask(Runnable,String,ZoneId); `ScheduledTaskRegistrarTests.java:89` no suitable method found for addCronTask(Runnable,String,ZoneId) |
+| P30 | exit 0, 72 tests, 0 failures, 0 errors (117 s) | exit 0, 70 tests, 0 failures, 0 errors (89 s) | **fails**: 72 tests, 3 failures, 0 errors; `BitsCronFieldTests#nextOrSameWithGapAfterRollForward()`, `BitsCronFieldTests#nextOrSameWithMidnightGap()`, `CronExpressionTests#daylightSaving()` |
+
+P04 and P29 do not compile on the parent: their landed tests call the signatures the landings add (the three-argument
+`getFlattenedMap(Map, boolean, Object)` and `addCronTask(Runnable, String, ZoneId)`). P01's and P10's failures are parameterized
+invocations, with these arguments (`$P/logs/CASE-parent-landed.test.offline.junit.txt`): P01 `truncateSurrogatePairs` `[1]`
+text = "a😀b", threshold = 2, expected = "a (truncated)..."; `[7]` text = "😀b", threshold = 1, expected = " (truncated)...";
+`[8]` the same as `[1]` with a `StringBuilder`; P10 `readMultipartFileContentMoreThanOnce` `[1]` maxInMemorySize = 262144 (the
+in-memory case; `[2]`, maxInMemorySize = 1, passes on the parent). P15's hang on the parent is
+the behaviour the PR describes (an interrupted read stays blocked until an upstream signal). No later test of that class reported
+a result, so which test blocked is not recorded. A rerun with a per-test timeout, e.g.
+`-Djunit.jupiter.execution.timeout.default=60s`, would name it; that was not queued. The timeout ended the Gradle processes and the
+`clean` step removed `$P/build/P15-parent-landed`; no process or copy remained.
+
+**Spring 6.x cases.** Seven jobs passed every step; P25's first job failed (above), and its rerun passed every step.
 
 | Case | Fix | Parent | Transplant |
 |---|---|---|---|
@@ -379,17 +480,86 @@ a copy of the parent.
 | P21 | exit 0, 1 test, 0 failures, 0 errors (239 s) | jars only (the test class is new) (170 s) | **fails**: 1 test, 1 failure; `AnnotatedBeanDefinitionReaderTests#registerBeanWithQualifiers()`, `AssertionFailedError` at `AnnotatedBeanDefinitionReaderTests.java:46` |
 | P22 | exit 0, 7 tests, 0 failures, 0 errors (123 s) | exit 0, 4 tests, 0 failures, 0 errors (64 s) | **fails**: 7 tests, 2 failures; `ScopedProxyUtilsTests#createScopedProxyTargetCleansAutowireSettingsInTargetDefinition()`, `#createScopedProxyTargetOvertakesAutowireSettingsToProxyBeanDefinition()` (`ScopedProxyUtilsTests.java:94`, `:137`) |
 | P24 | exit 0, 63 tests, 0 failures, 0 errors (277 s) | exit 0, 35 tests, 0 failures, 0 errors (120 s) | **does not compile**: 35 errors, 31 of them `cannot find symbol: method contextName()` (the attribute the landing adds to `@TestBean`, `@MockitoBean`, `@MockitoSpyBean`), the rest `constructor BeanOverrideHandler ... cannot be applied to given types` (`BeanOverrideContextCustomizerTests.java:74`, `DummyBean.java:69`, `EasyMockBeanOverrideHandler.java:46`) |
+| P25 | exit 0, 12 tests, 0 failures, 0 errors (123 s) | jars only (the test class is new) (53 s) | **fails**: 12 tests, 2 failures, 0 errors; `ProxyExceptionHandlingTests$WhenThereAreNoInterceptors#targetThrowsUndeclaredCheckedException()`, `ProxyExceptionHandlingTests$WhenThereIsOneInterceptor#targetThrowsUndeclaredCheckedException()` |
 | P26 | exit 0, 32 tests, 0 failures, 0 errors (225 s) | exit 0, 31 tests, 0 failures, 0 errors (206 s) | **fails**: 32 tests, 1 failure; `ApplicationContextEventTests#eventForSelfInjectedProxiedListenerFiredOnlyOnce()`, `AssertionFailedError` at `ApplicationContextEventTests.java:293` |
 | P27 | exit 0, 6 tests, 0 failures, 0 errors (242 s) | exit 0, 2 tests, 0 failures, 0 errors (209 s; the JUnit 4 and TestNG classes are new) | **fails**: 6 tests, 6 failures; `ParallelApplicationEventsIntegrationTests#executeTestsInParallelInstancePerMethod()`, `#rejectTestsInParallelWithInstancePerClassAndRecordApplicationEvents()`, `JUnit4ApplicationEventsAsyncIntegrationTests#asyncPublication`, `#asyncConsumption`, `TestNGApplicationEventsAsyncIntegrationTests#asyncPublication`, `#asyncConsumption` |
 | P28 | exit 0, 15 tests, 0 failures, 0 errors (196 s) | exit 0, 11 tests, 0 failures, 0 errors (206 s) | **fails**: 15 tests, 1 failure; `TransactionalApplicationListenerMethodAdapterTests#withTransactionalAnnotationOnEnclosingClass()`, `AssertionError` at `TransactionalApplicationListenerMethodAdapterTests.java:165` |
 
 P27's transplant compiled with the fix's `spring-test.gradle` (Awaitility); its failures are assertions and, in the JUnit 4 class,
 an `IllegalStateException` at `JUnit4ApplicationEventsAsyncIntegrationTests.java:74`. P24's fix pin runs 63 tests across its 29
-landed classes. The `clean` step left no untracked or ignored file in any of the fourteen worktrees, and no `$P/build/` copy remains.
+landed classes.
+
+After all 24 jobs, none of the 61 worktrees (the 47 of the built cases, P29's `later` included, and the 14 of the 5.x cases)
+has an untracked, ignored or modified file, and no `$P/build/` copy remains.
+
+## Digests of the built artifacts
+
+Each `$P/artifacts/CASE-ROLE/SHA256SUMS` lists the module jars (`jars/`), the project jars on the kept classpaths (`tree/…`) and
+the class digests of every production source file the landing changed (nested classes included). Jar digests include build
+timestamps in the 6.x builds; the 7.x builds write reproducible jars (entries dated 1980-02-01). The class digests are what
+compare across builds. Rows from `python3 -I $P/scripts/digest_rows.py CASE...` (also in `$P/logs/digest-rows.md`); the 5.x slices'
+class digests are in [their section](#the-5x-cases-on-the-slice-route).
+
+| Case | Role | Module jar sha256 | Changed classes (sha256) |
+|---|---|---|---|
+| P01 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `3d5e0896f4c86f0edbb264c12b3a74dd8ef3be06323f5a5e0e292354dc083cbd` | `StringUtils.class` `fe617940c4bb20abda81b21d638ee45b1744934d2e1bbfbd06346ede3217a279` |
+| P01 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `02bdefc275f29642200c81c91124b5815045e11b8b24395b011bf057726c39a7` | `e855027d0a12f8d21d3c78b92aac70d8d9ab73cfb83022a376e6ca57e0bcfb75` (same order) |
+| P02 | fix | `spring-core-7.0.10-SNAPSHOT.jar` `07e4efa64779531f31abc7397bbc3ad7bf597e695704abb1eabf9eeee3fe096c` | `TypeMappedAnnotation.class` `20f9e8e7c50024361053048d63fac4dd4644d086928432b402a532190b5fcd78` |
+| P02 | parent | `spring-core-7.0.10-SNAPSHOT.jar` `7224611050fbe55257b777856c5c4548ba6fd700519952a21c08dc9a6929b4fe` | `c4a82968d7f1aec16de2e038ffa2dc61adfcb4f22ca463c8f0c957d981ec9c14` (same order) |
+| P03 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `901efd0f96fe9cdadf5c95476291585689cd47434940c3e29ece3bf2312768aa` | `GenericTypeResolver.class` `b32cc5c8a4e059ee15c748a3b4d4dff2696e710ac72bf29f21a0f3bab72f8fa1` (+1 nested) |
+| P03 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `fd6696b2420c996412505dfbc531aae6cf7b3cb2adb6172f903a254b9c08bff5` | `b7af0edcded2c911da8bb520f56d29500f6ce374c561a4402b382afb44b7aca5` (same order) |
+| P04 | fix | `spring-beans-7.0.4-SNAPSHOT.jar` `2d52f5c264bce95ee57f5e2adc765020797f6b73c4effec72271dafb5e2f073c` | `YamlProcessor.class` `9c0db1d6f43534f2290724398998e6a2f77aa7220765b55a0be872f35df71378` (+5 nested) |
+| P04 | parent | `spring-beans-7.0.4-SNAPSHOT.jar` `5730b939595d97cea9fc65a460afd0529a7d1f9787a08d6143b78b73866efb34` | `44316441ba5b11854bade50e56f06ae8753f44ca18c1f41699611de8474226d8` (same order) |
+| P06 | fix | `spring-core-7.0.10-SNAPSHOT.jar` `7224611050fbe55257b777856c5c4548ba6fd700519952a21c08dc9a6929b4fe` | `LinkedCaseInsensitiveMap.class` `b1a4e0cc6f2faaefcc0102010aa3918ec5e116bc771b15575b23c9f893e668ac` (+8 nested) |
+| P06 | parent | `spring-core-7.0.10-SNAPSHOT.jar` `0657582c48cd2e4ac67d89021b4edda4a52e0f4b28712d358deca0d047cf6d48` | `d95ddb1b6a2b9e96161e5297d1e14b37bb240655c3eb6c9f4e202b2848fa76d7` (same order) |
+| P07 | fix | `spring-context-support-7.1.0-SNAPSHOT.jar` `e88476a386b6f99d0b3b9da82a342d52ac8e6f6261baa3bae530856fa6c407f6` | `SimpleMailMessage.class` `9862522ea9c3357af09ecde9e76ca953e4db2d81b19d377dbf08aace73755c68` |
+| P07 | parent | `spring-context-support-7.1.0-SNAPSHOT.jar` `d81270c6b324010ec58a76a7ffd87f13b37a8c12233cf1b7a82c7035351ff274` | `57e88c782e2f4175745ed66555f0eaf7c044b9fab69e1c675509367bbcf7fa57` (same order) |
+| P08 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `6abb58e66a4e45698cfd8a94a0a1a508e43e73c2db9f032e79848cc8f07db911` | `RetryPolicy.class` `9482539260e670593e00cf5f463dba653ea797d993277c68c83055978cfa5c58` (+1 nested) |
+| P08 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `c598e1829dcf34b172ea334dd2269074d95d133e5703a3d3a6032cf68309e06d` | `9482539260e670593e00cf5f463dba653ea797d993277c68c83055978cfa5c58` (same order) |
+| P10 | fix | `spring-web-7.1.0-SNAPSHOT.jar` `089bc85060987cc92a18f766f2b1543c089beda2b99f4fd8df8ae4de542decc1` | `DefaultParts.class` `61d8e19964bad50744893fa8976a5442e3b5ed96121808b72023871fdf0c427c` (+7 nested), `PartGenerator.class` `382ca9a2b17c893822099042ee80b93101af26f5c20b9dc58f666d12f40b1fa7` (+5 nested) |
+| P10 | parent | `spring-web-7.1.0-SNAPSHOT.jar` `7a852e35e0f26b50cb9a140ae1de40903916c1a5f3a288950d374ae0d27b8070` | `3b370c3a02382053a665e92f7308d98db36de3d2dabd36cc1ab50cf10bdf239b`, `f1ea4beececf7f301d8140aa72b27c9f930eb9745c21f0c11d90a0e1c5bfe07a` (same order) |
+| P12 | fix | `spring-web-7.1.0-SNAPSHOT.jar` `29caadbbc6f0dc913ccd06bbeb495e791f126f388450bf190c6a8b6440f72401` | `ProtobufJsonEncoder.class` `18619b349caf353cc4fa0180bf510eff3813145411e61c81d785fff1afc995a3` (+1 nested) |
+| P12 | parent | `spring-web-7.1.0-SNAPSHOT.jar` `ad136e9a1a6c10341b261c7be60c389e593f462b275c81e20a4facc3ef62680e` | `fc9a5b1bc4fa2c1e1b7eb806d5c804fb0fdaa417b310ccbc846a7c2a7d32eb3c` (same order) |
+| P13 | fix | `spring-web-7.1.0-SNAPSHOT.jar` `9c39afa1509c97df49f6101412283e9dae97b20759915bca042123596483f9c4` | `PartGenerator.class` `f1ea4beececf7f301d8140aa72b27c9f930eb9745c21f0c11d90a0e1c5bfe07a` (+5 nested) |
+| P13 | parent | `spring-web-7.1.0-SNAPSHOT.jar` `b1a579986995423b48e9f1e732234e7871e56ad5644ffa4a9bd0232c4c9dfb6c` | `42e17f6ac6717580d9baf1f1f8ab742912e77eb9ff66cc4add66e0bbf0e228ac` (same order) |
+| P14 | fix | `spring-web-7.0.9-SNAPSHOT.jar` `e9cb8d3dac20d4e300a457ebaa21d3b7d4fdf39473589397532d44892505c47c` | `AbstractJacksonEncoder.class` `d945682935df8b9712e7fcebce262bee46f99c7250f7722d3ea728aba94338ac` (+1 nested), `AbstractJackson2Encoder.class` `c0e3fdb8f0242b86640c11a7613b50f3e905acd348542981928d5d34e7cac43b` (+1 nested) |
+| P14 | parent | `spring-web-7.0.9-SNAPSHOT.jar` `51c64b5e8be5552d7b5213e32c28951b16e74ed805a04a445a2a27a2c722fa2e` | `3c09ab8bfcca56b144b2ad57da1e26dadfd8b4aad9c023a6258889439c418400`, `a5dfa807d7bfdf37e09a6e517d3cedcbc8371b9cde4d36e8a087c9c0d8a14138` (same order) |
+| P15 | fix | `spring-core-7.0.11-SNAPSHOT.jar` `c6fcc56f311a947dd2044ed78e640637817518aa7141e5cec358f3cb96ee8deb`, `spring-web-7.0.11-SNAPSHOT.jar` `5d749ebf2d690bacf8fb7bafcdfcb7a5c1c810f97f50b7a247c1892129432256` | `spring-core SubscriberInputStream.class` `e3a49bcafe8df57e83bb32f9353e8d06592b8f33f4efb1eb075c12fdf4bf9641`, `spring-web SubscriberInputStream.class` `73c877171c6c226cfd6ac979b03d614da4f6e74718840afa255bfa4efc2cdf20` |
+| P15 | parent | `spring-core-7.0.11-SNAPSHOT.jar` `c5c479ef500c19f64881867d3a87eefda335baa4f8963cc6ac5b2b7d1417759b`, `spring-web-7.0.11-SNAPSHOT.jar` `7ebbc777abea3893d4c0cf4107958d322fc27f9a657791eb21fc81bbca7780de` | `2a78db49ed8b674fc7842dfe46279bd493295ce8f36da6b210ff93f1848db40c`, `5665c81b93048bdf9fc2f5b15f734548e89c54f28d4df71ea25c1f6e8cda0f47` (same order) |
+| P17 | fix | `spring-jdbc-7.1.0-SNAPSHOT.jar` `cf61f678e84ca0cea2400ded341d4b120b88bb025e895778894e08a19d761b7c` | `TableMetaDataContext.class` `9266a6161b951b83faa774f0605d89109fa36d103376fde5892a762e6873abf1` (+1 nested) |
+| P17 | parent | `spring-jdbc-7.1.0-SNAPSHOT.jar` `4a215b93f79e65dd931c7ed8d28fd389ee48603aca9e91346521c51dd0ad019b` | `b575ff7dee1212c85afc8a8bd4493c6b180ba4a3faab908bc99ab8fa5784ffb6` (same order) |
+| P20 | fix | `spring-r2dbc-6.0.5-SNAPSHOT.jar` `26a1379473cec763b0443b28827f1fb727794a459207d59b572f26b9173d2dca` | `R2dbcTransactionManager.class` `04c658722dda8488b0b1bc88c14b7235f0aefe056666692ac0a758a61cfec950` (+2 nested) |
+| P20 | parent | `spring-r2dbc-6.0.5-SNAPSHOT.jar` `620746439f34da4db81645aa6ded4813579d024378c1ac07a960caa041526744` | `e7b097d6da2837c869956e9c96c71e81a480fcab71c8783726bc9afcc725cdf9` (same order) |
+| P21 | fix | `spring-context-6.2.0-SNAPSHOT.jar` `e39ec9634537273119e1af02e8588cb8b1886b89aabcce845b8331929375067d` | `AnnotatedBeanDefinitionReader.class` `990587f4056e0de14e22f3f87e1c9fe9d1f83ab7ad4174a594b39cc7edca009d` |
+| P21 | parent | `spring-context-6.2.0-SNAPSHOT.jar` `5277bf49833219ee8be153fbb9f516f42aa407eebc60ab00b1dc415f56f71114` | `7b7ebd1d3faa2631d780278deb89e3109900540eeb08b0b1ff188fb6d04fd8cd` (same order) |
+| P22 | fix | `spring-aop-6.2.12-SNAPSHOT.jar` `bc86ca473d9c75074ff32bf53233a340904225ba7ea3de5fa2a120aa38b2b0f7`, `spring-context-6.2.12-SNAPSHOT.jar` `7f578906c49d82b29f7ce44958c3194c8a917bad0aa606d524ef947a2a5aad38` | `ScopedProxyUtils.class` `788428a1bcfc827148e2964711202125c174c2da2a5cb1332b36e0524b2996a0` |
+| P22 | parent | `spring-aop-6.2.12-SNAPSHOT.jar` `6d5d7ea1bdb992e45a056f2ecce5516c4a277a6e47dd7a51fae6aba764a1527c`, `spring-context-6.2.12-SNAPSHOT.jar` `ac1081a5bec948c4ef0af37f2b8fe14e84f57ce0749b5b007b21a53b0062d543` | `d48757fe2db30b31ff6a528b733bc986d30a7b6e00feb9b65265b6bb976f298f` (same order) |
+| P24 | fix | `spring-test-6.2.6-SNAPSHOT.jar` `820c60ad1a31fc1d0a09da4715f09ea1c276df2b43cbee0b37da9e0a804d79c8` | `ContextConfiguration.class` `ea2b05eefdd24a0629f770372e260b6c0ed5113471db28ca1807eb6c99a9f07e`, `ContextHierarchy.class` `55b8fdd76a90c479bd60f2f06fa86937d66621d65f452b16a45b3070873b40e0`, `BeanOverrideContextCustomizerFactory.class` `d94ccbc28e06f359c78bf793f2474c888833fc7262ecef9d93853c9703862147`, `BeanOverrideHandler.class` `bba8bcd85c5e24f1c8ac201ab4ae0a393c6237ea49e216ef99bf84124c360d06`, `BeanOverrideRegistry.class` `41bb048c0e4c17b9402e4b04a31016cbc2cfa2ea622772376cf5ba3b2ffd06ca`, `BeanOverrideTestExecutionListener.class` `924e91615a58e781ce7d961e451db84a48f3faa5bfe4fdaf7ae70aa7975a921c`, `TestBean.class` `500bcbf891ef99c7c6cdccba15fa315457245e398e493d2948915103e764dff2`, `TestBeanOverrideHandler.class` `cd025384929571e72d664de7c89512fb5d4a3c2b7320360feb775dc36c428806`, `TestBeanOverrideProcessor.class` `7a4c90fd37365290c7fc27d49b9f2ead3aa6930b838dbc1029f8b8b894c20e4d`, `AbstractMockitoBeanOverrideHandler.class` `cef6bd056d2a21391c1bad7adc1d934af4c4306af3108b72141f10e26d88017b`, `MockitoBean.class` `204a6e1c39095ff715c2b8fe00af965d8a78a86ba51c9148d3a57a8a60de6a6f`, `MockitoBeanOverrideHandler.class` `067b639053256118566837daf6e7cb3bebc6cfbd5b31f2638d11e4f4e26aba3b`, `MockitoSpyBean.class` `5639be826723881c30bc7d7ff4c8ed4b144cad7b8c7995e590b0b59ed377487f`, `MockitoSpyBeanOverrideHandler.class` `f9c314bc07a88d7b0708b93ffa9f3829c7422b7c80fd0ccafaec344cff92e268` (+1 nested) |
+| P24 | parent | `spring-test-6.2.6-SNAPSHOT.jar` `ce1e6403b4f79e88665de1e07250000807ceeab5a53edc461516451a12b40e0d` | `ea2b05eefdd24a0629f770372e260b6c0ed5113471db28ca1807eb6c99a9f07e`, `55b8fdd76a90c479bd60f2f06fa86937d66621d65f452b16a45b3070873b40e0`, `7314a997702e1e42d28b0757ace2afd195edffee33e534cd8a2579911f83b51a`, `1034dd1cf0bbf8d845c7da8859af2dc9c14461e8048ce74c03a5d2b99ada61f2`, `ca77cdaaa88b1c71cea960d1efbeb4f94c2544bcd7ecb6099a502d451fd7db0f`, `3ae8a41272ad6e568eb8cd11053c86892e3edd6db6de07562115ff9cb8fa25ba`, `2647926d8e336d0893bc8c39f67892041781e5318342dc1db7a228cf822aa497`, `16a5d522c4324bcef5d3f6816f40398a935596236573071b6bad74a1e0dcb9e6`, `76b79e51d021174f234d6ba2c49891d1c9bf77528284f91da9bca5758fddd649`, `97c2fd6af8156d113cbbc27ab26490c795d1aa7e034ded84a60f843b4f69f004`, `88b6db03edbacb5d62e0c9ae8fefe76286b6975016112cbaf9ae1784b9d76422`, `088ff6b8dd52843b95fe126dd553272b103a58d38a5e473a6166e4eb6aef913e`, `ff4b6546dac216251415c1f5fa19fa95879a716ed0fd0dd1b6e7f06ada661500`, `5834780a61f6cf317d328739c143c0c79e9e68bf1259a57a8e1c54a6b59eba8b` (same order) |
+| P25 | fix | `spring-aop-6.2.0-SNAPSHOT.jar` `f5485ec9040f62e4906e95bea50b7a4998c1fb02fc5961128e2fa1d55ada34f9`, `spring-core-6.2.0-SNAPSHOT.jar` `b6321db847ac24a25b399698fd7867468682262c2a7442b29af2c80dd36ff9f5` | `spring-aop CglibAopProxy.class` `b87b7d645f5538c0c130e5ab8bc4ee75261000beed2a16a290b4d7870a4e2f2e` (+13 nested), `spring-core ClassLoaderAwareGeneratorStrategy.class` `c7a6ec4b8ab9a40dedc1090b160c4a2294ff61023decd2aedbc3540d1f498550`, `spring-core UndeclaredThrowableTransformer.class` `61125e5e32d6edaa392324be859b7adc794b2c4c1447492d5e9262be2be8852e` (+1 nested) |
+| P25 | parent | `spring-aop-6.2.0-SNAPSHOT.jar` `79e183e9d5ace65a07b00cb8750399ad048938081b71ecd0ee0e77e44e7d50bf`, `spring-core-6.2.0-SNAPSHOT.jar` `2c1769a0a15f17b79e080ac659ffd88e6b9738b9097eeb54d6687c022bcc339e` | `61d1a6adcd3ebe20135e57ca4dd68d2befe24a4b6b88550ecb4538a3acea658e`, `06b2112ac5c8b49adb6465ae6aa0b8d350871f93355e213d59cc50b83fa8f381`, `c0917db8de6d653597fbde6cfc912021df588891b4684dea0a177287dda90eb5` (same order) |
+| P26 | fix | `spring-context-6.1.0-SNAPSHOT.jar` `a1e40e346fae2d9b801deb8aacc57a8f4348f4a8ee4742ed941a263391b35551` | `AbstractApplicationEventMulticaster.class` `98341caf544199f8cbdcf95aa847fd8c1f9c01863b6455f02b146c3f6322cf95` (+3 nested) |
+| P26 | parent | `spring-context-6.1.0-SNAPSHOT.jar` `bea440658ef8616d16863041c96083dd710ee495e74fb6af16ed8bad0f565406` | `7d3229c8d82f6e41a1e4b12bb4235ff67d799b886cb4689c3dee1742586fcd75` (same order) |
+| P27 | fix | `spring-test-6.1.0-SNAPSHOT.jar` `b071314be23db623623c1395cb919ed8638ddbb2b826f2d18a001ef80d9fa86e` | `ApplicationEventsHolder.class` `42a81c7eaf685366bd9e1cc724d159093fedf98c1671def8451ffb125554e5bc`, `DefaultApplicationEvents.class` `c4bcf52a844b80eb1f9e747d4cccb162ea333977498eae6ed0d339707fe0b539`, `SpringExtension.class` `6d79c4ea0dd1effb565527b7e55012c3d4382bbb12e3c2d08960ce50f244824f` |
+| P27 | parent | `spring-test-6.1.0-SNAPSHOT.jar` `bbd2a2ef8c6f41e6c41640643c82b2b19fd0a8ec5e76cb1352f3a4cdbc56d877` | `e5a20c6ac5b9eddd55bb8ac9f7a4eb6b0315bb133159b90ee764efa96546af3a`, `5f0888ce4c51b8274f6836ac5d824b42562abb1613d59e793beff8ac3232b974`, `c794460a20f422b7e5aebc8554335644ae7b9143658730a16f9d4266596a30df` (same order) |
+| P28 | fix | `spring-tx-6.2.0-SNAPSHOT.jar` `45579d181a53bb9f13e2733308c3b5253694b8dde6e96a2f5589f300c979a1da` | `RestrictedTransactionalEventListenerFactory.class` `12e3ba34092220d991941e1ef2cee00367ba471903a43672bb803ea60a268ad7` |
+| P28 | parent | `spring-tx-6.2.0-SNAPSHOT.jar` `436a48b67a38f67fb00dbebafd238d2216890b6ec7098d3d8a1ac1d13910c480` | `49c205b9cbb66174ad655b9896cf2cbcea30f3adafdbec44c2d0c104e7c22aa9` (same order) |
+| P29 | fix | `spring-context-7.1.0-SNAPSHOT.jar` `f96bbd001c050a1fbdba2127d1e35c82cf16d2762ddd016a3aa0750557e94b2c` | `ScheduledTaskRegistrar.class` `e6a78f7515fd5f94118263d1abb5bc3987b54d293c1d4a1a5ee98c5e56694b17` |
+| P29 | parent | `spring-context-7.1.0-SNAPSHOT.jar` `3fba1194a07379a627fc4f4dba1ee200bcda743e259401fe68865c498f368cc7` | `13defb65bb0d1515d0bf918c73c12efa4941bfa9a1c530c9467f6b5ce439d21d` (same order) |
+| P30 | fix | `spring-context-7.0.8-SNAPSHOT.jar` `07112b245a4c436eff2ffaab1e569fc0fddbe3babe2cc2cdac171e444e48dc8f` | `BitsCronField.class` `1db3066a3bf680fe8e6330721deece0b5df1e0aafd4fe541a2e5625743126870` |
+| P30 | parent | `spring-context-7.0.8-SNAPSHOT.jar` `7e5b445af3373d774fe436c74f8225cf9c06f625bba874083e2422b2f63cdd88` | `daf70c5b5ae89b6dea34fefc6578dcd9bc1fd82f41c22e0b2e531b06e9439db9` (same order) |
+
+**Classpath sizes** (entries in `$P/artifacts/CASE-ROLE/M.runtimeClasspath.txt` / `M.testRuntimeClasspath.txt`, the same at both
+pins unless noted): spring-core 23 / 77 (P01, P02, P06, P08, P15), 23 / 78 (P03), 23 / 79 (P25); spring-beans 13 / 50 (P04);
+spring-context-support 24 / 79 (P07); spring-web 106 / 202 (P10, P12, P13, P14, P15); spring-jdbc 22 / 56 (P17); spring-r2dbc
+18 / 61 (P20); spring-context 34 / 110 (P21), 34 / 109 (P22), 33 / 97 (P26), 33 / 92 (P29, P30); spring-aop 14 / 64 (P22), 17 / 66
+(P25); spring-test 122 / 257 (P24), 108 / 219 at the fix and 108 / 218 at the parent (P27, whose landing adds Awaitility); spring-tx
+25 / 83 (P28).
 
 ## Commands for a rerun by hand
 
-Every build below is over a minute, so outside a job it is a probe at most; the caches are filled, so all run `--offline`.
+Every Gradle build below is over a minute, so outside a job it is a probe at most; the caches are filled, so all run
+`--offline`. The slice route takes seconds and needs no network.
 
 ```bash
 source ~/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/env.sh
@@ -404,6 +574,10 @@ $P/scripts/gradle_case.sh $W/P30-fix TAG "" --offline -I $P/scripts/resolve-all.
   :spring-context:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$TMPDIR/cp.txt
 # a released set for the 5.x cases (':'-joined jar paths)
 cat $P/releases/spring-jdbc-5.1.5.RELEASE/classpath.txt
+# the slice route for a 5.x case (CASE in P05, P09, P11, P16, P18, P19, P23; about 5 s each, inline in the probe cap)
+systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 choom -n 500 -- timeout 300 $P/scripts/slice_case.sh CASE
+# a 5.x pin's slice ahead of its base release, for a program of your own
+$J8/bin/java -cp $P/slices/P16-fix/P16-fix-slice.jar:$(cat $P/releases/spring-jdbc-5.1.4.RELEASE/classpath.txt) ...
 ```
 
 A worktree whose `clean` step ran has no `buildSrc/build`; the next offline run compiles `buildSrc` again (its dependencies are
@@ -412,24 +586,28 @@ resolved too but never built.
 
 ## What failed or was not done
 
-- **The seven 5.x cases are not built** ([why](#the-5x-builds-cannot-be-configured)): their build scripts need
+- **The seven 5.x cases have no Gradle build** ([why](#the-5x-builds-cannot-be-configured)): their build scripts need
   `propdeps-plugin` 0.0.8 / 0.0.9.RELEASE, `docbook-reference-plugin` 0.3.1, dokka `integration` 0.9.15,
   `spring-asciidoctor-extensions` 0.1.3.RELEASE or `gradle-enterprise-conventions` 0.0.2, which are in no public repository.
-  No substitute was put in. Released jars matching the pins' changed files are fetched instead (above).
+  No substitute was put in. Their changed files are built and their landed tests run on the
+  [slice route](#the-5x-cases-on-the-slice-route) against released jars instead; the rest of each module there is the release's.
 - Refused by servers (401, anonymous): `repo.spring.io/release`, `plugins-release`, `libs-release`. Nothing the 6.x and 7.x
   builds needed was only there.
 - Unchecked signatures: the Spring and Reactor release jars signed with `9A2C7A98E457C53D` and reactive-streams 1.0.3
   (`1364C5E2DF3E99C5`), keys not importable from keyserver.ubuntu.com or keys.openpgp.org; milestones and RCs publish no `.asc`.
-  Their sha1s match the repositories'. Liberica publishes a sha1 only. P11's wrapper jar matches no published checksum (unused).
-- Not run: the `later` revision of P29; the brief's own scenarios and predictions; the whole module test suites (only the landed
-  classes run); any test against the 5.x release jars.
-- The first P25 job selected no test (abstract class with nested tests); rerun queued. The first batch of 7.x dry-runs hit a
+  Their sha1s match the repositories'. Byte-buddy's key is revoked since. Liberica publishes a sha1 only. P11's wrapper jar matches
+  no published checksum (unused).
+- **P15's transplant hangs** after its one failure (`interruptWhileAwaitingData`), until the 3000 s timeout; which later test
+  blocked is not recorded (a rerun with a JUnit per-test timeout would say; not queued).
+- Not run: the `later` revision of P29 (fetched and resolved, never built); the brief's own scenarios and predictions; the whole
+  module test suites (only the landed classes run).
+- The first P25 job selected no test (abstract class with nested tests); its rerun passed. The first batch of 7.x dry-runs hit a
   time limit and was rerun from P07.
 
-Disk: `$P` 32 GB while the 7.x jobs are pending (worktrees 13 GB, `gradle-home` 15 GB, Gradle distributions and the Liberica
-JDK 3.4 GB, kept artifacts 304 MB, release sets and Maven repository 229 MB); the jobs' `clean` steps remove the build trees
-the resolution left in the 7.x worktrees. The mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git` is 392 MB (211 MB
-before). The Gradle zips were deleted after their digests were recorded (the `.sha256` files stay).
+Disk after the jobs' `clean` steps: `$P` 25 GB (worktrees 5.3 GB, `gradle-home` 15 GB, Gradle distributions and the Liberica JDK
+3.4 GB, kept artifacts 524 MB, release sets 196 MB and Maven repository 166 MB, slices 5.3 MB). The mirror
+`~/.cache/in-the-loop/git-mirrors/spring-framework.git` is 392 MB (211 MB before). The Gradle zips were deleted after their digests
+were recorded (the `.sha256` files stay).
 
 ## Setup Agent Notes
 
@@ -439,59 +617,72 @@ before). The Gradle zips were deleted after their digests were recorded (the `.s
   `~/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/CASE-ROLE` (ROLE `parent` = before pin, `fix` = after pin), from the
   shared mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git`. Every PR's merge commit equals the after pin, every landed
   diff names exactly the PR's files, the 21 signed pins verify ([Upstream revisions](#upstream-revisions), full ids in its table).
+  All worktrees are clean.
 - **Offline builds for 23 cases** (all but the 5.x seven). Every configuration of every project is resolved into
   `$P/gradle-home`; `source $P/scripts/env.sh` then `$P/scripts/gradle_case.sh WORKTREE TAG "" --offline TASKS` picks the right
   Gradle (verified distributions in `$P/tools/`) and JDK ([Build facts](#build-facts-by-era), [Commands](#commands-for-a-rerun-by-hand)).
   `$P/scripts/case_job.sh CASE STEP` reruns a case's job steps.
-- **Built jars, class digests and classpaths** per case and pin in `$P/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
-  `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`), filled by the jobs:
-  the 6.x cases now, the 7.x cases and P25 when their jobs finish ([Jobs](#jobs)).
+- **Built jars, class digests and classpaths** for all 23 cases at both pins in `$P/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
+  `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`), digests in full in
+  [Digests of the built artifacts](#digests-of-the-built-artifacts).
+- **Slices for the seven 5.x cases** at both pins: `$P/slices/CASE-ROLE/CASE-ROLE-slice.jar` (the pin's changed production
+  classes, JDK 8), to put ahead of the base release's `$P/releases/SET/classpath.txt`; `$P/scripts/slice_case.sh CASE` rebuilds
+  them and reruns the landed tests in seconds ([slice route](#the-5x-cases-on-the-slice-route), class digests there).
 - **Released artifacts for the 5.x cases and the versions the brief names** in `$P/releases/SET/` (`jars/`, `classpath.txt`):
   spring-web 5.0.0.RC4 and 5.0.0.RELEASE with protobuf-java-util 3.4.0, and protobuf-java-format 1.4 apart (P11); spring-test
   5.1.0.RC1 and RC2 (P09); spring-beans 5.1.6.RELEASE and 5.2.0.M1 (P05); spring-jdbc 5.1.4/5.1.5.RELEASE with H2, HSQLDB,
   Derby (P16) and 5.2.7.RELEASE/5.3.0-M1 (P18); spring-tx 5.2.0.RC2/5.2.0.RELEASE with their Reactor (P19); spring-orm
   5.1.4/5.1.5.RELEASE with hibernate-core 5.4.1.Final and HSQLDB (P23); spring-context 5.3.18 with AspectJ 1.9.7 (P26's reported
-  version); jasync-r2dbc-mysql 2.1.19 and 2.1.20 (P20) ([Released artifacts](#released-artifacts), digests there).
+  version); jasync-r2dbc-mysql 2.1.19 and 2.1.20 (P20); and each 5.x pin's test libraries as `tests-CASE`
+  ([Released artifacts](#released-artifacts), digests in `$P/logs/release-verify.txt`).
 
 ### What was verified on a JVM
 
-- 6.x cases, by their jobs: each landed test class passes at the fix, and its parent version (where it exists) passes at the
-  parent; the fix's test files on the parent **fail** for P20, P21, P22, P26, P27, P28 and **do not compile** for P24 (they use the
-  new `contextName` attribute). Every failing test is named in [Job results](#job-results).
-- P25 and the fifteen 7.x cases: **pending**, jobs queued ([Jobs](#jobs)); this section is updated when they finish.
-- 5.x cases: no build, no test run; only the source comparison with releases.
+- **All 30 cases' landed regressions pass at the fix and fail at the parent.**
+  - 23 Gradle cases, by their jobs (results commit `933de3d18d34`): each landed test class passes at the fix pin, and its parent
+    version (where one exists) passes at the parent. The fix's test files on a copy of the parent **fail** for P01, P02, P03, P06,
+    P07, P08, P10, P12, P13, P14, P17, P20, P21, P22, P25, P26, P27, P28, P30. They **do not compile** for P04, P24 and P29, which
+    use the API the landing adds. They **fail and then hang** for P15. Every failing test is named in [Job results](#job-results).
+  - The seven 5.x cases, on the slice route: each landed test class passes on the fix slice, and the parent's own version passes
+    on the parent slice (P18's and P23's classes are new). The fix's tests **fail** on the parent slice (P05 2, P09 2, P11 1, P16 1,
+    P18 3, P19 1, P23 4 tests) and, identically, on the stock base release. Every failing test is named in
+    [the section](#the-5x-cases-on-the-slice-route).
 - No scenario or prediction of the brief was run anywhere.
 
 ### What to know before starting
 
-- **P05, P09, P11, P16, P18, P19, P23 (Spring 5.x) have no historical build** ([why](#the-5x-builds-cannot-be-configured)). Released
-  files equal to the pins: P09 parent = spring-test 5.1.0.RC1, fix = 5.1.0.RC2; P11 parent = spring-web 5.0.0.RC4 (the version the
-  brief names), fix = 5.0.0.RELEASE; P05, P16, P18, P23 parents = 5.1.6, 5.1.4, 5.2.7 and 5.1.4.RELEASE; P19 parent = spring-tx
-  5.2.0.RC2 for both changed files. No release equals the fix pins of P05 (5.2.0.M1 differs in one `static` modifier and
-  comments), P16 (5.1.5.RELEASE: comments and indentation only), P18 (5.3.0-M1 drops `@Deprecated` and rewords a debug log),
-  P19's `TransactionalOperatorImpl` (5.2.0.RELEASE passes an extra `(res, err) -> Mono.empty()` to `usingWhen`) and P23
-  (5.1.5.RELEASE: copyright year and a blank line). The rest of each module moved between release and pin. Whether to use a
-  release, a source slice or neither is yours. In 5.2 there is no `spring-r2dbc`, which matters for P19's database claim.
+- **P05, P09, P11, P16, P18, P19, P23 (Spring 5.x) have no historical build** ([why](#the-5x-builds-cannot-be-configured)). What
+  exists is a slice per pin: that pin's changed classes ahead of the base release whose copy of those files equals the parent pin's
+  (P05 spring-beans 5.1.6.RELEASE, P09 spring-test 5.1.0.RC1, P11 spring-web 5.0.0.RC4, P16 spring-jdbc 5.1.4.RELEASE, P18
+  spring-jdbc 5.2.7.RELEASE, P19 spring-tx 5.2.0.RC2, P23 spring-orm 5.1.4.RELEASE). Every other class there is the release's, not
+  the pin's. Released files also equal some fix pins (P09 fix = spring-test 5.1.0.RC2, P11 fix = spring-web 5.0.0.RELEASE).
+  No release equals the fix pins of P05 (5.2.0.M1 differs in one `static` modifier and comments), P16 (5.1.5.RELEASE: comments
+  and indentation only), P18 (5.3.0-M1 drops `@Deprecated` and rewords a debug log), P19's `TransactionalOperatorImpl`
+  (5.2.0.RELEASE passes an extra `(res, err) -> Mono.empty()` to `usingWhen`) and P23 (5.1.5.RELEASE: copyright year and a blank
+  line). In 5.2 there is no `spring-r2dbc`, which matters for P19's database claim.
 - **P11's provider choice**: keep `$P/releases/protobuf-java-format-1.4` off the classpath for the Google JsonFormat path; the
-  public constructor prefers it when present.
+  public constructor prefers it when present. The slice and the upstream test run have it on the classpath, because the converter
+  class refers to it and the test chooses each provider through the package-visible constructor.
 - **Snapshots.** The 7.1.0-SNAPSHOT builds take Reactor 3.9.0-SNAPSHOT, reactor-netty 1.4.0-SNAPSHOT and Micrometer 1.18.0-SNAPSHOT
   as cached on 2026-11-26 (same bytes as on 2026-11-25); P20 takes reactor-core 3.5.3-SNAPSHOT `20230214.110429` and Micrometer
   1.10.4-SNAPSHOT `20230213.230149`, ten days after its pins, the only builds still served. Digests in
   [Snapshot dependencies](#snapshot-dependencies). Build `--offline` to keep them.
 - **P21, P22, P24, P25, P26, P28 need the Liberica JDK** (`$JL17`): their builds demand toolchain vendor BELLSOFT; `gradle_case.sh`
-  passes it. Default `java` on `PATH` is 25.0.5. The 7.x builds compile on toolchain 25 with `release` 17; the 6.x builds on 17.
+  passes it. Default `java` on `PATH` is 25.0.5. The 7.x builds compile on toolchain 25 with `release` 17; the 6.x builds on 17;
+  the 5.x slices on JDK 8 (`$J8`).
+- **P15 on the parent can block**: an interrupted read waits for an upstream signal. Give any run against the P15 parent a timeout.
 - **Two-commit landings**: P13, P15, P26, P30 (intermediate commits `8f4fcb6cbc3b85ba0cdaae7fc2b1c552f7ef9715`,
   `66125a569e4d673bd3e23f2f2c9490ec625cf640`, `86d52a677a41caa70477725d764c3deb2736bcb0`, `cddc671a8c6eea118b1f7ef05f2b6d754e852f09`
   are in the mirror); the brief compares the outer pins. P11's after pin is a merge.
 - **P25's landed test** `ProxyExceptionHandlingTests` is abstract; select its nested classes with `--tests 'org.springframework.aop.framework.ProxyExceptionHandlingTests*'`.
 - **Databases are open**: the spring-jdbc test runtime classpaths have H2, HSQLDB and Derby (check
-  `$P/artifacts/CASE-ROLE/M.testRuntimeClasspath.txt`); nothing else (no PostgreSQL or MySQL server, no R2DBC database for P19)
-  was set up for this brief.
+  `$P/artifacts/CASE-ROLE/M.testRuntimeClasspath.txt`), the P16 sets H2 1.4.197, HSQLDB 2.4.1 and Derby 10.14.2.0, the P23 sets
+  HSQLDB 2.4.1; nothing else (no PostgreSQL or MySQL server, no R2DBC database for P19) was set up for this brief.
 - Pins shared with the O01–O20 brief: P27's parent `906c54faffc75721b98f9b9cf63d35edd81f7b4f` is O05's fix, P30's fix
   `6467fca05b874f3e44fbd9451a252f035abbeafc` is O10's parent; P02's parent's parent is P06's fix. Their worktrees here are separate.
 
 ### What is left for the domain work on purpose
 
-All claims, scenarios, fixtures and examples; choosing a stand-in (or none) for the seven 5.x cases; choosing databases, drivers
-and providers beyond what is fetched (P16, P17, P19, P20, P23); any run of the brief's own scenarios or predictions; the P29
-`later` revision; and example ids and folders.
+All claims, scenarios, fixtures and examples; whether a 5.x case's slice, a release, or neither stands in for its pins in a
+claim; choosing databases, drivers and providers beyond what is fetched (P16, P17, P19, P20, P23); any run of the brief's own
+scenarios or predictions; the P29 `later` revision; and example ids and folders.
