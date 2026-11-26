@@ -1,0 +1,369 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-141555-setup-build-spring-framework-27735-q12-a",
+  "title": "Setup: build Spring Framework #27735 (Q12) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 12m53s, peak 2.4 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-141555-setup-build-spring-framework-27735-q12-a.json",
+    "sha256": "5949fe3a75499a72433ee6b18499b9cfa8439d2cccafc63962b937fb3ea43a8b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-141555-setup-build-spring-framework-27735-q12-a",
+      "title": "Setup: build Spring Framework #27735 (Q12) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, case Q12 (spring-projects/spring-framework#27735: Preserve result cardinality and release streams when returning Optional). In the worktrees $P/worktrees/Q12-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-q01-q30), offline (dependencies resolved online beforehand), it builds the jars of spring-tx with the Gradle each checkout's wrapper names, runs the landed test classes (DataAccessUtilsTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-tx in $P/artifacts/Q12-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned Q12",
+      "submitted": {
+        "at": "2026-11-26T14:15:55+00:00",
+        "session": "56626182-a69a-4945-91c7-07e11b9bb46a",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "Q12 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q12 fix",
+          "cwd": "."
+        },
+        {
+          "name": "Q12 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q12 parent",
+          "cwd": "."
+        },
+        {
+          "name": "Q12 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q12 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "Q12 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q12 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "66e7bf7f706c31472c43a9e68f0cb864ef57c1a9",
+  "startedAt": "2026-11-26T14:22:26+00:00",
+  "finishedAt": "2026-11-26T14:35:42+00:00",
+  "wallSeconds": 796.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1554067,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 2627821568,
+    "wallSeconds": 773.4,
+    "cpuSeconds": 671.5,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 0.43
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Q12 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q12 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 346.568,
+      "cpuSeconds": 269.52,
+      "cpuThrottledSeconds": 16.243,
+      "peakMemoryBytes": 2627821568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-q12-fix-offline-build-and-land.log",
+        "lines": 31,
+        "bytes": 3209,
+        "sha256": "8ba8feb86eff31b8ccd84a2d186005f3c77a8bcd7d4504ac45678058145d257b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q12-fix gradle=8.2 launcher=17.0.21.0+9-tem gradle-exit=0 seconds=177 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-tx:jar :spring-tx:test --tests org.springframework.",
+        "junit tests=10 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :spring-tx:processResources",
+        "> Task :spring-tx:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "> Task :spring-beans:processResources",
+        "class org.springframework.dao.support.DataAccessUtilsTests junit tests=10 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q12-fix/spring-tx.runtimeClasspath.txt 28 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q12-fix/spring-tx.testRuntimeClasspath.txt 71 entries",
+        "c79bbd37645c75a58f765793f02c5bd303af227c3efc846dad0f8f73695e78e0  jars/spring-tx-6.1.0-SNAPSHOT.jar",
+        "dd979a41bf3f211fbf2a42afe43365cd83c6fdbc004a2ccdf3801d9b2e28bfdd  tree/spring-aop/build/libs/spring-aop-6.1.0-SNAPSHOT.jar",
+        "b66b912eafea631da8b108730f92bc6aaa0355f8b6f7bb071bd8033e45c50a71  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT.jar",
+        "237e3776a9eb56b0f2468b570157480325c48b14faff84b7ec0807642dbad658  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "4ada3db3cd29c959a0641e0824e19a7596f387ef4f9a16e6ee568a33a4fb324b  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT.jar",
+        "49fa26d9f6dd28282ef5bf7224f6656f3726d10e57140ad3081637cced228029  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "5d4d495c5cb9f9d126c1ab19bb474720d38792a23f99efd66913f764255b3e7f  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT.jar",
+        "07b9d0b4a7ab15b8c450954a2388a21275b251e678c98c06f082148502ead66b  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "151369e5787c53e7fdb18b2d76040485e85e9eb57b42bfba1e2e871618f87d3f  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "b89c3132074402d0190b031a2336a1c887f9de95b7142c66aba40df140c11724  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "023e41fc9d0b98c861b4b2ddab696eb2bc05c2d12bd0a507d8503813df651f4b  tree/spring-core-test/build/libs/spring-core-test-6.1.0-SNAPSHOT.jar",
+        "717e57e51eb6fe483ce9e9da109b59d925516c8ac0d46f17813b2c0783a41154  tree/spring-expression/build/libs/spring-expression-6.1.0-SNAPSHOT.jar",
+        "e1fd1ff45a180d90c2ada1cedcfc6b5bf7a7ef8c9448ea1f9004f6aac2342d48  tree/spring-jcl/build/libs/spring-jcl-6.1.0-SNAPSHOT.jar",
+        "c79bbd37645c75a58f765793f02c5bd303af227c3efc846dad0f8f73695e78e0  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT.jar",
+        "05df999583a80ea4005792478baf3b0a32ed7d6f139ff864e2a12046854e2c85  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "7818bf6f12e35beda323174b18a1b3322acafcca9911364d46469dae98554bf5  spring-tx-6.1.0-SNAPSHOT.jar!/org/springframework/dao/support/DataAccessUtils.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Q12 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q12 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 323.615,
+      "cpuSeconds": 228.819,
+      "cpuThrottledSeconds": 8.941,
+      "peakMemoryBytes": 2220941312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-q12-parent-offline-build-and-t.log",
+        "lines": 31,
+        "bytes": 3218,
+        "sha256": "8b2bfed118f0907077dd743aae5878ec6bfb66d6fca3e4216e407caba3c63735",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q12-parent gradle=8.2 launcher=17.0.21.0+9-tem gradle-exit=0 seconds=150 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-tx:jar :spring-tx:test --tests org.springframewo",
+        "junit tests=10 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :spring-tx:processResources",
+        "> Task :spring-tx:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "> Task :spring-beans:processResources",
+        "class org.springframework.dao.support.DataAccessUtilsTests junit tests=10 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q12-parent/spring-tx.runtimeClasspath.txt 28 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q12-parent/spring-tx.testRuntimeClasspath.txt 71 entries",
+        "dc722b7c82a3af1dcd6086e8943bc9f777398b95835f16ef8589dd96f2325ba8  jars/spring-tx-6.1.0-SNAPSHOT.jar",
+        "3bd10eb77270130b810469929d0080e34e0d1eda554646c1971046c6f00b375c  tree/spring-aop/build/libs/spring-aop-6.1.0-SNAPSHOT.jar",
+        "ef972c9f2354bd1ef3343bc08711e647a3ad4551f9c266d48c161423c1699d3e  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT.jar",
+        "b8173d359b9b81eb7b4147a197e21e3f784354a7ba916bbb508cdf58f5259b36  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "e91b4a2f047d9541275d2bd7839af09c6d4e3e803171fff622d68ba91160c823  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT.jar",
+        "f14db4dae02213408d04fc9410df0f24ef743b16099fa5d728cb935f8af82499  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "ba5d468a87a752e359fe858d0e24aab59e832602e2e013612a9293ca9a0605e6  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT.jar",
+        "ba5b9d4b5139511e91506c8d9e2808e627fd183c59036ce212d31955493efc4d  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "a02aaa7e9e7485c984e3f6a16270de95744787694497032335a64752efa0fd12  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "f2ae6fd9ee3fc2d8c048963821a3769d106d84d9efadb310f549cf492e14ec9b  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "f2d7ef784becafa469b335d968b1ef3f0729a967c4359e27364f877354c224f8  tree/spring-core-test/build/libs/spring-core-test-6.1.0-SNAPSHOT.jar",
+        "0af8c5993b511ace3aff0f0f5c9b02221d9d2bee26531b9b07b338eae870cb7d  tree/spring-expression/build/libs/spring-expression-6.1.0-SNAPSHOT.jar",
+        "a34a983945e3bb56209788b0ca435d53872b422ff8f97367d794353734cf9598  tree/spring-jcl/build/libs/spring-jcl-6.1.0-SNAPSHOT.jar",
+        "dc722b7c82a3af1dcd6086e8943bc9f777398b95835f16ef8589dd96f2325ba8  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT.jar",
+        "b8ee80a8bab07c3fedc4c67c885f48d78033f66d8874fee34b191c3e44df4019  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "b4bd79c4307cdf75751f2bb97623789bc03c8461297e59b4fde03745e7ee1d6b  spring-tx-6.1.0-SNAPSHOT.jar!/org/springframework/dao/support/DataAccessUtils.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Q12 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q12 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 102.639,
+      "cpuSeconds": 172.684,
+      "cpuThrottledSeconds": 6.913,
+      "peakMemoryBytes": 1992364032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-q12-transplant-the-fix-s-tests.log",
+        "lines": 20,
+        "bytes": 1996,
+        "sha256": "31437876639a493086c8a8dac8544e6cfb964295a6bcfa25e89ef1ca57936d3f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-tx/src/test/java/org/springframework/dao/support/DataAccessUtilsTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q12-parent-landed gradle=8.2 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=102 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-tx:test --tests org.springframework.dao.suppo",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:jar",
+        "> Configure project :framework-docs",
+        "> Task :spring-tx:processResources",
+        "> Task :spring-tx:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "class org.springframework.dao.support.DataAccessUtilsTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q12-parent-landed/spring-tx/src/test/java/org/springframework/dao/support/DataAccessUtilsTests.java:52: error: method singleResult in class DataAccessUtils cannot be applied to given types;",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q12-parent-landed/spring-tx/src/test/java/org/springframework/dao/support/DataAccessUtilsTests.java:53: error: method singleResult in class DataAccessUtils cannot be applied to given types;",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q12-parent-landed/spring-tx/src/test/java/org/springframework/dao/support/DataAccessUtilsTests.java:54: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q12-parent-landed/spring-tx/src/test/java/org/springframework/dao/support/DataAccessUtilsTests.java:55: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q12-parent-landed/spring-tx/src/test/java/org/springframework/dao/support/DataAccessUtilsTests.java:56: error: cannot find symbol",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Q12 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q12 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.476,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13062144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-q12-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "a40dce24d3767f378ee12ecaa57ed6ab68fe7d10c158347f55b173c7c5497ab3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned Q12"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T14:36:11+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T143542Z-206116f558d952c1"
+    }
+  }
+}
