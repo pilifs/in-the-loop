@@ -1,0 +1,325 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-173550-setup-run-eclipse-collections-1786-s-lan",
+  "title": "Setup: run eclipse-collections #1786's landed map tests on the parent revision",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 4m12s, peak 305.6 MiB (estimated 15m00s, 4.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-173550-setup-run-eclipse-collections-1786-s-lan.json",
+    "sha256": "52133d90ade137faf9dec508bf73dbb38a72bc5227fb520dff6118e9783ea1a1",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-173550-setup-run-eclipse-collections-1786-s-lan",
+      "title": "Setup: run eclipse-collections #1786's landed map tests on the parent revision",
+      "description": "Setup for case R01 of llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. eclipse-collections PR #1786 moves the value computation in UnifiedMap and UnifiedMapWithHashingStrategy updateValue/updateValueWith before the key is published, and adds assertions to five test files (MutableMapIterableTestCase in unit-tests and unit-tests-java8, UnmodifiableBiMapTest, UnmodifiableMutableMapTest, UnmodifiableTreeMapTest). In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-r01-r50 (Maven local repository resolved there already, JDK 17, offline, settings maven-settings-ec.xml which mirrors the 503-ing repo.eclipse.org plugin repository to Maven Central), at the parent pin 3b3c55a47406ca11ece6c077b96c9564f73dfc53: runs the parent's own map and bimap tests (all *Test classes under impl/map, impl/bimap, test/map, test/bimap; about 120,000 tests, about 2 minutes), keeps the parent jars and class digests, then runs the same tests on a copy of the parent with the fix's five test files, where the new throwing-callback assertions are expected to fail. The fix side (4af700cda608e6817d7d17ab340b91442278cf14) ran inline: 120,694 tests, 0 failures. Each run recompiles the modules, so the runs are a job.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: the parent's own tests pass; the landed step prints LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED and names the failing tests; the copy and build output are removed",
+      "submitted": {
+        "at": "2026-11-26T17:35:50+00:00",
+        "session": "955141f5-9ccb-41fa-9e12-8a9dfab2ca8b",
+        "by": "setup agent (Claude Opus 5.5), fork C"
+      },
+      "requires": [
+        "java",
+        "mvn",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "4G",
+        "duration": "15m"
+      },
+      "steps": [
+        {
+          "name": "R01 parent: its own map and bimap tests in unit-tests and unit-tests-java8 (offline, JDK 17)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh own",
+          "cwd": "."
+        },
+        {
+          "name": "R01 parent: jars, classpaths and class digests",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh keep",
+          "cwd": "."
+        },
+        {
+          "name": "R01 parent with the fix's five changed test files: the same tests, expected to fail",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh landed",
+          "cwd": "."
+        },
+        {
+          "name": "remove the R01 build copy and build output",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh clean",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "1029f690884bb75b686534e34e2054ea4e355ef2",
+  "startedAt": "2026-11-26T17:54:24+00:00",
+  "finishedAt": "2026-11-26T17:58:46+00:00",
+  "wallSeconds": 262.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3010792,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 320425984,
+    "wallSeconds": 252.6,
+    "cpuSeconds": 2.3,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.28
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "R01 parent: its own map and bimap tests in unit-tests and unit-tests-java8 (offline, JDK 17)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh own",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 100.828,
+      "cpuSeconds": 0.275,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 9089024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-r01-parent-its-own-map-and-bim.log",
+        "lines": 4,
+        "bytes": 571,
+        "sha256": "dd2139830796df7a8f4c45fada4ca9fa1fbe3ba65b58a711dba6ccb88ada266d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=100 jdk=17.0.21.0+9-tem dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R01-eclipse-collections-parent args=-o -pl unit-tests,unit-tests-java8 -am -Dsurefire.failIfNoSpecifiedTests=false -Dmaven.test.failure.ignore=true -Dtest=org/eclipse/collections/impl/map/",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "17:56:13:821 [INFO] BUILD SUCCESS",
+        "junit tests=120694 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "R01 parent: jars, classpaths and class digests",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh keep",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 49.123,
+      "cpuSeconds": 0.196,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 27983872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-r01-parent-jars-classpaths-and.log",
+        "lines": 8,
+        "bytes": 718,
+        "sha256": "a40ada76f6cde2a5ebc07d4a50172631fc8920a5d61c77046dc4d8f47491036c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R01-parent/runtime-classpath.txt 1 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R01-parent/test-classpath.txt 4 entries",
+        "== /home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R01-parent (25 digests)",
+        "ea5a1e16144970d59cee5b33a3b5fc5ab54277adc00f75cf72b09994799603b2  eclipse-collections-14.0.0-SNAPSHOT.jar",
+        "e4332bbb93cebe82163fa656e633dd8f5704ad933e369e2611da0f8e13b0eedf  org/eclipse/collections/impl/map/mutable/UnifiedMap$1.class",
+        "2aa393bba0163556cba7627eb7e103691150e3406d1aeec5ff9864de8432b0e1  org/eclipse/collections/impl/map/mutable/UnifiedMap$2.class",
+        "runtime-classpath entries: 1",
+        "test-classpath entries: 4"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "R01 parent with the fix's five changed test files: the same tests, expected to fail",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh landed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 101.64,
+      "cpuSeconds": 1.06,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 320425984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-r01-parent-with-the-fix-s-five.log",
+        "lines": 27,
+        "bytes": 2388,
+        "sha256": "727cb55d32c1fc5a08ec4bff78571cd23bc68a146cfc0a715d78758133c40438",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=100 jdk=17.0.21.0+9-tem dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R01-parent-landed args=-o -pl unit-tests,unit-tests-java8 -am -Dsurefire.failIfNoSpecifiedTests=false -Dmaven.test.failure.ignore=true -Dtest=org/eclipse/collections/impl/map/**/*Test,org/ecli",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "17:58:38:325 [ERROR] Failures: ",
+        "17:58:38:325 [ERROR]   SynchronizedMutableMapCustomLockTest>MutableMapIterableTestCase.updateValue:817 expected: <false> but was: <true>",
+        "17:58:38:325 [ERROR]   SynchronizedMutableMapCustomLockTest>MutableMapIterableTestCase.updateValueWith:863 expected: <false> but was: <true>",
+        "17:58:38:325 [ERROR]   SynchronizedMutableMapTest>MutableMapIterableTestCase.updateValue:817 expected: <false> but was: <true>",
+        "17:58:38:326 [ERROR]   SynchronizedMutableMapTest>MutableMapIterableTestCase.updateValueWith:863 expected: <false> but was: <true>",
+        "17:58:38:326 [ERROR]   UnifiedMapOverridesTest>MutableMapIterableTestCase.updateValue:817 expected: <false> but was: <true>",
+        "17:58:38:326 [ERROR]   UnifiedMapOverridesTest>MutableMapIterableTestCase.updateValueWith:863 expected: <false> but was: <true>",
+        "17:58:38:326 [ERROR]   UnifiedMapTest>MutableMapIterableTestCase.updateValue:817 expected: <false> but was: <true>",
+        "junit tests=120694 failures=15 errors=0 skipped=0",
+        "junit failed SynchronizedMutableMapCustomLockTest#updateValue",
+        "junit failed SynchronizedMutableMapCustomLockTest#updateValueWith",
+        "junit failed SynchronizedMutableMapTest#updateValue",
+        "junit failed SynchronizedMutableMapTest#updateValueWith",
+        "junit failed UnifiedMapOverridesTest#updateValue",
+        "junit failed UnifiedMapOverridesTest#updateValueWith",
+        "junit failed UnifiedMapTest#updateValue",
+        "junit failed UnifiedMapTest#updateValueWith",
+        "junit failed UnifiedMapWithHashingStrategyOverridesTest#updateValue",
+        "junit failed UnifiedMapWithHashingStrategyOverridesTest#updateValueWith",
+        "junit failed UnifiedMapWithHashingStrategyTest#updateValue",
+        "junit failed UnifiedMapWithHashingStrategyTest#updateValueWith",
+        "junit failed SynchronizedMutableMapTest#MutableMapIterable_updateValue",
+        "junit failed UnifiedMapTest#MutableMapIterable_updateValue",
+        "junit failed UnifiedMapWithHashingStrategyTest#MutableMapIterable_updateValue",
+        "LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "remove the R01 build copy and build output",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/R01_job.sh clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 1.002,
+      "cpuSeconds": 0.773,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6742016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-remove-the-r01-build-copy-and.log",
+        "lines": 1,
+        "bytes": 8,
+        "sha256": "37c3dee866bc87fc3d52b6b053805dfbe5df3d394fdad9ec535f162a4e695941",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T17:59:13+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T175846Z-015426e566303f65"
+    }
+  }
+}
