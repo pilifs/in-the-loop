@@ -1,0 +1,411 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-025059-setup-build-spring-framework-34723-p24-a",
+  "title": "Setup: build Spring Framework #34723 (P24) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 9m30s, peak 5.4 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (P24 fix: offline build and landed tests) was held back 3m44s by its 4-CPU quota in 5m11s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (P24 parent: offline build and the parent's tests) was held back 3m18s by its 4-CPU quota in 2m27s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (P24 transplant: the fix's tests on the parent) was held back 2m48s by its 4-CPU quota in 1m49s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-025059-setup-build-spring-framework-34723-p24-a.json",
+    "sha256": "08fc0b08e3db253cc23a2930b691aafaa39cb4ddfa9fb3ea2ee814f910d5b1d7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-025059-setup-build-spring-framework-34723-p24-a",
+      "title": "Setup: build Spring Framework #34723 (P24) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P24 (spring-projects/spring-framework#34723: A test bean override can target one level of a context hierarchy). In the worktrees $P/worktrees/P24-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-test with the Gradle each checkout's wrapper names, runs the landed test classes (BeanOverrideContextCustomizerFactoryTests BeanOverrideContextCustomizerTests BeanOverrideHandlerTests BeanOverrideTestExecutionListenerTests TestBeanByNameInChildContextHierarchyTests TestBeanByNameInParentAndChildContextHierarchyTests TestBeanByNameInParentContextHierarchyTests TestBeanByTypeInChildContextHierarchyTests TestBeanByTypeInParentAndChildContextHierarchyTests TestBeanByTypeInParentContextHierarchyTests TestBeanOverrideHandlerTests MockitoBeanAndContextHierarchyParentIntegrationTests MockitoBeanByNameInChildContextHierarchyTests MockitoBeanByNameInParentAndChildContextHierarchyTests MockitoBeanByNameInParentContextHierarchyTests MockitoBeanByTypeInChildContextHierarchyTests MockitoBeanByTypeInParentAndChildContextHierarchyTests MockitoBeanByTypeInParentContextHierarchyTests MockitoSpyBeanAndContextHierarchyChildIntegrationTests MockitoSpyBeanByNameInChildContextHierarchyTests MockitoSpyBeanByNameInParentAndChildContextHierarchyTests MockitoSpyBeanByNameInParentAndChildContextHierarchyV2Tests MockitoSpyBeanByNameInParentContextHierarchyTests MockitoSpyBeanByTypeInChildContextHierarchyTests MockitoSpyBeanByTypeInParentAndChildContextHierarchyTests MockitoSpyBeanByTypeInParentContextHierarchyTests MockitoSpyBeansByTypeInParentAndChildContextHierarchyTests ReusedParentConfigV1Tests ReusedParentConfigV2Tests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-test in $P/artifacts/P24-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P24",
+      "submitted": {
+        "at": "2026-11-26T02:50:59+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P24 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P24 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P24 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P24 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P24 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P24 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P24 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P24 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "8db656c304c797d15e9eaedfe2f2d036bec4970d",
+  "startedAt": "2026-11-26T03:09:39+00:00",
+  "finishedAt": "2026-11-26T03:19:19+00:00",
+  "wallSeconds": 580.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2091580,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 5843001344,
+    "wallSeconds": 570.3,
+    "cpuSeconds": 1502.8,
+    "memoryOfEstimate": 0.91,
+    "durationOfEstimate": 0.32
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P24 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P24 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 311.102,
+      "cpuSeconds": 626.018,
+      "cpuThrottledSeconds": 224.416,
+      "peakMemoryBytes": 5843001344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p24-fix-offline-build-and-land.log",
+        "lines": 87,
+        "bytes": 15662,
+        "sha256": "addadeb898b844244057f6c21d10656da4fc5c2175bccc6473b6f8752b8e847c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2fb088b722a88b67fd858f659a48bc7eb66b6ee73065c47adae5f9e6d35de0bc  tree/spring-aop/build/libs/spring-aop-6.2.6-SNAPSHOT.jar",
+        "dd2234b9acd6836bb1e8f85195aee5abcefe32cc14b4589981a942277082bacb  tree/spring-beans/build/libs/spring-beans-6.2.6-SNAPSHOT.jar",
+        "44ae914bca7653205220bf03db3d57dcdb3a0641d9c62c2831399406e7f7afd4  tree/spring-beans/build/libs/spring-beans-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "c6bee51f6cbdc6abd3a9f55370c224efb7096d37ca32e2b7f5ff5bd283edb0ab  tree/spring-context/build/libs/spring-context-6.2.6-SNAPSHOT.jar",
+        "19fcce19939a582f9a19ded4f28a3cd5b75237122fe6ee18941c48630814cb95  tree/spring-context/build/libs/spring-context-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "fa3d5215c9166643b7f941f42311dcaf8a07be14645a8ae7ddda4411f928eb1b  tree/spring-context-support/build/libs/spring-context-support-6.2.6-SNAPSHOT.jar",
+        "218a5c74c60d20e34dab7c316a71f4c4cec714f6af1ca1c7f97227e9660fedb1  tree/spring-core/build/libs/spring-core-6.2.6-SNAPSHOT.jar",
+        "dea0b2f54aacf9d4dadfd45d7223ca6d3e92a39f86e368bf3ca99903738e7ba2  tree/spring-core/build/libs/spring-core-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "8936df48271c5daf3e815a26e48aaa5c68250969705bcc5305b44780a9d37d2f  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "8b813aea528cb76717578c5feadc0dc31dfec75888f3960f5a9097963c3986b1  tree/spring-core/build/libs/spring-objenesis-repack-3.4.jar",
+        "43d025abfbd76d0948b94a1f6379c33b5e521f32c5a227886bbfc20b57526dc4  tree/spring-core-test/build/libs/spring-core-test-6.2.6-SNAPSHOT.jar",
+        "802a80177752eaa5a11032a9895efe8b8910284ef18599d12a253be89633c6a1  tree/spring-expression/build/libs/spring-expression-6.2.6-SNAPSHOT.jar",
+        "6986ec136526a7f2f850f0b6554494bf973d938a1a78a4824af999bc61b5b52c  tree/spring-jcl/build/libs/spring-jcl-6.2.6-SNAPSHOT.jar",
+        "aae91eb288f7aa53ed11f2bbb79516eb4aa209ce13268645d98c1110c09b082c  tree/spring-jdbc/build/libs/spring-jdbc-6.2.6-SNAPSHOT.jar",
+        "edecf95b7ad6c64defa149cd8d562b9eab902c92c567cc5970b6118115e120a5  tree/spring-orm/build/libs/spring-orm-6.2.6-SNAPSHOT.jar",
+        "d54776217be1c033fb566c7f8e1adfa40985907339ff082f5c038c58a618b85d  tree/spring-oxm/build/libs/spring-oxm-6.2.6-SNAPSHOT.jar",
+        "820c60ad1a31fc1d0a09da4715f09ea1c276df2b43cbee0b37da9e0a804d79c8  tree/spring-test/build/libs/spring-test-6.2.6-SNAPSHOT.jar",
+        "96048dc485a55d64a8b0f0bd2b8488b72440003e9b14bb15d270f939cdbd52e0  tree/spring-test/build/libs/spring-test-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "afc1eb8aaf2cf30abba0fdce8d5b0153cb250f958818beacc3614be437376987  tree/spring-tx/build/libs/spring-tx-6.2.6-SNAPSHOT.jar",
+        "0085a4e358c6ed8c3a70a6b3b02c6256f851b653eb0048e2e5b459ee8b238767  tree/spring-tx/build/libs/spring-tx-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "2616aaad23365e7cabb1af21ca7abaad1c925315a96820db49ca9b98ac77cbcd  tree/spring-web/build/libs/spring-web-6.2.6-SNAPSHOT.jar",
+        "3e0ff5d580b45ad331d713e4f0e2d43c5baf7e2c666531b8a449fffa4c798225  tree/spring-web/build/libs/spring-web-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "f7fb9b8ab8f8b23fce01ac46c81d44bb5d3a4118aea7369db5915277bba0b26d  tree/spring-webflux/build/libs/spring-webflux-6.2.6-SNAPSHOT.jar",
+        "f0bcdd070e1b181078679888827e757713d9a6ad4d09ec77bffe1cd45b8ed61d  tree/spring-webmvc/build/libs/spring-webmvc-6.2.6-SNAPSHOT.jar",
+        "d9ad08bb8866ce276d322d762319f7b1904b48d4c2783576819bf7b3f90a5bbc  tree/spring-websocket/build/libs/spring-websocket-6.2.6-SNAPSHOT.jar",
+        "d94ccbc28e06f359c78bf793f2474c888833fc7262ecef9d93853c9703862147  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/BeanOverrideContextCustomizerFactory.class",
+        "bba8bcd85c5e24f1c8ac201ab4ae0a393c6237ea49e216ef99bf84124c360d06  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/BeanOverrideHandler.class",
+        "41bb048c0e4c17b9402e4b04a31016cbc2cfa2ea622772376cf5ba3b2ffd06ca  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/BeanOverrideRegistry.class",
+        "924e91615a58e781ce7d961e451db84a48f3faa5bfe4fdaf7ae70aa7975a921c  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/BeanOverrideTestExecutionListener.class",
+        "500bcbf891ef99c7c6cdccba15fa315457245e398e493d2948915103e764dff2  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/convention/TestBean.class",
+        "cd025384929571e72d664de7c89512fb5d4a3c2b7320360feb775dc36c428806  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/convention/TestBeanOverrideHandler.class",
+        "7a4c90fd37365290c7fc27d49b9f2ead3aa6930b838dbc1029f8b8b894c20e4d  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/convention/TestBeanOverrideProcessor.class",
+        "cef6bd056d2a21391c1bad7adc1d934af4c4306af3108b72141f10e26d88017b  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/AbstractMockitoBeanOverrideHandler.class",
+        "204a6e1c39095ff715c2b8fe00af965d8a78a86ba51c9148d3a57a8a60de6a6f  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoBean.class",
+        "067b639053256118566837daf6e7cb3bebc6cfbd5b31f2638d11e4f4e26aba3b  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoBeanOverrideHandler.class",
+        "5639be826723881c30bc7d7ff4c8ed4b144cad7b8c7995e590b0b59ed377487f  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoSpyBean.class",
+        "b74091f5fb9b2d24ee1a77c82982ea3e2748a370eea5dde2598893d84ade0f83  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoSpyBeanOverrideHandler$SpringAopBypassingVerificationStartedListener.class",
+        "f9c314bc07a88d7b0708b93ffa9f3829c7422b7c80fd0ccafaec344cff92e268  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoSpyBeanOverrideHandler.class",
+        "ea2b05eefdd24a0629f770372e260b6c0ed5113471db28ca1807eb6c99a9f07e  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/ContextConfiguration.class",
+        "55b8fdd76a90c479bd60f2f06fa86937d66621d65f452b16a45b3070873b40e0  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/ContextHierarchy.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P24 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P24 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 147.35,
+      "cpuSeconds": 492.224,
+      "cpuThrottledSeconds": 198.429,
+      "peakMemoryBytes": 4674949120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p24-parent-offline-build-and-t.log",
+        "lines": 87,
+        "bytes": 11726,
+        "sha256": "2777b9aa81c15b4f252af3f57f1265f777cb31e8c1fccf31cd0914027afe3b57",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "89e425da991f8fe632a698424f06ca243cefc3504617afe5487e15d85534585c  tree/spring-aop/build/libs/spring-aop-6.2.6-SNAPSHOT.jar",
+        "8ad763fe68d33d5ad7ac6f4f4f87cd90414f1a9ef2926b737b696fc802f842f0  tree/spring-beans/build/libs/spring-beans-6.2.6-SNAPSHOT.jar",
+        "3b5ca7557a304489b94c6e5c57a8ecac5c8b1c1351b48c6574d8491ac127afb5  tree/spring-beans/build/libs/spring-beans-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "3be0ced21726fe239fadde9b3bdd67ec160fb1ddddf66d406f5bdc61ffa9cd75  tree/spring-context/build/libs/spring-context-6.2.6-SNAPSHOT.jar",
+        "50a37d59982de060161b7725e7f3690070271f93e0587a75a5219cabb691d917  tree/spring-context/build/libs/spring-context-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "eacd9653299585ab343bdfb2ad17714cb0a4882d51068e6baed260c620749337  tree/spring-context-support/build/libs/spring-context-support-6.2.6-SNAPSHOT.jar",
+        "8503df7c9008a201ef03a61da183409cf6667581d50af7485be3ff0a6db9e778  tree/spring-core/build/libs/spring-core-6.2.6-SNAPSHOT.jar",
+        "aa0c2173cc4d92b625dde3d26011f0951fc0b6168de37f656b4ea9987068bef1  tree/spring-core/build/libs/spring-core-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "0dde445ed3f625262d19f87d7ec7500e0eed50e3cdcd48ceb5984ef8c34cd638  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "43600f026e0bc60aadd082c493bc3b7d800308a5d79413472939541e285bacd9  tree/spring-core/build/libs/spring-objenesis-repack-3.4.jar",
+        "8d6ee4a1c3fa2525b399c5a084235b99312463ec50aea8b58e384a5e4cf6c2fe  tree/spring-core-test/build/libs/spring-core-test-6.2.6-SNAPSHOT.jar",
+        "f01178073fcb9fad0fb213c20572f7f63a2db6314a22fb9dc2617be83922b050  tree/spring-expression/build/libs/spring-expression-6.2.6-SNAPSHOT.jar",
+        "bf8e062772681bad6427979aec8eb1b72da48efe8d470f5a978e663fa49ba5fe  tree/spring-jcl/build/libs/spring-jcl-6.2.6-SNAPSHOT.jar",
+        "1a9bf1c563c2f933f77218b6a5e33689c606308144f67ad8a47ef74e8cf13ecf  tree/spring-jdbc/build/libs/spring-jdbc-6.2.6-SNAPSHOT.jar",
+        "654efe52642658f08bde2389d3d5e5ec25e50d980874b14779775d2c79b69b71  tree/spring-orm/build/libs/spring-orm-6.2.6-SNAPSHOT.jar",
+        "e9b9bc0c4ab886c0f24b0fb6dae2c660850425ae691dadff05bd204273100cc4  tree/spring-oxm/build/libs/spring-oxm-6.2.6-SNAPSHOT.jar",
+        "ce1e6403b4f79e88665de1e07250000807ceeab5a53edc461516451a12b40e0d  tree/spring-test/build/libs/spring-test-6.2.6-SNAPSHOT.jar",
+        "97304678260ce0ea023456c5623fb01b8e452f8c91fdc6df3a953e17d2a5f481  tree/spring-test/build/libs/spring-test-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "a6d5fd6c4653fca7f7f7582f9f5dc5ce746ceb7485b691e05091d6c1da5f35b2  tree/spring-tx/build/libs/spring-tx-6.2.6-SNAPSHOT.jar",
+        "bf4be384045d29983813b206079fdf6ec561266414331cecdb2c93194cffd75a  tree/spring-tx/build/libs/spring-tx-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "580051ad71154c6e01bfc4d6e512c8c3b70b63feb111475639a6a16a708516b9  tree/spring-web/build/libs/spring-web-6.2.6-SNAPSHOT.jar",
+        "5c8de50f2c616936c58a8b32d06023e74ec2c4539272b51beeaf6de28cbb563c  tree/spring-web/build/libs/spring-web-6.2.6-SNAPSHOT-test-fixtures.jar",
+        "b9add15898720f68c2e66757f8332e8c801e61014efdf1cc8c529965f5eedab2  tree/spring-webflux/build/libs/spring-webflux-6.2.6-SNAPSHOT.jar",
+        "d265a14e9d2ad02395433bdbd646f5407535a8de3abc6e1f902a1a7a096d047b  tree/spring-webmvc/build/libs/spring-webmvc-6.2.6-SNAPSHOT.jar",
+        "2439b8414da5a267862fffbd6a5d9f30cb8e30033d1ab93870be2dd41076d134  tree/spring-websocket/build/libs/spring-websocket-6.2.6-SNAPSHOT.jar",
+        "7314a997702e1e42d28b0757ace2afd195edffee33e534cd8a2579911f83b51a  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/BeanOverrideContextCustomizerFactory.class",
+        "1034dd1cf0bbf8d845c7da8859af2dc9c14461e8048ce74c03a5d2b99ada61f2  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/BeanOverrideHandler.class",
+        "ca77cdaaa88b1c71cea960d1efbeb4f94c2544bcd7ecb6099a502d451fd7db0f  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/BeanOverrideRegistry.class",
+        "3ae8a41272ad6e568eb8cd11053c86892e3edd6db6de07562115ff9cb8fa25ba  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/BeanOverrideTestExecutionListener.class",
+        "2647926d8e336d0893bc8c39f67892041781e5318342dc1db7a228cf822aa497  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/convention/TestBean.class",
+        "16a5d522c4324bcef5d3f6816f40398a935596236573071b6bad74a1e0dcb9e6  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/convention/TestBeanOverrideHandler.class",
+        "76b79e51d021174f234d6ba2c49891d1c9bf77528284f91da9bca5758fddd649  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/convention/TestBeanOverrideProcessor.class",
+        "97c2fd6af8156d113cbbc27ab26490c795d1aa7e034ded84a60f843b4f69f004  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/AbstractMockitoBeanOverrideHandler.class",
+        "88b6db03edbacb5d62e0c9ae8fefe76286b6975016112cbaf9ae1784b9d76422  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoBean.class",
+        "088ff6b8dd52843b95fe126dd553272b103a58d38a5e473a6166e4eb6aef913e  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoBeanOverrideHandler.class",
+        "ff4b6546dac216251415c1f5fa19fa95879a716ed0fd0dd1b6e7f06ada661500  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoSpyBean.class",
+        "b74091f5fb9b2d24ee1a77c82982ea3e2748a370eea5dde2598893d84ade0f83  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoSpyBeanOverrideHandler$SpringAopBypassingVerificationStartedListener.class",
+        "5834780a61f6cf317d328739c143c0c79e9e68bf1259a57a8e1c54a6b59eba8b  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/bean/override/mockito/MockitoSpyBeanOverrideHandler.class",
+        "ea2b05eefdd24a0629f770372e260b6c0ed5113471db28ca1807eb6c99a9f07e  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/ContextConfiguration.class",
+        "55b8fdd76a90c479bd60f2f06fa86937d66621d65f452b16a45b3070873b40e0  spring-test-6.2.6-SNAPSHOT.jar!/org/springframework/test/context/ContextHierarchy.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P24 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P24 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 109.869,
+      "cpuSeconds": 383.179,
+      "cpuThrottledSeconds": 168.066,
+      "peakMemoryBytes": 4137734144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p24-transplant-the-fix-s-tests.log",
+        "lines": 82,
+        "bytes": 14355,
+        "sha256": "9c821a9bef98346df271d0f1a059bcaed8e8e699a18ea9b35c7f2c3e3f4f88fd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:jar",
+        "> Configure project :framework-docs",
+        "> Task :spring-beans:checkKotlinGradlePluginConfigurationErrors",
+        "> Task :spring-aop:checkKotlinGradlePluginConfigurationErrors",
+        "> Task :spring-core:checkKotlinGradlePluginConfigurationErrors",
+        "class org.springframework.test.context.bean.override.BeanOverrideContextCustomizerFactoryTests no-result",
+        "class org.springframework.test.context.bean.override.BeanOverrideContextCustomizerTests no-result",
+        "class org.springframework.test.context.bean.override.BeanOverrideHandlerTests no-result",
+        "class org.springframework.test.context.bean.override.BeanOverrideTestExecutionListenerTests no-result",
+        "class org.springframework.test.context.bean.override.convention.hierarchies.TestBeanByNameInChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.convention.hierarchies.TestBeanByNameInParentAndChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.convention.hierarchies.TestBeanByNameInParentContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.convention.hierarchies.TestBeanByTypeInChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.convention.hierarchies.TestBeanByTypeInParentAndChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.convention.hierarchies.TestBeanByTypeInParentContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.convention.TestBeanOverrideHandlerTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoBeanAndContextHierarchyParentIntegrationTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoBeanByNameInChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoBeanByNameInParentAndChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoBeanByNameInParentContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoBeanByTypeInChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoBeanByTypeInParentAndChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoBeanByTypeInParentContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeanAndContextHierarchyChildIntegrationTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeanByNameInChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeanByNameInParentAndChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeanByNameInParentAndChildContextHierarchyV2Tests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeanByNameInParentContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeanByTypeInChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeanByTypeInParentAndChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeanByTypeInParentContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.MockitoSpyBeansByTypeInParentAndChildContextHierarchyTests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.ReusedParentConfigV1Tests no-result",
+        "class org.springframework.test.context.bean.override.mockito.hierarchies.ReusedParentConfigV2Tests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P24-parent-landed/spring-test/src/test/java/org/springframework/test/context/bean/override/mockito/hierarchies/MockitoSpyBeanByTypeInParentAndChildContextHierarchyTests.java:55: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P24-parent-landed/spring-test/src/test/java/org/springframework/test/context/bean/override/mockito/hierarchies/MockitoSpyBeanByTypeInParentAndChildContextHierarchyTests.java:58: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P24-parent-landed/spring-test/src/test/java/org/springframework/test/context/bean/override/mockito/hierarchies/ReusedParentConfigV2Tests.java:53: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P24-parent-landed/spring-test/src/test/java/org/springframework/test/context/bean/override/mockito/hierarchies/MockitoSpyBeanByNameInParentContextHierarchyTests.java:55: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P24-parent-landed/spring-test/src/test/java/org/springframework/test/context/bean/override/mockito/hierarchies/ReusedParentConfigV1Tests.java:53: error: cannot find symbol",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P24 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P24 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 2.004,
+      "cpuSeconds": 1.357,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 80781312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p24-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "9e8450eea09c171efbb5f944a96dc66319cc96d530dc656c6462d4bb08b917f9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P24"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T03:19:48+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T031919Z-130021c1444ab9b6"
+    }
+  }
+}
