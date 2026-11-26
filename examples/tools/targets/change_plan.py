@@ -72,6 +72,11 @@ def frozen_workflows(path):
         if "checkedHelper" in row:
             row = dict(row)
             row["checkedHelper"] = json.loads((path.parent / row["checkedHelper"]).read_bytes())
+        if "generatedObserver" in spec:
+            from targets import observer_generation
+            if spec["generatedObserver"]["question"] != name:
+                raise ValueError("generated scope belongs to a different question")
+            observer_generation.checked_bundle(specfile, spec, probe)
         workflows[name] = (row, specfile, probe, spec)
     return doc, workflows
 
@@ -193,6 +198,12 @@ def compare(args, *, original_binary=True, archive_index=None):
             trace_changes = prior.get("traceChangedEntries", trace_changes)
         # Direct-entry evidence remains comparable when replacing the other revision makes the bytecode diff empty.
         basis["traceChangedEntries"] = trace_changes or [spec["entry"]]
+        if "generatedObserver" in spec:
+            from targets import observer_generation
+            record, registration = observer_generation.checked_bundle(scope, spec, probe)
+            basis["traceChangedEntries"] = registration["changed"] or [spec["entry"]]
+            basis["generatedObserver"] = spec["generatedObserver"]["sha256"]
+            basis["projectionChecker"] = digest(observer_generation.identity())
         helper = row.get("checkedHelper")
         if helper is not None:
             basis["checkedHelper"] = digest(helper)
@@ -204,6 +215,9 @@ def compare(args, *, original_binary=True, archive_index=None):
         if helper is not None:
             node["derivation"] = "finite public history with a checked, pure helper substituted on both deployments"
         node["traceChangedEntries"] = basis["traceChangedEntries"]
+        node["observerProvenance"] = ({"kind": "generated", "bundle": basis["generatedObserver"],
+                                      "classes": record["compiled"], "assertedSides": spec["assertedSides"]}
+                                     if "generatedObserver" in spec else {"kind": "authored"})
         node["traceInput"] = list(getattr(args, "changed_selector", []))
         node["entryBindings"] = {s: digest(bindings[s][spec["entry"]]) for s in graphs}
         plan["claims"].append(node)
@@ -427,6 +441,9 @@ def main(argv=None):
     saved.add_argument("report", type=Path)
     saved.add_argument("--output", type=Path)
     saved.add_argument("--verify-receipts", action="store_true", help="also verify the saved original-JVM evidence files")
+    rescore = sub.add_parser("rescore", help="evaluate new predictions against qualified frozen public observations")
+    for name in ("report", "bundle", "predictions", "output"):
+        rescore.add_argument("--" + name, required=True, type=Path)
     example = sub.add_parser("example", help="project the target runner's frozen claims, routes and dependencies")
     example.add_argument("number", type=int)
     upgrade = sub.add_parser("upgrade", aliases=["application"], help="compare prepared JVM applications with their ordered classpaths")
@@ -450,6 +467,10 @@ def main(argv=None):
     if getattr(args, "probe_limit", 0) < 0:
         parser.error("--probe-limit must be nonnegative")
     try:
+        if args.command == "rescore":
+            from targets import observer_generation
+            change_evidence.write_json(args.output, observer_generation.rescore(args.report, args.bundle, args.predictions))
+            return 0
         if args.command == "bindings":
             account = saved_bindings(json.loads(args.report.read_bytes()), args.report.parent if args.verify_receipts else None)
             if args.output:

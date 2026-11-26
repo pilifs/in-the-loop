@@ -264,7 +264,7 @@ public final class UpgradeTrace {
         }
     }
 
-    private static String invocation(BreakpointEvent hit, String observer, Set<Long> sites) throws Exception {
+    private static String invocation(LocatableEvent hit, String observer, Set<Long> sites) throws Exception {
         String dispatched = null;
         for (StackFrame frame : hit.thread().frames()) {
             Method method = frame.location().method();
@@ -276,6 +276,27 @@ public final class UpgradeTrace {
             dispatched = name;
         }
         return null;
+    }
+
+    // Inspect standard numeric return objects without executing injected code in the original JVM.
+    private static String numericReturn(Value value) {
+        if (value == null) return "null";
+        ObjectReference object = (ObjectReference)value;
+        ReferenceType type = object.referenceType();
+        String number;
+        if (type.name().equals("java.math.BigInteger")) {
+            com.sun.jdi.ArrayReference mag = (com.sun.jdi.ArrayReference)object.getValue(type.fieldByName("mag"));
+            java.nio.ByteBuffer bytes = java.nio.ByteBuffer.allocate(mag.length() * 4);
+            for (Value limb : mag.getValues()) bytes.putInt(((com.sun.jdi.IntegerValue)limb).value());
+            int sign = ((com.sun.jdi.IntegerValue)object.getValue(type.fieldByName("signum"))).value();
+            number = new java.math.BigInteger(sign, bytes.array()).toString();
+        } else {
+            Field field = type.fieldByName("value");
+            if (field == null || !(object.getValue(field) instanceof com.sun.jdi.PrimitiveValue))
+                return "unsupported " + type.name();
+            number = object.getValue(field).toString();
+        }
+        return type.name() + "\t" + number;
     }
 
     public static void main(String[] args) throws Exception {
@@ -307,10 +328,23 @@ public final class UpgradeTrace {
         OutputStream diagnostics = Files.newOutputStream(Paths.get(args[2], "child.stderr"));
         Thread stdout = forward(child.getInputStream(), System.out), stderr = forward(child.getErrorStream(), diagnostics);
         String entryInvocation = null;
+        boolean history = Boolean.getBoolean("upgrade.observe.history");
+        boolean numeric = Boolean.getBoolean("upgrade.observe.numeric");
+        Map<Long,Integer> historyReceivers = new LinkedHashMap<>();
         Map<Long, List<String>> constructors = new LinkedHashMap<>();
         boolean finished = false;
         Map<String, List<String>> thrown = new LinkedHashMap<>();
         try {
+            if (numeric) {
+                MethodExitRequest exits = vm.eventRequestManager().createMethodExitRequest();
+                exits.addClassFilter(owner);
+                exits.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+                exits.enable();
+                ExceptionRequest errors = vm.eventRequestManager().createExceptionRequest(null, true, false);
+                errors.putProperty("projection", true);
+                errors.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+                errors.enable();
+            }
             Set<String> watched = new LinkedHashSet<>(exceptions);
             watched.add(owner);
             for (String target : changed) if (target.contains("#")) watched.add(target.substring(0, target.indexOf('#')));
@@ -336,8 +370,25 @@ public final class UpgradeTrace {
                         install(vm, type, owner, method, descriptor, exceptions);
                         changedBreakpoints(vm, type);
                         if (checked != null) checked.bind(vm, type);
+                    } else if (event instanceof MethodExitEvent) {
+                        MethodExitEvent exit = (MethodExitEvent)event;
+                        if (CheckedReplay.entry(exit.location()).equals(entry) && invocation(exit, observer, sites) != null)
+                            System.err.println("UPGRADE-NUMBER " + numericReturn(exit.returnValue()));
                     } else if (event instanceof ExceptionEvent) {
                         ExceptionEvent raised = (ExceptionEvent) event;
+                        if (Boolean.TRUE.equals(raised.request().getProperty("projection"))) {
+                            Location catcher = raised.catchLocation();
+                            if (catcher != null && catcher.declaringType().name().equals(observer)
+                                    && catcher.method().name().equals("observe") && invocation(raised, observer, sites) != null) {
+                                for (StackFrame frame : raised.thread().frames()) {
+                                    if (CheckedReplay.entry(frame.location()).equals(entry)) {
+                                        System.err.println("UPGRADE-NUMBER throws\t" + raised.exception().referenceType().name());
+                                        break;
+                                    }
+                                }
+                            }
+                            continue;
+                        }
                         if (!raised.exception().referenceType().equals(raised.request().getProperty("exactException"))) continue;
                         String id = raised.thread().uniqueID() + "/" + raised.exception().uniqueID();
                         List<String> stack = throwingStack(raised, observer, entry, sites);
@@ -402,6 +453,11 @@ public final class UpgradeTrace {
                             if (site != null) {
                                 entryInvocation = site;
                                 ObjectReference instance = point.thread().frame(0).thisObject();
+                                if (history) {
+                                    int alias = instance == null ? -1 : historyReceivers.computeIfAbsent(
+                                            instance.uniqueID(), unused -> historyReceivers.size());
+                                    System.err.println("UPGRADE-PUBLIC-CALL " + alias);
+                                }
                                 System.err.println("UPGRADE-IMPLEMENTATION " + CheckedReplay.entry(point.location()) + "\t"
                                         + (instance == null ? "static" : instance.referenceType().name()));
                                 if (receivers) {
@@ -412,7 +468,7 @@ public final class UpgradeTrace {
                                         for (String call : constructors.get(object.uniqueID()))
                                             System.err.println("UPGRADE-CONSTRUCTOR " + encoded(call));
                                 }
-                                point.request().disable();
+                                if (!history) point.request().disable();
                             }
                         }
                     } else if (event instanceof VMDisconnectEvent) {

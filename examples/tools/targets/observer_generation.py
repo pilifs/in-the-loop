@@ -1,0 +1,312 @@
+"""Materialize a reviewed public history and persist the exact older-API caller for replay."""
+import json
+import hashlib
+import os
+from pathlib import Path
+import re
+import subprocess
+import tempfile
+import zipfile
+
+from targets import change_evidence, change_inventory, deployment_graph, observer_recipes, runtime_jdk, upgrade_replay
+from targets.change_inventory import digest
+from targets.observer_recipes import Unsupported
+from targets.upgrade_replay import sha
+
+HERE = Path(__file__).resolve().parent
+
+
+def identity():
+    files = [Path(__file__), HERE / "observer_recipes.py", HERE / "observer_histories.py", observer_recipes.TEMPLATE]
+    return {p.name: sha(p) for p in files}
+
+
+def arguments(value):
+    """Length-delimited typed tree for String[]. Payload strings can contain every marker."""
+    if value is None:
+        return ["n"]
+    if isinstance(value, bool):
+        return ["b" + str(value).lower()]
+    if type(value) is int and -(2**31) <= value < 2**31:
+        return ["i" + str(value)]
+    if isinstance(value, str):
+        return ["s" + value]
+    if isinstance(value, list):
+        return ["a" + str(len(value)), *(w for item in value for w in arguments(item))]
+    if isinstance(value, dict) and all(isinstance(k, str) for k in value):
+        return ["m" + str(len(value)), *(w for k in sorted(value) for item in (k, value[k]) for w in arguments(item))]
+    raise Unsupported("unsupported registered input type")
+
+
+def wire(value):
+    return {"return": json.dumps(value, separators=(",", ":"), ensure_ascii=True, allow_nan=False)}
+
+
+def portable_manifest(path):
+    doc = json.loads(path.read_bytes())
+    for key in ["classpath", "manifestProviders", "environmentFiles"]:
+        for item in doc.get(key, []):
+            item["file"] = str((path.parent / item["file"]).absolute())
+    if "deploymentRoot" in doc:
+        doc["deploymentRoot"] = str((path.parent / doc["deploymentRoot"]).absolute())
+    return doc
+
+
+def validate(reg):
+    if reg.get("schema") != "reviewed-public-observations/v1":
+        raise ValueError("unknown public observation registration")
+    required = {"schema", "change", "entry", "changed", "fields", "assumptions", "questions"}
+    if reg.keys() != required or not reg["questions"] or not reg["assumptions"]:
+        raise ValueError("expected a reviewed entry, changes, fields, assumptions and frozen questions")
+    seen = set()
+    for q in reg["questions"]:
+        if (q.keys() != {"id", "history", "cohort", "sides", "inputs"} or not isinstance(q["id"], str)
+                or not q["id"] or q["id"] in seen or q["cohort"] not in {"registered", "control", "additional"}
+                or q["sides"] not in (["old"], ["new"], ["old", "new"]) or not q["history"].strip()
+                or not isinstance(q["inputs"], list) or not q["inputs"]):
+            raise ValueError("a question needs a unique ID, history, cohort, side scope, and input meanings")
+        encoded = [tuple(arguments(v)) for v in q["inputs"]]
+        if len(set(encoded)) != len(encoded):
+            raise ValueError("duplicate inputs in registered history")
+        seen.add(q["id"])
+
+
+def compile_caller(work, src, files, jdk):
+    classes = work / "classes"
+    classes.mkdir()
+    compile_run = subprocess.run([jdk / "bin/javac", "-proc:none", "-encoding", "UTF-8", "-g", "-classpath",
+                                  os.pathsep.join(map(str, files)), "-d", classes, src],
+                                 cwd=work, capture_output=True, text=True, timeout=45)
+    if compile_run.returncode:
+        raise Unsupported("older API compiler: " + compile_run.stderr[-2300:])
+    members = {}
+    with zipfile.ZipFile(work / "caller.zip", "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(classes.glob("*.class")):
+            if not re.fullmatch(r"UpgradeProbe(?:\$[\w$]+)?\.class", path.name):
+                raise ValueError("unexpected generated class")
+            members[path.name] = sha(path)
+            archive.writestr(zipfile.ZipInfo(path.name), path.read_bytes(), zipfile.ZIP_DEFLATED)
+            path.unlink()
+    classes.rmdir()
+    return members
+
+
+def generate(reg, before, after, jdk, work):
+    """Operator phase. Receives only reviewed input meanings, classpaths and the pinned JDK."""
+    validate(reg)
+    change_evidence.write_json(work / "registration.json", reg)
+    record = {"schema": "generated-public-observer/v1", "registration": digest(reg), "generator": identity(),
+              "inputPolicy": "reviewed semantic data and public production declarations", "model": None,
+              "candidateBudget": observer_recipes.CANDIDATE_BUDGET, "compilePolicy": "once against old",
+              "jdkReleaseSha256": sha(jdk / "release"), "status": "open", "rejected": [], "declarations": {}}
+    cp = {}
+    try:
+        feature = int(runtime_jdk.identity(jdk)["feature"])
+        for side, path in (("old", before), ("new", after)):
+            manifest = portable_manifest(path)
+            if manifest.get("jdkReleaseSha256", record["jdkReleaseSha256"]) != record["jdkReleaseSha256"]:
+                raise Unsupported(f"{side} preparation needs its registered JDK")
+            change_evidence.write_json(work / (side + ".json"), manifest)
+            files, _, graph = deployment_graph.resolve(manifest, work, feature, change_inventory.file_digest)
+            if graph.get("manifestClassPath", {}).get("unresolved"):
+                raise Unsupported(f"{side} needs its original manifest deployment locations")
+            cp[side] = files
+        inputs = [x for q in reg["questions"] for x in q["inputs"]]
+        api = observer_recipes.API(cp["old"], feature)
+        try:
+            recipe = observer_recipes.select(reg["entry"], reg["fields"], inputs, api)
+        finally:
+            record["declarations"]["old"] = api.used
+        record["recipe"] = recipe
+        # A removed declaration stays measurable on the original-client path; record the gap separately.
+        new_api = observer_recipes.API(cp["new"], feature)
+        try:
+            observer_recipes.select(reg["entry"], reg["fields"], inputs, new_api)
+        except Unsupported as e:
+            record["newApiGap"] = str(e)
+        record["declarations"]["new"] = new_api.used
+        src = work / "UpgradeProbe.java"
+        src.write_text(observer_recipes.source(recipe))
+        record["sourceSha256"] = sha(src)
+        record["fieldSources"] = reg["fields"]
+        record["compiled"] = compile_caller(work, src, cp["old"], jdk)
+        record["archiveSha256"] = sha(work / "caller.zip")
+        record["status"] = "compiled"
+    except (Unsupported, subprocess.TimeoutExpired) as e:
+        record["firstOpenDependency"] = str(e)
+        record["rejected"].append({"entry": reg["entry"], "reason": str(e)})
+    change_evidence.write_json(work / "generation.json", record)
+    return record
+
+
+def workflows(reg, predictions, work):
+    """Evaluator phase. Its only generated files are scopes and workflow declarations."""
+    if set(predictions) != {q["id"] for q in reg["questions"]}:
+        raise ValueError("expected predicates must identify exactly the frozen questions")
+    rows = []
+    for index, q in enumerate(reg["questions"]):
+        expected = predictions[q["id"]]
+        if set(expected) != set(q["sides"]) or any(len(values) != len(q["inputs"]) for values in expected.values()):
+            raise ValueError("prediction differs from the approved side scope or domain: " + q["id"])
+        base = expected[q["sides"][0]]
+        cases = [{"args": arguments(item), "expected": wire(v)} for item, v in zip(q["inputs"], base, strict=True)]
+        changes = [{"input": i, "expectedNew": wire(v)} for i, v in enumerate(expected.get("new", []))
+                   if len(q["sides"]) == 2 and wire(v) != cases[i]["expected"]]
+        name = f"scope-{index + 1}.json"
+        spec = {"entry": reg["entry"], "probeClass": "UpgradeProbe", "observer": ", ".join(reg["fields"]),
+                "basis": q["history"], "cases": cases, "assertedSides": q["sides"],
+                "generatedObserver": {"file": "generation.json", "sha256": sha(work / "generation.json"), "question": q["id"]}}
+        change_evidence.write_json(work / name, spec)
+        rows.append({"id": q["id"], "scope": name, "probe": "UpgradeProbe.java", "cohort": q["cohort"],
+                     "assumptions": reg["assumptions"], "deterministicUnderAssumptions": True,
+                     "intent": {"allowedChanges": changes} if changes else "preserve"})
+    change_evidence.write_json(work / "workflows.json", {"schema": "caller-workflows/v1", "change": reg["change"], "workflows": rows})
+
+
+def materialize(registration, predictions, before, after, jdk, output):
+    """Publish one complete frozen bundle. A failed attempt also has a durable reason."""
+    output = output.absolute()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    reg = json.loads(registration.read_bytes())
+    if output.is_dir():
+        record = json.loads((output / "generation.json").read_bytes())
+        if (digest(reg) != record["registration"] or json.loads((output / "registration.json").read_bytes()) != reg
+                or any(json.loads((output / (s + ".json")).read_bytes()) != portable_manifest(p)
+                       for s, p in (("old", before), ("new", after)))
+                or sha(jdk / "release") != record["jdkReleaseSha256"]):
+            raise ValueError("a different reviewed experiment needs a new scaffold")
+        if record["status"] == "compiled":
+            expected = json.loads(predictions.read_bytes())
+            with tempfile.TemporaryDirectory(dir=output.parent) as tmp:
+                proposed = Path(tmp)
+                (proposed / "generation.json").write_bytes((output / "generation.json").read_bytes())
+                workflows(reg, expected, proposed)
+                for p in sorted(proposed.glob("*.json")):
+                    existing = output / p.name
+                    if existing.exists() and existing.read_bytes() != p.read_bytes():
+                        raise ValueError("saved predictions differ; re-score the frozen observations in a new evaluation")
+                for p in sorted(proposed.glob("scope-*.json")):
+                    checked_bundle(output / p.name, json.loads(p.read_bytes()), output / "UpgradeProbe.java")
+                for p in sorted(proposed.glob("*.json"), key=lambda p: p.name == "workflows.json"):
+                    if not (output / p.name).exists():
+                        change_evidence.write_json(output / p.name, json.loads(p.read_bytes()))
+        return record
+    with tempfile.TemporaryDirectory(dir=output.parent, prefix=".public-observer-") as scratch:
+        work = Path(scratch) / "bundle"
+        work.mkdir()
+        record = generate(reg, before, after, jdk, work)
+        if record["status"] == "compiled":
+            workflows(reg, json.loads(predictions.read_bytes()), work)
+        work.rename(output)
+    return record
+
+
+def checked_bundle(scope, spec, probe):
+    """Check source, the frozen semantic domain, and the exact older-API class archive before reuse."""
+    ref = spec["generatedObserver"]
+    root = scope.parent
+    if ref["file"] != "generation.json" or ref["sha256"] != sha(root / "generation.json"):
+        raise ValueError("generated observer manifest changed")
+    record = json.loads((root / "generation.json").read_bytes())
+    reg = json.loads((root / "registration.json").read_bytes())
+    if (record.get("schema") != "generated-public-observer/v1" or record.get("status") != "compiled"
+            or digest(reg) != record["registration"] or sha(probe) != record["sourceSha256"]
+            or sha(root / "caller.zip") != record["archiveSha256"]):
+        raise ValueError("generated observer source, registration or compiled archive differs")
+    if record["generator"] == identity() and probe.read_text() != observer_recipes.source(record["recipe"]):
+        raise ValueError("the caller does not implement the generated public projection")
+    q = next((q for q in reg["questions"] if q["id"] == ref["question"]), None)
+    if (not q or [arguments(x) for x in q["inputs"]] != [c["args"] for c in spec["cases"]]
+            or spec["entry"] != reg["entry"] or q["sides"] != spec["assertedSides"]
+            or spec["observer"] != ", ".join(reg["fields"]) or q["history"] != spec["basis"]):
+        raise ValueError("generated observer scope differs from the reviewed question")
+    return record, reg
+
+
+def install(root, record, output):
+    with zipfile.ZipFile(root / "caller.zip") as archive:
+        expected = record["compiled"]
+        if sorted(expected) != sorted(archive.namelist()) or "UpgradeProbe.class" not in expected:
+            raise ValueError("incomplete compiled caller")
+        for name in expected:
+            if not re.fullmatch(r"UpgradeProbe(?:\$[\w$]+)?\.class", name):
+                raise ValueError("unrelated compiled caller class")
+            data = archive.read(name)
+            if hashlib.sha256(data).hexdigest() != expected[name]:
+                raise ValueError("compiled observer class differs: " + name)
+            (output / name).write_bytes(data)
+
+
+def correspondence(recipe, inputs, marks, observation):
+    """Independent JVM call counts and receiver identities; the scalar projection also reads each return or throw."""
+    aliases = [int(m.split()[1]) for m in marks if m.startswith("UPGRADE-PUBLIC-CALL ")]
+    if not aliases or set(observation) != {"return"}:
+        raise ValueError("no qualified generated public readback")
+    values = json.loads(observation["return"])
+    if not isinstance(values, list):
+        raise ValueError("public observation requires an ordered sequence")
+    family = recipe["family"]
+    if family == "typed numeric conversions":
+        events = [m.partition(" ")[2] for m in marks if m.startswith("UPGRADE-NUMBER ")]
+        reads = []
+        for event in events:
+            fields = event.split("\t")
+            if fields == ["null"]:
+                reads.append(["return", None, None])
+            elif len(fields) == 2 and fields[0] == "throws":
+                reads.append(fields)
+            elif len(fields) == 2:
+                reads.append(["return", *fields])
+            else:
+                raise ValueError("unsupported live numeric representation: " + event)
+        if reads != values or len(aliases) != len(inputs["conversions"]) or len(reads) != len(aliases):
+            raise ValueError("numeric projection disagrees with the returns or exceptions of the live public invocations")
+    elif family == "selection and lazy default":
+        if (len(aliases) != len(inputs["selections"]) or len(values) != len(aliases)
+                or any(len(row) != 3 or type(row[0]) is not bool or type(row[2]) is not int for row in values)):
+            raise ValueError("incomplete nullable selection or lazy callback observation")
+    return {"entryCalls": len(aliases), "receiverAliases": aliases, "observationSha256": digest(values)}
+
+
+def rescore(report_path, bundle, predictions):
+    """A new oracle can challenge an already qualified finite experiment without changing measured bytes."""
+    from targets import change_plan
+    plan = json.loads(report_path.read_bytes())
+    if plan.get("executionState") != "complete":
+        raise ValueError("re-scoring requires completed original JVM observations")
+    change_plan.saved_bindings(plan, report_path.parent)
+    reg = json.loads((bundle / "registration.json").read_bytes())
+    checks = json.loads(predictions.read_bytes())
+    _, originals = change_plan.frozen_workflows(bundle / "workflows.json")
+    nodes = {n["id"]: n for n in plan["claims"]}
+    if set(nodes) != set(originals) or set(nodes) != set(checks):
+        raise ValueError("predictions or report belong to other registered questions")
+    result = {"schema": "rescored-public-observations/v1", "reportSha256": sha(report_path),
+              "predictionsSha256": sha(predictions), "claims": []}
+    with tempfile.TemporaryDirectory(prefix="public-rescore-") as temp:
+        dest = Path(temp)
+        (dest / "generation.json").write_bytes((bundle / "generation.json").read_bytes())
+        workflows(reg, checks, dest)
+        rescored = json.loads((dest / "workflows.json").read_bytes())
+        for row in rescored["workflows"]:
+            name = row["id"]
+            node = nodes[name]
+            orig, _, _, spec = originals[name]
+            if node.get("claimKey") != digest({"scope": spec, "intent": orig["intent"], "assumptions": orig["assumptions"]}):
+                raise ValueError("saved claim differs from the frozen bundle")
+            ref = node.get("receipt")
+            if not ref or node["status"] not in {"established", "refuted"}:
+                result["claims"].append({"id": name, "status": "open", "firstOpenDependency": node["firstOpenDependency"]})
+                continue
+            path = (report_path.parent / ref["path"]).resolve()
+            if not path.is_relative_to(report_path.parent.resolve()) or sha(path) != ref["sha256"]:
+                raise ValueError("original JVM receipt differs")
+            evidence = json.loads(path.read_bytes())
+            if (evidence.get("generatedObserver", {}).get("bundle") != spec["generatedObserver"]["sha256"]
+                    or evidence["cases"] != spec["cases"]):
+                raise ValueError("measurement belongs to another observer or input domain")
+            new_spec = json.loads((dest / row["scope"]).read_bytes())
+            scored = change_evidence.compose(new_spec, {**evidence, "cases": new_spec["cases"]}, row["intent"])
+            observations = {s: [t["observations"] for t in record["trials"]] for s, record in evidence["sides"].items()}
+            result["claims"].append({"id": name, **scored, "receipt": ref, "observationsSha256": digest(observations)})
+    return result

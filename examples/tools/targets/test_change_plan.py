@@ -112,7 +112,13 @@ class ChangePlanTest(unittest.TestCase):
         new = self.report["sides"]["new"]["trials"]
         new[0]["beforeEntry"] = [{"throws": "java.lang.LinkageError"}]
         self.assertEqual(change_evidence.compose(self.scope, self.report)["status"], "open")
+        # A fixed-side challenge carries no prediction about the parent. A qualified
+        # fixed-side contradiction still refutes it, and a missing fixed-side call stays open.
+        new_only = dict(self.scope, assertedSides=["new"])
+        self.assertEqual(change_evidence.compose(new_only, self.report)["status"], "open")
         new[1]["observations"] = [{"return": "9"}] * 2
+        self.assertEqual(change_evidence.compose(new_only, self.report)["status"], "refuted")
+        self.assertEqual(change_evidence.compose(dict(self.scope, assertedSides=["old"]), self.report)["status"], "established")
         result = change_evidence.compose(self.scope, self.report)
         self.assertEqual((result["status"], result["witness"], result["firstOpenDependency"]), ("refuted", 1, 0))
         self.assertEqual(result["children"][0]["beforeEntry"]["new"], new[0]["beforeEntry"])

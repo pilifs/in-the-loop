@@ -368,8 +368,16 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             if any(c["sha256"] not in bound["classpath"] for c in report["runtimeCompanions"]):
                 raise ValueError(f"{side} is missing a declared runtime companion")
         tools = [jdk/"lib/tools.jar"] if (jdk/"lib/tools.jar").is_file() else []
+        observer_sources = [probe]
+        if "generatedObserver" in spec:
+            from targets import observer_generation
+            frozen, _registration = observer_generation.checked_bundle(specfile, spec, probe)
+            observer_generation.install(specfile.parent, frozen, output)
+            observer_sources = []
+            report["generatedObserver"] = {"bundle": spec["generatedObserver"]["sha256"],
+                                           "compilePolicy": frozen["compilePolicy"], "classes": frozen["compiled"]}
         proc=subprocess.run([str(jdk/"bin/javac"),"-J-Djava.io.tmpdir="+t,"-proc:none","-g","-encoding","UTF-8",
-                             "-classpath",cp([*prepared["old"][0],*tools]),"-d",str(output),str(LAUNCHER),str(TRACER),str(LOOKUP),str(probe),*map(str,supplied)],
+                             "-classpath",cp([*prepared["old"][0],*tools]),"-d",str(output),str(LAUNCHER),str(TRACER),str(LOOKUP),*map(str,observer_sources),*map(str,supplied)],
                              cwd=temp,env=env,capture_output=True,text=True,timeout=timeout)
         if proc.returncode:
             raise ValueError("observer compilation: "+proc.stderr[-1800:])
@@ -422,6 +430,10 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                       "UpgradeTrace", live_entry, str(subject_jdk)]
             if trace_changes:
                 launch.insert(1, "-Dupgrade.trace.changed=" + "|".join(trace_changes))
+            if "generatedObserver" in spec:
+                launch.insert(1, "-Dupgrade.observe.history=true")
+                if frozen["recipe"]["family"] == "typed numeric conversions":
+                    launch.insert(1, "-Dupgrade.observe.numeric=true")
             if inspect_receiver or native_caller:
                 launch.insert(1, "-Dupgrade.trace.receivers=true")
             trial_env = {**env, "PATH": str(subject_jdk/"bin")+":/usr/bin:/bin"}
@@ -540,6 +552,10 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         trial_record.setdefault("changedBodyChains", []).append(chains)
                     trial_record["qualifiedMethodEntries"] += 1
                     observation,classes=parse_output(child_output,live_entry,files[side_record["entryProviderIndex"]],dependency,observation_text,escape=escape)
+                    if "generatedObserver" in spec:
+                        question = next(q for q in _registration["questions"] if q["id"] == spec["generatedObserver"]["question"])
+                        projection = observer_generation.correspondence(frozen["recipe"], question["inputs"][index], marks, observation)
+                        trial_record.setdefault("publicProjections", []).append(projection)
                     trials.append(observation)
                     operand_classes.update(classes)
                     loaded_each_time = loaded_each_time and bool(classes)

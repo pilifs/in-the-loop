@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize q",
   "client": {
@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T21:17:18.937Z",
-  "duration_seconds": 227188,
+  "ended": "2026-11-26T21:50:51.601Z",
+  "duration_seconds": 229201,
   "stats": {
-    "turns": 35,
-    "api_calls": 5573,
-    "tool_calls": 13934,
-    "tool_errors": 298,
+    "turns": 36,
+    "api_calls": 5624,
+    "tool_calls": 14086,
+    "tool_errors": 304,
     "compactions": 24,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 7486655,
-      "output_tokens": 3187718,
-      "cache_read_input_tokens": 1519411072,
+      "input_tokens": 7586006,
+      "output_tokens": 3225898,
+      "cache_read_input_tokens": 1526825728,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 7788,
-    "exec": 5319,
-    "apply_patch": 631,
+    "Bash": 7879,
+    "exec": 5370,
+    "apply_patch": 641,
     "wait": 108,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -163,16 +163,20 @@
     "examples/537-spring-manifest-dependency/caller/PublicCaller.java",
     "examples/schema/example.schema.json",
     "examples/tools/build.py",
+    "examples/tools/scaffold_example.py",
     "examples/tools/targets/change_evidence.py",
     "examples/tools/targets/change_inventory.py",
     "examples/tools/targets/change_plan.py",
     "examples/tools/targets/java/ResourceObserver.java.template",
     "examples/tools/targets/java/UpgradeClassLookup.java",
+    "examples/tools/targets/java/UpgradeTrace.java",
+    "examples/tools/targets/observer_generation.py",
     "examples/tools/targets/public_comparison.py",
     "examples/tools/targets/public_mysql.py",
     "examples/tools/targets/public_postgres.py",
     "examples/tools/targets/resource_workflows.py",
     "examples/tools/targets/test_change_plan.py",
+    "examples/tools/targets/upgrade_replay.py",
     "examples/tools/validate_example.py",
     "lib/benchmark/beyond-jbmc/README.md",
     "lib/benchmark/beyond-jbmc/additional_controls.py",
@@ -321,11 +325,13 @@
     "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-results.md",
     "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-results.md",
     "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-results.md",
+    "llm-dlc/runtime.md",
     "verification/beyond-jbmc/integer-codecs/RESULTS.md",
     "verification/beyond-jbmc/resource-postconditions/RESULTS.md",
     "verification/beyond-jbmc/scaffold-first/RESULTS.md",
     "verification/beyond-jbmc/successor/RESULTS.md",
     "verification/findings.md",
+    "verification/generated-observers/campaign.py",
     "verification/jobs/2026/11/25/20261125-183811-replay-60-l-series-java-questions-on-23.json",
     "verification/merged-pr-links/audit.py",
     "verification/merged-pr-links/l01-l20/upstream/README.md",
@@ -866,24 +872,24 @@
     {
       "index": 24,
       "started": "2026-11-26T21:14:32.029Z",
-      "ended": "2026-11-26T21:17:18.937Z",
-      "turns": 1,
-      "api_calls": 7,
+      "ended": "2026-11-26T21:50:51.601Z",
+      "turns": 2,
+      "api_calls": 58,
       "usage": {
-        "input_tokens": 37223,
-        "output_tokens": 6621,
-        "cache_read_input_tokens": 285824,
+        "input_tokens": 136574,
+        "output_tokens": 44801,
+        "cache_read_input_tokens": 7700480,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 54365
+      "peak_context_tokens": 190129
     }
   ],
   "log": {
-    "sha256": "15324dbca58df2be06808870ef406232d3f7a7d01014c6613b21953da2d369cc",
-    "bytes": 88141932,
-    "lines": 43960,
-    "gzip_bytes": 16201949,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/15324dbca58df2be06808870ef406232d3f7a7d01014c6613b21953da2d369cc.jsonl.gz"
+    "sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8",
+    "bytes": 89581675,
+    "lines": 44400,
+    "gzip_bytes": 16514134,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2630,6 +2636,62 @@
       "summary": "Record the completed deployment and entry-discovery qualification",
       "body": "The final release gate repeated both frozen Log4j claims across five cache comparisons, all twelve captured release questions and every one of the 283 original class bindings. The raw stock property and equivalence commands now refuse the unsafe JDK 21 member, still accept an earlier ordinary shadow, and produced zero false verifications on sixteen deliberately false assertions. Two additional wrong populated resource predictions were refuted while the unrelated-marker controls held.\n\nThe scorecard includes all twelve exercises and distinguishes unexecuted calls, actual counterexamples, backend refusals and the pre-repair false verdict. Verified all eleven collector receipts at 0ca120a720ab, eight independent reference digests, ten archived Log4j receipt references and all 37 local report links. The 243-row scorecard regenerated byte for byte. All 53 selected suites passed.",
       "log_sha256": "d5477a83b3cf942b2d87aa9f4acf88b2fb00cec8de44af0ea65da617588161b4"
+    },
+    {
+      "change_id": "mxwtmrrzlslskmynlmlkpumqulwvrrxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup for the generated callers and observers brief",
+      "body": "Every one of the brief's 13 campaign cases (examples 445, 458, 466, 484; product-behaviour cases J06, J10, J14, J16, J17, J19; Commons IO #520; successor slots 06 and 09) was already prepared by earlier campaigns, so nothing was fetched. The setup checked every deployment artifact against its recorded digest at the path its reader resolves, checked every source worktree against its pinned commit and tree, and listed each pair's changed production files with blob ids. It re-ran each case's registered public observation on its original JVMs, read-only: every fresh result equals the committed receipt and agrees with the outcome the brief states. It extracted the successor slots' original jars from their signed packages and rebuilt jvmcontract, which predated the last lib/src change. No claims, examples, callers or library code were written, and no verification job was needed.",
+      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
+    },
+    {
+      "change_id": "oomotuuosoopyyqmtnmzxrownquuqvyv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
+    },
+    {
+      "change_id": "xrlmzqxpotrztkmvqloxuzvmkxzkrkvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on generated-observers-and-callers-setup",
+      "body": "The watcher's verdicts on the single-agent run generated-observers-and-callers-setup (llm-dlc/decisions/single-generated-observers-and-callers-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
+    },
+    {
+      "change_id": "ztxxpmntuouvkxwnstlqtlrlnsoqwqxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run generated-observers-and-callers-setup into the line",
+      "body": "The single-agent run generated-observers-and-callers-setup (session 8100a50d-f5f0-46e5-bef9-1e5a189c0c98) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
+    },
+    {
+      "change_id": "vxmlqzstlxpxxqkkxpwvykxvrkqrywsp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of generated-observers-and-callers into its brief",
+      "body": "The setup run generated-observers-and-callers-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/in-the-loop-generated-observers-and-callers-brief.md and ~/code/scripts/analysis/in-the-loop-generated-observers-and-callers-brief.md, for the domain agent.",
+      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
+    },
+    {
+      "change_id": "zmsnluqvosyxvuuulwvwmkulovzopuop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
+    },
+    {
+      "change_id": "vxolklvyxoykorkvlozkusuroxnwsskq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Generate and replay typed public observers (verification pending)",
+      "body": "Stage 3 now consumes reviewed input meanings and separate evaluator predictions. It discovers the required public signatures, emits Java, compiles once against the older API, and freezes its class archive. The application planner resumes that archive, preserves fix-only predictions and can rescore qualified raw observations. Numeric measurements are independently compared with JDI returns and exceptions.\n\nSpring 458 and Vavr 445 compiled with production JARs and a Landlock-enforced evaluator boundary. The primary original Spring run saw both parent exceptions and both fixed 127 returns in the declared runtime types on two repetitions. All 53 selected test suites passed. Job 20261126-214343-qualify-generated-numeric-and-lazy-publi repeats the six frozen questions and their cache controls.",
+      "log_sha256": "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8"
     }
   ],
   "logs": {
@@ -2663,17 +2725,17 @@
       "gzip_bytes": 11738950,
       "url": null
     },
-    "15324dbca58df2be06808870ef406232d3f7a7d01014c6613b21953da2d369cc": {
-      "bytes": 88141932,
-      "lines": 43960,
-      "gzip_bytes": 16201949,
-      "url": null
-    },
     "1794fc909be9a30ed3c12ff1283fb6dcc54b5ac1295040cc104d69569d26569e": {
       "bytes": 19056256,
       "lines": 10000,
       "gzip_bytes": 3437368,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/1794fc909be9a30ed3c12ff1283fb6dcc54b5ac1295040cc104d69569d26569e.jsonl.gz"
+    },
+    "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8": {
+      "bytes": 89581675,
+      "lines": 44400,
+      "gzip_bytes": 16514134,
+      "url": null
     },
     "1b2900d2425aae84708c02dc580acb9104d9ed994497b27dcfa8824c0339f79f": {
       "bytes": 16240449,

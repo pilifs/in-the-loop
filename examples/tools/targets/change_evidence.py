@@ -125,6 +125,9 @@ def compose(spec, report, intent="preserve"):
         indexed[side] = {r["input"]: r for r in rows}
         if len(indexed[side]) != len(rows):
             raise ValueError("duplicate trial in finite coverage")
+    asserted = spec.get("assertedSides", ["old", "new"])
+    if asserted not in (["old"], ["new"], ["old", "new"]):
+        raise ValueError("invalid registered side scope")
     children = []
     changes = {c["input"]: c["expectedNew"] for c in intent["allowedChanges"]} if isinstance(intent, dict) else {}
     for i, case in enumerate(cases):
@@ -137,7 +140,11 @@ def compose(spec, report, intent="preserve"):
                 startup[side] = trial["beforeEntry"]
         old, new = values["old"], values["new"]
         target = changes.get(i, case["expected"])
-        if old is None or new is None or old != case["expected"] or intent == "undecided":
+        if len(asserted) == 1:
+            measured = values[asserted[0]]
+            status = ("open" if measured is None or intent == "undecided" else
+                      "established" if measured == case["expected"] else "refuted")
+        elif old is None or new is None or old != case["expected"] or intent == "undecided":
             status = "open"
         else:
             status = "established" if target == new else "refuted"
@@ -146,7 +153,9 @@ def compose(spec, report, intent="preserve"):
                          "status": status, **({"beforeEntry": startup} if startup else {})})
     witness = next((c for c in children if c["status"] == "refuted"), None)
     missing = [c["input"] for c in children if c["status"] == "open"]
-    return {"rule": "check both intended observations on the union of all enumerated singleton inputs",
+    rule = ("check both intended observations on the union of all enumerated singleton inputs" if len(asserted) == 2
+            else f"check only the registered {asserted[0]} prediction over the enumerated inputs")
+    return {"rule": rule,
             "status": "refuted" if witness else "open" if missing else "established",
             "inputs": len(cases), "covered": len(cases) - len(missing), "children": children,
             "firstOpenDependency": missing[0] if missing else None,

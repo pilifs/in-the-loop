@@ -1,0 +1,95 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "spring-projects/spring-framework#37434",
+  "entry": "org.springframework.util.NumberUtils#parseNumber(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Number;",
+  "changed": [
+    "org.springframework.util.NumberUtils#isHexNumber(Ljava/lang/String;)Z",
+    "org.springframework.util.NumberUtils#decodeBigInteger(Ljava/lang/String;)Ljava/math/BigInteger;"
+  ],
+  "fields": [
+    "call.outcome",
+    "return.type",
+    "return.value"
+  ],
+  "assumptions": [
+    "Fresh JVM, recorded release and ordered deployment; only the registered deterministic inputs and synchronous public calls."
+  ],
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37434.1",
+      "history": "Parse `+0x7f` as Integer and BigInteger.",
+      "cohort": "registered",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "conversions": [
+            {
+              "text": "+0x7f",
+              "type": "Integer"
+            },
+            {
+              "text": "+0x7f",
+              "type": "BigInteger"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spring-projects/spring-framework#37434.2",
+      "history": "Parse `-0x7f` as Integer and `+127` as BigInteger.",
+      "cohort": "control",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "conversions": [
+            {
+              "text": "-0x7f",
+              "type": "Integer"
+            },
+            {
+              "text": "+127",
+              "type": "BigInteger"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spring-projects/spring-framework#37434.3",
+      "history": "At the landing, try both `+0x80` and `+#80` with Short and Byte.",
+      "cohort": "registered",
+      "sides": [
+        "new"
+      ],
+      "inputs": [
+        {
+          "conversions": [
+            {
+              "text": "+0x80",
+              "type": "Short"
+            },
+            {
+              "text": "+0x80",
+              "type": "Byte"
+            },
+            {
+              "text": "+#80",
+              "type": "Short"
+            },
+            {
+              "text": "+#80",
+              "type": "Byte"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -373,6 +373,16 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    `records/entry-bindings.json` and reports each open lookup. If the builds became available after scaffolding,
    run `python3 examples/tools/scaffold_example.py bind --before OLD --after NEW --jdk JDK --workflows WORKFLOWS --output RECORD`.
    Both forms check each pinned deployment on its own JVM and ask the native resolver for the exact descriptor.
+   For a reviewed behavioral prediction, give `preparedDeployments` its `registration` and `predictions` files.
+   The registration supplies the public selector, changed selectors, public fields, deterministic assumptions,
+   and each question's ID, semantic input data, observed history and side scope. Stage 3 generates one Java
+   caller for the related questions, compiles against the older API and keeps the class bytes and their
+   hashes in `records/public-observer/`. An unsupported history records its first missing operation.
+   To materialize after setup, run `scaffold_example.py generate --registration REG --predictions PRED --before OLD --after NEW --jdk JDK --output DIR`.
+   The `emit` form takes the same inputs with the predictions omitted and writes only the measurement bundle.
+   Resume with `build.py --change-plan application --before DIR/old.json --after DIR/new.json --jdk JDK --workflows DIR/workflows.json --previous records/entry-bindings.json --run --output REPORT`.
+   The runner loads the saved class archive and checks the declared fields and original JVM calls. Handwritten
+   workflows retain their authored provenance. [Reviewed inputs](../verification/generated-observers/registrations/458.json)
    Stage 2 can omit workflows to discover public callers from the compiled change. Review competing observations
    with the claim owner. During replay, pass the saved record as `--previous` to `build.py --change-plan application --run`.
    The manifest's `classpath` lists the declared roots in JVM order. Each root carries `file` and `sha256`.

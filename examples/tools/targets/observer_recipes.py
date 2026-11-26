@@ -1,0 +1,165 @@
+"""Bounded public API search and source emission for reviewed observation shapes.
+
+The input vocabulary describes data and observable fields. Only members found on the
+original public API can become source identifiers. Predictions never enter this module.
+"""
+import hashlib
+from pathlib import Path
+import re
+from textwrap import dedent, indent
+
+from targets import runtime_jar
+
+TEMPLATE = Path(__file__).with_name("java") / "GeneratedObservation.java.template"
+IDENTIFIER = re.compile(r"[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*")
+CANDIDATE_BUDGET = 64
+NUMBERS = {"Byte", "Short", "Integer", "Long", "Float", "Double", "BigInteger", "BigDecimal"}
+
+
+class Unsupported(ValueError):
+    """A missing public operation or input meaning. Partial experiments cannot decide a question."""
+
+
+class API:
+    def __init__(self, files, feature):
+        self.files = files
+        self.feature = feature
+        self.classes = {}
+        self.used = {}
+
+    def definition(self, owner):
+        if not IDENTIFIER.fullmatch(owner):
+            raise Unsupported("invalid public class name")
+        if owner not in self.classes:
+            name = runtime_jar.internal(owner)
+            for file in self.files:
+                if file.is_dir():
+                    path = file / (name + ".class")
+                    data = path.read_bytes() if path.is_file() else None
+                else:
+                    data = runtime_jar.effective_class(file, name, self.feature)
+                if data:
+                    self.classes[owner] = data
+                    break
+            else:
+                raise Unsupported("public type missing from the bound deployment: " + owner)
+        return self.classes[owner]
+
+    def select(self, owner, names, descriptor, *, static=False):
+        """Refuse equally suitable candidates. Do not silently choose a same-name overload."""
+        data = self.definition(owner)
+        if not runtime_jar.class_flags(data) & 1:
+            raise Unsupported("type is inaccessible from a public caller: " + owner)
+        methods = runtime_jar.methods(data)
+        candidates = sorted((n, d) for n, d in methods if n in names and re.fullmatch(descriptor, d)
+                            and runtime_jar.method_flags(data, n, d) & 9 == (9 if static else 1))
+        if len(candidates) != 1:
+            raise Unsupported(f"{owner} needs one public {'/'.join(names)} matching {descriptor}, found {candidates}")
+        name, desc = candidates[0]
+        if name != "<init>" and not IDENTIFIER.fullmatch(name):
+            raise Unsupported("unrepresentable public method name")
+        entry = owner + "#" + name + desc
+        self.used[entry] = hashlib.sha256(data).hexdigest()
+        return name, desc
+
+    def require(self, owner, name, descriptor, *, static=False):
+        return self.select(owner, [name], re.escape(descriptor), static=static)[0]
+
+
+def keys(value, fields):
+    if not isinstance(value, dict) or set(value) != set(fields):
+        raise Unsupported("registered input needs exactly " + ", ".join(fields))
+
+
+def nonempty(value, meaning):
+    if not isinstance(value, list) or not value:
+        raise Unsupported("missing " + meaning)
+    return value
+
+
+def select(entry, fields, inputs, api):
+    owner, method, descriptor = runtime_jar.parse_target(entry)
+    if not descriptor:
+        raise Unsupported("supply the descriptor of the bound public entry")
+    if fields == ["call.outcome", "return.type", "return.value"]:
+        api.require(owner, method, "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Number;", static=True)
+        for item in inputs:
+            keys(item, ["conversions"])
+            for conv in nonempty(item["conversions"], "texts and requested numeric types"):
+                keys(conv, ["text", "type"])
+                if conv["type"] not in NUMBERS or not isinstance(conv["text"], str):
+                    raise Unsupported("each conversion needs literal text and a supported numeric target type")
+        recipe = {"family": "typed numeric conversions", "owner": owner, "method": method}
+    elif fields == ["result.defined", "fallback.value", "fallback.calls"]:
+        _, desc = api.select(owner, [method], r"\(Ljava/util/function/Predicate;\)L[\w/$]+;")
+        result = desc.split(")L")[1][:-1].replace("/", ".")
+        factory, _ = api.select(owner, ["of", "ofAll", "from"], r"\(\[Ljava/lang/Object;\)L" + re.escape(runtime_jar.internal(owner)) + ";", static=True)
+        defined = api.require(result, "isDefined", "()Z")
+        fallback = api.require(result, "getOrElse", "(Ljava/util/function/Supplier;)Ljava/lang/Object;")
+        for item in inputs:
+            keys(item, ["selections", "fallback"])
+            if type(item["fallback"]) is not int:
+                raise Unsupported("the registered fallback must be an integer")
+            for selection in nonempty(item["selections"], "sequences and predicates"):
+                keys(selection, ["values", "predicate"])
+                if not isinstance(selection["values"], list) or any(v is not None and type(v) is not int for v in selection["values"]):
+                    raise Unsupported("selection requires nullable integer values")
+                p = selection["predicate"]
+                if not isinstance(p, dict) or len(p) != 1 or not (
+                        ("oneOf" in p and isinstance(p["oneOf"], list) and all(v is None or type(v) is int for v in p["oneOf"])) or
+                        ("greaterThan" in p and type(p["greaterThan"]) is int) or ("odd" in p and p["odd"] is True)):
+                    raise Unsupported("missing integer predicate (oneOf, greaterThan or odd)")
+        recipe = {"family": "selection and lazy default", "owner": owner, "method": method, "result": result,
+                  "factory": factory, "defined": defined, "fallback": fallback}
+    else:
+        from targets import observer_histories
+        recipe = observer_histories.select(entry, fields, inputs, api)
+    if not any(target == entry for target in api.used):
+        raise Unsupported("selected public overload differs from the reviewed entry: " + entry)
+    return recipe
+
+
+def source(recipe):
+    p = recipe
+    if p["family"] == "typed numeric conversions":
+        body = '''
+            for (Map<String,String> pair : (List<Map<String,String>>)data.get("conversions")) {
+                String type = pair.get("type");
+                Class<? extends Number> target = Class.forName(
+                        (type.startsWith("Big") ? "java.math." : "java.lang.") + type).asSubclass(Number.class);
+                String text = pair.get("text");
+                try {
+                    Number value = OWNER.METHOD(text, target);
+                    if (value == null) observations.add(row("return", null, null));
+                    else observations.add(row("return", value.getClass().getName(), value.toString()));
+                } catch (RuntimeException error) {
+                    observations.add(row("throws", error.getClass().getName()));
+                }
+            }'''.replace("OWNER", p["owner"]).replace("METHOD", p["method"])
+        support = ""
+    elif p["family"] == "selection and lazy default":
+        body = '''
+            for (Map<String,Object> selection : (List<Map<String,Object>>)data.get("selections")) {
+                List<Integer> values = (List<Integer>)selection.get("values");
+                Map<String,Object> rule = (Map<String,Object>)selection.get("predicate");
+                java.util.function.Predicate<Integer> predicate = x -> {
+                    if (rule.containsKey("oneOf")) return ((List<?>)rule.get("oneOf")).contains(x);
+                    if (x == null) return false;
+                    if (rule.containsKey("greaterThan")) return x > (Integer)rule.get("greaterThan");
+                    return (x & 1) != 0;
+                };
+                OWNER<Integer> receiver = OWNER.FACTORY(values.toArray(new Integer[0]));
+                RESULT<Integer> selected = receiver.METHOD(predicate);
+                int[] calls = {0};
+                boolean defined = selected.DEFINED();
+                Integer value = selected.FALLBACK(() -> { calls[0]++; return (Integer)data.get("fallback"); });
+                observations.add(row(defined, value, calls[0]));
+            }'''
+        for key in ["owner", "method", "factory", "result", "defined", "fallback"]:
+            body = body.replace(key.upper(), p[key])
+        support = ""
+    else:
+        from targets import observer_histories
+        body, support = observer_histories.body(p)
+    return TEMPLATE.read_text().replace("        /* MEASURE */", indent(dedent(body).strip(), "        ")).replace(
+        "    /* SUPPORT */", indent(dedent(support).strip(), "    "))
