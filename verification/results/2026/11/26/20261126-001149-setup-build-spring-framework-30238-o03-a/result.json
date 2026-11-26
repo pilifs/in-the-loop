@@ -1,0 +1,387 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-001149-setup-build-spring-framework-30238-o03-a",
+  "title": "Setup: build Spring Framework #30238 (O03) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 17m47s, peak 3.2 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-001149-setup-build-spring-framework-30238-o03-a.json",
+    "sha256": "fab098066a92a02defc8e8f59ce25127e4b2c7ebe3424223aee091187864fff0",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-001149-setup-build-spring-framework-30238-o03-a",
+      "title": "Setup: build Spring Framework #30238 (O03) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md, case O03 (spring-projects/spring-framework#30238: scalar MockRestRequestMatchers header/queryParam overloads). In the worktrees $O/worktrees/O03-{fix,parent} (O = ~/.cache/in-the-loop/spring-pr-links-o01-o20), offline (dependencies resolved online beforehand), it builds the jars of spring-test with the Gradle each checkout's wrapper names, runs the landed test classes (MockRestRequestMatchersTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-test in $O/artifacts/O03-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $O/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned O03",
+      "submitted": {
+        "at": "2026-11-26T00:11:49+00:00",
+        "session": "bfc9aed1-6b9f-409a-9ed4-c5515dca4d80",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "O03 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O03 fix",
+          "cwd": "."
+        },
+        {
+          "name": "O03 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O03 parent",
+          "cwd": "."
+        },
+        {
+          "name": "O03 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O03 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "O03 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O03 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "ae4be9882649a5ed8bbb683be9bf693e37253453",
+  "startedAt": "2026-11-26T00:12:53+00:00",
+  "finishedAt": "2026-11-26T00:31:02+00:00",
+  "wallSeconds": 1089.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1001123,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3397931008,
+    "wallSeconds": 1067.9,
+    "cpuSeconds": 934.1,
+    "memoryOfEstimate": 0.53,
+    "durationOfEstimate": 0.89
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "O03 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O03 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 490.617,
+      "cpuSeconds": 396.752,
+      "cpuThrottledSeconds": 33.312,
+      "peakMemoryBytes": 3397931008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-o03-fix-offline-build-and-land.log",
+        "lines": 42,
+        "bytes": 4720,
+        "sha256": "af3580429f143293ab3ba1cbf1a9b49a7a739fda0aa97be6d29b1fc8b381ec48",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :spring-beans:processResources",
+        "> Task :spring-test:processResources",
+        "> Task :spring-test:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "class org.springframework.test.web.client.match.MockRestRequestMatchersTests junit tests=29 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O03-fix/spring-test.runtimeClasspath.txt 108 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O03-fix/spring-test.testRuntimeClasspath.txt 218 entries",
+        "4f60554049081a4ec4384e1f7275d5f80064d90612b66ac4f56c8cc4104396ef  jars/spring-test-6.0.8-SNAPSHOT.jar",
+        "eae4f94626b14bbd44a6c5dfe87efd24527adf8311c05e0d475bc42882581d57  tree/spring-aop/build/libs/spring-aop-6.0.8-SNAPSHOT.jar",
+        "d7009526d48d27645bacc52361b31fee6095fe6a8b14d579e55114f2c8e68b98  tree/spring-beans/build/libs/spring-beans-6.0.8-SNAPSHOT.jar",
+        "b3634ec07de30cc085a1bd577a50e7cab51029b0838ea76aec5ac36fa28d01f7  tree/spring-beans/build/libs/spring-beans-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "bcdb8bb26683199b0b86523d1ff85ed6dedecd4147507ff0587d0f005b5b5174  tree/spring-context/build/libs/spring-context-6.0.8-SNAPSHOT.jar",
+        "51a64301fa33b32074714936157b54323ad3cb73bdec3043485750234bb2a087  tree/spring-context/build/libs/spring-context-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "3dd1d9f2e79cc1639e3d854fa26fde5a26c28f7d38007dd448728ba8f429d9e7  tree/spring-context-support/build/libs/spring-context-support-6.0.8-SNAPSHOT.jar",
+        "67b79f55c89ad9337baf466e806f6b7a82274dbe2aaa1a323f4698f2460bc32f  tree/spring-core/build/libs/spring-core-6.0.8-SNAPSHOT.jar",
+        "05cc63f948d50bcb4afc9886e802df7a89ab3b7714ffeb21ad7338bd6f177f14  tree/spring-core/build/libs/spring-core-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "34f962f9f563fa7254bc4eccc40d7ae760c6668685de3ae19b4865b4a06e86f6  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "339cc2d5a113e32ec75dac22cc948883842dffe3d0576551b16945d14ce74c5a  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "a3867c8a6fe95a885af4987fc979b6a9ffe3fdbdfc7a1245850ffbb10b403314  tree/spring-core-test/build/libs/spring-core-test-6.0.8-SNAPSHOT.jar",
+        "98fb7e980c6eb43676254a2e236bb79e719fc6822e968331d3756c89c34cfd27  tree/spring-expression/build/libs/spring-expression-6.0.8-SNAPSHOT.jar",
+        "11002e7f1747a0fab096d90a9f6f118685e06bfa7b56d330590216c7858b57e1  tree/spring-jcl/build/libs/spring-jcl-6.0.8-SNAPSHOT.jar",
+        "9a057ed551ceafaf937b1e3fcf5a09b7437443a165420e4c0d20cc9b89a16572  tree/spring-jdbc/build/libs/spring-jdbc-6.0.8-SNAPSHOT.jar",
+        "e8453ceb06ec4371589e462c7d991860e09d9a3409310cb1015a0a09c0e3c333  tree/spring-orm/build/libs/spring-orm-6.0.8-SNAPSHOT.jar",
+        "0ccbd153a16323cd58bc7ed4f6d10cff4c5ab2cba074ee9903be964ff7975396  tree/spring-oxm/build/libs/spring-oxm-6.0.8-SNAPSHOT.jar",
+        "4f60554049081a4ec4384e1f7275d5f80064d90612b66ac4f56c8cc4104396ef  tree/spring-test/build/libs/spring-test-6.0.8-SNAPSHOT.jar",
+        "cfe2d1464e9374613a4419428998b11c53b448e0eec2ff9518a80c3eab7e7112  tree/spring-test/build/libs/spring-test-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "5676a37644acc4aec20092065519def121b13ddb522798d934c4faa341c021c4  tree/spring-tx/build/libs/spring-tx-6.0.8-SNAPSHOT.jar",
+        "82e6ae2bf17221ee03e922a0630e305f495b6f24092d41127159f3d63f4d0fb0  tree/spring-tx/build/libs/spring-tx-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "d89ef60f0959fae4137f96692fc37c0d07313dca50f0531b2af35423733f519e  tree/spring-web/build/libs/spring-web-6.0.8-SNAPSHOT.jar",
+        "bdcc1791e0d13d0ca64d520aff788d149eea57a9fe1ec4be6bd3c36e14ea9885  tree/spring-web/build/libs/spring-web-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "3205120585c3d96108888eebe68479048b7d428664115b392d8d359d3e976bb9  tree/spring-webflux/build/libs/spring-webflux-6.0.8-SNAPSHOT.jar",
+        "7a2b6853a78c55a4215806f1525956162a4a924cfc151ab84fcb30a269bb3a3a  tree/spring-webmvc/build/libs/spring-webmvc-6.0.8-SNAPSHOT.jar",
+        "124f0958c51dca78ff3962076fbd8800018b9e59b494b19823e5fb4ab5d364f1  tree/spring-websocket/build/libs/spring-websocket-6.0.8-SNAPSHOT.jar",
+        "afcfc0a2dc7a907f899dd1e01e1ff0277bb37172c4f15cad49bc17a80cc92ee4  spring-test-6.0.8-SNAPSHOT.jar!/org/springframework/test/web/client/match/MockRestRequestMatchers.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "O03 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O03 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 414.093,
+      "cpuSeconds": 299.587,
+      "cpuThrottledSeconds": 21.632,
+      "peakMemoryBytes": 3360272384,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-o03-parent-offline-build-and-t.log",
+        "lines": 42,
+        "bytes": 4729,
+        "sha256": "d1975c64c95ce2382fe6a64edb610aee5cdbad531d6a66700a1c9976c535bbfa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :spring-beans:processResources",
+        "> Task :spring-test:processResources",
+        "> Task :spring-test:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "class org.springframework.test.web.client.match.MockRestRequestMatchersTests junit tests=27 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O03-parent/spring-test.runtimeClasspath.txt 108 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O03-parent/spring-test.testRuntimeClasspath.txt 218 entries",
+        "1ecc94b106d1235a54e77d46adc55146aaf35c380e4cb26a7498b8ce4880d37f  jars/spring-test-6.0.8-SNAPSHOT.jar",
+        "cb8681a84399b65d790cbeba8d757705273ab00d4eb2a9aa3cda3cf37d226f8c  tree/spring-aop/build/libs/spring-aop-6.0.8-SNAPSHOT.jar",
+        "8c354d801ff3d4c58a6c928a9f9e5f50b0218ecad1a53bb8e78e2bb5c2b2a8a8  tree/spring-beans/build/libs/spring-beans-6.0.8-SNAPSHOT.jar",
+        "79edb6215a91b4e7d8beb020672adf650b4ba83cb086be2bf60f0fb9e2f26eb4  tree/spring-beans/build/libs/spring-beans-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "e5079f36b4431e5afeb451c4ee42eb143870885cff4e29daa5a5b8332dfd307c  tree/spring-context/build/libs/spring-context-6.0.8-SNAPSHOT.jar",
+        "254091eec6e32644be13ed01736032ee9286d09dd9b719369aa8f5559f82b977  tree/spring-context/build/libs/spring-context-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "79efac49c8abdb138f60d23621860a88e0f9a220cc03b22a7519bcfcd6d04d94  tree/spring-context-support/build/libs/spring-context-support-6.0.8-SNAPSHOT.jar",
+        "fc757aa8e3f9841a8ed44c373aac0ee62027f089a7f00d02fc0eb1e09c31f3e1  tree/spring-core/build/libs/spring-core-6.0.8-SNAPSHOT.jar",
+        "ff14f7696b216ec1b29d082d472975d387fe9ef2b71fc03f3959129661019928  tree/spring-core/build/libs/spring-core-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "6b66ba23f86e4c8a7c5223cdfdeaa492fe23e65baef586c7ba89af955f49c8ee  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "bd9c43cdf0e98a39c4db215e03c3274212d4add8f034131ffb475b09495bf82c  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "1d5edc9b0c4b4430db50e293b270b5ae728912c47119309c0221e36cba90da8f  tree/spring-core-test/build/libs/spring-core-test-6.0.8-SNAPSHOT.jar",
+        "a76e955976788c35e1322861cf113ec06455833a369d4b05a126bab30cb89d48  tree/spring-expression/build/libs/spring-expression-6.0.8-SNAPSHOT.jar",
+        "3f9ab827bd9dd4016becc7f567050fc2ce7b0228ac9dd54d6ff8cf321485a976  tree/spring-jcl/build/libs/spring-jcl-6.0.8-SNAPSHOT.jar",
+        "3e9747049f09db40f87ae92bb1a70cfba32c2581d9b4e455547bf0040ac6a8ee  tree/spring-jdbc/build/libs/spring-jdbc-6.0.8-SNAPSHOT.jar",
+        "337d94988aa84ea5d7f0f99e5f86fcd4988ef5a194b4b29d1d5ae8969fcf3acf  tree/spring-orm/build/libs/spring-orm-6.0.8-SNAPSHOT.jar",
+        "b60dfba827dab0852db720fe9f81f804613cbbdb72f62a74db225c8f2446d159  tree/spring-oxm/build/libs/spring-oxm-6.0.8-SNAPSHOT.jar",
+        "1ecc94b106d1235a54e77d46adc55146aaf35c380e4cb26a7498b8ce4880d37f  tree/spring-test/build/libs/spring-test-6.0.8-SNAPSHOT.jar",
+        "fa052b138c965bbe5ca408e9abe32726956745fcce43e083f37c9ca24c61eb5c  tree/spring-test/build/libs/spring-test-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "c0ce7a12f1a145401dfc73c25131b925f3e9378d7d86b819e515fba1c0de2bbf  tree/spring-tx/build/libs/spring-tx-6.0.8-SNAPSHOT.jar",
+        "b3f04001fb3bd86670235506ebae1d72357f0075f4c0ace4af6a8a589a1383a2  tree/spring-tx/build/libs/spring-tx-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "7af12d14cc1e9a36ce6c9edf4f535ac8dc27951aace1ee48fda57982fba0d3d5  tree/spring-web/build/libs/spring-web-6.0.8-SNAPSHOT.jar",
+        "3cfce63aae2caad8e82625690069f4c8c39548c07b7c5350fe8a6a7f6aad527f  tree/spring-web/build/libs/spring-web-6.0.8-SNAPSHOT-test-fixtures.jar",
+        "4f6a1e0a5cfb4b9eb82b1e2e7447f0d3ba6fb38d8b2a26862e52ade6493e1fe5  tree/spring-webflux/build/libs/spring-webflux-6.0.8-SNAPSHOT.jar",
+        "85406de529a4d644199725aa798185d4020aa27bd3fd1ac981be19f8c2c34e2b  tree/spring-webmvc/build/libs/spring-webmvc-6.0.8-SNAPSHOT.jar",
+        "250588b87472faa28c3756e8c525bfa5e1b05ce0e6792fd3ea9e26626c6d8fe5  tree/spring-websocket/build/libs/spring-websocket-6.0.8-SNAPSHOT.jar",
+        "a3271f782ffce9d01ee8a3696f6f9227b4426ab9005ddc0d54c77c6c93820a07  spring-test-6.0.8-SNAPSHOT.jar!/org/springframework/test/web/client/match/MockRestRequestMatchers.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "O03 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O03 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 161.424,
+      "cpuSeconds": 236.514,
+      "cpuThrottledSeconds": 20.622,
+      "peakMemoryBytes": 2918531072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-o03-transplant-the-fix-s-tests.log",
+        "lines": 20,
+        "bytes": 2047,
+        "sha256": "45cc2f0c3faedd9312ce9dfd235b4f57f02f21587c37482ebda3a15ad25726a5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-test/src/test/java/org/springframework/test/web/client/match/MockRestRequestMatchersTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O03-parent-landed gradle=8.0.2 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=161 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-test:test --tests org.springframework.test.",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:jar",
+        "> Task :spring-beans:processResources",
+        "> Task :spring-test:processResources",
+        "> Task :spring-test:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "class org.springframework.test.web.client.match.MockRestRequestMatchersTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O03-parent-landed/spring-test/src/test/java/org/springframework/test/web/client/match/MockRestRequestMatchersTests.java:164: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O03-parent-landed/spring-test/src/test/java/org/springframework/test/web/client/match/MockRestRequestMatchersTests.java:172: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O03-parent-landed/spring-test/src/test/java/org/springframework/test/web/client/match/MockRestRequestMatchersTests.java:173: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O03-parent-landed/spring-test/src/test/java/org/springframework/test/web/client/match/MockRestRequestMatchersTests.java:174: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O03-parent-landed/spring-test/src/test/java/org/springframework/test/web/client/match/MockRestRequestMatchersTests.java:175: error: cannot find symbol",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "O03 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O03 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 1.804,
+      "cpuSeconds": 1.248,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 98299904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-o03-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "73c7dfc24c1d5ae39f93a70536b1d4d5ecfd828a2df6db5dfd38a97a23afcaa0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned O03"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T00:31:28+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T003102Z-243376ede4a989aa"
+    }
+  }
+}

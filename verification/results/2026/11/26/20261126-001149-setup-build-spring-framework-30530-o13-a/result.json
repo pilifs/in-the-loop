@@ -1,0 +1,373 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-001149-setup-build-spring-framework-30530-o13-a",
+  "title": "Setup: build Spring Framework #30530 (O13) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 17m38s, peak 2.4 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-001149-setup-build-spring-framework-30530-o13-a.json",
+    "sha256": "1653bc5a2451b839bb67080d55fd557fe8a2a368ee9671daf2345d4f5b8b3421",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-001149-setup-build-spring-framework-30530-o13-a",
+      "title": "Setup: build Spring Framework #30530 (O13) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md, case O13 (spring-projects/spring-framework#30530: R2DBC BeanPropertyRowMapper and DataClassRowMapper). In the worktrees $O/worktrees/O13-{fix,parent} (O = ~/.cache/in-the-loop/spring-pr-links-o01-o20), offline (dependencies resolved online beforehand), it builds the jars of spring-r2dbc with the Gradle each checkout's wrapper names, runs the landed test classes (BeanPropertyRowMapperTests DataClassRowMapperTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-r2dbc in $O/artifacts/O13-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $O/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned O13",
+      "submitted": {
+        "at": "2026-11-26T00:11:49+00:00",
+        "session": "bfc9aed1-6b9f-409a-9ed4-c5515dca4d80",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "O13 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O13 fix",
+          "cwd": "."
+        },
+        {
+          "name": "O13 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O13 parent",
+          "cwd": "."
+        },
+        {
+          "name": "O13 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O13 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "O13 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O13 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "ae4be9882649a5ed8bbb683be9bf693e37253453",
+  "startedAt": "2026-11-26T00:12:53+00:00",
+  "finishedAt": "2026-11-26T00:30:52+00:00",
+  "wallSeconds": 1079.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1001123,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 2541756416,
+    "wallSeconds": 1058.5,
+    "cpuSeconds": 613.5,
+    "memoryOfEstimate": 0.39,
+    "durationOfEstimate": 0.88
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "O13 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O13 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 478.59,
+      "cpuSeconds": 276.651,
+      "cpuThrottledSeconds": 7.029,
+      "peakMemoryBytes": 2230358016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-o13-fix-offline-build-and-land.log",
+        "lines": 33,
+        "bytes": 3572,
+        "sha256": "4c027c9f34c4f54eab0b0ad666416ea0d3bcd4bb70185fe8b5928c7c99b38eda",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/worktrees/O13-fix gradle=8.1.1 launcher=17.0.21.0+9-tem gradle-exit=0 seconds=207 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-r2dbc:jar :spring-r2dbc:test --tests org.springfr",
+        "junit tests=18 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :spring-r2dbc:processResources",
+        "> Task :spring-r2dbc:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "> Task :spring-beans:processResources",
+        "class org.springframework.r2dbc.core.BeanPropertyRowMapperTests junit tests=14 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.r2dbc.core.DataClassRowMapperTests junit tests=4 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O13-fix/spring-r2dbc.runtimeClasspath.txt 18 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O13-fix/spring-r2dbc.testRuntimeClasspath.txt 65 entries",
+        "8370831560ba085d01cdf6305863bab52a90a714df353f7b714d07b784e98ab6  jars/spring-r2dbc-6.1.0-SNAPSHOT.jar",
+        "48566b3dcd55d6a3c416d00e1da95cda07e5b2e69b5d51cd7884d30d2801ebef  tree/spring-aop/build/libs/spring-aop-6.1.0-SNAPSHOT.jar",
+        "a5a287c80a7ad36a47d24e731c40decfd24cf6e9a9480f64b0bd8e4469283781  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT.jar",
+        "20852d57aa477cfacf9b1b3f4c8321a5f349325fc6988de7f5fd72a482249324  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "aeabf22e71c74f1cabe9c4076adf5e59fa09b4e729d2e1067bbf3096f75dd894  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT.jar",
+        "de98bdd3ab862341743e2cbf750c8391400d48753c505d64962f681f32015e07  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "bddd77cdcd1fd6d88889be1e1fb1385dfc828492c578afc13f286b30a8521329  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT.jar",
+        "46b966d12eb47190c295bb186c3280541ad80047a0ccbbde00f131cefd76e889  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "c9dc99479b23b42fc327249ae2e1760dd423400f7f0b9a18a6fdf2f024a5efc0  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "73f924af05f8263dd901793d6d71b30e2da2ac133e0195817b7860f987f87e74  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "07c8e690ee904cae400f2655db19b38be616b73490089e84d02ad72869f52b18  tree/spring-expression/build/libs/spring-expression-6.1.0-SNAPSHOT.jar",
+        "217aa6de8a06905e51809209a9d58dbefdadb240d313f8dac870f2dfe0bf7185  tree/spring-jcl/build/libs/spring-jcl-6.1.0-SNAPSHOT.jar",
+        "8370831560ba085d01cdf6305863bab52a90a714df353f7b714d07b784e98ab6  tree/spring-r2dbc/build/libs/spring-r2dbc-6.1.0-SNAPSHOT.jar",
+        "4d99ac211d004af467c4faecd210782220b4d547a339ad71f0d0b506ab264818  tree/spring-r2dbc/build/libs/spring-r2dbc-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "778fd3c42c7bf43ad8876c007cc15a774a54a2730b9883e28a2ed74fde09e072  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT.jar",
+        "d4c4a9a59f6fab7d6029a782d024212d59e1d3653edc9f2c956a3c9575556d99  spring-r2dbc-6.1.0-SNAPSHOT.jar!/org/springframework/r2dbc/core/BeanPropertyRowMapper.class",
+        "60d8f1a904327589d0fb89d4ac4d162abb9e0057201e6efb5e0767cd77ff960e  spring-r2dbc-6.1.0-SNAPSHOT.jar!/org/springframework/r2dbc/core/DataClassRowMapper.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "O13 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O13 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 447.773,
+      "cpuSeconds": 191.407,
+      "cpuThrottledSeconds": 6.163,
+      "peakMemoryBytes": 1928409088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-o13-parent-offline-build-and-t.log",
+        "lines": 31,
+        "bytes": 3029,
+        "sha256": "25bd683f84d1bab54f909c80a15dd5cc659aaf6e229a1a2c966eb2c3f8fb9dd5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/worktrees/O13-parent gradle=8.1.1 launcher=17.0.21.0+9-tem gradle-exit=0 seconds=169 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-r2dbc:jar",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :spring-r2dbc:processResources",
+        "> Task :spring-core:javapoetRepackJar",
+        "> Task :spring-instrument:compileJava",
+        "> Task :spring-core:objenesisRepackJar",
+        "class org.springframework.r2dbc.core.BeanPropertyRowMapperTests no-result",
+        "class org.springframework.r2dbc.core.DataClassRowMapperTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O13-parent/spring-r2dbc.runtimeClasspath.txt 18 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O13-parent/spring-r2dbc.testRuntimeClasspath.txt 65 entries",
+        "267410963d204b43e8c7bad2db823abd85219e58e2b2c273a2aadb929bb32b78  jars/spring-r2dbc-6.1.0-SNAPSHOT.jar",
+        "28d7066c9da35691fe1b01b043fb629b8df94fc88f661adaec4024e5fadcb663  tree/spring-aop/build/libs/spring-aop-6.1.0-SNAPSHOT.jar",
+        "856a62cbfd0ac710aeafe395c44714d3b299a7162d2e60c5e06d95447c0cc7a0  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT.jar",
+        "c94f05ef6e4efe06e3ffba5c2467ed4ab826d0d1f97eefd593e0448e108011e5  tree/spring-beans/build/libs/spring-beans-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "85bb256c03073a804770ccfa8226017d508be21b6be103ff50c36680cb7901fc  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT.jar",
+        "fcbc236621c7483d1bdefed06a96950f658655a804e3a615f88c11000a5f49a3  tree/spring-context/build/libs/spring-context-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "9b8c089f7850c4682088ea00f4836e44c8bfa7a14c7420466a02202be8bfcac3  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT.jar",
+        "dbccc0ecc49bb4c5ee2186ace775bfae2db8be7875323fdf44859bf27b258db7  tree/spring-core/build/libs/spring-core-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "2b4ca9a922d348ac01d6c06fcaad5e09fb2e80615da0c27ca74fd4070c87fb02  tree/spring-core/build/libs/spring-javapoet-repack-1.13.0.jar",
+        "faa382eed5e2547aa9dec002122950b63c9c372b0f6d634f4a306856ecfca510  tree/spring-core/build/libs/spring-objenesis-repack-3.3.jar",
+        "15060f01f920aa3d008dda81bc03faab9930993c0699f449bff0d501e29bef1f  tree/spring-expression/build/libs/spring-expression-6.1.0-SNAPSHOT.jar",
+        "10f46fb738c07f4b69bb0fbf96f7c11ade4509df099dd77a82699dca2b5fbcef  tree/spring-jcl/build/libs/spring-jcl-6.1.0-SNAPSHOT.jar",
+        "267410963d204b43e8c7bad2db823abd85219e58e2b2c273a2aadb929bb32b78  tree/spring-r2dbc/build/libs/spring-r2dbc-6.1.0-SNAPSHOT.jar",
+        "dcab30c9a28e389e008c4a68e7106ff0bcac1e4bea0648feec35417c4333ac1c  tree/spring-r2dbc/build/libs/spring-r2dbc-6.1.0-SNAPSHOT-test-fixtures.jar",
+        "3dfc653fdd92045abc41b664475d9d7ffb535bf6854ef514b9be4547fa19ae63  tree/spring-tx/build/libs/spring-tx-6.1.0-SNAPSHOT.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "O13 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O13 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 130.549,
+      "cpuSeconds": 144.434,
+      "cpuThrottledSeconds": 6.0,
+      "peakMemoryBytes": 2541756416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-o13-transplant-the-fix-s-tests.log",
+        "lines": 22,
+        "bytes": 2164,
+        "sha256": "a3c9778b8c7fec75539e43bb6cc4a57f7ccb0debd5a580ac408864f97ace7e8e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-r2dbc/src/test/java/org/springframework/r2dbc/core/BeanPropertyRowMapperTests.java",
+        "transplanted spring-r2dbc/src/test/java/org/springframework/r2dbc/core/DataClassRowMapperTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O13-parent-landed gradle=8.1.1 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=131 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-r2dbc:test --tests org.springframework.r2db",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:jar",
+        "> Configure project :framework-docs",
+        "> Task :spring-r2dbc:processResources",
+        "> Task :spring-r2dbc:processTestFixturesResources NO-SOURCE",
+        "> Task :spring-aop:processResources",
+        "class org.springframework.r2dbc.core.BeanPropertyRowMapperTests no-result",
+        "class org.springframework.r2dbc.core.DataClassRowMapperTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O13-parent-landed/spring-r2dbc/src/test/java/org/springframework/r2dbc/core/DataClassRowMapperTests.java:35: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O13-parent-landed/spring-r2dbc/src/test/java/org/springframework/r2dbc/core/DataClassRowMapperTests.java:35: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O13-parent-landed/spring-r2dbc/src/test/java/org/springframework/r2dbc/core/DataClassRowMapperTests.java:48: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O13-parent-landed/spring-r2dbc/src/test/java/org/springframework/r2dbc/core/DataClassRowMapperTests.java:48: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O13-parent-landed/spring-r2dbc/src/test/java/org/springframework/r2dbc/core/DataClassRowMapperTests.java:60: error: cannot find symbol",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "O13 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O13 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 1.604,
+      "cpuSeconds": 0.983,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 93196288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-o13-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "86cf3e151086c42b6972dccf62cfe97dc92ae623f55f569131dc07569b4c505b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned O13"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T00:31:28+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T003052Z-9930716c9f30ddbd"
+    }
+  }
+}
