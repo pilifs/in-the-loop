@@ -931,3 +931,597 @@ Record[field=value1, isField=true] not to be equal to: Record[field=value2, isFi
 **Artifacts.** `$O/artifacts/R48-ROLE/assertj-core-3.27.1-SNAPSHOT.jar`; `Introspection.class` fix `61e7baea5a900f4c4c98591e925f304eb0cacdf79b12c79896c08f9504df6036`, parent `2e583508bf1f87ef0c38496cf05644ea808dbbf9edf8b2c9a9c69a08897d9a4c`;
 `core-tests-test-classpath.txt` = the test classpath of `assertj-core-tests` with the kept jar in place.
 
+## Cases R25–R50 (fork D, Gradle)
+
+Fork D of the setup did the twelve Gradle cases: R25 (moshi), R33, R34 (Calcite), R41, R44 (RxJava), R42, R43 (Reactor Core), R45, R46 (Resilience4j),
+R47 (picocli), R49, R50 (JUnit). Eight ran inline (each Gradle run under a minute once resolved); **R42's pinned build cannot be configured** from public
+sources and took the slice route; **R33, R34, R49 and R50 build and test by two jobs**, `20261126-172339-setup-build-apache-calcite-at-both-pins` (Calcite) and `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (JUnit), queued by
+`$O/scripts/submit_D.py` after everything they need was resolved online into `$O/gradle-home`.
+
+### Toolchain (fork D)
+
+Gradle distributions in `$O/tools/gradle-V`, zips in `$O/dl/gradle/` with services.gradle.org's `.sha256` beside them (`$O/logs/D-gradle-dists.tsv`); every zip equals its
+published sha256. Each pin's `gradle/wrapper/gradle-wrapper.jar` was matched against the published wrapper checksums of all 166 Gradle releases
+(`https://services.gradle.org/versions/all`, `$O/logs/D-wrapper-matches.txt`); every one is a published wrapper jar, often an older version's. The wrappers are not run:
+the unpacked distributions are.
+
+| Gradle | Cases | zip sha256 (= published) | pins' wrapper jar sha256 | = published wrapper of |
+|---|---|---|---|---|
+| 2.14 | R41 | `993b4f33b652c689e9721917d8e021cab6bbd3eae81b39ab2fd46fdb19a928d5` | `b5ca811c057b3eb4164c78f4155d667c6092ff98ba91a4c90d29e127426f37a7` | 2.14 |
+| 4.2.1 | R42 | `b551cc04f2ca51c78dd14edb060621f0e5439bdfafa6fd167032a09ac708fbc0` | `53aa048fef3c06a8442c6a44df5edd2e8c791ee883e42ded6189c7eed112095d` | 4.2 |
+| 5.6 | R44 | `15c02ef5dd3631ec02ac52e8725703e0285d9a7eecbf4e5939aa9e924604d01d` | `383f4efa709b52632a520708e8a07353961970941ab3867ab8ac182132ce1c54` | 4.3.1 |
+| 7.3 | R25 | `de8f52ad49bdc759164f72439a3bf56ddb1589c4cde802d3cec7d6ad0e0ee410` | `33ad4583fd7ee156f533778736fa1b4940bd83b433934d1cc4e9f608e99a6a89` | 7.3 |
+| 7.4.2 | R45, R46 | `29e49b10984e585d8118b7d0bc452f944e386458df27371b49b4ac1dec4b7fda` | `660ab018b8e319e9ae779fdb1b7ac47d0321bde953bf0eb4545f14952cfdcaa3` | 4.10.3 |
+| 7.6 | R47 | `7ba68c54029790ab444b39d7e293d3236b2632631fb5f2e012bb28b4ff669e4b` | `575098db54a998ff1c6770b352c3b16766c09848bee7555dab09afc34e8cf590` | 7.4, 7.4.1, 7.4.2 |
+| 8.6 | R43 | `9631d53cf3e74bfa726893aee1f8994fee4e060c401335946dba2156f440f24c` | `d3b261c2820e9e3d8d639ed084900f11f4a86050a8f83342ade7b6bc9b0d2bdd` | 8.6 |
+| 8.13 | R50 | `20f1b1176237254a6fc204d8434196fa11a4cfb387567519c61556e8710aed78` (= wrapper `distributionSha256Sum`) | `81a82aaea5abcc8ff68b3dfcb58b3c3c429378efd98e7433460610fecd7ae45f` | 8.13 |
+| 8.14.4 | R33, R34 | `f1771298a70f6db5a29daf62378c4e18a17fc33c9ba6b14362e0cdf40610380d` (= `distributionSha256Sum`) | `498495120a03b9a6ab5d155f5de3c8f0d986a449153702fb80fc80e134484f17` | 8.9 |
+| 9.6.1 | R49 | `9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14` (= `distributionSha256Sum`) | `497c8c2a7e5031f6aa847f88104aa80a93532ec32ee17bdb8d1d2f67a194a9c7` | 9.6.1 |
+
+The 4.2.1, 7.6, 8.14.4 and 9.6.1 zips were copied from earlier setups' caches and checked again; the others were downloaded. JDKs: the sdkman Temurin set of
+`env.sh` plus Temurin 24.0.2+12 from an earlier setup (R49's `JDK24`; see R49). No JDK was added.
+
+**Substitute repository** `$O/dl/subst-repo-D` (log `$O/logs/D-subst-repo.txt`, every pom and jar there equal to its source's `.sha1`), added by
+`$O/scripts/subst-repo-D.init.gradle` to plugin and build-script resolution only: `org.ysb33r.gradle:grolifant:0.10` (R45, R46) and nine modules for R41 from
+`https://repo.grails.org/grails/core`; `org.jfrog.buildinfo:build-info-{extractor,client,api}:2.8.2` (R44) from JFrog's jcenter mirror, also equal to
+`releases.jfrog.io/artifactory/oss-release-local`. Details in each case. Nothing compiled or tested uses them.
+
+**Helpers** (`$O/scripts/`): `gradle_case_D.sh` (one Gradle run: verified distribution, JDK, 6 GB scope with `choom -n 500` unless `SCOPE=" "` in a job, `--no-daemon`,
+offline unless `ONLINE=1`, `-Dorg.gradle.caching=false`, toolchain auto-detect/download off and paths = the sdkman JDKs unless `NOTC=1`, init scripts from `GINIT`, log
+`$O/logs/TAG.log` and JUnit summary `TAG.junit.txt`), `junit_gradle_D.sh`, `overlay_D.sh CASE` (copy of the parent with the fix's changed test files, `$O/build/CASE-parent-landed`),
+`standalone_D.sh`, `cp_D.sh` (classpaths), `digests_D.sh`, `classdiff_D.py`, `failmsgs_D.py`, `relcmp_D.sh` (git blob ids of released sources vs the pins), `linecmp_D.py`
+(the PR's added/removed lines found in a release), `subst_add_D.sh`, `subst_find_D.sh`, `write-classpath-old.init.gradle` (Gradle < 4.9), `resolve-all-D.init.gradle`,
+`slice_D.sh` with `slice-R42.conf`, `verify_cp_D.sh`, `sigs_D.sh`, `calcite_job.sh`, `junit_job.sh`, `submit_D.py`.
+
+| Case | Built | Release side | Landed tests (fix / parent's own / fix's tests on the parent) | Upstream run |
+|---|---|---|---|---|
+| R25 moshi #1442 | Gradle 7.3, JDK 17, :moshi jar + records-tests at both pins | 1.12.0 has no records support; 1.13.0 has the fix (not byte-equal) | 6/6 · 5/5 · 1 of 6 FAILS (indirectGenerics: No JsonAdapter for T) | inline |
+| R33 calcite #5345 | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 predates the parent | by job | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
+| R34 calcite #4942 | Gradle 8.14.4, JDK 21 + toolchain 25; resolved inline | none has the fix; 1.42.0 = parent for all 5 changed files | by job | job 20261126-172339-setup-build-apache-calcite-at-both-pins |
+| R41 RxJava #5101 | Gradle 2.14, JDK 8, standalone clones, 9 jcenter-only build-script modules substituted | 2.0.6 = parent, 2.0.7 = fix (exact) | 150 · 136 · 3 of 150 FAIL (Maybe noSubsequentSubscription*) | inline |
+| R42 reactor-core #937 | NOT configurable (propdeps-plugin 0.0.7, spring-io-plugin 0.0.4.RELEASE, dokka integration 0.9.15 only on repo.spring.io, 401/405); slice route on 3.1.1.RELEASE | 3.1.0/3.1.1 = parent, 3.1.2 = fix (code files; Flux.java Javadoc only) | slice: 226/226 · 210/210 · 10 of 226 FAIL (delayError…WithMonoError/FluxError); 3.1.1 alone same 10 fail, 3.1.2 alone all pass | inline (slice) |
+| R43 reactor-core #3783 | Gradle 8.6, JDK 8, :reactor-core at both pins | 3.4.37 = parent, 3.4.38 = fix (exact) | 7/7 · 6/6 · 3 of 7 FAIL (testThenManyOnConcatArray, 2× testThenManyRepeated) | inline |
+| R44 RxJava #6664 | Gradle 5.6, JDK 8, build-info 2.8.2 substituted | 3.0.0-RC3 = parent; RC4 = fix for ObservableGroupBy, fix + later changes for FlowableGroupBy | 104 · 100 · 1 of 104 FAILS (FlowableGroupByTest#newGroupValueSelectorFails) | inline |
+| R45 resilience4j #2067 | Gradle 7.4.2, JDK 17, grolifant 0.10 substituted | 2.1.0 predates, 2.2.0 has the fix (not byte-equal) | 16/16 · 12/12 · 3 of 16 FAIL (×4 with test-retry) | inline |
+| R46 resilience4j #1999 | Gradle 7.4.2, JDK 17, same substitution | 2.1.0 (brief) predates, 2.2.0 has the fix | 1/1 · (new test) · 1 of 1 FAILS (IllegalAccessException on Issue560 lambda) | inline |
+| R47 picocli #2036 | Gradle 7.6, JDK 11, root jar | 4.7.3 predates, 4.7.4 has the fix | 13/13 · 10/10 · 3 of 13 FAIL (the three new inherited fallback tests) | inline |
+| R49 junit #5839 | Gradle 9.6.1, JDK 25 (+17,21,24), standalone clones; resolved inline | 6.1.1 (brief) predates; 6.1.2 = 6.1.1 + exactly the fix's 7 lines | by job | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
+| R50 junit #4466 | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | by job | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
+
+### R25 · moshi #1442 — nested record components resolved in the enclosing parameterized type (upstream Gradle 7.3 build at both pins, inline)
+
+**Pins.** Parent `751e8219e992a9aecd286aac830fef81da790baa`, fix `cdcf0da4ee260b72d7e1ea2be691a568e03720b3` (squash on `master`, one parent = the brief's).
+Changed: `moshi/src/main/java16/com/squareup/moshi/RecordJsonAdapter.java` (+5 −30: component types through `Util.resolve(type, rawType, …)`),
+`moshi/records-tests/src/test/java/com/squareup/moshi/records/RecordsTest.java` (+15: `indirectGenerics` with `HasIndirectGenerics`/`IndirectGenerics<T>`).
+
+**Build facts.** Gradle 7.3 (`$O/tools/gradle-7.3`; wrapper jar = 7.3's published one), run on **JDK 17** (`$J17`); Kotlin 1.6.0 plugin. Version
+`1.13.0-SNAPSHOT`. `moshi` is a **multi-release jar**: the record adapter is compiled from `src/main/java16` with `--release 16` into
+`META-INF/versions/16/`, beside a Java 8 stub `com/squareup/moshi/RecordJsonAdapter.class`; so the records path needs a JVM ≥ 16 and the jar on the
+class path (not exploded classes). `records-tests` uses a Java 17 toolchain (`$J17`), `--release 16`. Runtime classpath of `:moshi`: okio-jvm 2.10.0,
+kotlin-stdlib(-jdk7,-jdk8,-common) 1.6.0, annotations 13.0. Tests: JUnit 4.13.2, Truth 1.1.3. `gradle_case_D.sh` ran with `GOPTS=-Xmx512m`
+(the client JVM; the build's own `org.gradle.jvmargs=-Xmx2048m` applies to the daemon it forks). Central and the Plugin Portal only; nothing substituted.
+
+**Commands** (`GOPTS=-Xmx512m $O/scripts/gradle_case_D.sh DIR TAG 7.3 $J17 moshi/records-tests/build/test-results/test ARGS`):
+- online at the fix (64 s): `ONLINE=1 … :moshi:jar :moshi:records-tests:test --tests com.squareup.moshi.records.RecordsTest`
+- **offline (checked, 7 s at the fix, 16 s at the parent)**: the same without `ONLINE=1`
+- classpaths: `$O/scripts/cp_D.sh R25 ROLE 7.3 $J17 :moshi` and `… :moshi:records-tests`
+
+**Landed tests** (JDK 17.0.21):
+
+| Run | Result |
+|---|---|
+| fix, `RecordsTest` (online, then offline) | 6/6 pass |
+| parent, its own `RecordsTest` (offline) | 5/5 pass |
+| the fix's `RecordsTest` on a copy of the parent (offline) | **1 of 6 fails**, the new `indirectGenerics`: `java.lang.IllegalArgumentException: No JsonAdapter for T (with no annotations) for T for java.util.List<T> for com.squareup.moshi.records.RecordsTest$IndirectGenerics<java.lang.Long> for class com.squareup.moshi.records.RecordsTest$HasIndirectGenerics` (`$O/logs/R25-parent-landed.failures.txt`) |
+
+**Artifacts** (`$O/artifacts/R25-{parent,fix}/`: `moshi-1.13.0-SNAPSHOT.jar`, `SHA256SUMS`, `moshi.{runtime,testRuntime}Classpath.txt`, `moshi_records-tests.testRuntimeClasspath.txt`):
+
+| File | parent sha256 | fix sha256 |
+|---|---|---|
+| `moshi-1.13.0-SNAPSHOT.jar` | `89089638e260d3741c30c81b6d225334bb34ab0f8b9cae7ca356f3f0a55338c8` | `a5bfe2ad8afdbeed7fb8f412b09bae6c62ee3ec0e21dd88d1e693fb69e4f7e6b` |
+| `META-INF/versions/16/com/squareup/moshi/RecordJsonAdapter.class` | `bafe56e3f15b86f3d6f0e3d99360492ad320c4f05cb5a8b641946b7159e0fdce` | `2db9f951fb8f4197adb89d26b5f041ba80952b1cfebe5d5c58205f314eae456c` |
+| `META-INF/versions/16/com/squareup/moshi/RecordJsonAdapter$ComponentBinding.class` | `99644e0e8a13a7c6eb668331a96f540ac4c3f7610cb1a30cccd4fce37d0aa0d6` | `f84cfad45c2237c3e6fa8508aa3031638d7d31adaffc4f56fdb093438812aa79` |
+| Java 8 stub `com/squareup/moshi/RecordJsonAdapter.class` (both) | `d9abd3e496f7ad70636669a3df4fa8791fdaf42ca82fe75066dce25494b0b890` | the same |
+| stub `com/squareup/moshi/RecordJsonAdapter$1.class` (both) | `bb0f255bcb8c92d9d51a0ce30c93eed7957a71d53d14937d857254e3ae4c3595` | the same |
+
+**Release side** (`$O/releases/moshi-1.1{2,3}.0/`, jar, pom, `-sources.jar`, checked against Central's hashes):
+- **1.12.0 has no record support at all**: no `RecordJsonAdapter` in its jar or sources. `moshi-1.12.0.jar` `ee9091e1d1a5926fa9b4df2642c1fb7bb96aec08639b6219c19e0b8724d42475`. No release is on the parent's side.
+- **1.13.0 (2021-12-08) is the first release with the fix**: its `-sources.jar` omits the `java16` source, so the release tag's commit
+  `09a454329751e19adb18e39dee043c9a4eeada61` ("Prepare for release 1.13.0.", tag `moshi-parent-1.13.0`) was fetched into the mirror: its
+  `RecordJsonAdapter.java` (blob `cc69e40eb210b1f2c961fe4c04ec7aa7a1ccb3eb`; parent `6152d10a57c61a1b1449fff4ac474725ce42fd11`, fix `21f305abada635103e537e87162c09f349b06e27`)
+  holds all five added lines (one rewrapped) amid later reformatting, so 1.13.0's records path is not byte-equal to the fix's (bytecode differs, `javap -c`).
+  `moshi-1.13.0.jar` `bd004dd9ba175e603ad44420bf605250291b9b7bc6b9d9e916f5741ac8663307`.
+
+### R33 · Calcite #5345 — nested casts keep intermediate precision and formatting (upstream Gradle 8.14.4 build; jars and landed tests by job `20261126-172339-setup-build-apache-calcite-at-both-pins`)
+
+**Pins.** Parent `c368970b2950903432ed61ecd7ff404a67e16fb1`, fix `a2e574ec271866eb352f98d7101a386a30dc8bc8` (squash on `main`, one parent = the brief's).
+Changed production files: `core/src/main/java/org/apache/calcite/rex/RexSimplify.java` (+79 −27), `core/src/main/java/org/apache/calcite/rex/RexUtil.java` (+18 −4).
+Tests: `core/src/test/java/org/apache/calcite/rex/RexLosslessCastTest.java` (+78 −9), `core/src/test/resources/sql/cast.iq` (+112, run by `CoreQuidemTest`),
+`core/src/test/java/org/apache/calcite/rel/rel2sql/RelToSqlConverterTest.java` (+3 −1: an expected dialect string now `CAST(CAST(employee_id AS STRING) AS TIMESTAMP)`).
+
+**Build facts.** Gradle 8.14.4 (`$O/tools/gradle-8.14.4`; zip sha256 = the wrapper's `distributionSha256Sum`; the pins' wrapper jar is 8.9's), run on **JDK 21**
+(`$J21`), compiling with the build's default **JDK 25 toolchain** (`jdkBuildVersion` 25) at `--release 8`; `--no-scan`, `-Dorg.gradle.caching=false`
+(`gradle.properties` sets caching on), `NOTC` unset so toolchain paths are the sdkman JDKs. Version `1.43.0-SNAPSHOT` (`calcite.version=1.43.0`).
+The build has a Kotlin `buildSrc` (fmpp, javacc). **Online resolution inline** (`$O/logs/R33-fix.resolve-online.log`, 114 s): `setupResolveAll -PsetupResolve=ALL`
+on `:core`, `:linq4j`, `:testkit` (54 configurations, none failed); the parent then resolved offline with nothing missing (`R33-parent.resolve-offline.log`).
+No substitution.
+
+**Commands** (`$O/scripts/calcite_job.sh R33 fix|parent|landed|clean`, the job's steps; each runs
+`$O/scripts/gradle_case_D.sh DIR TAG 8.14.4 $J21 core/build/test-results/test --no-scan --continue :core:jar :linq4j:jar :testkit:jar :core:test --tests org.apache.calcite.rex.RexLosslessCastTest --tests org.apache.calcite.rel.rel2sql.RelToSqlConverterTest --tests org.apache.calcite.test.CoreQuidemTest`
+offline, `GRADLE_WORKERS=3`, `GOPTS=-Xmx512m`). The offline task graph was checked inline with `-m` (R34 fix, 27 s). A single Quidem file can run outside Gradle: `CoreQuidemTest.main sql/cast.iq` on the core test runtime classpath.
+
+**Landed tests and artifacts:** produced by job `20261126-172339-setup-build-apache-calcite-at-both-pins` (steps 1–4); results go to `$O/logs/R33-{fix,parent,parent-landed}.test-offline.{log,junit.txt,failures.txt}`,
+jars (`calcite-core`, `-linq4j`, `-testkit` `1.43.0-SNAPSHOT`), `SHA256SUMS` and `core.{runtime,testRuntime}Classpath.txt` to `$O/artifacts/R33-{parent,fix}/`.
+<!-- R33-job -->
+
+**Release side.** **No release has the fix**: Central's newest `calcite-core` is **1.42.0** (2026-05-28), older than the parent; its `RexSimplify.java` and
+`RexUtil.java` are on neither side byte for byte and lack the fix's added code (`$O/scripts/linecmp_D.py`). `calcite-core-1.42.0.jar`
+`2ed5489201baab842001c95f939a0829849cf3cdaed9cdbf4b9078633c35792b` (with `-sources.jar`, `$O/releases/calcite-core-1.42.0/`).
+
+### R34 · Calcite #4942 — sub-millisecond temporal literals survive constant reduction (upstream Gradle 8.14.4 build; jars and landed tests by job `20261126-172339-setup-build-apache-calcite-at-both-pins`)
+
+**Pins.** Parent `3fc5f464ee087f69cd7b1f8dd54ee612050a917d`, fix `b25114f7c616b6e3fb4007071406f79e765ff66f` (squash on `main`, one parent = the brief's).
+Changed production files: `core/src/main/java/org/apache/calcite/rex/RexBuilder.java` (+127), `core/src/main/java/org/apache/calcite/rex/RexExecutorImpl.java` (+24 −3),
+`core/src/main/java/org/apache/calcite/adapter/enumerable/RexToLixTranslator.java` (+4 −2), `core/src/main/java/org/apache/calcite/util/BuiltInMethod.java` (+4).
+Tests: `core/src/test/java/org/apache/calcite/rex/RexExecutorTest.java` (+207) and the test library `testkit/src/main/java/org/apache/calcite/test/SqlOperatorTest.java`
+(+1 −1: an expected `VARCHAR` result becomes `"2024-07-06 12:15:48.678"`; it runs in core's `CalciteSqlOperatorTest`).
+
+**Build facts.** As R33 (Gradle 8.14.4 on JDK 21, JDK 25 toolchain, `1.43.0-SNAPSHOT`). Online resolution inline at both pins (`$O/logs/R34-{fix,parent}.resolve-online.log`, 42 s and 15 s);
+the first offline try had failed only on the `com.gradle.develocity` 3.18.2 settings plugin, which the online run then fetched. Offline task graph checked with `-m` (27 s).
+
+**Commands** (`$O/scripts/calcite_job.sh R34 fix|parent|landed|clean`): `… :core:jar :linq4j:jar :testkit:jar :core:test --tests org.apache.calcite.rex.RexExecutorTest --tests org.apache.calcite.test.CalciteSqlOperatorTest`.
+The overlay for the landed run copies `RexExecutorTest.java` and the testkit `SqlOperatorTest.java` (`$O/scripts/overlay_D.sh`).
+
+**Landed tests and artifacts:** produced by job `20261126-172339-setup-build-apache-calcite-at-both-pins` (steps 5–8), into `$O/logs/R34-*.test-offline.*` and `$O/artifacts/R34-{parent,fix}/` (the testkit jar's `SqlOperatorTest` classes are in `SHA256SUMS` as a changed file).
+<!-- R34-job -->
+
+**Release side.** **No release has the fix.** **1.42.0 is a parent stand-in for every changed file**: `RexBuilder.java`, `RexExecutorImpl.java`,
+`RexToLixTranslator.java`, `BuiltInMethod.java` in `calcite-core-1.42.0-sources.jar` and `SqlOperatorTest.java` in `calcite-testkit-1.42.0-sources.jar` are
+byte-equal to the parent's (git blob ids; other files differ). `calcite-core-1.42.0.jar` `2ed5489201baab842001c95f939a0829849cf3cdaed9cdbf4b9078633c35792b`,
+`calcite-testkit-1.42.0.jar` `b43fe364aa58ef52a495bc3b65f1e180b1ba81955cef4b4bd01206dd60246e62` (`$O/releases/calcite-{core,testkit}-1.42.0/`; the dependency graph was not resolved for them).
+
+### R41 · RxJava #5101 (2.x) — Maybe concatenation does not subscribe to the next source after cancellation (upstream Gradle 2.14 build at both pins, inline; nine jcenter-only build-script modules substituted)
+
+**Pins.** Parent `5a8be22b6501feefe10fb00731c00ce1ad215b89`, fix `6daf59ebc19f5ef8914086fe466823f51ca628a9` (squash on `2.x`, one parent = the brief's).
+Changed production files (`src/main/java/io/reactivex/internal/operators/maybe/`): `MaybeConcatArray.java`, `MaybeConcatArrayDelayError.java`,
+`MaybeConcatIterable.java` (+3 −2 each: a `isCancelled()`/`isDisposed()` recheck before the next source). Tests (`src/test/java/io/reactivex/internal/operators/`):
+`flowable/FlowableConcatTest.java` (+84), `maybe/MaybeConcatArrayTest.java` (+41), `maybe/MaybeConcatIterableTest.java` (+42),
+`observable/ObservableConcatTest.java` (+83), `single/SingleConcatTest.java` (+43); `$O/scripts/R41-tests.txt` holds the five `--tests` filters.
+
+**Checkouts.** `$W/R41-RxJava-parent` and `$W/R41-RxJava-fix` are **standalone depth-1 clones** of the mirror at the pins (`$O/scripts/standalone_D.sh`),
+not linked worktrees: the build applies `nebula.rxjava-project` 4.0.0, whose release plugin needs a `.git` directory (in a linked worktree it fails with
+`Cannot set property 'defaultVersionStrategy' on null object`). Trees parent `511c3f166d43e5c0903af5f68e035c6b4e50241c`, fix `f7447c9f8bf6773538b6ab9fac7f3820b725adee`, as in the revisions table.
+Without tags the version is `2.0.0-DP0-SNAPSHOT` (`gradle.properties`), so the jars are `rxjava-2.0.0-DP0-SNAPSHOT.jar`.
+
+**Build facts.** **Gradle 2.14** (`$O/tools/gradle-2.14`; wrapper jar = 2.14's published one) on **JDK 8** (`$J8`; Gradle 2.14 runs on nothing later),
+`CI=true`, `NOTC=1` (no toolchain properties). Source/target 1.6 (class files major 50). Runtime dependency `org.reactivestreams:reactive-streams:1.0.0`
+only (`ef867702a614b96eb6c64fb65a8f5e14bdfcabbc1ae056f78a1643f7b79ca0eb`, in `$O/gradle-home`). Tests: JUnit 4.12, Mockito 2.1.0, reactive-streams-tck 1.0.0, TestNG 6.9.10.
+Results are under `build/test-results/` (Gradle 2.x layout).
+
+**Substitution (build-script classpath only).** The build script's only repository is `jcenter()`. jcenter no longer serves the nebula plugin's
+publishing dependencies, and neither Central nor the Plugin Portal has them. The **same coordinates** were copied from `https://repo.grails.org/grails/core`
+into `$O/dl/subst-repo-D`, each pom and jar equal to that repository's `.sha1` (`$O/scripts/subst_add_D.sh`, `$O/logs/D-subst-repo.txt`), and added by
+`$O/scripts/subst-repo-D.init.gradle` (adapted to Gradle 2.14, which has no `pluginManagement`). `http-builder-0.7.2.jar`'s SHA-1 equals the one an earlier
+setup took independently from JFrog's jcenter mirror and repo.grails.org (`merged-pr-links` record, M13). Nothing compiled or tested uses them.
+
+| Module | jar SHA-1 (= published) |
+|---|---|
+| `com.github.jengelman.gradle.plugins:shadow:1.2.3` | `52bbde5e384f0860df145abe24070d74dd8ed590` |
+| `com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5` | `7f3dc1cd3c538b4906006ffcf90d23aee569be3f` |
+| `com.perforce:p4java-jfrog:2011.1.297684` | `1de41848e31c6428e6eb7a71e8f88b9561d35fe1` |
+| `nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0` | `af79687fb505c520abb404ed9e822be15b25eb62` |
+| `org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0` | `37347d4122e50d83a30a07ef35fea47932722fe8` |
+| `org.codehaus.groovy.modules.http-builder:http-builder:0.7.2` | `323092cd786480311c1cf693770f9e6fc20a8bef` |
+| `org.jfrog.buildinfo:build-info-extractor:2.5.4` | `c8c416564baae94bf0e447c1ff63e55a7f23fced` |
+| `org.jfrog.buildinfo:build-info-client:2.5.4` | `1ff780d21f3182b41b3d12c1222556feda0d4bb4` |
+| `org.jfrog.buildinfo:build-info-api:2.5.4` | `a0f635a1ba06824b8c69b8a95755dd9a5cdc6160` |
+
+**Commands** (`CI=true NOTC=1 GINIT=$O/scripts/subst-repo-D.init.gradle $O/scripts/gradle_case_D.sh DIR TAG 2.14 $J8 build/test-results ARGS`):
+- online at the fix (32 s): `ONLINE=1 … jar test $(cat $O/scripts/R41-tests.txt)`
+- **offline (checked, 24 s)**: the same without `ONLINE=1`
+- classpaths: `GINIT="$O/scripts/subst-repo-D.init.gradle $O/scripts/write-classpath-old.init.gradle" … setupWriteClasspath -PsetupCpConf=runtime|testRuntime -PsetupCpOut=FILE`
+
+**Landed tests** (JDK 8u512):
+
+| Run | Result |
+|---|---|
+| fix, the five changed test classes (online, then offline) | 150 run, 0 failures, 2 skipped |
+| parent, its own copies (offline) | 136 run, 0 failures, 2 skipped |
+| the fix's five test files on a copy of the parent clone (offline) | **3 of 150 fail** (`$O/logs/R41-parent-landed.failures.txt`): `MaybeConcatArrayTest#noSubsequentSubscription`, `MaybeConcatArrayTest#noSubsequentSubscriptionDelayError`, `MaybeConcatIterableTest#noSubsequentSubscription`, each `java.lang.AssertionError: expected:<1> but was:<2>` |
+
+The new Flowable, Observable and Single tests pass on the parent too (only the Maybe operators changed).
+
+**Artifacts** (`$O/artifacts/R41-{parent,fix}/`: jar, `SHA256SUMS`, `runtime.txt`, `testRuntime.txt`):
+
+| File | parent sha256 | fix sha256 |
+|---|---|---|
+| `rxjava-2.0.0-DP0-SNAPSHOT.jar` | `41243f5b735ce07da6e515fcdf78db065851dc6de3f67b97142f70af06ce9a3e` | `0840ad766e2df93f1adc118af4be0b40f0c8e4fbef02d7ddb5a43ce147e0744e` |
+| `io/reactivex/internal/operators/maybe/MaybeConcatArray$ConcatMaybeObserver.class` | `b91ace43d10d70363722ba86ccfeea28c222d755edf1b4cf599f6694a52a2080` | `2f86eb611725b1d381d1d5fe70f95fd364741a3d81c5e8ecb931e836728f1dfb` |
+| `io/reactivex/internal/operators/maybe/MaybeConcatArrayDelayError$ConcatMaybeObserver.class` | `fd1867c5ae696a96baf6005e58cd4b0c3934d00a4948502087eebdf7146af016` | `d2a4c1e1365e31a1d6051bd8197d363585ac5bfed5bedcb23e1afbc34c787a11` |
+| `io/reactivex/internal/operators/maybe/MaybeConcatIterable$ConcatMaybeObserver.class` | `ade022af70467d48ef29be5e3508ebdc3c4cc6734305e3be1c253cd226eec6c2` | `5cad9fd1643ceab4f5b1bc650081ae579797666cddfba6075f719942a2f27d7c` |
+
+The outer classes are identical on both sides: `MaybeConcatArray.class` `308b49fa67515aa2936b1b81111ccc42f15a3c1487456468954c3cdf7fe29404`,
+`MaybeConcatArrayDelayError.class` `b638bb018e1657d06c21f7e2057e462d521ce44db13acf4871379afc4fab636a`, `MaybeConcatIterable.class` `1c7556cf1a6e5adaa4cafdda595e53ba110f8742c4feafdec9a8771c4217f5dc`.
+
+**Release side** (`$O/releases/rxjava-2.0.{6,7}/`, checked against Central's hashes): **an exact published pair for the three changed files.**
+`rxjava-2.0.6-sources.jar`'s three files are byte-equal to the **parent**'s, `rxjava-2.0.7-sources.jar`'s to the **fix**'s (git blob ids equal; `$O/scripts/relcmp_D.sh`).
+`rxjava-2.0.6.jar` `39799db09efc9545863b5fa7624c8ca932d8736d76df5e05707e5e7854ce52c6`, `rxjava-2.0.7.jar` `99d480d623030e32d8ea3c20caf1cbc9e8f28bb9705ee69a034dddba36515d2a`
+(each needs `reactive-streams-1.0.0.jar` beside it). The releases differ from the pins in other files.
+
+### R42 · reactor-core #937 — concatDelayError keeps going past a callable inner error (pinned Gradle 4.2.1 build cannot be configured; slice route)
+
+**Pins.** Parent `0ad7976bf1c02bccc28bb478758591bc8108b11a`, fix `af0cb628ece3c0a543512ea9913c4ff72ba18566` (one commit on `master`, one parent = the brief's;
+the PR's 2 commits landed as one). Changed production files (`reactor-core/src/main/java/reactor/core/publisher/`): `Flux.java` (+8 −6, **Javadoc only**),
+`FluxConcatMap.java` (+8 −3: with `veryEnd`, a callable inner source's error is added to `ERROR` and the loop continues), `FluxFlatMap.java` (+3 −1).
+Tests (`reactor-core/src/test/java/reactor/core/publisher/`): `FluxConcatArrayTest` (+26), `FluxConcatMapTest` (+52), `FluxFlatMapTest` (+27),
+`FluxMergeSequentialTest` (+56), `FluxMergeTest` (+25), `ParallelConcatMapTest` (+31). Version `3.1.2.BUILD-SNAPSHOT`.
+
+**The pinned build cannot be configured from public sources.** Gradle 4.2.1 (`$O/tools/gradle-4.2.1`; the pins' wrapper jar is 4.2's) on JDK 8,
+at both pins (`$O/logs/R42-{parent,fix}.help-online.log`): the build script's only repository is `http://repo.spring.io/plugins-release`, which
+answers 405 over http and 401 over https, and three of its build-script modules are nowhere else: `org.springframework.build.gradle:propdeps-plugin:0.0.7`,
+`io.spring.gradle:spring-io-plugin:0.0.4.RELEASE` and `org.jetbrains.dokka:integration:0.9.15` (looked for at Central, the Plugin Portal, repo.grails.org
+core and plugins, JFrog's jcenter mirror (401), Atlassian, JBoss, Red Hat, Jenkins, repo.gradle.org: 404; the Q01–Q30 and P01–P30 setups found
+`propdeps-plugin:0.0.7` and dokka `integration:0.9.15` nowhere either). Nothing was substituted and no upstream file changed.
+
+**Slice route** (the user's standing decision of 2026-11-26; `$O/scripts/slice_D.sh`, configuration `$O/scripts/slice-R42.conf`, results `$O/slices/R42-RUN/`,
+`junit.log` with every test and `reports/` JUnit XML):
+1. **Which release matches which pin** (git blob ids of the files in Central's `-sources.jar`, `$O/scripts/relcmp_D.sh`): `FluxConcatMap.java` and
+   `FluxFlatMap.java` of **3.1.0.RELEASE and 3.1.1.RELEASE are byte-equal to the parent's**, those of **3.1.2.RELEASE to the fix's**. `Flux.java`
+   matches no release exactly (Javadoc-only change; 3.1.2.RELEASE has all 8 added Javadoc lines).
+2. **Slice.** Each pin's `FluxConcatMap.java` and `FluxFlatMap.java` compiled by `javac` 1.8.0_512 (`-source 8 -target 8 -parameters -proc:none -implicit:none`)
+   against the base release **reactor-core 3.1.1.RELEASE** (+ reactive-streams 1.0.1) into `$O/slices/R42-slice-ROLE/main/`, jarred as `slice.jar`,
+   class digests in `main.SHA256SUMS`; the pin's three changed production files are copied beside it in `src/`. `Flux.java` was not compiled (Javadoc only).
+   Slice jars: parent `3609eb52befef5d097252e7447532ab6f73118277eee942d98fad5438d8d19f2`, fix `dbd201aadf0170b74349f14e22caf3f04a4c89a8930508ab070c0fd4390796bf`.
+   The slice classes differ in bytes from the releases' (those were compiled by 1.8.0_144), source-equal as above.
+3. **Tests.** The six landed test classes compiled from the chosen pin's own test tree (`-sourcepath`, so helpers such as `FluxOperatorTest` come from
+   that pin), with the test libraries the pins' `build.gradle` declares (JUnit 4.12, hamcrest 1.3, TestNG 6.8.5, AssertJ 3.8.0, Mockito 2.10.0, reactive-streams-tck 1.0.1,
+   logback 1.1.2, slf4j-api 1.7.12, jsr305 3.0.2, kotlin-stdlib 1.1.51) and **reactor-test 3.1.1.RELEASE** (the pins' own `reactor-test` project cannot be built either),
+   resolved by `$O/releases/tests-R42/pom.xml` into `$O/m2` (24 jars, each equal to its downloaded `.sha1`, `$O/scripts/verify_cp_D.sh`), run on JDK 8 with the
+   JUnit Platform console launcher 1.10.2 (vintage engine). Classpath: slice, test classes, test resources, base release, test libraries.
+
+| Run | Slice | Tests from | Result |
+|---|---|---|---|
+| `fix` | fix | fix | 226/226 pass |
+| `parent` | parent | parent | 210/210 pass |
+| `transplant` | parent | fix | **10 of 226 fail** |
+| `release-3.1.1` | none (3.1.1.RELEASE alone) | fix | **the same 10 fail** |
+| `release-3.1.2` | none (3.1.2.RELEASE alone) | fix | 226/226 pass |
+
+The ten (`$O/logs/R42-slice-failures.txt`), each `java.lang.AssertionError: expectation "expectNext(3)" failed (expected: onNext(3); actual: onError(java.lang.Exception: test))`:
+`FluxConcatMapTest#concatDelayErrorWithFluxError`, `#concatDelayErrorWithMonoError`, `#concatMapDelayErrorWithFluxError`, `#concatMapDelayErrorWithMonoError`;
+`FluxFlatMapTest#delayErrorWithFluxError`, `#delayErrorWithMonoError`; `FluxMergeTest#delayErrorWithFluxError`, `#delayErrorWithMonoError`;
+`ParallelConcatMapTest#concatDelayErrorWithFluxError`, `#concatDelayErrorWithMonoError`. The new `FluxConcatArrayTest` and `FluxMergeSequentialTest` tests pass on the parent slice.
+
+**Release jars** (`$O/releases/`, each checked against Central's `.sha1` and, where published, `.sha256`/`.sha512`):
+
+| Release | `reactor-core` sha256 | `reactor-test` sha256 | Side for the code files |
+|---|---|---|---|
+| 3.1.0.RELEASE (named by the brief, issue #936) | `80e30d4e25f052ef45ff6120897dbda6406de2791e37bce51602d56286e9789a` | `59c8e144a9bc6684596d15818a0094492e63defd5ce052d42c3ce3871c77ccc6` | parent |
+| 3.1.1.RELEASE (slice base) | `17e06176a410d876a532830c9c5d9beca020b5b8f77f86e5af275a56c20f689d` | `ccecb6fb350c30b63b40f9fb48dec8d6798b764b489065e1fd20874a54e329b7` | parent |
+| 3.1.2.RELEASE | `2412ae7a74bef85faff78aa83e0b1f1205517890e21630650cb080c51bfb8b18` | `e9da6c94149ccac634a8cb51f1daff5c66dc01561fae78d7e615885537c7432f` | fix |
+
+Each runs with `reactive-streams-1.0.1.jar` (in `$O/m2`). **Evidence label:** every R42 result above is from the slice route or the release jars, not
+from the pinned build.
+
+### R43 · reactor-core #3783 (3.4.x) — thenMany discards every concatenated value (upstream Gradle 8.6 build at both pins, inline)
+
+**Pins.** Parent `92c8ea05eaa4e009fe5459bd4a1fe51b244bcc52`, fix `2a664dd587e74793fb473d81e8b26a199ff07d1e` (squash on `3.4.x`, one parent = the brief's).
+Changed: `reactor-core/src/main/java/reactor/core/publisher/Flux.java` (+1 −7: `thenMany` no longer special-cases `FluxConcatArray`),
+`reactor-core/src/main/java/reactor/core/publisher/FluxConcatArray.java` (+1 −23); tests `reactor-core/src/test/java/reactor/core/publisher/FluxThenManyTest.java`
+(+13 −3: new `testThenManyOnConcatArray`), `…/MonoThenManyTest.java` (+4 −3). `$O/scripts/R43-tests.txt` holds the two `--tests` filters.
+
+**Build facts.** Gradle 8.6 (`$O/tools/gradle-8.6`; wrapper jar = 8.6's published one) on **JDK 8** (`$J8`; the 3.4.x build compiles with the JDK it runs on
+and targets 8; `NOTC=1`). Version `3.4.38-SNAPSHOT`. Not a multi-release jar at this line. Runtime dependency `org.reactivestreams:reactive-streams:1.0.4`
+(`f75ca597789b3dac58f61857b9ac2e1034a68fa672db35055a8fb4509e325f28`). Tests: JUnit Jupiter 5.10.2, AssertJ 3.25.3, Mockito 4.11.0, the project's `reactor-test`
+(26 entries in `reactor-core.testRuntimeClasspath.txt`). Central and the Plugin Portal only; no substitution (the init script is not needed).
+
+**Commands** (`NOTC=1 $O/scripts/gradle_case_D.sh DIR TAG 8.6 $J8 reactor-core/build/test-results/test ARGS`):
+- online (76 s at the fix, 35 s at the parent): `ONLINE=1 … :reactor-core:jar :reactor-core:test $(cat $O/scripts/R43-tests.txt)`
+- **offline (checked, 9 s at the fix)**: the same without `ONLINE=1`
+- classpaths: `$O/scripts/cp_D.sh R43 ROLE 8.6 $J8 :reactor-core`
+
+**Landed tests** (JDK 8u512):
+
+| Run | Result |
+|---|---|
+| fix, `FluxThenManyTest` + `MonoThenManyTest` (online, then offline) | 7/7 pass |
+| parent, its own copies (online, then offline) | 6/6 pass |
+| the fix's two test files on a copy of the parent (offline) | **3 of 7 fail** (`$O/logs/R43-parent-landed.failures.txt`) |
+
+- `FluxThenManyTest#testThenManyOnConcatArray()`: `expectation "expectNext(c)" failed (expected value: c; actual value: a)`
+- `FluxThenManyTest#testThenManyRepeated()`: `Expected size: 2 but was: 3 in: [MonoIgnoreElements, MonoIgnorePublisher, FluxArray]`
+- `MonoThenManyTest#testThenManyRepeated()`: `Expected size: 2 but was: 3 in: [MonoIgnoreElement, MonoIgnorePublisher, FluxArray]` (the assembly-shape assertions the brief calls internal)
+
+**Artifacts** (`$O/artifacts/R43-{parent,fix}/`: `reactor-core-3.4.38-SNAPSHOT.jar`, `SHA256SUMS` (8 classes of the two files), `reactor-core.{runtime,testRuntime}Classpath.txt`):
+
+| File | parent sha256 | fix sha256 |
+|---|---|---|
+| `reactor-core-3.4.38-SNAPSHOT.jar` | `899a1d6e6baf9e355421c0a78c39feba3efb33472df175c6a0f4f30bece596e9` | `c38f456be7f5b93143ad4cf5d731f0a77c964450449dc4d5e5ed1ffb5135643b` |
+| `reactor/core/publisher/Flux.class` | `3c8b28e9b0327e7587e056b3ffab7ba69c222212e6599cde8c388be94cee5b4f` | `b9013107eb7581bd5806f5601e506e98d8f8d2049808d907cb4371ddb559f9d2` |
+| `reactor/core/publisher/Flux$2.class` | `a298d38245ce5702fa7bbebe65a2a4f6ce8684bc94fa341605c1ab99afe69af3` | `830fa9b89cc25f85e8e6ba49a93839c8a36d0e94295989e95f050e261b32caa0` |
+| `reactor/core/publisher/Flux$3.class` | `5291692512c1d03cf69f386a4f66b45c7dce7567cdc22a176095e2e3caffe276` | `c65c5400b06f25b11afdc144f1a422bb741a0190a93e26adaedf9c33809b1bc3` |
+| `reactor/core/publisher/FluxConcatArray.class` | `ca2072cbcbd2148b19a1b9814d5b1cca00096eabd357e6edccc838dee193a564` | `4ad69de70078c909fafd34585f34d0c32a5311925318985a9f6198f4e9abde15` |
+| `reactor/core/publisher/FluxConcatArray$ConcatArraySubscriber.class` | `0167dccee5d733be53d57a5dd7aeb6b5fbd043ba870df1664080e927457d4ed1` | `c03affe42158df4823d43f86c32dbcc68853953679dc9078288b68ca93277c08` |
+| `reactor/core/publisher/FluxConcatArray$ConcatArrayDelayErrorSubscriber.class` | `5387c2a7af9ac27f26c1986273ce07fe8d716da3e66e81846739f3780536893c` | `29bd8e3e4b9dc84c6475b96dddd5c905bee39ac0895a31835890509bb6e0529a` |
+
+**Release side** (`$O/releases/reactor-core-3.4.3{7,8}/`, checked against Central's hashes): **an exact published pair.** Both changed files of
+`reactor-core-3.4.37-sources.jar` are byte-equal to the **parent**'s, those of `3.4.38` to the **fix**'s (git blob ids). `reactor-core-3.4.37.jar`
+`3b972076cd9466395d944a00ebdfdea1b77cc7e0d48b02d044c61d4cee257988`, `reactor-core-3.4.38.jar` `a9255f60d92e8fc58c3c87320cc439936e08227db65bd88eb97e844af853e608`
+(each with `reactive-streams-1.0.4.jar`; `reactor-test` of the same version for `StepVerifier`, not downloaded).
+
+### R44 · RxJava #6664 (3.x) — new groups expose their first value or the value selector's error (upstream Gradle 5.6 build at both pins, inline; three jcenter-only build-script modules substituted)
+
+**Pins.** Parent `c2dc134221ad6bd623f6160ec5338ad4496c5112`, fix `cb7ff83a2444731dd7eca4760e9410a6c2980b6d` (squash on `3.x`, one parent = the brief's).
+Changed: `src/main/java/io/reactivex/rxjava3/internal/operators/flowable/FlowableGroupBy.java` (+4: offer and drain a new group before the value
+selector's failure), `src/main/java/io/reactivex/rxjava3/internal/operators/observable/ObservableGroupBy.java` (+14 −6); tests
+`src/test/java/io/reactivex/rxjava3/internal/operators/flowable/FlowableGroupByTest.java` and `…/observable/ObservableGroupByTest.java` (+57 each: `newGroupValueSelectorFails`,
+`existingGroupValueSelectorFails`). `$O/scripts/R44-tests.txt` holds the two `--tests` filters.
+
+**Build facts.** Gradle 5.6 (`$O/tools/gradle-5.6`; the pins' wrapper jar is 4.3.1's) on **JDK 8** (`$J8`), `CI=true`, `NOTC=1`. Linked worktrees work.
+Version `3.0.0-SNAPSHOT` (`rxjava-3.0.0-SNAPSHOT.jar`), source/target 1.8. Runtime dependency `org.reactivestreams:reactive-streams:1.0.3` only
+(`1dee0481072d19c929b623e155e14d2f6085dc011529a0a0dbefc84cf571d865`). Tests: JUnit 4.12, Mockito 3.0.0, TestNG 7.0.0, Guava 28.0-jre.
+
+**Substitution (build-script classpath only).** Build-script repositories `jcenter()`, Central, the Plugin Portal. `build-info-extractor-gradle:4.5.2`
+(on Central) needs `org.jfrog.buildinfo:build-info-extractor`, `-client` and `-api` **2.8.2**, which only jcenter served (Central, the Portal and
+repo.grails.org: 404). They were copied with the same coordinates from JFrog's public jcenter mirror `https://releases.jfrog.io/artifactory/jcenter` into
+`$O/dl/subst-repo-D` (`$O/logs/D-subst-repo.txt`): each pom and jar equals that mirror's `.sha1` **and** the `.sha1` of `releases.jfrog.io/artifactory/oss-release-local`,
+and the jar SHA-1s equal the ones an earlier setup recorded for the same modules (M13): extractor `81999cbb9550b22bab79672c3d3b4bb1da98fa81`,
+client `cf64685e65904b39c28ac31554bcc63471f43aad`, api `09ade14380d2e088250c4bca8fe4a5d3cb3753f0`. Same init script (`GINIT=$O/scripts/subst-repo-D.init.gradle`).
+
+**Commands** (`CI=true NOTC=1 GINIT=$O/scripts/subst-repo-D.init.gradle $O/scripts/gradle_case_D.sh DIR TAG 5.6 $J8 build/test-results/test ARGS`):
+- online at the fix (25 s once the substitutes were in): `ONLINE=1 … jar test $(cat $O/scripts/R44-tests.txt)`
+- **offline (checked, 17 s at the fix, 25 s at the parent)**: the same without `ONLINE=1`
+- classpaths: `GINIT=… $O/scripts/cp_D.sh R44 ROLE 5.6 $J8 ""` (files `root.*Classpath.txt`)
+
+**Landed tests** (JDK 8u512):
+
+| Run | Result |
+|---|---|
+| fix, `FlowableGroupByTest` + `ObservableGroupByTest` (online, then offline) | 104 run, 0 failures, 2 skipped |
+| parent, its own copies (offline) | 100 run, 0 failures, 2 skipped |
+| the fix's two test files on a copy of the parent (offline) | **1 of 104 fails** (`$O/logs/R44-parent-landed.failures.txt`): `FlowableGroupByTest#newGroupValueSelectorFails`: `java.lang.AssertionError: Value counts differ; expected: 1 but was: 0 (latch = 0, values = 0, errors = 1, completions = 0)` |
+
+The Observable tests and `existingGroupValueSelectorFails` pass on the parent: the landed tests do not separate the Observable change (first item
+queued before an unclaimed group can finish) from the parent. The brief's delayed-subscription Observable scenario is not among them.
+
+**Artifacts** (`$O/artifacts/R44-{parent,fix}/`: jar, `SHA256SUMS` (all 9 classes of the two files), `root.runtimeClasspath.txt`, `root.testRuntimeClasspath.txt`):
+- `rxjava-3.0.0-SNAPSHOT.jar` parent `2d900e4fd44059bcd9524ea6371d8507749dda9c5ea10f6f3e2a2812498616bf`, fix `3574c3c2541e23f08d530abaebd2ef5a68c239346cdd09c802ead785d323324c`
+
+| Class | parent sha256 | fix sha256 |
+|---|---|---|
+| `io/reactivex/rxjava3/internal/operators/flowable/FlowableGroupBy$EvictionAction.class` | `69a346688ff0fdbf2d27c960e3dae7f2152a83c5e464f7d7c9c94841e56e7fb4` | `bab14cbfe2a56fc4ef9387aff1d700895284e18c55dd9d8ec6c6f1449cce9efc` |
+| `io/reactivex/rxjava3/internal/operators/flowable/FlowableGroupBy$GroupBySubscriber.class` | `31e62cb7e7ebbd169990800e0c101d2bad44f67e41f4021c12a83ef59cf93a0d` | `ab93f0eb329d2577faafef987d604ed9ee82a97e4d5d80fef0435bf87d425a49` |
+| `io/reactivex/rxjava3/internal/operators/flowable/FlowableGroupBy$GroupedUnicast.class` | `92ec8cf3ee6c9e0c366e30f3e146cc0f3329bc1af013d50afe4f514ff5f1d527` | `4959a7c65dd0a0eb474e16c1d4e3a89a3678bc63b672000d737235ccc6be5b44` |
+| `io/reactivex/rxjava3/internal/operators/flowable/FlowableGroupBy$State.class` | `59ca64eeff031b4acc17c83c62b170513c505f585c9a9fb7990fac8240425434` | `7a5b59aeb35f3e4ed20692d94379da0ae2eacd5b0aed255d201e1ff683885cc7` |
+| `io/reactivex/rxjava3/internal/operators/observable/ObservableGroupBy$GroupByObserver.class` | `c140fca42238becc5add6a8afee75dfde47a509628423c7bab712569fa6a440c` | `9f773c7d3ab5e59783d5f179acd4c8edd546340b0756a0040c095a2211330b73` |
+| `io/reactivex/rxjava3/internal/operators/observable/ObservableGroupBy$GroupedUnicast.class` | `b210161390fefcf7ccb66b855698d156ac8442ce44c37665e567c8435d4f99d7` | `b38a6af2325cec83153adc694b4d36f46797668e96eef9894bd807c8853c5b59` |
+| `io/reactivex/rxjava3/internal/operators/observable/ObservableGroupBy$State.class` | `b0a6e3bcdb74cdccff8f969b7d3c33c7bd48459fa324755b1e6911f10a661b7f` | `eab8644f227fb7a1c575977c657847b68c44a93f0ba53dd96c417659e50dedd4` |
+
+`FlowableGroupBy.class` (`3eaed04e0e0c8dc9e6ba1c457ecbc14ecdb8873b688eb0d9391f0872e0ed9301`) and `ObservableGroupBy.class` (`f29062a7cdbc0449613d0e73a9b3e83da82fd3c77d3c3413f07a7c3e5a368d77`) are identical on both sides.
+
+**Release side** (`$O/releases/rxjava-3.0.0-RC{3,4,5}/`, checked against Central's hashes; git blob ids of the two files):
+- **3.0.0-RC3**: both files byte-equal to the **parent**'s. `rxjava-3.0.0-RC3.jar` `52b15d7639e98e33d1b42bd34b16647120479596ecf3435884307103bb63ca91`.
+- **3.0.0-RC4** (first with the fix): `ObservableGroupBy.java` byte-equal to the **fix**'s; `FlowableGroupBy.java` has the fix's four added lines plus two later
+  changes (`!outputFused &&` in a drain guard, one `q.clear()` removed). `rxjava-3.0.0-RC4.jar` `6e7623803eac1bff82cfef42ec8309669ffe309749004ca2af60b26e1b836ffb`.
+- 3.0.0-RC5 likewise (fix's Observable file, later Flowable file): `rxjava-3.0.0-RC5.jar` `25c96e331d2bb0cb61cc873f08ef60e007922e9488cfcdeee6b94bface5d8943`.
+- So RC3 is an exact parent stand-in; no release is byte-equal to the fix for `FlowableGroupBy.java`. Each needs `reactive-streams-1.0.3.jar`.
+
+### R45 · resilience4j #2067 — asynchronous retry with a zero interval, stop on a negative one (upstream Gradle 7.4.2 build at both pins, inline; one jcenter-only plugin dependency substituted)
+
+**Pins.** Parent `12f66a31d7b4619ed0ffd1fddee9da683c41b9b7`, fix `a1a4acb85c83dbd1b1a67cd97dac994fb8bb034c` (squash on `master`, one parent = the brief's).
+Changed (all in `resilience4j-retry`): `src/main/java/io/github/resilience4j/retry/Retry.java` (+2 −2), `src/main/java/io/github/resilience4j/retry/internal/RetryImpl.java` (+21 −5),
+tests `src/test/java/io/github/resilience4j/retry/internal/CallableTest.java` (+80 −3), `src/test/java/io/github/resilience4j/retry/internal/CompletionStageRetryTest.java` (+79).
+
+**Build facts.** Gradle 7.4.2 (`$O/tools/gradle-7.4.2`; the pins' `gradle-wrapper.jar` is 4.10.3's, see the toolchain table), run on **JDK 17** (`$J17`);
+the build compiles with source/target 17. Version `2.2.0-SNAPSHOT` (root `build.gradle`). `gradle.properties` sets `org.gradle.caching=true`;
+the commands pass `-Dorg.gradle.caching=false`. Every core project applies `org.gradle.test-retry` with `maxRetries = 3`, so **a failing test runs
+four times** and its JUnit XML holds four results. Runtime classpath of `resilience4j-retry`: `resilience4j-core` (project) and `slf4j-api:1.7.30`.
+Tests: JUnit 4, AssertJ, Mockito, PowerMock, Awaitility, RxJava 2, logback, vavr (67 entries).
+
+**Substitution (plugin classpath only).** The `org.asciidoctor.convert` 1.6.0 plugin needs `org.ysb33r.gradle:grolifant:0.10`, which only jcenter
+served: Central has 0.12.1 and later, the Plugin Portal redirects to Central (404). The **same coordinates** were copied from
+`https://repo.grails.org/grails/core` into the file repository `$O/dl/subst-repo-D`, pom and jar each equal to that repository's `.sha1`
+(`$O/scripts/subst_add_D.sh`, log `$O/logs/D-subst-repo.txt`; no second public source serves it):
+`grolifant-0.10.jar` sha1 `e2ad2b34631cd8f19f2a992984a0dc4c71bee78f`, sha256 `c13e871892b9820f27d96f5a2216e888960e5c2d4383d8ea1837d18f1c733153`;
+`grolifant-0.10.pom` sha1 `3c42e5a501bccc1a0773ba508231542735522476`. `$O/scripts/subst-repo-D.init.gradle` adds the file repository to the plugin and
+build-script repositories (`GINIT=$O/scripts/subst-repo-D.init.gradle`). Nothing compiled or tested uses it (documentation plugin).
+
+**Commands** (`GINIT=$O/scripts/subst-repo-D.init.gradle $O/scripts/gradle_case_D.sh DIR TAG 7.4.2 $J17 resilience4j-retry/build/test-results/test ARGS`):
+- online, first resolution at the fix (34 s): `ONLINE=1 … :resilience4j-retry:jar :resilience4j-retry:test --tests io.github.resilience4j.retry.internal.CallableTest --tests io.github.resilience4j.retry.internal.CompletionStageRetryTest`
+- **offline (checked, 11 s at the fix, 16 s at the parent)**: the same without `ONLINE=1`
+- classpaths: `GINIT=… $O/scripts/cp_D.sh R45 ROLE 7.4.2 $J17 :resilience4j-retry`
+
+**Landed tests** (JDK 17.0.21; logs `$O/logs/R45-*.log`, summaries `*.junit.txt`):
+
+| Run | Result |
+|---|---|
+| fix, `CallableTest` + `CompletionStageRetryTest` (online, then offline) | 16/16 pass |
+| parent, its own copies (offline) | 12/12 pass |
+| the fix's two test files on a copy of the parent (offline) | **3 of 16 tests fail** (each four times under test-retry: 25 results, 12 failures; `$O/logs/R45-parent-landed.failures.txt`, XML in `$O/logs/junit-xml/R45-parent-landed/`) |
+
+- `CallableTest#shouldStopRetryingAndEmitProperEventsIfIntervalFunctionReturnsLessThanZero`: `Expecting <AtomicInteger(2)> to have value: <1> but did not.`
+- `CompletionStageRetryTest#shouldContinueRetryingAndEmitProperEventsIfIntervalFunctionReturnsZeroOrMore`: `Expecting <AtomicInteger(1)> to have value: <2> but did not.`
+- `CompletionStageRetryTest#shouldStopRetryingAndEmitProperEventsIfIntervalFunctionReturnsLessThanZero`: `Expecting <AtomicBoolean(false)> to have value: <true> but did not.`
+
+**Artifacts** (`$O/artifacts/R45-{parent,fix}/`: `resilience4j-retry-2.2.0-SNAPSHOT.jar`, `resilience4j-core-2.2.0-SNAPSHOT.jar`, `SHA256SUMS`,
+`resilience4j-retry.runtimeClasspath.txt`, `resilience4j-retry.testRuntimeClasspath.txt`, project entries copied under `tree/`):
+
+| File | parent sha256 | fix sha256 |
+|---|---|---|
+| `resilience4j-retry-2.2.0-SNAPSHOT.jar` | `1df91159be0aff5667df17b8cf610a2204f53efd17dd9099ce84b5cae89aa361` | `6bef988d2936dcfc39fc3d7fd040df462979ea549b350219fdcde3ad90e337c1` |
+| `resilience4j-core-2.2.0-SNAPSHOT.jar` (no source change; jar timestamps differ) | `a500a8fad8877eaba8dc05eb3e3cbaba3ad8ec9cdd08a1230b6d4280ca0638d4` | `85c0c0cc0361e33c0d1e19cc27acc03ace71f017e834c776f282bf070b28a8f6` |
+| `io/github/resilience4j/retry/Retry$AsyncRetryBlock.class` | `7e152705f833133ecf8c80b4bcb32192eb89ecee90af27407386a0852bef9e64` | `b9ad55c2541157c1e04de547c0da14fe999b52af7f239c34f5315e343c88f0c0` |
+| `io/github/resilience4j/retry/internal/RetryImpl$AsyncContextImpl.class` | `4f7ddbf3a0eabc0a8d89bdc6dc0ab54da7a8a0ca0b9ed03f43ae48cf502e53ee` | `a6cb0aecc59ece8959632e1349cbe9cdc60d31474143aaf7f1da0d4743b9e63a` |
+| `io/github/resilience4j/retry/internal/RetryImpl$ContextImpl.class` | `4f9b2d8594378832e7ca970eca7025472ef5cf98d6132c370ebaa54f203be306` | `d96cd41d13f0ad83c0930fd0a92a809b238cdbf5175f3e6af03a95efe5c50447` |
+| `io/github/resilience4j/retry/internal/RetryImpl$RetryEventProcessor.class` | `9868604c9817c81c289f54815f3d7c4942c33ff7f13f51b88985dcc0cfd6fb74` | `bb110ee48ab624e5f67d598bc68d54fba9fca345ad881d6b0140ff1ed125991d` |
+| `io/github/resilience4j/retry/internal/RetryImpl$RetryMetrics.class` | `402174aea8bf403687d34481b220df72f4f872375927222be909772a093b9953` | `26d6e58e634ff1c025fd3a1e0137618e8951e6d763e6c174cd33ed8fe6624340` |
+
+The other six classes of the two files are identical on both sides (`SHA256SUMS`), among them `Retry.class` `4c9dd0df7ec34fdb6fbe29ea520fef35968acea978ed4072a88ded8fd1fcf5d2` and `RetryImpl.class` `5affc68cc20a3ab1309035bdf7b7ab37eceea1f14d744de4771c3e10436d243e`.
+
+**Release side** (`$O/releases/resilience4j-{retry,feign,core,circuitbreaker,ratelimiter,bulkhead}-{2.1.0,2.2.0}/`, jars and poms, plus retry and feign
+`-sources.jar`, each equal to Central's `.sha1`/`.sha256`/`.sha512` where published):
+- **2.1.0 predates the fix**: its `Retry.java` has both removed lines and neither added one; `RetryImpl.java` has all 4 removed lines. `resilience4j-retry-2.1.0.jar` `e2dd918093bc263f1d725d0c17beea31ce34cbbf56eecfb92dce82a3c479e7b5`, `resilience4j-core-2.1.0.jar` `3c279de9c066215d04b89cc8864996660a05815ab47202089726aac7f3bd96fe`.
+- **2.2.0 is the first release with the fix**: all 2 + 14 added lines; neither file byte-equal to the fix's (later changes). `resilience4j-retry-2.2.0.jar` `5256badd000a3dfd74914241e7095adf96ccde955dabb9d204f1e7b60fe6bcba`, `resilience4j-core-2.2.0.jar` `6200917bb21c30134c27e3de8bc8c6e4a7760d87579a0dc4e2dc54888beab5ce`.
+
+### R46 · resilience4j #1999 — a lambda from a Feign fallback factory is invoked (upstream Gradle 7.4.2 build at both pins, inline; same substitution as R45)
+
+**Pins.** Parent `e328decc50954d70420359acea78491fce539d20`, fix `17dc97b1c8e472e1c295f112b8b761298cd1321a` (squash on `master`, one parent = the brief's).
+Changed (all in `resilience4j-feign/src/main/java/io/github/resilience4j/feign/`): `DefaultFallbackHandler.java` (+1 −3), `FallbackFactory.java` (+1 −2),
+`FallbackHandler.java` (+6); new test `resilience4j-feign/src/test/java/io/github/resilience4j/feign/Resilience4jFeignFallbackFactoryLambdaTest.java` (+68, one method
+`testFallbackFactory`, using the existing `test/Issue560.java` lambda from another package and WireMock).
+
+**Build facts.** As R45 (Gradle 7.4.2 on JDK 17, `2.2.0-SNAPSHOT`, test-retry ×4, `-Dorg.gradle.caching=false`, `GINIT=$O/scripts/subst-repo-D.init.gradle`).
+`feign-core` 12.0 is `compileOnly` (on the test classpath, not the runtime one). Runtime classpath of `resilience4j-feign`: the project jars
+`resilience4j-retry`, `-circuitbreaker`, `-ratelimiter`, `-bulkhead`, `-core` and `slf4j-api:1.7.30` (`$O/artifacts/R46-ROLE/resilience4j-feign.runtimeClasspath.txt`, project
+jars copied under `tree/`). Tests: WireMock `wiremock-jre8` 2.26.0 (Jetty 9.4.20), feign-core 12.0 and the common test libraries (121 entries).
+
+**Commands** (`GINIT=… $O/scripts/gradle_case_D.sh DIR TAG 7.4.2 $J17 resilience4j-feign/build/test-results/test ARGS`):
+- online at the fix (28 s): `ONLINE=1 … :resilience4j-feign:jar :resilience4j-feign:test --tests io.github.resilience4j.feign.Resilience4jFeignFallbackFactoryLambdaTest`
+- **offline (checked, 9 s)**: the same without `ONLINE=1`; parent (online first, 11 s): `:resilience4j-feign:jar :resilience4j-feign:testClasses`
+
+**Landed tests** (JDK 17.0.21):
+
+| Run | Result |
+|---|---|
+| fix, `Resilience4jFeignFallbackFactoryLambdaTest` (online, then offline) | 1/1 pass |
+| parent | no copy (the test is new) |
+| the fix's test on a copy of the parent (offline) | **1 of 1 fails** (four attempts; `$O/logs/R46-parent-landed.failures.txt`, XML in `$O/logs/junit-xml/R46-parent-landed/`): `testFallbackFactory`: `java.lang.reflect.UndeclaredThrowableException`, caused by `java.lang.IllegalAccessException: class io.github.resilience4j.feign.FallbackFactory cannot access a member of class io.github.resilience4j.feign.test.Issue560$$Lambda$194/0x… with modifiers "public"` |
+
+**Artifacts** (`$O/artifacts/R46-{parent,fix}/`):
+
+| File | parent sha256 | fix sha256 |
+|---|---|---|
+| `resilience4j-feign-2.2.0-SNAPSHOT.jar` | `d01a9ccfd9f21957c2bcc98960e74abe286762109c1b131b3b6c73f91b447368` | `06ed24b91d27693e34ecb868b0ecd0523d04dc087f028693184b3c3eed816eb5` |
+| `io/github/resilience4j/feign/DefaultFallbackHandler.class` | `83a3503f7f70acab272a01ae00882d1766ab0c68a03036475fda0f7378d8675a` | `d26b35779c91f5a4f377a8dc36b434afea2f7b384011d7bc04355208e3aef767` |
+| `io/github/resilience4j/feign/FallbackFactory.class` | `5a0042b8093772e3b296a5e75b1af0c0f963f7fd9cf8aecc362ef419efc14990` | `c6fd0446d1abcf112a566dee839c657a1d7e81c060d72cee04eb1de2555681f2` |
+| `io/github/resilience4j/feign/FallbackHandler.class` | `2147046c923ed02ad74eecb2e99fdbf643dafef936994186b5032b6ce98209c9` | `c5b4580ea4de85032d818e642d769f261d27b312bf001e00debc0bcaa84dfd20` |
+
+**Release side** (same downloads as R45). The brief names **Resilience4j 2.1.0** (issue #2000): it **predates the fix** (all 3 + 2 removed lines of
+`DefaultFallbackHandler.java`/`FallbackFactory.java`, none of the added lines). **2.2.0 is the first release with it** (all 7 added lines; files not
+byte-equal to the fix's). Jars (sha256): 2.1.0 `resilience4j-feign` `93e6d9faf7906cbaff9fc50d67e0d66c891fd73fd36eba75de3f74651bb291a0`, `-retry` `e2dd918093bc263f1d725d0c17beea31ce34cbbf56eecfb92dce82a3c479e7b5`,
+`-circuitbreaker` `0e6f73a1f17b2c813acca7cc131d2c1b6a5a56f3d55047872bbe7fe2cc73c312`, `-ratelimiter` `15377bd6ffe4e5a24e35611ed921ffe4fc111380c5b2c153cdb21ff4b08e3c2b`, `-bulkhead` `17d83e1751c3b91d17e45f43ba1814707706cb2209f07b59766a4d85bfe97c68`,
+`-core` `3c279de9c066215d04b89cc8864996660a05815ab47202089726aac7f3bd96fe`; 2.2.0 `resilience4j-feign` `2342c8073e962eb00f92ece37123a01a55389b3c196d6359d3a8cb228eedd3b2`, `-retry` `5256badd000a3dfd74914241e7095adf96ccde955dabb9d204f1e7b60fe6bcba`,
+`-circuitbreaker` `b87b0de1051e466190a2ea35f53e5c67d9268fb4000400e07bd1cbf9f006fbf4`, `-ratelimiter` `b285699e8f45e83bd1dec985ee7646086fcd0234871f4cf4fa5d2487a585601d`, `-bulkhead` `5211f86fdeff5aff8ef9f3f6491e101a992f215671c80404e9900b4242061394`,
+`-core` `6200917bb21c30134c27e3de8bc8c6e4a7760d87579a0dc4e2dc54888beab5ce`. A release run also needs `feign-core` (12.0 is what the pins test with; in `$O/gradle-home`) and `slf4j-api`.
+
+### R47 · picocli #2036 — inherited map options keep mapFallbackValue (upstream Gradle 7.6 build at both pins, inline)
+
+**Pins.** Parent `7c7c8b954277b6e18c57ff5ea1791b59569c0511`, fix `5984589f57bcf2bb716e3dee21025ddaa387c3da` (squash on `main`, one parent = the brief's).
+Changed: `src/main/java/picocli/CommandLine.java` (+1: `mapFallbackValue = original.mapFallbackValue;` in the copy of an `ArgSpec` builder),
+`src/test/java/picocli/MapOptionsTest.java` (+53: `testInheritedOptionMapFallbackValueEmptyString`, `testInheritedOptionMapFallbackValueNull`,
+`testInheritedPositionalMapFallbackValueNull`).
+
+**Build facts.** Gradle 7.6 (`$O/tools/gradle-7.6`, the wrapper's version; the pins' `gradle-wrapper.jar` is 7.4.x's, see the toolchain table),
+run on **JDK 11** (`$J11`). Version `4.7.4-SNAPSHOT` (from `dependencies.gradle`), so the jar is `picocli-4.7.4-SNAPSHOT.jar`; on JDK 9+ the build
+sets source/target 1.8 (class files major 52). **No runtime dependencies.** Tests: JUnit 4, hamcrest, system-rules, JUnitParams, groovy, jansi
+(`testRuntimeClasspath.txt`, 7 entries). Repositories `repo.spring.io/libs-snapshot` and Central; everything resolved from Central, no substitution.
+The root project only; the subprojects (`picocli-codegen`, …) were not built.
+
+**Commands** (`$O/scripts/gradle_case_D.sh DIR TAG 7.6 $J11 build/test-results/test ARGS`; offline unless `ONLINE=1`):
+- in `$W/R47-picocli-fix` online, first resolution (36 s): `ONLINE=1 … :jar :test --tests picocli.MapOptionsTest`
+- **offline (checked, 8 s at the fix, 13 s at the parent)**: `… :jar :test --tests picocli.MapOptionsTest`
+- classpaths: `GINIT=$O/scripts/resolve-all.init.gradle … :setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=FILE`
+
+**Landed tests** (JDK 11.0.33; logs `$O/logs/R47-*.log`, summaries `*.junit.txt`):
+
+| Run | Result |
+|---|---|
+| fix, `MapOptionsTest` (online, then offline) | 13/13 pass |
+| parent, its own `MapOptionsTest` (offline) | 10/10 pass |
+| the fix's `MapOptionsTest` on a copy of the parent (`$O/scripts/overlay_D.sh R47`, offline) | **3 of 13 fail**, exactly the three new tests (`$O/logs/R47-parent-landed.failures.txt`, XML in `$O/logs/junit-xml/R47-parent-landed/`) |
+
+- `testInheritedOptionMapFallbackValueEmptyString`: `CommandLine$ParameterException: Value for option option '-D' (<String=String>) should be in KEY=VALUE format but was key`
+- `testInheritedOptionMapFallbackValueNull`: the same `ParameterException` message
+- `testInheritedPositionalMapFallbackValueNull`: `CommandLine$UnmatchedArgumentException: Unmatched argument at index 1: 'key'`
+
+**Artifacts** (`$O/artifacts/R47-{parent,fix}/`: jar, `SHA256SUMS` with the jar and all 216 `picocli/CommandLine*.class` entries, `runtimeClasspath.txt` (empty), `testRuntimeClasspath.txt`):
+- `R47-parent/picocli-4.7.4-SNAPSHOT.jar` `01363c5c77b15ca1b5c0fa47962c996727e5352981de694d328ad5fed96e7137`
+- `R47-fix/picocli-4.7.4-SNAPSHOT.jar` `d73b56e5e55c024cc8811b913dccf5d35e9976964352713194acf2f05d1b1430`
+- 126 of the 216 `CommandLine*` classes differ between the sides (line-number tables shift; `python3 -I $O/scripts/classdiff_D.py R47 all` lists them); `picocli/CommandLine.class` parent `a4580b58f7cbfaf56ef8b1b27a179bee23121b373d43e51744ce6916ba0a56da`, fix `ebb8b6b773d99fe154f32df9bcaa9c96b87e1ad9d62275b0bed721b8be3dfdf2`.
+
+**Release side** (`$O/releases/picocli-4.7.{3,4}/`, jar, pom and `-sources.jar`, each checked against Central's `.sha1`, `.sha256`, `.sha512`; `$O/scripts/linecmp_D.py`):
+- **4.7.3 predates the fix**: its `CommandLine.java` lacks the added line. `picocli-4.7.3.jar` `6442745031a59fdd0d9841a3f2332a03f7aa37735536dad206ee4fac8800ab93`.
+- **4.7.4 is the first release with the fix**: it has the added line; not byte-equal to the fix's file (later commits). `picocli-4.7.4.jar` `1964e89575b43aa177aa4e534946b25bde9f3a48a9675d61d9ef7c4ca83d94b4`.
+- Signatures: see [Signatures (fork D)](#signatures-fork-d).
+
+### R49 · JUnit #5839 — the suite engine counts dynamically registered tests (upstream Gradle 9.6.1 build; jars and landed tests by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`)
+
+**Pins.** Parent `f8686f1e6482e41bd40548fd08c5340f414b968f`, fix `7e7183fe2989400b98c8ef06981ab0ae3e62d6d8` (squash on `main`, one parent = the brief's).
+Changed production file: `junit-platform-suite-engine/src/main/java/org/junit/platform/suite/engine/SuiteTestDescriptor.java` (+7: `dynamicTestRegistered` increments
+`testsFound` for a test identifier). Tests (`platform-tests/src/test/java/org/junit/platform/suite/engine/`): `SuiteEngineTests.java` (+60 −44),
+`BeforeAndAfterSuiteTests.java` (+5 −5), new helper `SuiteEventConditions.java` (+36); release notes `release-notes-6.1.2.adoc`.
+
+**Checkouts.** `$W/R49-junit-framework-{parent,fix}` are **standalone depth-1 clones** (`$O/scripts/standalone_D.sh`; JUnit's build reads git metadata, as
+earlier setups found); trees parent `3f3db360bb7a3196e91a76becb76bc5f07c3ee1d`, fix `e3e59aae84a9335ddd93b571dba4e24511f40e58`, as in the revisions table.
+
+**Build facts.** Gradle 9.6.1 (`$O/tools/gradle-9.6.1`; zip sha256 = the wrapper's `distributionSha256Sum`; wrapper jar = 9.6.1's published one) on **JDK 25**,
+default toolchain 25, `org.gradle.java.installations.fromEnv=GRAALVM_HOME,JDK17,JDK21,JDK24,JDK25` given `JDK17=$J17 JDK21=$J21 JDK25=$J25` and `JDK24` = the earlier
+setup's checked Temurin 24.0.2+12 (`~/.cache/in-the-loop/merged-pr-links/tools/jdk-24.0.2+12`, tarball sha256 `aea1cc55e51cf651c85f2f00ad021603fe269c4bb6493fa97a321ad770c9b096` = Adoptium's, per
+that setup's record); no GraalVM. Version `6.2.0-SNAPSHOT`. `$O/scripts/junit_gradle_D.sh R49 DIR TAG RESULTDIR ARGS` adds `--no-build-cache --no-scan
+-Pkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false`, toolchain auto-detect/download off.
+**Online resolution inline** (`$O/logs/R49-{fix,parent}.resolve-online.log`, 149 s and 40 s): `setupResolveAll -PsetupResolve=ALL` in every project, 459 configurations;
+only `:nmcpAggregation` (the publishing aggregate of the project's own modules) cannot resolve, and nothing needs it. Offline task graph checked with `-m` (29 s). No substitution.
+
+**Commands** (`$O/scripts/junit_job.sh R49 fix|parent|landed|clean`): `:junit-platform-suite-engine:jar :junit-platform-suite-api:jar :junit-platform-launcher:jar
+:junit-platform-engine:jar :junit-platform-commons:jar :junit-jupiter-api:jar :junit-jupiter-engine:jar :junit-jupiter-params:jar :platform-tests:test
+--tests org.junit.platform.suite.engine.SuiteEngineTests --tests org.junit.platform.suite.engine.BeforeAndAfterSuiteTests` offline.
+
+**Landed tests and artifacts:** produced by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (steps 1–4), into `$O/logs/R49-*.test-offline.*` and `$O/artifacts/R49-{parent,fix}/` (module jars,
+`SHA256SUMS`, `junit-platform-suite-engine.runtimeClasspath.txt`, `platform-tests.testRuntimeClasspath.txt`).
+<!-- R49-job -->
+
+**Release side** (`$O/releases/junit-platform-suite-engine-{6.1.1,6.1.2,6.2.0-M1}/` with `-sources.jar`; full runtime sets `$O/releases/junit-set-{6.1.1,6.1.2}/classpath.txt`,
+13 jars each — platform suite/suite-api/suite-engine/launcher/engine/commons, jupiter/-api/-params/-engine, opentest4j 1.3.0, apiguardian 1.1.2, jspecify 1.0.0 —
+resolved from Central into `$O/m2`, each jar equal to its `.sha1`):
+- **6.1.1 (named by the brief, issue #5837) predates the fix; 6.1.2 has it, and the two differ in `SuiteTestDescriptor.java` by exactly the fix's 7 added lines**
+  (the 6.1.x maintenance line; neither is byte-equal to a pin, whose `main` file has 44 more lines of 6.2 work). 6.2.0-M1 also has the fix.
+- `junit-platform-suite-engine-6.1.1.jar` `cc8e80d44a13e8734d1ef85bf87a7f8dc3182b24d772a001851f3c5be8f67c60`, `-6.1.2.jar` `2f478dfd1ccda57c576c761d07d5417f9048d5d97ae27d334ebdc76caaebcfda`.
+
+### R50 · JUnit #4466 — @TempDir ON_SUCCESS cleanup follows the owning test (upstream Gradle 8.13 build; jars and landed tests by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`)
+
+**Pins.** Parent `96d0c6dae456021a664a2283ab30fca28c4fbae2`, fix `48276fd094821f79afb3cd384b8c70946d73350b`; the range is two commits, as the brief says: middle
+`f7f1d51d4c57322dece17011a3da540b0f98bfbb` ("Add 5.12.2 release notes from template", documentation only), then the fix ("Fix handling of `CleanupMode.ON_SUCCESS`").
+Changed production file: `junit-jupiter-engine/src/main/java/org/junit/jupiter/engine/extension/TempDirectory.java` (+16 −7); test
+`jupiter-tests/src/test/java/org/junit/jupiter/engine/extension/TempDirectoryCleanupTests.java` (+52 −10); release notes (`index.adoc`, new `release-notes-5.12.2.adoc`).
+
+**Checkouts.** Standalone depth-1 clones `$W/R50-junit-framework-{parent,fix}`; trees parent `b827fdc509a4d96b324056817ed074bee00f346f`, fix `03a9443a67a71603209d8366316e67baac331c57`.
+
+**Build facts.** Gradle 8.13 (`$O/tools/gradle-8.13`; zip sha256 = the wrapper's `distributionSha256Sum`; wrapper jar = 8.13's) on **JDK 21**, default toolchain 21,
+`fromEnv=JDK8,JDK18,…,JDK24` (given `JDK8`, `JDK21`, `JDK24`). Version `5.13.0-SNAPSHOT` (platform `1.13.0-SNAPSHOT`). **This build's `junitbuild.build-parameters`
+plugin rejects any unknown `-P` property** (`Unknown build parameter: …`), so for R50 the Kotlin strategy is `-Dkotlin.compiler.execution.strategy=in-process` and the setup's
+init-script parameters are system properties (`$O/scripts/resolve-all-D.init.gradle`, `-DsetupResolve=ALL`, `-DsetupCpConf`, `-DsetupCpOut`). `gradle.properties` sets
+`org.gradle.warning.mode=fail`; the init script's resolution trips it at the end (the resolution itself completed, 501 configurations, none failed), so the classpath export passes
+`--warning-mode=summary`. Online resolution inline: `$O/logs/R50-{fix,parent}.resolve-online.log`. Offline task graph checked with `-m` (29 s). No substitution.
+
+**Commands** (`$O/scripts/junit_job.sh R50 fix|parent|landed|clean`): `:junit-jupiter-engine:jar :junit-jupiter-api:jar :junit-jupiter-params:jar :junit-platform-launcher:jar
+:junit-platform-engine:jar :junit-platform-commons:jar :jupiter-tests:test --tests org.junit.jupiter.engine.extension.TempDirectoryCleanupTests` offline.
+
+**Landed tests and artifacts:** produced by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (steps 5–8), into `$O/logs/R50-*.test-offline.*` and `$O/artifacts/R50-{parent,fix}/`
+(`junit-jupiter-engine.runtimeClasspath.txt`, `jupiter-tests.testRuntimeClasspath.txt`).
+<!-- R50-job -->
+
+**Release side** (`$O/releases/junit-jupiter-engine-{5.12.1,5.12.2,5.13.0}/` with `-sources.jar`; runtime sets `$O/releases/junit-set-{5.12.1,5.12.2}/classpath.txt`, 13 jars each, platform 1.12.x):
+**an exact published pair**: `TempDirectory.java` of **5.12.1 = the parent's**, of **5.12.2 (named by the brief) = the fix's** (git blob ids). 5.13.0 has the fix plus later changes (30 lines).
+`junit-jupiter-engine-5.12.1.jar` `0e7f2dbeb91bfaeb0d4cb33a487351baf0e5a6ed72906154d8fd9975d329c592`, `-5.12.2.jar` `f576c06b8accde9985063b8bc80526cb980eec24dee0b7221fc8ddd7ace65800`.
+
+### Signatures (fork D)
+
+Every `.asc` of fork D's release downloads (100 files: jar, pom and `-sources.jar` of each release folder in `$O/notes/D-releases.tsv`) was verified with the
+keyring `$O/gnupg-D` (`$O/scripts/sigs_D.sh`, results `$O/logs/D-signatures.tsv`, exported keys `$O/keys-D/`); missing keys were fetched by the signature's issuer
+from keyserver.ubuntu.com, keys.openpgp.org or pgp.mit.edu (the last served the ReactiveX and old Spring keys). Its daemons were stopped
+(`gpgconf --homedir $O/gnupg-D --kill all`). **All 100 verify**:
+
+| Releases | Signer key (fingerprint) | Files | Note |
+|---|---|---|---|
+| picocli 4.7.3, 4.7.4 | `AA417737BD805456DB3CBDDE6601E5C08DCCBB96` Popma Remko | 6 | good |
+| moshi 1.12.0, 1.13.0 | `A6D6C97108B8585F91B158748671A8DF71296252` Jesse Wilson | 6 | good |
+| reactor-core / reactor-test 3.1.0–3.1.2.RELEASE | `E2ACB037933CDEAAB7BF77D49A2C7A98E457C53D` Spring Buildmaster | 15 | good |
+| reactor-core 3.4.37, 3.4.38 | `48B086A7D843CFA258E83286928FBF39003C0425` Spring Builds (JAR Signing) | 6 | good |
+| calcite-core, calcite-testkit 1.42.0 | `04749577FD934674B9CD45C5D77C3383F1927570` Stamatis Zampetakis | 6 | good |
+| junit-platform-suite-engine 6.1.1, 6.1.2, 6.2.0-M1; junit-jupiter-engine 5.12.1, 5.12.2, 5.13.0 | `FF6E2C001948C5F2F38B0CC385911F425EC61B51` Marc Philipp | 18 | good |
+| rxjava 2.0.6, 2.0.7, 3.0.0-RC3, RC4, RC5 | `1D9AA7F9E1E2824728B8CD1794B291AEF984A085` ReactiveX Admin | 15 | good signature, key expired 2018-08-19 (signatures made 2017 and 2019) |
+| resilience4j-{retry,feign,core,circuitbreaker,ratelimiter,bulkhead} 2.1.0, 2.2.0 | `94FAC9D5B165E80F1F2D9A103FFA7DB1EC0FF1A2` Robert Winkler | 28 | good signature, but the keyserver copy of the key **expired 2023-05-21, before the signatures were made** (2023-06-29, 2023-12-17) |
+
+The JUnit runtime sets and the R42 test libraries resolved through Maven into `$O/m2` were checked against Central's `.sha1` only (`$O/scripts/verify_cp_D.sh`).
+
+
