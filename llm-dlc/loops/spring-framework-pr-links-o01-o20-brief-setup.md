@@ -308,3 +308,151 @@ configured for all 18 (`$O/logs/dryrun-{6x,7x-a,7x-b}.txt`). Logs per step: `$O/
 | O20 | `20261126-003558-setup-build-spring-framework-37600-o20-a` |
 
 Results are recorded below as the jobs come back.
+
+## Job results
+
+**Spring 6.x cases: all six jobs passed every step** (read from the step logs in `$O/logs/` after the runner finished them on
+2026-11-26; the result files are collected onto the default line by the watcher, not in this record's commits). Fix and parent
+columns: the landed test classes at that pin (O13's two classes are new, so its parent step builds the jar only). Transplant: the
+fix's changed test files on a copy of the parent.
+
+| Case | Fix | Parent | Transplant |
+|---|---|---|---|
+| O03 | exit 0, 29 tests, 0 failures, 0 errors (211 s) | exit 0, 27 tests, 0 failures, 0 errors (190 s) | **does not compile**: `MockRestRequestMatchersTests.java:164` cannot find symbol; `MockRestRequestMatchersTests.java:172` cannot find symbol |
+| O05 | exit 0, 33 tests, 0 failures, 0 errors (153 s) | exit 0, 30 tests, 0 failures, 0 errors (118 s) | **does not compile**: `TestScenarioCreator.java:82` incompatible types: MethodHandle cannot be converted to Method; `TestScenarioCreator.java:85` incompatible types: MethodHandle cannot be converted to Method |
+| O13 | exit 0, 18 tests, 0 failures, 0 errors (207 s) | exit 0, 0 tests, 0 failures, 0 errors (169 s) | **does not compile**: `DataClassRowMapperTests.java:35` cannot find symbol; `DataClassRowMapperTests.java:35` cannot find symbol |
+| O15 | exit 0, 17 tests, 0 failures, 0 errors (285 s) | exit 0, 18 tests, 0 failures, 0 errors (184 s) | **fails**: 17 tests, 1 failures, 0 errors; `R2dbcTransactionManagerUnitTests#testPropagationNestedWithExistingTransaction()` |
+| O16 | exit 0, 20 tests, 0 failures, 0 errors (209 s) | exit 0, 20 tests, 0 failures, 0 errors (191 s) | **fails**: 20 tests, 11 failures, 0 errors; `ClassPathXmlApplicationContextTests#aliasWithPlaceholder()`, `ClassPathXmlApplicationContextTests#childWithProxy()`, `ClassPathXmlApplicationContextTests#configLocationPattern()`, `ClassPathXmlApplicationContextTests#factoryBeanAndApplicationListener()` and 7 more |
+| O18 | exit 0, 19 tests, 0 failures, 0 errors (198 s) | exit 0, 18 tests, 0 failures, 0 errors (160 s) | **fails**: 19 tests, 1 failures, 0 errors; `SingleConnectionFactoryTests#testWithConnectionFactoryAndExceptionListenerAndReconnectOnExceptionWithJMSException()` |
+
+O16's eleven transplant failures are `BeanCreationException`s (for example at `ClassPathXmlApplicationContextTests.java:187`):
+every test that loads the changed `contextA.xml`, which adds `service3` with the single-resource collection properties, fails to
+create its context on the parent. O15 fails an `AssertionError` at `R2dbcTransactionManagerUnitTests.java:479`, O18 an
+`AssertionFailedError` at `SingleConnectionFactoryTests.java:409`. All three compile-failures name the API the landing adds
+(`headerList`/`queryParamList`, `registerFunction(String, MethodHandle)`, the r2dbc row mappers). The `clean` step left no
+untracked or ignored file in any of the twelve worktrees.
+
+**Spring 7.x cases (O01, O02, O04, O06–O10, O12, O17, O19, O20): verification pending** (jobs in the table above).
+
+## Digests of the built artifacts
+
+Each `$O/artifacts/CASE-ROLE/SHA256SUMS` lists the module jars (`jars/`), the project jars on the kept classpaths (`tree/…`) and
+the class digests of every production source file the landing changed (nested classes included). Jar digests include build
+timestamps; the class digests are what compare across builds. Classpaths: `$O/artifacts/CASE-ROLE/M.runtimeClasspath.txt` and
+`M.testRuntimeClasspath.txt` (`:`-joined).
+
+| Case | Role | Module jar sha256 | Changed classes (sha256) |
+|---|---|---|---|
+| O03 | fix | `spring-test-6.0.8-SNAPSHOT.jar` `4f60554049081a4ec4384e1f7275d5f80064d90612b66ac4f56c8cc4104396ef` | `MockRestRequestMatchers.class` `afcfc0a2dc7a907f899dd1e01e1ff0277bb37172c4f15cad49bc17a80cc92ee4` |
+| O03 | parent | `1ecc94b106d1235a54e77d46adc55146aaf35c380e4cb26a7498b8ce4880d37f` | `a3271f782ffce9d01ee8a3696f6f9227b4426ab9005ddc0d54c77c6c93820a07` |
+| O05 | fix | `spring-expression-6.1.0-SNAPSHOT.jar` `1180be602732143635848905348d5e7b7005ff21f19a8b377125a92482078b57` | `FunctionReference.class` `498b71aaa065fe8c7edd0452c66200809b86578dd24062370a59f210b2c035f0`, `ReflectionHelper.class` `422c95e8f946da8e2c90947df07f3fe1d75e41bf460a1d3cbba7b76af1a088ca`, `StandardEvaluationContext.class` `a0caef978f9ce4ad592962b5c6613b5cf80a60a9c09eeb96289147753f42235a` (+2 nested, in the file) |
+| O05 | parent | `bcb6092e71470a27918bc688904869c54df99581b0c26b36db1c346ecf1be415` | `825a80db74ecbff71867201a85a3e20ecd0e437067f25251e32f8d1cc09ef299`, `3cbd553409fd892336c7adafb417e6d21e89e0a8a0dddbff01a2514939b4f546`, `2b3434e3b5d90325171f6749e1f35800e2af238e53850bc7067fa4b4444a07e7` (same order) |
+| O13 | fix | `spring-r2dbc-6.1.0-SNAPSHOT.jar` `8370831560ba085d01cdf6305863bab52a90a714df353f7b714d07b784e98ab6` | `BeanPropertyRowMapper.class` `d4c4a9a59f6fab7d6029a782d024212d59e1d3653edc9f2c956a3c9575556d99`, `DataClassRowMapper.class` `60d8f1a904327589d0fb89d4ac4d162abb9e0057201e6efb5e0767cd77ff960e` |
+| O13 | parent | `267410963d204b43e8c7bad2db823abd85219e58e2b2c273a2aadb929bb32b78` | (classes absent) |
+| O15 | fix | `spring-r2dbc-6.1.0-SNAPSHOT.jar` `431ed84317ee7492cdcf9b4203bd40ba00cb1df73cae5857acc06a943fc8f350` | `R2dbcTransactionManager.class` `a7d2781393588e636b0986d777e8d2004f11e8d9a244e59a29f4e4585f50b28d` (+2 nested) |
+| O15 | parent | `009485c08575179c738e700eccfd9b64f9d3d63a54559c47b58beb5ab3b4d086` | `e018dc7b928b35cbd15d3041ae27b9d1fe1c31d01bca5fc2b09f1eef8e8dec1a` |
+| O16 | fix | `spring-beans-6.1.2-SNAPSHOT.jar` `66738032d6bafb59cea89fb65250d659abe00dfae1fa2707e1cdd7c0b46d9346`, `spring-context-6.1.2-SNAPSHOT.jar` `65c27117cd2d5a1752e3ebd4f07188f0a15e2885347f7247d6a1ac45403583e1` | `TypeConverterDelegate.class` `276fbe147f33f1e8fca9f75009277a4205abd02a9d1f1fe41b2378183850f797` |
+| O16 | parent | `c896916a37e92a599dcf17746027c68c883c8d55f459d89a7fe0cd94c89fca63`, `2fdc2658b06bcc1d2242186110e5555e9523eed0a82a05d15379d881002b5bea` | `c8cedbf575df814cf9bff2032cea7d80dfb3c0418657157f625de2af14c7b914` |
+| O18 | fix | `spring-jms-6.0.6-SNAPSHOT.jar` `f6e94fef2e108adc75be33ae7559623421aeeaaa1bb2f471e51e0c2ba4910ab8` | `SingleConnectionFactory.class` `aa1d56c92469666a68cfe0a386954b1d7391299375b06037422533316bf1dbc0` (+2 nested) |
+| O18 | parent | `dc522913ca18d225698a7afccdf2340a1ccf5f48b942927b15e260333b70508a` | `30206f976e7c2e391e257de000d5866f9bbf8542d60f55960fdaaba80dff01d2` |
+
+Kept test runtime classpath sizes: O03 spring-test 218 entries, O05 49, O13 65, O15 64, O16 spring-context 108, O18 54.
+
+## Commands for a rerun by hand
+
+Every build below is over a minute, so outside a job it is a probe at most; the caches are filled, so all run `--offline`.
+
+```bash
+source ~/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/env.sh
+# one case's job steps (CASE in O01..O10, O12, O13, O15..O20; STEP fix | parent | transplant | clean | dryrun)
+bash $O/scripts/case_job.sh CASE STEP
+# any task in a worktree, with the Gradle and JDKs that worktree needs (log $O/logs/TAG.log)
+$O/scripts/gradle_case.sh $W/O02-fix TAG "spring-context/build/test-results/test" \
+  -Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline \
+  :spring-context:test --tests org.springframework.scheduling.support.CronExpressionTests
+# a classpath of any project and configuration, offline
+$O/scripts/gradle_case.sh $W/O02-fix TAG "" --offline -I $O/scripts/resolve-all.init.gradle \
+  :spring-context:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$O/tmp/cp.txt
+```
+
+A worktree whose `clean` step ran has no `buildSrc/build`; the next offline run compiles `buildSrc` again (its dependencies are
+cached). Every project's every configuration was resolved, so modules beyond the case's (spring-tx, spring-orm, …) also build
+offline. The `later` worktrees (`O01-later`, `O17-later`, `O20-later`) were resolved too but never built.
+
+## What failed or was not done
+
+- **O11 and O14 are not built** (sections above): their build scripts need artifacts that are in no public repository
+  (propdeps-plugin 0.0.8, docbook-reference-plugin 0.3.1; Kotlin 1.4-M2). No substitute was put in.
+- Refused by servers (401, anonymous): `repo.spring.io/release`, `plugins-release(-local)`, `plugins-snapshot`, `libs-release(-local)`,
+  `libs-snapshot`, `libs-milestone`. Nothing the 7.x and 6.x builds needed was only there.
+- Unchecked signatures: Spring 5.0.0.M5 jars (key `23EF3D2F93185045`), Spring 5.2.7.RELEASE, Reactor 3.3.6.RELEASE and R2DBC 0.8.x
+  jars (key `9A2C7A98E457C53D`), reactive-streams 1.0.3 (`1364C5E2DF3E99C5`): keys not obtainable from keyserver.ubuntu.com or
+  keys.openpgp.org; milestones (5.0.0.RC1, 5.3.0-M1, reactor 3.4.0-M1) publish no `.asc`. Their sha1s match the repositories'.
+  Gradle 3.4's wrapper jar has no published checksum (unused). Liberica publishes sha1 only.
+- Not run: the O17 `later` revision's dedicated unit test and the other `later` revisions (outside the comparison by the brief);
+  the whole module test suites (only the landed classes run).
+- Two first-pass resolutions (O07 parent, O15 parent) and three O16 passes failed once, the first two because this session
+  rewrote the runner script while they ran, O16 for want of the Liberica JDK; all reran cleanly.
+
+Disk after setup (7.x jobs still running): worktrees 11 GB while build outputs exist (the `clean` steps take them back to about
+3.8 GB), `gradle-home` 9.6 GB, Gradle distributions and the Liberica JDK 2.2 GB, Maven repository and release sets 62 MB, kept
+artifacts 112 MB, mirror 211 MB. The Gradle zips were deleted after their digests were recorded (the `.sha256` files stay).
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Sources.** All 40 pins, plus the three `later` revisions the brief names, as worktrees `~/.cache/in-the-loop/spring-pr-links-o01-o20/worktrees/CASE-ROLE`
+  (ROLE `parent` = before pin, `fix` = after pin, `later`), from the shared mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git`.
+  Every PR's merge commit equals the after pin; every landed diff names exactly the PR's files; signed pins verify
+  ([Upstream revisions](#upstream-revisions), full ids in its table).
+- **Offline builds for 18 cases** (all but O11 and O14). Every configuration of every project is resolved into
+  `$O/gradle-home`; `source $O/scripts/env.sh` then `$O/scripts/gradle_case.sh WORKTREE TAG "" --offline TASKS` picks the right
+  Gradle (verified distributions in `$O/tools/`) and JDK ([Build facts](#build-facts-by-era), [Commands](#commands-for-a-rerun-by-hand)).
+  `$O/scripts/case_job.sh CASE STEP` reruns a case's job steps.
+- **Built jars, class digests and classpaths** per case and pin in `$O/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
+  `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`). Digests: the table in
+  [Digests of the built artifacts](#digests-of-the-built-artifacts) (6.x cases now; the 7.x rows come with their jobs).
+- **Released artifacts** in `$O/releases/SET/` (`jars/`, `classpath.txt`): spring-test 5.3.26 (the reporter's version for O03);
+  spring-jdbc 5.0.0.M5 and 5.0.0.RC1 (O11); spring-tx 5.2.7.RELEASE and 5.3.0-M1 with their Reactor, and spring-r2dbc 5.3.0-M1 with
+  r2dbc-h2 and H2 (O14); pgJDBC 42.7.15 ([Released artifacts](#released-artifacts)).
+- **PostgreSQL** for O11's driver read: `postgres@sha256:0d938e975177bef9f1f61f3f9dbcf2e0aa0a139568f66d3415ed8892eb97f6ac` (17.12) is
+  in local Docker; the smoke command is in [Released artifacts](#released-artifacts).
+
+### What was verified on a JVM
+
+- 6.x cases, by their jobs (all steps passed): each landed test class passes at the fix and its parent version passes at the
+  parent; the fix's test files on the parent **fail** for O15 (`testPropagationNestedWithExistingTransaction`), O16 (11 of 20
+  `ClassPathXmlApplicationContextTests`, context creation fails) and O18
+  (`testWithConnectionFactoryAndExceptionListenerAndReconnectOnExceptionWithJMSException`), and **do not compile** for O03, O05 and
+  O13 (the API they use is new in the landing). Row by row in [Job results](#job-results).
+- 7.x cases (O01, O02, O04, O06–O10, O12, O17, O19, O20): **pending**, jobs listed in [Jobs](#jobs-verification-pending).
+- O11, O14: no build, no test run. Only the source comparison with releases (below).
+- pgJDBC 42.7.15 connects to the PostgreSQL 17.12 image. No query from the brief was run anywhere.
+
+### What to know before starting
+
+- **O11 (#1366) and O14 (#25256) have no historical build** ([why](#o11-and-o14-the-historical-builds-cannot-be-configured)). The
+  released files that equal the pins: O11 parent's `NamedParameterUtils.java` is byte-identical in spring-jdbc 5.0.0.M5; the fix's
+  differs from 5.0.0.RC1's only in the copyright line. O14 parent's `TransactionalOperatorImpl.java` and
+  `TransactionalOperatorExtensions.kt` are identical in spring-tx 5.2.7.RELEASE and 5.2.8.RELEASE, the fix's in 5.3.0-M1;
+  `TransactionAspectSupport.java` differs from both releases (outside the reactive path; diffs described in that section). The rest
+  of each release moved; whether to use a release, a source slice or neither is yours. The O14 pins have no spring-r2dbc module.
+- **Snapshots.** The 7.1.0-SNAPSHOT builds take Reactor 3.9.0-SNAPSHOT, reactor-netty 1.4.0-SNAPSHOT and Micrometer 1.18.0-SNAPSHOT
+  as cached on 2026-11-25 (digests in [Snapshot artifacts](#snapshot-artifacts)), the same bytes for both pins of a case, not the
+  bytes of each pin's date. Build `--offline` to keep them.
+- **O16 needs the Liberica JDK** (`$JL17`): the build demands toolchain vendor BELLSOFT; `gradle_case.sh` passes it.
+- Default `java` on `PATH` is 25.0.5. The 7.x builds compile on toolchain 25 with `release` 17; the 6.x builds on JDK 17.
+- The brief's database choices are open: O11 names no pgJDBC version (42.7.15 here is this setup's pick, the current release);
+  O12's readback, O14's and O15's transaction-aware R2DBC writes need a driver the brief leaves open. On the kept test runtime
+  classpaths: spring-jdbc has H2, HSQLDB and Derby (optional dependencies); spring-r2dbc has r2dbc-h2 (check
+  `$O/artifacts/CASE-ROLE/M.testRuntimeClasspath.txt`).
+- O08 and O10 land as two commits (intermediate commits `8ab533263994e92f9660c9917a07cd3d8f8e769b`, `d8bc54d2e7d09d115dfb78381fbbac1ac0c90ab0`
+  in the mirror); the brief compares the outer pins.
+
+### What is left for the domain work on purpose
+
+All claims, scenarios, fixtures and examples; choosing a stand-in (or none) for O11 and O14; choosing databases and drivers beyond
+what is fetched; any run of the brief's own scenarios or predictions (the trailing-space SSE case, the strict-mode R2DBC mapper, the
+`initConnection` JMS path, the `take(1)` placement, the cross-route If-Range matrix and the rest); the `later` revisions; and
+example ids and folders.
