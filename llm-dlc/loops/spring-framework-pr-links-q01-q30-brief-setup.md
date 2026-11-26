@@ -192,7 +192,10 @@ then `-PsetupResolve=ALL`, over every project of the build (the init script adds
 every project and changes no upstream file). `GRADLE_USER_HOME` was first seeded with a copy of the P01–P30 setup's
 `caches/modules-2` (4.1 GB, copied while no Gradle ran there), so most artifacts and that setup's snapshot builds were already
 cached. Summaries `$P/logs/resolve-7x.summary.txt`, `$P/logs/resolve-6x.summary.txt`, `$P/logs/resolve-q09.summary.txt`; logs
-`$P/logs/WORKTREE.resolve{1,2}.online.log`. *Resolution of the Gradle 9 worktrees is still running.*
+`$P/logs/WORKTREE.resolve{1,2}.online.log`. All 45 worktrees of the 22 Gradle cases (Q23's `later` included) resolved every configuration of pass 1 (492–559 per worktree).
+Pass 2 (718–1,172 configurations) failed only on configurations no compile or test task uses: the Kotlin plugin's IDE-only
+`*DependenciesMetadata` (122 per worktree at 7.0.x and 7.0.0, 117 at Q13/Q28, 70 at Q30, 68 at Q12, none at 7.1) and, at Q09 and Q11,
+the docs build's `asciidoctorExt` (`io.spring.asciidoctor` extensions, from the 401 repository), as in the P01–P30 setup.
 
 ## Q09 configures with one substitution
 
@@ -365,7 +368,44 @@ holds the images `postgres:16` (`07abc3f43c93`) and `postgres:17` (`0d938e975177
 
 ## Snapshot dependencies
 
-*Pending.*
+Five pin pairs import snapshot BOMs (`$P/logs/snapshot-boms.txt`): Q08, Q16, Q29 (7.1.0-SNAPSHOT) `reactor-bom:2026.0.0-SNAPSHOT` and
+`micrometer-bom:1.18.0-SNAPSHOT`; Q21, Q27 (7.0.10/7.0.11-SNAPSHOT) `reactor-bom:2025.0.8-SNAPSHOT` and `micrometer-bom:1.16.8-SNAPSHOT`;
+Q11 (6.0.0-SNAPSHOT) `reactor-bom:2020.0.14-SNAPSHOT` (Q10's `2020.0.0-SNAPSHOT` and `rsocket-bom:1.1.0-SNAPSHOT` are moot: its build
+does not configure). `repo.spring.io/snapshot` serves each snapshot only as its newest build, so that is what the cache holds: every
+cached snapshot jar's sha1 equals the newest build's `.sha1` (`$P/scripts/snapshots.sh`, `$P/logs/snapshots.txt`). Those builds are
+dated after the pins for the 7.1 cases (Reactor 3.9.0-SNAPSHOT `20261110.081737`, Micrometer 1.18.0-SNAPSHOT `20261116.155816`;
+the pins are from 2026-08-05 to 2026-10-20) and for Q21 (Reactor 3.8.8-SNAPSHOT `20261016.063046`, Micrometer 1.16.8-SNAPSHOT
+`20261015.224611`; Q21's pins are of 2026-10-13), before Q27's pins (2026-10-21), and for Q11 two days before its merge (Reactor
+3.4.13-SNAPSHOT `20211212.180947`, reactor-netty 1.0.14-SNAPSHOT `20211214.094426`; merged 2021-12-14T10:24). Both pins of a case read
+the same bytes. The 7.1 and 7.0.x snapshot jars came with the cache seeded from the P01–P30 setup and are the same bytes it recorded.
+Build `--offline` to keep them.
+
+| Module | Build | sha256 |
+|---|---|---|
+| `io.micrometer:micrometer-commons:1.16.8-SNAPSHOT` | `1.16.8-20261015.224611-46` | `8896390e5230d3590160cb9475fb8d0c667135457b4c18ad3271e9aa96ea94ee` |
+| `io.micrometer:micrometer-commons:1.18.0-SNAPSHOT` | `1.18.0-20261116.155816-314` | `1b3add3a081c9e9390fe3305dff43db944ea7a39b9a50a03acb1e3e65497eff9` |
+| `io.micrometer:micrometer-core:1.16.8-SNAPSHOT` | `1.16.8-20261015.224611-46` | `dc733af940f3a820a2e9625adfc67f9759f64266761fbfdd2f5342a9b3a463c0` |
+| `io.micrometer:micrometer-core:1.18.0-SNAPSHOT` | `1.18.0-20261116.155816-313` | `048dcfc51a98e344c22bc17720bceca999f65f7a5fd403a967b7aea296547fa6` |
+| `io.micrometer:micrometer-jakarta9:1.16.8-SNAPSHOT` | `1.16.8-20261015.224611-46` | `5dbc34bd1643579b6e969cabc683034c645e983f577950aa65e54e8503a6f558` |
+| `io.micrometer:micrometer-jakarta9:1.18.0-SNAPSHOT` | `1.18.0-20261116.155816-315` | `c5809b29a8458dd9128ff5e5f5beda7cdad73bbe72527f4b990a1c29a90fe6b1` |
+| `io.micrometer:micrometer-observation:1.16.8-SNAPSHOT` | `1.16.8-20261015.224611-45` | `7769f0658e3edb9c3c43c2bbced067f91c83f952d6b427085e3c1b961be0b08a` |
+| `io.micrometer:micrometer-observation:1.18.0-SNAPSHOT` | `1.18.0-20261116.155816-315` | `e1c8305e6b8e30563012c3aa6cea565a9367ba773202386e8015efa5a46e6964` |
+| `io.micrometer:micrometer-observation-test:1.16.8-SNAPSHOT` | `1.16.8-20261015.224611-45` | `86f3f8440c40b4059e5475f1075e24d04c395643722c57dfbb0d95c6532b9e8e` |
+| `io.micrometer:micrometer-observation-test:1.18.0-SNAPSHOT` | `1.18.0-20261116.155816-315` | `d4e85b7504c8621ba20e56a11bf4c0ff062b03a0b553bfce6d9e24c6d37da742` |
+| `io.projectreactor.netty:reactor-netty-core:1.0.14-SNAPSHOT` | `1.0.14-20211214.094426-54` | `04094a9ae1adeb4352160bf68997d6aea5998e5501413dcdba11c95054fdd704` |
+| `io.projectreactor.netty:reactor-netty-core:1.3.8-SNAPSHOT` | `1.3.8-20261022.061939-75` | `ac7cd43ce95945d47e8ae09edd61593b481264559d265d3a351461138731d08a` |
+| `io.projectreactor.netty:reactor-netty-core:1.4.0-SNAPSHOT` | `1.4.0-20261113.130354-170` | `eec27fecf961e887aa8ec1d1add4173556bf46d9ca87c429295ae93c2ebbba03` |
+| `io.projectreactor.netty:reactor-netty-http:1.0.14-SNAPSHOT` | `1.0.14-20211214.094426-54` | `42b394ca13d77a953788fe143156399913b1b900b577abe0cefe9a3d061ed6a6` |
+| `io.projectreactor.netty:reactor-netty-http:1.3.8-SNAPSHOT` | `1.3.8-20261022.061939-75` | `9dc96a3224eea8672f4911e4916ad302e32b63a8b3e29b623b4db49516a0196f` |
+| `io.projectreactor.netty:reactor-netty-http:1.4.0-SNAPSHOT` | `1.4.0-20261113.130354-169` | `e28e59e57bb53e643b71f8ec5aa253db868cbb5190bcd4ea67509c9d44533e55` |
+| `io.projectreactor:reactor-core:3.4.13-SNAPSHOT` | `3.4.13-20211212.180947-6` | `14aa5a047ca92267422176482176c255db19bf570fae78e4ff67794f193a6546` |
+| `io.projectreactor:reactor-core:3.8.8-SNAPSHOT` | `3.8.8-20261016.063046-46` | `dd6f6961fb3ec2148e3c8c7e0be6d2d534a5edb0d125797ee01e65cacdaadfa5` |
+| `io.projectreactor:reactor-core:3.9.0-SNAPSHOT` | `3.9.0-20261110.081737-24` | `51436b9a3967185ee445d5db4053c5c43886465121383f6196d8f383a66bfc72` |
+| `io.projectreactor:reactor-test:3.4.13-SNAPSHOT` | `3.4.13-20211212.180947-6` | `f92ff8d74d43f1b47ef40658dc4d5a3228c1cee35ddbc98e7b049d0aab5ea1c0` |
+| `io.projectreactor:reactor-test:3.8.8-SNAPSHOT` | `3.8.8-20261016.063046-44` | `7875d014ee565d139a5001c128054e5e89124588518f66b0f5befdad76577bd5` |
+| `io.projectreactor:reactor-test:3.9.0-SNAPSHOT` | `3.9.0-20261110.081737-23` | `129ede5ed343d6996fa427f48ffb29d56d0b7a6814d006c00e3c644a985b44a3` |
+
+The cache also holds the snapshot builds of the P01–P30 setup's 6.0.5 pins (Reactor 3.5.3, reactor-netty 1.1.3, Micrometer 1.10.4), which no Q pin uses.
 
 ## Jobs
 
@@ -390,17 +430,164 @@ included) configured for each case (`$P/logs/dryrun-6x.txt`, `$P/logs/dryrun-7x.
 
 | Case | Job |
 |---|---|
+| Q01 | `20261126-144024-setup-build-spring-framework-36912-q01-a` |
+| Q02 | `20261126-144024-setup-build-spring-framework-36550-q02-a` |
+| Q03 | `20261126-144024-setup-build-spring-framework-37326-q03-a` |
+| Q05 | `20261126-144024-setup-build-spring-framework-35808-q05-a` |
+| Q06 | `20261126-144025-setup-build-spring-framework-37332-q06-a` |
+| Q07 | `20261126-144025-setup-build-spring-framework-37577-q07-a` |
+| Q08 | `20261126-144025-setup-build-spring-framework-37524-q08-a` |
 | Q09 | `20261126-141555-setup-build-spring-framework-26700-q09-a` |
 | Q11 | `20261126-141555-setup-build-spring-framework-27716-q11-a` |
 | Q12 | `20261126-141555-setup-build-spring-framework-27735-q12-a` |
 | Q13 | `20261126-141555-setup-build-spring-framework-34709-q13-a` |
+| Q14 | `20261126-144025-setup-build-spring-framework-37602-q14-a` |
+| Q15 | `20261126-144025-setup-build-spring-framework-37261-q15-a` |
+| Q16 | `20261126-144025-setup-build-spring-framework-37053-q16-a` |
+| Q21 | `20261126-144025-setup-build-spring-framework-36602-q21-a` |
+| Q22 | `20261126-144025-setup-build-spring-framework-37096-q22-a` |
+| Q23 | `20261126-144026-setup-build-spring-framework-37601-q23-a` |
+| Q24 | `20261126-144026-setup-build-spring-framework-36162-q24-a` |
+| Q27 | `20261126-144026-setup-build-spring-framework-37525-q27-a` |
 | Q28 | `20261126-141555-setup-build-spring-framework-35140-q28-a` |
+| Q29 | `20261126-144026-setup-build-spring-framework-37465-q29-a` |
 | Q30 | `20261126-141555-setup-build-spring-framework-35732-q30-a` |
 
 ## Job results
 
-*Pending: the jobs run in the pipeline.*
+*Pending.*
+
+## Digests of the built artifacts
+
+*Pending.*
+
+## Commands for a rerun by hand
+
+Every Gradle build below is over a minute, so outside a job it is a probe at most; the caches are filled, so all run
+`--offline`. The slice route takes seconds and needs no network.
+
+```bash
+source ~/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/env.sh
+# one case's job steps (CASE in Q01-Q03, Q05-Q09, Q11-Q16, Q21-Q24, Q27-Q30; STEP fix | parent | transplant | clean | dryrun)
+bash $P/scripts/case_job.sh CASE STEP
+# any task in a worktree, with the Gradle and JDKs that worktree needs (log $P/logs/TAG.log)
+$P/scripts/gradle_case.sh $W/Q07-fix TAG "spring-core/build/test-results/test" \
+  -Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline \
+  :spring-core:test --tests org.springframework.util.ConcurrentReferenceHashMapTests
+# Q09 needs the substitution on every run, offline too
+SETUP_INIT="-I $P/scripts/subst-grails.init.gradle" $P/scripts/gradle_case.sh $W/Q09-fix TAG "" --offline :spring-context:jar
+# a classpath of any project and configuration, offline
+$P/scripts/gradle_case.sh $W/Q30-fix TAG "" --offline -I $P/scripts/resolve-all.init.gradle \
+  :spring-core:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$TMPDIR/cp.txt
+# the slice route for an old case (CASE in Q04, Q10, Q17, Q18, Q19, Q20, Q25, Q26; seconds each, inline in the probe cap)
+systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 choom -n 500 -- timeout 300 $P/scripts/slice_case.sh CASE
+# chosen test classes of a pin on a slice (after slice_case.sh): CASE SLICEROLE TESTROLE TAG CLASS...
+$P/scripts/slice_one.sh Q10 parent fix transplant-trigger org.springframework.scheduling.support.CronTriggerTests
+# a slice ahead of its base release, for a program of your own (base set name in slices.tsv column 2)
+$J8/bin/java -cp $P/slices/Q25-fix/Q25-fix-slice.jar:$(cat $P/releases/spring-context-5.2.1.RELEASE-q25/classpath.txt) ...
+# a released set (':'-joined jar paths)
+cat $P/releases/spring-jms-7.0.4/classpath.txt
+```
+
+A worktree whose `clean` step ran has no `buildSrc/build`; the next offline run compiles `buildSrc` again (its dependencies are
+cached). Every project's every compile and test configuration was resolved, so modules beyond the case's also build offline.
+`Q23-later` was resolved too but never built.
 
 ## What failed or was not done
 
-*Pending.*
+- **Eight old cases have no Gradle build** ([why](#the-old-builds-that-cannot-be-configured)): Q04, Q10, Q17, Q18, Q19, Q20, Q25 and
+  Q26 need build plugins that only `repo.spring.io/plugins-release` served (`propdeps-plugin` 0.0.4, 0.0.7, 0.0.9.RELEASE,
+  `docbook-reference-plugin` 0.2.7, 0.3.1, `spring-asciidoctor-extensions` 0.1.3.RELEASE, `gradle-enterprise-conventions` 0.0.2), found
+  in no public repository. No substitute was put in. Their changed files are built and their landed tests run on the
+  [slice route](#the-slice-route) against released jars instead; the rest of each module there is the release's.
+- **No release equals some pins**: Q04 (both; the fix's public `AutowireUtils` API never shipped), Q18 (both), Q19's fix, Q20's
+  parent, Q26 (both), Q10's new `CronExpression`/`CronField`. The slices are the only builds of those files.
+- **Q17 and Q18 slices take one unchanged pin file each** (`ReactiveHttpOutputMessage`, `AbstractServerHttpMessageWriter`), because
+  the base release changed that API afterwards. Q19's tests use JUnit 4.12, not the pins' 4.11 (the vintage engine refuses 4.11).
+- **Q18 has 6 failures at both pins** on the slice route (`ResourceWebHandlerTests` media-type and jar-directory tests), from the
+  5.0.0.M2 base, not from the landing.
+- **Q20's landed test does not detect the parent**: it passes on both slices, as the brief says (it never calls `clone()`).
+- Refused by servers (401, anonymous): `repo.spring.io/release`, `plugins-release`. Nothing the Gradle 6–9 builds needed was only
+  there, except Q09's `grolifant:0.14`, taken from Grails core with its sha1 checked.
+- Unchecked signatures: Spring's and Reactor's release key `9A2C7A98E457C53D` and the 4.0/5.0 milestones' `23EF3D2F93185045` cannot be
+  imported from keyserver.ubuntu.com or keys.openpgp.org; the 5.2/5.3 milestones and RCs publish no `.asc`. Their sha1s match the
+  repositories'. Byte-buddy's key is revoked since. Grails core publishes no `.asc` for grolifant.
+- Snapshot dependencies are the newest builds, not the builds of the pins' dates ([Snapshot dependencies](#snapshot-dependencies)).
+- Not fetched: Spring Boot 4.0.8 (Q27's report; the scenario uses Framework only); a PostgreSQL server for Q11 and a RabbitMQ or other
+  JMS broker beyond the embedded Artemis on spring-jms's test classpath for Q24 (choices for the domain work).
+- Not run: the `later` revision of Q23 (fetched and resolved, never built); the brief's own scenarios and predictions; the whole
+  module test suites (only the landed classes run).
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Sources.** All 60 pins, plus the `later` revision Q23 links (`64861cb395e415bf1452d30f54f8e2c0ecc9cb46`), as worktrees
+  `~/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/CASE-ROLE` (ROLE `parent` = before pin, `fix` = after pin), from the
+  shared mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git`. Every PR's merge commit equals the after pin, every landed
+  diff names exactly the PR's files, the 19 signed pins verify ([Upstream revisions](#upstream-revisions), full ids in its table).
+  Q18 and Q26 land as chains of four and two commits, whose intermediate commits are in the mirror. All worktrees are clean.
+- **Offline builds for 22 cases** (all but the eight old ones). Every configuration a compile or test task uses is resolved into
+  `$P/gradle-home`; `source $P/scripts/env.sh` then `$P/scripts/gradle_case.sh WORKTREE TAG "" --offline TASKS` picks the right
+  Gradle (verified distributions in `$P/tools/`) and JDK ([Build facts](#build-facts-by-era), [Commands](#commands-for-a-rerun-by-hand)).
+  `$P/scripts/case_job.sh CASE STEP` reruns a case's job steps. Q09 needs `SETUP_INIT="-I $P/scripts/subst-grails.init.gradle"`.
+- **Built jars, class digests and classpaths** for the 22 cases at both pins in `$P/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
+  `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`), once their jobs ran;
+  digests in full in [Digests of the built artifacts](#digests-of-the-built-artifacts).
+- **Slices for the eight old cases** at both pins: `$P/slices/CASE-ROLE/CASE-ROLE-slice.jar` (the pin's changed production classes,
+  JDK 8), to put ahead of the base release's `$P/releases/SET/classpath.txt` (set per case in [the slice route](#the-slice-route));
+  `$P/scripts/slice_case.sh CASE` rebuilds them and reruns the landed tests in seconds.
+- **Released artifacts** in `$P/releases/SET/` (`jars/`, `classpath.txt`): the slices' bases and test libraries, and the versions
+  the brief names: spring-core 6.2.13 (Q07), spring-context 7.0.9 (Q27), spring-jms 7.0.4 (Q24), spring-webmvc 4.3.3.RELEASE with
+  jackson-databind 2.8.3 (Q17's servlet report), and Q11's PostgreSQL R2DBC driver as the pins' BOM manages it,
+  `io.r2dbc:r2dbc-postgresql:0.8.8.RELEASE` ([Released artifacts](#released-artifacts), digests in `$P/logs/release-verify.txt`).
+- **JDKs**: Temurin 24.0.2 (`$J24`) for Q13 and Q28, Liberica 17 (`$JL17`) for Q30, JDK 8 (`$J8`) for the slices and Q09.
+
+### What was verified on a JVM
+
+- **The eight old cases, on the slice route**: each landed test class passes on the fix slice and its parent version passes on the
+  parent slice (Q18's six base-release failures aside). The fix's tests **fail** on the parent slice for Q17 (7), Q25 (1), Q26 (5),
+  Q10 (`CronTriggerTests` alone, 2) and Q18 (`ResourceWebHandlerTests` alone, the 7 range tests); they **do not compile** there for Q04
+  and Q19 (API the landing adds); Q20's landed test passes on both. Every failing test is named in [the slice route](#the-slice-route).
+- **The 22 Gradle cases**: jobs queued, results pending ([Jobs](#jobs)).
+- No scenario or prediction of the brief was run anywhere.
+
+### What to know before starting
+
+- **Q04, Q10, Q17, Q18, Q19, Q20, Q25, Q26 have no historical build** ([why](#the-old-builds-that-cannot-be-configured)). What exists
+  is a slice per pin: that pin's changed classes ahead of a base release (Q04 5.2.0.M1, Q10 spring-context 5.3.0-M1, Q17 spring-web
+  5.0.0.M3, Q18 5.0.0.M2, Q19 spring-test 4.0.0.M3, Q20 spring-web 5.3.0-RC1, Q25 spring-context 5.2.1.RELEASE, Q26 spring-tx
+  5.2.0.M2). Every other class there is the release's, not the pin's. Releases equal to pins: Q10 parent = 5.3.0-M1 (and its
+  `CronTrigger` fix = 5.3.0-M2), Q17 parent = 5.0.0.M3 and fix ≈ 5.0.0.M4, Q19 parent = 4.0.0.M3, Q20 fix ≈ 5.3.0-RC1, Q25 parent =
+  5.2.1.RELEASE and fix ≈ 5.2.2.RELEASE (≈: equal in code, comments differ). No release equals Q04, Q18 or Q26 at either pin
+  ([table](#the-slice-route)).
+- **Q04's API never shipped.** The fix pin's `public` `AutowireUtils.isAutowirable(Parameter, int)` and `resolveDependency(...)` exist
+  only at that pin and in its slice; from 5.2.0.M1 on, `AutowireUtils` is package-private again and the feature is
+  `org.springframework.beans.factory.annotation.ParameterResolutionDelegate`. An "external consumer" of the pin's signatures compiles
+  only against `$P/slices/Q04-fix/Q04-fix-slice.jar`.
+- **Q18's base release already contains part of the fix** (5.0.0.M2 has the fix's `ResourceEncoder` and `DataBufferUtils`), and six
+  `ResourceWebHandlerTests` (media types, a jar directory) fail on both slices for reasons of the base, not the landing. The seven
+  `partialContent*` tests pass on the fix slice and fail on the parent slice; the parent's own copies of them are `@Ignore`d.
+- **Q17 and Q18 slices include one unchanged pin file each** (`ReactiveHttpOutputMessage`, `AbstractServerHttpMessageWriter`), and
+  Q26's slices run on Reactor 3.3.0.M1: the pins name `Dysprosium-BUILD-SNAPSHOT`, whose builds of that time are gone (the snapshot
+  repository keeps 3.3.0.BUILD-SNAPSHOT builds of 2019-09-20 and 2019-09-24 only).
+- **Snapshots.** Q08, Q16, Q29 (7.1) take Reactor 3.9.0-SNAPSHOT and Micrometer 1.18.0-SNAPSHOT, Q21 and Q27 Reactor 3.8.8-SNAPSHOT and
+  Micrometer 1.16.8-SNAPSHOT, Q11 Reactor 3.4.13-SNAPSHOT and reactor-netty 1.0.14-SNAPSHOT, each the newest build the repository
+  serves, mostly dated after the pins ([Snapshot dependencies](#snapshot-dependencies), digests there). Build `--offline` to keep them.
+- **JDKs.** Q13 and Q28 compile with toolchain 24 (`$J24`), Q30 with Liberica 17 (`$JL17`), the other 7.x builds with toolchain 25 and
+  `release` 17, Q11/Q12 with 17, Q09 and the slices with JDK 8. Default `java` on `PATH` is 25.0.5.
+- **Q09** configures only with `$P/scripts/subst-grails.init.gradle` (grolifant 0.14 from Grails core); `case_job.sh` passes it.
+- **Databases and brokers**: spring-jdbc's test runtime classpaths have H2, HSQLDB and Derby (check
+  `$P/artifacts/CASE-ROLE/spring-jdbc.testRuntimeClasspath.txt`); spring-r2dbc's has r2dbc-h2. No PostgreSQL server was set up for
+  Q11: Docker answers and already holds `postgres:16` and `postgres:17` images from other work; the R2DBC driver is in
+  `$P/releases/r2dbc-postgresql-arabba-sr10` (it brings reactor-core 3.3.17 and reactor-netty 0.9.20, older than the pins' Reactor
+  2020.0.14-SNAPSHOT line). Q24's spring-jms test classpath has the embedded Artemis broker the module's tests use.
+- **Pins shared with other briefs**: Q08's fix `a38ebf4b7cffe5946e07d0fb8ef2d7dc0ec9bbe3` is the P01–P30 brief's P10 parent; its
+  worktrees here are separate.
+- **Q23's `later` revision** (`64861cb395e415bf1452d30f54f8e2c0ecc9cb46`) is checked out and resolved, not built.
+
+### What is left for the domain work on purpose
+
+All claims, scenarios, fixtures and examples; whether a slice, a release, or neither stands in for an old case's pins in a claim;
+choosing databases, drivers, brokers and servers beyond what is fetched (Q08, Q11, Q14, Q15, Q24); the Kotlin side of Q05 beyond its
+landed test; any run of the brief's own scenarios or predictions; the Q23 `later` revision; and example ids and folders.
