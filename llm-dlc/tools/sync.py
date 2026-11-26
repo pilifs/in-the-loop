@@ -725,9 +725,12 @@ def sync_cache(redact: Redactor, trusted: bool = True) -> LocalCache:
     """Each session's state (session_state) as it was right after it was last synced. The
     fingerprint covers what process() reads besides the session's own files and commits: the
     rules and redactor (in redact's), the rest of the tools, the templates, prices and reviewed
-    findings, and the repo."""
+    findings, and the repo. Not the allow list: process() redacts by the rules alone, and an approved entry only
+    leaves a finding out of what `check` and `scan` report (Redactor.reviewed), so approving or proposing one changes
+    no manifest. Until 2026-11-26 it was hashed here too, and every allow-list commit, which the setup runs made often,
+    made the next commit in each workspace sync every session again (VF-070, item 4)."""
     h = hashlib.sha256(f"{redact.fingerprint()}\0{tools_digest()}\0{REPO}\0{repo_web_url()}\0{has_jj()}\0".encode())
-    for source in (SUMMARY_TEMPLATE, PRICING, REVIEWED, ALLOWLIST):
+    for source in (SUMMARY_TEMPLATE, PRICING, REVIEWED):
         h.update((source.read_bytes() if source.exists() else b"-") + b"\0")
     return LocalCache(SYNC_CACHE, h.hexdigest(), trusted=trusted and not full_audit([]))
 

@@ -1061,6 +1061,15 @@ class Fingerprints(unittest.TestCase):
             after = self.fingerprints(edited)
             self.assertEqual((after[0] != before[0], after[1] != before[1]), (redactor_changes, tools_change), edited)
 
+    def test_the_sync_cache_does_not_depend_on_the_allow_list(self):
+        # process() redacts by the rules alone; an allow-list entry only filters what check reports.
+        r = MadeUpRedactor()
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(sync, "ALLOWLIST", Path(d) / "allowlist.json"), \
+                mock.patch.object(sync, "repo_web_url", return_value=None), mock.patch.object(sync, "has_jj", return_value=False):
+            first = sync.sync_cache(r).fingerprint
+            sync.ALLOWLIST.write_text('{"schema": "llm-trace-allowlist/v1", "entries": {"made-up": {"status": "proposed"}}}')
+            self.assertEqual(sync.sync_cache(r).fingerprint, first)
+
     def test_the_sync_cache_depends_on_the_rest_of_the_tools(self):
         r = MadeUpRedactor()
         with mock.patch.object(sync, "repo_web_url", return_value=None), mock.patch.object(sync, "has_jj", return_value=False):
