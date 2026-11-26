@@ -12,3 +12,5 @@ The first removal on the parent had already mutated the first backing map when i
 | Challenge · second | `UnsupportedOperationException:{}:{b=x}:[b]:1` | `UnsupportedOperationException:{}:{b=x}:[b]:1` | refuted |
 
 With the prepared campaign cache, run `python3 examples/tools/build.py 513` to repeat this comparison. [Registered questions and falsifiers](comparison.json) · [Public caller](caller/PublicCaller.java) · [Locked inputs](runtime.json) · [Measured outcomes](observations.json) · [Upstream pull request](https://github.com/spring-projects/spring-framework/pull/37332)
+
+The same caller on Spring 7.1.0 reproduced all four observations, including the exception with b=x intact on the second removal. Removal through a collection is optional. [Campaign release checks](../../verification/merged-pr-links/q01-q30/upstream.md) · [Release and later-revision evidence](../../llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-results.md#published-versions-and-the-later-factory)

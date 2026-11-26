@@ -34,7 +34,8 @@
   },
   "notes": [
     "The Jupiter control exercised SpringExtension on both revisions. These exact AutowireUtils signatures were subsequently replaced before a published release.",
-    "Each pin supplies its changed production classes on spring-5.2.0.M1-q04. The replay verifies the loaded class origins and all class digests of each compiled slice."
+    "Each pin supplies its changed production classes on spring-5.2.0.M1-q04. The replay verifies the loaded class origins and all class digests of each compiled slice.",
+    "The unchanged external source also failed javac on the original parent because AutowireUtils was package-private. Changing to the shipped ParameterResolutionDelegate on Spring 5.2.0.M1 reproduced all three landing histories."
   ],
   "verdictLabel": "3/3 merged predictions matched"
 }

@@ -11,3 +11,5 @@ The caller keeps the entry objects reachable and reads size and emptiness before
 | Challenge · survivor | `2:false:[b=keep]:0` | `1:false:[b=keep]:0` | matched |
 
 With the prepared campaign cache, run `python3 examples/tools/build.py 514` to repeat this comparison. [Registered questions and falsifiers](comparison.json) · [Public caller](caller/PublicCaller.java) · [Locked inputs](runtime.json) · [Measured outcomes](observations.json) · [Upstream pull request](https://github.com/spring-projects/spring-framework/pull/37577)
+
+The reported 6.2.13 release reproduced the stale singleton and size-two survivor counts. The same caller on 7.1.0 reproduced all three merged outcomes. [Campaign release checks](../../verification/merged-pr-links/q01-q30/upstream.md) · [Release and later-revision evidence](../../llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-results.md#published-versions-and-the-later-factory)

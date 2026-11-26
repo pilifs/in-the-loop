@@ -33,7 +33,8 @@
     "url": "https://github.com/spring-projects/spring-framework/pull/36162"
   },
   "notes": [
-    "The existing overload returned its acknowledgement via a temporary queue on both revisions. The broker ran in-process with finite receives and one outstanding request."
+    "The existing overload returned its acknowledgement via a temporary queue on both revisions. The broker ran in-process with finite receives and one outstanding request.",
+    "Spring JMS 7.0.4 applies a correlation selector to the caller-owned queue. Uncorrelated replies remained there, and the same caller timed out. Copying the assigned message ID or an explicit request correlation ID into each reply restored ack-A, ack-B, and the subsequent marker C on Artemis."
   ],
   "verdictLabel": "3/3 merged predictions matched"
 }

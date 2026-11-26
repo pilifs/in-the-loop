@@ -278,6 +278,8 @@ All three entries above reproduced on published Spring 7.1.0 with the original c
 
 **24. Spring Core, PR #37465. Direct legacy callbacks on CompositeRetryListener stop reaching delegates.** The parent forwarded one failure and one success. Calling the same public signatures with the same inputs on the landing produced an empty delegate history. Both revisions forwarded the legacy callbacks when driven through RetryTemplate. [Direct and template-driven records](../examples/536-spring-retry-state-callbacks/README.md)
 
+All four Q-series cases reproduced on published Spring Framework 7.1.0. The reactive jitter fixture used the relocated interceptor package in spring-context. [Release witnesses and reporting scope](merged-pr-links/q01-q30/upstream.md)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

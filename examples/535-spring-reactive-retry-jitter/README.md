@@ -11,3 +11,5 @@ The large and small jitter inputs were both exercised with an immediately succes
 | Challenge · duration | `IllegalArgumentException:0/IllegalArgumentException:0` | `ok:1/ArithmeticException:0` | refuted |
 
 With the prepared campaign cache, run `python3 examples/tools/build.py 535` to repeat this comparison. [Registered questions and falsifiers](comparison.json) · [Public caller](caller/PublicCaller.java) · [Locked inputs](runtime.json) · [Measured outcomes](observations.json) · [Upstream pull request](https://github.com/spring-projects/spring-framework/pull/35140)
+
+On Spring 7.1.0 this public interceptor is in org.springframework.resilience.retry. Recompiling the fixture with just that import changed reproduced all three results, including the synchronous overflow. [Campaign release checks](../../verification/merged-pr-links/q01-q30/upstream.md) · [Release and later-revision evidence](../../llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-results.md#published-versions-and-the-later-factory)

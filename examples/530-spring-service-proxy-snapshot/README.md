@@ -11,3 +11,5 @@ The advice test counted actual adapter calls. The header test ran all three serv
 | Challenge · header | `[base, base, base]:[[late], [late], [late]]` | `[base, base, base]:[[], [late], []]` | matched |
 
 With the prepared campaign cache, run `python3 examples/tools/build.py 530` to repeat this comparison. [Registered questions and falsifiers](comparison.json) · [Public caller](caller/PublicCaller.java) · [Locked inputs](runtime.json) · [Measured outcomes](observations.json) · [Upstream pull request](https://github.com/spring-projects/spring-framework/pull/37601)
+
+The named later revision moved both defensive copies into the factory constructor. Compiling both original factory sources against the same companions yielded the same advice, header, and adapter histories in six executions. [Campaign release checks](../../verification/merged-pr-links/q01-q30/upstream.md) · [Release and later-revision evidence](../../llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-results.md#published-versions-and-the-later-factory)

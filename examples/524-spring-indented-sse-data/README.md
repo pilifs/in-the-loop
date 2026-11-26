@@ -13,3 +13,5 @@ Each pin supplies its changed production classes on spring-web-5.0.0.M3-q17. The
 | Challenge · nested | `events=2:invalid,invalid` | `events=2:A<LF>B/one,B/nested` | matched |
 
 With the prepared campaign cache, run `python3 examples/tools/build.py 524` to repeat this comparison. [Registered questions and falsifiers](comparison.json) · [Public caller](caller/PublicCaller.java) · [Locked inputs](runtime.json) · [Measured outcomes](observations.json) · [Upstream pull request](https://github.com/spring-projects/spring-framework/pull/1251)
+
+The original reactive caller reproduced the two revision outcomes on 5.0.0.M3 and M4. A separate MockMvc caller with SseEmitter on 4.3.3.RELEASE received two invalid indented JSON events and two valid compact events. On 5.0.0.RELEASE both servlet modes delivered both complete objects. [Campaign release checks](../../verification/merged-pr-links/q01-q30/upstream.md) · [Release and later-revision evidence](../../llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-results.md#published-versions-and-the-later-factory)

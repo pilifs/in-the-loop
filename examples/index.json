@@ -27290,7 +27290,8 @@
       "existingTestsPassed": null,
       "notes": [
         "The Jupiter control exercised SpringExtension on both revisions. These exact AutowireUtils signatures were subsequently replaced before a published release.",
-        "Each pin supplies its changed production classes on spring-5.2.0.M1-q04. The replay verifies the loaded class origins and all class digests of each compiled slice."
+        "Each pin supplies its changed production classes on spring-5.2.0.M1-q04. The replay verifies the loaded class origins and all class digests of each compiled slice.",
+        "The unchanged external source also failed javac on the original parent because AutowireUtils was package-private. Changing to the shipped ParameterResolutionDelegate on Spring 5.2.0.M1 reproduced all three landing histories."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/2060",
       "target": null
@@ -27368,7 +27369,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The first removal on the parent had already mutated the first backing map when it threw. The merged live view also exposed a previously shadowed value after the winning mapping was removed."
+        "The first removal on the parent had already mutated the first backing map when it threw. The merged live view also exposed a previously shadowed value after the winning mapping was removed.",
+        "The same caller on Spring 7.1.0 reproduced all four observations, including the exception with b=x intact on the second removal. Removal through a collection is optional."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/37332",
       "target": null
@@ -27407,7 +27409,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The caller keeps the entry objects reachable and reads size and emptiness before any lookup or purge. Replacing the value kept size one."
+        "The caller keeps the entry objects reachable and reads size and emptiness before any lookup or purge. Replacing the value kept size one.",
+        "The reported 6.2.13 release reproduced the stale singleton and size-two survivor counts. The same caller on 7.1.0 reproduced all three merged outcomes."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/37577",
       "target": null
@@ -27642,7 +27645,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The connection delegates to H2 and records the limit call without enforcing it. The parent returned all three rows at zero, the JDBC unlimited setting. The default limit left the driver alone."
+        "The connection delegates to H2 and records the limit call without enforcing it. The parent returned all three rows at zero, the JDBC unlimited setting. The default limit left the driver alone.",
+        "On published Spring JDBC 7.1.0 the same driver fixture and application binary reproduced the limit-two prefix, the default full result, and zero delivered rows at explicit zero."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/34709",
       "target": null
@@ -27799,7 +27803,8 @@
       "existingTestsPassed": null,
       "notes": [
         "The caller consumed each flush group and its buffers in order, dispatched data at blank lines, then parsed the complete payload. The compact control passed on both revisions.",
-        "Each pin supplies its changed production classes on spring-web-5.0.0.M3-q17. The replay verifies the loaded class origins and all class digests of each compiled slice."
+        "Each pin supplies its changed production classes on spring-web-5.0.0.M3-q17. The replay verifies the loaded class origins and all class digests of each compiled slice.",
+        "The original reactive caller reproduced the two revision outcomes on 5.0.0.M3 and M4. A separate MockMvc caller with SseEmitter on 4.3.3.RELEASE received two invalid indented JSON events and two valid compact events. On 5.0.0.RELEASE both servlet modes delivered both complete objects."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/1251",
       "target": null
@@ -28036,7 +28041,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The advice test counted actual adapter calls. The header test ran all three service methods to the adapter without short-circuiting."
+        "The advice test counted actual adapter calls. The header test ran all three service methods to the adapter without short-circuiting.",
+        "The named later revision moved both defensive copies into the factory constructor. Compiling both original factory sources against the same companions yielded the same advice, header, and adapter histories in six executions."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/37601",
       "target": null
@@ -28075,7 +28081,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The existing overload returned its acknowledgement via a temporary queue on both revisions. The broker ran in-process with finite receives and one outstanding request."
+        "The existing overload returned its acknowledgement via a temporary queue on both revisions. The broker ran in-process with finite receives and one outstanding request.",
+        "Spring JMS 7.0.4 applies a correlation selector to the caller-owned queue. Uncorrelated replies remained there, and the same caller timed out. Copying the assigned message ID or an explicit request correlation ID into each reply restored ack-A, ack-B, and the subsequent marker C on Artemis."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/36162",
       "target": null
@@ -28194,7 +28201,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The parent seconds conversion raised ArithmeticException before target entry. A representable explicit maximum worked through the advised bean on both revisions."
+        "The parent seconds conversion raised ArithmeticException before target entry. A representable explicit maximum worked through the advised bean on both revisions.",
+        "The original caller reproduced pre-entry overflow on the reported Spring 7.0.9 release and recovered on Spring 7.1.0. The finite upper bound control worked on both."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/37525",
       "target": null
@@ -28233,7 +28241,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The large and small jitter inputs were both exercised with an immediately successful cold target. No long backoff was needed."
+        "The large and small jitter inputs were both exercised with an immediately successful cold target. No long backoff was needed.",
+        "On Spring 7.1.0 this public interceptor is in org.springframework.resilience.retry. Recompiling the fixture with just that import changed reproduced all three results, including the synchronous overflow."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/35140",
       "target": null
@@ -28272,7 +28281,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "Template-driven legacy callbacks still worked, and both delegate orders retained the expected records. The direct-call parent delivered both events."
+        "Template-driven legacy callbacks still worked, and both delegate orders retained the expected records. The direct-call parent delivered both events.",
+        "The identical application class on Spring 7.1.0 again received no events via the old direct overloads. All three template and composite controls retained their original histories."
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/37465",
       "target": null
