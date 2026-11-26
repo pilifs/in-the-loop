@@ -117,3 +117,82 @@ Follow the repository’s existing changed-test and queued-proof conventions. Us
 [parquet]: https://github.com/pilifs/in-the-loop/blob/00800750fc71d393f9c1dc837d387fc5a9adcf4a/verification/product-behaviour/cases/J08/case.json
 [parquet-graphs]: https://github.com/pilifs/in-the-loop/blob/00800750fc71d393f9c1dc837d387fc5a9adcf4a/verification/product-behaviour/cases/J08/bindings.json
 [plan-cli]: https://github.com/pilifs/in-the-loop/blob/00800750fc71d393f9c1dc837d387fc5a9adcf4a/examples/tools/targets/change_plan.py#L302-L325
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Log4j #1173.** `lib/benchmark/organic-composition/log4j/{old,new}/prepared.json` name `$O/artifacts/G-logging-log4j2-{parent,fix}-log4j-{api,core}.jar`
+  (`$O` = `~/.cache/in-the-loop/organic-composition-ff`), in the order api, core. All four match their digests
+  ([table](#inputs-digests-at-the-paths-their-readers-use)), and the paths exist as written, so nothing needs
+  rebasing on this machine. The source worktrees `$O/worktrees/G-logging-log4j2-{parent,fix}` are at the pins.
+- **Parquet J08.** All 114 distinct files of `verification/product-behaviour/cases/J08/bindings.json` match, resolved
+  under `~/.cache/in-the-loop/organic-pr-20`. That includes the overlays at index 0
+  (`artifacts/J08-parquet-java-parent-overlay.jar` `28b3eb17a9d72a4f678e86642f52fa2ec7cf17b42626d1deda37e7c04e9ab2ae`
+  and `artifacts/J08-parquet-java-fix-overlay.jar` `cb7a4d77da751a8ae262afc22a6609803319065cae001f7eb2dd8ac5c0a23095`)
+  and the release column jar at index 2 (`m2/org/apache/parquet/parquet-column/1.18.2/parquet-column-1.18.2.jar`
+  `e453c9725e323ca3a1165b842cae325c35fc3eed0ec37856ba15fe61290569a6`).
+- **Release panel** (exercises 3 and 9). The packets are `~/.cache/in-the-loop/beyond-jbmc/panel/evaluation/SLOT/packet`,
+  with neutral names `old/NNN.jar`. They pass the campaign's own locked-input check, and every jar is byte-identical to
+  its file in a `.deb` that chains to a signed Ubuntu index ([chain](#release-panel-signed-chain)). The neutral-name
+  ↔ deployment-path mapping and the manifest edges are in each slot's `graphs.json`. The packaged layouts of slots
+  03, 04, 08, 10, 13, 15 and 16, with their symlinks, are in `~/.cache/in-the-loop/classpath-entry-discovery/layouts/SLOT/{old,new}/root/usr/share/{java,maven-repo}`
+  ([table of edges and unresolved paths](#original-layouts)).
+- **Historical origins** (exercise 12). The 21 graphs and 283 class bindings of
+  `verification/java-semantics-gap/heap-and-gson/origins.json`: all 17 library jars match at `~/.cache/in-the-loop/jbmc-java-semantics-gap/artifacts/`.
+- **OpenJDK fixture** (exercise 5). `~/.cache/in-the-loop/classpath-entry-discovery/src/openjdk-jdk-21+35-paths/test/langtools/tools/javac/Paths/ClassPath.java`,
+  commit `890adb6410dab4606a4f26a942aed02fb2f55387`, blob `5b6bb5fe5bc058a9a0d6196e5463b35cb5f55306`. A plain-JDK
+  re-creation of its java steps is `~/.cache/in-the-loop/classpath-entry-discovery/scripts/openjdk_classpath_fixture.sh JDK_BIN EMPTY_DIR`.
+- **Examples 312, 323, 333** validate. **`jvmcontract`** is rebuilt at this head
+  (`0ff2ba8821339d856389eefe52c2525afc1c36c0924652c2cd21ae17c2153c70`).
+- **JDKs** 8, 11, 17, 21.0.13 and 25.0.5 (Temurin) are in `~/.sdkman/candidates/java/`, with digests in
+  [Tools](#tools). The default `java` is 25.0.5. The Log4j and J08 manifests' `jdkReleaseSha256`
+  `f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898` is the `release` file of 21.0.13.
+
+### What was verified on a JVM
+
+- The OpenJDK `A.jar ↔ B.zip` fixture on JDK 21: from either root, moved together, the boot-path failure, and `-jar`
+  with a manifest Class-Path all behave as the test expects (6/6).
+- Log4j on the built jars, api then core, JDK 21, one JVM per zone. The four `getNextTime` rows are the
+  [recorded ones](#what-was-run-on-a-jvm): with the zone given, the fix moves the rollover to `2014-03-05T06:00:00Z`;
+  with it omitted, the two sides agree. `PatternProcessor` comes from the core jar with digests parent
+  `0ff2c4356701b9bb4249bbaad5bb2c1352d18cb5d6a8ecadafd86d39a35a6aa1` and fix `538564676d2e264f509005f722b199f0d02a248984b48b8c748188a9b6fb987e`,
+  descriptor `(JIZ)J`. The landed `PatternProcessorTest` passes on the fix and fails (9 tests) on the parent:
+  job `20261124-141323-setup-build-log4j-core-at-both-1173-revi`, not re-run.
+- J08: the ten `physical.json` observations reproduce in fresh JVMs on the recorded 113-entry orders (10/10).
+
+### What to know before starting
+
+- **J08 is a withheld case.** This setup recorded no class origins or shadowing for J08, so that the brief's frozen
+  transfer stays cold. `case.json` and `physical.json` already hold its nominated entry and answers: keep them out
+  of the discovery input.
+- **The panel's manifests name absolute Debian paths.** Most are `/usr/share/java/…`; slot 04 also has relative
+  `lib/…` edges and slot 08 has `rt.jar`. The neutral packets cannot satisfy them. The archived manifest-bound plans
+  resolved them against `packet/old/…`, where they are absent by design. On this host `/usr/share/java` holds none of
+  the targets, but that is a property of the host. The faithful layout is the extracted `root/`, whose absolute
+  edges point at `/usr/share/java` and not into `root/`. How to map them (a chroot-like root, or a verified mapping)
+  is the brief's design question, so this setup did not decide it.
+- **Slot 04 old has 33 unresolved manifest paths and 22 basename matches. Slot 08 has `usr/share/java/rt.jar`
+  unresolved on both sides.** These come from `graphs.json`; nothing here added to or settled them.
+- **Resolute's universe index** is checked from apt's copy in `/var/lib/apt/lists/`, which matches the signed
+  InRelease today. If apt refreshes it, the chain for the resolute-side packages of slots 03–06, 08, 13 and 15 needs
+  that index fetched again (its sha256 is in the cached InRelease).
+- The build of the Log4j jars needs Maven 3.8.4 on JDK 8 with toolchain 11
+  ([fast-follow setup](organic-java-pr-capability-composition-fast-follow-setup.md)). Nothing in this brief needs a
+  rebuild.
+- There are no snapshot dependencies in the runtime class paths, apart from Log4j's own 2.19.1-SNAPSHOT build, which
+  is pinned by digest.
+- The default `java` is 25.0.5, and the panel scripts use 25.0.5 (`history.py`). The Log4j, J08 and origins evidence
+  was recorded on 21.0.13.
+- pytest is not installed: run the Python tests with `unittest` or `lib/tools/test_costs.py`.
+
+### What is left for the domain work on purpose
+
+- Every run of the product on these inputs: the Log4j change plan and its first open reason, candidate discovery, the
+  manifest-bound slots through the shared path, the frozen J08 transfer, and the 283-binding replay through the
+  shared binding path. The same goes for the scorecard and the counts of scans, batches and probes.
+- The small generated layouts of exercises 2, 4, 5, 6 and 7, including the moved, broken and duplicate-`lib.jar`
+  variants of the OpenJDK fixture.
+- How a faithful deployment maps absolute manifest URLs, and how a cache rename keeps a verified layout.
+- Reproducing the published 22/32 and 32/32 from the records. The records and their 372 archives are verified, but
+  were not re-scored here.
