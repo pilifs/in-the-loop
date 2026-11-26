@@ -1,0 +1,374 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-144026-setup-build-spring-framework-36162-q24-a",
+  "title": "Setup: build Spring Framework #36162 (Q24) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 7m26s, peak 3.5 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-144026-setup-build-spring-framework-36162-q24-a.json",
+    "sha256": "1db3c43fd53a99e0d8245a114128e5493bd09323770d2cb70d7ad42a71925ebc",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-144026-setup-build-spring-framework-36162-q24-a",
+      "title": "Setup: build Spring Framework #36162 (Q24) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, case Q24 (spring-projects/spring-framework#36162: Request a JMS reply on a caller-owned queue). In the worktrees $P/worktrees/Q24-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-q01-q30), offline (dependencies resolved online beforehand), it builds the jars of spring-jms with the Gradle each checkout's wrapper names, runs the landed test classes (JmsTemplateTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-jms in $P/artifacts/Q24-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned Q24",
+      "submitted": {
+        "at": "2026-11-26T14:40:26+00:00",
+        "session": "56626182-a69a-4945-91c7-07e11b9bb46a",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "Q24 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q24 fix",
+          "cwd": "."
+        },
+        {
+          "name": "Q24 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q24 parent",
+          "cwd": "."
+        },
+        {
+          "name": "Q24 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q24 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "Q24 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q24 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4607cc1187f24d79e63ce5f7633a41338f4dd5d5",
+  "startedAt": "2026-11-26T14:57:48+00:00",
+  "finishedAt": "2026-11-26T15:05:23+00:00",
+  "wallSeconds": 455.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1664671,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3761033216,
+    "wallSeconds": 446.1,
+    "cpuSeconds": 967.7,
+    "memoryOfEstimate": 0.58,
+    "durationOfEstimate": 0.37
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Q24 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q24 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 142.742,
+      "cpuSeconds": 353.666,
+      "cpuThrottledSeconds": 59.6,
+      "peakMemoryBytes": 3532345344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-q24-fix-offline-build-and-land.log",
+        "lines": 34,
+        "bytes": 3679,
+        "sha256": "4c1c4d6683028d5ad357558219ec575c332caba05cc07273858424eb0ead1f00",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q24-fix gradle=9.3.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=91 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-jms:jar :spring-jms:test --tests org.springframewor",
+        "junit tests=50 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.jms.core.JmsTemplateTests junit tests=50 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q24-fix/spring-jms.runtimeClasspath.txt 28 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q24-fix/spring-jms.testRuntimeClasspath.txt 110 entries",
+        "3c62010619aaacba11f52348ea2bdb1a590a63541fe0550abed9b8bbb304993e  jars/spring-jms-7.0.4-SNAPSHOT.jar",
+        "2e895ea002d979bf76002c27fe52632c0380bff76a4621dff8c66fb772f827cb  tree/spring-aop/build/libs/spring-aop-7.0.4-SNAPSHOT.jar",
+        "15d5e4930c4587fe43b2d0728298bea7bff3d09c1cbeeaa83309e42c95e6cdfb  tree/spring-beans/build/libs/spring-beans-7.0.4-SNAPSHOT.jar",
+        "13835272e0836bbbd95c1296b3a2a9c33c67a94c1ad66ec3bdc7e904e34de4e4  tree/spring-beans/build/libs/spring-beans-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "8ac89ecd38a37f2b50c21a1a793a7ff8ff4ff5658d2edbbbb8ac4ecba24cede5  tree/spring-context/build/libs/spring-context-7.0.4-SNAPSHOT.jar",
+        "fbd21375739c83b3b84b01cbbc7b62e8c5587d312eb30425bb261e06255c6587  tree/spring-core/build/libs/spring-core-7.0.4-SNAPSHOT.jar",
+        "57e0b510a1b67b4b3af7e88b433600ddf134d3f7e8299edca2bd550521a74665  tree/spring-core/build/libs/spring-javapoet-repack-0.7.0.jar",
+        "3cf8f4b544f2a336fe4ab4503f535587a560a6a90ba6b3439e9aa437e0546d5f  tree/spring-core/build/libs/spring-objenesis-repack-3.4.jar",
+        "1f17b37793151c4b407662e6275555d96f0e677dd5a99174b9f73809e2763e08  tree/spring-expression/build/libs/spring-expression-7.0.4-SNAPSHOT.jar",
+        "3c62010619aaacba11f52348ea2bdb1a590a63541fe0550abed9b8bbb304993e  tree/spring-jms/build/libs/spring-jms-7.0.4-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-jms/build/libs/spring-jms-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "076d223dadaf21a7fb3c85ed6a839bdadfeaf2918426f924930fbdfc0e86b075  tree/spring-messaging/build/libs/spring-messaging-7.0.4-SNAPSHOT.jar",
+        "29189d473f6b5a647cf6ddc250bc8b37f30f353793e5fbc5ce66caa135cd0ee4  tree/spring-oxm/build/libs/spring-oxm-7.0.4-SNAPSHOT.jar",
+        "f018e93d5c0d548e75f66e7d937e768a8953e290c156e8915eaf417a23d597d0  tree/spring-tx/build/libs/spring-tx-7.0.4-SNAPSHOT.jar",
+        "3c97b502ab77f1b5de3961705b66a666e340ed823d5cd9ed15087b75c17e454b  tree/spring-tx/build/libs/spring-tx-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "1a594f7c0f152b5c4c71d3b93b9a65ef5cfaae5b72d0a285d95da7453c896778  spring-jms-7.0.4-SNAPSHOT.jar!/org/springframework/jms/core/JmsOperations.class",
+        "d1bbeb2c6a3413c8474d739cc2d7a679fb973902841ec5a7bad5ee4a06b0be3a  spring-jms-7.0.4-SNAPSHOT.jar!/org/springframework/jms/core/JmsTemplate$JmsTemplateResourceFactory.class",
+        "5f08a54853f6e5a7164fd83c09e301160d2204093a29094874ed02e406da19c9  spring-jms-7.0.4-SNAPSHOT.jar!/org/springframework/jms/core/JmsTemplate$MicrometerInstrumentation.class",
+        "23457f9a47793d41e052548d6c12f2d6d825a2c061054c36af54c5c08bdfbd7d  spring-jms-7.0.4-SNAPSHOT.jar!/org/springframework/jms/core/JmsTemplate.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Q24 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q24 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 154.695,
+      "cpuSeconds": 320.155,
+      "cpuThrottledSeconds": 52.676,
+      "peakMemoryBytes": 3327733760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-q24-parent-offline-build-and-t.log",
+        "lines": 34,
+        "bytes": 3688,
+        "sha256": "26182ac7ef19efd09ec6d6d3991720f94227d2857f58509ec75116c20a1b5476",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q24-parent gradle=9.3.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=93 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-jms:jar :spring-jms:test --tests org.springframe",
+        "junit tests=48 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.jms.core.JmsTemplateTests junit tests=48 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q24-parent/spring-jms.runtimeClasspath.txt 28 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q24-parent/spring-jms.testRuntimeClasspath.txt 110 entries",
+        "145fb14c00d802d8a1a17d19742d71a53ff265e75588dd3159b743a1d4382761  jars/spring-jms-7.0.4-SNAPSHOT.jar",
+        "2e895ea002d979bf76002c27fe52632c0380bff76a4621dff8c66fb772f827cb  tree/spring-aop/build/libs/spring-aop-7.0.4-SNAPSHOT.jar",
+        "15d5e4930c4587fe43b2d0728298bea7bff3d09c1cbeeaa83309e42c95e6cdfb  tree/spring-beans/build/libs/spring-beans-7.0.4-SNAPSHOT.jar",
+        "13835272e0836bbbd95c1296b3a2a9c33c67a94c1ad66ec3bdc7e904e34de4e4  tree/spring-beans/build/libs/spring-beans-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "8ac89ecd38a37f2b50c21a1a793a7ff8ff4ff5658d2edbbbb8ac4ecba24cede5  tree/spring-context/build/libs/spring-context-7.0.4-SNAPSHOT.jar",
+        "fbd21375739c83b3b84b01cbbc7b62e8c5587d312eb30425bb261e06255c6587  tree/spring-core/build/libs/spring-core-7.0.4-SNAPSHOT.jar",
+        "57e0b510a1b67b4b3af7e88b433600ddf134d3f7e8299edca2bd550521a74665  tree/spring-core/build/libs/spring-javapoet-repack-0.7.0.jar",
+        "3cf8f4b544f2a336fe4ab4503f535587a560a6a90ba6b3439e9aa437e0546d5f  tree/spring-core/build/libs/spring-objenesis-repack-3.4.jar",
+        "1f17b37793151c4b407662e6275555d96f0e677dd5a99174b9f73809e2763e08  tree/spring-expression/build/libs/spring-expression-7.0.4-SNAPSHOT.jar",
+        "145fb14c00d802d8a1a17d19742d71a53ff265e75588dd3159b743a1d4382761  tree/spring-jms/build/libs/spring-jms-7.0.4-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-jms/build/libs/spring-jms-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "7b5c21ee3329301fdef4eedb94a0eef6eaf77a927fb5ad8d678d433bfa2ebbf0  tree/spring-messaging/build/libs/spring-messaging-7.0.4-SNAPSHOT.jar",
+        "29189d473f6b5a647cf6ddc250bc8b37f30f353793e5fbc5ce66caa135cd0ee4  tree/spring-oxm/build/libs/spring-oxm-7.0.4-SNAPSHOT.jar",
+        "f018e93d5c0d548e75f66e7d937e768a8953e290c156e8915eaf417a23d597d0  tree/spring-tx/build/libs/spring-tx-7.0.4-SNAPSHOT.jar",
+        "3c97b502ab77f1b5de3961705b66a666e340ed823d5cd9ed15087b75c17e454b  tree/spring-tx/build/libs/spring-tx-7.0.4-SNAPSHOT-test-fixtures.jar",
+        "b4d46945c6675fcbc0807b3bd24eb145f0c2f56601abf173b0a1bdc616411cb2  spring-jms-7.0.4-SNAPSHOT.jar!/org/springframework/jms/core/JmsOperations.class",
+        "8f66428764e6a9f97155e5ef1a635f13df8e78993a42fa3a50399290f28edb01  spring-jms-7.0.4-SNAPSHOT.jar!/org/springframework/jms/core/JmsTemplate$JmsTemplateResourceFactory.class",
+        "17dcddc358a1455cbb86eb33b1f8586f8093dff29fd9aef3f7993aeedbd78d8c  spring-jms-7.0.4-SNAPSHOT.jar!/org/springframework/jms/core/JmsTemplate$MicrometerInstrumentation.class",
+        "4eea3ea0770781123b450e89cb2c1e53d127a66e35c61fba7cefd8752c34c173  spring-jms-7.0.4-SNAPSHOT.jar!/org/springframework/jms/core/JmsTemplate.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Q24 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q24 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 147.837,
+      "cpuSeconds": 293.241,
+      "cpuThrottledSeconds": 69.849,
+      "peakMemoryBytes": 3761033216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-q24-transplant-the-fix-s-tests.log",
+        "lines": 19,
+        "bytes": 1878,
+        "sha256": "c5007dfd91bf1608580d22b0a996dd42f682c91f8f806a3459fd7522094b7aef",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-jms/src/test/java/org/springframework/jms/core/JmsTemplateTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q24-parent-landed gradle=9.3.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=148 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-jms:test --tests org.springframework.jms.cor",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.jms.core.JmsTemplateTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q24-parent-landed/spring-jms/src/test/java/org/springframework/jms/core/JmsTemplateTests.java:737: error: no suitable method found for sendAndReceive(Queue,Queue,MessageCreator)",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q24-parent-landed/spring-jms/src/test/java/org/springframework/jms/core/JmsTemplateTests.java:740: error: no suitable method found for sendAndReceive(String,String,MessageCreator)",
+        "  /home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q24-parent-landed/spring-jms/src/test/java/org/springframework/jms/core/JmsTemplateTests.java:737: error: no suitable method found for sendAndReceive(Queue,Queue,MessageCreator)",
+        "  /home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q24-parent-landed/spring-jms/src/test/java/org/springframework/jms/core/JmsTemplateTests.java:740: error: no suitable method found for sendAndReceive(String,String,MessageCreator)",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Q24 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q24 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 0.802,
+      "cpuSeconds": 0.685,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 23822336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-q24-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "9a6ad1f851644e08e929d32d760ecc3963b3ccb9916d613adc96d1cdb0a8a16b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned Q24"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T15:05:47+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T150523Z-970725f26cea7013"
+    }
+  }
+}
