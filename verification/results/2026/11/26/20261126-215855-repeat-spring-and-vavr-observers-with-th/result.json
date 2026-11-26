@@ -1,0 +1,224 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-215855-repeat-spring-and-vavr-observers-with-th",
+  "title": "Repeat Spring and Vavr observers with the verification runner checker",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m17s, peak 233.7 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-215855-repeat-spring-and-vavr-observers-with-th.json",
+    "sha256": "02cd8c1ad7d05ce8f0402445f0422c5d766136e2340260d0f997c8a05e4e7990",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-215855-repeat-spring-and-vavr-observers-with-th",
+      "title": "Repeat Spring and Vavr observers with the verification runner checker",
+      "description": "The first remote run stopped before opening any JVM observations because its isolated checkout had no local release binary. Use the checker built for this job. Repeat all six questions with old-API bytes, Landlock isolation, JDI correspondence and warm controls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T21:58:55+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Spring original JVM returns",
+          "run": "python3 verification/generated-observers/campaign.py 458",
+          "cwd": "."
+        },
+        {
+          "name": "Vavr nullable selection",
+          "run": "python3 verification/generated-observers/campaign.py 445",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/458.zip",
+        "verification/generated-observers/receipts/445.zip"
+      ]
+    }
+  },
+  "sourceCommit": "3b7e7161e5640b418855a0657653367fe010fdb9",
+  "startedAt": "2026-11-26T22:03:32+00:00",
+  "finishedAt": "2026-11-26T22:05:07+00:00",
+  "wallSeconds": 95.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1891241,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 245088256,
+    "wallSeconds": 77.8,
+    "cpuSeconds": 104.8,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.32
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Spring original JVM returns",
+      "run": "python3 verification/generated-observers/campaign.py 458",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 37.889,
+      "cpuSeconds": 49.325,
+      "cpuThrottledSeconds": 5.717,
+      "peakMemoryBytes": 245088256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-spring-original-jvm-returns.log",
+        "lines": 2,
+        "bytes": 252,
+        "sha256": "cf35e3705fe436ba32de6fdead75284170bdf0e7d9ca9183b96c72bccc0e9f9c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/tmp/generated-observers-cpad139b/458/operator/bundle/generation.json",
+        "458 {'spring-projects/spring-framework#37434.1': 'established', 'spring-projects/spring-framework#37434.2': 'established', 'spring-projects/spring-framework#37434.3': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Vavr nullable selection",
+      "run": "python3 verification/generated-observers/campaign.py 445",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 39.872,
+      "cpuSeconds": 55.46,
+      "cpuThrottledSeconds": 7.706,
+      "peakMemoryBytes": 151912448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-vavr-nullable-selection.log",
+        "lines": 2,
+        "bytes": 189,
+        "sha256": "e5073ea0ceac24490b53334fa220390200e00e85b07bb20bf487192edeca994b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/tmp/generated-observers-7t05im7r/445/operator/bundle/generation.json",
+        "445 {'vavr-io/vavr#3272.1': 'established', 'vavr-io/vavr#3272.2': 'established', 'vavr-io/vavr#3272.3': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/458.zip",
+      "change": "added",
+      "bytes": 63872,
+      "sha256": "654ab32d5fe1c0b48a0ea1d4eb4b9a3d723af11ebb22c2e3c16e3f8ed4b72119",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/445.zip",
+      "change": "added",
+      "bytes": 66627,
+      "sha256": "1e7ad08b72e26189250cd5e99cc24fd9baf241a65eabc26850f59e5e3c77f5ad",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T22:05:27+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/458.zip",
+      "verification/generated-observers/receipts/445.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "53e17d263a9418acdd671a4d27e11cbe64a50b5d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53e17d263a9418acdd671a4d27e11cbe64a50b5d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T220507Z-459885d65eb69bed",
+      "outputs": "20261126T220507Z-4826942864a24782",
+      "diff": "20261126T220507Z-50260135ee799bbf"
+    }
+  }
+}

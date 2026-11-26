@@ -1,0 +1,276 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-215633-qualify-generated-retained-graph-map-and",
+  "title": "Qualify generated retained graph map and listener histories",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 1m34s, peak 243.1 MiB (estimated 6m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-215633-qualify-generated-retained-graph-map-and.json",
+    "sha256": "8dac4f85af2145b568756d5e95139136c13b9d37d3520417c3d47be29c824a5f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-215633-qualify-generated-retained-graph-map-and",
+      "title": "Qualify generated retained graph map and listener histories",
+      "description": "Observe both handles and assertion settings for graph updates, all ordered synchronous transitions, and both removals and retained views across 127 subsets in each order. Independently compare every map field with java.util.HashMap.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T21:56:33+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m"
+      },
+      "steps": [
+        {
+          "name": "Graph view plus backing handle",
+          "run": "python3 verification/generated-observers/campaign.py J16",
+          "cwd": "."
+        },
+        {
+          "name": "Interface commands and listener",
+          "run": "python3 verification/generated-observers/campaign.py J19",
+          "cwd": "."
+        },
+        {
+          "name": "Independent JDK map",
+          "run": "python3 verification/generated-observers/campaign.py J17",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/J16.zip",
+        "verification/generated-observers/receipts/J19.zip",
+        "verification/generated-observers/receipts/J17.zip"
+      ]
+    }
+  },
+  "sourceCommit": "3b7e7161e5640b418855a0657653367fe010fdb9",
+  "startedAt": "2026-11-26T22:03:32+00:00",
+  "finishedAt": "2026-11-26T22:05:24+00:00",
+  "wallSeconds": 112.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1891241,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 254885888,
+    "wallSeconds": 94.5,
+    "cpuSeconds": 124.2,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Graph view plus backing handle",
+      "run": "python3 verification/generated-observers/campaign.py J16",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 38.42,
+      "cpuSeconds": 47.438,
+      "cpuThrottledSeconds": 6.531,
+      "peakMemoryBytes": 151457792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-graph-view-plus-backing-handle.log",
+        "lines": 2,
+        "bytes": 157,
+        "sha256": "64482e98fc6ec7cd22e9396e5eaee85e26fdef38a235e10d3c55e1061c7bf066",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/tmp/generated-observers-cawetfjh/J16/operator/bundle/generation.json",
+        "J16 {'disabled-cache-write-through': 'established', 'cached-and-local': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Interface commands and listener",
+      "run": "python3 verification/generated-observers/campaign.py J19",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 25.847,
+      "cpuSeconds": 34.523,
+      "cpuThrottledSeconds": 4.679,
+      "peakMemoryBytes": 126398464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-interface-commands-and-listene.log",
+        "lines": 2,
+        "bytes": 149,
+        "sha256": "d26a41b49497bcb9e5b37bd950849975cf351fd774cfe63747f8359033acc0bf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/tmp/generated-observers-e87tpcmh/J19/operator/bundle/generation.json",
+        "J19 {'repeated-commands': 'established', 'genuine-and-invalid': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Independent JDK map",
+      "run": "python3 verification/generated-observers/campaign.py J17",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 30.281,
+      "cpuSeconds": 42.232,
+      "cpuThrottledSeconds": 4.136,
+      "peakMemoryBytes": 254885888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-independent-jdk-map.log",
+        "lines": 2,
+        "bytes": 115,
+        "sha256": "9b96467804e93a76751c6df14d8f793fcd35e045a14ac63fad8c167d76c702fb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/tmp/generated-observers-txsfjzkz/J17/operator/bundle/generation.json",
+        "J17 {'all-collision-subsets': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/J16.zip",
+      "change": "added",
+      "bytes": 56297,
+      "sha256": "fc21be2747697048abb8a315e6822a7da00a8a6ccb21e97f5542577b41a30230",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/J19.zip",
+      "change": "added",
+      "bytes": 59258,
+      "sha256": "d4d82f3e0b8d6fcd96643cf4b2029474204857a7fc394293b9e178e69bcb0c0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/generated-observers/receipts/J17.zip",
+      "change": "added",
+      "bytes": 76405,
+      "sha256": "f4c3ab3623511792472d69441a54cd2c7a76f762ed89796e0d788b53de1fb7f3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T22:05:27+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/J16.zip",
+      "verification/generated-observers/receipts/J19.zip",
+      "verification/generated-observers/receipts/J17.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "53e17d263a9418acdd671a4d27e11cbe64a50b5d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53e17d263a9418acdd671a4d27e11cbe64a50b5d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T220524Z-127991a90b1d7e22",
+      "outputs": "20261126T220524Z-154407b4fa16beb6",
+      "diff": "20261126T220524Z-1734846411c75bd5"
+    }
+  }
+}
