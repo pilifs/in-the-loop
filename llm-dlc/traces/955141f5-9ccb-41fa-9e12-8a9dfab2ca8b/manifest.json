@@ -12,32 +12,35 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-26T16:14:29.015Z",
-  "ended": "2026-11-26T18:09:38.863Z",
-  "duration_seconds": 6910,
+  "ended": "2026-11-26T18:18:30.069Z",
+  "duration_seconds": 7441,
   "stats": {
-    "turns": 11,
-    "api_calls": 109,
-    "tool_calls": 102,
-    "tool_errors": 0,
-    "compactions": 1,
-    "peak_context_tokens": 223815,
+    "turns": 16,
+    "api_calls": 134,
+    "tool_calls": 140,
+    "tool_errors": 2,
+    "compactions": 2,
+    "peak_context_tokens": 226148,
     "usage": {
-      "input_tokens": 236,
-      "output_tokens": 83249,
-      "cache_read_input_tokens": 17130485,
-      "cache_creation_input_tokens": 415413
+      "input_tokens": 288,
+      "output_tokens": 102364,
+      "cache_read_input_tokens": 20326290,
+      "cache_creation_input_tokens": 578926
     }
   },
   "tools": {
-    "Bash": 87,
+    "Bash": 106,
+    "Edit": 13,
+    "Read": 11,
     "ScheduleWakeup": 5,
     "Agent": 4,
-    "Read": 4,
-    "Edit": 1,
     "Write": 1
   },
   "files_touched": [
+    "~/.cache/in-the-loop/merged-pr-links-r01-r50/notes/06-summary.md",
     "~/.cache/in-the-loop/merged-pr-links-r01-r50/notes/30-fork-C.md",
+    "~/.cache/in-the-loop/merged-pr-links-r01-r50/notes/40-fork-D.md",
+    "~/.cache/in-the-loop/merged-pr-links-r01-r50/notes/90-setup-agent-notes.md",
     "~/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/resolve-groovy-D.init.gradle"
   ],
   "context_windows": [
@@ -58,24 +61,38 @@
     {
       "index": 1,
       "started": "2026-11-26T17:55:57.083Z",
-      "ended": "2026-11-26T18:09:38.863Z",
+      "ended": "2026-11-26T18:10:58.664Z",
       "turns": 5,
-      "api_calls": 51,
+      "api_calls": 53,
       "usage": {
-        "input_tokens": 104,
-        "output_tokens": 38083,
-        "cache_read_input_tokens": 7545995,
-        "cache_creation_input_tokens": 210162
+        "input_tokens": 108,
+        "output_tokens": 39667,
+        "cache_read_input_tokens": 7995325,
+        "cache_creation_input_tokens": 212495
       },
-      "peak_context_tokens": 223815
+      "peak_context_tokens": 226148
+    },
+    {
+      "index": 2,
+      "started": "2026-11-26T18:11:52.513Z",
+      "ended": "2026-11-26T18:18:30.069Z",
+      "turns": 5,
+      "api_calls": 23,
+      "usage": {
+        "input_tokens": 48,
+        "output_tokens": 17531,
+        "cache_read_input_tokens": 2746475,
+        "cache_creation_input_tokens": 161180
+      },
+      "peak_context_tokens": 174833
     }
   ],
   "log": {
-    "sha256": "c0b523aec8de50012c3655f1fc8675e769397714b056d2cee13a3df5a4dd5cc2",
-    "bytes": 3377221,
-    "lines": 1264,
-    "gzip_bytes": 703368,
-    "path": "llm-dlc/traces/955141f5-9ccb-41fa-9e12-8a9dfab2ca8b/logs/c0b523aec8de50012c3655f1fc8675e769397714b056d2cee13a3df5a4dd5cc2.jsonl.gz"
+    "sha256": "78fb8735696988498bf5ada68a51cb77d1d14ac4b1d5b1cb4d1ff51aeaa273fb",
+    "bytes": 4873143,
+    "lines": 1567,
+    "gzip_bytes": 1049445,
+    "path": "llm-dlc/traces/955141f5-9ccb-41fa-9e12-8a9dfab2ca8b/logs/78fb8735696988498bf5ada68a51cb77d1d14ac4b1d5b1cb4d1ff51aeaa273fb.jsonl.gz"
   },
   "subagents": [
     {
@@ -235,6 +252,14 @@
       "summary": "Record the R01-R50 setup jobs' results and rerun R50 (verification pending)",
       "body": "Three setup jobs came back passed, and their results are now in the setup record. R01: the parent's own map and bimap tests pass (120,694, 0 failures), and the fix's five test files give 15 failures on a copy of the parent, all the new throwing-callback assertions. R33 and R34 (Calcite): the landed tests pass on the fix and fail on the parent (4 and 9 failures). R49 (JUnit suite engine): SuiteEngineTests#dynamicSuite fails on the parent with NoTestsDiscoveredException. The record now also has the parent jar digests, the classpaths (every entry checked to exist) and the summary rows. 47 of the 50 cases are now checked at both pins on a JVM.\n\nR50 (JUnit #4466) was not verified, although its job reported passed. All three offline builds stopped at :jupiter-tests:compileTestGroovy, because 13 Groovy 4.0.26 modules that GroovyCompile infers at compile time were missing from the Gradle cache, and the job script exited 0 whatever happened. An init script in the setup cache now resolves that classpath. All 47 Groovy 4.0.26 files equal Maven Central's .sha1, and they resolve offline at both pins. The JUnit job script now fails a step whose outcome is wrong.\n\nJob 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins reruns R50's fix, parent and landed tests.",
       "log_sha256": "c0b523aec8de50012c3655f1fc8675e769397714b056d2cee13a3df5a4dd5cc2"
+    },
+    {
+      "change_id": "rmnoroynptqrnkmxnlwsorqywxzotynw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record R50's rerun and finish the R01-R50 setup",
+      "body": "Job 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins came back passed, and its logs confirm it: JUnit #4466's TempDirectoryCleanupTests ran 18 tests with 0 failures on the fix and the parent's own 16 with 0 failures, and the fix's test file on a copy of the parent failed exactly the three ON_SUCCESS failing-then-passing tests (the passing test's directory was not cleaned). The result is recorded on another head and was read from there, not merged. The setup record gains R50's test counts, the rebuilt jar digests at both pins, a class-by-class comparison (only junit-jupiter-engine differs between the pins), the checked classpaths (every entry exists) and a note that JUnit's @TempDir uses java.io.tmpdir (/tmp by default). The Setup Agent Notes now count 48 cases checked at both pins on a JVM, with R39 and R42 checked by their release, overlay or slice routes, and state that setup is complete.",
+      "log_sha256": "78fb8735696988498bf5ada68a51cb77d1d14ac4b1d5b1cb4d1ff51aeaa273fb"
     }
   ],
   "logs": {
@@ -266,6 +291,12 @@
       "bytes": 766170,
       "lines": 239,
       "gzip_bytes": 114537,
+      "url": null
+    },
+    "78fb8735696988498bf5ada68a51cb77d1d14ac4b1d5b1cb4d1ff51aeaa273fb": {
+      "bytes": 4873143,
+      "lines": 1567,
+      "gzip_bytes": 1049445,
       "url": null
     },
     "c0b523aec8de50012c3655f1fc8675e769397714b056d2cee13a3df5a4dd5cc2": {

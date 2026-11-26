@@ -278,7 +278,7 @@ D: Gradle projects); each part's section follows the summary.
 | R47 picocli #2036 | D | Gradle 7.6, JDK 11, root jar | 4.7.3 predates, 4.7.4 has the fix | 13/13 · 10/10 · 3 of 13 FAIL (the three new inherited fallback tests) | inline |
 | R48 assertj #3710 | B | Maven, JDK 21, -pl assertj-tests/assertj-integration-tests/assertj-core-tests -am, offline 17 s | 3.27.0 = parent; 3.27.1 has all added lines | 1/1, none, 1 fail | inline |
 | R49 junit #5839 | D | Gradle 9.6.1, JDK 25 (+17,21,24), standalone clones; resolved inline | 6.1.1 (brief) predates; 6.1.2 = 6.1.1 + exactly the fix's 7 lines | 59 · 59 · 1 of 59 FAILS (SuiteEngineTests#dynamicSuite: NoTestsDiscoveredException) | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
-| R50 junit #4466 | D | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | **not yet**: the first job stopped at the Groovy test compile (cache gap, now resolved) | rerun job 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins |
+| R50 junit #4466 | D | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | 18 (2 skipped) · 16 (2 skipped) · 3 of 18 FAIL (the three ON_SUCCESS failing-then-passing / static-field-with-nesting tests: directory not cleaned) | rerun job 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins (the first job's builds stopped at the Groovy test compile) |
 
 
 ## Cases R02–R40 (fork A)
@@ -1368,8 +1368,8 @@ about 10 s; logs `$O/logs/R39-*.landed.log`). This is evidence about the release
 Fork D of the setup did the twelve Gradle cases: R25 (moshi), R33, R34 (Calcite), R41, R44 (RxJava), R42, R43 (Reactor Core), R45, R46 (Resilience4j),
 R47 (picocli), R49, R50 (JUnit). Eight ran inline (each Gradle run under a minute once resolved); **R42's pinned build cannot be configured** from public
 sources and took the slice route; **R33, R34, R49 and R50 build and test by two jobs**, `20261126-172339-setup-build-apache-calcite-at-both-pins` (Calcite) and `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (JUnit), queued by
-`$O/scripts/submit_D.py` after everything they need was resolved online into `$O/gradle-home`. Both came back: R33, R34 and R49 behave as their PRs say. **R50's tests never ran**: its
-Groovy test compile needed files the online resolution had missed. They are now resolved and checked, and R50 reruns in job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`.
+`$O/scripts/submit_D.py` after everything they need was resolved online into `$O/gradle-home`. Both came back: R33, R34 and R49 behave as their PRs say. **R50's tests never ran** in the first job: its
+Groovy test compile needed files the online resolution had missed. They were resolved and checked, and the rerun job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins` passed: R50 behaves as its PR says too.
 
 ### Toolchain (fork D)
 
@@ -1419,7 +1419,7 @@ offline unless `ONLINE=1`, `-Dorg.gradle.caching=false`, toolchain auto-detect/d
 | R46 resilience4j #1999 | Gradle 7.4.2, JDK 17, same substitution | 2.1.0 (brief) predates, 2.2.0 has the fix | 1/1 · (new test) · 1 of 1 FAILS (IllegalAccessException on Issue560 lambda) | inline |
 | R47 picocli #2036 | Gradle 7.6, JDK 11, root jar | 4.7.3 predates, 4.7.4 has the fix | 13/13 · 10/10 · 3 of 13 FAIL (the three new inherited fallback tests) | inline |
 | R49 junit #5839 | Gradle 9.6.1, JDK 25 (+17,21,24), standalone clones; resolved inline | 6.1.1 (brief) predates; 6.1.2 = 6.1.1 + exactly the fix's 7 lines | 59 · 59 · 1 of 59 FAILS (SuiteEngineTests#dynamicSuite: NoTestsDiscoveredException) | job 20261126-172339-setup-build-junit-at-both-pins-of-5839-a |
-| R50 junit #4466 | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | **not yet**: the first job's builds stopped at the Groovy test compile (cache gap, now resolved) | rerun job 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins |
+| R50 junit #4466 | Gradle 8.13, JDK 21, standalone clones; resolved inline | 5.12.1 = parent, 5.12.2 (brief) = fix (exact) | yes, by rerun job: 18/0 · 16/0 · 3 fail (the first job's builds stopped at the Groovy test compile) | 20261126-180537-setup-rerun-junit-4466-r50-at-both-pins |
 
 ### R25 · moshi #1442 — nested record components resolved in the enclosing parameterized type (upstream Gradle 7.3 build at both pins, inline)
 
@@ -1986,7 +1986,7 @@ init-script parameters are system properties (`$O/scripts/resolve-all-D.init.gra
 **Commands** (`$O/scripts/junit_job.sh R50 fix|parent|landed|clean`): `:junit-jupiter-engine:jar :junit-jupiter-api:jar :junit-jupiter-params:jar :junit-platform-launcher:jar
 :junit-platform-engine:jar :junit-platform-commons:jar :jupiter-tests:test --tests org.junit.jupiter.engine.extension.TempDirectoryCleanupTests` offline.
 
-**Landed tests and artifacts:** produced by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (steps 5–8), into `$O/logs/R50-*.test-offline.*` and `$O/artifacts/R50-{parent,fix}/`
+**Landed tests and artifacts:** first by job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` (steps 5–8; its tests never ran), then by the rerun job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`, into `$O/logs/R50-*.test-offline.*` and `$O/artifacts/R50-{parent,fix}/`
 (`junit-jupiter-engine.runtimeClasspath.txt`, `jupiter-tests.testRuntimeClasspath.txt`).
 <!-- R50-job -->
 **First job run: the tests never ran** (job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`, steps 5–8; results in `verification/results/2026/11/26/20261126-172339-setup-build-junit-at-both-pins-of-5839-a/`).
@@ -2005,9 +2005,42 @@ init-script parameters are system properties (`$O/scripts/resolve-all-D.init.gra
   - **All 47 Groovy 4.0.26 files** (jars, poms, Gradle module files) in `$O/gradle-home` equal Maven Central's `.sha1` (`$O/logs/R50-groovy-4.0.26-sha1.txt`).
   - `junit_job.sh` now exits with the test run's status for fix and parent. Its landed step exits 0 only when tests ran (`tests>0`) and some failed. The test run now
     also passes `--warning-mode=summary`, because the build's `gradle.properties` sets `org.gradle.warning.mode=fail`. That changes no test.
-- **Rerun: job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`** (steps `junit_job.sh R50 fix|parent|landed|clean`). Until its result is recorded
-  here, R50's pin builds are built but **their tests are unchecked**.
+- **Rerun: job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`** (steps `junit_job.sh R50 fix|parent|landed|clean`), result below.
 <!-- R50-rerun -->
+**Rerun result: verified.** Job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins` passed (4 steps, 3m28s wall, peak 3.5 GiB, source commit
+`a6792b0f771348e72880d6dd16595044267e2ee3`; results in `verification/results/2026/11/26/20261126-180537-setup-rerun-junit-4466-r50-at-both-pins/`, recorded on
+another head and read from there, not merged). Every build ran offline on JDK 21 with Gradle 8.13 and got past `compileTestGroovy`.
+- **Fix:** `TempDirectoryCleanupTests` 18 tests, 0 failures, 0 errors, 2 skipped; `gradle-exit=0` (`$O/logs/R50-fix.test-offline.{log,junit.txt}`).
+- **Parent, its own test file:** 16 tests, 0 failures, 0 errors, 2 skipped; `gradle-exit=0` (`$O/logs/R50-parent.test-offline.{log,junit.txt}`).
+- **The fix's test file on a copy of the parent** (`$O/build/R50-parent-landed`, deleted after): 18 tests, **3 failures**, 0 errors, 2 skipped, each
+  `AssertionError: Expecting path: …/junit-NNN not to exist`, so the passing test's ON_SUCCESS directory survived a failing sibling, as issue #4464 says
+  (`$O/logs/R50-parent-landed.test-offline.{log,junit.txt,failures.txt}`):
+  - `TempDirectoryCleanupTests$TempDirFieldTests#cleanupModeOnSuccessFailingThenPassingField()`
+  - `TempDirectoryCleanupTests$TempDirFieldTests#cleanupModeOnSuccessFailingStaticFieldWithNesting()`
+  - `TempDirectoryCleanupTests$TempDirParameterTests#cleanupModeOnSuccessFailingThenPassingParameter()`
+- **Temp directories go to `/tmp`.** The Gradle test JVM takes `java.io.tmpdir` from the JVM default, not from `TMPDIR`, so these `@TempDir`s were made under
+  `/tmp` (the three left by the failing tests were gone afterwards). A run of the brief's own `@TempDir` scenarios can pass `-Djava.io.tmpdir=` a folder under
+  `~/.cache/in-the-loop/`.
+- **Artifacts** (`$O/artifacts/R50-{fix,parent}/`, rebuilt by the rerun; the first job's jars are replaced):
+
+  | Jar (5.13.0-SNAPSHOT / platform 1.13.0-SNAPSHOT) | Fix sha256 | Parent sha256 |
+  |---|---|---|
+  | `junit-jupiter-engine` | `f52cabe316163389489fd16ff8f26792382d117b37e049c91db0a934fd23fa84` | `1707e669f94a64edc23ab775ec32218c29cc4e4ad11a95ce3bd01b5ae18be5fe` |
+  | `junit-jupiter-api` | `ba2bc3320409d6f722bf5d9c5b6e64dbf2d481329725338bc966eecc5574b89f` | `384c3f03b681f1bd21ef17d7c1a50d136b84d16c7d8f6dc05d0c2edd174e4ca9` |
+  | `junit-jupiter-params` | `c9c1e1f70f2650a8dd01e0fd68225072551afd78b71618630112dd49d4bb414f` | `23d6b0fe2b292e417915685060775f73aac579fac3aed56fb6a9140cfe9b1750` |
+  | `junit-platform-launcher` | `a506df6ac4ee8b5662fe16273491160eb036087c4ab741a985a72d4fc7eecaa2` | `b6e76c78c9ec9fa5f0ff972f2e7ff872fdf16ae7714bf05e5b6e8a28b8565551` |
+  | `junit-platform-engine` | `651da2bbc81721f033a61a7252588af3f518ff82fd4f55e22a63554b511ba1a8` | `647890d87e6e98fa8ebd4ff507180b1894b235f0982ba10067d4bf2aac11b540` |
+  | `junit-platform-commons` | `4094f931bd65244313066c8efa44e66e08b2530fd41a7d16683c38c3fa503040` | `dc1f6e39f23fe46512c39f8a56c86299540a4a97e91a4edd0d10c705c8a40b7f` |
+
+  `TempDirectory.class` fix `3edf64419c50c8d75c24116094c21b707cf8ca90907ffe990e0e8b6e000cad72`, parent `1e37ee592b36de0e8c49dfd475cf2d39ed0d7a8668aa4e5c07025a5ab71057b7`
+  (all seven `TempDirectory*.class` digests are in each `SHA256SUMS`; `TempDirectory$1.class` is the same at both pins).
+  The jar digests differ at both pins because the manifests carry `Build-Revision` and `Build-Time`. Compared class by class (sha256 of the sorted list of
+  each class's name and sha256), **only `junit-jupiter-engine` differs** (159 classes; fix `9c183d09e4e93240d8327c8403a93e894c0d28baa303b9a530e3affd92908095`,
+  parent `4d4f6f05721cd0f5fb1230ed0e6f02e3de6de5a0ff3724f78cf0912272f05c9c`). The other five are the same at both pins: api (200 classes)
+  `195861a2017210a2d6ce5d53800642145d2c551f5e78383339d261a01de3cfa9`, params (396) `8973a2eacb4fa63cceb16e61ddbf06d7411a0612d4a60de0835eeb4bb8d287c9`, platform-commons (75)
+  `04fcac1c4fbf489c1a63936c01d4302d205eff4a42f3bbec0c605348882d932c`, platform-engine (170) `a3907bbf3ceb32f085e203e1284ce9da3a7aaf786bf8903cb7e62d010fe5948e`,
+  platform-launcher (129) `f92f01caa819bea591f64c2730615657d04a660701e235f6fcb8f3a8680ec356`.
+- **Classpaths** `junit-jupiter-engine.runtimeClasspath.txt` (4 entries) and `jupiter-tests.testRuntimeClasspath.txt` (46 entries) at both pins; every entry exists.
 
 **Release side** (`$O/releases/junit-jupiter-engine-{5.12.1,5.12.2,5.13.0}/` with `-sources.jar`; runtime sets `$O/releases/junit-set-{5.12.1,5.12.2}/classpath.txt`, 13 jars each, platform 1.12.x):
 **an exact published pair**: `TempDirectory.java` of **5.12.1 = the parent's**, of **5.12.2 (named by the brief) = the fix's** (git blob ids). 5.13.0 has the fix plus later changes (30 lines).
@@ -2046,9 +2079,8 @@ in its section above (parts A–D), and the summary table names the part.
   `$W/CASE-MIRROR-parent` and `$W/CASE-MIRROR-fix`. They are clean, with no build output. R41, R49 and R50 are standalone depth-1 clones, because
   their builds read git metadata. Every PR is merged, and its merge commit is the brief's after pin (*Upstream revisions*). The two-commit ranges
   have their middle commits fetched: R24 `ba880df507664d320f54028810c42e07e429515f` and R50 `f7f1d51d4c57322dece17011a3da540b0f98bfbb`.
-- **Builds.** 49 of the 50 cases are built at both pins. R39 parquet is the exception (see below). R01's parent side, R33, R34 and R49 were built
-  by jobs, and their artifacts are in place. R50's artifacts from the first job are in place too, and its rerun job
-  `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins` rebuilds them. Each built case has, in `$O/artifacts/CASE-ROLE/`:
+- **Builds.** 49 of the 50 cases are built at both pins. R39 parquet is the exception (see below). R01's parent side, R33, R34, R49 and R50 were built
+  by jobs, and their artifacts are in place (R50's from its rerun job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`). Each built case has, in `$O/artifacts/CASE-ROLE/`:
   - the jar;
   - `SHA256SUMS`, covering the jar and every class of each changed production file;
   - the runtime and test classpaths (`:`-joined, pointing into `$O/m2` or `$O/gradle-home`). Sibling module jars are copied under `tree/` where a
@@ -2099,7 +2131,7 @@ in its section above (parts A–D), and the summary table names the part.
   on 3.1.2.RELEASE.
 - **R39 (releases and pin-source overlays only).** The landed method passes on parquet-hadoop 1.18.2 and fails on 1.18.1. The fix pin's
   `DictionaryPageReader.java` compiled onto 1.18.2 passes, and the parent pin's fails.
-- **4 more cases by verification jobs**, which came back passed. Each landed test set passes on the fix, the parent's own copy passes on the parent, and
+- **5 more cases by verification jobs**, which came back passed. Each landed test set passes on the fix, the parent's own copy passes on the parent, and
   the fix's landed tests fail on a copy of the parent where the PR says:
 
   | Case | Fix · parent's own · fix's tests on the parent | Job |
@@ -2108,17 +2140,17 @@ in its section above (parts A–D), and the summary table names the part.
   | R33 | 698/0 · 696/0 · 4 fail | `20261126-172339-setup-build-apache-calcite-at-both-pins` |
   | R34 | 606/0 · 598/0 · 9 fail | `20261126-172339-setup-build-apache-calcite-at-both-pins` |
   | R49 | 59/0 · 59/0 · 1 fails (`SuiteEngineTests#dynamicSuite`, `NoTestsDiscoveredException`) | `20261126-172339-setup-build-junit-at-both-pins-of-5839-a` |
+  | R50 | 18/0 · 16/0 · 3 fail (`cleanupModeOnSuccessFailingThenPassingField`, `…FailingStaticFieldWithNesting`, `…FailingThenPassingParameter`: the passing test's directory is not cleaned) | `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins` |
 
-  So **47 cases** are checked at both pins on a JVM.
-- **R50: not yet verified.** In job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`, its three offline builds stopped at
-  `:jupiter-tests:compileTestGroovy`: 13 Groovy 4.0.26 modules that the Groovy plugin resolves at compile time were missing from the cache. No test ran.
-  The job still reported passed, because its script exited 0 whatever the build did.
-  - **Fixed since.** The modules are resolved now (`$O/scripts/resolve-groovy-D.init.gradle`), all 47 files equal Central's `.sha1`, and they resolve
-    offline at both pins. The script now fails a step whose outcome is wrong.
-  - **Rerun: job `20261126-180537-setup-rerun-junit-4466-r50-at-both-pins`.** Until its result is recorded in R50's section (`<!-- R50-rerun -->`),
-    treat R50's pin tests as unchecked.
+  So **48 cases** are checked at both pins on a JVM. The other two, R39 and R42, are checked only by their release, overlay or slice routes above, so
+  every one of the 50 cases has had its landed regression run on both sides in some form.
+  - **R50's first job ran no test.** In job `20261126-172339-setup-build-junit-at-both-pins-of-5839-a`, its three offline builds stopped at
+    `:jupiter-tests:compileTestGroovy` (13 Groovy 4.0.26 modules resolved only at compile time were missing), yet the job reported passed because its
+    script exited 0. The modules were resolved (`$O/scripts/resolve-groovy-D.init.gradle`, all 47 files equal Central's `.sha1`), `junit_job.sh` now fails
+    a step whose outcome is wrong, and the rerun above is the result. Its jars replaced the first job's.
   - `calcite_job.sh` also exits 0 in every case, so R33 and R34 above were read from their logs (`test rc=0` with tests > 0, and the landed marker), not from
     the job status alone. `R01_job.sh` fails its landed step when nothing fails.
+  - The job results are recorded on another head (`77cdd5d09f2c` at the time of writing); they were read from there and not merged here.
 - **None of the brief's own scenarios, controls or challenges was run.** That is on purpose.
 
 ### What to know before starting
@@ -2181,7 +2213,8 @@ in its section above (parts A–D), and the summary table names the part.
 - **Signatures.** All release signatures verify. fastutil's are EXPKEYSIG (valid signature, key listed as expired), and the keyserver's Resilience4j
   2.x key expired before the signing dates. Every keyring is this work's own (`$O/gnupg-A` … `$O/gnupg-D`), and their daemons are stopped.
 - **Rebuilt jars.** The kept jar digests are of those copies. A rebuild changes a jar's digest (timestamps) but not the class digests.
-- **Runtime notes.** R25's records need a JVM of 16 or later and the multi-release jar (the adapter is under `META-INF/versions/16/`).
+- **Runtime notes.** R25's records need a JVM of 16 or later and the multi-release jar (the adapter is under `META-INF/versions/16/`). JUnit's
+  `@TempDir` (R50) follows `java.io.tmpdir`, which defaults to `/tmp` whatever `TMPDIR` says: pass `-Djava.io.tmpdir=` a folder under `~/.cache/in-the-loop/`.
 
 ### What is left for the domain work on purpose
 
@@ -2191,4 +2224,7 @@ in its section above (parts A–D), and the summary table names the part.
 - The choice between pin jars, slice jars, overlay jars and release jars where more than one exists, and how to label the evidence.
 - Rebuilding R28–R30's snapshot inputs as they stood at the pins' dates (not done), and whether R02's 4.6.0 `add()` matters.
 - No full upstream test suites were run beyond the landed classes; R01's fix side is the exception, run whole.
+
+**Setup is complete** (2026-11-26): no setup job is pending, and the only gaps are the ones named above (R39's pins unbuilt, R42's pinned build
+unconfigurable, R16/R18 substitutes, R28–R30's later snapshot inputs).
 
