@@ -1,0 +1,324 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-185342-trace-original-r-series-reader-group-ret",
+  "title": "Trace original R-series reader, group, retry and getter methods",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 23.4s, peak 101.7 MiB (estimated 1m00s, 768.0 MiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-185342-trace-original-r-series-reader-group-ret.json",
+    "sha256": "1e237305f64005721ed79a9360c2fc85d220d36c2e4d5820b2d4afc14c50d285",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-185342-trace-original-r-series-reader-group-ret",
+      "title": "Trace original R-series reader, group, retry and getter methods",
+      "description": "Bind public outcomes to original JVM method entries twice per revision. Exercise BoundedReader.skip and Observable grouping for all three roles, and the returned-value retry and record getter for their challenges. Check the saved records against the exact source, caller and classpath.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {},
+      "expected": "Four compressed reports covering 32 trials with original method hits and outcomes matching the ordinary public callers.",
+      "submitted": {
+        "at": "2026-11-26T18:53:42+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Trace reader and Observable histories",
+          "run": "python3 verification/merged-pr-links/qualify.py 549 581 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+          "cwd": "."
+        },
+        {
+          "name": "Trace the negative retry event and constant getter",
+          "run": "python3 verification/merged-pr-links/qualify.py 582 585 --gzip --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+          "cwd": "."
+        },
+        {
+          "name": "Check reader and group evidence",
+          "run": "python3 verification/merged-pr-links/qualify.py 549 581 --gzip --check --only Intent --only Control --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+          "cwd": "."
+        },
+        {
+          "name": "Check retry and getter evidence",
+          "run": "python3 verification/merged-pr-links/qualify.py 582 585 --gzip --check --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/r01-r50/qualified"
+      ]
+    }
+  },
+  "sourceCommit": "5298c29ce52e8abd4a219330b65836e789fced4d",
+  "startedAt": "2026-11-26T19:02:47+00:00",
+  "finishedAt": "2026-11-26T19:03:20+00:00",
+  "wallSeconds": 33.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3470373,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 106643456,
+    "wallSeconds": 23.4,
+    "cpuSeconds": 24.8,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Trace reader and Observable histories",
+      "run": "python3 verification/merged-pr-links/qualify.py 549 581 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 15.823,
+      "cpuSeconds": 15.874,
+      "cpuThrottledSeconds": 1.719,
+      "peakMemoryBytes": 106397696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-trace-reader-and-observable-hi.log",
+        "lines": 2,
+        "bytes": 230,
+        "sha256": "92b078143df00a2243e79793bfe659136223343d62889a83864dac71e56a2831",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "549 pins org.apache.commons.io.input.BoundedReader#skip(J)J 12 qualified JVM trials",
+        "581 pins io.reactivex.rxjava3.internal.operators.observable.ObservableGroupBy$GroupByObserver#onNext(Ljava/lang/Object;)V 12 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Trace the negative retry event and constant getter",
+      "run": "python3 verification/merged-pr-links/qualify.py 582 585 --gzip --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 7.21,
+      "cpuSeconds": 8.805,
+      "cpuThrottledSeconds": 1.335,
+      "peakMemoryBytes": 106643456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-trace-the-negative-retry-event.log",
+        "lines": 2,
+        "bytes": 284,
+        "sha256": "99784b8dbd5bc83199e5ccc75e7dc799c74a419c66b405e7d613a07fe44d5520",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "582 pins io.github.resilience4j.retry.internal.RetryImpl$AsyncContextImpl#onResult(Ljava/lang/Object;)J 4 qualified JVM trials",
+        "585 pins org.assertj.core.util.introspection.Introspection#findGetter(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/reflect/Method; 4 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check reader and group evidence",
+      "run": "python3 verification/merged-pr-links/qualify.py 549 581 --gzip --check --only Intent --only Control --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.054,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13586432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-reader-and-group-evidenc.log",
+        "lines": 2,
+        "bytes": 240,
+        "sha256": "9a987e03ceebce40f891ba9cfa03d7c713ec4f1b8caa17e77574ae87a496201c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "549 pins org.apache.commons.io.input.BoundedReader#skip(J)J 12 verified saved JVM trials",
+        "581 pins io.reactivex.rxjava3.internal.operators.observable.ObservableGroupBy$GroupByObserver#onNext(Ljava/lang/Object;)V 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Check retry and getter evidence",
+      "run": "python3 verification/merged-pr-links/qualify.py 582 585 --gzip --check --only Challenge --output verification/merged-pr-links/r01-r50/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.056,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13340672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-check-retry-and-getter-evidenc.log",
+        "lines": 2,
+        "bytes": 294,
+        "sha256": "1fafb96235cbcddb0e4f99f2a2ec8aad170f3782e57205a27c0244baa63b77e3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "582 pins io.github.resilience4j.retry.internal.RetryImpl$AsyncContextImpl#onResult(Ljava/lang/Object;)J 4 verified saved JVM trials",
+        "585 pins org.assertj.core.util.introspection.Introspection#findGetter(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/reflect/Method; 4 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/r01-r50/qualified/549-pins.json.gz",
+      "change": "added",
+      "bytes": 1953,
+      "sha256": "741eb9d54b084d3c74b5da1d33fb2e4bf2cb07fcac97aa36023239f65c34483e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/r01-r50/qualified/581-pins.json.gz",
+      "change": "added",
+      "bytes": 4464,
+      "sha256": "cb2aa9f16f1c233c65722f983f20e8805319471f2510a525ed1180bec956bc27",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/r01-r50/qualified/582-pins.json.gz",
+      "change": "added",
+      "bytes": 2096,
+      "sha256": "7ff0648b40259089f0a748695fa4b5d9d8c20db6ff39cdf1cb75aeef632a0b84",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/r01-r50/qualified/585-pins.json.gz",
+      "change": "added",
+      "bytes": 3188,
+      "sha256": "b3747ecb9da00f560b884989aee1e0d2fe54f165b6fc4c751bcea139bbba5704",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T19:03:27+00:00",
+    "applied": [
+      "verification/merged-pr-links/r01-r50/qualified/549-pins.json.gz",
+      "verification/merged-pr-links/r01-r50/qualified/581-pins.json.gz",
+      "verification/merged-pr-links/r01-r50/qualified/582-pins.json.gz",
+      "verification/merged-pr-links/r01-r50/qualified/585-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T190320Z-1282290ce38474ad",
+      "outputs": "20261126T190320Z-15344570dce2c4b9",
+      "diff": "20261126T190320Z-174503e39f89f766"
+    }
+  }
+}
