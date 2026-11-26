@@ -1,0 +1,400 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-003557-setup-build-spring-framework-37218-o08-a",
+  "title": "Setup: build Spring Framework #37218 (O08) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 11m47s, peak 6.1 GiB (estimated 40m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (O08 fix: offline build and landed tests) was held back 3m41s by its 4-CPU quota in 5m02s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (O08 parent: offline build and the parent's tests) was held back 3m30s by its 4-CPU quota in 4m22s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (O08 transplant: the fix's tests on the parent) was held back 4m07s by its 4-CPU quota in 2m19s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-003557-setup-build-spring-framework-37218-o08-a.json",
+    "sha256": "c96103e5d49627970ad62ab6fb912e023123dedadde3e6441b0117f2072e2ec3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-003557-setup-build-spring-framework-37218-o08-a",
+      "title": "Setup: build Spring Framework #37218 (O08) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md, case O08 (spring-projects/spring-framework#37218: If-Range handling for resource range requests). In the worktrees $O/worktrees/O08-{fix,parent} (O = ~/.cache/in-the-loop/spring-pr-links-o01-o20), offline (dependencies resolved online beforehand), it builds the jars of spring-web spring-webmvc spring-webflux with the Gradle each checkout's wrapper names, runs the landed test classes (HttpRangeTests ResourceHttpMessageWriterTests ResourceHandlerFunctionTests HttpEntityMethodProcessorMockTests ResourceHttpRequestHandlerTests ResourceWebHandlerTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-web spring-webmvc spring-webflux in $O/artifacts/O08-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $O/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned O08",
+      "submitted": {
+        "at": "2026-11-26T00:35:57+00:00",
+        "session": "bfc9aed1-6b9f-409a-9ed4-c5515dca4d80",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "40m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "O08 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O08 fix",
+          "cwd": "."
+        },
+        {
+          "name": "O08 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O08 parent",
+          "cwd": "."
+        },
+        {
+          "name": "O08 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O08 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "O08 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O08 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "132ae3386c8914da894d7a90e5eb592dcf083f6b",
+  "startedAt": "2026-11-26T00:42:48+00:00",
+  "finishedAt": "2026-11-26T00:54:45+00:00",
+  "wallSeconds": 717.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1123013,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 9600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 2400.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 6567407616,
+    "wallSeconds": 707.4,
+    "cpuSeconds": 1897.8,
+    "memoryOfEstimate": 1.02,
+    "durationOfEstimate": 0.29
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "O08 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O08 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 302.577,
+      "cpuSeconds": 803.218,
+      "cpuThrottledSeconds": 221.995,
+      "peakMemoryBytes": 6084648960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-o08-fix-offline-build-and-land.log",
+        "lines": 71,
+        "bytes": 9825,
+        "sha256": "3ab03870e55a00cbbe41806d974d1c39710cff9b721007a955391d77c13562c2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "a8a71f9cd8cabe296115a932ef3dd0d14ef5aaa7b7df68d31f4edd0bfb20b8d3  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "36e64d12ed90f2ab01c638bf815d17e5f8e475243361a455534625fb2d0a6171  tree/spring-context-support/build/libs/spring-context-support-7.1.0-SNAPSHOT.jar",
+        "ce0938f65dc6bd4478c360609574a7bd4fcde68071c314ba7e5e47067ba310f1  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "2ce215ae47ac4d69ab071a534b1f8c6588feb69de1bc28c4e57246b9803882e5  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "d4c4838906198a7323f323729961386f9f6a3feba1f25b29f109aba4f8dd91af  tree/spring-core-test/build/libs/spring-core-test-7.1.0-SNAPSHOT.jar",
+        "b956fe310a8e3ac4fb92cee8f88b3a3d1f29c468bc53cac92a73a4cc6e71031b  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "8d1c808cb3839defb65788b5b6bc099f5b4ae101515ef11b3b1732934defa097  tree/spring-messaging/build/libs/spring-messaging-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-messaging/build/libs/spring-messaging-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "349d88def04c05656798e50bc61977aaf07cf83bd3a7b8fc64fcf2d09b905237  tree/spring-oxm/build/libs/spring-oxm-7.1.0-SNAPSHOT.jar",
+        "43c1aa2e123e266fa141840a71ca6b4b8b3a376ebdc65ffed11c79fa23acae89  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT.jar",
+        "3c97b502ab77f1b5de3961705b66a666e340ed823d5cd9ed15087b75c17e454b  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "09d116a348b8e699ac69d952223c6ad4c68f43ce9739f51c3b918e11d665ce46  tree/spring-web/build/libs/spring-web-7.1.0-SNAPSHOT.jar",
+        "4177ae577b2016652a8cb2a9d90c45e31621b813148ca66384dca013dbb772ef  tree/spring-web/build/libs/spring-web-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "a888c3569708b3e50887ef718b9697ae5111383b2b0a45fca2dab1bedddc37d2  tree/spring-webflux/build/libs/spring-webflux-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-webflux/build/libs/spring-webflux-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "df86969485f7c90f21d15b48f5e1a71406c61b91ebb3719b4fcbb744c701b02e  tree/spring-webmvc/build/libs/spring-webmvc-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-webmvc/build/libs/spring-webmvc-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "4948361f0d5a88e351d903f5729636ab969f074ed9578aa6c0a1677ea2c5f2f2  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$1.class",
+        "4fd53afde52d278fe1bbd31af52bef5ee2148d23ff33a338d9ece2662c6f724a  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$CompletionStageEntityResponse.class",
+        "bb43463ffc53979f63c0bcf07cd440da33a0509f69f053ea064224ade872a02e  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$DefaultEntityResponse.class",
+        "32ff6d5253207c6802a2940fc113660f697855d48d1736a13f015f43f55ea2a9  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$PublisherEntityResponse$DeferredResultSubscriber.class",
+        "d395f9d58f83164c4c9cd293f4ce6acf4cc423c23ba34f8c00717aae93380890  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$PublisherEntityResponse$NoContentLengthResponseWrapper.class",
+        "b6285056c5977d20501624410c136ff45ae126e64fcf3955f870cbbdee616543  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$PublisherEntityResponse.class",
+        "1ce5b828b227b6b85049190925ee6fa4c61297073cc944f44b19b1b230b89c38  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder.class",
+        "d009520ec2bf08a7bc0880bb7dc04d3ef25af28936534424224c2b4efa219aee  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor$1.class",
+        "59846c9dd674affe055551305c148f15fe0b20398a88cb54b0298747d8ac72f1  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor$2.class",
+        "b8ad20c1486418c8c1457d3195fcbfab82fee755cd24e2ad27458c416bd796c4  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor.class",
+        "f650ea5dec48dae78469a52f1c10b326b34495a7ae936acd9f41287939d48225  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/resource/ResourceHttpRequestHandler.class",
+        "fc6e4a9f7e35d030e80e6db5f5b1ae715771f1be324bbbe9a688368be74240f2  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/codec/ResourceHttpMessageWriter.class",
+        "79409ed248ab4444f706ecd25642930947d55e1fc566addfb93c33dd9fc95b5f  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$CaseInsensitiveEntrySet$CaseInsensitiveEntry.class",
+        "9112354522964b00ebef8fa1ae3570790f6a9edfd0c2e4b02d9165a1a9701efb  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$CaseInsensitiveEntrySet$CaseInsensitiveIterator.class",
+        "3f87960dda70f3321cebb62446da362c93d3367615ed114eb8cada39a5854363  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$CaseInsensitiveEntrySet.class",
+        "a54e7106fd3d77adcf64b8857d6b77d0c0cf4f586d0ada06e3c68cd511181089  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$CaseInsensitiveHeaderNameSet.class",
+        "fc8ece7f3ad29e2f70f1238d0c2647e136b15e51635a24c0ac6d6103b71a871a  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$HeaderNamesIterator.class",
+        "b74d75df6759b71a5ad5096e52b4986406b4b79f304f8e19d3092c10ba1bc46d  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders.class",
+        "c2ac9dfc55126b59f90d3cdaba950fb03e5c545a966459b2ebd5edd246e9b456  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpRange$ByteRange.class",
+        "964a516896c586d73488fabefb335d0885dc280de2b829de5a3d823b5d43c9de  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpRange$SuffixByteRange.class",
+        "3b867c2b939ba137d0e1b82ae5ae7f17c4d7dd47903d69c45a86662db74229e0  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpRange.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "O08 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O08 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 262.577,
+      "cpuSeconds": 656.028,
+      "cpuThrottledSeconds": 210.448,
+      "peakMemoryBytes": 5386448896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-o08-parent-offline-build-and-t.log",
+        "lines": 71,
+        "bytes": 9846,
+        "sha256": "a0a37fe2a89ee9dafb0186d9c5cd974b804a75f705afdb6d566905744d65d44c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "a8a71f9cd8cabe296115a932ef3dd0d14ef5aaa7b7df68d31f4edd0bfb20b8d3  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "36e64d12ed90f2ab01c638bf815d17e5f8e475243361a455534625fb2d0a6171  tree/spring-context-support/build/libs/spring-context-support-7.1.0-SNAPSHOT.jar",
+        "ce0938f65dc6bd4478c360609574a7bd4fcde68071c314ba7e5e47067ba310f1  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "2ce215ae47ac4d69ab071a534b1f8c6588feb69de1bc28c4e57246b9803882e5  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "d4c4838906198a7323f323729961386f9f6a3feba1f25b29f109aba4f8dd91af  tree/spring-core-test/build/libs/spring-core-test-7.1.0-SNAPSHOT.jar",
+        "b956fe310a8e3ac4fb92cee8f88b3a3d1f29c468bc53cac92a73a4cc6e71031b  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "8d1c808cb3839defb65788b5b6bc099f5b4ae101515ef11b3b1732934defa097  tree/spring-messaging/build/libs/spring-messaging-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-messaging/build/libs/spring-messaging-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "349d88def04c05656798e50bc61977aaf07cf83bd3a7b8fc64fcf2d09b905237  tree/spring-oxm/build/libs/spring-oxm-7.1.0-SNAPSHOT.jar",
+        "43c1aa2e123e266fa141840a71ca6b4b8b3a376ebdc65ffed11c79fa23acae89  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT.jar",
+        "3c97b502ab77f1b5de3961705b66a666e340ed823d5cd9ed15087b75c17e454b  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "4d397f543ecf83e88be03951e60b4fc9696abe8835709658a686665dbbb16c0e  tree/spring-web/build/libs/spring-web-7.1.0-SNAPSHOT.jar",
+        "4177ae577b2016652a8cb2a9d90c45e31621b813148ca66384dca013dbb772ef  tree/spring-web/build/libs/spring-web-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "a888c3569708b3e50887ef718b9697ae5111383b2b0a45fca2dab1bedddc37d2  tree/spring-webflux/build/libs/spring-webflux-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-webflux/build/libs/spring-webflux-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "fa8182db94bc85b7b969d92b0c452b7200c4d83199aebf97e65957888e7dbcd0  tree/spring-webmvc/build/libs/spring-webmvc-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-webmvc/build/libs/spring-webmvc-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "6eadca45db53837e1ac27ea1a46a6ccd10c7b412eaaee44db60767651fd0ef17  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$1.class",
+        "681295ce2b19bb80c7d09c71707f33ae076e1ddef5d63ec37762682a5843b7ce  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$CompletionStageEntityResponse.class",
+        "ed452c6409ec11df517b898a4930c4063d729d736a76228dfc8902fef01e5ff8  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$DefaultEntityResponse.class",
+        "e9c93951218045ecc8e8e778735d04f5f70fedf608ba014c87a482fcd575041c  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$PublisherEntityResponse$DeferredResultSubscriber.class",
+        "a0c1825714fa42b4eeb063f44db589e243bf157d0a62c35ba58d67289aedca09  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$PublisherEntityResponse$NoContentLengthResponseWrapper.class",
+        "af6563629c728b8b8be3fd8dae17857aea22f4b90a1aae02c03ad997222c3b33  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder$PublisherEntityResponse.class",
+        "99b15f6c15c61e2dcadcfff7168102b39a8c841f23b2f31a210eb0dc87277519  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/function/DefaultEntityResponseBuilder.class",
+        "d009520ec2bf08a7bc0880bb7dc04d3ef25af28936534424224c2b4efa219aee  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor$1.class",
+        "fe1e7aa1b04b1f16f1f54104d78871a264e20f4fc55dc14a52e650c1e91e33de  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor$2.class",
+        "2a6ec238e19087307967a2386ce7298f38eac987801c3e9d7579aaaa25b2de91  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor.class",
+        "04b3bf65d0716619fdd984858f2a5c51208a27d58acaadd88bb37e781888ff72  spring-webmvc-7.1.0-SNAPSHOT.jar!/org/springframework/web/servlet/resource/ResourceHttpRequestHandler.class",
+        "9b36713f89a9b34db77a66e5ac3a3f549788b79838fa8bd8dbbf070192735c90  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/codec/ResourceHttpMessageWriter.class",
+        "6b76b63fb3033d9235af2fad0be7c461ad17b34936d44934b29b9af2d710cc77  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$CaseInsensitiveEntrySet$CaseInsensitiveEntry.class",
+        "ab94cdea3911e4a98285bdb5a382c36c27d20c4540f047b25dedc9a61a31df91  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$CaseInsensitiveEntrySet$CaseInsensitiveIterator.class",
+        "e8001d19881a1d97a1a109dc072497d06093d9a5abdfb1db6bedfb58f1ac3018  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$CaseInsensitiveEntrySet.class",
+        "5f4a3339978b8acb9f125a57c4a1417f536ad6a698a77aa844a4dccf95320362  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$CaseInsensitiveHeaderNameSet.class",
+        "df1c8f8ba0577b43d59cdbe5461689dc4e3643d891f79e4d1b7840751ab5392e  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders$HeaderNamesIterator.class",
+        "a8146e389db954b4d99b4828127421d60bf4de49bb071e40cda535df2a477e28  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpHeaders.class",
+        "bae50a0d1c679a31406b6df9e13a61d33cd98d384671bb98f50e9e6803e0bbdb  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpRange$ByteRange.class",
+        "f35350f6ef9d99e35843c042854a2a19691947cf8a759c3f2da04b2554071a62  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpRange$SuffixByteRange.class",
+        "3796fb044f06ab84a3309ada1d4d721a524bf7676334428456745ea12137f8f5  spring-web-7.1.0-SNAPSHOT.jar!/org/springframework/http/HttpRange.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "O08 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O08 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 139.001,
+      "cpuSeconds": 436.589,
+      "cpuThrottledSeconds": 247.585,
+      "peakMemoryBytes": 6567407616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-o08-transplant-the-fix-s-tests.log",
+        "lines": 29,
+        "bytes": 3007,
+        "sha256": "1373afc8f07886fd16081ff6c7596d533a7f0c4fb57e7b5f752ccae8455b7471",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-webflux/src/test/java/org/springframework/web/reactive/resource/ResourceWebHandlerTests.java",
+        "transplanted spring-webmvc/src/test/java/org/springframework/web/servlet/function/ResourceHandlerFunctionTests.java",
+        "transplanted spring-webmvc/src/test/java/org/springframework/web/servlet/mvc/method/annotation/HttpEntityMethodProcessorMockTests.java",
+        "transplanted spring-webmvc/src/test/java/org/springframework/web/servlet/resource/ResourceHttpRequestHandlerTests.java",
+        "transplanted spring-web/src/test/java/org/springframework/http/codec/ResourceHttpMessageWriterTests.java",
+        "transplanted spring-web/src/test/java/org/springframework/http/HttpRangeTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O08-parent-landed gradle=9.8.2 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=138 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-web:test --tests org.springframework.http.Ht",
+        "junit tests=156 failures=4 errors=0 skipped=0",
+        "junit failed ResourceWebHandlerTests$RangeRequestTests#ignoreRangeWhenIfRangeETagDoesNotMatch()",
+        "junit failed ResourceHandlerFunctionTests#ignoreRangeWhenIfRangeETagDoesNotMatch()",
+        "junit failed HttpEntityMethodProcessorMockTests#shouldIgnoreResourceByteRangeWhenIfRangeETagDoesNotMatch()",
+        "junit failed ResourceHttpRequestHandlerTests$RangeRequestTests#ignoreRangeWhenIfRangeETagDoesNotMatch()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.http.HttpRangeTests no-result",
+        "class org.springframework.http.codec.ResourceHttpMessageWriterTests no-result",
+        "class org.springframework.web.servlet.function.ResourceHandlerFunctionTests junit tests=7 failures=1 errors=0 skipped=0 junit failed ResourceHandlerFunctionTests#ignoreRangeWhenIfRangeETagDoesNotMatch() ",
+        "class org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessorMockTests junit tests=43 failures=1 errors=0 skipped=0 junit failed HttpEntityMethodProcessorMockTests#shouldIgnoreResourceByteRangeWhenIfRangeETagDoesNotMatch() ",
+        "class org.springframework.web.servlet.resource.ResourceHttpRequestHandlerTests no-result",
+        "class org.springframework.web.reactive.resource.ResourceWebHandlerTests no-result",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "O08 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O08 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 3.205,
+      "cpuSeconds": 1.924,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 116862976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-o08-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "80761ebf72f5e04aa05aa39c81eba3e48691f5e075659fc73789d73d18081ff8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned O08"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T00:55:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T005445Z-986139366af5d129"
+    }
+  }
+}
