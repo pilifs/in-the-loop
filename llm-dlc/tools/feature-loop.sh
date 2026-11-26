@@ -451,6 +451,26 @@ fi
 # matters: under the default, systemd stops the scope on the first kill, and
 # claude dies with the proof instead of seeing it fail. Without swap the cap is
 # exact, and a process over it is killed rather than left thrashing.
+# Stop this loop's scope when all it holds is what an ended loop left (as run-streams.sh's clear_scope does for a
+# stream): fails, leaving the scope alone, when a feature loop (it runs from a private copy, feature-loop.XXXXXX) or
+# an agent client is among its processes, or when its processes can't be read.
+CGROUPS=${FEATURE_LOOP_CGROUP_ROOT:-/sys/fs/cgroup}
+clear_leftovers() {
+  local group pid cmd left=0
+  group=$(systemctl --user show -p ControlGroup --value "$SCOPE.scope" 2>/dev/null)
+  [[ -n "$group" && -r "$CGROUPS$group/cgroup.procs" ]] || return 1
+  for pid in $(cat "$CGROUPS$group/cgroup.procs" 2>/dev/null); do
+    cmd=$(tr '\0' ' ' <"/proc/$pid/cmdline" 2>/dev/null)
+    if [[ "$cmd" == *feature-loop.* || "$cmd" == *agent_client.py* || "$cmd" =~ (^|/)(claude|codex)( |$) ]]; then
+      log "$SCOPE.scope: pid $pid is a loop or an agent at work (${cmd:0:80})"
+      return 1
+    fi
+    left=$(( left + 1 ))
+  done
+  log "$SCOPE.scope holds only what an ended loop left ($left process(es)): stopping it before the loop starts"
+  systemctl --user stop "$SCOPE.scope" 2>/dev/null
+}
+
 contain() {
   grep -q "/$SCOPE\.scope\$" /proc/self/cgroup && return
   if [[ -n "${FEATURE_LOOP_UNCAPPED:-}" ]]; then
@@ -458,9 +478,11 @@ contain() {
     return
   fi
 
-  # The scope outlives the loop while anything in it runs, such as a Gradle daemon.
-  if systemctl --user is-active --quiet "$SCOPE.scope"; then
-    log "$SCOPE.scope is active: another loop, or processes left by the last one"
+  # The scope outlives the loop while anything in it runs, such as a Gradle daemon or the dirmngr a signature
+  # check started (on 2026-11-26 one kept a setup's scope active for eight hours, and every start refused: VF-070).
+  # What an ended loop left is stopped; a loop or an agent at work in the scope is not.
+  if systemctl --user is-active --quiet "$SCOPE.scope" && ! clear_leftovers; then
+    log "$SCOPE.scope is active: another loop, or an agent, is at work in it"
     log "to clear it: systemctl --user stop $SCOPE.scope"
     exit 1
   fi
