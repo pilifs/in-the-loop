@@ -372,6 +372,7 @@ public final class UpgradeTrace {
         String candidateHelper = System.getProperty("upgrade.observe.helper");
         String publicReader = System.getProperty("upgrade.observe.reader");
         Map<Long,Integer> historyReceivers = new LinkedHashMap<>();
+        Set<String> observedHistoryChanges = new HashSet<>();
         Map<Long, List<String>> constructors = new LinkedHashMap<>();
         boolean finished = false;
         Map<String, List<String>> thrown = new LinkedHashMap<>();
@@ -477,17 +478,22 @@ public final class UpgradeTrace {
                         } else if (purpose.equals("checked") || purpose.equals("startup")) {
                             checked.apply(point, purpose.equals("startup"), observer);
                         } else if (purpose.equals("changed")) {
-                            if (invocation(point, observer, sites) == null) continue;
+                            boolean selectedCall = invocation(point, observer, sites) != null;
+                            if (!selectedCall && !history) continue;
                             List<String> chain = new ArrayList<>();
                             for (StackFrame frame : point.thread().frames()) {
                                 String declaration = CheckedReplay.entry(frame.location());
                                 chain.add(declaration);
-                                if (declaration.equals(entry)) break;
+                                if ((selectedCall && declaration.equals(entry)) ||
+                                        declaration.equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) break;
                             }
-                            if (chain.get(chain.size() - 1).equals(entry)
-                                    && vm.classesByName(point.location().declaringType().name()).size() == 1) {
+                            if (vm.classesByName(point.location().declaringType().name()).size() != 1) continue;
+                            if (selectedCall && chain.get(chain.size() - 1).equals(entry)) {
                                 System.err.println("UPGRADE-CHANGED " + encoded(String.join("\n", chain)));
                                 point.request().disable();
+                            } else if (history && chain.get(chain.size()-1).equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")
+                                    && observedHistoryChanges.add(chain.get(0))) {
+                                System.err.println("UPGRADE-HISTORY-CHANGE " + encoded(String.join("\n", chain)));
                             }
                         } else if (purpose.equals("constructor")) {
                             if (entryInvocation != null) continue;

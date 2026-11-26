@@ -208,7 +208,7 @@ def compare(args, *, original_binary=True, archive_index=None):
         if "generatedObserver" in spec:
             from targets import observer_generation
             record, registration = observer_generation.checked_bundle(scope, spec, probe)
-            basis["traceChangedEntries"] = registration["changed"] or [spec["entry"]]
+            basis["traceChangedEntries"] = sorted(set(registration["changed"]) | set(getattr(args, "changed_selector", []))) or [spec["entry"]]
             basis["generatedObserver"] = spec["generatedObserver"]["sha256"]
             basis["projectionChecker"] = digest(observer_generation.identity())
         helper = row.get("checkedHelper")

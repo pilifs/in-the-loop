@@ -585,6 +585,20 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         chains = [base64.b64decode(line.removeprefix("UPGRADE-CHANGED "), validate=True).decode().splitlines()
                                   for line in marks if line.startswith("UPGRADE-CHANGED ")]
                         trial_record.setdefault("changedBodyChains", []).append(chains)
+                        if "generatedObserver" in spec:
+                            loaded = class_origins(child_output)
+                            history_hits = []
+                            for line in marks:
+                                if not line.startswith("UPGRADE-HISTORY-CHANGE "):
+                                    continue
+                                chain = base64.b64decode(line.partition(" ")[2], validate=True).decode().splitlines()
+                                changed_owner = chain[0].split("#")[0]
+                                origins = loaded.get(changed_owner,set())
+                                if chain[0] not in trace_changes or len(origins) != 1 or not origins.issubset(files):
+                                    continue
+                                provider = files.index(next(iter(origins)))
+                                history_hits.append({"stack":chain,"providerIndex":provider,"artifactSha256":side_record["classpath"][provider]})
+                            trial_record.setdefault("changedWithinHistory", []).append(history_hits)
                     trial_record["qualifiedMethodEntries"] += 1
                     observation,classes=parse_output(child_output,live_entry,files[executed_index],dependency,observation_text,escape=escape)
                     if "generatedObserver" in spec:
