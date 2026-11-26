@@ -1,0 +1,314 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-203730-verify-multi-release-entry-binding-acros",
+  "title": "Verify multi-release entry binding across legacy and modular JVM profiles",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 29.3s, peak 231.8 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-203730-verify-multi-release-entry-binding-acros.json",
+    "sha256": "48fc5dbcb15848ba4ac6a9f5c15844fe98d9f3a9b238acde080cb6d5379eb8ec",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-203730-verify-multi-release-entry-binding-acros",
+      "title": "Verify multi-release entry binding across legacy and modular JVM profiles",
+      "description": "Run twelve original Gate deployments across JDK 8, 17 and 21 with ordinary and folded multi-release manifests. Compare exact class origins and sentinel values. Execute matching and deliberately incorrect assertions on the native and raw stock routes and check the separate stock qualification boundary. Recheck inherited symbolic owners, a client in slot one and the one-sided missing-member control.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T20:37:30+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Original JVM and actual multi-release checker routes",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py mr-proofs verification/classpath-entry-discovery/mr-proofs.json",
+          "cwd": "."
+        },
+        {
+          "name": "Bind the inherited declaration",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/workflows.py inherited verification/classpath-entry-discovery/inherited.json",
+          "cwd": "."
+        },
+        {
+          "name": "Only swap the real original client",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/workflows.py original-client verification/classpath-entry-discovery/original-client.json",
+          "cwd": "."
+        },
+        {
+          "name": "Normal preparation and both proof engines",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/prepared-backend.json"
+        }
+      ],
+      "outputs": [
+        "verification/classpath-entry-discovery/mr-proofs.json",
+        "verification/classpath-entry-discovery/prepared-backend.json"
+      ]
+    }
+  },
+  "sourceCommit": "9a2aa43232d148c58c44bcd36deb222168e6f14b",
+  "startedAt": "2026-11-26T20:41:25+00:00",
+  "finishedAt": "2026-11-26T20:45:06+00:00",
+  "wallSeconds": 221.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 449222,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 243011584,
+    "wallSeconds": 29.3,
+    "cpuSeconds": 40.1,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Original JVM and actual multi-release checker routes",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py mr-proofs verification/classpath-entry-discovery/mr-proofs.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 5.615,
+      "cpuSeconds": 7.588,
+      "cpuThrottledSeconds": 0.319,
+      "peakMemoryBytes": 243011584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-original-jvm-and-actual-multi.log",
+        "lines": 1,
+        "bytes": 44,
+        "sha256": "f43b0ae3501821bf7fe350e7a859e64582230261a7939c96690285728122e24e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mr-proofs: 12 qualified deployment controls"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Bind the inherited declaration",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/workflows.py inherited verification/classpath-entry-discovery/inherited.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 4.808,
+      "cpuSeconds": 6.293,
+      "cpuThrottledSeconds": 0.704,
+      "peakMemoryBytes": 146735104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-bind-the-inherited-declaration.log",
+        "lines": 2,
+        "bytes": 74,
+        "sha256": "f5126c4c07e16b1f61a931d7a948811cfeaf6ef442884325149dbb887771d4f4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "1 claims in /tmp/entry-workflows-u171h2ck/inherited.json",
+        "inherited 2 rows"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Only swap the real original client",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/workflows.py original-client verification/classpath-entry-discovery/original-client.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 8.615,
+      "cpuSeconds": 10.902,
+      "cpuThrottledSeconds": 1.092,
+      "peakMemoryBytes": 145530880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-only-swap-the-real-original-cl.log",
+        "lines": 2,
+        "bytes": 81,
+        "sha256": "2aa52be142520ba77914ee0c0a3927c9e8107d03a649f5f8bb235492d11ef914",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "1 claims in /tmp/entry-workflows-vuazoq2c/comparison.json",
+        "original-client 2 rows"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Normal preparation and both proof engines",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/prepared-backend.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 10.216,
+      "cpuSeconds": 15.308,
+      "cpuThrottledSeconds": 0.897,
+      "peakMemoryBytes": 112697344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-normal-preparation-and-both-pr.log",
+        "lines": 4,
+        "bytes": 285,
+        "sha256": "b78de16f59f29a66fec8be0c2ef3dd14f25acf222ef8ca30dc0f1d6e395c83c8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0 claims in /tmp/entry-controls-l6czdu4j/scaffold-A,B/records/entry-bindings.json",
+        "0 claims in /tmp/entry-controls-l6czdu4j/scaffold-B,A/records/entry-bindings.json",
+        "0 claims in /tmp/entry-controls-l6czdu4j/scaffold-B/records/entry-bindings.json",
+        "backend: 3 qualified deployment controls"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/classpath-entry-discovery/mr-proofs.json",
+      "change": "added",
+      "bytes": 36184,
+      "sha256": "64f299a40f35f1208eefb8056991fac6964c2d602a3ad9e23010660bd4ae1a5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/classpath-entry-discovery/prepared-backend.json",
+      "change": "added",
+      "bytes": 17596,
+      "sha256": "87e6fd165ef98ddd2351179f1cc0f0dcbe11f64d12a989652af62f31f66f34d6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T20:45:16+00:00",
+    "applied": [
+      "verification/classpath-entry-discovery/mr-proofs.json",
+      "verification/classpath-entry-discovery/prepared-backend.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "22b898f5a5819aa123b360c976884c854ddc9500",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/22b898f5a5819aa123b360c976884c854ddc9500/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T204506Z-255415e3aaf2e6ec",
+      "outputs": "20261126T204506Z-2735463084b1738f",
+      "diff": "20261126T204506Z-289625dcca81bb46"
+    }
+  }
+}
