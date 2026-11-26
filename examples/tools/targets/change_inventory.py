@@ -88,6 +88,13 @@ def resolve(path, jdk, image, environment, *, kind, layout_cache=None, index=Non
             raise ValueError(f"{kind} environment file differs at {file.name}")
         external.append({"file": str(file), "sha256": actual})
     binding = {"kind": kind, "jdk": image, "classpath": entries, "environment": environment, **graph}
+    if "jvmFlags" in document:
+        flags = document["jvmFlags"]
+        if not isinstance(flags, list) or any(not isinstance(f, str) or not re.fullmatch(
+                r"-(?:ea|da|XX:-UsePerfData|Xmx[1-9][0-9]*[mMgG]|D(?:user\.(?:timezone|country|language)|file\.encoding|java\.awt\.headless)=[A-Za-z0-9_./+-]+)", f)
+                for f in flags):
+            raise ValueError("unsupported original JVM profile flag")
+        binding["jvmFlags"] = flags
     if external:
         binding["environmentFiles"] = external
     return files, {**binding, "key": digest(binding), "commit": document.get("commit"),

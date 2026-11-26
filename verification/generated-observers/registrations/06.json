@@ -1,0 +1,69 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "CSS Parser",
+  "entry": "com.steadystate.css.parser.CSSOMParser#parsePropertyValue(Lorg/w3c/css/sac/InputSource;)Lorg/w3c/dom/css/CSSValue;",
+  "changed": [],
+  "fields": [
+    "dimension.spelling",
+    "dimension.type",
+    "dimension.magnitude"
+  ],
+  "questions": [
+    {
+      "id": "viewport",
+      "history": "Parse the two viewport units with the public CSS 2.1 grammar; read spelling, primitive type and magnitude.",
+      "inputs": [
+        {
+          "text": "17vw",
+          "property": "width"
+        },
+        {
+          "text": "17vh",
+          "property": "width"
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    },
+    {
+      "id": "pixel",
+      "history": "Read the corresponding pixel dimension.",
+      "inputs": [
+        {
+          "text": "17px",
+          "property": "width"
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "control"
+    },
+    {
+      "id": "earlier-change",
+      "history": "The earlier contrary prediction says the older parser lost the viewport representation.",
+      "inputs": [
+        {
+          "text": "17vw",
+          "property": "width"
+        },
+        {
+          "text": "17vh",
+          "property": "width"
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    }
+  ],
+  "assumptions": [
+    "The shared CSS 2.1 parser and deterministic dimension input; no network resource."
+  ]
+}

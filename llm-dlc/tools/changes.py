@@ -120,6 +120,12 @@ def row(root: Path, number: str, sidecar_file: Path | None) -> dict:
         from targets import sidecar, workflow
         target = sidecar.load(folder, example)
         if target is None:
+            if example.get("publicComparison") and (folder/"records/public-observer/generation.json").is_file():
+                from targets import observer_review
+                answers = observer_review.finite_answers(folder)
+                return {**r, "state": "decided" if all(a in ANSWERS for a in answers.values()) else "prepared",
+                        "readiness": "frozen finite public observations",
+                        "claims": {name: {"status": a, "kind": "finite public observation"} for name,a in answers.items()}}
             return {**r, "state": "unknown", "why": ["no target sidecar: its state is not derived"]}
         projected = workflow.project(folder, example, target)
         ready = workflow.readiness(folder, example, target)

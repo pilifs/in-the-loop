@@ -1,0 +1,34 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-223147-check-a-populated-peek-retains-the-same",
+  "title": "Check a populated peek retains the same top for the following pop",
+  "description": "On both original Conversant releases use a fresh single-threaded stack. Push the registered 42, observe peek, and then measure the following pop on the same receiver to detect a destructive peek. Repeat cold, warm and from an empty cache.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T22:31:47+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Public non-consumption control",
+      "run": "python3 verification/generated-observers/campaign.py --empty-cache 09-retained",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/09-retained-clean.zip"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-215633-qualify-generated-retained-graph-map-and",
+  "title": "Qualify generated retained graph map and listener histories",
+  "description": "Observe both handles and assertion settings for graph updates, all ordered synchronous transitions, and both removals and retained views across 127 subsets in each order. Independently compare every map field with java.util.HashMap.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T21:56:33+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m"
+  },
+  "steps": [
+    {
+      "name": "Graph view plus backing handle",
+      "run": "python3 verification/generated-observers/campaign.py J16",
+      "cwd": "."
+    },
+    {
+      "name": "Interface commands and listener",
+      "run": "python3 verification/generated-observers/campaign.py J19",
+      "cwd": "."
+    },
+    {
+      "name": "Independent JDK map",
+      "run": "python3 verification/generated-observers/campaign.py J17",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/J16.zip",
+    "verification/generated-observers/receipts/J19.zip",
+    "verification/generated-observers/receipts/J17.zip"
+  ]
+}

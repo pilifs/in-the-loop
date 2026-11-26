@@ -1,0 +1,314 @@
+"""Exercise planted false greens independently of the source and class digests that also reject edits."""
+import argparse
+import base64
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import zipfile
+
+import campaign
+from controls import app
+from targets import change_inventory, observer_generation, runtime_jar, upgrade_claims, upgrade_replay
+import scaffold_example
+
+read, write = campaign.read, campaign.write
+
+
+def dynamic(bundle, jdk, directory, source, question, index, side):
+    """Compile the planted candidate and run the same independent public projection check on its actual output."""
+    record = read(bundle / "generation.json")
+    recipe = record["recipe"]
+    reg = read(bundle / "registration.json")
+    manifest = read(bundle / (side + ".json"))
+    files = [Path(row["file"]) for row in manifest["classpath"]]
+    directory.mkdir()
+    candidate = directory / "UpgradeProbe.java"
+    candidate.write_text(source)
+    old = [r["file"] for r in read(bundle / "old.json")["classpath"]]
+    subprocess.run([jdk / "bin/javac", "-g", "-proc:none", "-cp", os.pathsep.join(old),
+                    "-d", directory, upgrade_replay.LAUNCHER, upgrade_replay.TRACER, candidate], check=True,
+                   capture_output=True, timeout=35)
+    selector = recipe.get("invocationVia",reg["entry"])
+    owner, method, desc = runtime_jar.parse_target(selector)
+    sites = [pc for member,pc,ref in upgrade_claims.invocation_sites(
+             upgrade_claims.disassemble(jdk, [directory], "UpgradeProbe", 15), "UpgradeProbe")
+             if member == ("observe","([Ljava/lang/String;)Ljava/lang/String;") and ref == (runtime_jar.internal(owner),method,desc)]
+    if not sites:
+        raise ValueError("planted caller has no static public call")
+    inputs = question["inputs"][index]
+    encoded = [base64.b64encode(s.encode("utf-16-be")).decode() for s in observer_generation.arguments(inputs)]
+    flags = ["-Dupgrade.observe.history=true"]
+    if recipe["family"] == "typed numeric conversions":
+        flags.append("-Dupgrade.observe.numeric=true")
+    if "publicReader" in recipe:
+        flags.append("-Dupgrade.observe.reader="+recipe["publicReader"])
+    command = [str(jdk/"bin/java"), *flags, "-cp", str(directory), "UpgradeTrace", reg["entry"], str(jdk)]
+    _, marks, obs = upgrade_replay.run_observation(directory/"trial", command,
+        os.pathsep.join(map(str,[directory,*files])), ",".join(map(str,sites)), "UpgradeProbe", encoded, "",
+        {"PATH": str(jdk/"bin")+":/usr/bin:/bin","HOME":str(directory),"TMPDIR":str(directory),"LANG":"C.UTF-8","TZ":"UTC"},
+        [], time.monotonic()+35, ".")
+    value = upgrade_replay.typed_outcome(obs.splitlines())
+    result = {"sourceSha256":upgrade_replay.sha(candidate),"staticSites":sites,"raw":value,
+              "marks":[m for m in marks if m.startswith(("UPGRADE-NUMBER ", "UPGRADE-NUMERIC-INPUT ", "UPGRADE-PUBLIC-"))]}
+    try:
+        result["projection"] = observer_generation.correspondence(recipe, inputs, marks, value)
+    except ValueError as e:
+        result["refusal"] = str(e)
+    return result
+
+
+def altered_subject(work, jdk, bundle):
+    manifest = read(bundle/"new.json")
+    original = Path(manifest["classpath"][0]["file"])
+    root = campaign.CACHE/"spring-pr-links-o01-o20/worktrees/O01-fix"
+    if subprocess.check_output(["git","-C",root,"rev-parse","HEAD"], text=True).strip() != manifest["commit"]:
+        raise ValueError("mutant base is not the registered fix")
+    relative = "spring-core/src/main/java/org/springframework/util/NumberUtils.java"
+    base = subprocess.check_output(["git","-C",root,"show",manifest["commit"]+":"+relative],text=True)
+    sig = "public static <T extends Number> T parseNumber(String text, Class<T> targetClass) {"
+    if base.count(sig) != 1:
+        raise ValueError("changed mutation site")
+    folder = work/"mutation"
+    folder.mkdir()
+    source = folder/"NumberUtils.java"
+    source.write_text(base.replace(sig,sig+'\n        if ("+0x7f".equals(text)) text = "+0x7e";'))
+    subprocess.run([jdk/"bin/javac","-g","-proc:none","-cp",os.pathsep.join(r["file"] for r in manifest["classpath"]),
+                    "-d",folder,source],check=True,capture_output=True)
+    member = "org/springframework/util/NumberUtils.class"
+    output = folder/original.name
+    with zipfile.ZipFile(original) as old, zipfile.ZipFile(output,"w") as new:
+        for item in old.infolist():
+            new.writestr(item, (folder/member).read_bytes() if item.filename==member else old.read(item))
+    manifest["classpath"][0].update(file=str(output),sha256=upgrade_replay.sha(output))
+    manifest.update(scope="diagnostic controlled mutation of the fixed public subject",commit=None)
+    write(folder/"manifest.json",manifest)
+    return folder/"manifest.json"
+
+
+def numbered(study, number, work, jdk, bundle):
+    """Invoke the numbered Stage 3 writer, as used by scaffold-only, against a fresh example folder."""
+    root = work/"numbered"
+    source = next((campaign.ROOT/"examples").glob(number+"-*"))
+    example = root/"examples"/source.name
+    example.mkdir(parents=True)
+    for name in ("example.json","comparison.json","runtime.json"):
+        shutil.copyfile(source/name,example/name)
+    plan = work/"reviewed-plan.json"
+    write(plan,{"schema":"prove-plan/v1","examples":[{"id":number,"review":"designed","tasks":[],"claimFiles":{},
+        "publicComparison":{"deployment":"pins","inputDefaults":{"fallback":99} if number=="445" else {}}}]})
+    result = scaffold_example.scaffold(number,plan,True,root=root)
+    if result["refused"] or result["leftForSetup"]:
+        raise ValueError(str(result))
+    built = example/"records/public-observer"
+    identical = all(upgrade_replay.sha(built/name)==upgrade_replay.sha(bundle/name) for name in ("UpgradeProbe.java","caller.zip"))
+    reviewed = read(built/"registration.json")
+    if reviewed["questions"] != read(bundle/"registration.json")["questions"]:
+        raise ValueError("numbered histories did not recover all registered inputs and side bounds")
+    if not identical:
+        raise ValueError("numbered and isolated Stage 3 generated different callers")
+    plan_report = example/"records/entry-bindings.json"
+    campaign.run([sys.executable,campaign.ROOT/"examples/tools/build.py","--change-plan","application","--supplied-only",
+                  "--before",built/"old.json","--after",built/"new.json","--jdk",jdk,"--workflows",built/"workflows.json",
+                  "--previous",plan_report,"--run","--seconds","120","--cache",work/"cache","--output",work/"numbered-resume.json"])
+    study["numberedStage3"] = {"generation":upgrade_replay.sha(built/"generation.json"),"sameCompiledBytes":identical,
+        "planned":read(plan_report)["executionState"],"resumed":read(work/"numbered-resume.json")["executionState"],
+        "claims":[n["status"] for n in read(work/"numbered-resume.json")["claims"]]}
+    if set(study["numberedStage3"]["claims"]) != {"established"}:
+        raise ValueError("numbered resume did not qualify the frozen questions")
+
+
+def fixture_control(work, jdk, bundle):
+    root = work/"fixture-input"
+    root.mkdir()
+    reg = read(bundle/"registration.json")
+    selected = reg["questions"][0]["inputs"][0]["conversions"][0]
+    text = root/"input.txt"
+    text.write_text(selected["text"])
+    pin = upgrade_replay.sha(text)
+    selected["text"] = {"fixture":"registered spelling"}
+    reg["fixtures"] = [{"id":"registered spelling","file":text.name,"encoding":"text","sha256":pin}]
+    registration = root/"packet.json"
+    write(registration,reg)
+    args = [registration,campaign.HERE/"predictions/458.json",bundle/"old.json",bundle/"new.json",jdk]
+    saved = root/"bundle"
+    candidate = observer_generation.materialize(*args,saved)
+    if candidate["compiled"] != read(bundle/"generation.json")["compiled"]:
+        raise ValueError("externalizing a spelling changed the compiled caller")
+    text.write_text("changed after registration")
+    try:
+        observer_generation.materialize(*args,root/"changed")
+    except ValueError as e:
+        changed_source = str(e)
+    else:
+        raise ValueError("changed external fixture was admitted")
+    spec = read(saved/"scope-1.json")
+    observer_generation.checked_bundle(saved/"scope-1.json",spec,saved/"UpgradeProbe.java")
+    (saved/"fixtures"/pin).write_text("changed frozen bytes")
+    try:
+        observer_generation.checked_bundle(saved/"scope-1.json",spec,saved/"UpgradeProbe.java")
+    except ValueError as e:
+        changed_saved = str(e)
+    else:
+        raise ValueError("changed saved fixture was admitted")
+    return {"fixtureSha256":pin,"sameCompiledBytes":True,"freshSourceRefusal":changed_source,
+            "offlineBeforeTamper":"validated","frozenBytesRefusal":changed_saved}
+
+
+def controls(number, work):
+    campaign.exercise(number,work)
+    bundle=work/"bundle"
+    reg=read(bundle/"registration.json")
+    source=(bundle/"UpgradeProbe.java").read_text()
+    jdk=campaign.prepare(number,work)
+    out={"case":number,"compiled":read(bundle/"generation.json")["compiled"]}
+    if number in ("445","458"):
+        numbered(out,number,work,jdk,bundle)
+    q=reg["questions"][0]
+    if number=="458":
+        out["pinnedFixture"] = fixture_control(work,jdk,bundle)
+        correct=campaign.HERE/"predictions/458.json"
+        expected=read(correct)
+        for value in expected[q["id"]]["new"][0]:
+            value[2]="126"
+        wrong=work/"wrong.json"
+        write(wrong,expected)
+        evaluations=[observer_generation.rescore(work/"cold.json",bundle,p) for p in (correct,wrong)]
+        a,b=[r["claims"][0] for r in evaluations]
+        out["oracleOnly"]={"before":a["status"],"after":b["status"],"raw":a["observationsSha256"],
+               "sameRaw":a["observationsSha256"]==b["observationsSha256"],"witness":b["witness"]}
+        if (a["status"],b["status"],out["oracleOnly"]["sameRaw"]) != ("established","refuted",True):
+            raise ValueError("wrong fixed expectation survived")
+        altered=altered_subject(work,jdk,bundle)
+        changed=app(work,bundle,jdk,bundle/"workflows.json",work/"mutated.json",after=altered)
+        c=changed["claims"][0]
+        out["subjectMutation"]={"status":c["status"],"actual":c["children"][0]["new"],"compiled":c["observerProvenance"]["classes"],
+                                "subject":read(altered)["classpath"][0]["sha256"]}
+        if c["status"]!="refuted" or json.loads(c["children"][0]["new"]["return"]) != expected[q["id"]]["new"][0] or out["compiled"]!=c["observerProvenance"]["classes"]:
+            raise ValueError("frozen caller failed to follow the subject")
+        canned=source.replace("        StringBuilder result", '        observations.clear(); observations.add(row("return","java.lang.Integer","127")); observations.add(row("return","java.math.BigInteger","127"));\n        StringBuilder result')
+        early=source.replace("Number value = ", 'if (data.containsKey("conversions")) throw new NumberFormatException();\n                Number value = ')
+        out["genuine"]=dynamic(bundle,jdk,work/"genuine",source,q,0,"old")
+        if "projection" not in out["genuine"]: raise ValueError("original numeric measurement lost correspondence")
+        out["canned"]=dynamic(bundle,jdk,work/"canned",canned,q,0,"old")
+        out["beforeEntry"]=dynamic(bundle,jdk,work/"early",early,q,0,"old")
+        if out["beforeEntry"]["raw"] != out["genuine"]["raw"] or not all("refusal" in out[k] for k in ("canned","beforeEntry")):
+            raise ValueError("planted projection obtained a verdict")
+    elif number=="J16":
+        owner=reg["entry"].split("#")[0]
+        bad=source.replace("view.getEdgeWeight(edge)", "new "+owner+"<>(backing, e -> ((Number)data.get(\"viewWeight\")).doubleValue(), true, false).getEdgeWeight(edge)")
+        # The unchanged values on this profile make the wrong receiver invisible to an output-only test.
+        out["genuine"]=dynamic(bundle,jdk,work/"genuine",source,q,0,"new")
+        if "projection" not in out["genuine"]: raise ValueError("original retained receiver lost correspondence")
+        out["freshReceiver"]=dynamic(bundle,jdk,work/"wrong-receiver",bad,q,0,"new")
+        if "refusal" not in out["freshReceiver"] or out["freshReceiver"]["raw"] != out["genuine"]["raw"]: raise ValueError("wrong receiver survived qualification")
+    write(work/"qualification-controls.json",out)
+    campaign.pack(work,[*work.glob("*.json"),*(work/"receipts").glob("*.json"),*(work/"bundle").glob("*")],
+                  campaign.HERE/"receipts"/(number+"-controls.zip"))
+
+
+def format_controls(work):
+    work.mkdir()
+    jdk = campaign.prepare("458-format", work)
+    bundle = work / "bundle"
+    reg = campaign.HERE / "registrations/458-format.json"
+    campaign.isolated(reg, work, jdk, bundle)
+    with zipfile.ZipFile(campaign.HERE / "receipts/number-format-open.zip") as archive:
+        first = json.loads(archive.read("bundle/registration.json"))
+    questions = read(reg)["questions"]
+    if questions[0] != first["questions"][0] or read(bundle/"generation.json")["status"] != "compiled":
+        raise ValueError("the originally unsupported decimal-format question changed or failed to compile")
+    source = (bundle / "UpgradeProbe.java").read_text()
+    false_inputs = {
+        "text": ('String text = (String)pair.get("text");', 'String text = "01,5";'),
+        "locale": ('(String)spec.get("locale")', '"fr-FR"'),
+        "pattern": ('(String)spec.get("pattern")', '"#0.0"'),
+        "parsing-mode": ('(Boolean)spec.get("parseBigDecimal")', 'false'),
+        "target-class": ("(text, target, format);", "(text, Long.class, format);"),
+    }
+    controls = {}
+    for label, question in (("formatted", questions[0]), ("null-format", questions[2])):
+        controls[label] = dynamic(bundle, jdk, work / label, source, question, 0, "old")
+        if controls[label].get("projection", {}).get("numericArguments") != question["inputs"][0]["conversions"]:
+            raise ValueError("the genuine caller lost its actual numeric inputs")
+    for label, (needle, replacement) in false_inputs.items():
+        if source.count(needle) != 1:
+            raise ValueError("numeric input control needs one substitution site for " + label)
+        null_format = label == "target-class"
+        question = questions[2] if null_format else questions[0]
+        control = dynamic(bundle, jdk, work / label, source.replace(needle, replacement), question, 0, "old")
+        genuine = controls["null-format" if null_format else "formatted"]
+        if control["raw"] != genuine["raw"] or "actual numeric arguments" not in control.get("refusal", ""):
+            raise ValueError("equal-valued " + label + " substitution passed or changed the raw public result")
+        controls[label] = control
+    legacy = work / "two-argument"
+    with zipfile.ZipFile(campaign.HERE / "receipts/458-clean.zip") as archive:
+        for name in archive.namelist():
+            if name.startswith("bundle/"):
+                archive.extract(name, legacy)
+    plain = legacy / "bundle"
+    original = read(plain / "registration.json")["questions"][0]
+    for side in ("old", "new"):
+        check = dynamic(plain, jdk, legacy / side, (plain / "UpgradeProbe.java").read_text(), original, 0, side)
+        if check.get("projection", {}).get("numericArguments") != original["inputs"][0]["conversions"]:
+            raise ValueError("the saved two-argument caller lost its public input correspondence")
+        controls["two-argument-" + side] = check
+    write(work / "controls.json", controls)
+    campaign.pack(work, [bundle, work / "operator-policy.json", work / "controls.json"],
+                  campaign.HERE / "receipts/458-format-controls.zip")
+
+
+def wrong_prediction_at_setup(work):
+    work.mkdir()
+    jdk=campaign.prepare("458",work)
+    registration=campaign.HERE/"registrations/458.json"
+    question=read(registration)["questions"][0]["id"]
+    expected=read(campaign.HERE/"predictions/458.json")
+    for row in expected[question]["new"][0]:
+        row[2]="126"
+    wrong=work/"wrong-before-setup.json"
+    write(wrong,expected)
+    bundle=work/"bundle"
+    campaign.run([sys.executable,campaign.ROOT/"examples/tools/scaffold_example.py","generate","--jdk",jdk,
+                  "--registration",registration,"--predictions",wrong,"--before",work/"old.json",
+                  "--after",work/"new.json","--output",bundle])
+    original=campaign.HERE/"receipts/458-clean.zip"
+    with zipfile.ZipFile(original) as archive:
+        baseline=json.loads(archive.read("cold.json"))["claims"][0]
+        for name in ("UpgradeProbe.java","caller.zip","registration.json"):
+            if archive.read("bundle/"+name)!=(bundle/name).read_bytes():
+                raise ValueError("the wrong prediction altered measurement input or caller bytes")
+    ws=read(bundle/"workflows.json")
+    scope=bundle/"focused.json"
+    write(scope,{**ws,"workflows":[row for row in ws["workflows"] if row["id"]==question]})
+    result=app(work,bundle,jdk,scope,work/"replayed.json")
+    node,=result["claims"]
+    witness=node["children"][node["witness"]]
+    if (node["status"]!="refuted" or json.loads(witness["intendedChange"]["return"])!=expected[question]["new"][0]
+            or any(witness[side]!=baseline["children"][0][side] for side in ("old","new"))):
+        raise ValueError("setup or replay changed the registered false prediction or the original observations")
+    write(work/"control.json",{"source":"generated with the wrong prediction already present",
+        "referenceArchiveSha256":upgrade_replay.sha(original),"sameRegistrationSourceAndClasses":True,
+        "question":question,"status":node["status"],"old":witness["old"],"fixed":witness["new"],
+        "intendedFixed":witness["intendedChange"],"receipt":node["receipt"]})
+    campaign.pack(work,[*work.glob("*.json"),*bundle.glob("*"),*(work/"receipts").glob("*.json")],
+                  campaign.HERE/"receipts/458-wrong-at-setup.zip")
+
+
+if __name__=="__main__":
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("number",choices=["458","445","J16","458-format"])
+    parser.add_argument("--wrong-at-setup",action="store_true",help="seed a wrong Spring prediction before ordinary materialization")
+    a=parser.parse_args()
+    with tempfile.TemporaryDirectory(prefix="generated-controls-") as tmp:
+        if a.wrong_at_setup:
+            if a.number!="458": parser.error("the seeded numeric challenge uses example 458")
+            wrong_prediction_at_setup(Path(tmp)/a.number)
+        elif a.number == "458-format":
+            format_controls(Path(tmp) / a.number)
+        else:
+            controls(a.number,Path(tmp)/a.number)

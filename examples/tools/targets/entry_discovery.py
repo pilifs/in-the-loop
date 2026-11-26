@@ -82,14 +82,14 @@ class Artifact:
         self.skipped = []
         self.multi = "disabled"
         self.manifests = []
-        self.has_jar_index = False
+        self.jar_indexes = []
         def add(name, data):
             if name.upper() == "META-INF/MANIFEST.MF" and not file.is_dir():
                 self.manifests.append(data)
                 if name == "META-INF/MANIFEST.MF":
                     self.multi = runtime_jar.multi_release(data)
             if name.upper() == "META-INF/INDEX.LIST" and not file.is_dir():
-                self.has_jar_index = True
+                self.jar_indexes.append(data)
             variant = class_binding.VERSIONED.fullmatch(name) if not file.is_dir() else None
             logical = variant[2] if variant else name
             release = int(variant[1]) if variant else 0

@@ -1,0 +1,61 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "Kryo \u2014 Round-trip the abstract Enum class token in a stream of class tokens",
+  "entry": "com.esotericsoftware.kryo.Kryo#writeObject(Lcom/esotericsoftware/kryo/io/Output;Ljava/lang/Object;)V",
+  "changed": [
+    "com.esotericsoftware.kryo.Kryo#getRegistration(Ljava/lang/Class;)Lcom/esotericsoftware/kryo/Registration;",
+    "com.esotericsoftware.kryo.serializers.DefaultSerializers$EnumSerializer#<init>(Ljava/lang/Class;)V"
+  ],
+  "fields": [
+    "phase",
+    "token.index",
+    "class.identity",
+    "stream.cursor",
+    "stream.length",
+    "exception"
+  ],
+  "assumptions": [
+    "JDK 8, default resolver, registration optional, a fresh codec at each end of one byte stream."
+  ],
+  "questions": [
+    {
+      "id": "abstract-enum-token",
+      "history": "Record the type and index of a rejected token or the exact identities and final consumption of the whole sequence.",
+      "cohort": "registered",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "classTokens": [
+            "void",
+            "java.util.ArrayList",
+            "fixture enum",
+            "java.lang.Enum",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ordinary-class-tokens",
+      "history": "Read the four remaining identities sequentially and compare the cursor to the actual stream length.",
+      "cohort": "control",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "classTokens": [
+            "void",
+            "java.util.ArrayList",
+            "fixture enum",
+            "java.lang.String"
+          ]
+        }
+      ]
+    }
+  ]
+}

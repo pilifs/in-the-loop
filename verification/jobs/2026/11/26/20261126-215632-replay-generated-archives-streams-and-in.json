@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-215632-replay-generated-archives-streams-and-in",
+  "title": "Replay generated archives streams and independent class decoders",
+  "description": "Generate on restricted production inputs and run both public archive rename questions and both complete class-token codec histories. Compare the actual cursor, ordered readback and failure phase across cold and warm JVM replays.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T21:56:32+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "JDK archive readback",
+      "run": "python3 verification/generated-observers/campaign.py J06",
+      "cwd": "."
+    },
+    {
+      "name": "Independent class decoder and partial write",
+      "run": "python3 verification/generated-observers/campaign.py J10",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/J06.zip",
+    "verification/generated-observers/receipts/J10.zip"
+  ]
+}

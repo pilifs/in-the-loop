@@ -1,0 +1,151 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "vavr-io/vavr#3272",
+  "entry": "io.vavr.collection.Iterator#findLast(Ljava/util/function/Predicate;)Lio/vavr/control/Option;",
+  "changed": [
+    "io.vavr.collection.Iterator#findLast(Ljava/util/function/Predicate;)Lio/vavr/control/Option;"
+  ],
+  "fields": [
+    "result.defined",
+    "fallback.value",
+    "fallback.calls"
+  ],
+  "assumptions": [
+    "Fresh JVM, recorded release and ordered deployment; only the registered deterministic inputs and synchronous public calls."
+  ],
+  "questions": [
+    {
+      "id": "vavr-io/vavr#3272.1",
+      "history": "`Iterator.<Integer>of(null,1,null)`, with `x -> x == null`.",
+      "cohort": "registered",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "fallback": 99,
+          "selections": [
+            {
+              "values": [
+                null,
+                1,
+                null
+              ],
+              "predicate": {
+                "oneOf": [
+                  null
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vavr-io/vavr#3272.2",
+      "history": "Use [1,2,3] twice, first selecting values >5, then selecting odd values.",
+      "cohort": "control",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "fallback": 99,
+          "selections": [
+            {
+              "values": [
+                1,
+                2,
+                3
+              ],
+              "predicate": {
+                "greaterThan": 5
+              }
+            },
+            {
+              "values": [
+                1,
+                2,
+                3
+              ],
+              "predicate": {
+                "odd": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vavr-io/vavr#3272.3",
+      "history": "On the merge select null or 7. Compare [7,null,4] with [null,7,4]. Append a further rejected 4 to each and search again.",
+      "cohort": "registered",
+      "sides": [
+        "new"
+      ],
+      "inputs": [
+        {
+          "fallback": 99,
+          "selections": [
+            {
+              "values": [
+                7,
+                null,
+                4
+              ],
+              "predicate": {
+                "oneOf": [
+                  null,
+                  7
+                ]
+              }
+            },
+            {
+              "values": [
+                null,
+                7,
+                4
+              ],
+              "predicate": {
+                "oneOf": [
+                  null,
+                  7
+                ]
+              }
+            },
+            {
+              "values": [
+                7,
+                null,
+                4,
+                4
+              ],
+              "predicate": {
+                "oneOf": [
+                  null,
+                  7
+                ]
+              }
+            },
+            {
+              "values": [
+                null,
+                7,
+                4,
+                4
+              ],
+              "predicate": {
+                "oneOf": [
+                  null,
+                  7
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

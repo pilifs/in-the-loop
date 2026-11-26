@@ -232,7 +232,10 @@ def compile_source_slice(cache, jdk, deployment, revisions, side, cp, work):
     return classes
 
 
-def replay(folder, record=False):
+def replay(folder, record=False, *, authored=False):
+    if not (authored or record) and (folder/"records/public-observer/generation.json").is_file():
+        from targets import observer_review
+        return observer_review.resume_numbered(folder)
     comparison_plan(folder)
     spec = read(folder / "comparison.json")
     runtime = read(folder / "runtime.json")
@@ -341,9 +344,10 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("example")
     parser.add_argument("--record", action="store_true")
+    parser.add_argument("--authored", action="store_true", help="run the original authored comparison even when a generated scaffold exists")
     args = parser.parse_args(argv)
     folder, = EXAMPLES.glob(args.example + "-*")
-    replay(folder, args.record)
+    replay(folder, args.record, authored=args.authored)
 
 
 if __name__ == "__main__":

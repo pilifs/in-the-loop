@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-231202-re-score-a-lone-open-baseline-from-its-o",
+  "title": "Re-score a lone open baseline from its original JVM receipts",
+  "description": "Run the ordinary generated caller with a wrong parent prediction for the reviewed German DecimalFormat, on both pinned Spring JARs. Its lone claim must remain open, while offline correction asks the original receipt again and establishes the separate evaluation. Also reproduce the CSS and SSE baseline corrections and the negative controls for deployment, registration and incomplete evidence.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T23:12:02+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Historical counterfactuals and invalidation controls",
+      "run": "python3 verification/generated-observers/rescoring.py --check",
+      "cwd": "."
+    },
+    {
+      "name": "Newly measured single-claim baseline through the public rescore command",
+      "run": "python3 verification/generated-observers/rescoring.py --live",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/458-format-rescore.zip"
+  ]
+}

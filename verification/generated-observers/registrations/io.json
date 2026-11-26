@@ -1,0 +1,197 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "Commons IO #520, repeated resets on one encoded stream",
+  "entry": "org.apache.commons.io.input.CharSequenceInputStream#read([BII)I",
+  "changed": [
+    "org.apache.commons.io.input.CharSequenceInputStream#reset()V"
+  ],
+  "fields": [
+    "prefix",
+    "read.count",
+    "destination.bytes",
+    "rewind"
+  ],
+  "assumptions": [
+    "Fresh original JVM, explicit UTF-8, capacity eight, immutable source, one caller-owned destination and no concurrent operations."
+  ],
+  "questions": [
+    {
+      "id": "rewinds",
+      "history": "The prefix and every subsequent return count and all seven bytes of the same caller-owned destination, including short reads, EOF, zero-length read and both outer guards.",
+      "cohort": "registered",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "text": "Aé中Z",
+          "charset": "UTF-8",
+          "encoderBuffer": 8,
+          "destination": "51627314253647",
+          "markLimit": 100,
+          "readWindowsByEpoch": [
+            [
+              [
+                1,
+                3
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                6,
+                0
+              ]
+            ]
+          ]
+        },
+        {
+          "text": "Aé中Z",
+          "charset": "UTF-8",
+          "encoderBuffer": 8,
+          "destination": "51627314253647",
+          "markLimit": 100,
+          "readWindowsByEpoch": [
+            [
+              [
+                1,
+                5
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                5
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                5
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                6,
+                0
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "preservation",
+      "history": "The prefix and every subsequent return count and all seven bytes of the same caller-owned destination, including short reads, EOF, zero-length read and both outer guards.",
+      "cohort": "control",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "text": "Aé中Z",
+          "charset": "UTF-8",
+          "encoderBuffer": 8,
+          "destination": "51627314253647",
+          "markLimit": 100,
+          "readWindowsByEpoch": [
+            [
+              [
+                1,
+                3
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                6,
+                0
+              ]
+            ]
+          ]
+        },
+        {
+          "text": "Aé",
+          "charset": "UTF-8",
+          "encoderBuffer": 8,
+          "destination": "51627314253647",
+          "markLimit": 100,
+          "readWindowsByEpoch": [
+            [
+              [
+                2,
+                4
+              ]
+            ],
+            [
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                6,
+                0
+              ]
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

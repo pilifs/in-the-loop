@@ -1,0 +1,162 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "Apache Lucene — Sort parent search hits when only some children have values",
+  "entry": "org.apache.lucene.search.join.ToParentBlockJoinSortField#<init>(Ljava/lang/String;Lorg/apache/lucene/search/SortField$Type;ZLorg/apache/lucene/search/join/BitSetProducer;Lorg/apache/lucene/search/join/BitSetProducer;)V",
+  "changed": [],
+  "fields": [
+    "hits.orderedParentIds",
+    "hits.sortKeys",
+    "hits.total"
+  ],
+  "questions": [
+    {
+      "id": "missing-child",
+      "history": "Read ordered parent IDs, sort key for each hit and total count; additionally compare fixed numeric child substitutions 5 and 50 with a parent-level default of 99.",
+      "inputs": [
+        {
+          "blocks": [
+            {
+              "parent": "A",
+              "children": [
+                30,
+                null
+              ]
+            },
+            {
+              "parent": "B",
+              "children": [
+                20,
+                40
+              ]
+            }
+          ],
+          "order": "ascending",
+          "excludeMissingChild": false,
+          "childMissing": [],
+          "parentMissing": 99
+        },
+        {
+          "blocks": [
+            {
+              "parent": "A",
+              "children": [
+                30,
+                null
+              ]
+            },
+            {
+              "parent": "B",
+              "children": [
+                20,
+                40
+              ]
+            }
+          ],
+          "order": "ascending",
+          "excludeMissingChild": false,
+          "childMissing": [
+            5,
+            50
+          ],
+          "parentMissing": 99
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    },
+    {
+      "id": "descending-and-all-present",
+      "history": "Read descending keys and all-present ascending keys on both original versions.",
+      "inputs": [
+        {
+          "blocks": [
+            {
+              "parent": "A",
+              "children": [
+                30,
+                null
+              ]
+            },
+            {
+              "parent": "B",
+              "children": [
+                20,
+                40
+              ]
+            }
+          ],
+          "order": "descending",
+          "excludeMissingChild": false,
+          "childMissing": [],
+          "parentMissing": 99
+        },
+        {
+          "blocks": [
+            {
+              "parent": "A",
+              "children": [
+                30,
+                35
+              ]
+            },
+            {
+              "parent": "B",
+              "children": [
+                20,
+                40
+              ]
+            }
+          ],
+          "order": "ascending",
+          "excludeMissingChild": false,
+          "childMissing": [],
+          "parentMissing": 99
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    },
+    {
+      "id": "filtered-child-hypothesis",
+      "history": "Test the initial prediction that excluding the child with no value preserves the ascending result. Record both parent IDs and actual returned keys.",
+      "inputs": [
+        {
+          "blocks": [
+            {
+              "parent": "A",
+              "children": [
+                30,
+                null
+              ]
+            },
+            {
+              "parent": "B",
+              "children": [
+                20,
+                40
+              ]
+            }
+          ],
+          "order": "ascending",
+          "excludeMissingChild": true,
+          "childMissing": [],
+          "parentMissing": 99
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    }
+  ],
+  "assumptions": [
+    "Index writer closed before opening a DirectoryReader. Two fixed parent/child blocks. A common five-argument constructor sorts the same children on both versions."
+  ]
+}

@@ -97,9 +97,8 @@ def materialize(folder, work):
         if "fixtures" in case:
             scope["fixtures"] = [{k: item[k] for k in ("file", "kind", "sha256")} for item in case["fixtures"]]
         write(work / (name + ".json"), scope)
-        rows.append({"id": name, "scope": name + ".json", "probe": str(folder / "UpgradeProbe.java"),
-                     "cohort": "registered", "deterministicUnderAssumptions": True,
-                     "assumptions": case["assumptions"], "intent": {"allowedChanges": changes} if changes else "preserve"})
+        rows.append(change_plan.workflow_row(name, name + ".json", folder / "UpgradeProbe.java",
+                                             case["assumptions"], changes))
     workflows = work / "workflows.json"
     write(workflows, {"schema": "caller-workflows/v1", "change": case["change"], "workflows": rows})
     change_plan.frozen_workflows(workflows)

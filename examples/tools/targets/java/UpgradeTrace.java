@@ -1,10 +1,12 @@
 import com.sun.jdi.Bootstrap;
+import com.sun.jdi.ClassObjectReference;
 import com.sun.jdi.Field;
 import com.sun.jdi.Location;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
+import com.sun.jdi.StringReference;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.Value;
 import com.sun.jdi.VMDisconnectedException;
@@ -246,7 +248,10 @@ public final class UpgradeTrace {
             List<String> args = new ArrayList<>();
             for (Value v : values) args.add(Long.toString(((com.sun.jdi.PrimitiveValue)v).longValue()));
             String key = String.join(",", args);
-            if (!table.containsKey(key)) return;
+            if (!table.containsKey(key)) {
+                System.err.println("UPGRADE-UNCOVERED " + key);
+                return;
+            }
             long result = table.get(key);
             VirtualMachine vm = hit.virtualMachine();
             Value returned;
@@ -264,7 +269,7 @@ public final class UpgradeTrace {
         }
     }
 
-    private static String invocation(BreakpointEvent hit, String observer, Set<Long> sites) throws Exception {
+    private static String invocation(LocatableEvent hit, String observer, Set<Long> sites) throws Exception {
         String dispatched = null;
         for (StackFrame frame : hit.thread().frames()) {
             Method method = frame.location().method();
@@ -276,6 +281,136 @@ public final class UpgradeTrace {
             dispatched = name;
         }
         return null;
+    }
+
+    private static java.math.BigInteger integerValue(ObjectReference object) {
+        ReferenceType type = object.referenceType();
+        com.sun.jdi.ArrayReference mag = (com.sun.jdi.ArrayReference)object.getValue(type.fieldByName("mag"));
+        java.nio.ByteBuffer bytes = java.nio.ByteBuffer.allocate(mag.length() * 4);
+        for (Value limb : mag.getValues()) bytes.putInt(((com.sun.jdi.IntegerValue)limb).value());
+        int sign = ((com.sun.jdi.IntegerValue)object.getValue(type.fieldByName("signum"))).value();
+        return new java.math.BigInteger(sign, bytes.array());
+    }
+
+    // Inspect standard numeric return objects without executing injected code in the original JVM.
+    private static String numericReturn(Value value) {
+        if (value == null) return "null";
+        ObjectReference object = (ObjectReference)value;
+        ReferenceType type = object.referenceType();
+        String number;
+        if (type.name().equals("java.math.BigInteger")) {
+            number = integerValue(object).toString();
+        } else if (type.name().equals("java.math.BigDecimal")) {
+            long compact = ((com.sun.jdi.LongValue)object.getValue(type.fieldByName("intCompact"))).value();
+            int scale = ((com.sun.jdi.IntegerValue)object.getValue(type.fieldByName("scale"))).value();
+            java.math.BigInteger unscaled = compact == Long.MIN_VALUE
+                    ? integerValue((ObjectReference)object.getValue(type.fieldByName("intVal")))
+                    : java.math.BigInteger.valueOf(compact);
+            number = new java.math.BigDecimal(unscaled, scale).toString();
+        } else {
+            Field field = type.fieldByName("value");
+            if (field == null || !(object.getValue(field) instanceof com.sun.jdi.PrimitiveValue))
+                return "unsupported " + type.name();
+            number = object.getValue(field).toString();
+        }
+        return type.name() + "\t" + number;
+    }
+
+    // Preserve Java String code units exactly, even isolated surrogates or an empty argument.
+    private static String textArgument(Value value) {
+        String s = ((StringReference)value).value();
+        java.nio.ByteBuffer bytes = java.nio.ByteBuffer.allocate(s.length() * 2);
+        for (int i = 0; i < s.length(); i++) bytes.putChar(s.charAt(i));
+        return Base64.getEncoder().encodeToString(bytes.array());
+    }
+
+    // Follow the JDK objects actually returned to or constructed by the caller. A formatter with the
+    // same output can still have received a different pattern, locale or initial parsing mode.
+    private static final class NumericInputs {
+        final Map<Long,String> builders = new LinkedHashMap<>(), locales = new LinkedHashMap<>();
+        final Map<Long,String> symbols = new LinkedHashMap<>(), formats = new LinkedHashMap<>();
+
+        void watchFormats(VirtualMachine vm) {
+            for (String type : Arrays.asList("java.util.Locale$Builder", "java.text.DecimalFormatSymbols", "java.text.DecimalFormat")) {
+                MethodExitRequest request = vm.eventRequestManager().createMethodExitRequest();
+                request.addClassFilter(type);
+                request.putProperty("formatConstruction", true);
+                request.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+                request.enable();
+            }
+        }
+
+        void observeConstruction(MethodExitEvent event, String observer) throws Exception {
+            if (event.location().declaringType().classLoader() != null || event.thread().frameCount() < 2
+                    || !event.thread().frame(1).location().declaringType().name().equals(observer)) return;
+            StackFrame frame = event.thread().frame(0);
+            ObjectReference receiver = frame.thisObject();
+            if (receiver == null) return;
+            long id = receiver.uniqueID();
+            List<Value> args = frame.getArgumentValues();
+            String member = CheckedReplay.entry(event.location());
+            switch (member) {
+                case "java.util.Locale$Builder#setLanguageTag(Ljava/lang/String;)Ljava/util/Locale$Builder;":
+                    builders.put(id, textArgument(args.get(0)));
+                    break;
+                case "java.util.Locale$Builder#build()Ljava/util/Locale;":
+                    locales.put(((ObjectReference)event.returnValue()).uniqueID(), builders.get(id));
+                    break;
+                case "java.text.DecimalFormatSymbols#<init>(Ljava/util/Locale;)V":
+                    symbols.put(id, locales.get(((ObjectReference)args.get(0)).uniqueID()));
+                    break;
+                case "java.text.DecimalFormat#<init>(Ljava/lang/String;Ljava/text/DecimalFormatSymbols;)V":
+                    String language = symbols.get(((ObjectReference)args.get(1)).uniqueID());
+                    if (language != null) formats.put(id, language + "\t" + textArgument(args.get(0)));
+                    break;
+                case "java.text.DecimalFormat#setParseBigDecimal(Z)V":
+                    break; // Read the object's current flag at the public parser entry.
+                default:
+                    // Other direct configuration invalidates the recorded construction.
+                    if (event.method().name().startsWith("set") || event.method().name().startsWith("apply")
+                            || event.method().name().startsWith("clear")) {
+                        builders.remove(id);
+                        symbols.remove(id);
+                        formats.remove(id);
+                    }
+            }
+        }
+
+        String atEntry(StackFrame frame) {
+            List<Value> args = frame.getArgumentValues();
+            String fields = textArgument(args.get(0)) + "\t" + ((ClassObjectReference)args.get(1)).reflectedType().name();
+            if (args.size() == 2) return fields;
+            ObjectReference format = (ObjectReference)args.get(2);
+            if (format == null) return fields + "\tnull";
+            String fixture = formats.get(format.uniqueID());
+            Field mode = format.referenceType().fieldByName("parseBigDecimal");
+            if (fixture == null || mode == null || !format.referenceType().name().equals("java.text.DecimalFormat"))
+                return fields + "\tunobserved";
+            return fields + "\tdecimal\t" + fixture + "\t" + format.getValue(mode);
+        }
+    }
+
+    private static void observeHelper(BreakpointEvent hit, String consumer, String observer) throws Exception {
+        List<StackFrame> frames = hit.thread().frames();
+        if (frames.size() < 2 || !CheckedReplay.entry(frames.get(1).location()).equals(consumer)) return;
+        if (frames.stream().noneMatch(f -> CheckedReplay.entry(f.location()).equals(
+                observer + "#observe([Ljava/lang/String;)Ljava/lang/String;"))) return;
+        List<String> args = new ArrayList<>();
+        for (Value v : frames.get(0).getArgumentValues()) args.add(Long.toString(((com.sun.jdi.PrimitiveValue)v).longValue()));
+        MethodExitRequest exit = hit.virtualMachine().eventRequestManager().createMethodExitRequest();
+        exit.addClassFilter(hit.location().declaringType());
+        exit.addThreadFilter(hit.thread());
+        exit.addCountFilter(1);
+        exit.putProperty("tuple", frames.get(1).location().codeIndex() + "\t" + String.join(",", args));
+        exit.putProperty("target", CheckedReplay.entry(hit.location()));
+        exit.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+        exit.enable();
+    }
+
+    private static void selectedBreakpoint(VirtualMachine vm, ReferenceType type, String target, String purpose) {
+        if (target == null || !target.startsWith(type.name() + "#")) return;
+        int paren = target.indexOf('(');
+        breakpoint(vm, type, target.substring(target.indexOf('#') + 1, paren), target.substring(paren), purpose);
     }
 
     public static void main(String[] args) throws Exception {
@@ -295,6 +430,7 @@ public final class UpgradeTrace {
         Map<String, Connector.Argument> launch = connector.defaultArguments();
         launch.get("home").setValue(args[1]);
         launch.get("options").setValue("-Xmx384m -Duser.timezone=UTC -Duser.language=en -Duser.country=US "
+                + System.getProperty("upgrade.profile", "") + " "
                 + quote("-Djava.io.tmpdir=" + args[2]) + " " + quote("-Duser.home=" + args[2])
                 + " " + quote("-Dupgrade.observation.file=" + Paths.get(args[2], "observation.txt"))
                 + " -verbose:class -cp " + quote(args[3]));
@@ -307,12 +443,32 @@ public final class UpgradeTrace {
         OutputStream diagnostics = Files.newOutputStream(Paths.get(args[2], "child.stderr"));
         Thread stdout = forward(child.getInputStream(), System.out), stderr = forward(child.getErrorStream(), diagnostics);
         String entryInvocation = null;
+        boolean history = Boolean.getBoolean("upgrade.observe.history");
+        boolean numeric = Boolean.getBoolean("upgrade.observe.numeric");
+        NumericInputs numericInputs = new NumericInputs();
+        String candidateHelper = System.getProperty("upgrade.observe.helper");
+        String publicReader = System.getProperty("upgrade.observe.reader");
+        Map<Long,Integer> historyReceivers = new LinkedHashMap<>();
+        Set<String> observedHistoryChanges = new HashSet<>();
         Map<Long, List<String>> constructors = new LinkedHashMap<>();
         boolean finished = false;
         Map<String, List<String>> thrown = new LinkedHashMap<>();
         try {
+            if (numeric) {
+                if (descriptor.contains("Ljava/text/NumberFormat;")) numericInputs.watchFormats(vm);
+                MethodExitRequest exits = vm.eventRequestManager().createMethodExitRequest();
+                exits.addClassFilter(owner);
+                exits.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+                exits.enable();
+                ExceptionRequest errors = vm.eventRequestManager().createExceptionRequest(null, true, false);
+                errors.putProperty("projection", true);
+                errors.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+                errors.enable();
+            }
             Set<String> watched = new LinkedHashSet<>(exceptions);
             watched.add(owner);
+            if (candidateHelper != null) watched.add(candidateHelper.split("#")[0]);
+            if (publicReader != null) watched.add(publicReader.split("#")[0]);
             for (String target : changed) if (target.contains("#")) watched.add(target.substring(0, target.indexOf('#')));
             if (checked != null) {
                 watched.add(checked.helper.split("#")[0]);
@@ -325,6 +481,8 @@ public final class UpgradeTrace {
                     if (type.isPrepared()) {
                         install(vm, type, owner, method, descriptor, exceptions);
                         changedBreakpoints(vm, type);
+                        selectedBreakpoint(vm, type, candidateHelper, "candidate");
+                        selectedBreakpoint(vm, type, publicReader, "readback");
                         if (checked != null) checked.bind(vm, type);
                     }
             }
@@ -335,9 +493,40 @@ public final class UpgradeTrace {
                         ReferenceType type = ((ClassPrepareEvent) event).referenceType();
                         install(vm, type, owner, method, descriptor, exceptions);
                         changedBreakpoints(vm, type);
+                        selectedBreakpoint(vm, type, candidateHelper, "candidate");
+                        selectedBreakpoint(vm, type, publicReader, "readback");
                         if (checked != null) checked.bind(vm, type);
+                    } else if (event instanceof MethodExitEvent) {
+                        MethodExitEvent exit = (MethodExitEvent)event;
+                        if (Boolean.TRUE.equals(exit.request().getProperty("formatConstruction"))) {
+                            numericInputs.observeConstruction(exit, observer);
+                            continue;
+                        }
+                        Object tuple = exit.request().getProperty("tuple");
+                        if (tuple != null) {
+                            if (!CheckedReplay.entry(exit.location()).equals(exit.request().getProperty("target")))
+                                throw new IllegalStateException("helper exit differs from its marked invocation");
+                            System.err.println("UPGRADE-HELPER-VALUE " + tuple + "\t" + exit.returnValue());
+                            vm.eventRequestManager().deleteEventRequest(exit.request());
+                            continue;
+                        }
+                        if (CheckedReplay.entry(exit.location()).equals(entry) && invocation(exit, observer, sites) != null)
+                            System.err.println("UPGRADE-NUMBER " + numericReturn(exit.returnValue()));
                     } else if (event instanceof ExceptionEvent) {
                         ExceptionEvent raised = (ExceptionEvent) event;
+                        if (Boolean.TRUE.equals(raised.request().getProperty("projection"))) {
+                            Location catcher = raised.catchLocation();
+                            if (catcher != null && catcher.declaringType().name().equals(observer)
+                                    && catcher.method().name().equals("observe") && invocation(raised, observer, sites) != null) {
+                                for (StackFrame frame : raised.thread().frames()) {
+                                    if (CheckedReplay.entry(frame.location()).equals(entry)) {
+                                        System.err.println("UPGRADE-NUMBER throws\t" + raised.exception().referenceType().name());
+                                        break;
+                                    }
+                                }
+                            }
+                            continue;
+                        }
                         if (!raised.exception().referenceType().equals(raised.request().getProperty("exactException"))) continue;
                         String id = raised.thread().uniqueID() + "/" + raised.exception().uniqueID();
                         List<String> stack = throwingStack(raised, observer, entry, sites);
@@ -358,20 +547,35 @@ public final class UpgradeTrace {
                     } else if (event instanceof BreakpointEvent) {
                         BreakpointEvent point = (BreakpointEvent) event;
                         String purpose = (String) point.request().getProperty("purpose");
-                        if (purpose.equals("checked") || purpose.equals("startup")) {
+                        if (purpose.equals("readback")) {
+                            List<StackFrame> frames = point.thread().frames();
+                            if (frames.size() > 1 && CheckedReplay.entry(frames.get(1).location()).equals(
+                                    observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) {
+                                ObjectReference object = frames.get(0).thisObject();
+                                if (object != null) System.err.println("UPGRADE-PUBLIC-READ "
+                                        + historyReceivers.computeIfAbsent(object.uniqueID(), unused -> historyReceivers.size()));
+                            }
+                        } else if (purpose.equals("candidate")) {
+                            observeHelper(point, entry, observer);
+                        } else if (purpose.equals("checked") || purpose.equals("startup")) {
                             checked.apply(point, purpose.equals("startup"), observer);
                         } else if (purpose.equals("changed")) {
-                            if (invocation(point, observer, sites) == null) continue;
+                            boolean selectedCall = invocation(point, observer, sites) != null;
+                            if (!selectedCall && !history) continue;
                             List<String> chain = new ArrayList<>();
                             for (StackFrame frame : point.thread().frames()) {
                                 String declaration = CheckedReplay.entry(frame.location());
                                 chain.add(declaration);
-                                if (declaration.equals(entry)) break;
+                                if ((selectedCall && declaration.equals(entry)) ||
+                                        declaration.equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) break;
                             }
-                            if (chain.get(chain.size() - 1).equals(entry)
-                                    && vm.classesByName(point.location().declaringType().name()).size() == 1) {
+                            if (vm.classesByName(point.location().declaringType().name()).size() != 1) continue;
+                            if (selectedCall && chain.get(chain.size() - 1).equals(entry)) {
                                 System.err.println("UPGRADE-CHANGED " + encoded(String.join("\n", chain)));
                                 point.request().disable();
+                            } else if (history && chain.get(chain.size()-1).equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")
+                                    && observedHistoryChanges.add(chain.get(0))) {
+                                System.err.println("UPGRADE-HISTORY-CHANGE " + encoded(String.join("\n", chain)));
                             }
                         } else if (purpose.equals("constructor")) {
                             if (entryInvocation != null) continue;
@@ -402,6 +606,12 @@ public final class UpgradeTrace {
                             if (site != null) {
                                 entryInvocation = site;
                                 ObjectReference instance = point.thread().frame(0).thisObject();
+                                if (numeric) System.err.println("UPGRADE-NUMERIC-INPUT " + numericInputs.atEntry(point.thread().frame(0)));
+                                if (history) {
+                                    int alias = instance == null ? -1 : historyReceivers.computeIfAbsent(
+                                            instance.uniqueID(), unused -> historyReceivers.size());
+                                    System.err.println("UPGRADE-PUBLIC-CALL " + alias);
+                                }
                                 System.err.println("UPGRADE-IMPLEMENTATION " + CheckedReplay.entry(point.location()) + "\t"
                                         + (instance == null ? "static" : instance.referenceType().name()));
                                 if (receivers) {
@@ -412,7 +622,7 @@ public final class UpgradeTrace {
                                         for (String call : constructors.get(object.uniqueID()))
                                             System.err.println("UPGRADE-CONSTRUCTOR " + encoded(call));
                                 }
-                                point.request().disable();
+                                if (!history) point.request().disable();
                             }
                         }
                     } else if (event instanceof VMDisconnectEvent) {

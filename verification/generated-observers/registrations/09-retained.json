@@ -1,0 +1,36 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "Conversant stack",
+  "entry": "com.conversantmedia.util.concurrent.ConcurrentStack#peek()Ljava/lang/Object;",
+  "changed": [
+    "com.conversantmedia.util.concurrent.ConcurrentStack#peek()Ljava/lang/Object;"
+  ],
+  "fields": [
+    "peek.outcome",
+    "peek.value",
+    "pop.afterPeek"
+  ],
+  "questions": [
+    {
+      "id": "populated-nonconsumption",
+      "history": "Push the registered value, read the top through peek and then pop from the same stack.",
+      "inputs": [
+        {
+          "capacity": 4,
+          "values": [
+            42
+          ],
+          "drain": false
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "control"
+    }
+  ],
+  "assumptions": [
+    "Single thread, fixed capacity, each history starts a fresh stack."
+  ]
+}

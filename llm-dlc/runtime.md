@@ -373,6 +373,38 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    `records/entry-bindings.json` and reports each open lookup. If the builds became available after scaffolding,
    run `python3 examples/tools/scaffold_example.py bind --before OLD --after NEW --jdk JDK --workflows WORKFLOWS --output RECORD`.
    Both forms check each pinned deployment on its own JVM and ask the native resolver for the exact descriptor.
+   For a reviewed behavioral prediction, give `preparedDeployments` its `registration` and `predictions` files.
+   For an existing numbered numeric or nullable-selection registration, set `publicComparison` to
+   `{"deployment":"pins"}` instead. Stage 3 reads its `comparison.json` and `runtime.json`, resolves the public
+   signature on the pinned JARs, and derives the inputs from the registered history. A counting supplier also
+   needs its approved return value in `inputDefaults.fallback` when the history omits it.
+   For the formatted numeric overload, put its fixture in `inputDefaults.numberFormat`. Backtick-quoted
+   input text can be empty, malformed or locale-specific. Setup retains the order of literals and
+   predicates and records the first operation it cannot interpret. Resuming by number checks the reviewed
+   inputs, predicates and deployments against the scaffold that supplied the caller.
+   The registration supplies the public selector, changed selectors, public fields, deterministic assumptions,
+   and each question's ID, semantic input data, observed history and side scope. Stage 3 generates one Java
+   caller for the related questions, compiles against the older API and keeps the class bytes and their
+   hashes in `records/public-observer/`. An unsupported history records its first missing operation.
+   To materialize after setup, run `scaffold_example.py generate --registration REG --predictions PRED --before OLD --after NEW --jdk JDK --output DIR`.
+   The `emit` form takes the same inputs with the predictions omitted and writes only the measurement bundle.
+   A numeric conversion bound to the three-argument `NumberFormat` overload takes an explicit `format` on
+   each call. Supply `null` or a decimal pattern, BCP 47 locale and boolean `parseBigDecimal`. Replay checks
+   the actual input text, target class, formatter construction and parsing mode at the public invocation.
+   [Formatted numeric inputs and controls](../verification/generated-observers/registrations/458-format.json)
+   Resume with `build.py --change-plan application --before DIR/old.json --after DIR/new.json --jdk JDK --workflows DIR/workflows.json --previous records/entry-bindings.json --run --output REPORT`.
+   The runner loads the saved class archive and checks the declared fields and original JVM calls. Handwritten
+   workflows retain their authored provenance. [Reviewed inputs](../verification/generated-observers/registrations/458.json)
+   For numbered comparisons, `watch.py preflight` reads the bound questions at the scaffold-only boundary.
+   A later `build.py NNN` loads the frozen caller and writes its finite results to `records/public-replay.json`.
+   Preflight derives its answers from the referenced JVM receipts. The authored comparison remains accessible
+   through `python3 -m targets.public_comparison NNN --authored` with `PYTHONPATH=examples/tools`.
+   Re-score a frozen run with `build.py --change-plan rescore --bundle DIR --report REPORT --predictions PRED --output NEW`.
+   An incorrect parent prediction can leave a fully measured question open. A separate evaluation can correct
+   that prediction using its original JVM receipt. The command checks the frozen input domain, repeated
+   observations, entry bindings and runtime stability before it issues a new adjudication.
+   For a marked minimum, `build.py --change-plan helper-table --bundle DIR --report REPORT --jdk JDK --output HELPER`
+   derives its finite rows. Reference that declaration with `checkedHelper` in a separate workflow.
    Stage 2 can omit workflows to discover public callers from the compiled change. Review competing observations
    with the claim owner. During replay, pass the saved record as `--previous` to `build.py --change-plan application --run`.
    The manifest's `classpath` lists the declared roots in JVM order. Each root carries `file` and `sha256`.

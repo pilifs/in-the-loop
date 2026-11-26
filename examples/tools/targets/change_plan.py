@@ -41,6 +41,13 @@ def delta(previous, current):
                         if old[k] != new[k]}}
 
 
+def workflow_row(name, scope, probe, assumptions, changes, *, cohort="registered"):
+    """Shared portable registration for an authored or generated finite public observer."""
+    return {"id": name, "scope": scope, "probe": str(probe), "cohort": cohort,
+            "deterministicUnderAssumptions": True, "assumptions": assumptions,
+            "intent": {"allowedChanges": changes} if changes else "preserve"}
+
+
 def frozen_workflows(path):
     doc = json.loads(path.read_text())
     if doc["schema"] != "caller-workflows/v1":
@@ -72,6 +79,11 @@ def frozen_workflows(path):
         if "checkedHelper" in row:
             row = dict(row)
             row["checkedHelper"] = json.loads((path.parent / row["checkedHelper"]).read_bytes())
+        if "generatedObserver" in spec:
+            from targets import observer_generation
+            if spec["generatedObserver"]["question"] != name:
+                raise ValueError("generated scope belongs to a different question")
+            observer_generation.checked_bundle(specfile, spec, probe)
         workflows[name] = (row, specfile, probe, spec)
     return doc, workflows
 
@@ -193,6 +205,12 @@ def compare(args, *, original_binary=True, archive_index=None):
             trace_changes = prior.get("traceChangedEntries", trace_changes)
         # Direct-entry evidence remains comparable when replacing the other revision makes the bytecode diff empty.
         basis["traceChangedEntries"] = trace_changes or [spec["entry"]]
+        if "generatedObserver" in spec:
+            from targets import observer_generation
+            record, registration = observer_generation.checked_bundle(scope, spec, probe)
+            basis["traceChangedEntries"] = sorted(set(registration["changed"]) | set(getattr(args, "changed_selector", []))) or [spec["entry"]]
+            basis["generatedObserver"] = spec["generatedObserver"]["sha256"]
+            basis["projectionChecker"] = digest(observer_generation.identity())
         helper = row.get("checkedHelper")
         if helper is not None:
             basis["checkedHelper"] = digest(helper)
@@ -204,6 +222,9 @@ def compare(args, *, original_binary=True, archive_index=None):
         if helper is not None:
             node["derivation"] = "finite public history with a checked, pure helper substituted on both deployments"
         node["traceChangedEntries"] = basis["traceChangedEntries"]
+        node["observerProvenance"] = ({"kind": "generated", "bundle": basis["generatedObserver"],
+                                      "classes": record["compiled"], "assertedSides": spec["assertedSides"]}
+                                     if "generatedObserver" in spec else {"kind": "authored"})
         node["traceInput"] = list(getattr(args, "changed_selector", []))
         node["entryBindings"] = {s: digest(bindings[s][spec["entry"]]) for s in graphs}
         plan["claims"].append(node)
@@ -243,6 +264,8 @@ def compare(args, *, original_binary=True, archive_index=None):
             evidence.update(status="open", reason=str(error))
         stable = initially_absent and change_inventory.absences_hold(missing)
         changed_files = change_inventory.changed_inputs((old, new))
+        if "generatedObserver" in spec:
+            node["rescoreDomainClosed"] = bool(closed and stable and not changed_files)
         if cache and stable and not changed_files and evidence.get("status") != "open":
             cache.publish_pending()
         if evidence.get("cases") == spec["cases"]:
@@ -318,8 +341,11 @@ def compare(args, *, original_binary=True, archive_index=None):
     # A provider can appear or be replaced after an earlier claim. Check again before publishing the plan.
     if args.run:
         changed_final = change_inventory.changed_inputs((old, new))
+        stable_final = not changed_final and change_inventory.absences_hold(missing)
         for node in plan["claims"]:
-            if node["status"] != "open" and (not change_inventory.absences_hold(missing) or changed_final):
+            if not stable_final and "rescoreDomainClosed" in node:
+                node["rescoreDomainClosed"] = False
+            if node["status"] != "open" and not stable_final:
                 node.update(status="open", firstOpenDependency="deployment changed before plan publication")
         plan["counts"] = {cohort: dict(Counter(n["status"] for n in plan["claims"] if n["cohort"] == cohort))
                           for cohort in ("registered", "additional", "control")}
@@ -427,6 +453,12 @@ def main(argv=None):
     saved.add_argument("report", type=Path)
     saved.add_argument("--output", type=Path)
     saved.add_argument("--verify-receipts", action="store_true", help="also verify the saved original-JVM evidence files")
+    rescore = sub.add_parser("rescore", help="evaluate new predictions against qualified frozen public observations")
+    for name in ("report", "bundle", "predictions", "output"):
+        rescore.add_argument("--" + name, required=True, type=Path)
+    helper = sub.add_parser("helper-table", help="derive a checked minimum table from live public call sites")
+    for name in ("report", "bundle", "jdk", "output"):
+        helper.add_argument("--" + name, required=True, type=Path)
     example = sub.add_parser("example", help="project the target runner's frozen claims, routes and dependencies")
     example.add_argument("number", type=int)
     upgrade = sub.add_parser("upgrade", aliases=["application"], help="compare prepared JVM applications with their ordered classpaths")
@@ -441,7 +473,7 @@ def main(argv=None):
         upgrade.add_argument("--" + name, type=Path)
     for name in ("old-dependency", "new-dependency"):
         upgrade.add_argument("--" + name, help="tracked runtime artifact digest (default: the client JAR)")
-    upgrade.add_argument("--checker", type=Path, default=ROOT / "lib/target/release/jvmcontract")
+    upgrade.add_argument("--checker", type=Path, default=Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")))
     upgrade.add_argument("--seconds", type=int, default=60, help="per-workflow replay budget")
     upgrade.add_argument("--run", action="store_true", help="execute the finite obligations on the original JVM")
     for command in (example, upgrade):
@@ -450,6 +482,14 @@ def main(argv=None):
     if getattr(args, "probe_limit", 0) < 0:
         parser.error("--probe-limit must be nonnegative")
     try:
+        if args.command == "helper-table":
+            from targets import observer_generation
+            change_evidence.write_json(args.output, observer_generation.helper_table(args.report, args.bundle, args.jdk))
+            return 0
+        if args.command == "rescore":
+            from targets import observer_rescore
+            change_evidence.write_json(args.output, observer_rescore.score(args.report, args.bundle, args.predictions))
+            return 0
         if args.command == "bindings":
             account = saved_bindings(json.loads(args.report.read_bytes()), args.report.parent if args.verify_receipts else None)
             if args.output:

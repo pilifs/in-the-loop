@@ -49,6 +49,24 @@ def checked_classpath(path, doc, dependency):
     return files, files[hashes.index(dependency)], hashes
 
 
+def dispatch_binding(symbolic, target, files, feature):
+    """Bind an explicitly nominated implementation behind its accessible public interface."""
+    interface, method, descriptor = runtime_jar.parse_target(symbolic)
+    owner, name, desc = runtime_jar.parse_target(target)
+    if (name, desc) != (method, descriptor):
+        raise ValueError("nominated dispatch has a different public signature")
+    internal = runtime_jar.internal(owner)
+    for index, file in enumerate(files):
+        data = (class_binding.read(file, internal) if file.is_dir() else runtime_jar.effective_class(file, internal, feature))
+        if data is None:
+            continue
+        flags = runtime_jar.method_flags(data, name, desc)
+        if not flags or not flags & 1 or flags & (0x400 | 8) or runtime_jar.internal(interface) not in runtime_jar.interfaces(data):
+            raise ValueError("winning class lacks the nominated public interface implementation")
+        return {"entry":target,"providerIndex":index,"classSha256":hashlib.sha256(data).hexdigest()}
+    raise ValueError("nominated concrete implementation is absent")
+
+
 def check_input(path, entry, dependency, *, qualified=None, effective=None):
     doc = json.loads(path.read_text())
     files, operand, hashes = checked_classpath(path, doc, dependency)
@@ -94,6 +112,8 @@ def check_input(path, entry, dependency, *, qualified=None, effective=None):
         binding["entryBinding"] = digest(qualified)
         if "resolvedEntry" in qualified:
             binding["resolvedEntry"] = qualified["resolvedEntry"]
+    if effective and effective[1].get("jvmFlags"):
+        binding["jvmFlags"] = effective[1]["jvmFlags"]
     for key in ("operandScope", "declaredDependencyScope", "modulePomSha256"):
         if key in doc:
             binding[key] = doc[key]
@@ -368,8 +388,16 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             if any(c["sha256"] not in bound["classpath"] for c in report["runtimeCompanions"]):
                 raise ValueError(f"{side} is missing a declared runtime companion")
         tools = [jdk/"lib/tools.jar"] if (jdk/"lib/tools.jar").is_file() else []
+        observer_sources = [probe]
+        if "generatedObserver" in spec:
+            from targets import observer_generation
+            frozen, _registration = observer_generation.checked_bundle(specfile, spec, probe)
+            observer_generation.install(specfile.parent, frozen, output)
+            observer_sources = []
+            report["generatedObserver"] = {"bundle": spec["generatedObserver"]["sha256"],
+                                           "compilePolicy": frozen["compilePolicy"], "classes": frozen["compiled"]}
         proc=subprocess.run([str(jdk/"bin/javac"),"-J-Djava.io.tmpdir="+t,"-proc:none","-g","-encoding","UTF-8",
-                             "-classpath",cp([*prepared["old"][0],*tools]),"-d",str(output),str(LAUNCHER),str(TRACER),str(LOOKUP),str(probe),*map(str,supplied)],
+                             "-classpath",cp([*prepared["old"][0],*tools]),"-d",str(output),str(LAUNCHER),str(TRACER),str(LOOKUP),*map(str,observer_sources),*map(str,supplied)],
                              cwd=temp,env=env,capture_output=True,text=True,timeout=timeout)
         if proc.returncode:
             raise ValueError("observer compilation: "+proc.stderr[-1800:])
@@ -415,13 +443,30 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             live_entry = side_record.get("resolvedEntry", caller)
             subject_jdk = jdk if side == "old" else after_jdk
             subject_feature = int(runtime_jdk.identity(subject_jdk)["feature"])
+            executed_index = side_record["entryProviderIndex"]
+            if spec.get("requiredDispatch"):
+                dispatch = dispatch_binding(caller,spec["requiredDispatch"],files,subject_feature)
+                live_entry = dispatch["entry"]
+                executed_index = dispatch["providerIndex"]
+                side_record.update(dispatchBinding=dispatch, resolvedEntry=live_entry,
+                                   dispatchArtifactSha256=side_record["classpath"][executed_index])
             if after_jdk != jdk:
                 side_record["jdk"] = runtime_jdk.identity(subject_jdk)["release"]
             subject_tools = [subject_jdk/"lib/tools.jar"] if (subject_jdk/"lib/tools.jar").is_file() else []
             launch = [str(subject_jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*subject_tools]),
                       "UpgradeTrace", live_entry, str(subject_jdk)]
+            if side_record.get("jvmFlags"):
+                launch.insert(1, "-Dupgrade.profile=" + " ".join(side_record["jvmFlags"]))
             if trace_changes:
                 launch.insert(1, "-Dupgrade.trace.changed=" + "|".join(trace_changes))
+            if "generatedObserver" in spec:
+                launch.insert(1, "-Dupgrade.observe.history=true")
+                if frozen["recipe"]["family"] == "typed numeric conversions":
+                    launch.insert(1, "-Dupgrade.observe.numeric=true")
+                if not checked_helper and "helperCandidate" in frozen:
+                    launch.insert(1, "-Dupgrade.observe.helper=" + frozen["helperCandidate"]["entry"])
+                if "publicReader" in frozen["recipe"]:
+                    launch.insert(1, "-Dupgrade.observe.reader=" + frozen["recipe"]["publicReader"])
             if inspect_receiver or native_caller:
                 launch.insert(1, "-Dupgrade.trace.receivers=true")
             trial_env = {**env, "PATH": str(subject_jdk/"bin")+":/usr/bin:/bin"}
@@ -497,7 +542,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         loaded_each_time = loaded_each_time and bool(classes)
                         evidence = throw_evidence(marks, loaded, files, side_record["classpath"],
                                                   dependency, observation_text.splitlines(),
-                                                  client_index=side_record["clientIndex"], entry_index=side_record["entryProviderIndex"])
+                                                  client_index=side_record["clientIndex"], entry_index=executed_index)
                         upgrade_linkage.observed_member(evidence, loaded, files, side_record, subject_feature)
                         early.append({**outcome, **evidence})
                         trial_record["beforeEntry"] = early
@@ -513,11 +558,16 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                             raise ValueError(f"{side} input {index}: inconsistent exception across original caller replays")
                         evidence = throw_evidence(marks, class_origins(child_output), files, side_record["classpath"],
                                                   dependency, observation_text.splitlines(),
-                                                  client_index=side_record["clientIndex"], entry_index=side_record["entryProviderIndex"])
+                                                  client_index=side_record["clientIndex"], entry_index=executed_index)
                         escape = evidence.get("escapingInvocation")
                         if escape:
                             escape["throws"] = outcome["throws"]
                             trial_record.setdefault("escapingExceptions", []).append(escape)
+                    if spec.get("requiredDispatch"):
+                        interface_origins = class_origins(child_output).get(owner,set())
+                        if interface_origins != {files[side_record["entryProviderIndex"]]}:
+                            raise ValueError(f"public interface {owner}: observed providers {sorted(map(str,interface_origins))}, "
+                                             f"expected {files[side_record['entryProviderIndex']]}")
                     site_marks = [line.removeprefix("UPGRADE-CALL-SITE ") for line in marks
                                   if line.startswith("UPGRADE-CALL-SITE ")]
                     if len(site_marks) != 1:
@@ -538,8 +588,26 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         chains = [base64.b64decode(line.removeprefix("UPGRADE-CHANGED "), validate=True).decode().splitlines()
                                   for line in marks if line.startswith("UPGRADE-CHANGED ")]
                         trial_record.setdefault("changedBodyChains", []).append(chains)
+                        if "generatedObserver" in spec:
+                            loaded = class_origins(child_output)
+                            history_hits = []
+                            for line in marks:
+                                if not line.startswith("UPGRADE-HISTORY-CHANGE "):
+                                    continue
+                                chain = base64.b64decode(line.partition(" ")[2], validate=True).decode().splitlines()
+                                changed_owner = chain[0].split("#")[0]
+                                origins = loaded.get(changed_owner,set())
+                                if chain[0] not in trace_changes or len(origins) != 1 or not origins.issubset(files):
+                                    continue
+                                provider = files.index(next(iter(origins)))
+                                history_hits.append({"stack":chain,"providerIndex":provider,"artifactSha256":side_record["classpath"][provider]})
+                            trial_record.setdefault("changedWithinHistory", []).append(history_hits)
                     trial_record["qualifiedMethodEntries"] += 1
-                    observation,classes=parse_output(child_output,live_entry,files[side_record["entryProviderIndex"]],dependency,observation_text,escape=escape)
+                    observation,classes=parse_output(child_output,live_entry,files[executed_index],dependency,observation_text,escape=escape)
+                    if "generatedObserver" in spec:
+                        question = next(q for q in _registration["questions"] if q["id"] == spec["generatedObserver"]["question"])
+                        projection = observer_generation.correspondence(frozen["recipe"], question["inputs"][index], marks, observation)
+                        trial_record.setdefault("publicProjections", []).append(projection)
                     trials.append(observation)
                     operand_classes.update(classes)
                     loaded_each_time = loaded_each_time and bool(classes)

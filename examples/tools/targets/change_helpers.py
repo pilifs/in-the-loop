@@ -101,6 +101,8 @@ def prove(spec, files, jdk, image, checker, directory, cache):
     from targets.upgrade_replay import sha
     owner, _, _ = runtime_jar.parse_target(spec["entry"])
     data, origin = original_class(owner, files, jdk)
+    if spec.get("boundClassSha256") and hashlib.sha256(data).hexdigest() != spec["boundClassSha256"]:
+        raise ValueError("actual helper class differs from the generated binding")
     contract, source, hashes = declaration(spec, data)
     rules = {path.name: sha(path) for path in
              (Path(__file__), Path(change_inventory.__file__), Path(runtime_jar.__file__), Path(runtime_jdk.__file__))}
@@ -202,6 +204,8 @@ def trace_config(directory, spec, proof):
 def applications(marks, loaded, spec, proof, files, arguments):
     """Require successful substitution on the original public path and its named startup witness."""
     from targets.upgrade_replay import sha
+    if spec.get("requireAllApplications") and any(m.startswith("UPGRADE-UNCOVERED ") for m in marks):
+        raise ValueError("a used helper tuple is outside the generated declaration")
     owner = spec["entry"].split("#")[0]
     if proof["provider"] != "java.base" and loaded.get(owner) != {Path(proof["provider"])}:
         raise ValueError("live helper did not come from its proved provider")

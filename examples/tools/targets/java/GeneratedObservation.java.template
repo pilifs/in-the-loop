@@ -1,0 +1,85 @@
+import java.util.*;
+import java.io.*;
+
+// The reviewed input is data. The evaluator and its predictions are outside this class.
+public final class UpgradeProbe {
+    private static final class Inputs {
+        final String[] words;
+        int index;
+        Inputs(String[] words) { this.words = words; }
+
+        Object read() {
+            String word = words[index++];
+            String value = word.substring(1);
+            switch (word.charAt(0)) {
+                case 's': return value;
+                case 'i': return Integer.valueOf(value);
+                case 'b': return Boolean.valueOf(value);
+                case 'n': return null;
+                case 'a': {
+                    List<Object> list = new ArrayList<>();
+                    for (int i = Integer.parseInt(value); i > 0; i--) list.add(read());
+                    return list;
+                }
+                case 'm': {
+                    Map<String,Object> map = new LinkedHashMap<>();
+                    for (int i = Integer.parseInt(value); i > 0; i--) map.put((String)read(), read());
+                    return map;
+                }
+                default: throw new IllegalArgumentException("unknown input type");
+            }
+        }
+    }
+    @SuppressWarnings("unchecked")
+    private static Map<String,Object> input(String[] words) {
+        Inputs in = new Inputs(words);
+        Map<String,Object> value = (Map<String,Object>)in.read();
+        if (in.index != words.length) throw new IllegalArgumentException("extra input");
+        return value;
+    }
+
+    private static List<Object> row(Object... fields) { return Arrays.asList(fields); }
+
+    private static void encode(StringBuilder out, Object value) {
+        if (value instanceof List<?>) {
+            out.append('[');
+            boolean first = true;
+            for (Object item : (List<?>)value) {
+                if (!first) out.append(',');
+                encode(out, item);
+                first = false;
+            }
+            out.append(']');
+        } else if (value instanceof String) {
+            out.append('"');
+            for (char ch : ((String)value).toCharArray()) {
+                switch (ch) {
+                    case '"': out.append("\\\""); break;
+                    case '\\': out.append("\\\\"); break;
+                    case '\b': out.append("\\b"); break;
+                    case '\t': out.append("\\t"); break;
+                    case '\n': out.append("\\n"); break;
+                    case '\f': out.append("\\f"); break;
+                    case '\r': out.append("\\r"); break;
+                    default:
+                        if (ch < 32 || ch > 126) out.append(String.format(Locale.ROOT, "\\u%04x", (int)ch));
+                        else out.append(ch);
+                }
+            }
+            out.append('"');
+        } else if (value == null || value instanceof Boolean || value instanceof Number) {
+            out.append(String.valueOf(value));
+        } else throw new IllegalArgumentException("unsupported public field " + value.getClass().getName());
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static String observe(String[] args) throws Exception {
+        Map<String,Object> data = input(args);
+        List<Object> observations = new ArrayList<>();
+        /* MEASURE */
+        StringBuilder result = new StringBuilder();
+        encode(result, observations);
+        return result.toString();
+    }
+    /* SUPPORT */
+}

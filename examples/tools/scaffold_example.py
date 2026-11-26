@@ -64,7 +64,13 @@ def scaffold(number: str, plan_path: Path, write: bool, root: Path = REPO) -> di
         return out
     example = json.loads((folder / "example.json").read_text())
     target_path = sidecar.path_of(folder, example) or folder / "target.json"
-    target = json.loads(target_path.read_text())
+    deployments = entry.get("preparedDeployments") or {}
+    numbered = entry.get("publicComparison")
+    if numbered is not None and deployments:
+        out["refused"].append("choose either the numbered public comparison or prepared manifests")
+        return out
+    public_bundle_only = (bool(deployments.get("registration")) or numbered is not None) and not target_path.exists() and not entry.get("tasks")
+    target = {} if public_bundle_only else json.loads(target_path.read_text())
     claims = entry.get("claimFiles") or {}
     for name, doc in claims.items():
         if not name.startswith("claims/") or ".." in name or not name.endswith(".json"):
@@ -99,26 +105,68 @@ def scaffold(number: str, plan_path: Path, write: bool, root: Path = REPO) -> di
         out["wrote"], out["added"] = [], []
         return out
     candidate = {**target, "tasks": tasks}
-    try:
-        sidecar.check(candidate, folder, target_path)
-    except sidecar.SidecarError as e:
-        out["leftForSetup"].append(str(e).split(": ", 1)[-1])
+    if not public_bundle_only:
+        try:
+            sidecar.check(candidate, folder, target_path)
+        except sidecar.SidecarError as e:
+            out["leftForSetup"].append(str(e).split(": ", 1)[-1])
     if write:
         for name in out["wrote"]:
             (folder / name).parent.mkdir(parents=True, exist_ok=True)
             (folder / name).write_text(json.dumps(claims[name], indent=1, ensure_ascii=False) + "\n")
         if out["added"]:
             target_path.write_text(json.dumps(candidate, indent=2, ensure_ascii=False) + "\n")
-    deployments = entry.get("preparedDeployments")
-    if deployments:
+    if deployments or numbered is not None:
         record = folder / "records" / "entry-bindings.json"
         out["entryBindings"] = str(record)
         if write:
-            paths = {k: plan_path.parent / value for k, value in deployments.items()}
-            bind_deployments(paths["before"], paths["after"], paths["jdk"], record,
+            if numbered is not None:
+                from targets import observer_review, observer_recipes
+                try:
+                    paths = observer_review.prepare(folder, numbered, folder/"records/reviewed-public-inputs")
+                except observer_recipes.Unsupported as error:
+                    from targets import change_evidence, upgrade_replay
+                    change_evidence.write_json(folder/"records/reviewed-public-inputs/review.json",
+                        {"status":"open","firstOpenDependency":str(error),
+                         "comparisonSha256":upgrade_replay.sha(folder/"comparison.json"),
+                         "runtimeSha256":upgrade_replay.sha(folder/"runtime.json")})
+                    out["leftForSetup"].append(str(error))
+                    return out
+            else:
+                paths = {k: plan_path.parent / value for k, value in deployments.items()}
+            if "registration" in paths:
+                from targets import observer_generation
+                bundle = folder / "records" / "public-observer"
+                if "predictions" not in paths or "workflows" in paths:
+                    raise ValueError("a reviewed registration requires its predictions and generates its own workflows")
+                try:
+                    generation = observer_generation.materialize(paths["registration"], paths["predictions"],
+                        paths["before"], paths["after"], paths["jdk"], bundle)
+                except ValueError as error:
+                    if numbered is None:
+                        raise
+                    from targets import change_evidence
+                    review = folder/"records/reviewed-public-inputs/review.json"
+                    detail = json.loads(review.read_bytes())
+                    change_evidence.write_json(review, {**detail, "status": "open", "firstOpenDependency": str(error)})
+                    out["refused"].append(str(error))
+                    return out
+                out["generatedObserver"] = str(bundle / "generation.json")
+                if generation["status"] != "compiled":
+                    out["leftForSetup"].append(generation["firstOpenDependency"])
+                    return out
+                paths["workflows"] = bundle / "workflows.json"
+            status = bind_deployments(paths["before"], paths["after"], paths["jdk"], record,
                              workflows=paths.get("workflows"),
                              entries=[t["target"] for t in tasks if "#" in t.get("target", "")])
+            if status:
+                out["refused"].append("the prepared deployment binding failed")
+                return out
             report = json.loads(record.read_text())
+            if numbered is not None:
+                from targets import change_evidence, upgrade_replay
+                report["numberedReviewSha256"] = upgrade_replay.sha(folder/"records/reviewed-public-inputs/review.json")
+                change_evidence.write_json(record, report)
             for binding in report["entryBindings"].values():
                 if binding["status"] != "bound":
                     out["leftForSetup"].append(f"{binding['side']} {binding['entry']}: {binding['firstOpenDependency']}")
@@ -140,6 +188,26 @@ def bind_deployments(before, after, jdk, output, *, workflows=None, entries=(), 
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] in {"generate", "emit"}:
+        from targets import observer_generation
+        parser = argparse.ArgumentParser(description="Materialize a reviewed public observation on its prepared deployments")
+        for name in ("registration", "before", "after", "jdk", "output"):
+            parser.add_argument("--" + name, type=Path, required=True)
+        if argv[0] == "generate":
+            parser.add_argument("--predictions", type=Path, required=True)
+        args = parser.parse_args(argv[1:])
+        try:
+            if argv[0] == "emit":
+                args.output.mkdir(parents=True)
+                record = observer_generation.generate(json.loads(args.registration.read_bytes()), args.before,
+                                                      args.after, args.jdk, args.output, fixture_root=args.registration.parent)
+            else:
+                record = observer_generation.materialize(**vars(args))
+        except (ValueError, OSError) as error:
+            print(str(error), file=sys.stderr)
+            return 1
+        print(record.get("firstOpenDependency", str(args.output / "generation.json")))
+        return int(record["status"] != "compiled")
     if argv and argv[0] == "bind":
         parser = argparse.ArgumentParser(description="Bind approved public entries on the two prepared deployments")
         for name in ("before", "after", "jdk", "output"):

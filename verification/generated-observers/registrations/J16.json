@@ -1,0 +1,106 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "JGraphT — See a rejected graph-view update in both the view and the backing graph",
+  "entry": "org.jgrapht.graph.AsWeightedGraph#setEdgeWeight(Ljava/lang/Object;D)V",
+  "changed": [
+    "org.jgrapht.graph.AsWeightedGraph#setEdgeWeight(Ljava/lang/Object;D)V"
+  ],
+  "fields": [
+    "write.outcome",
+    "view.weight",
+    "backing.weight"
+  ],
+  "assumptions": [
+    "One fresh JVM per registered assertion profile, class-loader assertion status selected before the graph initializes, same edge retained through both views and two updates."
+  ],
+  "questions": [
+    {
+      "id": "disabled-cache-write-through",
+      "history": "Observe termination and read both the computed view and backing graph after each attempted update.",
+      "cohort": "registered",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "assertions": false,
+          "cache": false,
+          "through": true,
+          "backingWeight": 2,
+          "viewWeight": 7,
+          "writes": [
+            9,
+            11
+          ]
+        },
+        {
+          "assertions": true,
+          "cache": false,
+          "through": true,
+          "backingWeight": 2,
+          "viewWeight": 7,
+          "writes": [
+            9,
+            11
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cached-and-local",
+      "history": "Repeat with caching and either write-through or view-only updates.",
+      "cohort": "control",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "assertions": false,
+          "cache": true,
+          "through": true,
+          "backingWeight": 2,
+          "viewWeight": 7,
+          "writes": [
+            9,
+            11
+          ]
+        },
+        {
+          "assertions": false,
+          "cache": true,
+          "through": false,
+          "backingWeight": 2,
+          "viewWeight": 7,
+          "writes": [
+            9,
+            11
+          ]
+        },
+        {
+          "assertions": true,
+          "cache": true,
+          "through": true,
+          "backingWeight": 2,
+          "viewWeight": 7,
+          "writes": [
+            9,
+            11
+          ]
+        },
+        {
+          "assertions": true,
+          "cache": true,
+          "through": false,
+          "backingWeight": 2,
+          "viewWeight": 7,
+          "writes": [
+            9,
+            11
+          ]
+        }
+      ]
+    }
+  ]
+}

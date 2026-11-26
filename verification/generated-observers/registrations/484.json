@@ -1,0 +1,72 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "spring-projects/spring-framework#36626",
+  "entry": "org.springframework.mail.SimpleMailMessage#copyTo(Lorg/springframework/mail/MailMessage;)V",
+  "changed": [
+    "org.springframework.mail.SimpleMailMessage#copyTo(Lorg/springframework/mail/MailMessage;)V",
+    "org.springframework.mail.SimpleMailMessage#getSentDate()Ljava/util/Date;",
+    "org.springframework.mail.SimpleMailMessage#setSentDate(Ljava/util/Date;)V"
+  ],
+  "fields": [
+    "date.afterEachMutation.messageAndCopy",
+    "date.publicGetter",
+    "date.constructedCopy",
+    "date.target"
+  ],
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36626.1",
+      "history": "Change the input date to 0. Next mutate the Date returned by the first message to 1 and the recording target’s Date to 2.",
+      "inputs": [
+        {
+          "mode": "paired mutations",
+          "seed": 1234,
+          "mutateInput": 0,
+          "mutateReturn": 1,
+          "mutateTarget": 2,
+          "preexisting": 77
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    },
+    {
+      "id": "spring-projects/spring-framework#36626.2",
+      "history": "Set a message’s date to null and copy its contents to a target already carrying 77 milliseconds.",
+      "inputs": [
+        {
+          "mode": "unset",
+          "seed": null,
+          "preexisting": 77
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "control"
+    },
+    {
+      "id": "spring-projects/spring-framework#36626.3",
+      "history": "Subclass SimpleMailMessage and override only `getSentDate()` to return a fresh Date(1234) each time. Leave the inherited field unset. Compare its public getter with a constructed copy and with a target initially at 77 after `copyTo`.",
+      "inputs": [
+        {
+          "mode": "overridden getter",
+          "seed": 1234,
+          "preexisting": 77
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    }
+  ],
+  "assumptions": [
+    "Original Spring artifacts and profile, single deterministic public history on each fresh JVM."
+  ]
+}

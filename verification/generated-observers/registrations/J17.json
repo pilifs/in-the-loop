@@ -1,0 +1,40 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "Eclipse Collections #786, preservation under colliding-key removal",
+  "entry": "org.eclipse.collections.impl.map.mutable.UnifiedMap#removeIf(Lorg/eclipse/collections/api/block/predicate/Predicate2;)Z",
+  "changed": [
+    "org.eclipse.collections.impl.map.mutable.UnifiedMap#removeIf(Lorg/eclipse/collections/api/block/predicate/Predicate2;)Z"
+  ],
+  "fields": [
+    "remove.flags",
+    "remaining.mappings",
+    "retained.keys",
+    "null.key"
+  ],
+  "assumptions": [
+    "Distinct immutable keys have one hash code. A retained key-set view and null-key sentinel are observed after each call. No iteration-order requirement."
+  ],
+  "questions": [
+    {
+      "id": "all-collision-subsets",
+      "history": "Check both returned flags, remaining mappings, retained key view, size and untouched null key after each of two removals.",
+      "cohort": "registered",
+      "sides": [
+        "old",
+        "new"
+      ],
+      "inputs": [
+        {
+          "maximumSize": 6,
+          "reverse": false,
+          "nullValue": -1
+        },
+        {
+          "maximumSize": 6,
+          "reverse": true,
+          "nullValue": -1
+        }
+      ]
+    }
+  ]
+}

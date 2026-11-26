@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-214343-qualify-generated-numeric-and-lazy-publi",
+  "title": "Qualify generated numeric and lazy public observations on both original releases",
+  "description": "Run Spring 458 and Vavr 445 from reviewed data and pinned JARs. Keep the generated caller, compiled old-API class archive, workflows and scope with its side bounds. Replay cold and warm through the application change planner, and retain per-input JVM evidence.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T21:43:43+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Spring numeric return type value and exception",
+      "run": "python3 verification/generated-observers/campaign.py 458",
+      "cwd": "."
+    },
+    {
+      "name": "Nullable selection and lazy supplier",
+      "run": "python3 verification/generated-observers/campaign.py 445",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/458.zip",
+    "verification/generated-observers/receipts/445.zip"
+  ]
+}
