@@ -1,0 +1,84 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/30020",
+  "revisions": {
+    "parent": "906c54faffc75721b98f9b9cf63d35edd81f7b4f",
+    "fix": "b39e93d0d149459f28d61b19f3409d4b64165233"
+  },
+  "entry": "ApplicationEvents.stream",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#30020.1",
+      "role": "Intent",
+      "args": [
+        "child"
+      ],
+      "history": "A new child thread publishes CustomEvent(`child`), then the parent joins it and reads the filtered stream.",
+      "prediction": "The parent revision is expected to record no child event. The landing should return exactly one event whose message is child.",
+      "basis": "The issue identifies thread-local recording as the missing link. The landed Jupiter test publishes from a new child, joins it and asserts its message.",
+      "refutation": "The merged test loses the child event, records it twice or changes the message.",
+      "expected": {
+        "fix": {
+          "return": "[child]"
+        },
+        "parent": {
+          "return": "[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30020.2",
+      "role": "Control",
+      "args": [
+        "parent"
+      ],
+      "history": "Publish CustomEvent(`parent`) on the recording test thread and read the filtered stream there.",
+      "prediction": "Both revisions should record exactly that event once.",
+      "basis": "Synchronous capture on the active test thread is the pre-existing feature. Filtering by class makes unrelated Spring lifecycle events immaterial.",
+      "refutation": "The ordinary same-thread record is absent or duplicated.",
+      "expected": {
+        "fix": {
+          "return": "[parent]"
+        },
+        "parent": {
+          "return": "[parent]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30020.3",
+      "role": "Challenge",
+      "args": [
+        "both"
+      ],
+      "history": "In one test publish tag A on the parent, publish B on a fresh child and join it, then inspect the injected ApplicationEvents from a second fresh child and from the parent.",
+      "prediction": "On the landing both consumers should observe A then B exactly once. Both threads are created after the recorder is registered.",
+      "basis": "Sequential publication plus join establishes order. Two independently created children should see the recorder for their common test. This crosses both the producer and reader thread boundaries.",
+      "refutation": "The parent sees both tags but a child sees none, sees only its own event, or fails to resolve the recorder.",
+      "expected": {
+        "fix": {
+          "return": "child=[A, B] parent=[A, B]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#30020.4",
+      "role": "Configuration",
+      "args": [
+        "guard"
+      ],
+      "history": "Give a recording Jupiter test explicit @TestInstance(PER_CLASS) and @Execution(CONCURRENT) with parallel execution enabled. As a separate landing check, keep the annotations and disable global parallel execution.",
+      "prediction": "At the landing expect a failing container with IllegalStateException in the enabled case, as tested. The validation source predicts the same rejection with global parallelism off. The parent has no Spring guard for this combination.",
+      "basis": "The landed extension inspects merged class annotations and their values. Its diagnostic suggests disabling parallel execution, yet the guard does not read the global switch.",
+      "refutation": "The annotated class runs under enabled parallelism, or the otherwise identical globally disabled case passes despite the predicted annotation-only check.",
+      "expected": {
+        "fix": {
+          "return": "enabled=IllegalStateException disabled=IllegalStateException"
+        },
+        "parent": {
+          "return": "enabled=ran disabled=ran"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/34723",
+  "revisions": {
+    "parent": "3afd5511743840dd2c97d7410362963dd0d9f3e2",
+    "fix": "c168e1c2976267630d86c7114cf934a0f01aa8c9"
+  },
+  "entry": "SpringExtension",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#34723.1",
+      "role": "Intent",
+      "args": [
+        "child"
+      ],
+      "history": "Select only child for the service replacement. Compare the test field, both local service lookups and the greeting from each injected caller.",
+      "prediction": "The selector is unavailable on the parent revision. At the landing the parent lookup/caller should use P, while the child lookup, test field and child caller use the identical X instance.",
+      "basis": "Context names designate individual levels. A dependency created in the parent must still reference its own parent service. The landed child-only regression checks identity and both greetings.",
+      "refutation": "The parent serves X, the child still serves C, or the test field and child caller disagree.",
+      "expected": {
+        "fix": {
+          "return": "P/X local=true field=true"
+        },
+        "parent": {
+          "return": "selector unavailable"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34723.2",
+      "role": "Control",
+      "args": [
+        "all"
+      ],
+      "history": "Omit contextName and supply a single @TestBean factory producing the same greeting X at each level.",
+      "prediction": "On both revisions the override should apply at both levels and both callers should greet with X. Leave cross-level object identity unspecified.",
+      "basis": "The published change and annotation Javadoc retain the default policy of applying overrides to all levels.",
+      "refutation": "An unscoped override leaves an original greeting in one level or the test fails to initialize.",
+      "expected": {
+        "fix": {
+          "return": "X/X"
+        },
+        "parent": {
+          "return": "X/X"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34723.3",
+      "role": "Challenge",
+      "args": [
+        "split"
+      ],
+      "history": "Still on the landing, define two same-name overrides, one for parent with factory result A and one for child with result B. Give the test distinct fields and explicitly select the appropriate factory method for each.",
+      "prediction": "Both fields should refer to their respective local instances, the parent caller should return A, and the child caller B. Selecting the parent via child.getParent() should return A even after using B.",
+      "basis": "Context plus bean name identifies the target. A successful child lookup alone could conceal both fields resolving to the same level.",
+      "refutation": "A field, lookup or caller silently uses the other level’s marker.",
+      "expected": {
+        "fix": {
+          "return": "A/B fields=true parentAgain=A"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#34723.4",
+      "role": "Challenge",
+      "args": [
+        "cache"
+      ],
+      "history": "Use a shared parent config in two TestContext clients. In one child, mock FooService via @MockitoBean(contextName=\"child\"). In the other child mock BarService the same way. Keep the parent configuration and cache in the same JVM with no eviction.",
+      "prediction": "At the landing both should receive their child mocks and the parent ApplicationContext instance should be reused, with neither child-only mock registered locally in it.",
+      "basis": "Nothing about the parent’s effective configuration changed. The landed ReusedParentConfig pair checks child-only overrides against a parent whose fixture rejects a second initialization.",
+      "refutation": "Parent identity changes or its local type list includes a child-only mock.",
+      "expected": {
+        "fix": {
+          "return": "mocks=true parentReused=true parentClean=true"
+        }
+      }
+    }
+  ]
+}

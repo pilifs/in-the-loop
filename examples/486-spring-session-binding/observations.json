@@ -1,0 +1,76 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "332c97411a358bad2d64aab523d6da30036d2800090ca6b55004462ebe1f3a0f",
+  "runtimeSha256": "328469b83b97e62ae2c816cd30a9a620193edad6808710b64ee139d6042a26a9",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "b6b4899f772424ddad3302a2a7e0fb72c07e8ef24f977b08aa943467f53ad79a"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Listener.class": "2934f39a596437f89d4007becaff7196edbb7d85074e2fe9470ef54a8468d8be",
+        "PublicCaller.class": "2a98a80d0b68f873bbc00e893b702a3014c566fa5590f33020dbe09bbf826bcc",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1912.1",
+          "outcome": {
+            "return": "+A:A,+B:B stored=B"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1912.2",
+          "outcome": {
+            "return": "+A:A,-A:A stored=null"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1912.3",
+          "outcome": {
+            "return": "+A:A,+A:A,+B:B stored=B"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1912.1",
+          "outcome": {
+            "return": "+A:A,-A:A,+B:B stored=B"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1912.2",
+          "outcome": {
+            "return": "+A:A,-A:A stored=null"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1912.3",
+          "outcome": {
+            "return": "+A:A,-A:A,+B:B stored=B"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/mock/web/MockHttpSession.class": "247f81a7ab626355a9395e395e0fa9eff574b31442f9185f8df4db7ced97d29f"
+        },
+        "fix": {
+          "org/springframework/mock/web/MockHttpSession.class": "29551a44bf2ab6c24a01af0a2b869852c1ad0777dc0d9c7e29b1f2fdbc122081"
+        }
+      }
+    }
+  }
+}

@@ -71,6 +71,11 @@ ENTRIES = {
     "466": ("O09", "spring-web/src/main/java", "org.springframework.http.codec.ServerSentEventHttpMessageReader"
             "#buildEvent(Ljava/util/List;Lorg/springframework/core/ResolvableType;ZLjava/util/Map;)Ljava/lang/Object;"),
     "475": ("O18", "spring-jms/src/main/java", "org.springframework.jms.connection.SingleConnectionFactory#initConnection()V"),
+    "484": ("P07", "spring-context-support/src/main/java",
+            "org.springframework.mail.SimpleMailMessage#copyTo(Lorg/springframework/mail/MailMessage;)V"),
+    "497": ("P20", "spring-r2dbc/src/main/java",
+            "org.springframework.r2dbc.connection.R2dbcTransactionManager#doCleanupAfterCompletion"
+            "(Lorg/springframework/transaction/reactive/TransactionSynchronizationManager;Ljava/lang/Object;)Lreactor/core/publisher/Mono;"),
 }
 
 

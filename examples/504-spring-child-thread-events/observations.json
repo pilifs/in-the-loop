@@ -1,0 +1,87 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "8c9e5faff3bc830c512df96d14d704b1f68382931c10b34053a73a89b56f2671",
+  "runtimeSha256": "6433c3afa0ea7c68f570257fde7428ff154d204c7deb6f7858f5796aa9d26461",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "df49c98032dc969f8ff9c24b01c092e4927c5444a5adcec12548453a122f5b1c"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Config.class": "aed5f54f4d4f11395ee375587a32294762719cd19f9125ed6548c2134fc959ba",
+        "PublicCaller$CustomEvent.class": "d0a8f2d5fb5d21cc72a45dd84481ffcf752a2ff67bb8b774e6a248b333e13708",
+        "PublicCaller$Guard.class": "4c52d2f5ef6aa943f03a4feb3d7e85ae66fdb550c9f80d72355c66cb646aad73",
+        "PublicCaller$Recording.class": "780266ec308320bb8b03a9a8ac1fb562ad065055b1d28bf9361632313cae54db",
+        "PublicCaller.class": "c067203a4832d123adcff74dac4465f98300c6314fde8f2911aa96a4a1344db3",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30020.1",
+          "outcome": {
+            "return": "[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30020.2",
+          "outcome": {
+            "return": "[parent]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30020.3",
+          "outcome": {
+            "return": "child=IllegalStateException parent=[A]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#30020.4",
+          "outcome": {
+            "return": "enabled=ran disabled=ran"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30020.1",
+          "outcome": {
+            "return": "[child]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30020.2",
+          "outcome": {
+            "return": "[parent]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30020.3",
+          "outcome": {
+            "return": "child=[A, B] parent=[A, B]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#30020.4",
+          "outcome": {
+            "return": "enabled=IllegalStateException disabled=IllegalStateException"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

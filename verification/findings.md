@@ -256,6 +256,12 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 **14. Spring Framework, PR #37325. WebTestClient can reject an append to its live default headers.** Initializing a header through defaultHeader and appending through defaultHeaders on the same retained builder threw UnsupportedOperationException on the parent, the merge and Spring 7.0.10. Seeding through the consumer allowed the append. A fresh derivative successfully copied the convenience-initialized list on the merge. [Caller, controls and release results](../examples/463-spring-client-defaults/retained-builder/README.md)
 
+**15. Spring Framework, PR #36207. An empty YAML sequence ignores the caller's empty-value marker.** On the landing the protected flattening hook preserved the identical marker for both YAML null scalars and an empty mapping. An empty list mapped to a blank string. The ordinary properties factory kept its prior behavior. [Caller and adapter comparison](../examples/481-spring-yaml-empty-values/README.md)
+
+**16. Spring Framework, PR #36626. Copying a mail message can drop the date returned by an overridden getter.** A subclass whose getter returned 1234 ms and whose inherited field was unset copied 1234 by both routes on the parent. On the merge its constructed copy returned null and copying into a target left its previous 77 ms intact. [Mutation controls and both copy routes](../examples/484-spring-mail-date-copy/README.md)
+
+**17. Spring Framework, PR #37559. The default protobuf JSON Lines encoder splits two records into twelve lines.** The merged encoder selected the advertised media type. The compact printer produced two independently parseable messages. With the default printer all twelve physical lines failed independent parsing. [Generated protobuf messages and line reader](../examples/489-spring-protobuf-json-lines/README.md)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "505",
+  "title": "Class-level transaction propagation on event listeners",
+  "summary": "Event listener creation now rejects class-level REQUIRED. The method-level NOT_SUPPORTED override refreshed and received exactly one fallback event outside a transaction.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "validation-gap",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "RestrictedTransactionalEventListenerFactory.createApplicationListener"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Validate the effective transaction propagation when creating a transactional event listener, including the annotation on its containing class."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/33470"
+  },
+  "notes": [
+    "The forbidden and permitted method controls call the factory directly. The delivery history registers a managed listener with transaction management enabled."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "001e57833747d5988194694e5e871729db82575446212ddf5c79d016f54a8272",
+  "runtimeSha256": "9f570b55a1d84d588fa7120f3a71398037151491a904acd03e03eadbf30b4457",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "2c5041aa0e906923123d56ad431bc872ea52a9f945820c90057551dab5ed65b0"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Bean.class": "bbb78480dc2cfc825020778d2f3e2da265bdcd0f5750266db321d1bead9f3b0e",
+        "PublicCaller$Child.class": "cb4a63c9d6449ec26853f577e2586ebcf28ca431ba194852420964f34c1f2b9a",
+        "PublicCaller.class": "d3fe131f56e8759e1a3f8cd5b3b6ebe10abc2a5dbef93342115d17e6b93ffa32",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#21855.1",
+          "outcome": {
+            "return": "prefix"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#21855.2",
+          "outcome": {
+            "return": "control -> control2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#21855.3",
+          "outcome": {
+            "throws": "org.springframework.beans.NullValueInNestedPathException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#21855.1",
+          "outcome": {
+            "return": "full"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#21855.2",
+          "outcome": {
+            "return": "control -> control2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#21855.3",
+          "outcome": {
+            "return": "changed/prefix/changed keys=3"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/beans/AbstractNestablePropertyAccessor$PropertyHandler.class": "3a2e9b2976ce7be4f5463b73f0e681b1e7b9c5386cc860f9c67f0e096538ea2a",
+          "org/springframework/beans/AbstractNestablePropertyAccessor$PropertyTokenHolder.class": "dd2ee2425606d4ba5342788831b190ec4253690617ca2de8060de10b48d1c7af",
+          "org/springframework/beans/AbstractNestablePropertyAccessor.class": "c62e29cc51fd53c0236bbb6497391b6f6b887e5fa1805586812c73c5d4ae63b8"
+        },
+        "fix": {
+          "org/springframework/beans/AbstractNestablePropertyAccessor$PropertyHandler.class": "27c93db10dfc2c4dc3ccf59c4134bac177753fd29748d595fbcabbacf96a7154",
+          "org/springframework/beans/AbstractNestablePropertyAccessor$PropertyTokenHolder.class": "d14de0d8419d4668106dbc34b67a0534ff1a64a428130d5d2ee368b4f9540cd3",
+          "org/springframework/beans/AbstractNestablePropertyAccessor.class": "52278528ce9897784d1b5ef8a6f2cbfa86db66afd9e47f755b9c7c7def39041c"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "504",
+  "title": "Recording application events from a test's child threads",
+  "summary": "New child threads now share the recording test's events. In Jupiter the PER_CLASS and CONCURRENT combination was rejected with global parallelism both enabled and disabled.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ApplicationEvents.stream"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The test context shares its event recorder with threads created during the recording test. The JUnit Jupiter extension also rejects a specified combination of recording, concurrent execution and per-class test instances."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/30020"
+  },
+  "notes": [
+    "An actual EngineTestKit run checks the container error. The event cases create and join both children after the recording test starts."
+  ],
+  "verdictLabel": "4/4 merged predictions matched"
+}

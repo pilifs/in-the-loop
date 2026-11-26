@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37596",
+  "revisions": {
+    "parent": "dfbe36b4da5546752cd5914940a70671e5302f22",
+    "fix": "b98ad3cbe3943fbcb1d7300b3349bb0bcdafb9ba"
+  },
+  "entry": "RetryPolicy.Builder.build",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37596.1",
+      "role": "Intent",
+      "args": [
+        "old"
+      ],
+      "history": "After the edits, call A.shouldRetry on IllegalArgumentException and FileNotFoundException, in that order.",
+      "prediction": "Expect true and false on the parent, false and true at the landing.",
+      "basis": "A initially admits IOException and its subclasses. FileNotFoundException is such a subclass. The PR demonstrates a built policy changing when its builder's includes set changes.",
+      "refutation": "The merged A adopts either later rule.",
+      "expected": {
+        "fix": {
+          "return": "false,true"
+        },
+        "parent": {
+          "return": "true,false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37596.2",
+      "role": "Control",
+      "args": [
+        "new"
+      ],
+      "history": "Query B for ordinary IOException, IllegalArgumentException and FileNotFoundException.",
+      "prediction": "On both revisions expect true, true and false.",
+      "basis": "B was built after both edits. Its explicit subclass exclusion is more specific than the IOException inclusion.",
+      "refutation": "B loses the added rule, or retries the explicitly excluded file exception.",
+      "expected": {
+        "fix": {
+          "return": "true,true,false"
+        },
+        "parent": {
+          "return": "true,true,false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37596.3",
+      "role": "Challenge",
+      "args": [
+        "execute"
+      ],
+      "history": "On the landing execute a fresh operation through each template. Each operation throws FileNotFoundException on its first call and would return 7 on its second.",
+      "prediction": "With A expect two calls and result 7. With B expect one call and RetryException. Record the operation's own invocation count.",
+      "basis": "The same failure and retry budget pass through the public executor. Only A's snapshot permits a second attempt.",
+      "refutation": "A stops after one call, or B makes a second call despite the exclusion.",
+      "expected": {
+        "fix": {
+          "return": "2:7 / 1:RetryException"
+        }
+      }
+    }
+  ]
+}

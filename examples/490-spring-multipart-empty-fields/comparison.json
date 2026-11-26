@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37202",
+  "revisions": {
+    "parent": "2028c54d01de7fe15e29c1233b83170c3a05b591",
+    "fix": "4c8c6409a27a62ab163d3b6196ad862b7c835440"
+  },
+  "entry": "MultipartHttpMessageConverter.read",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37202.1",
+      "role": "Intent",
+      "args": [
+        "edges"
+      ],
+      "history": "Read the two supplied resources. One has empty text1 before text2=`a`, the other has text1=`a` before empty text2.",
+      "prediction": "The PR reports both lose the empty part on the parent. On the landing each key must have exactly one part with its stated value, including the zero-length string.",
+      "basis": "The Content-Disposition of each field is present on the wire. Moving it last changes the event that finalizes the part, not the count.",
+      "refutation": "Missing key, extra occurrence, null instead of the empty string, or loss of the neighboring `a`.",
+      "expected": {
+        "fix": {
+          "return": "text1=[<empty>];text2=[a] / text1=[a];text2=[<empty>]"
+        },
+        "parent": {
+          "return": "text2=[a] / text1=[a]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37202.2",
+      "role": "Control",
+      "args": [
+        "one"
+      ],
+      "history": "Send only a field named text1 containing `a`, with a normal closing boundary.",
+      "prediction": "Both should return the single value `a` and no text2 key.",
+      "basis": "An absent field has no headers. An existing body supplies one completion even before the fix.",
+      "refutation": "A phantom empty text2 appears or text1 occurs twice.",
+      "expected": {
+        "fix": {
+          "return": "text1=[a]"
+        },
+        "parent": {
+          "return": "text1=[a]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37202.3",
+      "role": "Challenge",
+      "args": [
+        "repeated"
+      ],
+      "history": "Use one name `item` three times in wire order with bodies empty, `a`, empty. Inspect the complete list and the part names.",
+      "prediction": "The landing should expose exactly three parts named item with values `[\"\", \"a\", \"\"]`.",
+      "basis": "Each disposition describes a distinct field occurrence. The middle field can encounter both body completion and a subsequent boundary.",
+      "refutation": "All keys exist and individual value searches pass, but the list loses, duplicates, or reorders an occurrence.",
+      "expected": {
+        "fix": {
+          "return": "item=[<empty>, a, <empty>]"
+        }
+      }
+    }
+  ]
+}

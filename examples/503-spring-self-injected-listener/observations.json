@@ -1,0 +1,74 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "367516226a1bc967457156726b9a11d47ce4ac4d0c4ad4701ac457bbdbd3f4a0",
+  "runtimeSha256": "dbdf33b0a7cc57519e181e3f2c838655ae660cb40ea1f5887aa26055ec6e9fa8",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "bb6cbde585cfd2c6145cd16a3d6b71842eb7b198659e72231716d77fb998c0dd"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$CountAdvice.class": "e85b03e765eaf5eabf1d2c503362ff8aa2d333d241c6b07301a5a611301a97b7",
+        "PublicCaller$Other.class": "d2df1f93204af326634afb4b0b926737c635094178891c555d01124f1203111a",
+        "PublicCaller.class": "f8d399915adc995790e7f313868afcd8ec5c0c48fdf0509f60db223cb163a8d5",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13",
+        "org/springframework/context/event/test/self_inject/MyApplication.class": "2698715d7e6510a9179d78d4f4422bb794fe7f1368decad7331aacf5695c1482",
+        "org/springframework/context/event/test/self_inject/MyAspect.class": "72817ca862980717fb694540ef8030a4962b0e627699eed6cbdc0ede504eef19",
+        "org/springframework/context/event/test/self_inject/MyEvent.class": "6cc4f1723646474317f3e91bcf56dc16867fa250c2230a7d0d1a853124c313d3",
+        "org/springframework/context/event/test/self_inject/MyEventListener.class": "382b04db6730d075b730e95305a25f500f75a1ee1c1ed2d7cb7e5a35b205fd22",
+        "org/springframework/context/event/test/self_inject/MyEventPublisher.class": "e9a861fbec852c7b4c35d0cdfc5e32f5642b5f977ff79b53b133a14fab88c8be"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#28322.1",
+          "outcome": {
+            "return": "callbacks=2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#28322.2",
+          "outcome": {
+            "return": "ordered=true count=2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#28322.3",
+          "outcome": {
+            "return": "first=2/1/1 second=2/1/1 identities=true"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#28322.1",
+          "outcome": {
+            "return": "callbacks=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#28322.2",
+          "outcome": {
+            "return": "ordered=true count=2"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#28322.3",
+          "outcome": {
+            "return": "first=1/1/1 second=1/1/1 identities=true"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

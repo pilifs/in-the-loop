@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "3dce83f795973afb09df74bb2c3c8f0bd998eb4a7d32a9a3185cac312ea047ca",
+  "runtimeSha256": "2c7fa5ba311a6c5980c670c7ea950cbb58156ca40334ff8beb8aba66762e31c7",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "2e0874cc8247b7f259335e4dfba3d27afa61e0573753ab2d1b59b6d12ac86fe7"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Provider.class": "0fbc0779acf9dc07ebd2cfa78631e6e4212b68a5595bfa1d19aaecad90e48983",
+        "PublicCaller.class": "2c2c26be261f44658612a64ebb486e832bf3d4aa6a6c62dccd2fc9862dc92f24",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#29703.1",
+          "outcome": {
+            "return": "IllegalTransactionStateException cause=false commits=1 rollbacks=0 restores=1 closes=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#29703.2",
+          "outcome": {
+            "return": "ok commits=1 rollbacks=0 restores=1 closes=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#29703.3",
+          "outcome": {
+            "return": "R2dbcTimeoutException cause=false commits=0 rollbacks=1 restores=1 closes=0 next=false"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#29703.1",
+          "outcome": {
+            "return": "ok commits=1 rollbacks=0 restores=1 closes=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#29703.2",
+          "outcome": {
+            "return": "ok commits=1 rollbacks=0 restores=1 closes=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#29703.3",
+          "outcome": {
+            "return": "BadSqlGrammarException cause=true commits=0 rollbacks=1 restores=1 closes=1 next=true"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

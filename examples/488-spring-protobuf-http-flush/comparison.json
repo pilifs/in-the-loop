@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/1532",
+  "revisions": {
+    "parent": "15c82afc1cdedc95b453e8f4ca61fd72f4a3ae82",
+    "fix": "c9afdce54bb702a5f60da1a7d83152ed7f8b8e1b"
+  },
+  "entry": "ProtobufHttpMessageConverter.write",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#1532.1",
+      "role": "Intent",
+      "args": [
+        "small"
+      ],
+      "history": "Write the small message and inspect the returned response.",
+      "prediction": "Migrated issue #20538 reports an empty JSON response with this provider. The parent is expected to reproduce that result for the short message. At the landing the decoded message should equal the input and Content-Type should specify JSON UTF-8.",
+      "basis": "JsonFormat.parser decodes the response independently of Spring’s writer. The pinned test checks message equality and absence of binary protobuf headers for JSON.",
+      "refutation": "A merged empty or malformed body, changed field, or binary schema/message header on the JSON response.",
+      "expected": {
+        "fix": {
+          "return": "roundtrip=true headers=true"
+        },
+        "parent": {
+          "return": "empty headers=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1532.2",
+      "role": "Control",
+      "args": [
+        "binary"
+      ],
+      "history": "With the same converter and message write ProtobufHttpMessageConverter.PROTOBUF, then read the bytes with Msg.parseFrom.",
+      "prediction": "Both revisions should round-trip the message with the schema and message headers sample.proto and Msg.",
+      "basis": "The binary encoding uses the generated parser and the fixture descriptor. It bypasses the changed JSON writer.",
+      "refutation": "The binary parser rejects the body, a field changes, or either descriptor header is wrong.",
+      "expected": {
+        "fix": {
+          "return": "roundtrip=true schema=sample.proto message=Msg"
+        },
+        "parent": {
+          "return": "roundtrip=true schema=sample.proto message=Msg"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1532.3",
+      "role": "Challenge",
+      "args": [
+        "large"
+      ],
+      "history": "Replace foo with 12000 ASCII letters followed by Ω and retain the nested field. Parse the entire JSON response.",
+      "prediction": "The landing should retain the exact length, final character and nested integer. The parent may emit a nonempty prefix if its character buffer fills, so length greater than zero alone is inconclusive.",
+      "basis": "A receiver has the known source string and an independent protobuf parser. Buffer boundaries do not alter the message.",
+      "refutation": "Parsing fails, the suffix is absent, or the nested field differs despite a nonempty body.",
+      "expected": {
+        "fix": {
+          "return": "roundtrip=true length=12001 last=Ω nested=123"
+        }
+      }
+    }
+  ]
+}

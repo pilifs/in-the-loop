@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "491",
+  "title": "Reusing Jackson's encoding buffers preserves the JSON stream",
+  "summary": "After encoding one JSON object the recycler's acquisitions and returns now balance. Two successive NDJSON streams preserved an embedded quote and newline.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "JacksonJsonEncoder.encode"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Both Jackson encoder families release the borrowed recycler after single-value encoding and after normal or exceptional termination of a Flux."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37059"
+  },
+  "notes": [
+    "A separate mapper decoded the actual bytes. The caller checks the pool after each synchronous subscription has unwound."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "492",
+  "title": "An interrupted stream read preserves bytes already copied",
+  "summary": "An interrupted empty read now throws with the interrupt flag set and cancels the source. A bulk read preserved three bytes at offset one before the next read threw.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "DataBufferUtils.subscriberInputStream"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The bridge from a publisher to an InputStream now distinguishes interruption before and after a bulk read has copied data. It preserves the thread's interrupt status."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37159"
+  },
+  "notes": [
+    "The controlled publisher stays open. A bounded reader observes the parent's continued wait, then sends completion and joins it. No competing byte is emitted."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

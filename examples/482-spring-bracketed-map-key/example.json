@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "482",
+  "title": "Map keys can contain balanced brackets in a bean property path",
+  "summary": "A balanced bracket inside a literal map key now selects the intended child. A quoted write left the similarly named decoy untouched.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "PropertyAccessorFactory.forBeanPropertyAccess"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Property access now finds the bracket that closes the whole map key, accounting for balanced brackets inside that key."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/21855"
+  },
+  "notes": [
+    "A direct read from the backing Java map checks both children and counts its keys after the write.",
+    "Each pin supplies its changed production classes on spring-beans 5.1.6.RELEASE. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

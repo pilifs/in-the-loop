@@ -66,7 +66,7 @@ def comparison_plan(folder):
     if services - {"postgres", "mysql"}:
         raise ValueError("unknown public comparison service")
     required = ["javac", "java"] + (["docker"] if services else [])
-    if any("sourceSlice" in d for d in runtime["deployments"].values()):
+    if any("sourceSlice" in d or "upstreamTestInputs" in d for d in runtime["deployments"].values()):
         required.append("git")
     if any("callOwner" in d for d in runtime["deployments"].values()):
         required.append("javap")
@@ -146,6 +146,46 @@ def class_digests(folder):
     return {p.relative_to(folder).as_posix(): upgrade_replay.sha(p) for p in sorted(folder.rglob("*.class"))}
 
 
+def jar_classes(archive):
+    """Identify the actual bytecode of each class in a prepared source slice."""
+    with zipfile.ZipFile(archive) as jar:
+        members = [item.filename for item in jar.infolist() if item.filename.endswith(".class")]
+        if not members or len(set(members)) != len(members):
+            raise ValueError("empty or duplicate slice classes")
+        return {name: hashlib.sha256(jar.read(name)).hexdigest() for name in sorted(members)}
+
+
+def upstream_test_inputs(cache, spec, deployment, work):
+    """Materialize the same original test types and resources at both caller boundaries."""
+    fixtures = deployment.get("upstreamTestInputs")
+    if not fixtures:
+        return [], None
+    tree = (cache / fixtures["tree"]).resolve(strict=True)
+    if not tree.is_relative_to(cache):
+        raise ValueError("upstream fixture tree outside cache")
+    revision = spec["revisions"]["fix"]
+    if not re.fullmatch(r"[0-9a-f]{40}", revision):
+        raise ValueError("invalid original fixture revision")
+    sources = []
+    resources = work / "resources"
+    for name, digest in fixtures["sha256"].items():
+        match = re.fullmatch(r"[\w-]+/src/test/(java|resources)/(.+)", name)
+        if not match or any(p in ("", ".", "..") for p in name.split("/")):
+            raise ValueError(f"invalid upstream test fixture path: {name}")
+        data = subprocess.check_output(["git", "-C", tree, "show", f"{revision}:{name}"])
+        if hashlib.sha256(data).hexdigest() != digest:
+            raise ValueError(f"upstream test fixture differs: {name}")
+        java = match[1] == "java"
+        dest = (work / "java" if java else resources) / match[2]
+        if dest.exists() or (java and dest.suffix != ".java"):
+            raise ValueError(f"ambiguous upstream test fixture: {name}")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(data)
+        if java:
+            sources.append(dest)
+    return sources, resources if resources.exists() else None
+
+
 def caller_invocations(jdk, folder, owner):
     code = upgrade_claims.disassemble(jdk, [folder], "PublicCaller", 15)
     sites = [{"caller": member[0], "offset": pc, "method": method, "descriptor": descriptor}
@@ -189,12 +229,14 @@ def replay(folder, record=False):
     if sha(jdk / "release") != runtime["jdkReleaseSha256"]:
         raise ValueError("JDK release differs from the registered deployment")
     sources = sorted((folder / "caller").rglob("*.java"))
+    adapters = {side: sorted((folder / "adapters" / side).rglob("*.java")) for side in SIDES}
     fixtures = sorted(p for p in (folder / "fixtures").rglob("*") if p.is_file())
     if not sources:
         raise ValueError("missing public caller")
     result = {"schema": "public-observations/v1", "comparisonSha256": sha(folder / "comparison.json"),
               "runtimeSha256": sha(folder / "runtime.json"), "launcherSha256": sha(upgrade_replay.LAUNCHER),
-              "inputs": {str(p.relative_to(folder)): sha(p) for p in sources + fixtures}, "deployments": {}}
+              "inputs": {str(p.relative_to(folder)): sha(p) for p in sources + fixtures +
+                         adapters["parent"] + adapters["fix"]}, "deployments": {}}
     with tempfile.TemporaryDirectory(prefix="public-comparison-") as tmp, ExitStack() as services:
         work = Path(tmp)
         for name, deploy in runtime["deployments"].items():
@@ -215,13 +257,19 @@ def replay(folder, record=False):
                                                         work / "slices" / name / side)
                     cp[side] = str(slices[side]) + os.pathsep + cp[side]
             per_side = deploy.get("compilePerSide", False)
+            compile_side = deploy.get("compileAgainst", "fix")
+            if compile_side not in SIDES or (per_side and "compileAgainst" in deploy):
+                raise ValueError("invalid caller compilation side")
+            if any(adapters.values()) and not (per_side and all(adapters.values())):
+                raise ValueError("revision-specific adapters require separate compilation on both revisions")
+            upstream, resources = upstream_test_inputs(cache, spec, deploy, work / "test-inputs" / name)
             classes = {}
-            for side in (SIDES if per_side else ("fix",)):
+            for side in (SIDES if per_side else (compile_side,)):
                 classes[side] = work / name / side
-                compile_java(jdk, cp[side], classes[side], [upgrade_replay.LAUNCHER, *sources],
+                compile_java(jdk, cp[side], classes[side], [upgrade_replay.LAUNCHER, *sources, *adapters[side], *upstream],
                              ["-parameters"] if deploy.get("parameterNames") else [])
             if not per_side:
-                classes["parent"] = classes["fix"]
+                classes = dict.fromkeys(SIDES, classes[compile_side])
             runs = []
             for side in SIDES:
                 providers = {cls: cache / deploy["classpath"][side][index] for cls, index in deploy["providers"].items()}
@@ -234,7 +282,8 @@ def replay(folder, record=False):
                         trial = Path(trial_path)
                         if fixtures:
                             shutil.copytree(folder / "fixtures", trial / "fixtures")
-                        actual = observe(jdk, str(classes[side]) + os.pathsep + cp[side], trial, "PublicCaller",
+                        caller_path = [str(classes[side]), *([str(resources)] if resources else []), cp[side]]
+                        actual = observe(jdk, os.pathsep.join(caller_path), trial, "PublicCaller",
                                          row["args"], providers, label=f"{folder.name} {side} {row['id']}",
                                          service_env=service_env, open_modules=deploy.get("openModules", ()))
                         print(f"{name} {side} {row['id']} {actual}", flush=True)
@@ -250,6 +299,9 @@ def replay(folder, record=False):
                     side: caller_invocations(jdk, classes[side], deploy["callOwner"]) for side in SIDES}
             if slices:
                 record_entry["sourceSliceClasses"] = {side: class_digests(slices[side]) for side in SIDES}
+            if deploy.get("preparedSlice"):
+                record_entry["preparedSliceClasses"] = {
+                    side: jar_classes(cache / deploy["classpath"][side][0]) for side in SIDES}
             result["deployments"][name] = record_entry
             if deploy.get("service") == "postgres":
                 result["deployments"][name]["postgresVersionNumber"] = int(service_env["PUBLIC_COMPARISON_PG_VERSION"])

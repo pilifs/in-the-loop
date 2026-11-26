@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/28322",
+  "revisions": {
+    "parent": "299a10ce2a909fab1c0fe810a9b7d84e01ffd7ef",
+    "fix": "20c688e68de2fe9db9dda95bb1b43c6147ae0007"
+  },
+  "entry": "ApplicationContext.publishEvent",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#28322.1",
+      "role": "Intent",
+      "args": [
+        "self"
+      ],
+      "history": "Publish one MyEvent in a fresh context with the self-injection enabled.",
+      "prediction": "Issue #28283 reports two listener deliveries from one publication. At the landing expect a listener count delta of exactly one.",
+      "basis": "One singleton listener subscribes to this event. Its self-reference and proxy do not constitute a second subscription. The regression checks one callback after publication.",
+      "refutation": "The first merged publication invokes the target zero times or twice.",
+      "expected": {
+        "fix": {
+          "return": "callbacks=1"
+        },
+        "parent": {
+          "return": "callbacks=2"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#28322.2",
+      "role": "Control",
+      "args": [
+        "plain"
+      ],
+      "history": "In a separate context use a plain singleton ApplicationListener<MyEvent> with neither self-injection nor advice. Publish two distinct events in sequence.",
+      "prediction": "Both revisions should deliver the two event objects once each in publication order.",
+      "basis": "Synchronous publication to one ordinary listener supplies a one-to-one reference history.",
+      "refutation": "An event disappears, repeats, or is delivered to that listener out of order.",
+      "expected": {
+        "fix": {
+          "return": "ordered=true count=2"
+        },
+        "parent": {
+          "return": "ordered=true count=2"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#28322.3",
+      "role": "Challenge",
+      "args": [
+        "advice"
+      ],
+      "history": "Give the aspect a counter restricted to the actual onApplicationEvent method, and add a distinct ordinary MyEvent listener with its own receipt list. Publish two events of the same type and source class on the landing.",
+      "prediction": "For each publication expect one target callback, one matching advice execution and one delivery to the second listener, including on the second publication. Compare per-event identities without requiring cross-listener ordering.",
+      "basis": "The proxy carries advice that direct target dispatch would bypass. Resolving a target/proxy pair must preserve the separate subscription when listener selection is reused.",
+      "refutation": "The target count is right but advice is skipped, the second listener is dropped, or the repeated publication duplicates delivery.",
+      "expected": {
+        "fix": {
+          "return": "first=1/1/1 second=1/1/1 identities=true"
+        }
+      }
+    }
+  ]
+}

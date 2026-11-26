@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/1912",
+  "revisions": {
+    "parent": "0001f87d59c9a247838ce0090771f351607263ce",
+    "fix": "70dbaf9751961fc9105241830fd206b873fb738c"
+  },
+  "entry": "MockHttpSession.setAttribute",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#1912.1",
+      "role": "Intent",
+      "args": [
+        "replace"
+      ],
+      "history": "Call setAttribute(`k`, A), then setAttribute(`k`, B).",
+      "prediction": "The parent should bind A then B, omitting A's unbind. The landing should bind A, unbind A, then bind B. After both writes getAttribute(`k`) should be B by identity.",
+      "basis": "There is one binding under k at a time. The landed overwrite test checks occupancy counters for both listeners.",
+      "refutation": "The old listener remains bound, the wrong receiver is notified, or the stored object differs from B.",
+      "expected": {
+        "fix": {
+          "return": "+A:A,-A:A,+B:B stored=B"
+        },
+        "parent": {
+          "return": "+A:A,+B:B stored=B"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1912.2",
+      "role": "Control",
+      "args": [
+        "remove"
+      ],
+      "history": "Starting empty, bind A once and call removeAttribute(`k`).",
+      "prediction": "Both revisions should log bind A and unbind A exactly once each. Both events should carry k, the session and A. getAttribute(`k`) should then be null.",
+      "basis": "The removal path sends the former object to its own listener. The original bind/remove regression observes a zero final counter.",
+      "refutation": "The lookup stays occupied or either event identifies the wrong name, session or object.",
+      "expected": {
+        "fix": {
+          "return": "+A:A,-A:A stored=null"
+        },
+        "parent": {
+          "return": "+A:A,-A:A stored=null"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1912.3",
+      "role": "Challenge",
+      "args": [
+        "equal"
+      ],
+      "history": "On the landing use two distinct listeners that compare equal. Bind A, set A again, then set B. Compare both object identities in the log.",
+      "prediction": "Only the second call should be silent. Expect bind A, unbind A, bind B and final lookup B.",
+      "basis": "The same object remains bound on the second write. Equal application values can be distinct lifecycle participants on the third write.",
+      "refutation": "There is an extra bind for A, or equality suppresses the transition to B.",
+      "expected": {
+        "fix": {
+          "return": "+A:A,-A:A,+B:B stored=B"
+        }
+      }
+    }
+  ]
+}

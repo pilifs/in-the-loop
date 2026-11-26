@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37349",
+  "revisions": {
+    "parent": "4d3beb5c3bbdfd781a18f73693f97f8abac67154",
+    "fix": "6afb65b225df5211365647f68090fb10a02afbba"
+  },
+  "entry": "MergedAnnotation.of",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37349.1",
+      "role": "Intent",
+      "args": [
+        "codes"
+      ],
+      "history": "Read the scalar Integer 7 as the `codes` member.",
+      "prediction": "The PR describes an IllegalStateException on adaptation in the parent. The landing should return primitive `int[] {7}`.",
+      "basis": "The member return type is `int[]`. A one-element array of boxed Integer has a different runtime class.",
+      "refutation": "The merged read throws, returns a boxed array through generic access, or changes 7.",
+      "expected": {
+        "fix": {
+          "return": "int[] [7]"
+        },
+        "parent": {
+          "return": "IllegalStateException"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37349.2",
+      "role": "Control",
+      "args": [
+        "ordinary"
+      ],
+      "history": "Read scalar `east` as `names`, then supply `new int[] {7,9}` for `codes`.",
+      "prediction": "Both should return respectively `String[] {\"east\"}` and the two primitive integers in order.",
+      "basis": "The existing reference-array and already-correct-array paths have no boxing mismatch.",
+      "refutation": "A scalar string stops adapting or a supplied array loses its second element.",
+      "expected": {
+        "fix": {
+          "return": "String[] [east] int[] [7, 9]"
+        },
+        "parent": {
+          "return": "String[] [east] int[] [7, 9]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37349.3",
+      "role": "Challenge",
+      "args": [
+        "synthesize"
+      ],
+      "history": "Compare the synthesized annotation with one obtained via reflection from a class annotated `@Options(codes={7}, names={\"east\"})`.",
+      "prediction": "On the landing, `Arrays.equals` between their `codes()` results and between their `names()` results should hold.",
+      "basis": "The Java compiler determines the reflected member types and values independently of Spring’s map adapter.",
+      "refutation": "The typed map accessor passes but a synthesized member throws, is empty, or differs from its compiled counterpart.",
+      "expected": {
+        "fix": {
+          "return": "codes=true names=true"
+        }
+      }
+    }
+  ]
+}

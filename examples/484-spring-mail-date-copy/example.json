@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "484",
+  "title": "A mail message owns its sent date across setters, getters and copies",
+  "summary": "Ordinary message copies now retain the original 1234 ms through mutations of the input, getter and target. Both copy paths skipped a subclass's getter-provided date.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "SimpleMailMessage.copyTo"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "`SimpleMailMessage` clones a non-null `Date` on input, output, construction from another message, and transfer to a `MailMessage`. The copy paths also change how they read the original date."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36626"
+  },
+  "notes": [
+    "The subclass leaves the inherited field unset. Its getter still returned 1234. The constructed copy returned null and the pre-populated target retained 77."
+  ],
+  "verdictLabel": "2/3 merged predictions matched"
+}

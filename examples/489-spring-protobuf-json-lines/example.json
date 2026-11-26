@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "489",
+  "title": "JSON Lines selection and physical line boundaries for protobuf",
+  "summary": "The compact encoder now selects JSONL and produces two parseable records. The default printer produced 12 physical lines for those two messages, none independently parseable.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ProtobufJsonEncoder.encode"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The protobuf JSON encoder adds application/jsonl to the media types it can encode. Its streaming media list already advertised that type."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37559"
+  },
+  "notes": [
+    "The observer concatenates the actual bytes and splits at LF. Each complete record is checked against its original generated message. NDJSON with the compact printer stayed stable."
+  ],
+  "verdictLabel": "2/3 merged predictions matched"
+}

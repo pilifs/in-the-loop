@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37531",
+  "revisions": {
+    "parent": "a38ebf4b7cffe5946e07d0fb8ef2d7dc0ec9bbe3",
+    "fix": "18860f5732ac4bccdd26bb4254f23ec57f4bd99c"
+  },
+  "entry": "MultipartHttpMessageConverter.read",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37531.1",
+      "role": "Intent",
+      "args": [
+        "memory"
+      ],
+      "history": "With the large limit, read all bytes via content() twice using separately opened streams. Then transferTo a path and read that path with Files.readAllBytes.",
+      "prediction": "The PR reports the first read succeeds and subsequent reads/copies can be empty on the parent. All three merged observations should equal abcdef.",
+      "basis": "A fresh reader of a retained upload and a copy of the same file should each start at byte zero. The regression exercises both operations.",
+      "refutation": "Any merged read or the independently opened file loses bytes.",
+      "expected": {
+        "fix": {
+          "return": "abcdef/abcdef/abcdef"
+        },
+        "parent": {
+          "return": "abcdef//"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37531.2",
+      "role": "Control",
+      "args": [
+        "disk"
+      ],
+      "history": "Use the one-byte limit and repeat both reads and the copy.",
+      "prediction": "Both revisions should yield abcdef three times.",
+      "basis": "The six-byte file exceeds this threshold. The disk implementation opens its backing file anew for each read or copy.",
+      "refutation": "Any output is empty, truncated or reordered.",
+      "expected": {
+        "fix": {
+          "return": "abcdef/abcdef/abcdef"
+        },
+        "parent": {
+          "return": "abcdef/abcdef/abcdef"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37531.3",
+      "role": "Challenge",
+      "args": [
+        "interleave"
+      ],
+      "history": "At the landing open stream A, consume just a, then open B. Read B completely, overwrite an existing longer destination using transferTo and finish A.",
+      "prediction": "B and the destination should each equal abcdef. A should still yield bcdef. Repeat at both thresholds.",
+      "basis": "Independent cursors permit interleaving. Replacing the destination must discard its old tail without resetting or advancing A.",
+      "refutation": "B starts at b, the old tail survives, or finishing A yields anything other than bcdef.",
+      "expected": {
+        "fix": {
+          "return": "a/abcdef/abcdef/bcdef | a/abcdef/abcdef/bcdef"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "481",
+  "title": "Choosing a value for empty YAML entries",
+  "summary": "The new YAML hook retained a caller-selected marker for an empty mapping and both null scalars. An empty sequence still became an empty string.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "special-values",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "YamlProcessor.getFlattenedMap"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "The YAML processor changes its protected two-argument flattening hook into a three-argument hook accepting a caller-selected empty value. The public properties factory retains its default policy."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36207"
+  },
+  "notes": [
+    "The adapter for each revision directly calls its protected overload. The common caller tests key presence and marker identity. The proposed uniform empty-container behavior was refuted."
+  ],
+  "verdictLabel": "2/3 merged predictions matched"
+}

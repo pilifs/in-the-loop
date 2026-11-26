@@ -1,0 +1,84 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/22260",
+  "revisions": {
+    "parent": "4c9ae6494f181967f5f28f06574f6d5f3ff7f9d8",
+    "fix": "00855c4f5f4e0f028212268a98a23b3009c3f7d4"
+  },
+  "entry": "BeanContainer.getBean",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#22260.1",
+      "role": "Intent",
+      "args": [
+        "injected"
+      ],
+      "history": "Request multiple-1 by name and MultiplePrototypesInSpringContextTestBean.class with JPA-compliant creation and caching enabled.",
+      "prediction": "The PR reports missing injection on the parent. At the landing the instance must have name multiple-1 and the same ApplicationContext object that bootstrapped the fixture, with no fallback calls.",
+      "basis": "The XML gives the requested prototype its name, and the base test bean declares an @Autowired ApplicationContext. Both are independently observable.",
+      "refutation": "A merged instance has a missing context, a sibling’s name, or came from the fallback.",
+      "expected": {
+        "fix": {
+          "return": "multiple-1 context=true calls=0/0"
+        },
+        "parent": {
+          "return": "multiple-1 context=false calls=0/0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#22260.2",
+      "role": "Intent",
+      "args": [
+        "fallback"
+      ],
+      "history": "With native uncached options request an absent name X for the upstream NoDefinitionInSpringContextTestBean and return distinguishable instances from the two producer overloads.",
+      "prediction": "The PR reports the parent can call the unnamed producer. The landing must invoke only produceBeanInstance(X, type), once, returning its X instance.",
+      "basis": "Hibernate’s named request supplies X. The producer’s arguments and returned marker show whether the entire request crossed the fallback boundary.",
+      "refutation": "The unnamed overload runs, another name reaches it, or the container substitutes another instance.",
+      "expected": {
+        "fix": {
+          "return": "X calls=0/1"
+        },
+        "parent": {
+          "return": "unnamed calls=1/0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#22260.3",
+      "role": "Control",
+      "args": [
+        "prototype"
+      ],
+      "history": "Request SinglePrototypeInSpringContextTestBean by type with native uncached options twice, using the upstream XML.",
+      "prediction": "Both should return distinct Spring prototypes named single, each with the originating context, without using either fallback.",
+      "basis": "An unambiguous native type lookup of a Spring prototype creates a fresh instance per request. The existing type-only path is independent of the named dispatch.",
+      "refutation": "Identity is reused, an injected context is missing, or a producer is called.",
+      "expected": {
+        "fix": {
+          "return": "single/single distinct=true contexts=true calls=0/0"
+        },
+        "parent": {
+          "return": "single/single distinct=true contexts=true calls=0/0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#22260.4",
+      "role": "Challenge",
+      "args": [
+        "decoy"
+      ],
+      "history": "Retain native uncached options. Register exactly one named prototype of type T as known. Ask for missing by name and T, then for known and T.",
+      "prediction": "At the landing the first call should return the named fallback’s missing instance. The second must return the registered Spring prototype. The parent’s fallback to type lookup predicts known can answer the missing-name request.",
+      "basis": "A matching type elsewhere does not satisfy a lookup for a specific absent name. The registered bean serves as a decoy and then as a positive control.",
+      "refutation": "Either call returns the other call’s instance, Spring answers missing with known, or the producer receives known.",
+      "expected": {
+        "fix": {
+          "return": "missing/known distinct=true calls=0/1"
+        }
+      }
+    }
+  ]
+}

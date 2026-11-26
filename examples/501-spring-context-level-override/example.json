@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "501",
+  "title": "A test bean override can target one level of a context hierarchy",
+  "summary": "A child-only override now preserves the parent greeting and field identity. Two different mocked children reused the identical parent with neither mock registered there.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "SpringExtension"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "@TestBean, @MockitoBean and @MockitoSpyBean acquire contextName. TestContext uses the matching @ContextConfiguration name to limit the override and inject the field from that level."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/34723"
+  },
+  "notes": [
+    "Each hierarchy is declared on the concrete Jupiter test. Both mock clients run on the same JVM and Spring context cache."
+  ],
+  "verdictLabel": "4/4 merged predictions matched"
+}

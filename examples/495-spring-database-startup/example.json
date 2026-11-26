@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "495",
+  "title": "A JDBC startup check can succeed without a validation query",
+  "summary": "Startup now uses JDBC isValid(1) when no SQL is configured. An invalid first loan and a throwing first loan each closed before the second was validated.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "DatabaseStartupValidator.afterPropertiesSet"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "DatabaseStartupValidator uses JDBC 4 Connection.isValid when no SQL is configured and retains the explicit validation-query path."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/25305"
+  },
+  "notes": [
+    "Two distinct connection objects record acquisitions, timeout, calls and closes. The explicit SELECT 1 control records the statement close separately.",
+    "Each pin supplies its changed production classes on spring-jdbc 5.2.7.RELEASE. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

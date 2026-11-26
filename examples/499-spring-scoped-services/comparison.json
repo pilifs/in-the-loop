@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/35627",
+  "revisions": {
+    "parent": "05814f7a421508ad4c600780a641c3b3aa26f44b",
+    "fix": "df67c1cf2d4d477e78d8711c9a875608acf9d5e9"
+  },
+  "entry": "AnnotationConfigApplicationContext.refresh",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#35627.1",
+      "role": "Intent",
+      "args": [
+        "proxied"
+      ],
+      "history": "Start the context with all three scoped proxies and invoke the unqualified consumer.",
+      "prediction": "Issue #35626 reports three candidates and an ambiguous dependency before the fix. At the landing refresh should succeed and route should return D(L,C).",
+      "basis": "@Bean documents defaultCandidate=false as excluding plain-type injection while permitting a qualifier. Only dispatcher meets that plain-type contract.",
+      "refutation": "The merged context fails to select a service, or route invokes either restricted delegate directly.",
+      "expected": {
+        "fix": {
+          "return": "D(L,C)"
+        },
+        "parent": {
+          "return": "NoUniqueBeanDefinitionException"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#35627.2",
+      "role": "Control",
+      "args": [
+        "plain"
+      ],
+      "history": "Keep the same bean definitions and qualifiers but remove the scoped proxies.",
+      "prediction": "Both revisions should produce D(L,C).",
+      "basis": "The issue reports normal behavior after dropping proxy mode. Without proxy creation the original candidacy settings apply directly.",
+      "refutation": "Refresh fails or a delegate selected by qualifier changes.",
+      "expected": {
+        "fix": {
+          "return": "D(L,C)"
+        },
+        "parent": {
+          "return": "D(L,C)"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#35627.3",
+      "role": "Challenge",
+      "args": [
+        "extra"
+      ],
+      "history": "Add a third interface-proxied defaultCandidate=false delegate archive, returning A, and a consumer with @Qualifier(\"archive\"). Retain the existing unqualified consumer.",
+      "prediction": "At the landing the new consumer must return A while the old route still returns D(L,C).",
+      "basis": "Adding an explicitly restricted bean should enlarge the qualified choices without changing ordinary type selection. Invoking both consumers crosses the proxy boundary.",
+      "refutation": "The extra bean introduces ambiguity, becomes the implicit service, or cannot be reached by its qualifier.",
+      "expected": {
+        "fix": {
+          "return": "D(L,C) / A"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/23562",
+  "revisions": {
+    "parent": "f0e160fc67d276d22b2908b6421351feeba7f492",
+    "fix": "393a81d4a9d206cb7c7ff5184475ca1907c9de3f"
+  },
+  "entry": "TransactionalOperator.transactional",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#23562.1",
+      "role": "Intent",
+      "args": [
+        "gate"
+      ],
+      "history": "Release the commit gate after the upstream has emitted and commit has been subscribed.",
+      "prediction": "The PR attributes a cancellation to the parent shortcut. On the landing the work should receive no cancellation and the subscriber should obtain 7 and normal completion after one commit, with zero rollbacks.",
+      "basis": "The landed regression observes cancellation directly. Normal completion of a one-element transaction supplies both its value and a reason to commit.",
+      "refutation": "Cancellation reaches the work on the landing, the value disappears, or completion is observed before the gated commit finishes.",
+      "expected": {
+        "fix": {
+          "return": "cancel=false early=false values=[7] complete=true commits=1 rollbacks=0"
+        },
+        "parent": {
+          "return": "cancel=true early=true values=[7] complete=true commits=1 rollbacks=0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#23562.2",
+      "role": "Control",
+      "args": [
+        "error"
+      ],
+      "history": "Use `Mono.error(marker)` as the work, with a manager whose rollback completes normally.",
+      "prediction": "Both should emit the application error, no success value, and roll back once without committing.",
+      "basis": "The upstream rollback test exercises an application exception. No value is available for `next()` to select on the parent.",
+      "refutation": "The marker is lost, commit is subscribed, or rollback is skipped.",
+      "expected": {
+        "fix": {
+          "return": "marker=true values=[] commits=0 rollbacks=1"
+        },
+        "parent": {
+          "return": "marker=true values=[] commits=0 rollbacks=1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#23562.3",
+      "role": "Challenge",
+      "args": [
+        "visible"
+      ],
+      "history": "Using a transactional database, insert a unique id through a Mono returning the update count. After the transactional Mono completes, read that id using a separate connection to the same database.",
+      "prediction": "At the landing completion should imply exactly one visible row and count 1, even if commit was delayed. The parent may expose the count before the row is visible.",
+      "basis": "A read-committed independent connection cannot see an uncommitted insert. Issue #23304 describes that visibility gap on the related `execute(...).next()` path.",
+      "refutation": "The Mono completes successfully but the immediately subsequent independent read cannot find the row.",
+      "expected": {
+        "fix": {
+          "return": "count=1 visibleAtCompletion=1 visibleAfterRelease=1"
+        }
+      }
+    }
+  ]
+}

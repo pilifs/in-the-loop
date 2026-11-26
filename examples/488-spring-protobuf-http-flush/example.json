@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "488",
+  "title": "Writing protobuf JSON flushes the complete response body",
+  "summary": "The Google protobuf JSON response now round-trips both messages. The parent returned an empty short body and an incomplete 8192-byte prefix for the larger message.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ProtobufHttpMessageConverter.write"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The Google protobuf JSON writer flushes its character buffer before the HTTP converter returns."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/1532"
+  },
+  "notes": [
+    "The public constructor selected the Google implementation with the alternative formatter absent. The generated binary parser also checked the independent protobuf control.",
+    "Each pin supplies its changed production classes on spring-web 5.0.0.RC4. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

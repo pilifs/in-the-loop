@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37351",
+  "revisions": {
+    "parent": "06c597ed6fa8bdde6b8155a9587a9250936dd402",
+    "fix": "1b4955e49f06a791a1b5f3f7333ab631cab5a293"
+  },
+  "entry": "LinkedCaseInsensitiveMap.computeIfAbsent",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37351.1",
+      "role": "Intent",
+      "args": [
+        "failed"
+      ],
+      "history": "Compute Key with a function returning null. On another empty map use a function throwing a particular IllegalStateException.",
+      "prediction": "Both revisions should return null or propagate the exception respectively. The PR reports containsKey(key) true on the parent despite size zero. The landing must report false, size zero, get(key) null and an empty key set after each call.",
+      "basis": "Map.computeIfAbsent records no mapping when the function returns null or throws. Iteration and lookup describe the same mappings.",
+      "refutation": "A merged map reports membership, contains an entry, or swallows the exception.",
+      "expected": {
+        "fix": {
+          "return": "null:0,false,null,[] / marker:0,false,null,[]"
+        },
+        "parent": {
+          "return": "null:0,true,null,[] / marker:0,true,null,[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37351.2",
+      "role": "Control",
+      "args": [
+        "existing"
+      ],
+      "history": "Start with put(Key, null), then computeIfAbsent(KEY, k -> null).",
+      "prediction": "Both should return null and retain exactly the pre-existing Key mapping, including its original spelling and case-insensitive membership.",
+      "basis": "A null-valued mapping already existed and no replacement was supplied. The landed regression distinguishes this history from an empty map.",
+      "refutation": "The mapping disappears, changes spelling, or acquires a value.",
+      "expected": {
+        "fix": {
+          "return": "null:1,true,null,[Key]"
+        },
+        "parent": {
+          "return": "null:1,true,null,[Key]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37351.3",
+      "role": "Challenge",
+      "args": [
+        "retry"
+      ],
+      "history": "After the failed absent-key computation, compute KEY successfully with a function recording its argument and returning v. Remove through kEy.",
+      "prediction": "The landing should pass KEY to the second function, expose exactly KEY in iteration, return v from removal and finish empty with containsKey(Key) false. The PR reports the parent can reuse the first unsuccessful spelling.",
+      "basis": "The first call added no mapping. The second spelling is therefore the first successful insertion, and removal addresses that same entry irrespective of case.",
+      "refutation": "The function sees Key, iteration exposes Key, or removal leaves stale membership.",
+      "expected": {
+        "fix": {
+          "return": "KEY:[KEY]:v:0,false,null,[]"
+        }
+      }
+    }
+  ]
+}

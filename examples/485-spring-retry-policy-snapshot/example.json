@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "485",
+  "title": "A built retry policy keeps its exception rules",
+  "summary": "A built retry policy now keeps its original exception rules. Its executor retried the file exception and returned 7 while the newer policy stopped after one call.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "RetryPolicy.Builder.build"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Building a policy snapshots the sets of included and excluded exception classes."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37596"
+  },
+  "notes": [
+    "Both operations have independent invocation counters. The budgets and thrown exception classes are the same."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

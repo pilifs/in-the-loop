@@ -1,0 +1,92 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "0dedfe970295497c254a42769428f0674c7eb6d8fc331b51348b547f15e562e5",
+  "runtimeSha256": "85432f94232368142bd60b9b33fba590b3cee2b3a24b4524cf28cf56252a52b8",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "b9e17cf41f5f98e488237f78977525220ce7a9a39b8f07c6eeb984235e52effb"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "b73e01f04f9a429a63dd80e623a74c43b2758f9b9c83fded5ea36a09219cc082",
+        "UpgradeObservation.class": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+        "org/springframework/http/MockHttpOutputMessage.class": "9ea199ea75c1b681d2590d4a311c235fe6f3253eba5b702d67307f825298d29c",
+        "org/springframework/protobuf/Msg$1.class": "5cc7304f9d53e241e5b170d0ce1c1985aa30fc7f4ccfe6496a649163bcb85568",
+        "org/springframework/protobuf/Msg$Builder.class": "5a698dddce8c7ca08384e247579ae28cae67936be7e357c04667b21ca1ba827d",
+        "org/springframework/protobuf/Msg.class": "53d6d1c1ef6493abf502cc9067dde65f52d01be736cb7024a465dad3f82e7c22",
+        "org/springframework/protobuf/MsgOrBuilder.class": "b3f2fc179c6d0c3b33bbaa0846dc39ec513f7267a6cd05ed1efa2e39f05e6c75",
+        "org/springframework/protobuf/OuterSample$1.class": "ed9487f71c113768ade18d90ac5cd3bd5e1f2e9c8a206c6906c21374217ec056",
+        "org/springframework/protobuf/OuterSample.class": "0f3422c6236155fb0aa061cd3a415577c70412e8360dc57b48d03fa63bd38c40",
+        "org/springframework/protobuf/SecondMsg$1.class": "feed6af121acab3d39a64ff91fd8d9dd11fc581bcf035f5d51c77e0027b87b77",
+        "org/springframework/protobuf/SecondMsg$Builder.class": "a8be7732e9342df7d074b1cb819f493059269ab7b033ac7d8ab44f31c48e3685",
+        "org/springframework/protobuf/SecondMsg.class": "52604d67df49a28fc12103bd59d74a1fdcb1a90f9dd1b4baf36fc50e32dd0ac5",
+        "org/springframework/protobuf/SecondMsgOrBuilder.class": "648838ec67da4be435d97a334ba9dd21b3d148b00729276b53498a5eab46fd07"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1532.1",
+          "outcome": {
+            "return": "empty headers=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1532.2",
+          "outcome": {
+            "return": "roundtrip=true schema=sample.proto message=Msg"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#1532.3",
+          "outcome": {
+            "return": "incomplete bytes=8192"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1532.1",
+          "outcome": {
+            "return": "roundtrip=true headers=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1532.2",
+          "outcome": {
+            "return": "roundtrip=true schema=sample.proto message=Msg"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#1532.3",
+          "outcome": {
+            "return": "roundtrip=true length=12001 last=Ω nested=123"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter$ProtobufFormatSupport.class": "92941c7a4b397f4bd157df1c020d85a3f53f37df6c8fab7158e499dd66f14ac3",
+          "org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter$ProtobufJavaFormatSupport.class": "2d6e9d84e5da9f130e64f5820b200850d35deca11e096be43c270493991937c2",
+          "org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter$ProtobufJavaUtilSupport.class": "039eace814fc9291fe05d6d96be3d20ae90f185c3ed301469ad22068e2fa7d4e",
+          "org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter.class": "a9838230279a078492dcbaa64c1cadb0da5bc808d78d05137c2b1dc93e8bb41f"
+        },
+        "fix": {
+          "org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter$ProtobufFormatSupport.class": "92941c7a4b397f4bd157df1c020d85a3f53f37df6c8fab7158e499dd66f14ac3",
+          "org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter$ProtobufJavaFormatSupport.class": "2d6e9d84e5da9f130e64f5820b200850d35deca11e096be43c270493991937c2",
+          "org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter$ProtobufJavaUtilSupport.class": "3b3a46ea1f7e3c622c65133f23c71ce5113ad6f8817cde669f0513d8115a6b4d",
+          "org/springframework/http/converter/protobuf/ProtobufHttpMessageConverter.class": "a9838230279a078492dcbaa64c1cadb0da5bc808d78d05137c2b1dc93e8bb41f"
+        }
+      }
+    }
+  }
+}

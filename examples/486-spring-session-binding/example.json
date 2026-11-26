@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "486",
+  "title": "Replacing a session attribute notifies the displaced listener",
+  "summary": "Replacing a session attribute now unbinds the displaced listener before binding its replacement. Rebinding the same object was silent.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "duplicate-delivery",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "MockHttpSession.setAttribute"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "MockHttpSession now sends an unbind event to a displaced attribute and suppresses a redundant bind when the identical instance is stored again."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/1912"
+  },
+  "notes": [
+    "The public javax.servlet mock records the receiver, callback phase, session, attribute name and value. The challenge uses distinct listeners with equal application values.",
+    "Each pin supplies its changed production classes on spring-test 5.1.0.RC1. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

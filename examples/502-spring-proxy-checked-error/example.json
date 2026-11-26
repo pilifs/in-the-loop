@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "502",
+  "title": "CGLIB advice sees a checked exception before the caller receives its wrapper",
+  "summary": "CGLIB advice now sees the original undeclared checked exception. The caller still receives its wrapper, and type-specific advice can recover normally.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "jvm-internals",
+    "unmapped-exception",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ProxyFactory.getProxy"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "An advised class-based proxy moves wrapping of an undeclared checked exception to the generated proxy boundary. Advice can once again classify the exception thrown by the target."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/32469"
+  },
+  "notes": [
+    "The caller and interceptor compare the exact exception objects. A JDK proxy and declared and unchecked failures supply controls."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

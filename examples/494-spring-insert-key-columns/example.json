@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "494",
+  "title": "Rejecting conflicting generated-key and declared insert columns before execution",
+  "summary": "Overlapping generated and supplied columns now fail during compilation. Correcting that same insert after failure returned a key identifying the only Sven row.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "validation-gap",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "SimpleJdbcInsert.executeAndReturnKey"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "SimpleJdbcInsert compilation rejects an explicit insert column that is also named as generated. Matching ignores case and the diagnostic retains the declared spelling."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37014"
+  },
+  "notes": [
+    "The observer checks the failure type, declared column spelling, compiled state, table count and the row reached through the returned key."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

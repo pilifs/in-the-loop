@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/33470",
+  "revisions": {
+    "parent": "e3cf23d15aae9bfd8fe5c5bbfc505942d3ea28fe",
+    "fix": "cc3948e14cbca6ba9f40607fcc456da842b93279"
+  },
+  "entry": "RestrictedTransactionalEventListenerFactory.createApplicationListener",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#33470.1",
+      "role": "Intent",
+      "args": [
+        "class"
+      ],
+      "history": "Create the listener with only the class-level transaction annotation.",
+      "prediction": "Before, the factory should return a listener. After, it should throw IllegalStateException at registration.",
+      "basis": "The PR reports missing validation for the service-level annotation. The factory contract permits only REQUIRES_NEW and NOT_SUPPORTED when a transaction annotation applies.",
+      "refutation": "A listener is returned on the merge, or the parent already rejects this fixture.",
+      "expected": {
+        "fix": {
+          "return": "IllegalStateException"
+        },
+        "parent": {
+          "return": "accepted"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#33470.2",
+      "role": "Control",
+      "args": [
+        "method"
+      ],
+      "history": "Move REQUIRED to the method and remove the class-level annotation. Then change only the method propagation to REQUIRES_NEW.",
+      "prediction": "On both revisions the first factory call throws IllegalStateException and the second returns a listener.",
+      "basis": "Issues #30679 and #31414 establish the pre-existing restriction for methods. REQUIRES_NEW is an explicitly allowed propagation.",
+      "refutation": "The forbidden method is accepted or the allowed method is rejected.",
+      "expected": {
+        "fix": {
+          "return": "IllegalStateException/accepted"
+        },
+        "parent": {
+          "return": "IllegalStateException/accepted"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#33470.3",
+      "role": "Challenge",
+      "args": [
+        "receipt"
+      ],
+      "history": "Keep REQUIRED on the class. Override the listener method with NOT_SUPPORTED and set fallbackExecution=true on its event annotation. Register it in a fresh AnnotationConfigApplicationContext with @EnableTransactionManagement and a transaction manager. After refresh, publish the string \"receipt\" outside a transaction.",
+      "prediction": "Both revisions should refresh and the listener should record [\"receipt\"] once. The method override remains effective despite the class declaration.",
+      "basis": "Method transaction metadata takes precedence. Issue #31907 permits NOT_SUPPORTED, and fallbackExecution explicitly enables delivery outside a transaction.",
+      "refutation": "Refresh fails because of the outer annotation, or publication leaves an empty or duplicate receipt.",
+      "expected": {
+        "fix": {
+          "return": "[receipt]"
+        },
+        "parent": {
+          "return": "[receipt]"
+        }
+      }
+    }
+  ]
+}

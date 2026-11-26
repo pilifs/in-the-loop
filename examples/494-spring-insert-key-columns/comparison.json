@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37014",
+  "revisions": {
+    "parent": "99f2ccc2ecce47bbe35c5c7552f2aa5b22ae606c",
+    "fix": "e06482ad519d1040a1d0a95e8e2f696cf89d7362"
+  },
+  "entry": "SimpleJdbcInsert.executeAndReturnKey",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37014.1",
+      "role": "Intent",
+      "args": [
+        "compile"
+      ],
+      "history": "Compile that mixed-case overlapping configuration.",
+      "prediction": "The parent should compile, with the mismatch deferred until binding or execution. The landing should throw InvalidDataAccessApiUsageException naming ID and generated key columns, leave isCompiled() false and write no rows.",
+      "basis": "A generated column and a supplied value claim the same slot. compile is the configuration boundary. The upstream regression asserts the exception type and declared spelling.",
+      "refutation": "Compilation succeeds on the landing, a late JDBC exception replaces the configuration error, or it reports the wrong offending column.",
+      "expected": {
+        "fix": {
+          "return": "InvalidDataAccessApiUsageException column=true compiled=false rows=0"
+        },
+        "parent": {
+          "return": "ok compiled=true rows=0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37014.2",
+      "role": "Control",
+      "args": [
+        "valid"
+      ],
+      "history": "On a fresh insert use usingColumns(name) and usingGeneratedKeyColumns(id). Call executeAndReturnKey with name=Sven.",
+      "prediction": "With a driver supporting numeric generated keys, both should return a number identifying the single row whose name is Sven.",
+      "basis": "The two column sets are disjoint. Looking up the returned id in the table ties the key to the row actually inserted.",
+      "refutation": "A configuration exception, duplicate row, or a key that reads back a different row.",
+      "expected": {
+        "fix": {
+          "return": "key-to-Sven=true rows=1"
+        },
+        "parent": {
+          "return": "key-to-Sven=true rows=1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37014.3",
+      "role": "Challenge",
+      "args": [
+        "recover"
+      ],
+      "history": "On the landing skip explicit compile and invoke executeAndReturnKey on a fresh overlapping insert with name=Sven. Then correct that same object using usingColumns(name) and retry.",
+      "prediction": "The first call should fail with the same configuration error before inserting. The corrected call should return the key of the only Sven row.",
+      "basis": "The first execute implicitly compiles. Compilation records success only after metadata processing, and usingColumns replaces the declaration. Failure recovery tests the retained state.",
+      "refutation": "A row escapes the first attempt, the failed configuration becomes frozen, or the corrected key cannot retrieve the unique row.",
+      "expected": {
+        "fix": {
+          "return": "InvalidDataAccessApiUsageException column=true rows=0 / key-to-Sven=true rows=1"
+        }
+      }
+    }
+  ]
+}

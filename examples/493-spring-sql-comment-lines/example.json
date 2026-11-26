@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "493",
+  "title": "Executing SQL after a block comment whose closing line starts with dashes",
+  "summary": "The merged SQL populator committed both original rows and ignored the sentinel in a line comment. The parent committed the first row and then failed. Its old three-argument direct client lost binary linkage on the merge.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ResourceDatabasePopulator.populate"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The script reader retains a line containing the block-comment terminator, allowing the splitter to recognize the end of the block even when that line starts with the line-comment prefix."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/22392"
+  },
+  "notes": [
+    "Each history reads the H2 table through a distinct JDBC connection. javap records the exact descriptor of the client compiled on the parent.",
+    "Each pin supplies its changed production classes on spring-jdbc 5.1.4.RELEASE. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "4/4 merged predictions matched"
+}

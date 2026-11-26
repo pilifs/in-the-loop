@@ -1,0 +1,84 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/22392",
+  "revisions": {
+    "parent": "a698adf125c540206b2050d94655ddeb293d8757",
+    "fix": "82dbde13b67ffbd6bbcbef9ecf01ef18c236271f"
+  },
+  "entry": "ResourceDatabasePopulator.populate",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#22392.1",
+      "role": "Intent",
+      "args": [
+        "original"
+      ],
+      "history": "Execute the unmodified fixture. Its decorative comment ends on a line beginning with -- and ending in */.",
+      "prediction": "Issue #22388 reports a missing block terminator before execution for this comment layout. The landing should complete and store precisely (Juergen, Hoeller) and (Sam, Brannen), once each, in either row order.",
+      "basis": "Only the two INSERT statements outside comments contribute rows. The regression asserts the two statements after reading and splitting.",
+      "refutation": "The merged populator throws a script parse error or independent row readback differs.",
+      "expected": {
+        "fix": {
+          "return": "ok rows=[Juergen Hoeller, Sam Brannen]"
+        },
+        "parent": {
+          "return": "ScriptParseException rows=[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#22392.2",
+      "role": "Control",
+      "args": [
+        "bare"
+      ],
+      "history": "Change only the closing line of the decorative block to a bare */ on its own line.",
+      "prediction": "Both should produce the same two rows.",
+      "basis": "The old reader retains that line because it does not begin with the single-line comment prefix. The effective SQL is identical.",
+      "refutation": "Either version loses an insert or reads comment text as SQL.",
+      "expected": {
+        "fix": {
+          "return": "ok rows=[Juergen Hoeller, Sam Brannen]"
+        },
+        "parent": {
+          "return": "ok rows=[Juergen Hoeller, Sam Brannen]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#22392.3",
+      "role": "Challenge",
+      "args": [
+        "sentinel"
+      ],
+      "history": "Keep the original closing line. Between statements insert an ordinary -- line whose text contains */ and a harmless INSERT for a third sentinel row.",
+      "prediction": "At the landing the two original rows should survive unchanged, and the sentinel should be absent.",
+      "basis": "Outside a block, -- consumes the rest of that line. Keeping the line during reading must not make the fake statement executable during splitting.",
+      "refutation": "The sentinel row exists, either real row is missing, or parsing fails.",
+      "expected": {
+        "fix": {
+          "return": "ok rows=[Juergen Hoeller, Sam Brannen]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#22392.4",
+      "role": "Compatibility",
+      "args": [
+        "descriptor"
+      ],
+      "history": "Compile a direct Java call to ScriptUtils.readScript(reader, \"--\", \";\") against the parent. Resolve that same three-argument invocation against the landing.",
+      "prediction": "The public parent method exists. At the pinned landing the public method takes an additional blockCommentEndDelimiter. An unchanged direct client is expected to fail source compilation or binary method resolution.",
+      "basis": "Public method descriptors include arity. ResourceDatabasePopulator follows the updated internal call and does not establish compatibility for direct API clients.",
+      "refutation": "An unchanged direct call successfully resolves the original descriptor on the landing alone.",
+      "expected": {
+        "fix": {
+          "return": "NoSuchMethodError"
+        },
+        "parent": {
+          "return": "select 1;"
+        }
+      }
+    }
+  ]
+}

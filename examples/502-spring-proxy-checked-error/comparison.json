@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/32469",
+  "revisions": {
+    "parent": "bed36890019a1764f1ed846ec1c94325a2ac5c72",
+    "fix": "561583842fe49ba61152f96f30572ec02b36d443"
+  },
+  "entry": "ProxyFactory.getProxy",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#32469.1",
+      "role": "Intent",
+      "args": [
+        "undeclared"
+      ],
+      "history": "Invoke the proxy once and compare the advice’s recorded Throwable with the exception caught by its caller.",
+      "prediction": "The PR reports premature wrapping on the parent CGLIB path. On the landing the advice should see the original OtherProblem by identity and the caller should receive `java.lang.reflect.UndeclaredThrowableException` whose immediate cause is that object.",
+      "basis": "The interface omits OtherProblem from its throws clause. The caller crosses that boundary after the advice has handled the original failure. The landed tests check both identities.",
+      "refutation": "Advice sees a wrapper, the caller receives OtherProblem directly, or the wrapper has another cause.",
+      "expected": {
+        "fix": {
+          "return": "advice=original caller=wrapper cause=true"
+        },
+        "parent": {
+          "return": "advice=wrapper caller=wrapper cause=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#32469.2",
+      "role": "Control",
+      "args": [
+        "allowed"
+      ],
+      "history": "Use the declared checked `DeclaredProblem` and then an unchecked IllegalStateException on fresh proxies. Repeat with a JDK interface proxy.",
+      "prediction": "Both revisions should expose each declared or unchecked object unchanged to advice and caller. The JDK proxy should give the original undeclared exception to advice and wrap it only for its caller.",
+      "basis": "Both permitted exception types can cross the method boundary directly. The JDK proxy provides an independent reference for the undeclared case.",
+      "refutation": "A permitted throwable acquires a wrapper, or only the JDK proxy loses the undeclared cause.",
+      "expected": {
+        "fix": {
+          "return": "class=true jdk=true jdkUndeclared=true"
+        },
+        "parent": {
+          "return": "class=true jdk=true jdkUndeclared=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#32469.3",
+      "role": "Challenge",
+      "args": [
+        "recover"
+      ],
+      "history": "In the advice catch OtherProblem specifically and return the ordinary fallback for the method (normal return for the test’s void method). Keep the same target and checked instance and count handler entries.",
+      "prediction": "At the landing the checked handler should run once and the caller should complete normally on both proxy kinds. Parent class-based advice is expected to miss the handler.",
+      "basis": "Catching by the original exception type exercises an actual recovery decision, independent of the final wrapper class.",
+      "refutation": "An advised CGLIB caller still receives a wrapper or the handler count stays at zero while the JDK control succeeds.",
+      "expected": {
+        "fix": {
+          "return": "class=normal:1 jdk=normal:1"
+        }
+      }
+    }
+  ]
+}

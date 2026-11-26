@@ -1,0 +1,79 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "932b9082b98ebb4c9b92bbd9f586b0cc15956318f7d63ad57fe3908eca49764b",
+  "runtimeSha256": "b6612ff4792e505f963c5be36924aaca6d9e030d48c6a61db004e6e2e8119d7e",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "2c1f4222e8dfcc0790891621f17e28bd7216ddac001db9cf6ddda7b4a83fb378"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Manager.class": "9ae0edce30c3aa28d56624c7adf61ef61685adbbb2163138689744b4729c64d3",
+        "PublicCaller$Tx.class": "a63f0fa5f036f9aa4fbd48f10f15d57784e98be99e80d4293ce1efe2c46510f7",
+        "PublicCaller.class": "ad4f3700dfa515a15ecbf68b088f87d4ea16ba62cb19123e09c59de910146836",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#23562.1",
+          "outcome": {
+            "return": "cancel=true early=true values=[7] complete=true commits=1 rollbacks=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#23562.2",
+          "outcome": {
+            "return": "marker=true values=[] commits=0 rollbacks=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#23562.3",
+          "outcome": {
+            "return": "count=1 visibleAtCompletion=0 visibleAfterRelease=1"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#23562.1",
+          "outcome": {
+            "return": "cancel=false early=false values=[7] complete=true commits=1 rollbacks=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#23562.2",
+          "outcome": {
+            "return": "marker=true values=[] commits=0 rollbacks=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#23562.3",
+          "outcome": {
+            "return": "count=1 visibleAtCompletion=1 visibleAfterRelease=1"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/transaction/reactive/TransactionalOperator.class": "d0858b8a685b905087ec427e4f7c377b231f1a35bfcbcdfa6d4ac3559e08f250",
+          "org/springframework/transaction/reactive/TransactionalOperatorImpl.class": "7e5d0207ba512a62fc4cd4a10b823ba58894d18afda741a488adb6e7a93453ac"
+        },
+        "fix": {
+          "org/springframework/transaction/reactive/TransactionalOperator.class": "ac76908876452b9f3e9b5e0428e7a6d23259bf28cabc901a97e3bf6c6ba2427f",
+          "org/springframework/transaction/reactive/TransactionalOperatorImpl.class": "90ebcb8bad4b6c7aed5b0695fdef4ad612c1cb4bd8a71a7f5f0f5716627d6347"
+        }
+      }
+    }
+  }
+}

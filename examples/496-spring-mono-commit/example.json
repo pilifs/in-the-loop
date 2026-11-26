@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "496",
+  "title": "A successful transactional Mono waits for commit completion",
+  "summary": "The transactional Mono now waited for the gated commit. A separate H2 connection saw zero matching rows at parent completion and one at merged completion.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "write-ahead-ordering",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "TransactionalOperator.transactional"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The built-in operator uses a Mono-specific resource scope for the Mono overload. The parent adapts the Flux returned by `execute` through `next()`, which can cancel the upstream subscription after one element."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/23562"
+  },
+  "notes": [
+    "The historical spring-tx operator wraps a JDBC-backed ReactiveTransactionManager. The read runs in the subscriber's completion callback at READ_COMMITTED, before the fixture releases any still-pending commit.",
+    "Each pin supplies its changed production classes on spring-tx 5.2.0.RC2. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

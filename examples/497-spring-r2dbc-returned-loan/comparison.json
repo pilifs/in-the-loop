@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/29703",
+  "revisions": {
+    "parent": "eff1a1a664582383a278224db7cc34fa1c02443d",
+    "fix": "e050c37158634fcc49e0b11254bbfeea71d17b8f"
+  },
+  "entry": "R2dbcTransactionManager",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#29703.1",
+      "role": "Intent",
+      "args": [
+        "restore"
+      ],
+      "history": "Complete a transaction normally, allowing commit to succeed. Have only the publisher returned by setAutoCommit(true) signal R2dbcTimeoutException. Let close succeed.",
+      "prediction": "The parent is expected to skip release after the restore error. The landing should subscribe to close once and the committed work should complete normally.",
+      "basis": "The transaction owns the connection. A later failure to restore its mode leaves the obligation to release it in place. The pre-change cleanup sequences release behind successful restoration.",
+      "refutation": "The merged caller sees the restore error, or commit succeeds but the close publisher is never consumed.",
+      "expected": {
+        "fix": {
+          "return": "ok commits=1 rollbacks=0 restores=1 closes=1"
+        },
+        "parent": {
+          "contains": [
+            "commits=1 rollbacks=0 restores=1 closes=0"
+          ]
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#29703.2",
+      "role": "Control",
+      "args": [
+        "success"
+      ],
+      "history": "Complete the same work and let every driver operation succeed.",
+      "prediction": "Both revisions should commit once, restore auto-commit, close the owned connection once and complete normally.",
+      "basis": "A successful transaction finishes before cleanup. The factory started with auto-commit on and lent exactly one connection.",
+      "refutation": "Rollback occurs, the transaction fails, or cleanup releases the loan twice or fails to release it.",
+      "expected": {
+        "fix": {
+          "return": "ok commits=1 rollbacks=0 restores=1 closes=1"
+        },
+        "parent": {
+          "return": "ok commits=1 rollbacks=0 restores=1 closes=1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#29703.3",
+      "role": "Challenge",
+      "args": [
+        "slot"
+      ],
+      "history": "On the landing fail the work, then have rollbackTransaction signal R2dbcBadGrammarException and have auto-commit restoration signal R2dbcTimeoutException. Keep close successful.",
+      "prediction": "Expect BadSqlGrammarException whose cause is the rollback error, no commit and one subscribed close. A second independent checkout from a recording provider that credits a returned loan should see the available slot.",
+      "basis": "The rollback failure determines the transaction error. The provider observes return of its loan independently of the framework's error translation.",
+      "refutation": "A later cleanup error replaces the rollback cause, the loan stays outstanding, or a second checkout from that provider cannot be granted.",
+      "expected": {
+        "fix": {
+          "return": "BadSqlGrammarException cause=true commits=0 rollbacks=1 restores=1 closes=1 next=true"
+        }
+      }
+    }
+  ]
+}

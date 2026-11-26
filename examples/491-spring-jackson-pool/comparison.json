@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37059",
+  "revisions": {
+    "parent": "27aa9e46c5165adbb7d7d0384e25f702872f3720",
+    "fix": "a2feb9ffe6674b6a6d2b66c69382d779cce7dc8a"
+  },
+  "entry": "JacksonJsonEncoder.encode",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37059.1",
+      "role": "Intent",
+      "args": [
+        "mono"
+      ],
+      "history": "Use a fresh pool and encoder for Mono.just(new Item(\"one\")) with application/json. Drain the complete result.",
+      "prediction": "Expect at least one acquisition on each revision. The parent should leave an unmatched acquisition. At the landing the counts should balance and the decoded JSON should be an object with text equal to one.",
+      "basis": "A pool lender observes real checkouts and returns independently of the Spring encoder's bookkeeping. The upstream test counts acquisitions and releases.",
+      "refutation": "The merged pool sees no acquisition or has an outstanding loan after completion, or the result changes type or value.",
+      "expected": {
+        "fix": {
+          "return": "acquired=true balanced=true object=one"
+        },
+        "parent": {
+          "return": "acquired=true balanced=false object=one"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37059.2",
+      "role": "Control",
+      "args": [
+        "array"
+      ],
+      "history": "Encode a Flux of Item(one), Item(two) as application/json and parse the concatenated bytes using a separate mapper.",
+      "prediction": "Both revisions should yield one JSON array of two objects. Their text values should be one and two in input order.",
+      "basis": "The media type selects a single JSON document. Element order is part of the array value. Buffer boundaries can vary.",
+      "refutation": "The encoded bytes cannot be parsed, produce two top-level values, or change either element.",
+      "expected": {
+        "fix": {
+          "return": "array=[one, two]"
+        },
+        "parent": {
+          "return": "array=[one, two]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37059.3",
+      "role": "Challenge",
+      "args": [
+        "repeat"
+      ],
+      "history": "On the landing encode two Items as application/x-ndjson. Let the first text contain a quote and the second an actual newline. Drain and decode each nonempty physical line. Repeat on the same encoder after the pool is idle.",
+      "prediction": "Both runs should decode exactly two objects whose text members equal the original strings in order, and have balanced pool counts after each termination. Pool object identity and chunk boundaries may vary.",
+      "basis": "A JSON string escapes an embedded line feed. A second pass can expose reuse of stale bytes that the acquire/release counters alone miss.",
+      "refutation": "The embedded newline splits a record, the second result contains old bytes, or one completed call leaves outstanding borrows.",
+      "expected": {
+        "fix": {
+          "return": "records=2 equal=true balanced=true / records=2 equal=true balanced=true"
+        }
+      }
+    }
+  ]
+}

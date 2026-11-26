@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "6695018b6f01473e552fed2307d4fe5b47203efe5c63507764850991ad7b9d1a",
+  "runtimeSha256": "8995cc376ff485f1d4ad849e3c114c3c76e80da9c738d4b2967ffcc6fc513375",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "7d370e6018523cb8a7a29157b725f320da6ed555d436c7d7f5c3377113512bd5"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "83a595589c6f1d944529d9ca0a2d494681bae1408589b7efbbf5401e34224f20",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37014.1",
+          "outcome": {
+            "return": "ok compiled=true rows=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37014.2",
+          "outcome": {
+            "return": "key-to-Sven=true rows=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#37014.3",
+          "outcome": {
+            "return": "DataIntegrityViolationException column=false rows=0 / InvalidDataAccessApiUsageException rows=0"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37014.1",
+          "outcome": {
+            "return": "InvalidDataAccessApiUsageException column=true compiled=false rows=0"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37014.2",
+          "outcome": {
+            "return": "key-to-Sven=true rows=1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#37014.3",
+          "outcome": {
+            "return": "InvalidDataAccessApiUsageException column=true rows=0 / key-to-Sven=true rows=1"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

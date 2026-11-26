@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "487",
+  "title": "Repeated reads and copies of a small multipart file",
+  "summary": "Two reads and a filesystem copy now returned all six in-memory upload bytes. Interleaved readers preserved independent positions at both storage thresholds.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "MultipartHttpMessageConverter.read"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Servlet multipart file parts retained in memory now create a fresh input stream for every read or transfer."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37531"
+  },
+  "notes": [
+    "The destination started longer than the upload. Its bytes and the first reader's remaining suffix were observed after transfer."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

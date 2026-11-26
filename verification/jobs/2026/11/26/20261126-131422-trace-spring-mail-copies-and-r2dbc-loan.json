@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-131422-trace-spring-mail-copies-and-r2dbc-loan",
+  "title": "Trace Spring mail copies and R2DBC loan cleanup at original methods",
+  "description": "Use original-method debugger breakpoints on SimpleMailMessage.copyTo and R2dbcTransactionManager.doCleanupAfterCompletion. Repeat each intent, control and challenge twice per revision, then verify the complete debugger reports against the registered callers, original classpaths and physical observations.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {
+    "examples": [
+      "484",
+      "497"
+    ]
+  },
+  "expected": "Both saved reports bind to the registered public caller at the specified original method in all 24 trials.",
+  "submitted": {
+    "at": "2026-11-26T13:14:22+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Trace the two original methods",
+      "run": "python3 verification/merged-pr-links/qualify.py 484 497 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/p01-p30/qualified",
+      "cwd": "."
+    },
+    {
+      "name": "Verify both debugger reports",
+      "run": "python3 verification/merged-pr-links/qualify.py 484 497 --gzip --only Intent --only Control --only Challenge --check --output verification/merged-pr-links/p01-p30/qualified",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/p01-p30/qualified"
+  ]
+}

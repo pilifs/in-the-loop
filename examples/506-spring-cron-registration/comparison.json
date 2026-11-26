@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36556",
+  "revisions": {
+    "parent": "a947f9bf7908f10a24aa98db68585fb5bbd0e2af",
+    "fix": "7da47f8c473e5b48939418adc9b2427b0890501f"
+  },
+  "entry": "ScheduledTaskRegistrar.addCronTask",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36556.1",
+      "role": "Intent",
+      "args": [
+        "london"
+      ],
+      "history": "Use a UTC clock fixed at 2025-07-15T00:00:00Z. Compare the parent’s explicit trigger with both forms on the merge.",
+      "prediction": "The parent exposes the explicit form. The merge additionally accepts the three-argument call. Each supported form should retain one task whose next instant is 2025-07-15T08:00:00Z.",
+      "basis": "London observes UTC+01 on that date, so 09:00 London is 08:00 UTC. The PR describes the overload as equivalent to constructing the zoned trigger.",
+      "refutation": "The new overload fails to register, schedules a different instant, or disagrees with the explicit trigger.",
+      "expected": {
+        "fix": {
+          "return": "explicit=08:00Z overload=08:00Z"
+        },
+        "parent": {
+          "return": "explicit=08:00Z overload=unavailable"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36556.2",
+      "role": "Control",
+      "args": [
+        "disabled"
+      ],
+      "history": "At the same UTC fixed clock register the existing two-argument addCronTask(task, expression). Make a second call with CRON_DISABLED (\"-\").",
+      "prediction": "Both revisions should retain only the original task, scheduled for 2025-07-15T09:00:00Z. On the merge the three-argument disabled call should likewise leave the list untouched.",
+      "basis": "With no explicit zone the trigger takes the context clock’s zone. The registrar documents \"-\" as disabling registration.",
+      "refutation": "The UTC task fires at 08:00Z, or the disabled call adds a task or throws.",
+      "expected": {
+        "fix": {
+          "return": "count=1 next=09:00Z disabled=true"
+        },
+        "parent": {
+          "return": "count=1 next=09:00Z disabled=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36556.3",
+      "role": "Challenge",
+      "args": [
+        "seasons"
+      ],
+      "history": "Keep the same London expression and override the trigger-context clock zone with Asia/Tokyo. Use the same initial instant as above, then a fresh history at 2025-01-15T00:00:00Z.",
+      "prediction": "All explicit-London forms on their supported revisions should still produce 08:00Z on July 15 and 09:00Z on January 15.",
+      "basis": "An explicit zone is independent of the clock’s display zone. London is UTC+01 in July and UTC+00 in January. A constant numeric offset cannot satisfy both.",
+      "refutation": "Changing only the clock zone moves the July instant, or the winter task still uses the summer offset.",
+      "expected": {
+        "fix": {
+          "return": "explicit=08:00Z/09:00Z overload=08:00Z/09:00Z"
+        }
+      }
+    }
+  ]
+}
