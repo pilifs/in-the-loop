@@ -605,3 +605,93 @@ Determine which changes a caller can observe in generated code, bean lookup, col
 **Technical notes.** Use spring-core and the launcher packaging in PathMatchingResourcePatternResolverTests. A plain IDE class path may expose the dependency directly and hide the defect. The reported use includes long Windows classpaths. Exact drive/path behavior depends on the runtime OS.
 
 **Sources.** [PathMatchingResourcePatternResolver.java](https://github.com/spring-projects/spring-framework/blob/97586b525f0d20836c6ab319d9d68d396218340e/spring-core/src/main/java/org/springframework/core/io/support/PathMatchingResourcePatternResolver.java) · [PathMatchingResourcePatternResolverTests.java](https://github.com/spring-projects/spring-framework/blob/97586b525f0d20836c6ab319d9d68d396218340e/spring-core/src/test/java/org/springframework/core/io/support/PathMatchingResourcePatternResolverTests.java) · [ResourcePatternResolver.java](https://github.com/spring-projects/spring-framework/blob/97586b525f0d20836c6ab319d9d68d396218340e/spring-core/src/main/java/org/springframework/core/io/support/ResourcePatternResolver.java) · [Child JVM lookup](https://github.com/spring-projects/spring-framework/blob/97586b525f0d20836c6ab319d9d68d396218340e/spring-core/src/test/java/org/springframework/core/io/support/ClassPathManifestEntriesTestApplication.java) · [spring-core build](https://github.com/spring-projects/spring-framework/blob/97586b525f0d20836c6ab319d9d68d396218340e/spring-core/spring-core.gradle) · [Issue #35730](https://github.com/spring-projects/spring-framework/issues/35730)
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Sources.** All 60 pins, plus the `later` revision Q23 links (`64861cb395e415bf1452d30f54f8e2c0ecc9cb46`), as worktrees
+  `~/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/CASE-ROLE` (ROLE `parent` = before pin, `fix` = after pin), from the
+  shared mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git`. Every PR's merge commit equals the after pin, every landed
+  diff names exactly the PR's files, the 19 signed pins verify ([Upstream revisions](#upstream-revisions), full ids in its table).
+  Q18 and Q26 land as chains of four and two commits, whose intermediate commits are in the mirror. All worktrees are clean.
+- **Offline builds for 22 cases** (all but the eight old ones). Every configuration a compile or test task uses is resolved into
+  `$P/gradle-home`; `source $P/scripts/env.sh` then `$P/scripts/gradle_case.sh WORKTREE TAG "" --offline TASKS` picks the right
+  Gradle (verified distributions in `$P/tools/`) and JDK ([Build facts](#build-facts-by-era), [Commands](#commands-for-a-rerun-by-hand)).
+  `$P/scripts/case_job.sh CASE STEP` reruns a case's job steps. Q09 needs `SETUP_INIT="-I $P/scripts/subst-grails.init.gradle"`.
+- **Built jars, class digests and classpaths** for the 22 cases at both pins in `$P/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
+  `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`), once their jobs ran;
+  digests in full in [Digests of the built artifacts](#digests-of-the-built-artifacts). The jobs
+  ran for all 22 cases.
+- **Slices for the eight old cases** at both pins: `$P/slices/CASE-ROLE/CASE-ROLE-slice.jar` (the pin's changed production classes,
+  JDK 8), to put ahead of the base release's `$P/releases/SET/classpath.txt` (set per case in [the slice route](#the-slice-route));
+  `$P/scripts/slice_case.sh CASE` rebuilds them and reruns the landed tests in seconds.
+- **Released artifacts** in `$P/releases/SET/` (`jars/`, `classpath.txt`): the slices' bases and test libraries, and the versions
+  the brief names: spring-core 6.2.13 (Q07), spring-context 7.0.9 (Q27), spring-jms 7.0.4 (Q24), spring-webmvc 4.3.3.RELEASE with
+  jackson-databind 2.8.3 (Q17's servlet report), and Q11's PostgreSQL R2DBC driver as the pins' BOM manages it,
+  `io.r2dbc:r2dbc-postgresql:0.8.8.RELEASE` ([Released artifacts](#released-artifacts), digests in `$P/logs/release-verify.txt`).
+- **JDKs**: Temurin 24.0.2 (`$J24`) for Q13 and Q28, Liberica 17 (`$JL17`) for Q30, JDK 8 (`$J8`) for the slices and Q09.
+
+### What was verified on a JVM
+
+- **The eight old cases, on the slice route**: each landed test class passes on the fix slice and its parent version passes on the
+  parent slice (Q18's six base-release failures aside). The fix's tests **fail** on the parent slice for Q17 (7), Q25 (1), Q26 (5),
+  Q10 (`CronTriggerTests` alone, 2) and Q18 (`ResourceWebHandlerTests` alone, the 7 range tests); they **do not compile** there for Q04
+  and Q19 (API the landing adds); Q20's landed test passes on both. Every failing test is named in [the slice route](#the-slice-route).
+- **All 22 Gradle cases ran offline in verification jobs** ([Job results](#job-results)). The landed test classes
+  pass at the fix (0 failures, 0 errors) and the parent's versions pass at the parent. The fix's changed test files fail on
+  the parent for Q01, Q02, Q03, Q06, Q07, Q08, Q09, Q11, Q13, Q14, Q15, Q16, Q21, Q22, Q23, Q27, Q28 and Q30. They do not compile
+  there for Q05, Q12, Q24 and Q29, which use API the landing adds. Every failing test is named in the results table.
+- **Q11 passed on its third job** (`20261126-151047-setup-build-spring-framework-27716-q11-a`), after the first two failed
+  offline in the Groovy compile before any test ran ([Jobs](#jobs)).
+- No scenario or prediction of the brief was run anywhere.
+
+### What to know before starting
+
+- **Q04, Q10, Q17, Q18, Q19, Q20, Q25, Q26 have no historical build** ([why](#the-old-builds-that-cannot-be-configured)). What exists
+  is a slice per pin: that pin's changed classes ahead of a base release (Q04 5.2.0.M1, Q10 spring-context 5.3.0-M1, Q17 spring-web
+  5.0.0.M3, Q18 5.0.0.M2, Q19 spring-test 4.0.0.M3, Q20 spring-web 5.3.0-RC1, Q25 spring-context 5.2.1.RELEASE, Q26 spring-tx
+  5.2.0.M2). Every other class there is the release's, not the pin's. Releases equal to pins: Q10 parent = 5.3.0-M1 (and its
+  `CronTrigger` fix = 5.3.0-M2), Q17 parent = 5.0.0.M3 and fix ≈ 5.0.0.M4, Q19 parent = 4.0.0.M3, Q20 fix ≈ 5.3.0-RC1, Q25 parent =
+  5.2.1.RELEASE and fix ≈ 5.2.2.RELEASE (≈: equal in code, comments differ). No release equals Q04, Q18 or Q26 at either pin
+  ([table](#the-slice-route)).
+- **Q04's API never shipped.** The fix pin's `public` `AutowireUtils.isAutowirable(Parameter, int)` and `resolveDependency(...)` exist
+  only at that pin and in its slice; from 5.2.0.M1 on, `AutowireUtils` is package-private again and the feature is
+  `org.springframework.beans.factory.annotation.ParameterResolutionDelegate`. An "external consumer" of the pin's signatures compiles
+  only against `$P/slices/Q04-fix/Q04-fix-slice.jar`.
+- **Q18's base release already contains part of the fix** (5.0.0.M2 has the fix's `ResourceEncoder` and `DataBufferUtils`), and six
+  `ResourceWebHandlerTests` (media types, a jar directory) fail on both slices for reasons of the base, not the landing. The seven
+  `partialContent*` tests pass on the fix slice and fail on the parent slice; the parent's own copies of them are `@Ignore`d.
+- **Q17 and Q18 slices include one unchanged pin file each** (`ReactiveHttpOutputMessage`, `AbstractServerHttpMessageWriter`), and
+  Q26's slices run on Reactor 3.3.0.M1: the pins name `Dysprosium-BUILD-SNAPSHOT`, whose builds of that time are gone (the snapshot
+  repository keeps 3.3.0.BUILD-SNAPSHOT builds of 2019-09-20 and 2019-09-24 only).
+- **Snapshots.** Q08, Q16, Q29 (7.1) take Reactor 3.9.0-SNAPSHOT and Micrometer 1.18.0-SNAPSHOT, Q21 and Q27 Reactor 3.8.8-SNAPSHOT and
+  Micrometer 1.16.8-SNAPSHOT, Q11 Reactor 3.4.13-SNAPSHOT and reactor-netty 1.0.14-SNAPSHOT, each the newest build the repository
+  serves, mostly dated after the pins ([Snapshot dependencies](#snapshot-dependencies), digests there). Build `--offline` to keep them.
+- **JDKs.** Q13 and Q28 compile with toolchain 24 (`$J24`), Q30 with Liberica 17 (`$JL17`), the other 7.x builds with toolchain 25 and
+  `release` 17, Q11/Q12 with 17, Q09 and the slices with JDK 8. Default `java` on `PATH` is 25.0.5.
+- **Q11 (Gradle 7.3) compiles spring-beans' Groovy through a detached configuration** that holds the whole Groovy 3.0.9
+  runtime. Those modules were resolved separately ([Jobs](#jobs)). A new build in an older worktree that fails offline with
+  "No cached version" needs the same: `setupResolveCoords`, online once ([Commands](#commands-for-a-rerun-by-hand)).
+- **Some changed top-level classes compile identically at both pins** (Q03, Q16, Q23, Q27, Q28). The change is in their nested
+  classes ([Digests](#digests-of-the-built-artifacts)).
+- **Q16's transplant reports 118 failures, of which 14 are direct.** The rest is the pooled-buffer leak check failing later tests
+  ([Job results](#job-results)).
+- **Q09** configures only with `$P/scripts/subst-grails.init.gradle` (grolifant 0.14 from Grails core); `case_job.sh` passes it.
+- **Databases and brokers**: spring-jdbc's test runtime classpaths have H2 (2.4.240; 2.3.232 for Q13), HSQLDB 2.7.4 and
+  Derby 10.16.1.1 (`$P/artifacts/CASE-ROLE/spring-jdbc.testRuntimeClasspath.txt`); Q11's spring-r2dbc test runtime classpath has r2dbc-h2 0.8.4.RELEASE, H2 1.4.200 and r2dbc-spi 0.8.5.RELEASE. No PostgreSQL server was set up for
+  Q11: Docker answers and already holds `postgres:16` and `postgres:17` images from other work; the R2DBC driver is in
+  `$P/releases/r2dbc-postgresql-arabba-sr10` (it brings reactor-core 3.3.17 and reactor-netty 0.9.20, older than the pins' Reactor
+  2020.0.14-SNAPSHOT line). Q24's spring-jms test classpath has the embedded Artemis 2.42.0 broker (`artemis-server`,
+  `artemis-jms-server`, `artemis-jakarta-client`, `artemis-junit-5`) that the module's tests use.
+- **Pins shared with other briefs**: Q08's fix `a38ebf4b7cffe5946e07d0fb8ef2d7dc0ec9bbe3` is the P01–P30 brief's P10 parent; its
+  worktrees here are separate.
+- **Q23's `later` revision** (`64861cb395e415bf1452d30f54f8e2c0ecc9cb46`) is checked out and resolved, not built.
+- **Disk**: `$P` takes 22 GB, of which `$P/gradle-home` 13 GB, `$P/worktrees` 5.2 GB and `$P/artifacts` 292 MB. Tracked files
+  are clean in every worktree, and each job's last step removed its build output.
+
+### What is left for the domain work on purpose
+
+All claims, scenarios, fixtures and examples; whether a slice, a release, or neither stands in for an old case's pins in a claim;
+choosing databases, drivers, brokers and servers beyond what is fetched (Q08, Q11, Q14, Q15, Q24); the Kotlin side of Q05 beyond its
+landed test; any run of the brief's own scenarios or predictions; the Q23 `later` revision; and example ids and folders.
