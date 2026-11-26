@@ -1,0 +1,336 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-144401-setup-build-spring-framework-27716-q11-a",
+  "title": "Setup: build Spring Framework #27716 (Q11) at both pins offline and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 3 failed, 1 passed step(s) in 3m06s, peak 1.5 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (Q11 fix: offline build and landed tests) exited 1, expected 0",
+    "step 2 (Q11 parent: offline build and the parent's tests) exited 1, expected 0",
+    "step 3 (Q11 transplant: the fix's tests on the parent) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-144401-setup-build-spring-framework-27716-q11-a.json",
+    "sha256": "c73c1b82a3f4710fc2d99187f7e11f1247225b084b5be6b58966850ec12d48ad",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-144401-setup-build-spring-framework-27716-q11-a",
+      "title": "Setup: build Spring Framework #27716 (Q11) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, case Q11 (spring-projects/spring-framework#27716: Bind a named R2DBC parameter immediately inside SQL array brackets (rerun after groovy-ant was resolved online)). In the worktrees $P/worktrees/Q11-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-q01-q30), offline (dependencies resolved online beforehand), it builds the jars of spring-r2dbc with the Gradle each checkout's wrapper names, runs the landed test classes (NamedParameterUtilsUnitTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-r2dbc in $P/artifacts/Q11-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned Q11",
+      "submitted": {
+        "at": "2026-11-26T14:44:01+00:00",
+        "session": "56626182-a69a-4945-91c7-07e11b9bb46a",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "Q11 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q11 fix",
+          "cwd": "."
+        },
+        {
+          "name": "Q11 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q11 parent",
+          "cwd": "."
+        },
+        {
+          "name": "Q11 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q11 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "Q11 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q11 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "c9d554f1aab508a4b11482da257f511c9027f386",
+  "startedAt": "2026-11-26T15:03:29+00:00",
+  "finishedAt": "2026-11-26T15:06:46+00:00",
+  "wallSeconds": 197.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1664671,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 1661829120,
+    "wallSeconds": 186.6,
+    "cpuSeconds": 228.1,
+    "memoryOfEstimate": 0.26,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Q11 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q11 fix",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 124.416,
+      "cpuSeconds": 93.473,
+      "cpuThrottledSeconds": 2.022,
+      "peakMemoryBytes": 1661829120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-q11-fix-offline-build-and-land.log",
+        "lines": 14,
+        "bytes": 929,
+        "sha256": "26b025742e506a5c7845c22ab393eed031cb47f9c762f316ae1551d647de01e4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q11-fix gradle=7.3 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=72 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-r2dbc:jar :spring-r2dbc:test --tests org.springframe",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :buildSrc:assemble UP-TO-DATE",
+        "> Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava NO-SOURCE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "class org.springframework.r2dbc.core.NamedParameterUtilsUnitTests no-result",
+        "classpath spring-r2dbc runtimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Q11 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q11 parent",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 26.899,
+      "cpuSeconds": 79.64,
+      "cpuThrottledSeconds": 3.782,
+      "peakMemoryBytes": 1276555264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-q11-parent-offline-build-and-t.log",
+        "lines": 14,
+        "bytes": 932,
+        "sha256": "cf690a859ca58ffa51dd67bfd013bcbcd173e79f427e8b50579b20ab27698c62",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/worktrees/Q11-parent gradle=7.3 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=18 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-r2dbc:jar :spring-r2dbc:test --tests org.springfr",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:jar UP-TO-DATE",
+        "> Task :buildSrc:assemble UP-TO-DATE",
+        "> Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava NO-SOURCE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "class org.springframework.r2dbc.core.NamedParameterUtilsUnitTests no-result",
+        "classpath spring-r2dbc runtimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Q11 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q11 transplant",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 34.492,
+      "cpuSeconds": 54.514,
+      "cpuThrottledSeconds": 3.634,
+      "peakMemoryBytes": 1418428416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-q11-transplant-the-fix-s-tests.log",
+        "lines": 15,
+        "bytes": 938,
+        "sha256": "bde19de82cad6b71f216ebba62dab0cf0012cfddf9ad84662b8245c1dac0f969",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-r2dbc/src/test/java/org/springframework/r2dbc/core/NamedParameterUtilsUnitTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q11-parent-landed gradle=7.3 launcher=17.0.21.0+9-tem gradle-exit=1 seconds=34 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-r2dbc:test --tests org.springframework.r2dbc.c",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:jar",
+        "> Task :buildSrc:assemble",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "> Task :buildSrc:compileTestJava NO-SOURCE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "class org.springframework.r2dbc.core.NamedParameterUtilsUnitTests no-result",
+        "TRANSPLANT DID NOT FAIL (gradle-exit=1)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Q11 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q11 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.802,
+      "cpuSeconds": 0.474,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 30113792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-q11-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "3c7cfa1f623435fd8c99de40414b26f8abcd68d9c3ea5076d00d861bf5d82209",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned Q11"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T15:07:27+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T150646Z-768898ab5f6ea6cd",
+      "workdir": "20261126T150650Z-612010a44843d4d1"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261126-144401-setup-build-spring-framework-27716-q11-a"
+}
