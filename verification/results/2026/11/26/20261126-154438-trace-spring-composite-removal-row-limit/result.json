@@ -1,0 +1,232 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-154438-trace-spring-composite-removal-row-limit",
+  "title": "Trace Spring composite removal, row limits and reactive jitter",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 31.9s, peak 108.7 MiB (estimated 1m00s, 768.0 MiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-154438-trace-spring-composite-removal-row-limit.json",
+    "sha256": "f07abfbe1831eaffb86c811c311b68b47bb07ebf2da141ea6abf69765c925294",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-154438-trace-spring-composite-removal-row-limit",
+      "title": "Trace Spring composite removal, row limits and reactive jitter",
+      "description": "Stop the original JVM at CompositeCollection.remove, JdbcTemplate.queryForStream, and ReactorDelegate.adaptReactiveResult for the registered public callers. Repeat each of ten input histories twice per pin and bind the resulting report to the original source, caller, classpath, and public observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {},
+      "expected": "Three debugger reports, 40 qualified original-method trials, and exact agreement with the registered physical public observations.",
+      "submitted": {
+        "at": "2026-11-26T15:44:38+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Repeat the ten histories under the debugger",
+          "run": "python3 verification/merged-pr-links/qualify.py 513 520 535 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/q01-q30/qualified",
+          "cwd": "."
+        },
+        {
+          "name": "Validate the original-method evidence",
+          "run": "python3 verification/merged-pr-links/qualify.py 513 520 535 --gzip --only Intent --only Control --only Challenge --check --output verification/merged-pr-links/q01-q30/qualified",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/q01-q30/qualified"
+      ]
+    }
+  },
+  "sourceCommit": "5e1c479afd3bd191e044bb8c0a6fb87590af009b",
+  "startedAt": "2026-11-26T15:52:19+00:00",
+  "finishedAt": "2026-11-26T15:53:01+00:00",
+  "wallSeconds": 42.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2175011,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 114003968,
+    "wallSeconds": 31.9,
+    "cpuSeconds": 36.8,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.53
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat the ten histories under the debugger",
+      "run": "python3 verification/merged-pr-links/qualify.py 513 520 535 --gzip --only Intent --only Control --only Challenge --output verification/merged-pr-links/q01-q30/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 31.681,
+      "cpuSeconds": 36.782,
+      "cpuThrottledSeconds": 5.65,
+      "peakMemoryBytes": 114003968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-the-ten-histories-under.log",
+        "lines": 3,
+        "bytes": 560,
+        "sha256": "cc364a662d824b85a714da2b2ed379f8fd3a47577fd9b52c338132d42329916a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "513 pins org.springframework.util.CompositeCollection#remove(Ljava/lang/Object;)Z 16 qualified JVM trials",
+        "520 pins org.springframework.jdbc.core.JdbcTemplate#queryForStream(Ljava/lang/String;Lorg/springframework/jdbc/core/RowMapper;)Ljava/util/stream/Stream; 12 qualified JVM trials",
+        "535 pins org.springframework.aop.retry.AbstractRetryInterceptor$ReactorDelegate#adaptReactiveResult(Ljava/lang/Object;Lorg/springframework/core/ReactiveAdapter;Lorg/springframework/aop/retry/MethodRetrySpec;Ljava/lang/reflect/Method;)Ljava/lang/Object; 12 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Validate the original-method evidence",
+      "run": "python3 verification/merged-pr-links/qualify.py 513 520 535 --gzip --only Intent --only Control --only Challenge --check --output verification/merged-pr-links/q01-q30/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.066,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 13377536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-validate-the-original-method-e.log",
+        "lines": 3,
+        "bytes": 575,
+        "sha256": "2caec26ec330c4d0455e5148f6c0f6739f5023bd7c36fd743f8d27f29caa002f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "513 pins org.springframework.util.CompositeCollection#remove(Ljava/lang/Object;)Z 16 verified saved JVM trials",
+        "520 pins org.springframework.jdbc.core.JdbcTemplate#queryForStream(Ljava/lang/String;Lorg/springframework/jdbc/core/RowMapper;)Ljava/util/stream/Stream; 12 verified saved JVM trials",
+        "535 pins org.springframework.aop.retry.AbstractRetryInterceptor$ReactorDelegate#adaptReactiveResult(Ljava/lang/Object;Lorg/springframework/core/ReactiveAdapter;Lorg/springframework/aop/retry/MethodRetrySpec;Ljava/lang/reflect/Method;)Ljava/lang/Object; 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/q01-q30/qualified/513-pins.json.gz",
+      "change": "added",
+      "bytes": 2217,
+      "sha256": "31f43c4411291a3b3757e29e695a0e47741f19ce534d9c401f4839118c894ab7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/q01-q30/qualified/520-pins.json.gz",
+      "change": "added",
+      "bytes": 2797,
+      "sha256": "b595cff8207c4480f42e7d97afc093b95d62833a97e7c4034b04f1e6f105880d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/q01-q30/qualified/535-pins.json.gz",
+      "change": "added",
+      "bytes": 3019,
+      "sha256": "7198a11e725b14577feac81f933621d30b34350bffb2b4b1dc204b9eaba36926",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T15:53:07+00:00",
+    "applied": [
+      "verification/merged-pr-links/q01-q30/qualified/513-pins.json.gz",
+      "verification/merged-pr-links/q01-q30/qualified/520-pins.json.gz",
+      "verification/merged-pr-links/q01-q30/qualified/535-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T155301Z-2731402afee13760",
+      "outputs": "20261126T155301Z-29018504196e2418",
+      "diff": "20261126T155301Z-305092f6df88c89e"
+    }
+  }
+}
