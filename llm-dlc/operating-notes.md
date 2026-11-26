@@ -265,6 +265,11 @@ had four of them, the oldest 40 minutes old. Run the command in the foreground, 
 (`wait PID`, or `while kill -0 PID 2>/dev/null; do sleep 10; done`). If you must match by name, use a pattern that
 can't match itself, such as `pgrep -f '[s]ync.py commit'`.
 
+A watcher that finds a run held by such a loop ends it with `python3 llm-dlc/tools/single_run.py unhang NAME` (since
+2026-11-26; `--dry-run` first names what it would end). It ends only a wait loop at least ten minutes old whose
+`pgrep -f` pattern nothing but the loop itself matches, by its pid, and records it in the run's `unhang.jsonl`. It
+replaced the user's delegation of 2026-11-26 to end such loops by hand (VF-069).
+
 ## Verification jobs
 
 - A job cannot be withdrawn by deleting its committed job file: the runner reads the files of `@-` and may have

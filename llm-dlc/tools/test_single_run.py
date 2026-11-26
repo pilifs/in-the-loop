@@ -366,6 +366,16 @@ class SingleRunTest(unittest.TestCase):
         self.assertIn("moved forward", landed["landed"])
         self.assertTrue((self.root / "work.txt").exists())
         self.assertIn("Made-up work, turn 1", self.jj("log", "--no-graph", "-r", "@-", "-T", "description"))
+        # What the watcher collects while the run is stopped is committed on the line; a restart brings the workspace
+        # onto the line, so the agent sees it (VF-070, item 7).
+        (self.root / "result.json").write_text("{}\n")
+        self.jj("commit", "-m", "Record verification results")
+        again = self.start()
+        self.assertIn("moved onto", again["workspaceOntoLine"])
+        self.assertTrue((folder / "result.json").exists())
+        self.wait()
+        self.tool("answer", "thing", "stop", "--reason", "Done.")
+        self.wait(kind="ended")
 
     @cost("tool")
     def test_a_fork_starts_the_run_from_a_copy_of_another_session_which_is_left_as_it_was(self):
@@ -796,6 +806,51 @@ class TheGenerationPhase(unittest.TestCase):
         self.assertEqual(single_run.setup_texts("## First text\n\nFor {brief}, {record}.\n\n## Continue message\n\nOn {brief}.\n",
                                                 "b.md", "r.md"), ("For `b.md`, r.md.\n", "On `b.md`.\n"),
                          "the setup texts are filled as before")
+
+
+class HungWaits(unittest.TestCase):
+    """`unhang` ends a run's wait loop whose pgrep pattern matches only itself (VF-069), and nothing else."""
+
+    def test_a_wait_is_hung_when_only_it_matches_its_pattern_and_it_is_old_enough(self):
+        procs = {
+            1: {"ppid": 0, "age": 5000, "cmd": "claude -p You are the SETUP AGENT"},
+            10: {"ppid": 1, "age": 2000, "cmd": "/bin/bash -c until ! pgrep -f 'python3 llm-dlc/tools/sync.py commit' >/dev/null; do sleep 10; done"},
+            11: {"ppid": 1, "age": 2000, "cmd": "/bin/bash -c until ! pgrep -f 'case_job.sh O.. dryrun' >/dev/null && [ 9 -ge 52 ]; do sleep 20; done"},
+            12: {"ppid": 1, "age": 2000, "cmd": "/bin/bash -c while pgrep -f \"made-up-build\" >/dev/null; do sleep 5; done"},
+            13: {"ppid": 1, "age": 100, "cmd": "bash made-up-build --long"},
+            14: {"ppid": 1, "age": 60, "cmd": "/bin/bash -c until ! pgrep -f 'review show' >/dev/null; do sleep 15; done"},
+            15: {"ppid": 1, "age": 2000, "cmd": "/bin/bash -c sleep 600"},
+            16: {"ppid": 1, "age": 2000, "cmd": "/bin/bash -c source snap.sh && eval 'until ! pgrep -f '\"'\"'review show'\"'\"' "
+                                                 ">/dev/null; do sleep 15; done'"},  # as Claude Code runs it
+        }
+        found = single_run.hung_waits(procs, set(procs), 600)
+        self.assertEqual([f["pid"] for f in found], [10, 11, 16],
+                         "12 waits on a build that runs, 14 is younger than the limit, 1 and 15 are no waits")
+        self.assertEqual((found[1]["patterns"], found[2]["patterns"]), (["case_job.sh O.. dryrun"], ["review show"]))
+
+    @cost("tool")
+    def test_unhang_ends_only_the_hung_wait_of_the_run(self):
+        root = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, root, True)
+        target = f"made-up-target-{os.getpid()}-{time.time_ns()}"
+        hung = subprocess.Popen(["bash", "-c", f"until ! pgrep -f '{target}-gone' >/dev/null; do sleep 1; done"])
+        waiting = subprocess.Popen(["bash", "-c", f"exec -a '{target}-here' sleep 60"])  # what the second wait waits for
+        working = subprocess.Popen(["bash", "-c", f"until ! pgrep -f '{target}-here' >/dev/null; do sleep 1; done"])
+        for p in (hung, waiting, working):
+            self.addCleanup(lambda p=p: (p.kill(), p.wait()))
+        run = single_run.Run(root, "made-up")
+        run.dir.mkdir(parents=True)
+        run.update(loop={"pid": os.getpid()})  # the test stands in for the run's loop: the waits are below it
+        time.sleep(0.5)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(single_run.cmd_unhang(run, 0, dry_run=False), 0)
+        report = json.loads(out.getvalue())
+        self.assertEqual(report["ended"], [hung.pid], report)
+        self.assertIsNotNone(hung.wait(timeout=10))
+        self.assertIsNone(working.poll(), "a wait whose command still runs is left alone")
+        self.assertIsNone(waiting.poll())
+        self.assertIn(f'"pid": {hung.pid}', (run.dir / "unhang.jsonl").read_text())
 
 
 if __name__ == "__main__":

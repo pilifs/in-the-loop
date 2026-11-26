@@ -461,31 +461,11 @@ def run_tool(root: Path, *args: str) -> dict:
 
 
 def onto_line(root: Path, workspace: str) -> str:
-    """The workspace, moved to the line's last commit so that a run starts from everything landed: refused while it
-    holds uncommitted work or commits the line lacks. A workspace that does not exist yet is made by `start`."""
-    known = brief_run.workspaces(root)
-    if workspace not in known:
-        return "made by the run's start"
-    folder = known[workspace]
-    if folder is None or not folder.is_dir():
-        raise Problem(f"jj knows the workspace {workspace} but not its folder")
-    heads = brief_run.jj(root, "log", "--no-graph", "-r", "@-", "-T", 'commit_id ++ "\n"').stdout.split()
-    if len(heads) != 1:
-        raise Problem("the default workspace is in the middle of a merge: commit it first")
-    if brief_run.commit_id(root, f"{workspace}@-") == heads[0]:
-        return "on the line already"
-    dirty = [f for f in brief_run.jj(folder, "diff", "-r", "@", "--name-only").stdout.splitlines() if f.strip()]
-    left = [f for f in dirty if not brief_run.regenerable(folder, f)]
-    if left:
-        raise Problem(f"the workspace {workspace} has uncommitted files ({', '.join(left[:5])}): land or finish them first")
-    if not brief_run.merged_in(root, workspace):
-        raise Problem(f"the workspace {workspace} has commits the line lacks: land its run first")
-    if dirty:
-        brief_run.jj(folder, "restore", "--", *dirty)  # generated trace output only: sync.py writes it again
-    r = brief_run.jj(folder, "new", heads[0])
-    if r.returncode != 0:
-        raise Problem(f"could not move the workspace {workspace} onto the line: {r.stderr.strip()}")
-    return f"moved onto {heads[0][:12]}"
+    """brief_run.onto_line, with its refusal as this tool's."""
+    try:
+        return brief_run.onto_line(root, workspace)
+    except brief_run.Problem as e:
+        raise Problem(str(e))
 
 
 def prompt_files(root: Path, entry: dict, s: dict) -> tuple[Path, Path]:

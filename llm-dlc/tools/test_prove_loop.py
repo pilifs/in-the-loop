@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import textwrap
 import threading
 import time
 import unittest
@@ -573,6 +574,48 @@ class ProveLoopTest(unittest.TestCase):
         self.assertEqual(r.returncode, 2)
         self.assertIn("{}", r.stderr)
         self.assertEqual(self.calls(), [])
+
+    def capped(self, held: str):
+        """feature-loop.sh with its memory cap, against stand-ins for systemctl and systemd-run: the loop's scope is
+        active, and holds one process running `held`. systemd-run records what it was given and exits."""
+        bin, cgroup = self.tmp / "bin", self.tmp / "cgroup" / "scope"
+        cgroup.mkdir(parents=True, exist_ok=True)
+        (bin / "systemctl").write_text(textwrap.dedent(f"""\
+            #!/usr/bin/env bash
+            echo "$*" >>{self.tmp}/systemctl.log
+            case "$2" in
+              is-active) [[ ! -e {self.tmp}/stopped ]] ;;
+              show) echo /scope ;;
+              stop) touch {self.tmp}/stopped ;;
+            esac
+        """))
+        (bin / "systemd-run").write_text(f"#!/usr/bin/env bash\necho \"$*\" >{self.tmp}/systemd-run.log\n")
+        for name in ("systemctl", "systemd-run"):
+            (bin / name).chmod(0o755)
+        left = subprocess.Popen(["bash", "-c", held], cwd=self.tmp)
+        self.addCleanup(lambda: (left.kill(), left.wait()))
+        (cgroup / "cgroup.procs").write_text(f"{left.pid}\n")
+        env = {k: v for k, v in self.env.items() if k != "FEATURE_LOOP_UNCAPPED"}
+        return subprocess.run([str(self.root / "llm-dlc/tools/feature-loop.sh"), "prove-change"], cwd=self.root,
+                              env={**env, "FEATURE_LOOP_ITEMS": "901", "FEATURE_LOOP_MEMORY_MAX": "64M",
+                                   "FEATURE_LOOP_CGROUP_ROOT": str(self.tmp / "cgroup")},
+                              capture_output=True, text=True, timeout=60)
+
+    @cost("tool")
+    def test_a_scope_holding_only_what_an_ended_loop_left_is_stopped_and_one_at_work_is_not(self):
+        # A daemon the last leg left (2026-11-26: a dirmngr held a setup's scope for eight hours): stopped, and on.
+        r = self.capped("exec -a 'dirmngr --daemon' sleep 60")
+        self.assertIn("holds only what an ended loop left (1 process(es)): stopping it before the loop starts", r.stdout + r.stderr)
+        self.assertIn("--user stop feature-loop-prove-change.scope", (self.tmp / "systemctl.log").read_text())
+        self.assertIn("--unit=feature-loop-prove-change", (self.tmp / "systemd-run.log").read_text())
+        # A loop at work (it runs from a private copy, feature-loop.XXXXXX): refused, and the scope is left alone.
+        (self.tmp / "stopped").unlink()
+        (self.tmp / "systemd-run.log").unlink()
+        r = self.capped("exec -a 'bash /made/up/feature-loop.Ab12Cd single-agent' sleep 60")
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn("is a loop or an agent at work", r.stdout + r.stderr)
+        self.assertFalse((self.tmp / "stopped").exists())
+        self.assertFalse((self.tmp / "systemd-run.log").exists())
 
     @cost("tool")
     def test_the_loop_runs_from_a_copy_of_its_scripts(self):

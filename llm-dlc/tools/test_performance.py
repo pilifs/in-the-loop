@@ -1011,6 +1011,33 @@ print(redactor.Redactor(([], "qzuser"), {}).fingerprint(), sync.tools_digest())
 """
 
 
+class ReviewShow(unittest.TestCase):
+    """`review show` reads the texts of the sessions a finding is in, and leaves every other stored log compressed."""
+
+    def test_only_the_findings_sessions_are_read(self):
+        value = "203.0." + "113.77"
+        found = {"f" * 64: {"level": "warn", "kind": "public-ip", "count": 1, "masked": "203…77", "where": {"aaaaaaaa"},
+                            "value": value}}
+        opened = []
+
+        def stored(name):
+            def content():
+                opened.append(name)
+                return f"a line that names {value} once\n".encode()
+            return content
+        targets = [("aaaaaaaa-1111", "aaaaaaaa-1111", "sha1", stored("in the finding's session"), 40),
+                   ("bbbbbbbb-2222", "bbbbbbbb-2222", "sha2", stored("another session's log"), 40)]
+        out = io.StringIO()
+        with mock.patch.object(sync, "Redactor", MadeUpRedactor), \
+                mock.patch.object(sync, "open_findings", return_value=found), \
+                mock.patch.object(sync, "preview_caches", return_value=(None, None, None)), \
+                mock.patch.object(sync, "scan_targets", return_value=iter(targets)), contextlib.redirect_stdout(out):
+            self.assertEqual(sync.show_finding("ffff"), 0)
+        self.assertEqual(opened, ["in the finding's session"])
+        self.assertIn("×1", out.getvalue().splitlines()[1])
+        self.assertNotIn(value, out.getvalue())
+
+
 class Fingerprints(unittest.TestCase):
     """The transcript, scan and check caches are keyed on redactor.py and the rules, not on the rest
     of sync.py, which is safe only while redactor.py runs nothing from sync.py or metrics.py."""
@@ -1060,6 +1087,15 @@ class Fingerprints(unittest.TestCase):
                                                        ("redaction_rules.py", True, False)):
             after = self.fingerprints(edited)
             self.assertEqual((after[0] != before[0], after[1] != before[1]), (redactor_changes, tools_change), edited)
+
+    def test_the_sync_cache_does_not_depend_on_the_allow_list(self):
+        # process() redacts by the rules alone; an allow-list entry only filters what check reports.
+        r = MadeUpRedactor()
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(sync, "ALLOWLIST", Path(d) / "allowlist.json"), \
+                mock.patch.object(sync, "repo_web_url", return_value=None), mock.patch.object(sync, "has_jj", return_value=False):
+            first = sync.sync_cache(r).fingerprint
+            sync.ALLOWLIST.write_text('{"schema": "llm-trace-allowlist/v1", "entries": {"made-up": {"status": "proposed"}}}')
+            self.assertEqual(sync.sync_cache(r).fingerprint, first)
 
     def test_the_sync_cache_depends_on_the_rest_of_the_tools(self):
         r = MadeUpRedactor()
@@ -1203,7 +1239,10 @@ class Incremental(SyncFixture):
                 made = (f'mutable() & ::@ & author_date(after:"{m["started"]}") & author_date(before:"{m["ended"]}")'
                         f' & ~(empty() & description(exact:""))')
                 wanted = {x["change_id"] for x in sync.jj_commits(made)}
-                wanted |= {x["change_id"] for x in sync.jj_commits(f'description(substring:"LLM-Trace: {sid}")')}
+                # On this line only: another workspace's newer commits can name the session too, and the repository
+                # store, which all workspaces share, shows them (a watcher's results commit failed this in a side
+                # workspace on 2026-11-26).
+                wanted |= {x["change_id"] for x in sync.jj_commits(f'::@ & description(substring:"LLM-Trace: {sid}")')}
                 state = sync.session_state(self.src / f"{sid}.jsonl", "ended", False, index)
                 self.assertLessEqual(wanted, {x[0] for x in state["commits"]}, sid)
 

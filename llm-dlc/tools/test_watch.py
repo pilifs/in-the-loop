@@ -449,6 +449,32 @@ class PreflightTest(Checkout):
 
 
 @cost("tool")
+class DivergentBaseTest(unittest.TestCase):
+    """VF-049: a run's base is a change id; once a rewrite gives it a new commit and a bookmark keeps the old one, the
+    change is divergent, and its commits must still be listed."""
+
+    @cost("tool")
+    def test_the_commits_after_a_base_that_turned_divergent_are_still_listed(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        env = {**os.environ, "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid", "JJ_CONFIG": os.devnull}
+        jj = lambda *a: subprocess.run(["jj", "--quiet", *a], cwd=root, env=env, check=True, capture_output=True,
+                                       text=True).stdout.strip()
+        jj("git", "init", str(root))
+        jj("describe", "-m", "The base")
+        base = jj("log", "--no-graph", "-r", "@", "-T", "change_id")
+        old = jj("log", "--no-graph", "-r", "@", "-T", "commit_id")
+        jj("new", "-m", "The run's work")
+        jj("new")
+        jj("describe", "-r", base, "-m", "The base, its trace lines rewritten")  # as sync.py commit does
+        jj("bookmark", "create", "-r", old, "run-v0")  # the agent's bookmark on the old version
+        self.assertIn("divergent", jj("log", "--no-graph", "-r", "all()", "-T", 'if(divergent, "divergent ", "")'))
+        with mock.patch.dict(os.environ, env):
+            self.assertEqual([c.split(" ", 1)[1] for c in watch.commits(root, base)], ["The run's work"])
+            self.assertEqual(watch.since_revset(old), old, "a commit id is taken as it is")
+
+
 class StateTest(Made):
     def test_the_state_is_read_from_the_loops_events_and_the_queue(self):
         self.loop("901", "902")

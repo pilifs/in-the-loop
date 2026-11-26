@@ -725,9 +725,12 @@ def sync_cache(redact: Redactor, trusted: bool = True) -> LocalCache:
     """Each session's state (session_state) as it was right after it was last synced. The
     fingerprint covers what process() reads besides the session's own files and commits: the
     rules and redactor (in redact's), the rest of the tools, the templates, prices and reviewed
-    findings, and the repo."""
+    findings, and the repo. Not the allow list: process() redacts by the rules alone, and an approved entry only
+    leaves a finding out of what `check` and `scan` report (Redactor.reviewed), so approving or proposing one changes
+    no manifest. Until 2026-11-26 it was hashed here too, and every allow-list commit, which the setup runs made often,
+    made the next commit in each workspace sync every session again (VF-070, item 4)."""
     h = hashlib.sha256(f"{redact.fingerprint()}\0{tools_digest()}\0{REPO}\0{repo_web_url()}\0{has_jj()}\0".encode())
-    for source in (SUMMARY_TEMPLATE, PRICING, REVIEWED, ALLOWLIST):
+    for source in (SUMMARY_TEMPLATE, PRICING, REVIEWED):
         h.update((source.read_bytes() if source.exists() else b"-") + b"\0")
     return LocalCache(SYNC_CACHE, h.hexdigest(), trusted=trusted and not full_audit([]))
 
@@ -3258,7 +3261,13 @@ def show_finding(prefix: str, limit: int = 4) -> int:
     f = found[matches[0]]
     print(f"{matches[0][:8]}  {f['level']}  {f['kind']}  ×{f['count']}  {f['masked']}  in {', '.join(sorted(f['where']))}")
     excerpts: Counter = Counter()
-    for _, text in texts_to_check(redact, transcripts=preview_caches(redact, False)[2]):
+    # Only the texts of the sessions the finding is in are read. Reading every one decompressed each stored log, about
+    # 11 GB for 356 logs on 2026-11-26, and took 50 s to over 200 s for each finding an agent looked at (VF-070, item 6).
+    _, checks, transcripts = preview_caches(redact, False)
+    for where, _, _, content, _ in scan_targets(redact, False, transcripts, checks):
+        if where[:8] not in f["where"]:
+            continue
+        text = (content if isinstance(content, bytes) else content()).decode(errors="replace")
         for line in text.splitlines():
             if (at := line.find(f["value"])) >= 0:
                 excerpts[masked_excerpt(redact, line, at, len(f["value"]))] += 1
