@@ -386,3 +386,112 @@ a copy of the parent.
 P27's transplant compiled with the fix's `spring-test.gradle` (Awaitility); its failures are assertions and, in the JUnit 4 class,
 an `IllegalStateException` at `JUnit4ApplicationEventsAsyncIntegrationTests.java:74`. P24's fix pin runs 63 tests across its 29
 landed classes. The `clean` step left no untracked or ignored file in any of the fourteen worktrees, and no `$P/build/` copy remains.
+
+## Commands for a rerun by hand
+
+Every build below is over a minute, so outside a job it is a probe at most; the caches are filled, so all run `--offline`.
+
+```bash
+source ~/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/env.sh
+# one case's job steps (CASE in P01-P04, P06-P08, P10, P12-P15, P17, P20-P22, P24-P30; STEP fix | parent | transplant | clean | dryrun)
+bash $P/scripts/case_job.sh CASE STEP
+# any task in a worktree, with the Gradle and JDKs that worktree needs (log $P/logs/TAG.log)
+$P/scripts/gradle_case.sh $W/P30-fix TAG "spring-context/build/test-results/test" \
+  -Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline \
+  :spring-context:test --tests org.springframework.scheduling.support.CronExpressionTests
+# a classpath of any project and configuration, offline
+$P/scripts/gradle_case.sh $W/P30-fix TAG "" --offline -I $P/scripts/resolve-all.init.gradle \
+  :spring-context:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$TMPDIR/cp.txt
+# a released set for the 5.x cases (':'-joined jar paths)
+cat $P/releases/spring-jdbc-5.1.5.RELEASE/classpath.txt
+```
+
+A worktree whose `clean` step ran has no `buildSrc/build`; the next offline run compiles `buildSrc` again (its dependencies are
+cached). Every project's every configuration was resolved, so modules beyond the case's also build offline. `P29-later` was
+resolved too but never built.
+
+## What failed or was not done
+
+- **The seven 5.x cases are not built** ([why](#the-5x-builds-cannot-be-configured)): their build scripts need
+  `propdeps-plugin` 0.0.8 / 0.0.9.RELEASE, `docbook-reference-plugin` 0.3.1, dokka `integration` 0.9.15,
+  `spring-asciidoctor-extensions` 0.1.3.RELEASE or `gradle-enterprise-conventions` 0.0.2, which are in no public repository.
+  No substitute was put in. Released jars matching the pins' changed files are fetched instead (above).
+- Refused by servers (401, anonymous): `repo.spring.io/release`, `plugins-release`, `libs-release`. Nothing the 6.x and 7.x
+  builds needed was only there.
+- Unchecked signatures: the Spring and Reactor release jars signed with `9A2C7A98E457C53D` and reactive-streams 1.0.3
+  (`1364C5E2DF3E99C5`), keys not importable from keyserver.ubuntu.com or keys.openpgp.org; milestones and RCs publish no `.asc`.
+  Their sha1s match the repositories'. Liberica publishes a sha1 only. P11's wrapper jar matches no published checksum (unused).
+- Not run: the `later` revision of P29; the brief's own scenarios and predictions; the whole module test suites (only the landed
+  classes run); any test against the 5.x release jars.
+- The first P25 job selected no test (abstract class with nested tests); rerun queued. The first batch of 7.x dry-runs hit a
+  time limit and was rerun from P07.
+
+Disk: `$P` 32 GB while the 7.x jobs are pending (worktrees 13 GB, `gradle-home` 15 GB, Gradle distributions and the Liberica
+JDK 3.4 GB, kept artifacts 304 MB, release sets and Maven repository 229 MB); the jobs' `clean` steps remove the build trees
+the resolution left in the 7.x worktrees. The mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git` is 392 MB (211 MB
+before). The Gradle zips were deleted after their digests were recorded (the `.sha256` files stay).
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Sources.** All 60 pins, plus the `later` revision P29 links (`daa8c10031e35f1a447917474f203789e009d3b5`), as worktrees
+  `~/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/CASE-ROLE` (ROLE `parent` = before pin, `fix` = after pin), from the
+  shared mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git`. Every PR's merge commit equals the after pin, every landed
+  diff names exactly the PR's files, the 21 signed pins verify ([Upstream revisions](#upstream-revisions), full ids in its table).
+- **Offline builds for 23 cases** (all but the 5.x seven). Every configuration of every project is resolved into
+  `$P/gradle-home`; `source $P/scripts/env.sh` then `$P/scripts/gradle_case.sh WORKTREE TAG "" --offline TASKS` picks the right
+  Gradle (verified distributions in `$P/tools/`) and JDK ([Build facts](#build-facts-by-era), [Commands](#commands-for-a-rerun-by-hand)).
+  `$P/scripts/case_job.sh CASE STEP` reruns a case's job steps.
+- **Built jars, class digests and classpaths** per case and pin in `$P/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
+  `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`), filled by the jobs:
+  the 6.x cases now, the 7.x cases and P25 when their jobs finish ([Jobs](#jobs)).
+- **Released artifacts for the 5.x cases and the versions the brief names** in `$P/releases/SET/` (`jars/`, `classpath.txt`):
+  spring-web 5.0.0.RC4 and 5.0.0.RELEASE with protobuf-java-util 3.4.0, and protobuf-java-format 1.4 apart (P11); spring-test
+  5.1.0.RC1 and RC2 (P09); spring-beans 5.1.6.RELEASE and 5.2.0.M1 (P05); spring-jdbc 5.1.4/5.1.5.RELEASE with H2, HSQLDB,
+  Derby (P16) and 5.2.7.RELEASE/5.3.0-M1 (P18); spring-tx 5.2.0.RC2/5.2.0.RELEASE with their Reactor (P19); spring-orm
+  5.1.4/5.1.5.RELEASE with hibernate-core 5.4.1.Final and HSQLDB (P23); spring-context 5.3.18 with AspectJ 1.9.7 (P26's reported
+  version); jasync-r2dbc-mysql 2.1.19 and 2.1.20 (P20) ([Released artifacts](#released-artifacts), digests there).
+
+### What was verified on a JVM
+
+- 6.x cases, by their jobs: each landed test class passes at the fix, and its parent version (where it exists) passes at the
+  parent; the fix's test files on the parent **fail** for P20, P21, P22, P26, P27, P28 and **do not compile** for P24 (they use the
+  new `contextName` attribute). Every failing test is named in [Job results](#job-results).
+- P25 and the fifteen 7.x cases: **pending**, jobs queued ([Jobs](#jobs)); this section is updated when they finish.
+- 5.x cases: no build, no test run; only the source comparison with releases.
+- No scenario or prediction of the brief was run anywhere.
+
+### What to know before starting
+
+- **P05, P09, P11, P16, P18, P19, P23 (Spring 5.x) have no historical build** ([why](#the-5x-builds-cannot-be-configured)). Released
+  files equal to the pins: P09 parent = spring-test 5.1.0.RC1, fix = 5.1.0.RC2; P11 parent = spring-web 5.0.0.RC4 (the version the
+  brief names), fix = 5.0.0.RELEASE; P05, P16, P18, P23 parents = 5.1.6, 5.1.4, 5.2.7 and 5.1.4.RELEASE; P19 parent = spring-tx
+  5.2.0.RC2 for both changed files. No release equals the fix pins of P05 (5.2.0.M1 differs in one `static` modifier and
+  comments), P16 (5.1.5.RELEASE: comments and indentation only), P18 (5.3.0-M1 drops `@Deprecated` and rewords a debug log),
+  P19's `TransactionalOperatorImpl` (5.2.0.RELEASE passes an extra `(res, err) -> Mono.empty()` to `usingWhen`) and P23
+  (5.1.5.RELEASE: copyright year and a blank line). The rest of each module moved between release and pin. Whether to use a
+  release, a source slice or neither is yours. In 5.2 there is no `spring-r2dbc`, which matters for P19's database claim.
+- **P11's provider choice**: keep `$P/releases/protobuf-java-format-1.4` off the classpath for the Google JsonFormat path; the
+  public constructor prefers it when present.
+- **Snapshots.** The 7.1.0-SNAPSHOT builds take Reactor 3.9.0-SNAPSHOT, reactor-netty 1.4.0-SNAPSHOT and Micrometer 1.18.0-SNAPSHOT
+  as cached on 2026-11-26 (same bytes as on 2026-11-25); P20 takes reactor-core 3.5.3-SNAPSHOT `20230214.110429` and Micrometer
+  1.10.4-SNAPSHOT `20230213.230149`, ten days after its pins, the only builds still served. Digests in
+  [Snapshot dependencies](#snapshot-dependencies). Build `--offline` to keep them.
+- **P21, P22, P24, P25, P26, P28 need the Liberica JDK** (`$JL17`): their builds demand toolchain vendor BELLSOFT; `gradle_case.sh`
+  passes it. Default `java` on `PATH` is 25.0.5. The 7.x builds compile on toolchain 25 with `release` 17; the 6.x builds on 17.
+- **Two-commit landings**: P13, P15, P26, P30 (intermediate commits `8f4fcb6cbc3b85ba0cdaae7fc2b1c552f7ef9715`,
+  `66125a569e4d673bd3e23f2f2c9490ec625cf640`, `86d52a677a41caa70477725d764c3deb2736bcb0`, `cddc671a8c6eea118b1f7ef05f2b6d754e852f09`
+  are in the mirror); the brief compares the outer pins. P11's after pin is a merge.
+- **P25's landed test** `ProxyExceptionHandlingTests` is abstract; select its nested classes with `--tests 'org.springframework.aop.framework.ProxyExceptionHandlingTests*'`.
+- **Databases are open**: the spring-jdbc test runtime classpaths have H2, HSQLDB and Derby (check
+  `$P/artifacts/CASE-ROLE/M.testRuntimeClasspath.txt`); nothing else (no PostgreSQL or MySQL server, no R2DBC database for P19)
+  was set up for this brief.
+- Pins shared with the O01–O20 brief: P27's parent `906c54faffc75721b98f9b9cf63d35edd81f7b4f` is O05's fix, P30's fix
+  `6467fca05b874f3e44fbd9451a252f035abbeafc` is O10's parent; P02's parent's parent is P06's fix. Their worktrees here are separate.
+
+### What is left for the domain work on purpose
+
+All claims, scenarios, fixtures and examples; choosing a stand-in (or none) for the seven 5.x cases; choosing databases, drivers
+and providers beyond what is fetched (P16, P17, P19, P20, P23); any run of the brief's own scenarios or predictions; the P29
+`later` revision; and example ids and folders.
