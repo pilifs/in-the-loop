@@ -1,0 +1,366 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-032327-setup-build-spring-framework-37014-p17-a",
+  "title": "Setup: build Spring Framework #37014 (P17) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 5m37s, peak 3.8 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [
+    "step 3 (P17 transplant: the fix's tests on the parent) was held back 56.0s by its 4-CPU quota in 1m38s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-032327-setup-build-spring-framework-37014-p17-a.json",
+    "sha256": "8a0096b36a8dc04773e82bc3e3bbbf1dfbf04bb63b275d928f95f0f00acfd9d8",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-032327-setup-build-spring-framework-37014-p17-a",
+      "title": "Setup: build Spring Framework #37014 (P17) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P17 (spring-projects/spring-framework#37014: Rejecting conflicting generated-key and declared insert columns before execution). In the worktrees $P/worktrees/P17-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-jdbc with the Gradle each checkout's wrapper names, runs the landed test classes (TableMetaDataContextTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-jdbc in $P/artifacts/P17-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P17",
+      "submitted": {
+        "at": "2026-11-26T03:23:27+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P17 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P17 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P17 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P17 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P17 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P17 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P17 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P17 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "629f1997d1f51f029e19cbf1f1fefaf3b197dc38",
+  "startedAt": "2026-11-26T03:36:56+00:00",
+  "finishedAt": "2026-11-26T03:42:44+00:00",
+  "wallSeconds": 348.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2262997,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 4103639040,
+    "wallSeconds": 337.8,
+    "cpuSeconds": 892.7,
+    "memoryOfEstimate": 0.64,
+    "durationOfEstimate": 0.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P17 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P17 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 123.888,
+      "cpuSeconds": 331.784,
+      "cpuThrottledSeconds": 27.113,
+      "peakMemoryBytes": 2645106688,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p17-fix-offline-build-and-land.log",
+        "lines": 30,
+        "bytes": 3176,
+        "sha256": "a0453c3347cb42d3a6bd1d35b1f12d6fbdf6748577da11143fd7e15d1ecada52",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P17-fix gradle=9.7.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=79 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-jdbc:jar :spring-jdbc:test --tests org.springframew",
+        "junit tests=5 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.jdbc.core.simple.TableMetaDataContextTests junit tests=5 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P17-fix/spring-jdbc.runtimeClasspath.txt 22 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P17-fix/spring-jdbc.testRuntimeClasspath.txt 56 entries",
+        "cf61f678e84ca0cea2400ded341d4b120b88bb025e895778894e08a19d761b7c  jars/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "05f4bdfb8983cccc9b20a0e473a4c14c69299cf7d50a997506b62bc70dfd206d  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT.jar",
+        "36e75b95888d5cb8ae6a195df95c65c94fd4290ca04624d21d76acef9f2c1228  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "295f57a2c6cfe148ccef619570fee8ed7df0a0caec21c9a2b73675c54059b5e4  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "f518d90dc3ef52b0e655251e21a9358a150d71455b413aef93b9c134dde270ce  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT.jar",
+        "ea95b855069662ab53829559c3823a0b8c981d49305e04d78e343815b7ff2c50  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "4fbbbdb124dc42d602f22b3f401a8e33dd66ebefdae87cd59a1908e76159a03c  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "cf61f678e84ca0cea2400ded341d4b120b88bb025e895778894e08a19d761b7c  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "29e84325e05b3dbaed763169ec31aee1e70b3aa700c456f7d540a08e1fe7c189  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT.jar",
+        "fde1bfd0dbbcdbca699c30b738209720311cb000a1a8f4cf25274f3a8f77b994  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/metadata/TableMetaDataContext$QuoteHandler.class",
+        "9266a6161b951b83faa774f0605d89109fa36d103376fde5892a762e6873abf1  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/metadata/TableMetaDataContext.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P17 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P17 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 111.9,
+      "cpuSeconds": 282.87,
+      "cpuThrottledSeconds": 33.591,
+      "peakMemoryBytes": 2649505792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p17-parent-offline-build-and-t.log",
+        "lines": 30,
+        "bytes": 3185,
+        "sha256": "19d5984b37e9704974cfef596519211c03e24eb661fba33e0b417ce9b35b328d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P17-parent gradle=9.7.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=74 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-jdbc:jar :spring-jdbc:test --tests org.springfra",
+        "junit tests=2 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.jdbc.core.simple.TableMetaDataContextTests junit tests=2 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P17-parent/spring-jdbc.runtimeClasspath.txt 22 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P17-parent/spring-jdbc.testRuntimeClasspath.txt 56 entries",
+        "4a215b93f79e65dd931c7ed8d28fd389ee48603aca9e91346521c51dd0ad019b  jars/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "05f4bdfb8983cccc9b20a0e473a4c14c69299cf7d50a997506b62bc70dfd206d  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT.jar",
+        "36e75b95888d5cb8ae6a195df95c65c94fd4290ca04624d21d76acef9f2c1228  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "295f57a2c6cfe148ccef619570fee8ed7df0a0caec21c9a2b73675c54059b5e4  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "f518d90dc3ef52b0e655251e21a9358a150d71455b413aef93b9c134dde270ce  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT.jar",
+        "ea95b855069662ab53829559c3823a0b8c981d49305e04d78e343815b7ff2c50  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "4fbbbdb124dc42d602f22b3f401a8e33dd66ebefdae87cd59a1908e76159a03c  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "4a215b93f79e65dd931c7ed8d28fd389ee48603aca9e91346521c51dd0ad019b  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT.jar",
+        "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3  tree/spring-jdbc/build/libs/spring-jdbc-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "29e84325e05b3dbaed763169ec31aee1e70b3aa700c456f7d540a08e1fe7c189  tree/spring-tx/build/libs/spring-tx-7.1.0-SNAPSHOT.jar",
+        "ad8960eb428944be994bfb66d2c432bd34fd0f3116fdbac471d9819d1522f384  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/metadata/TableMetaDataContext$QuoteHandler.class",
+        "b575ff7dee1212c85afc8a8bd4493c6b180ba4a3faab908bc99ab8fa5784ffb6  spring-jdbc-7.1.0-SNAPSHOT.jar!/org/springframework/jdbc/core/metadata/TableMetaDataContext.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P17 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P17 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 98.039,
+      "cpuSeconds": 275.969,
+      "cpuThrottledSeconds": 56.02,
+      "peakMemoryBytes": 4103639040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p17-transplant-the-fix-s-tests.log",
+        "lines": 17,
+        "bytes": 1398,
+        "sha256": "672de4d326e74adfb617efe704dc074be1668e98dc2aad4fa54d3e6e9561e09f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-jdbc/src/test/java/org/springframework/jdbc/core/simple/TableMetaDataContextTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P17-parent-landed gradle=9.7.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=97 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-jdbc:test --tests org.springframework.jdbc.co",
+        "junit tests=5 failures=2 errors=0 skipped=0",
+        "junit failed TableMetaDataContextTests#overlappingDeclaredAndGeneratedKeyColumnsAreRejected()",
+        "junit failed TableMetaDataContextTests#overlappingDeclaredAndGeneratedKeyColumnsAreRejectedRegardlessOfCase()",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.jdbc.core.simple.TableMetaDataContextTests junit tests=5 failures=2 errors=0 skipped=0 junit failed TableMetaDataContextTests#overlappingDeclaredAndGeneratedKeyColumnsAreRejected() junit failed TableMetaDataContextTests#overlappingDeclaredAndGeneratedKeyColumnsAreRejectedRe",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P17 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P17 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 4.007,
+      "cpuSeconds": 2.124,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 196747264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p17-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "edb7b39b7802e070e82518452c317e52d3ed0cf06f3f300a5a6165d883c31788",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P17"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T03:43:15+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T034244Z-962010679dd792cc"
+    }
+  }
+}
