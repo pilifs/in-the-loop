@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37159",
+  "revisions": {
+    "parent": "a041c9932b0ec4a9cb51e33c403363066c279424",
+    "fix": "fd44a6bdd94b65312fbb02bc11a575b40fa1e772"
+  },
+  "entry": "DataBufferUtils.subscriberInputStream",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37159.1",
+      "role": "Intent",
+      "args": [
+        "await"
+      ],
+      "history": "On the landing observe a read interrupted while awaiting the first byte, with no data or completion competing.",
+      "prediction": "The caller should receive InterruptedIOException with its interrupt flag still set, and the subscription should receive cancellation. The PR reports that earlier readers could remain active until an upstream signal.",
+      "basis": "An interrupted I/O operation has an observable exception and the upstream subscription independently records cancellation. The landed InputStream catch path cancels it.",
+      "refutation": "The landed read reports ordinary EOF, clears the flag, or leaves the subscription active after propagating the exception.",
+      "expected": {
+        "fix": {
+          "return": "InterruptedIOException flag=true cancelled=true"
+        },
+        "parent": {
+          "return": "waiting for upstream"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37159.2",
+      "role": "Control",
+      "args": [
+        "normal"
+      ],
+      "history": "Supply the one-byte buffer 0xff followed by completion, with no interrupt. Call read twice.",
+      "prediction": "On both revisions expect 255, then −1.",
+      "basis": "InputStream's single-byte read returns an unsigned byte as an int. EOF is a separate result.",
+      "refutation": "The data byte becomes −1, changes value, or persists beyond completion.",
+      "expected": {
+        "fix": {
+          "return": "255,-1"
+        },
+        "parent": {
+          "return": "255,-1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37159.3",
+      "role": "Challenge",
+      "args": [
+        "partial"
+      ],
+      "history": "On the landing queue bytes A,B,C and leave the source open. With the reader already interrupted, call read(dst, 1, 5) on a seven-byte sentinel-filled array, then read() while no further data is available.",
+      "prediction": "Expect count 3 and only offsets 1 through 3 replaced by A,B,C. The next read should throw InterruptedIOException with the interrupt flag still set.",
+      "basis": "A bulk read must report progress already made. A nonzero destination offset tests the actual copied bytes and protects both adjacent sentinels.",
+      "refutation": "The bulk read loses the partial count, touches another offset, or consumes the interruption before the next empty read.",
+      "expected": {
+        "fix": {
+          "return": "3:.ABC... InterruptedIOException flag=true"
+        }
+      }
+    }
+  ]
+}

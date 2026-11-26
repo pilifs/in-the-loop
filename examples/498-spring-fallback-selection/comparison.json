@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/33533",
+  "revisions": {
+    "parent": "159e23730c3a10a48d91bc5c0fdcbb95c528312e",
+    "fix": "24a8f1b26da5ea2ec086e4b8e82bb6e4bb459a52"
+  },
+  "entry": "AnnotatedBeanDefinitionReader.registerBean",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#33533.1",
+      "role": "Intent",
+      "args": [
+        "fallback"
+      ],
+      "history": "Call reader.registerBean(Reserve.class, `reserve`, Fallback.class), register the regular definition normally, then call context.getBean(Service.class).",
+      "prediction": "The parent is expected to see two ordinary candidates and throw NoUniqueBeanDefinitionException. At the landing expect the same instance as context.getBean(`regular`).",
+      "basis": "The published Fallback contract selects the single non-fallback when every other matching candidate is a fallback. The added test confirms the flag for this overload.",
+      "refutation": "The merged lookup is ambiguous or resolves the reserve bean.",
+      "expected": {
+        "fix": {
+          "return": "regular"
+        },
+        "parent": {
+          "return": "NoUniqueBeanDefinitionException"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#33533.2",
+      "role": "Control",
+      "args": [
+        "primary"
+      ],
+      "history": "In a fresh context pass Primary.class only on Reserve and leave Regular ordinary. Resolve Service.",
+      "prediction": "Both revisions should resolve the same instance as the named `reserve` bean.",
+      "basis": "The reader already supports Primary.class on this overload and the upstream test checks that definition flag.",
+      "refutation": "Resolution is ambiguous or returns the regular instance.",
+      "expected": {
+        "fix": {
+          "return": "reserve"
+        },
+        "parent": {
+          "return": "reserve"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#33533.3",
+      "role": "Challenge",
+      "args": [
+        "stream"
+      ],
+      "history": "In the first context ask context.getBeanProvider(Service.class).stream() for all instances and compare identities with the two named beans. Repeat with registration order reversed.",
+      "prediction": "Both revisions should yield the two distinct singleton identities exactly once in either order. At the landing single-bean lookup must still choose regular after reversing registrations.",
+      "basis": "Fallback's Javadoc explicitly includes all type matches in provider streams. Preference for single injection does not remove a registered instance.",
+      "refutation": "The stream discards or duplicates the fallback, or registration order changes the merged single-bean choice.",
+      "expected": {
+        "fix": {
+          "return": "both=true single=regular / both=true single=regular"
+        }
+      }
+    }
+  ]
+}

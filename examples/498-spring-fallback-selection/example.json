@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "498",
+  "title": "A programmatic fallback participates in single-bean selection",
+  "summary": "A programmatically registered fallback now loses single-bean selection to the regular bean. The provider stream retained both singleton identities in either registration order.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "AnnotatedBeanDefinitionReader.registerBean"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Passing Fallback.class as a qualifier to AnnotatedBeanDefinitionReader.registerBean now marks the resulting bean definition as a fallback candidate."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/33533"
+  },
+  "notes": [
+    "The same programmatic overload with Primary selected the reserve bean on both revisions."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

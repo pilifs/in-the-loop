@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36480",
+  "revisions": {
+    "parent": "a0dba60fa657088015be64e9987f68c179c76e08",
+    "fix": "c1e90d51ca6a8379a0366f30cd77e5c1be019447"
+  },
+  "entry": "GenericTypeResolver.resolveType",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36480.1",
+      "role": "Intent",
+      "args": [
+        "override"
+      ],
+      "history": "Resolve the interface return type in the Text context.",
+      "prediction": "Parent source predicts raw `Collection.class`. Landing should expose `Collection<Optional<String>>`, equal to the generic return type of the concrete non-bridge override.",
+      "basis": "The two substitutions are `T = Collection<P>` and `P = Optional<String>`. Java reflection on the explicit override gives an independent expected Type.",
+      "refutation": "The landing exposes only Collection, only Optional, an unresolved variable, or a different leaf.",
+      "expected": {
+        "fix": {
+          "return": "Collection<Optional<String>> equal=true"
+        },
+        "parent": {
+          "return": "Collection equal=false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36480.2",
+      "role": "Control",
+      "args": [
+        "direct"
+      ],
+      "history": "Use a class implementing `Source<String>` directly.",
+      "prediction": "Both revisions should resolve T to `String.class`.",
+      "basis": "The interface directly fixes the variable to a class without nested arguments.",
+      "refutation": "The result stays a TypeVariable or differs from String.",
+      "expected": {
+        "fix": {
+          "return": "String"
+        },
+        "parent": {
+          "return": "String"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36480.3",
+      "role": "Challenge",
+      "args": [
+        "siblings"
+      ],
+      "history": "Resolve T for a second sibling `Middle<Optional<Long>>`, then for Text again. Neither needs an explicit override in this variation.",
+      "prediction": "On the landing the two leaf arguments should be Long and String respectively, with identical outer Collection and Optional raw types.",
+      "basis": "A sibling’s binding is determined by its declared superclass. An override is unnecessary to recover that signature.",
+      "refutation": "The contexts collapse to one cached result, the leaf disappears, or resolution depends on declaring an override.",
+      "expected": {
+        "fix": {
+          "return": "Collection<Optional<Long>> / Collection<Optional<String>>"
+        }
+      }
+    }
+  ]
+}

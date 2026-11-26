@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "490",
+  "title": "Retain empty multipart fields exactly once, including the final field",
+  "summary": "The servlet multipart converter now returns both an empty first field and an empty last field. Three fields under one name retained order and cardinality.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "MultipartHttpMessageConverter.read"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The servlet-side converter finishes the current part at the next part boundary and at end of input. Its completion guard also protects parts already emitted on a final body buffer."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37202"
+  },
+  "notes": [
+    "Both original CRLF resources come from the pinned test tree. A separate wire fixture repeats the same name with empty, nonempty and empty bodies."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

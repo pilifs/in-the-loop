@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37435",
+  "revisions": {
+    "parent": "bcb4fbf31ca15f88697da1281894281ba4d6324d",
+    "fix": "35584e498e249986fbdc50bf16e3bfa88d2f97e2"
+  },
+  "entry": "StringUtils.truncate",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37435.1",
+      "role": "Intent",
+      "args": [
+        "cut"
+      ],
+      "history": "Use limit 2 on `a😀b`.",
+      "prediction": "Parent predicts `a` plus a lone high surrogate before the suffix. Landing should return exactly `a (truncated)...`.",
+      "basis": "The pair occupies indices 1 and 2. A two-unit cut crosses it. The landed regression asserts the complete string.",
+      "refutation": "The landing includes either half or all of the emoji, or changes the suffix.",
+      "expected": {
+        "fix": {
+          "return": "0061 |suffix=true"
+        },
+        "parent": {
+          "return": "0061 d83d |suffix=true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37435.2",
+      "role": "Control",
+      "args": [
+        "whole"
+      ],
+      "history": "Use limit 3 on the same input, then limit 4.",
+      "prediction": "Both should retain `a😀` with the suffix at 3 and return exactly `a😀b` at 4.",
+      "basis": "The first cut follows the complete pair. At 4 the input already fits.",
+      "refutation": "Either complete pair is dropped, or a suffix appears at 4.",
+      "expected": {
+        "fix": {
+          "return": "0061 d83d de00 |suffix=true / 0061 d83d de00 0062 |suffix=false"
+        },
+        "parent": {
+          "return": "0061 d83d de00 |suffix=true / 0061 d83d de00 0062 |suffix=false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37435.3",
+      "role": "Challenge",
+      "args": [
+        "encode"
+      ],
+      "history": "Use `StringBuilder` with two consecutive emoji after `a` and a final `b`. Set limit 4 and encode the result strictly as UTF-8.",
+      "prediction": "The merged string and its decoded UTF-8 bytes should equal `a😀 (truncated)...`. The parent is expected to give the encoder malformed input.",
+      "basis": "Only the second pair straddles the cut. A strict encoder exposes a dangling surrogate that a rendering or replacement encoder can hide.",
+      "refutation": "Strict encoding rejects the merged string, or decoding loses the first emoji.",
+      "expected": {
+        "fix": {
+          "return": "a😀 (truncated)..."
+        },
+        "parent": {
+          "return": "MalformedInputException"
+        }
+      }
+    }
+  ]
+}

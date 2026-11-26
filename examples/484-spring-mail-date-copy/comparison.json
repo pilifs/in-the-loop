@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36626",
+  "revisions": {
+    "parent": "e940a38014cfad78aaef39a77db128e778f2f9ae",
+    "fix": "4b0101a9dcdf7dbe1841dfc33992fa8eb27eaf2f"
+  },
+  "entry": "SimpleMailMessage.copyTo",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36626.1",
+      "role": "Intent",
+      "args": [
+        "mutations"
+      ],
+      "history": "Change the input date to 0. Next mutate the Date returned by the first message to 1 and the recording target’s Date to 2.",
+      "prediction": "The parent is expected to expose these successive mutations through the shared reference. On the landing, fresh getters on the first message and its copy should still read 1234 after every step.",
+      "basis": "A plain Date has mutable millisecond state. All four landed regressions require the original timestamp to survive mutation outside the message.",
+      "refutation": "Either source or copy reports 0, 1 or 2 after the respective mutation.",
+      "expected": {
+        "fix": {
+          "return": "1234/1234 1234/1234 1234/1234"
+        },
+        "parent": {
+          "return": "0/0 1/1 2/2"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36626.2",
+      "role": "Control",
+      "args": [
+        "unset"
+      ],
+      "history": "Set a message’s date to null and copy its contents to a target already carrying 77 milliseconds.",
+      "prediction": "Both should return null from the source getter and leave the target at 77. Constructing a fresh copy should give it a null date.",
+      "basis": "`copyTo` transfers populated fields only. The copy constructor starts with an empty destination.",
+      "refutation": "The target’s date is cleared or a fresh copy acquires a timestamp.",
+      "expected": {
+        "fix": {
+          "return": "null/null/77"
+        },
+        "parent": {
+          "return": "null/null/77"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36626.3",
+      "role": "Challenge",
+      "args": [
+        "subclass"
+      ],
+      "history": "Subclass SimpleMailMessage and override only `getSentDate()` to return a fresh Date(1234) each time. Leave the inherited field unset. Compare its public getter with a constructed copy and with a target initially at 77 after `copyTo`.",
+      "prediction": "The parent should copy 1234 by both routes. The broad promise to copy message contents suggests the same at the landing, but the pinned field reads predict a null constructed date and the target still at 77.",
+      "basis": "The overridden getter supplies a stable observable value with no mutable alias. Changing representation alone tests what copying a subclass promises.",
+      "refutation": "A null or skipped copy falsifies preservation of the exposed date. Two copies of 1234 would refute the predicted discrepancy.",
+      "expected": {
+        "fix": {
+          "return": "1234/1234/1234"
+        },
+        "parent": {
+          "return": "1234/1234/1234"
+        }
+      }
+    }
+  ]
+}

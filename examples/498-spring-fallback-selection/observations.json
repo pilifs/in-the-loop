@@ -1,0 +1,70 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "0d0cdb910c0bc8caaa972f06221dc599a64d446496d3d356592c21495b6dbaee",
+  "runtimeSha256": "e9d61466d09c5d724e4a76d6e081ce6020654e021f434ae0fbc314277850853e",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "aadab76514bfc50f86660003cc2f0b5ef72cd5139ec05ccc26226f45c1e15a00"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Regular.class": "b0a7f6e7fab11e32c528ff410b0c72a066e8adfec19aee9b804a7de62641cd49",
+        "PublicCaller$Reserve.class": "c21a806a56f421c13cab8051deef31af7092ab78d34f4c050c054c05c28c6077",
+        "PublicCaller$Service.class": "21b82b960da87903c394310578df0b95887c42b329bfebe0cb9586d463c23643",
+        "PublicCaller.class": "1de1d5e126b8adf425611abea848ee2f0c3e52ad74f0d97a16d792a8c4563de0",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#33533.1",
+          "outcome": {
+            "return": "NoUniqueBeanDefinitionException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#33533.2",
+          "outcome": {
+            "return": "reserve"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#33533.3",
+          "outcome": {
+            "return": "both=true single=NoUniqueBeanDefinitionException / both=true single=NoUniqueBeanDefinitionException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#33533.1",
+          "outcome": {
+            "return": "regular"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#33533.2",
+          "outcome": {
+            "return": "reserve"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#33533.3",
+          "outcome": {
+            "return": "both=true single=regular / both=true single=regular"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

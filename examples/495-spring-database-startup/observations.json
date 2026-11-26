@@ -1,0 +1,76 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "3cd6f09fb66627964621049ba8321b08e8137efc4cf517496347c79fc1b91df2",
+  "runtimeSha256": "799131c89ecf0dfdb46da0306a26daae387aa6051ae60aae07a3cfc7109683a6",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "54c4f55a3227e93239482fa15ea8f9afa724d75dd9dfa6744b74664a345b66e2"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Loans.class": "5ce17ae463a378d11279cf991ef864419a232d586f0a2d5441645c8acf94db39",
+        "PublicCaller.class": "bfa1754d73856d404b49758da95dc6e16c3ad73caf9262d233cf2c066eb7420f",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25305.1",
+          "outcome": {
+            "return": "IllegalArgumentException []"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25305.2",
+          "outcome": {
+            "return": "ok [openA, statementA, SELECT 1, closeStatementA, closeA]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25305.3",
+          "outcome": {
+            "return": "IllegalArgumentException [] / IllegalArgumentException []"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25305.1",
+          "outcome": {
+            "return": "ok [openA, validA(1), closeA]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25305.2",
+          "outcome": {
+            "return": "ok [openA, statementA, SELECT 1, closeStatementA, closeA]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25305.3",
+          "outcome": {
+            "return": "ok [openA, validA(1), closeA, openB, validB(1), closeB] / ok [openA, validA(1), closeA, openB, validB(1), closeB]"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/jdbc/support/DatabaseStartupValidator.class": "2538bd6aa665dbe554ff6ddb06aa836d39df4900ea694b5d849225d5e84a4813"
+        },
+        "fix": {
+          "org/springframework/jdbc/support/DatabaseStartupValidator.class": "28f4e3424067adf63ecf5a3326cf3b733cb5b11fa95d5f6cfae09472884b0945"
+        }
+      }
+    }
+  }
+}

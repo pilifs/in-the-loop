@@ -18,24 +18,66 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def spring_builds(setup):
+def spring_builds(setup, campaign, prefix):
     """The 6.x rows give jar names once, then give parent digests in the same order."""
     table = setup.split("## Digests of the built artifacts\n", 1)[1].split("\n## ", 1)[0]
     names = {}
     builds = {}
-    for case, side, jars in re.findall(r"^\| (O\d\d) \| (fix|parent) \| (.*?) \|", table, re.M):
+    for case, side, jars in re.findall(rf"^\| ({prefix}\d\d) \| (fix|parent) \| (.*?) \|", table, re.M):
         listed = re.findall(r"`([^`]+\.jar)`", jars)
         if listed:
             names[case] = listed
         for jar, digest in zip(names[case], re.findall(r"`([0-9a-f]{64})`", jars), strict=True):
             builds[f"artifacts/{case}-{side}/jars/{jar}"] = digest
-    companions = Path(__file__).with_name("o01-o20") / "project-jars.sha256"
+    companions = Path(__file__).with_name(campaign) / "project-jars.sha256"
     for line in companions.read_text().splitlines():
         digest, name = line.split()
-        require(re.fullmatch(r"artifacts/O\d\d-(parent|fix)/tree/.+\.jar", name) and name not in builds,
+        require(re.fullmatch(rf"artifacts/{prefix}\d\d-(parent|fix)/tree/.+\.jar", name) and name not in builds,
                 "invalid Spring companion build record")
         builds[name] = digest
     return builds
+
+
+def check_prepared_spring_pair(number, deployment, recorded, setup):
+    case = f"P{number:02}"
+    if number == 4:
+        classes = recorded["callerClassesBySide"]
+        require(deployment.get("compilePerSide") and classes["fix"] == recorded["callerClasses"] and
+                classes["parent"]["PublicCaller.class"] == classes["fix"]["PublicCaller.class"] and
+                classes["parent"]["Flatten.class"] != classes["fix"]["Flatten.class"],
+                "P04 needs the same caller with separately compiled YAML adapters")
+    if number == 16:
+        descriptor = "(Ljava/io/LineNumberReader;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+        sites = recorded["callerInvocations"]
+        require(deployment.get("compileAgainst") == "parent" and not deployment.get("compilePerSide")
+                and sites["parent"] == sites["fix"] and
+                [(s["method"], s["descriptor"]) for s in sites["parent"]] == [("readScript", descriptor)],
+                "P16 needs the parent-compiled three-argument readScript call")
+    if "upstreamTestInputs" in deployment:
+        require(deployment["upstreamTestInputs"]["tree"] == f"worktrees/{case}-fix",
+                f"{case}: wrong original test fixture tree")
+    if number not in (5, 9, 11, 16, 18, 19, 23):
+        require(not deployment.get("preparedSlice") and "preparedSliceClasses" not in recorded,
+                f"{case}: expected the complete module builds")
+        return
+    cp = deployment["classpath"]
+    require(deployment.get("preparedSlice") and cp["parent"][1:] == cp["fix"][1:],
+            f"{case}: original classes need identical released companions")
+    for side in comparison.SIDES:
+        label = f"{case}-{side}"
+        require(cp[side][0] == f"slices/{label}/{label}-slice.jar" and 0 in deployment["providers"].values(),
+                f"{label}: source slice must supply a loaded class")
+    expected = {side: {} for side in comparison.SIDES}
+    table = setup.split("**Slice class digests (sha256).**", 1)[1].split("**What the slice route", 1)[0]
+    for member, parent, fix in re.findall(rf"^\| {case} \| `([^`]+)` \| `([0-9a-f]{{64}})` \| (.*?) \|$", table, re.M):
+        if member.startswith("…/"):
+            member = package + member[1:]
+        else:
+            package = member.rsplit("/", 1)[0]
+        expected["parent"][member] = parent
+        expected["fix"][member] = parent if fix == "the same" else re.search(r"`([0-9a-f]{64})`", fix)[1]
+    require(expected["parent"] and expected["parent"] != expected["fix"] and
+            recorded["preparedSliceClasses"] == expected, f"{case}: bytecode differs from upstream setup")
 
 
 def check_spring_deployment(number, deployment, recorded, setup):
@@ -78,15 +120,17 @@ def audit(replay=False, campaign="original"):
               "l01-l20": ("organic-java-merged-pr-links-l01-l20-brief", "L", 20),
               "m01-m10": ("organic-java-merged-pr-links-m01-m10-brief", "M", 10),
               "n01-n05": ("organic-java-merged-pr-links-n01-n05-brief", "N", 5),
-              "o01-o20": ("spring-framework-pr-links-o01-o20-brief", "O", 20)}
+              "o01-o20": ("spring-framework-pr-links-o01-o20-brief", "O", 20),
+              "p01-p30": ("spring-framework-pr-links-p01-p30-brief", "P", 30)}
     brief_name, case_prefix, case_count = series[campaign]
     brief = ROOT / "llm-dlc/loops" / (brief_name + ".md")
     setup = brief.with_name(brief.stem + "-setup.md").read_text()
     # N01–N05's build record puts every module in one table, including the nested Spring JARs.
     build_table = {f"artifacts/{case}-{side}/{path}": digest for case, side, path, digest in re.findall(
         r"^\| (N\d\d) \| (parent|fix) \| `([^`]+)` \| `([0-9a-f]{64})` \|$", setup, re.MULTILINE)}
-    if campaign == "o01-o20":
-        build_table = spring_builds(setup)
+    spring_series = campaign in ("o01-o20", "p01-p30")
+    if spring_series:
+        build_table = spring_builds(setup, campaign, case_prefix)
     references = {}
     for section in brief.read_text().split("\n## "):
         link = re.search(r"https://github.com/([\w.-]+/[\w.-]+)/compare/([0-9a-f]{40})\.{3}([0-9a-f]{40})", section)
@@ -117,6 +161,12 @@ def audit(replay=False, campaign="original"):
                     roles.append("Date validator")
                 elif pr in ("37403", "37600"):
                     roles.insert(2, "Eviction" if pr == "37403" else "Put and eviction")
+            if campaign == "p01-p30":
+                pr = case.rsplit("#", 1)[1]
+                if pr == "22260":
+                    roles.insert(1, "Intent")
+                elif pr in ("22392", "34723", "30020"):
+                    roles.append({"22392": "Compatibility", "34723": "Challenge", "30020": "Configuration"}[pr])
             require([row[0] for row in rows.values()] == roles,
                     f"{case}: incomplete or reordered questions")
     fields = ("role", "history", "prediction", "basis")
@@ -147,14 +197,14 @@ def audit(replay=False, campaign="original"):
         for key, path in [("comparisonSha256", folder / "comparison.json"), ("runtimeSha256", folder / "runtime.json"),
                           ("launcherSha256", comparison.upgrade_replay.LAUNCHER)]:
             require(comparison.upgrade_replay.sha(path) == recorded[key], prefix + key)
-        sources = sorted((folder / "caller").rglob("*.java"))
+        sources = sorted((folder / "caller").rglob("*.java")) + sorted((folder / "adapters").rglob("*.java"))
         fixtures = [p for p in (folder / "fixtures").rglob("*") if p.is_file()]
         require(recorded["inputs"] == {p.relative_to(folder).as_posix(): comparison.upgrade_replay.sha(p)
                                        for p in sources + fixtures}, prefix + "caller or fixtures")
         require(runtime["deployments"].keys() == recorded["deployments"].keys(), prefix + "deployment names")
         evidence = {q: {} for q in questions}
         used_files = set()
-        setup_section = (setup if campaign == "o01-o20" else
+        setup_section = (setup if spring_series else
                          setup.split(f"\n### {case_prefix}{number:02} · ", 1)[1].split("\n### " + case_prefix, 1)[0])
         supplied = {}
         inventory = folder / "setup/artifacts.sha256"
@@ -165,6 +215,9 @@ def audit(replay=False, campaign="original"):
             if campaign == "o01-o20":
                 check_spring_deployment(number, deployment, result_rows, setup)
                 counters["pinnedSourcePairs" if "sourceSlice" in deployment else "fullBuildPairs"] += 1
+            if campaign == "p01-p30":
+                check_prepared_spring_pair(number, deployment, result_rows, setup)
+                counters["pinnedSourcePairs" if deployment.get("preparedSlice") else "fullBuildPairs"] += 1
             if campaign == "n01-n05" and case == "spring-projects/spring-framework#37322":
                 require(deployment.get("service") == "mysql" and
                         re.fullmatch(r"mysql@sha256:[0-9a-f]{64}", deployment.get("mysqlImage", "")) and
@@ -181,7 +234,7 @@ def audit(replay=False, campaign="original"):
                         if case_count:
                             label = re.match(rf"artifacts/{case_prefix}{number:02}[-/].*?\b(parent|fix)\b", f)
                             require(label and label[1] == side, prefix + f"{f} belongs to a different revision")
-                        if campaign in ("n01-n05", "o01-o20"):
+                        if spring_series or campaign == "n01-n05":
                             require(build_table.get(f) == digest, prefix + f"{side} {f} differs from pin-build table")
                         else:
                             require(digest in setup_section or supplied.get(f) == digest,
@@ -196,7 +249,8 @@ def audit(replay=False, campaign="original"):
                 indices = [*deployment["providers"].values(), *deployment.get("childProviders", {}).values()]
                 require(all(type(i) is int and 0 <= i < len(files) for i in indices), prefix + "provider index")
                 require(any(files[i].startswith("artifacts/") for i in indices) or
-                        (campaign == "o01-o20" and number in (11, 14) and "sourceSlice" in deployment),
+                        (campaign == "o01-o20" and number in (11, 14) and "sourceSlice" in deployment) or
+                        (campaign == "p01-p30" and deployment.get("preparedSlice")),
                         prefix + "no pin-built provider")
             expected_keys = [(s, q["id"]) for s in comparison.SIDES for q in spec["questions"]
                              if s not in q.get("omit", {})]
@@ -239,7 +293,7 @@ def audit(replay=False, campaign="original"):
                         omittedParentHistories=sum("parent" in q.get("omit", {}) for q in spec["questions"]))
         result["cases"].append({"example": ex["id"], "case": case, "observationsSha256": comparison.upgrade_replay.sha(folder / "observations.json"),
                                 "deployments": list(runtime["deployments"]), "allHistoriesPaired": paired, "fixedRefutations": refuted})
-        if campaign in ("m01-m10", "n01-n05", "o01-o20"):
+        if spring_series or campaign in ("m01-m10", "n01-n05"):
             require(paired, prefix + "expected both original revisions for every history")
             for key, desc in questions.items():
                 if desc[0] in ("Intent", "Control"):
@@ -273,7 +327,7 @@ def audit(replay=False, campaign="original"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10", "n01-n05", "o01-o20"), default="original")
+    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10", "n01-n05", "o01-o20", "p01-p30"), default="original")
     parser.add_argument("--replay", action="store_true", help="also rebuild every caller and repeat the physical trials")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()

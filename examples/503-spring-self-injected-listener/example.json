@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "503",
+  "title": "A self-injected proxied listener receives each published event once",
+  "summary": "The self-injected proxied listener now receives one callback per event. Its advice and the independent listener observed identical event objects on both publications.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "duplicate-delivery",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ApplicationContext.publishEvent"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The event multicaster replaces a registered singleton target with its bean proxy when both represent the same listener. It makes the same choice for cached listener lists."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/28322"
+  },
+  "notes": [
+    "The original package-scanned application, event publisher, eager listener and aspect come from the upstream test source. The repeated history adds an event-specific aspect and a separate listener."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

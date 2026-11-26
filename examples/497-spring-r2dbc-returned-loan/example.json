@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "497",
+  "title": "A transaction releases its connection after an auto-commit restore error",
+  "summary": "A failed auto-commit restore now still releases the R2DBC loan. A rollback failure retained its translated cause and another checkout obtained the freed slot.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "R2dbcTransactionManager"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Cleanup handles an error signal from restoring auto-commit and continues to release a newly held connection. A release error signal is also suppressed during cleanup."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/29703"
+  },
+  "notes": [
+    "Only a subscription to the driver's cold close publisher credits the slot. A second checkout tests that independently."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

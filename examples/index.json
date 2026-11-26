@@ -25959,6 +25959,1184 @@
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/37600",
       "target": null
+    },
+    {
+      "id": "478",
+      "path": "examples/478-spring-utf16-prefix",
+      "title": "Keep a supplementary character intact at the truncation boundary",
+      "summary": "A cut inside an emoji now drops the whole split pair. The strict UTF-8 encoder accepted the retained earlier emoji and the exact truncation suffix.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "StringUtils.truncate",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Hexadecimal units expose the lone high surrogate the parent returned. A complete pair at limit 3 and an input that fits at 4 each retained their original units."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37435",
+      "target": null
+    },
+    {
+      "id": "479",
+      "path": "examples/479-spring-annotation-arrays",
+      "title": "Read a scalar map value through a primitive-array annotation member",
+      "summary": "A scalar 7 now reads as primitive int[] through both the public annotation reader and a synthesized annotation.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "MergedAnnotation.of",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The reference annotation comes from javac and reflection. Both array members were compared independently."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37349",
+      "target": null
+    },
+    {
+      "id": "480",
+      "path": "examples/480-spring-nested-return-type",
+      "title": "Recover the nested return type inherited through a generic interface",
+      "summary": "Resolving the interface type now recovers Collection<Optional<String>>. Sibling subclasses preserve distinct Long and String leaves without overrides.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "GenericTypeResolver.resolveType",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The caller also checks equality with the non-bridge override's reflective Type. The parent returned only the raw Collection."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36480",
+      "target": null
+    },
+    {
+      "id": "481",
+      "path": "examples/481-spring-yaml-empty-values",
+      "title": "Choosing a value for empty YAML entries",
+      "summary": "The new YAML hook retained a caller-selected marker for an empty mapping and both null scalars. An empty sequence still became an empty string.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "YamlProcessor.getFlattenedMap",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The adapter for each revision directly calls its protected overload. The common caller tests key presence and marker identity. The proposed uniform empty-container behavior was refuted."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36207",
+      "target": null
+    },
+    {
+      "id": "482",
+      "path": "examples/482-spring-bracketed-map-key",
+      "title": "Map keys can contain balanced brackets in a bean property path",
+      "summary": "A balanced bracket inside a literal map key now selects the intended child. A quoted write left the similarly named decoy untouched.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "PropertyAccessorFactory.forBeanPropertyAccess",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A direct read from the backing Java map checks both children and counts its keys after the write.",
+        "Each pin supplies its changed production classes on spring-beans 5.1.6.RELEASE. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/21855",
+      "target": null
+    },
+    {
+      "id": "483",
+      "path": "examples/483-spring-case-map-retry",
+      "title": "A failed computation leaves no case-insensitive key behind",
+      "summary": "A failed computation now leaves size, iteration and case-insensitive membership in agreement. A successful retry keeps its own KEY spelling.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "LinkedCaseInsensitiveMap.computeIfAbsent",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "case-normalization"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "An existing null-valued mapping retained its original spelling on both revisions. The throwing function is checked by exception identity."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37351",
+      "target": null
+    },
+    {
+      "id": "484",
+      "path": "examples/484-spring-mail-date-copy",
+      "title": "A mail message owns its sent date across setters, getters and copies",
+      "summary": "Ordinary message copies now retain the original 1234 ms through mutations of the input, getter and target. Both copy paths skipped a subclass's getter-provided date.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "SimpleMailMessage.copyTo",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The subclass leaves the inherited field unset. Its getter still returned 1234. The constructed copy returned null and the pre-populated target retained 77."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36626",
+      "target": null
+    },
+    {
+      "id": "485",
+      "path": "examples/485-spring-retry-policy-snapshot",
+      "title": "A built retry policy keeps its exception rules",
+      "summary": "A built retry policy now keeps its original exception rules. Its executor retried the file exception and returned 7 while the newer policy stopped after one call.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "RetryPolicy.Builder.build",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both operations have independent invocation counters. The budgets and thrown exception classes are the same."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37596",
+      "target": null
+    },
+    {
+      "id": "486",
+      "path": "examples/486-spring-session-binding",
+      "title": "Replacing a session attribute notifies the displaced listener",
+      "summary": "Replacing a session attribute now unbinds the displaced listener before binding its replacement. Rebinding the same object was silent.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "MockHttpSession.setAttribute",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The public javax.servlet mock records the receiver, callback phase, session, attribute name and value. The challenge uses distinct listeners with equal application values.",
+        "Each pin supplies its changed production classes on spring-test 5.1.0.RC1. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/1912",
+      "target": null
+    },
+    {
+      "id": "487",
+      "path": "examples/487-spring-multipart-file-cursors",
+      "title": "Repeated reads and copies of a small multipart file",
+      "summary": "Two reads and a filesystem copy now returned all six in-memory upload bytes. Interleaved readers preserved independent positions at both storage thresholds.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "MultipartHttpMessageConverter.read",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The destination started longer than the upload. Its bytes and the first reader's remaining suffix were observed after transfer."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37531",
+      "target": null
+    },
+    {
+      "id": "488",
+      "path": "examples/488-spring-protobuf-http-flush",
+      "title": "Writing protobuf JSON flushes the complete response body",
+      "summary": "The Google protobuf JSON response now round-trips both messages. The parent returned an empty short body and an incomplete 8192-byte prefix for the larger message.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ProtobufHttpMessageConverter.write",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The public constructor selected the Google implementation with the alternative formatter absent. The generated binary parser also checked the independent protobuf control.",
+        "Each pin supplies its changed production classes on spring-web 5.0.0.RC4. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/1532",
+      "target": null
+    },
+    {
+      "id": "489",
+      "path": "examples/489-spring-protobuf-json-lines",
+      "title": "JSON Lines selection and physical line boundaries for protobuf",
+      "summary": "The compact encoder now selects JSONL and produces two parseable records. The default printer produced 12 physical lines for those two messages, none independently parseable.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ProtobufJsonEncoder.encode",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The observer concatenates the actual bytes and splits at LF. Each complete record is checked against its original generated message. NDJSON with the compact printer stayed stable."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37559",
+      "target": null
+    },
+    {
+      "id": "490",
+      "path": "examples/490-spring-multipart-empty-fields",
+      "title": "Retain empty multipart fields exactly once, including the final field",
+      "summary": "The servlet multipart converter now returns both an empty first field and an empty last field. Three fields under one name retained order and cardinality.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "MultipartHttpMessageConverter.read",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both original CRLF resources come from the pinned test tree. A separate wire fixture repeats the same name with empty, nonempty and empty bodies."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37202",
+      "target": null
+    },
+    {
+      "id": "491",
+      "path": "examples/491-spring-jackson-pool",
+      "title": "Reusing Jackson's encoding buffers preserves the JSON stream",
+      "summary": "After encoding one JSON object the recycler's acquisitions and returns now balance. Two successive NDJSON streams preserved an embedded quote and newline.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "JacksonJsonEncoder.encode",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A separate mapper decoded the actual bytes. The caller checks the pool after each synchronous subscription has unwound."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37059",
+      "target": null
+    },
+    {
+      "id": "492",
+      "path": "examples/492-spring-interrupted-stream",
+      "title": "An interrupted stream read preserves bytes already copied",
+      "summary": "An interrupted empty read now throws with the interrupt flag set and cancels the source. A bulk read preserved three bytes at offset one before the next read threw.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "DataBufferUtils.subscriberInputStream",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The controlled publisher stays open. A bounded reader observes the parent's continued wait, then sends completion and joins it. No competing byte is emitted."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37159",
+      "target": null
+    },
+    {
+      "id": "493",
+      "path": "examples/493-spring-sql-comment-lines",
+      "title": "Executing SQL after a block comment whose closing line starts with dashes",
+      "summary": "The merged SQL populator committed both original rows and ignored the sentinel in a line comment. The parent committed the first row and then failed. Its old three-argument direct client lost binary linkage on the merge.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ResourceDatabasePopulator.populate",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "4/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history reads the H2 table through a distinct JDBC connection. javap records the exact descriptor of the client compiled on the parent.",
+        "Each pin supplies its changed production classes on spring-jdbc 5.1.4.RELEASE. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/22392",
+      "target": null
+    },
+    {
+      "id": "494",
+      "path": "examples/494-spring-insert-key-columns",
+      "title": "Rejecting conflicting generated-key and declared insert columns before execution",
+      "summary": "Overlapping generated and supplied columns now fail during compilation. Correcting that same insert after failure returned a key identifying the only Sven row.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "SimpleJdbcInsert.executeAndReturnKey",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The observer checks the failure type, declared column spelling, compiled state, table count and the row reached through the returned key."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37014",
+      "target": null
+    },
+    {
+      "id": "495",
+      "path": "examples/495-spring-database-startup",
+      "title": "A JDBC startup check can succeed without a validation query",
+      "summary": "Startup now uses JDBC isValid(1) when no SQL is configured. An invalid first loan and a throwing first loan each closed before the second was validated.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "DatabaseStartupValidator.afterPropertiesSet",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Two distinct connection objects record acquisitions, timeout, calls and closes. The explicit SELECT 1 control records the statement close separately.",
+        "Each pin supplies its changed production classes on spring-jdbc 5.2.7.RELEASE. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/25305",
+      "target": null
+    },
+    {
+      "id": "496",
+      "path": "examples/496-spring-mono-commit",
+      "title": "A successful transactional Mono waits for commit completion",
+      "summary": "The transactional Mono now waited for the gated commit. A separate H2 connection saw zero matching rows at parent completion and one at merged completion.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "TransactionalOperator.transactional",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "write-ahead-ordering"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The historical spring-tx operator wraps a JDBC-backed ReactiveTransactionManager. The read runs in the subscriber's completion callback at READ_COMMITTED, before the fixture releases any still-pending commit.",
+        "Each pin supplies its changed production classes on spring-tx 5.2.0.RC2. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/23562",
+      "target": null
+    },
+    {
+      "id": "497",
+      "path": "examples/497-spring-r2dbc-returned-loan",
+      "title": "A transaction releases its connection after an auto-commit restore error",
+      "summary": "A failed auto-commit restore now still releases the R2DBC loan. A rollback failure retained its translated cause and another checkout obtained the freed slot.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "R2dbcTransactionManager",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Only a subscription to the driver's cold close publisher credits the slot. A second checkout tests that independently."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/29703",
+      "target": null
+    },
+    {
+      "id": "498",
+      "path": "examples/498-spring-fallback-selection",
+      "title": "A programmatic fallback participates in single-bean selection",
+      "summary": "A programmatically registered fallback now loses single-bean selection to the regular bean. The provider stream retained both singleton identities in either registration order.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "AnnotatedBeanDefinitionReader.registerBean",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The same programmatic overload with Primary selected the reserve bean on both revisions."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/33533",
+      "target": null
+    },
+    {
+      "id": "499",
+      "path": "examples/499-spring-scoped-services",
+      "title": "Plain and qualified injection of scoped service proxies",
+      "summary": "The unqualified consumer now invokes D(L,C) through scoped proxies. An added archive delegate remains reachable by qualifier without changing that route.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "AnnotationConfigApplicationContext.refresh",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The unproxied control used the same candidacy flags. Each result comes from invoking the injected services."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/35627",
+      "target": null
+    },
+    {
+      "id": "500",
+      "path": "examples/500-spring-hibernate-named-beans",
+      "title": "Named Hibernate bean requests preserve injection and fallback identity",
+      "summary": "The named Hibernate prototype now receives its originating Spring context. Named fallback creation retains X, and an absent name no longer resolves to a differently named Spring prototype.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "BeanContainer.getBean",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "4/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The caller boots the original native Hibernate XML on HSQLDB and obtains BeanContainer from the unwrapped SessionFactory. The producer records both overloads.",
+        "Each pin supplies its changed production classes on spring-orm 5.1.4.RELEASE. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/22260",
+      "target": null
+    },
+    {
+      "id": "501",
+      "path": "examples/501-spring-context-level-override",
+      "title": "A test bean override can target one level of a context hierarchy",
+      "summary": "A child-only override now preserves the parent greeting and field identity. Two different mocked children reused the identical parent with neither mock registered there.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "SpringExtension",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "4/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each hierarchy is declared on the concrete Jupiter test. Both mock clients run on the same JVM and Spring context cache.",
+        "When the concrete test inherits both levels from a superclass, adding an unscoped or child-only override on the subclass fails before the test method. Five separate follow-up histories compare the declaration sites on both pins and Spring 7.1.0."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/34723",
+      "target": null
+    },
+    {
+      "id": "502",
+      "path": "examples/502-spring-proxy-checked-error",
+      "title": "CGLIB advice sees a checked exception before the caller receives its wrapper",
+      "summary": "CGLIB advice now sees the original undeclared checked exception. The caller still receives its wrapper, and type-specific advice can recover normally.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ProxyFactory.getProxy",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "unmapped-exception"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The caller and interceptor compare the exact exception objects. A JDK proxy and declared and unchecked failures supply controls."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/32469",
+      "target": null
+    },
+    {
+      "id": "503",
+      "path": "examples/503-spring-self-injected-listener",
+      "title": "A self-injected proxied listener receives each published event once",
+      "summary": "The self-injected proxied listener now receives one callback per event. Its advice and the independent listener observed identical event objects on both publications.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ApplicationContext.publishEvent",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "duplicate-delivery"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The original package-scanned application, event publisher, eager listener and aspect come from the upstream test source. The repeated history adds an event-specific aspect and a separate listener."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/28322",
+      "target": null
+    },
+    {
+      "id": "504",
+      "path": "examples/504-spring-child-thread-events",
+      "title": "Recording application events from a test's child threads",
+      "summary": "New child threads now share the recording test's events. In Jupiter the PER_CLASS and CONCURRENT combination was rejected with global parallelism both enabled and disabled.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ApplicationEvents.stream",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "4/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "An actual EngineTestKit run checks the container error. The event cases create and join both children after the recording test starts."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/30020",
+      "target": null
+    },
+    {
+      "id": "505",
+      "path": "examples/505-spring-listener-propagation",
+      "title": "Class-level transaction propagation on event listeners",
+      "summary": "Event listener creation now rejects class-level REQUIRED. The method-level NOT_SUPPORTED override refreshed and received exactly one fallback event outside a transaction.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "RestrictedTransactionalEventListenerFactory.createApplicationListener",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The forbidden and permitted method controls call the factory directly. The delivery history registers a managed listener with transaction management enabled."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/33470",
+      "target": null
+    },
+    {
+      "id": "506",
+      "path": "examples/506-spring-cron-registration",
+      "title": "Observe the zone of a programmatically registered cron task",
+      "summary": "The new London cron overload and the explicit trigger fired at 08:00Z in July and 09:00Z in January, including with a Tokyo context clock.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ScheduledTaskRegistrar.addCronTask",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The caller reads the recorded trigger, invokes its runnable, uses a fixed date and zone, and checks that disabled registrations leave the task alone."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36556",
+      "target": null
+    },
+    {
+      "id": "507",
+      "path": "examples/507-spring-cron-hour-gap",
+      "title": "Find the next valid local cron hour after a midnight gap",
+      "summary": "The merged cron returned Cairo's next two even hours on April 25 and New York's next legal midnight and 02:00 on March 9. Both parent schedules skipped a day.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "CronExpression.next",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both the civil time and instant are recorded on each successive call. The installed zone rules must contain both named gaps."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36865",
+      "target": null
     }
   ]
 }

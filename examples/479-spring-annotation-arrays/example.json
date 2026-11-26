@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "479",
+  "title": "Read a scalar map value through a primitive-array annotation member",
+  "summary": "A scalar 7 now reads as primitive int[] through both the public annotation reader and a synthesized annotation.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "MergedAnnotation.of"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Spring allocates a singleton array with the declared component type when the supplied scalar can be assigned to it."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37349"
+  },
+  "notes": [
+    "The reference annotation comes from javac and reflection. Both array members were compared independently."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

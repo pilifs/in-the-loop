@@ -1,0 +1,109 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "1240c6f198fb517da1063157707dd8c3fabe277160a1592796cc0a09403b2af3",
+  "runtimeSha256": "7f42146ff2cf6d79584bafc3176d4d19509520ad5d91561cdc1957817edad182",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "fbea8e6f1e561d2a992f77e8fc00db2d6a59ea3512b5157a6715843be0d428b7"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "c1025ed370fde7a6dfcbafc00f4abebab81641ee7cffc4b385cabcb0ba691fdf",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#22392.1",
+          "outcome": {
+            "return": "ScriptStatementFailedException rows=[Juergen Hoeller]"
+          },
+          "prediction": "refuted"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#22392.2",
+          "outcome": {
+            "return": "ok rows=[Juergen Hoeller, Sam Brannen]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#22392.3",
+          "outcome": {
+            "return": "ScriptStatementFailedException rows=[Juergen Hoeller]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#22392.4",
+          "outcome": {
+            "return": "select 1;"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#22392.1",
+          "outcome": {
+            "return": "ok rows=[Juergen Hoeller, Sam Brannen]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#22392.2",
+          "outcome": {
+            "return": "ok rows=[Juergen Hoeller, Sam Brannen]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#22392.3",
+          "outcome": {
+            "return": "ok rows=[Juergen Hoeller, Sam Brannen]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#22392.4",
+          "outcome": {
+            "return": "NoSuchMethodError"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "callerInvocations": {
+        "parent": [
+          {
+            "caller": "observe",
+            "offset": 31,
+            "method": "readScript",
+            "descriptor": "(Ljava/io/LineNumberReader;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+          }
+        ],
+        "fix": [
+          {
+            "caller": "observe",
+            "offset": 31,
+            "method": "readScript",
+            "descriptor": "(Ljava/io/LineNumberReader;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+          }
+        ]
+      },
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/jdbc/datasource/init/ScriptUtils.class": "6a98d2deafc602b2aca6073f872ff60a2a797ffe9aded2a09e33ca5fe1d121a9"
+        },
+        "fix": {
+          "org/springframework/jdbc/datasource/init/ScriptUtils.class": "3d9add8dcfedd58a2e027496c3c957de81890b5fd9970673a64e7e18e3d0c6a8"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "499",
+  "title": "Plain and qualified injection of scoped service proxies",
+  "summary": "The unqualified consumer now invokes D(L,C) through scoped proxies. An added archive delegate remains reachable by qualifier without changing that route.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "AnnotationConfigApplicationContext.refresh"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A scoped proxy now inherits defaultCandidate from its target definition. Unqualified injection should see the default service while a qualifier can still select a restricted delegate."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/35627"
+  },
+  "notes": [
+    "The unproxied control used the same candidacy flags. Each result comes from invoking the injected services."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

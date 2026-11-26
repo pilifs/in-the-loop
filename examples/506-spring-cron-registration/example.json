@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "506",
+  "title": "Observe the zone of a programmatically registered cron task",
+  "summary": "The new London cron overload and the explicit trigger fired at 08:00Z in July and 09:00Z in January, including with a Tokyo context clock.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ScheduledTaskRegistrar.addCronTask"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Add a Runnable, expression and ZoneId overload to ScheduledTaskRegistrar. The pre-existing CronTask constructor path supplies a comparison available on both revisions."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36556"
+  },
+  "notes": [
+    "The caller reads the recorded trigger, invokes its runnable, uses a fixed date and zone, and checks that disabled registrations leave the task alone."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

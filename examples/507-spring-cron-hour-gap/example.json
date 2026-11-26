@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "507",
+  "title": "Find the next valid local cron hour after a midnight gap",
+  "summary": "The merged cron returned Cairo's next two even hours on April 25 and New York's next legal midnight and 02:00 on March 9. Both parent schedules skipped a day.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "CronExpression.next"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Both landed commits cover the cron field rollover and its regressions. Preserve later valid matches on the same calendar day when the first local hour does not exist."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36865"
+  },
+  "notes": [
+    "Both the civil time and instant are recorded on each successive call. The installed zone rules must contain both named gaps."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

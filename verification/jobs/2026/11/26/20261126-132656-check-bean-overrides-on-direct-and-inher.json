@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-132656-check-bean-overrides-on-direct-and-inher",
+  "title": "Check bean overrides on direct and inherited Spring test hierarchies",
+  "description": "Run five concrete Jupiter configurations on both original Spring 6.2 revisions and on published 7.1.0. Compare ordinary inherited contexts and two direct override scopes with subclass fields on inherited levels, checking the local consumers, field identity and preparation failure.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "examples": [
+      "501"
+    ]
+  },
+  "expected": "The same two inherited override histories fail on the merged and released Spring while all three controls work. The independent release result matches the registered file byte for byte and both pinned runs reproduce.",
+  "submitted": {
+    "at": "2026-11-26T13:26:56+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "512M",
+    "duration": "30s"
+  },
+  "steps": [
+    {
+      "name": "Run ten original and five release histories",
+      "run": "python3 examples/501-spring-context-level-override/inherited-hierarchy/check_hierarchy.py --output verification/merged-pr-links/p01-p30/repeated-hierarchy.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the released hierarchy observations",
+      "run": "cmp examples/501-spring-context-level-override/inherited-hierarchy/release-observations.json verification/merged-pr-links/p01-p30/repeated-hierarchy.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/p01-p30/repeated-hierarchy.json"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36207",
+  "revisions": {
+    "parent": "611811d8fc8b96d7983cf2d3d261727c3c12f66b",
+    "fix": "ab314aadd95e05318629943754a8e4c1dd0400be"
+  },
+  "entry": "YamlProcessor.getFlattenedMap",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36207.1",
+      "role": "Intent",
+      "args": [
+        "select"
+      ],
+      "history": "On the parent call getFlattenedMap(map, true). At the landing call getFlattenedMap(map, true, null), then repeat with a unique marker object.",
+      "prediction": "Parent a/b are empty strings and c is present with null. At the landing a/b/c should all be present with the requested value, including the identical marker object. d stays an empty string and s stays value.",
+      "basis": "YAML null and ~ denote the same null scalar. The quoted empty scalar denotes a string. The new hook documents the caller’s choice for empty entries.",
+      "refutation": "One spelling gives a different answer, a present entry disappears, or d becomes the marker.",
+      "expected": {
+        "fix": {
+          "return": "null,null,null,blank,value / marker,marker,marker,blank,value"
+        },
+        "parent": {
+          "return": "blank,blank,null,blank,value"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36207.2",
+      "role": "Control",
+      "args": [
+        "properties"
+      ],
+      "history": "Set the same resource on YamlPropertiesFactoryBean, call afterPropertiesSet(), then getObject().",
+      "prediction": "Both should expose empty strings for a, b and d, value for s, and omit c.",
+      "basis": "The factory consumes MatchCallback properties using the single-argument default flattening policy. The landed test records the default map.",
+      "refutation": "c appears or a null scalar becomes an absent property.",
+      "expected": {
+        "fix": {
+          "return": "blank,blank,absent,blank,value"
+        },
+        "parent": {
+          "return": "blank,blank,absent,blank,value"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36207.3",
+      "role": "Challenge",
+      "args": [
+        "containers"
+      ],
+      "history": "On the landing add e: [] to the fixture and select the unique marker again. Compare its mapping with c: {}.",
+      "prediction": "The general empty-entry description suggests the same marker for both. The empty-collection branch instead predicts that c holds the marker while e holds an empty string.",
+      "basis": "Changing only the empty container type distinguishes the documented generalization from the implementation’s older sequence policy.",
+      "refutation": "e carrying the marker refutes the predicted asymmetry. A blank e refutes uniform caller selection across these empty containers.",
+      "expected": {
+        "fix": {
+          "return": "map=marker list=marker"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/25305",
+  "revisions": {
+    "parent": "eee0b76ef3c468767ec938b4998a1dc96a5d877e",
+    "fix": "8eedd9d5cc6357a71663232b9601410e0c1a9793"
+  },
+  "entry": "DatabaseStartupValidator.afterPropertiesSet",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#25305.1",
+      "role": "Intent",
+      "args": [
+        "valid"
+      ],
+      "history": "Supply no query and make the first connection return true from isValid(1).",
+      "prediction": "The parent should reject the missing validationQuery with IllegalArgumentException before acquiring a connection. The landing should return normally after one acquisition, one isValid(1), no statement and one close.",
+      "basis": "The parent’s public precondition is explicit in its initialization method. JDBC validity is a boolean delivered by the connection. The regression asserts one call and one release.",
+      "refutation": "The landing requires SQL, invokes a different timeout, creates a statement or leaves the acquired handle open.",
+      "expected": {
+        "fix": {
+          "return": "ok [openA, validA(1), closeA]"
+        },
+        "parent": {
+          "return": "IllegalArgumentException []"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#25305.2",
+      "role": "Control",
+      "args": [
+        "query"
+      ],
+      "history": "Set validationQuery to SELECT 1. Make statement.execute complete normally and configure isValid to fail if called.",
+      "prediction": "Both should return normally after executing that exact SQL once, with the statement and connection closed.",
+      "basis": "A caller-specified query selects the compatibility path. A successfully executed query is the existing readiness test.",
+      "refutation": "isValid is called, SQL changes, or a resource stays open.",
+      "expected": {
+        "fix": {
+          "return": "ok [openA, statementA, SELECT 1, closeStatementA, closeA]"
+        },
+        "parent": {
+          "return": "ok [openA, statementA, SELECT 1, closeStatementA, closeA]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#25305.3",
+      "role": "Challenge",
+      "args": [
+        "retry"
+      ],
+      "history": "At the landing have A return false and B return true. In a separate history replace A’s false with SQLException. B refuses validation while A remains open.",
+      "prediction": "Both histories should finish after two acquisitions. A must close before B validates, then B must close. Neither history should execute SQL.",
+      "basis": "An invalid result and a JDBC exception each require another attempt. A bounded pool can progress only if the failed attempt releases its own connection.",
+      "refutation": "Initialization declares success after A, B encounters an outstanding A, or either handle remains open.",
+      "expected": {
+        "fix": {
+          "return": "ok [openA, validA(1), closeA, openB, validB(1), closeB] / ok [openA, validA(1), closeA, openB, validB(1), closeB]"
+        }
+      }
+    }
+  ]
+}

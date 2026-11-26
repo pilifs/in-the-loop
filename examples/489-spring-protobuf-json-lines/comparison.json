@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37559",
+  "revisions": {
+    "parent": "c2d3866b0a3e0459c27957782e9b4386744d5786",
+    "fix": "a8b48a6042c80a66c6237b35d29db84c45c75bd2"
+  },
+  "entry": "ProtobufJsonEncoder.encode",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37559.1",
+      "role": "Intent",
+      "args": [
+        "jsonl"
+      ],
+      "history": "Request application/jsonl for the two-message Flux.",
+      "prediction": "The PR reports canEncode false on the parent despite advertised streaming support. The landing should return true and emit two LF-terminated lines decoding to first and second in order with the compact printer.",
+      "basis": "The downstream receiver treats one physical line as one complete JSON value. The regression compares the two compact messages including their LF terminators.",
+      "refutation": "Selection fails, an array or extra line appears, or parsing either line gives the wrong message.",
+      "expected": {
+        "fix": {
+          "return": "lines=2 terminated=true decoded=[123, 456]"
+        },
+        "parent": {
+          "return": "not selected"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37559.2",
+      "role": "Control",
+      "args": [
+        "ndjson"
+      ],
+      "history": "Select application/x-ndjson for the same messages and compact printer.",
+      "prediction": "Both revisions should accept the type and yield the same two ordered records.",
+      "basis": "The earlier NDJSON support and the existing two-message streaming regression establish this format.",
+      "refutation": "Selection or line-by-line readback differs at either revision.",
+      "expected": {
+        "fix": {
+          "return": "lines=2 terminated=true decoded=[123, 456]"
+        },
+        "parent": {
+          "return": "lines=2 terminated=true decoded=[123, 456]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37559.3",
+      "role": "Challenge",
+      "args": [
+        "default"
+      ],
+      "history": "At the landing keep the nested messages and JSONL type fixed but use new ProtobufJsonEncoder() with its default printer.",
+      "prediction": "A JSON Lines reader still expects exactly two independently parseable records. The default constructor uses JsonFormat.printer() without the test’s compacting option, so interior formatting newlines may break that contract.",
+      "basis": "Formatting whitespace is allowed within ordinary JSON but a physical LF delimits a record here. Parsing whole DataBuffers would hide this distinction.",
+      "refutation": "A third nonempty line, a line that cannot parse by itself, or loss of either message refutes default JSONL framing.",
+      "expected": {
+        "fix": {
+          "return": "lines=2 terminated=true decoded=[123, 456]"
+        }
+      }
+    }
+  ]
+}

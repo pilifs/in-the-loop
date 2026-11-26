@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "480",
+  "title": "Recover the nested return type inherited through a generic interface",
+  "summary": "Resolving the interface type now recovers Collection<Optional<String>>. Sibling subclasses preserve distinct Long and String leaves without overrides.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "jvm-internals",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "GenericTypeResolver.resolveType"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Resolving a method’s type variable against a concrete class now preserves the arguments of a parameterized binding."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36480"
+  },
+  "notes": [
+    "The caller also checks equality with the non-bridge override's reflective Type. The parent returned only the raw Collection."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

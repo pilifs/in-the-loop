@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-131411-replay-94-spring-predictions-across-30-p",
+  "title": "Replay 94 Spring predictions across 30 pull requests",
+  "description": "Recompile the public Java callers and repeat all 188 original JVM histories for examples 478 through 507. Check all loaded providers and independently pinned class bytes across 23 module builds and seven historical source-slice pairs.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay",
+    "java:source-overload-resolution",
+    "jdbc:durable-transaction-readback"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-results.md"
+    ]
+  },
+  "expected": "The audit reproduces byte for byte with 31 intended contrasts, 30 unchanged controls, three refuted merged predictions and one refuted parent prediction.",
+  "submitted": {
+    "at": "2026-11-26T13:14:11+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "Run all original public callers",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign p01-p30 --replay --output verification/merged-pr-links/p01-p30/repeated-audit.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the measured campaign audit",
+      "run": "cmp verification/merged-pr-links/p01-p30/audit.json verification/merged-pr-links/p01-p30/repeated-audit.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/p01-p30/repeated-audit.json"
+  ]
+}

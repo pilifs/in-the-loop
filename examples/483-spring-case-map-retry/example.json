@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "483",
+  "title": "A failed computation leaves no case-insensitive key behind",
+  "summary": "A failed computation now leaves size, iteration and case-insensitive membership in agreement. A successful retry keeps its own KEY spelling.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "case-normalization",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "LinkedCaseInsensitiveMap.computeIfAbsent"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "LinkedCaseInsensitiveMap defers key registration until a mapping function produces a non-null value. Membership, iteration and stored spelling should then agree."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37351"
+  },
+  "notes": [
+    "An existing null-valued mapping retained its original spelling on both revisions. The throwing function is checked by exception identity."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

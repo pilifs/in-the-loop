@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/21855",
+  "revisions": {
+    "parent": "7b11c3b599c82782d3e48328715926c1296d921f",
+    "fix": "6899624155e9c450d5166577d8b40e9783d718f4"
+  },
+  "entry": "PropertyAccessorFactory.forBeanPropertyAccess",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#21855.1",
+      "role": "Intent",
+      "args": [
+        "read"
+      ],
+      "history": "Read map[key5[foo]].name with the two similarly named keys present.",
+      "prediction": "The PR reports truncation of the inner closing bracket. With this fixture the parent is expected to read prefix, and the landing must read full.",
+      "basis": "The original Java map explicitly assigns full to the balanced literal key. The landed regression resolves the same key unquoted and with either quote style.",
+      "refutation": "The landing reads prefix, returns null or throws.",
+      "expected": {
+        "fix": {
+          "return": "full"
+        },
+        "parent": {
+          "return": "prefix"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#21855.2",
+      "role": "Control",
+      "args": [
+        "plain"
+      ],
+      "history": "Read map[plain].name and write control2 there.",
+      "prediction": "Both should return control initially and leave control2 in the child stored at plain.",
+      "basis": "This property path has a single bracket pair, and the ordinary map getter supplies an independent observation.",
+      "refutation": "The ordinary read or write targets a different child.",
+      "expected": {
+        "fix": {
+          "return": "control -> control2"
+        },
+        "parent": {
+          "return": "control -> control2"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#21855.3",
+      "role": "Challenge",
+      "args": [
+        "quoted"
+      ],
+      "history": "At the landing write changed through map['key5[foo]'].name. Read the map directly and read the same property with double quotes.",
+      "prediction": "Only the child under key5[foo] should change. The alternate quoted read should agree, the prefix child should still say prefix, and the map should still have three keys.",
+      "basis": "Quoting changes the path spelling while preserving the selected literal. A direct map read can detect a self-consistent read/write to the wrong child.",
+      "refutation": "A decoy changes, a key is created, or the alternate read fails.",
+      "expected": {
+        "fix": {
+          "return": "changed/prefix/changed keys=3"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "500",
+  "title": "Named Hibernate bean requests preserve injection and fallback identity",
+  "summary": "The named Hibernate prototype now receives its originating Spring context. Named fallback creation retains X, and an absent name no longer resolves to a differently named Spring prototype.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "BeanContainer.getBean"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "SpringBeanContainer autowires properties of named JPA-managed instances and preserves the requested name when Spring must delegate creation to Hibernate’s fallback producer."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/22260"
+  },
+  "notes": [
+    "The caller boots the original native Hibernate XML on HSQLDB and obtains BeanContainer from the unwrapped SessionFactory. The producer records both overloads.",
+    "Each pin supplies its changed production classes on spring-orm 5.1.4.RELEASE. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "4/4 merged predictions matched"
+}

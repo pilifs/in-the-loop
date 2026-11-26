@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36865",
+  "revisions": {
+    "parent": "2e653246b5f27dc0baa6aa09ae207512bed45899",
+    "fix": "6467fca05b874f3e44fbd9451a252f035abbeafc"
+  },
+  "entry": "CronExpression.next",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36865.1",
+      "role": "Intent",
+      "args": [
+        "cairo"
+      ],
+      "history": "Ask for the first strictly later occurrence after 22:00 Cairo on April 24.",
+      "prediction": "Issue #36859 showed April 26 00:00+03:00 after the April 24 occurrence. That skip is predicted before. The merge should return April 25 02:00+03:00 (April 24 23:00Z), then April 25 04:00+03:00 (01:00Z).",
+      "basis": "The cron expression selects even local hours. Midnight is absent on the 25th but 02:00 and 04:00 both exist. The landed public regression asserts the first result.",
+      "refutation": "The merge skips the 25th, returns the nonexistent midnight or loses the 04:00 occurrence on the second call.",
+      "expected": {
+        "fix": {
+          "return": "2025-04-25T02:00+03:00=2025-04-24T23:00:00Z / 2025-04-25T04:00+03:00=2025-04-25T01:00:00Z"
+        },
+        "parent": {
+          "contains": [
+            "2025-04-26T00:00+03:00=2025-04-25T21:00:00Z"
+          ]
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36865.2",
+      "role": "Control",
+      "args": [
+        "ordinary"
+      ],
+      "history": "Keep the expression, starting instead at 2025-04-23T22:00+02:00 in Cairo.",
+      "prediction": "Both should yield April 24 00:00+02:00 (April 23 22:00Z), then April 24 02:00+02:00 (00:00Z).",
+      "basis": "With no offset change at this midnight both intervening even hours are valid on April 24.",
+      "refutation": "Either instant is skipped, repeated or returned at the wrong offset.",
+      "expected": {
+        "fix": {
+          "return": "2025-04-24T00:00+02:00=2025-04-23T22:00:00Z / 2025-04-24T02:00+02:00=2025-04-24T00:00:00Z"
+        },
+        "parent": {
+          "return": "2025-04-24T00:00+02:00=2025-04-23T22:00:00Z / 2025-04-24T02:00+02:00=2025-04-24T00:00:00Z"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36865.3",
+      "role": "Challenge",
+      "args": [
+        "newyork"
+      ],
+      "history": "On the merge parse `0 0 0,2 * * ?` and start at 2026-03-08T01:00-05:00[America/New_York]. Invoke public next and then next again.",
+      "prediction": "Expect March 9 00:00-04:00 (04:00Z), then March 9 02:00-04:00 (06:00Z). No March 8 03:00 catch-up is valid.",
+      "basis": "The March 8 midnight is past and the 02:00 hour does not exist. The allowed hours next exist on March 9. The landed New York regression stops at the internal hour-field result.",
+      "refutation": "The public result is 03:00 on March 8, lands after the March 9 midnight, or omits the next legal 02:00.",
+      "expected": {
+        "fix": {
+          "return": "2026-03-09T00:00-04:00=2026-03-09T04:00:00Z / 2026-03-09T02:00-04:00=2026-03-09T06:00:00Z"
+        }
+      }
+    }
+  ]
+}
