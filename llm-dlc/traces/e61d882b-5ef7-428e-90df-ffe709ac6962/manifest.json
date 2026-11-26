@@ -12,8 +12,8 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-26T14:53:46.561Z",
-  "duration_seconds": 785763,
+  "ended": "2026-11-26T15:23:33.725Z",
+  "duration_seconds": 787550,
   "stats": {
     "turns": 296,
     "api_calls": 2640,
@@ -251,7 +251,7 @@
     {
       "index": 10,
       "started": "2026-11-26T13:12:13.083Z",
-      "ended": "2026-11-26T14:53:46.561Z",
+      "ended": "2026-11-26T15:23:33.725Z",
       "turns": 9,
       "api_calls": 121,
       "usage": {
@@ -264,11 +264,11 @@
     }
   ],
   "log": {
-    "sha256": "b127683a5f383dfa8b11aebf87bdabe684a85a41b79a8820bb702e31954efc08",
-    "bytes": 46240028,
-    "lines": 21264,
-    "gzip_bytes": 7952016,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/b127683a5f383dfa8b11aebf87bdabe684a85a41b79a8820bb702e31954efc08.jsonl.gz"
+    "sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06",
+    "bytes": 46253168,
+    "lines": 21280,
+    "gzip_bytes": 7953420,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06.jsonl.gz"
   },
   "subagents": [
     {
@@ -12831,14 +12831,6 @@
       "log_sha256": "b127683a5f383dfa8b11aebf87bdabe684a85a41b79a8820bb702e31954efc08"
     },
     {
-      "change_id": "nkusrrxuwkuzlkptkxpokqzvrzzlqwxw",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the watcher's decisions on spring-framework-pr-links-q01-q30-brief-setup",
-      "body": "The watcher's verdicts on the single-agent run spring-framework-pr-links-q01-q30-brief-setup (llm-dlc/decisions/single-spring-framework-pr-links-q01-q30-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
-      "log_sha256": "b127683a5f383dfa8b11aebf87bdabe684a85a41b79a8820bb702e31954efc08"
-    },
-    {
       "change_id": "ymsxzkuykwskwxwoqpyuoupsmwuvqtyv",
       "commit_id": null,
       "immutable": false,
@@ -12863,6 +12855,78 @@
       "log_sha256": "b127683a5f383dfa8b11aebf87bdabe684a85a41b79a8820bb702e31954efc08"
     },
     {
+      "change_id": "nzssktxwopqswoynsulwqrluptoxouok",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record Spring Q01-Q30 setup build results; requeue Q11 (verification pending)",
+      "body": "The setup record for the Spring Q01-Q30 brief now has the results of 21 of its 22 offline Gradle setup jobs. Each landed test class passes at its fix pin and the parent's versions pass at the parent. The fix's tests fail on the parent (17 cases) or do not compile there (Q05, Q12, Q24, Q29). The record also has the sha256 of every built jar and changed class, the classpath entry counts, and notes on Q16's leak-check cascade and on top-level classes that compile identically at both pins.\n\nQ11 failed offline twice in spring-beans' Groovy compile: Gradle 7.3 resolves the whole Groovy 3.0.9 runtime in a detached configuration. Those modules and javaparser-core were resolved online at both pins and confirmed offline, and job 20261126-151047-setup-build-spring-framework-27716-q11-a is queued. The jobs' own results are recorded on the runner's line (b4cff56869fd).",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
+    },
+    {
+      "change_id": "lvkztvpwpotvmxrmmukpnpynopkoxzyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record Spring Q11 setup build result; Q01-Q30 setup complete",
+      "body": "Q11 (Spring Framework #27716) passed its third verification job, 20261126-151047-setup-build-spring-framework-27716-q11-a, after the Gradle 7.3 Groovy runtime modules were resolved into the offline cache. At the fix pin NamedParameterUtilsUnitTests passes (25 tests), the parent's own version passes at the parent (24 tests), and the fix's test file run on the parent fails exactly the landed parseSqlStatementWithSquareBracket(). The setup record now has Q11's jar and class sha256 digests, its spring-r2dbc classpath counts (18 runtime, 61 test, equal at both pins), and disk use; all 22 Gradle cases and the 8 slice cases are verified, and the record no longer says in progress.",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
+    },
+    {
+      "change_id": "zsrxxmtyzmsnupwovnzorrqqtwlpmtsl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-144026-setup-build-spring-framework-37465-q29-a: passed: 4 passed step(s) in 5m03s, peak 3.3 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-q01-q30-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
+    },
+    {
+      "change_id": "yvvqtkxywpstmlxusrovosnrwkpxlvln",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-144401-setup-build-spring-framework-26700-q09-a: passed: 4 passed step(s) in 3m33s, peak 2.9 GiB (estimated 30m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-q01-q30-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
+    },
+    {
+      "change_id": "rspuktvqqxtswwvvsovunnotptlpqopp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261126-144025-setup-build-spring-framework-37602-q14-a: passed: 4 passed step(s) in 7m47s, peak 3.0 GiB (estimated 20m00s, 6.0 GiB) 20261126-144026-setup-build-spring-framework-36162-q24-a: passed: 4 passed step(s) in 7m26s, peak 3.5 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-q01-q30-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
+    },
+    {
+      "change_id": "ynylqttswqyuxupznvprqtqsrqzskxxv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261126-144026-setup-build-spring-framework-37525-q27-a: passed: 4 passed step(s) in 7m25s, peak 3.8 GiB (estimated 20m00s, 6.0 GiB) 20261126-144401-setup-build-spring-framework-27716-q11-a: failed: 3 failed, 1 passed step(s) in 3m06s, peak 1.5 GiB (estimated 30m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-q01-q30-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
+    },
+    {
+      "change_id": "qzkyvykqwtlwluxplmrmxvttryqttrnn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-144026-setup-build-spring-framework-37601-q23-a: passed: 4 passed step(s) in 7m42s, peak 4.5 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-q01-q30-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
+    },
+    {
+      "change_id": "ztmmspxwrolulyqronoulwtqwyspyxxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-151047-setup-build-spring-framework-27716-q11-a: passed: 4 passed step(s) in 1m57s, peak 2.5 GiB (estimated 30m00s, 6.0 GiB) Collected by the watcher of the spring-framework-pr-links-q01-q30-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
+    },
+    {
+      "change_id": "nkusrrxuwkuzlkptkxpokqzvrzzlqwxw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on spring-framework-pr-links-q01-q30-brief-setup",
+      "body": "The watcher's verdicts on the single-agent run spring-framework-pr-links-q01-q30-brief-setup (llm-dlc/decisions/single-spring-framework-pr-links-q01-q30-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "b127683a5f383dfa8b11aebf87bdabe684a85a41b79a8820bb702e31954efc08"
+    },
+    {
       "change_id": "kzuwykysuzmpsmnmoznvrznmyzutzzyq",
       "commit_id": null,
       "immutable": false,
@@ -12877,6 +12941,14 @@
       "summary": "Put the setup notes of spring-framework-pr-links-q01-q30-brief into its brief",
       "body": "The setup run spring-framework-pr-links-q01-q30-brief-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md and ~/code/scripts/analysis/spring-framework-pr-links-q01-q30-brief.md, for the domain agent.",
       "log_sha256": "b127683a5f383dfa8b11aebf87bdabe684a85a41b79a8820bb702e31954efc08"
+    },
+    {
+      "change_id": "ryptupumkwlvltyxyxuywvtpyrqmvspq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06"
     }
   ],
   "logs": {
@@ -14253,6 +14325,12 @@
       "lines": 12886,
       "gzip_bytes": 5555468,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/c03d90546bd4348e088dce7cfa263a65e9666181dd6066a3360005c6d6a70611.jsonl.gz"
+    },
+    "c049de8b3ecebfe2926e6333928bfb790e29ca313a55b37bbdd425958fc23a06": {
+      "bytes": 46253168,
+      "lines": 21280,
+      "gzip_bytes": 7953420,
+      "url": null
     },
     "c32d1b6b1f18fdb68d729a73438141b011210c4021983847b6c368df1bf8136d": {
       "bytes": 22891288,
