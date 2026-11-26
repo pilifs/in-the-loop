@@ -1,0 +1,393 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-144024-setup-build-spring-framework-35808-q05-a",
+  "title": "Setup: build Spring Framework #35808 (Q05) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 9m37s, peak 3.7 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (Q05 fix: offline build and landed tests) was held back 3m36s by its 4-CPU quota in 5m54s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Q05 parent: offline build and the parent's tests) was held back 3m13s by its 4-CPU quota in 2m22s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (Q05 transplant: the fix's tests on the parent) was held back 41.3s by its 4-CPU quota in 1m18s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-144024-setup-build-spring-framework-35808-q05-a.json",
+    "sha256": "c9dc03ed921a80002ad43d12070879dc60d7195996ee621f463ba7e415064ba2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-144024-setup-build-spring-framework-35808-q05-a",
+      "title": "Setup: build Spring Framework #35808 (Q05) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, case Q05 (spring-projects/spring-framework#35808: Check the named bean's generic type before returning it). In the worktrees $P/worktrees/Q05-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-q01-q30), offline (dependencies resolved online beforehand), it builds the jars of spring-beans spring-context spring-test with the Gradle each checkout's wrapper names, runs the landed test classes (DefaultListableBeanFactoryTests BeanFactoryExtensionsTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-beans in $P/artifacts/Q05-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned Q05",
+      "submitted": {
+        "at": "2026-11-26T14:40:24+00:00",
+        "session": "56626182-a69a-4945-91c7-07e11b9bb46a",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "Q05 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q05 fix",
+          "cwd": "."
+        },
+        {
+          "name": "Q05 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q05 parent",
+          "cwd": "."
+        },
+        {
+          "name": "Q05 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q05 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "Q05 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q05 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4607cc1187f24d79e63ce5f7633a41338f4dd5d5",
+  "startedAt": "2026-11-26T14:41:59+00:00",
+  "finishedAt": "2026-11-26T14:51:55+00:00",
+  "wallSeconds": 596.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1664671,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 4001542144,
+    "wallSeconds": 577.2,
+    "cpuSeconds": 1110.7,
+    "memoryOfEstimate": 0.62,
+    "durationOfEstimate": 0.48
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Q05 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q05 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 354.977,
+      "cpuSeconds": 484.011,
+      "cpuThrottledSeconds": 216.853,
+      "peakMemoryBytes": 3926822912,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-q05-fix-offline-build-and-land.log",
+        "lines": 45,
+        "bytes": 6004,
+        "sha256": "5a077deec854c54936baf321361ae2b0bf2d935d148dd160b5567d4d0433097a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.beans.factory.DefaultListableBeanFactoryTests junit tests=186 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.beans.factory.BeanFactoryExtensionsTests junit tests=6 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q05-fix/spring-beans.runtimeClasspath.txt 13 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q05-fix/spring-beans.testRuntimeClasspath.txt 50 entries",
+        "cf7c9a4171e01723c1d3f66f0d1c8449a3e2c432f5d24811acd44148e20d3e96  jars/spring-beans-7.1.0-SNAPSHOT.jar",
+        "bb6b0f10da3f6966fef8fa6e11f2356a7eb51c3e18fb486c146c9d54e9203c01  jars/spring-context-7.1.0-SNAPSHOT.jar",
+        "c1b89fa26e5ba71273ba7b11ff5c8d9ded272e3e7d9672e2303b05209602b286  jars/spring-test-7.1.0-SNAPSHOT.jar",
+        "cf7c9a4171e01723c1d3f66f0d1c8449a3e2c432f5d24811acd44148e20d3e96  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "7b755984aedc1a9096bffce809ee06cc3c4785ad788a903cd7ab61ab3d417824  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "eff00347a4acdc83cf4252811ef30bc80562096fea92f2f74e044d9776e1f8da  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "41c7b8168ae1e8c54a6b5945fd4ea25656092a46d15d339b5ec42e5b363258f6  tree/spring-core-test/build/libs/spring-core-test-7.1.0-SNAPSHOT.jar",
+        "f854419afa69cc873893524ba6ba9636ec97e86f73b8f49db54df85781f8ddca  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactory.class",
+        "9d209ff6a36c6ef5b9f81a33fbefb4490411cee56f80f685636492dd639874a7  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanNotOfRequiredTypeException.class",
+        "c62dae07fb868de1a2d87624ac07f93fd1153f7763c0981c60aa15392abe71fd  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/AbstractBeanFactory$BeanFactoryDefaultEditorRegistrar.class",
+        "e3fbb4617a6cd6afec852d43385da60820bf0d1ce3534a1aea319836b82938b8  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/AbstractBeanFactory$BeanPostProcessorCache.class",
+        "e14e7e2da69ac97f88e5a8df6c18ebf8fe183f143919419f9532f15f03cee4f6  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/AbstractBeanFactory$BeanPostProcessorCacheAwareList.class",
+        "01ba53e93447ed90deb9b84d5be37a1672ede19350b2079565eadb99e6cb6612  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/AbstractBeanFactory.class",
+        "ae8c024ed30a33ad2d8e1748e3c1d31123906ebeb63d5fd6b3d1faa503156930  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/StaticListableBeanFactory$1.class",
+        "c39d4eaa646424dd26b89c96bcbfa71d034314e6867f7e004c32d78cbff475d0  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/StaticListableBeanFactory.class",
+        "f9261d209320bd802f950185dfcf9aa2b554d14c92df7b8b4d8532282e58e65f  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt$getBean$$inlined$getBeanProvider$1.class",
+        "64ce9d6f0351df9c271d4136958d57a19881524dcbd6a11f4136bd0b6a9a1d46  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt$getBean$$inlined$getBeanProvider$2.class",
+        "36467c7398148bfad09537da6cff73cc218bb39499889f873d182b67de13e04e  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt$getBean$1.class",
+        "5ca0c7da504713b87fd29960ee21d8d2a824fb064ac80facb480b1bd6fa2a7e6  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt$getBeanProvider$1.class",
+        "13cc5aef69dd0f82976089ae6a7216a8c5b065c3f25b54be1c8418d8c8d9e821  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt.class",
+        "0949e1416eb019591cb6b9cb2d59663046e1badf1379c15fc8cd58651a518b53  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/context/support/AbstractApplicationContext$1.class",
+        "ebf5aaf2b7e7d4d30a0e8283afe25bbe994ac60a7c6236bcc9804c6ba38f7574  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/context/support/AbstractApplicationContext.class",
+        "bbb7a2d6fc03d895825029dafa795ca89db16043e9e8c4b1fd12813688c472ba  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/jndi/support/SimpleJndiBeanFactory$1.class",
+        "ce03f0f2938010bf8523fcc48d3118b3da5c0ddadaf143c552c4786a18db0ace  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/jndi/support/SimpleJndiBeanFactory.class",
+        "44ff4ac632d752ce973d0bc6bac8b806e490799b267dadb72647471b85c43cab  spring-test-7.1.0-SNAPSHOT.jar!/org/springframework/test/web/servlet/setup/StubWebApplicationContext$StubBeanFactory.class",
+        "84ade618ce312b7ab88aef3abe20ce60449e83a1574d2372e068cc44a147bd1a  spring-test-7.1.0-SNAPSHOT.jar!/org/springframework/test/web/servlet/setup/StubWebApplicationContext.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Q05 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q05 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 142.796,
+      "cpuSeconds": 407.384,
+      "cpuThrottledSeconds": 193.751,
+      "peakMemoryBytes": 4001542144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-q05-parent-offline-build-and-t.log",
+        "lines": 44,
+        "bytes": 5840,
+        "sha256": "c4748fb4a85582ad01bb1bc29fe7aa27e8bdefa76a4881d54f3aafd860f5a8ff",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.beans.factory.DefaultListableBeanFactoryTests junit tests=185 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.beans.factory.BeanFactoryExtensionsTests junit tests=5 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q05-parent/spring-beans.runtimeClasspath.txt 13 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/artifacts/Q05-parent/spring-beans.testRuntimeClasspath.txt 50 entries",
+        "5eb7cd466c0dc720ef85704407546ac4ecbeede320b1c3e5dd119df1b3e103d5  jars/spring-beans-7.1.0-SNAPSHOT.jar",
+        "7d397600ba9995093222982cf3d8dcf71de067eb75fd497a9f948b8c964559d5  jars/spring-context-7.1.0-SNAPSHOT.jar",
+        "ae78d8e7e9c3322089aff6093eec3d382a54b387b0e06e6f4e1cc9bc068987e8  jars/spring-test-7.1.0-SNAPSHOT.jar",
+        "5eb7cd466c0dc720ef85704407546ac4ecbeede320b1c3e5dd119df1b3e103d5  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "7b755984aedc1a9096bffce809ee06cc3c4785ad788a903cd7ab61ab3d417824  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "eff00347a4acdc83cf4252811ef30bc80562096fea92f2f74e044d9776e1f8da  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "41c7b8168ae1e8c54a6b5945fd4ea25656092a46d15d339b5ec42e5b363258f6  tree/spring-core-test/build/libs/spring-core-test-7.1.0-SNAPSHOT.jar",
+        "9c5f013df26f4669242c4bcc5c093f15b921778bce5675c79863e69c1a1820f9  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactory.class",
+        "55fae87a04ddc7987b6871cd3ba29b14f9a85745997fd8dda3d111566f51d4d2  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanNotOfRequiredTypeException.class",
+        "e833d2acfe73e506c99c71d6d6146f5a9fe73e456bc4ef8ec1fe09b50639aedb  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/AbstractBeanFactory$BeanFactoryDefaultEditorRegistrar.class",
+        "04f853ec0bebcd1c19adb44542098d6e6f107968187bd7a0f07290a6a683a9eb  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/AbstractBeanFactory$BeanPostProcessorCache.class",
+        "c3503f711576efd01c282649c15e08b58a919078f09ad89a4246c7e5f4eb183b  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/AbstractBeanFactory$BeanPostProcessorCacheAwareList.class",
+        "1fa3c3e7c0e8ae16bbbddf1543b8e228e0a6cfc6529d83efd4521c976d176df3  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/AbstractBeanFactory.class",
+        "75d02fa48ecec9110f80bdeae6c7a0a9a987267a9ed03caafbd71b638c4cb723  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/StaticListableBeanFactory$1.class",
+        "6ba5e232306936ffaf8a444dee552ff6ae64aae3b19b3df82634db800af7232b  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/support/StaticListableBeanFactory.class",
+        "254d7ebe87a2037c6b5dd929c8bcb94b9cf30c438f4e501d6eae9793535d0f53  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt$getBean$$inlined$getBeanProvider$1.class",
+        "731d5acf7f3a42707ec5a7657a956ece548aa3b872bf993f86ffc371eee2ebec  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt$getBean$$inlined$getBeanProvider$2.class",
+        "0a4c6b266226f35d9c6ae7543b4c045ab7ee728e97f81b07d62970f9fb4cd06f  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt$getBeanProvider$1.class",
+        "05fcf387463f799bfd6d3be68b1f0e343c65ce482ed97d08fa6308f8999c893d  spring-beans-7.1.0-SNAPSHOT.jar!/org/springframework/beans/factory/BeanFactoryExtensionsKt.class",
+        "843ebab65ed3d37061f624e162c94ebaafffa49d8aefaa96d2382eece6d95a00  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/context/support/AbstractApplicationContext$1.class",
+        "ed50cb1b236f12f963b814e4f632adb0da0d3bef2589e4f71b6fc4cfc1d6e3e3  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/context/support/AbstractApplicationContext.class",
+        "d9e3bfc11e8a0dfd67d9781f99a3f5ac935e4e1095ca4fcbb8807415007f7040  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/jndi/support/SimpleJndiBeanFactory$1.class",
+        "87ee471b0eedae0752c0b1620be018933e97a953d148c1a1b144cfcff0db1fa3  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/jndi/support/SimpleJndiBeanFactory.class",
+        "25650fea44650f3588d8c276a00ca690c3d6b987e77e833395adbc6ee3ad88dd  spring-test-7.1.0-SNAPSHOT.jar!/org/springframework/test/web/servlet/setup/StubWebApplicationContext$StubBeanFactory.class",
+        "8ccef2e9b4fb834866d5157af553b02a7a7aeefdcafd0e56314502aea13f913c  spring-test-7.1.0-SNAPSHOT.jar!/org/springframework/test/web/servlet/setup/StubWebApplicationContext.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Q05 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q05 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 78.423,
+      "cpuSeconds": 218.362,
+      "cpuThrottledSeconds": 41.331,
+      "peakMemoryBytes": 3474587648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-q05-transplant-the-fix-s-tests.log",
+        "lines": 22,
+        "bytes": 2470,
+        "sha256": "39b3e3b9961db2b8d960d1db9d311826465a20056d93406b25a5e3984cc7a398",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-beans/src/test/java/org/springframework/beans/factory/DefaultListableBeanFactoryTests.java",
+        "transplanted spring-beans/src/test/kotlin/org/springframework/beans/factory/BeanFactoryExtensionsTests.kt",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q05-parent-landed gradle=9.4.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=78 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-beans:test --tests org.springframework.beans.",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.beans.factory.DefaultListableBeanFactoryTests no-result",
+        "class org.springframework.beans.factory.BeanFactoryExtensionsTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q05-parent-landed/spring-beans/src/test/java/org/springframework/beans/factory/DefaultListableBeanFactoryTests.java:1693: error: incompatible types: Object cannot be converted to Template<String>",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q05-parent-landed/spring-beans/src/test/java/org/springframework/beans/factory/DefaultListableBeanFactoryTests.java:1694: error: incompatible types: Object cannot be converted to Template<Number>",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q05-parent-landed/spring-beans/src/test/java/org/springframework/beans/factory/DefaultListableBeanFactoryTests.java:1705: error: cannot find symbol",
+        "  /home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q05-parent-landed/spring-beans/src/test/java/org/springframework/beans/factory/DefaultListableBeanFactoryTests.java:1693: error: incompatible types: Object cannot be converted to Template<String>",
+        "  /home/filip/.cache/in-the-loop/spring-pr-links-q01-q30/build/Q05-parent-landed/spring-beans/src/test/java/org/springframework/beans/factory/DefaultListableBeanFactoryTests.java:1694: error: incompatible types: Object cannot be converted to Template<Number>",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Q05 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q05 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 1.003,
+      "cpuSeconds": 0.927,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 37539840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-q05-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "d022f3845158e41b69a50503767d853f35e7104c4d73b80220e430430a012712",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned Q05"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T14:52:29+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T145155Z-429883804a9c7bb4"
+    }
+  }
+}
