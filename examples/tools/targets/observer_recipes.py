@@ -6,6 +6,7 @@ original public API can become source identifiers. Predictions never enter this 
 import hashlib
 from pathlib import Path
 import re
+import zipfile
 from textwrap import dedent, indent
 
 from targets import runtime_jar
@@ -76,6 +77,21 @@ class API:
 
     def require(self, owner, name, descriptor, *, static=False):
         return self.select(owner, [name], re.escape(descriptor), static=static)[0]
+
+    def named(self, simple):
+        """Return a unique physical type for an approved grammar or public construction convention."""
+        found = set()
+        for file in self.files:
+            if file.is_dir():
+                names = [p.relative_to(file).as_posix() for p in file.rglob(simple + ".class")]
+            else:
+                with zipfile.ZipFile(file) as jar:
+                    names = jar.namelist()
+            found.update(n[:-6].replace("/", ".") for n in names if not n.startswith("META-INF/")
+                         and n.rsplit("/", 1)[-1] == simple + ".class")
+        if len(found) != 1:
+            raise Unsupported(f"need one public {simple} declaration, found {sorted(found)}")
+        return found.pop()
 
 
 def keys(value, fields):

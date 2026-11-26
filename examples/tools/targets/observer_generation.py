@@ -18,7 +18,7 @@ HERE = Path(__file__).resolve().parent
 
 def identity():
     files = [Path(__file__), HERE / "observer_recipes.py", HERE / "observer_histories.py", HERE / "observer_state.py",
-             HERE / "observer_io.py", observer_recipes.TEMPLATE]
+             HERE / "observer_io.py", HERE / "observer_public_data.py", observer_recipes.TEMPLATE]
     return {p.name: sha(p) for p in files}
 
 
@@ -366,6 +366,10 @@ def matches(actual, expected):
         return actual == expected
     def compare(value, predicate):
         if isinstance(predicate, dict):
+            if set(predicate) == {"oneOf"} and isinstance(predicate["oneOf"], list) and predicate["oneOf"]:
+                return any(compare(value, option) for option in predicate["oneOf"])
+            if set(predicate) == {"differentFrom"}:
+                return not compare(value, predicate["differentFrom"])
             if set(predicate) != {"integerAtLeast"} or type(predicate["integerAtLeast"]) != int:
                 raise ValueError("unknown typed public-field predicate")
             return type(value) == int and value >= predicate["integerAtLeast"]

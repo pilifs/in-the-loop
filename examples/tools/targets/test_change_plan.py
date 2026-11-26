@@ -103,6 +103,11 @@ class ChangePlanTest(unittest.TestCase):
             with zipfile.ZipFile(jar, "a") as archive:
                 archive.writestr("META-INF/MANIFEST.MF", "Manifest-Version: 1.0\n\n")
             self.assertEqual(change_inventory.manifest_classpath([jar], 21)["unresolved"][0]["reason"], "ambiguous manifest member")
+            from targets import deployment_graph
+            self_index = b"JarIndex-Version: 1.0\n\nself.jar\npkg\n"
+            self.assertEqual(deployment_graph.manifest_entries([], [self_index], 8, "self.jar")[1], [])
+            for name, content in [("renamed.jar", self_index), ("self.jar", self_index + b"other.jar\npkg2\n")]:
+                self.assertTrue(deployment_graph.manifest_entries([], [content], 8, name)[1])
             manifest("Class-Path: extra.jar\x1cother.jar")
             self.assertTrue(change_inventory.manifest_classpath([jar], 21)["unresolved"])
 

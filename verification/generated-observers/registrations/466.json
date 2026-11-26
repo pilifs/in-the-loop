@@ -1,0 +1,67 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "spring-projects/spring-framework#37193",
+  "entry": "org.springframework.web.reactive.function.client.DefaultWebClient$DefaultResponseSpec#bodyToFlux(Lorg/springframework/core/ParameterizedTypeReference;)Lreactor/core/publisher/Flux;",
+  "changed": [
+    "org.springframework.http.codec.ServerSentEventHttpMessageReader#buildEvent(Ljava/util/List;Lorg/springframework/core/ResolvableType;ZLjava/util/Map;)Ljava/lang/Object;"
+  ],
+  "fields": [
+    "events.envelopes",
+    "terminal.signal",
+    "terminal.outer",
+    "terminal.cause"
+  ],
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37193.1",
+      "history": "Send retry:none then data:foo in the first event, and data:bar in the next.",
+      "inputs": [
+        {
+          "streams": [
+            "retry:none\ndata:foo\n\ndata:bar\n\n"
+          ]
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    },
+    {
+      "id": "spring-projects/spring-framework#37193.2",
+      "history": "First event has retry: 25 and data:foo; second has data:bar.",
+      "inputs": [
+        {
+          "streams": [
+            "retry: 25\ndata:foo\n\ndata:bar\n\n"
+          ]
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "control"
+    },
+    {
+      "id": "spring-projects/spring-framework#37193.3",
+      "history": "Compare two one-event streams: retry: 25 versus retry:25 followed by one trailing ASCII space. In each append a newline, data:foo, and a blank line.",
+      "inputs": [
+        {
+          "streams": [
+            "retry: 25\ndata:foo\n\n",
+            "retry:25 \ndata:foo\n\n"
+          ]
+        }
+      ],
+      "sides": [
+        "new"
+      ],
+      "cohort": "registered"
+    }
+  ],
+  "assumptions": [
+    "Original Spring artifacts and profile, single deterministic public history on each fresh JVM."
+  ]
+}

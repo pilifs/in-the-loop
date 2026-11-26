@@ -94,6 +94,8 @@ def check_input(path, entry, dependency, *, qualified=None, effective=None):
         binding["entryBinding"] = digest(qualified)
         if "resolvedEntry" in qualified:
             binding["resolvedEntry"] = qualified["resolvedEntry"]
+    if effective and effective[1].get("jvmFlags"):
+        binding["jvmFlags"] = effective[1]["jvmFlags"]
     for key in ("operandScope", "declaredDependencyScope", "modulePomSha256"):
         if key in doc:
             binding[key] = doc[key]
@@ -428,6 +430,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             subject_tools = [subject_jdk/"lib/tools.jar"] if (subject_jdk/"lib/tools.jar").is_file() else []
             launch = [str(subject_jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*subject_tools]),
                       "UpgradeTrace", live_entry, str(subject_jdk)]
+            if side_record.get("jvmFlags"):
+                launch.insert(1, "-Dupgrade.profile=" + " ".join(side_record["jvmFlags"]))
             if trace_changes:
                 launch.insert(1, "-Dupgrade.trace.changed=" + "|".join(trace_changes))
             if "generatedObserver" in spec:

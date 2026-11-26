@@ -1,0 +1,58 @@
+{
+  "schema": "reviewed-public-observations/v1",
+  "change": "Conversant stack",
+  "entry": "com.conversantmedia.util.concurrent.ConcurrentStack#peek()Ljava/lang/Object;",
+  "changed": [
+    "com.conversantmedia.util.concurrent.ConcurrentStack#peek()Ljava/lang/Object;"
+  ],
+  "fields": [
+    "peek.outcome",
+    "peek.value"
+  ],
+  "questions": [
+    {
+      "id": "empty",
+      "history": "Peek on a fresh empty stack and after popping its final value.",
+      "inputs": [
+        {
+          "capacity": 4,
+          "values": [],
+          "drain": false
+        },
+        {
+          "capacity": 4,
+          "values": [
+            42
+          ],
+          "drain": true
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "registered"
+    },
+    {
+      "id": "populated",
+      "history": "Read the top of the populated stack.",
+      "inputs": [
+        {
+          "capacity": 4,
+          "values": [
+            42
+          ],
+          "drain": false
+        }
+      ],
+      "sides": [
+        "old",
+        "new"
+      ],
+      "cohort": "control"
+    }
+  ],
+  "assumptions": [
+    "Single thread, fixed capacity, each history starts a fresh stack."
+  ]
+}

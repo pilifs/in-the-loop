@@ -342,6 +342,7 @@ public final class UpgradeTrace {
         Map<String, Connector.Argument> launch = connector.defaultArguments();
         launch.get("home").setValue(args[1]);
         launch.get("options").setValue("-Xmx384m -Duser.timezone=UTC -Duser.language=en -Duser.country=US "
+                + System.getProperty("upgrade.profile", "") + " "
                 + quote("-Djava.io.tmpdir=" + args[2]) + " " + quote("-Duser.home=" + args[2])
                 + " " + quote("-Dupgrade.observation.file=" + Paths.get(args[2], "observation.txt"))
                 + " -verbose:class -cp " + quote(args[3]));
