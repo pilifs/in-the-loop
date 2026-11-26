@@ -607,3 +607,81 @@ Determine which changes an application can observe at a public Spring API. Compa
 **Technical notes.** Use spring-context with java.time.ZonedDateTime and an explicit ZoneId. The JDK time-zone database must represent Cairo’s April 25 midnight gap and New York’s March 8 02:00 gap for these years. A fixed offset cannot express either transition.
 
 **Sources.** [Public next calculation](https://github.com/spring-projects/spring-framework/blob/6467fca05b874f3e44fbd9451a252f035abbeafc/spring-context/src/main/java/org/springframework/scheduling/support/CronExpression.java) · [Landed rollover](https://github.com/spring-projects/spring-framework/blob/6467fca05b874f3e44fbd9451a252f035abbeafc/spring-context/src/main/java/org/springframework/scheduling/support/BitsCronField.java) · [Cairo public regression](https://github.com/spring-projects/spring-framework/blob/6467fca05b874f3e44fbd9451a252f035abbeafc/spring-context/src/test/java/org/springframework/scheduling/support/CronExpressionTests.java) · [New York hour-field regression](https://github.com/spring-projects/spring-framework/blob/6467fca05b874f3e44fbd9451a252f035abbeafc/spring-context/src/test/java/org/springframework/scheduling/support/BitsCronFieldTests.java) · [spring-context build](https://github.com/spring-projects/spring-framework/blob/6467fca05b874f3e44fbd9451a252f035abbeafc/spring-context/spring-context.gradle) · [Original Cairo timestamps](https://github.com/spring-projects/spring-framework/issues/36859)
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Sources.** All 60 pins, plus the `later` revision P29 links (`daa8c10031e35f1a447917474f203789e009d3b5`), as worktrees
+  `~/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/CASE-ROLE` (ROLE `parent` = before pin, `fix` = after pin), from the
+  shared mirror `~/.cache/in-the-loop/git-mirrors/spring-framework.git`. Every PR's merge commit equals the after pin, every landed
+  diff names exactly the PR's files, the 21 signed pins verify ([Upstream revisions](#upstream-revisions), full ids in its table).
+  All worktrees are clean.
+- **Offline builds for 23 cases** (all but the 5.x seven). Every configuration of every project is resolved into
+  `$P/gradle-home`; `source $P/scripts/env.sh` then `$P/scripts/gradle_case.sh WORKTREE TAG "" --offline TASKS` picks the right
+  Gradle (verified distributions in `$P/tools/`) and JDK ([Build facts](#build-facts-by-era), [Commands](#commands-for-a-rerun-by-hand)).
+  `$P/scripts/case_job.sh CASE STEP` reruns a case's job steps.
+- **Built jars, class digests and classpaths** for all 23 cases at both pins in `$P/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
+  `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`), digests in full in
+  [Digests of the built artifacts](#digests-of-the-built-artifacts).
+- **Slices for the seven 5.x cases** at both pins: `$P/slices/CASE-ROLE/CASE-ROLE-slice.jar` (the pin's changed production
+  classes, JDK 8), to put ahead of the base release's `$P/releases/SET/classpath.txt`; `$P/scripts/slice_case.sh CASE` rebuilds
+  them and reruns the landed tests in seconds ([slice route](#the-5x-cases-on-the-slice-route), class digests there).
+- **Released artifacts for the 5.x cases and the versions the brief names** in `$P/releases/SET/` (`jars/`, `classpath.txt`):
+  spring-web 5.0.0.RC4 and 5.0.0.RELEASE with protobuf-java-util 3.4.0, and protobuf-java-format 1.4 apart (P11); spring-test
+  5.1.0.RC1 and RC2 (P09); spring-beans 5.1.6.RELEASE and 5.2.0.M1 (P05); spring-jdbc 5.1.4/5.1.5.RELEASE with H2, HSQLDB,
+  Derby (P16) and 5.2.7.RELEASE/5.3.0-M1 (P18); spring-tx 5.2.0.RC2/5.2.0.RELEASE with their Reactor (P19); spring-orm
+  5.1.4/5.1.5.RELEASE with hibernate-core 5.4.1.Final and HSQLDB (P23); spring-context 5.3.18 with AspectJ 1.9.7 (P26's reported
+  version); jasync-r2dbc-mysql 2.1.19 and 2.1.20 (P20); and each 5.x pin's test libraries as `tests-CASE`
+  ([Released artifacts](#released-artifacts), digests in `$P/logs/release-verify.txt`).
+
+### What was verified on a JVM
+
+- **All 30 cases' landed regressions pass at the fix and fail at the parent.**
+  - 23 Gradle cases, by their jobs (results commit `933de3d18d34`): each landed test class passes at the fix pin, and its parent
+    version (where one exists) passes at the parent. The fix's test files on a copy of the parent **fail** for P01, P02, P03, P06,
+    P07, P08, P10, P12, P13, P14, P17, P20, P21, P22, P25, P26, P27, P28, P30. They **do not compile** for P04, P24 and P29, which
+    use the API the landing adds. They **fail and then hang** for P15. Every failing test is named in [Job results](#job-results).
+  - The seven 5.x cases, on the slice route: each landed test class passes on the fix slice, and the parent's own version passes
+    on the parent slice (P18's and P23's classes are new). The fix's tests **fail** on the parent slice (P05 2, P09 2, P11 1, P16 1,
+    P18 3, P19 1, P23 4 tests) and, identically, on the stock base release. Every failing test is named in
+    [the section](#the-5x-cases-on-the-slice-route).
+- No scenario or prediction of the brief was run anywhere.
+
+### What to know before starting
+
+- **P05, P09, P11, P16, P18, P19, P23 (Spring 5.x) have no historical build** ([why](#the-5x-builds-cannot-be-configured)). What
+  exists is a slice per pin: that pin's changed classes ahead of the base release whose copy of those files equals the parent pin's
+  (P05 spring-beans 5.1.6.RELEASE, P09 spring-test 5.1.0.RC1, P11 spring-web 5.0.0.RC4, P16 spring-jdbc 5.1.4.RELEASE, P18
+  spring-jdbc 5.2.7.RELEASE, P19 spring-tx 5.2.0.RC2, P23 spring-orm 5.1.4.RELEASE). Every other class there is the release's, not
+  the pin's. Released files also equal some fix pins (P09 fix = spring-test 5.1.0.RC2, P11 fix = spring-web 5.0.0.RELEASE).
+  No release equals the fix pins of P05 (5.2.0.M1 differs in one `static` modifier and comments), P16 (5.1.5.RELEASE: comments
+  and indentation only), P18 (5.3.0-M1 drops `@Deprecated` and rewords a debug log), P19's `TransactionalOperatorImpl`
+  (5.2.0.RELEASE passes an extra `(res, err) -> Mono.empty()` to `usingWhen`) and P23 (5.1.5.RELEASE: copyright year and a blank
+  line). In 5.2 there is no `spring-r2dbc`, which matters for P19's database claim.
+- **P11's provider choice**: keep `$P/releases/protobuf-java-format-1.4` off the classpath for the Google JsonFormat path; the
+  public constructor prefers it when present. The slice and the upstream test run have it on the classpath, because the converter
+  class refers to it and the test chooses each provider through the package-visible constructor.
+- **Snapshots.** The 7.1.0-SNAPSHOT builds take Reactor 3.9.0-SNAPSHOT, reactor-netty 1.4.0-SNAPSHOT and Micrometer 1.18.0-SNAPSHOT
+  as cached on 2026-11-26 (same bytes as on 2026-11-25); P20 takes reactor-core 3.5.3-SNAPSHOT `20230214.110429` and Micrometer
+  1.10.4-SNAPSHOT `20230213.230149`, ten days after its pins, the only builds still served. Digests in
+  [Snapshot dependencies](#snapshot-dependencies). Build `--offline` to keep them.
+- **P21, P22, P24, P25, P26, P28 need the Liberica JDK** (`$JL17`): their builds demand toolchain vendor BELLSOFT; `gradle_case.sh`
+  passes it. Default `java` on `PATH` is 25.0.5. The 7.x builds compile on toolchain 25 with `release` 17; the 6.x builds on 17;
+  the 5.x slices on JDK 8 (`$J8`).
+- **P15 on the parent can block**: an interrupted read waits for an upstream signal. Give any run against the P15 parent a timeout.
+- **Two-commit landings**: P13, P15, P26, P30 (intermediate commits `8f4fcb6cbc3b85ba0cdaae7fc2b1c552f7ef9715`,
+  `66125a569e4d673bd3e23f2f2c9490ec625cf640`, `86d52a677a41caa70477725d764c3deb2736bcb0`, `cddc671a8c6eea118b1f7ef05f2b6d754e852f09`
+  are in the mirror); the brief compares the outer pins. P11's after pin is a merge.
+- **P25's landed test** `ProxyExceptionHandlingTests` is abstract; select its nested classes with `--tests 'org.springframework.aop.framework.ProxyExceptionHandlingTests*'`.
+- **Databases are open**: the spring-jdbc test runtime classpaths have H2, HSQLDB and Derby (check
+  `$P/artifacts/CASE-ROLE/M.testRuntimeClasspath.txt`), the P16 sets H2 1.4.197, HSQLDB 2.4.1 and Derby 10.14.2.0, the P23 sets
+  HSQLDB 2.4.1; nothing else (no PostgreSQL or MySQL server, no R2DBC database for P19) was set up for this brief.
+- Pins shared with the O01–O20 brief: P27's parent `906c54faffc75721b98f9b9cf63d35edd81f7b4f` is O05's fix, P30's fix
+  `6467fca05b874f3e44fbd9451a252f035abbeafc` is O10's parent; P02's parent's parent is P06's fix. Their worktrees here are separate.
+
+### What is left for the domain work on purpose
+
+All claims, scenarios, fixtures and examples; whether a 5.x case's slice, a release, or neither stands in for its pins in a
+claim; choosing databases, drivers and providers beyond what is fetched (P16, P17, P19, P20, P23); any run of the brief's own
+scenarios or predictions; the P29 `later` revision; and example ids and folders.
