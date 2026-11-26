@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-141555-setup-build-spring-framework-34709-q13-a",
+  "title": "Setup: build Spring Framework #34709 (Q13) at both pins offline and run its landed tests",
+  "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, case Q13 (spring-projects/spring-framework#34709: Honor a JDBC row limit when the driver returns additional rows). In the worktrees $P/worktrees/Q13-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-q01-q30), offline (dependencies resolved online beforehand), it builds the jars of spring-jdbc with the Gradle each checkout's wrapper names, runs the landed test classes (JdbcTemplateTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-jdbc in $P/artifacts/Q13-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md"
+    ]
+  },
+  "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned Q13",
+  "submitted": {
+    "at": "2026-11-26T14:15:55+00:00",
+    "session": "56626182-a69a-4945-91c7-07e11b9bb46a",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "unzip"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "6G",
+    "duration": "30m",
+    "memoryLimit": "9G",
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "steps": [
+    {
+      "name": "Q13 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q13 fix",
+      "cwd": "."
+    },
+    {
+      "name": "Q13 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q13 parent",
+      "cwd": "."
+    },
+    {
+      "name": "Q13 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q13 transplant",
+      "cwd": "."
+    },
+    {
+      "name": "Q13 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-q01-q30/scripts/case_job.sh Q13 clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}
