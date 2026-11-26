@@ -1,0 +1,223 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-203416-compare-typed-log4j-returns-with-the-ind",
+  "title": "Compare typed Log4j returns with the independent zone histories",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m53s, peak 148.8 MiB (estimated 2m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-203416-compare-typed-log4j-returns-with-the-ind.json",
+    "sha256": "5b93fd34e1ef85670e662bd531e6bba903c6c81a030feb6298618a793a357c7b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-203416-compare-typed-log4j-returns-with-the-ind",
+      "title": "Compare typed Log4j returns with the independent zone histories",
+      "description": "The previous run completed its cold replay but compared a typed return object to the archive's plain return string. Normalize the archived strings to typed returns and compare every input twice. Exercise both shared-entry claims, the resumed and clean caches, and same-path replacement. Verify every archived plan and receipt offline.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T20:34:16+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Check every scheduling history and its reuse",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/log4j.py verification/classpath-entry-discovery/log4j-replays.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/classpath-entry-discovery/log4j-replays.json",
+        "verification/classpath-entry-discovery/log4j-plans.zip"
+      ]
+    }
+  },
+  "sourceCommit": "9a2aa43232d148c58c44bcd36deb222168e6f14b",
+  "startedAt": "2026-11-26T20:41:25+00:00",
+  "finishedAt": "2026-11-26T20:46:30+00:00",
+  "wallSeconds": 305.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 449222,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 155979776,
+    "wallSeconds": 113.3,
+    "cpuSeconds": 145.2,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.94
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 180.88,
+      "cpuSeconds": 180.858,
+      "cpuThrottledSeconds": 0.002,
+      "peakMemoryBytes": 2385354752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "9b8cdb5e97f2f9389a23de148add79a73f57741efeeb4bbeebc94b5381dc1be4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261126-203416-compare-typed-log4j-returns-with-the-ind/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 00s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check every scheduling history and its reuse",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/log4j.py verification/classpath-entry-discovery/log4j-replays.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 113.295,
+      "cpuSeconds": 145.175,
+      "cpuThrottledSeconds": 20.06,
+      "peakMemoryBytes": 155979776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-every-scheduling-history.log",
+        "lines": 7,
+        "bytes": 419,
+        "sha256": "4400a2095f244f3545142bc484ef0617a16998dfa5d428f50b1c02d75e257955",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/entry-log4j-hkkvq9m7/scaffold.json",
+        "2 claims in /tmp/entry-log4j-hkkvq9m7/cold.json",
+        "2 claims in /tmp/entry-log4j-hkkvq9m7/warm.json",
+        "2 claims in /tmp/entry-log4j-hkkvq9m7/clean.json",
+        "2 claims in /tmp/entry-log4j-hkkvq9m7/replacement-warm.json",
+        "2 claims in /tmp/entry-log4j-hkkvq9m7/replacement-clean.json",
+        "Two scaffold bindings, eight frozen cases, five cache comparisons; all independent histories matched"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/classpath-entry-discovery/log4j-replays.json",
+      "change": "added",
+      "bytes": 42139,
+      "sha256": "3a4d06bd573ddaba136f68dd0abdb1db14b861def1eb6ca87496499d2e0f47ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/classpath-entry-discovery/log4j-plans.zip",
+      "change": "added",
+      "bytes": 90960,
+      "sha256": "e3b83819ba799204d4c9ee8f190c715d5c5daf9353e97548586cb7e1db7900a9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T20:46:47+00:00",
+    "applied": [
+      "verification/classpath-entry-discovery/log4j-replays.json",
+      "verification/classpath-entry-discovery/log4j-plans.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "22b898f5a5819aa123b360c976884c854ddc9500",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/22b898f5a5819aa123b360c976884c854ddc9500/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T204630Z-270981a1ec566e93",
+      "outputs": "20261126T204630Z-2914091c4cf45c84",
+      "diff": "20261126T204630Z-306916802ded49f4"
+    }
+  }
+}
