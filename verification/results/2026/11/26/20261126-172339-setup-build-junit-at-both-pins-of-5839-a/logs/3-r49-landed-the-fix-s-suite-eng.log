@@ -1,0 +1,20 @@
+overlaid platform-tests/src/test/java/org/junit/platform/suite/engine/BeforeAndAfterSuiteTests.java
+overlaid platform-tests/src/test/java/org/junit/platform/suite/engine/SuiteEngineTests.java
+overlaid platform-tests/src/test/java/org/junit/platform/suite/engine/SuiteEventConditions.java
+dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R49-parent-landed gradle=9.6.1 jdk=25.0.5.0+8-tem gradle-exit=1 seconds=118 args=--offline --no-build-cache --no-scan -Pkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.auto-detect=false -Porg.gradle.java.installations.paths=/home/filip/.sdkman/candidates/java/8.0.512.0+9-tem,/home/filip/.sdkman/candidates/java/17.0.21.0+9-tem,/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem,/home/filip/.cache/in-the-loop/merged-pr-links/tools/jdk-24.0.2+12,/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem --continue :junit-platform-suite-engine:jar :junit-platform-suite-api:jar :junit-platform-launcher:jar :junit-platform-engine:jar :junit-platform-commons:jar :junit-jupiter-api:jar :junit-jupiter-engine:jar :junit-jupiter-params:jar :platform-tests:test --tests org.junit.platform.suite.engine.SuiteEngineTests --tests org.junit.platform.suite.engine.BeforeAndAfterSuiteTests
+junit tests=59 failures=1 errors=0 skipped=0
+junit failed SuiteEngineTests#dynamicSuite()
+SuiteEngineTests > dynamicSuite() FAILED
+    java.lang.AssertionError: 
+    Expecting elements:
+--
+        Event [type = FINISHED, testDescriptor = SuiteTestDescriptor: [engine:junit-platform-suite]/[suite:org.junit.platform.suite.engine.testsuites.DynamicSuite], timestamp = 2026-11-26T17:35:16.027107271Z, payload = TestExecutionResult [status = FAILED, throwable = org.junit.platform.suite.engine.NoTestsDiscoveredException: Suite [org.junit.platform.suite.engine.testsuites.DynamicSuite] did not discover any tests]],
+        Event [type = FINISHED, testDescriptor = SuiteEngineDescriptor: [engine:junit-platform-suite], timestamp = 2026-11-26T17:35:16.027129512Z, payload = TestExecutionResult [status = SUCCESSFUL, throwable = null]]]
+    to have exactly 1 times all of:[
+--
+> Task :platform-tests:test FAILED
+> Task :platform-tests:generateOpenTestHtmlReport
+
+--
+R49 landed rc=1 (failures expected)
+LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED

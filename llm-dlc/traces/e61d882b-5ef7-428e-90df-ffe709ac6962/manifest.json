@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-26T15:53:40.838Z",
-  "duration_seconds": 789357,
+  "ended": "2026-11-26T17:24:19.155Z",
+  "duration_seconds": 794796,
   "stats": {
     "turns": 296,
-    "api_calls": 2647,
-    "tool_calls": 2353,
+    "api_calls": 2660,
+    "tool_calls": 2363,
     "tool_errors": 27,
     "compactions": 10,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 105683,
-      "output_tokens": 1697012,
-      "cache_read_input_tokens": 828978122,
-      "cache_creation_input_tokens": 6536347
+      "input_tokens": 105717,
+      "output_tokens": 1703385,
+      "cache_read_input_tokens": 832755476,
+      "cache_creation_input_tokens": 6546247
     }
   },
   "tools": {
-    "Bash": 2055,
+    "Bash": 2064,
     "Edit": 80,
-    "SendMessage": 72,
+    "SendMessage": 73,
     "Read": 55,
     "Write": 35,
     "ToolSearch": 18,
@@ -251,24 +251,24 @@
     {
       "index": 10,
       "started": "2026-11-26T13:12:13.083Z",
-      "ended": "2026-11-26T15:53:40.838Z",
+      "ended": "2026-11-26T17:24:19.155Z",
       "turns": 9,
-      "api_calls": 128,
+      "api_calls": 141,
       "usage": {
-        "input_tokens": 292,
-        "output_tokens": 70029,
-        "cache_read_input_tokens": 28575058,
-        "cache_creation_input_tokens": 251012
+        "input_tokens": 326,
+        "output_tokens": 76402,
+        "cache_read_input_tokens": 32352412,
+        "cache_creation_input_tokens": 260912
       },
-      "peak_context_tokens": 285391
+      "peak_context_tokens": 296565
     }
   ],
   "log": {
-    "sha256": "32130d6ba7270b90f8c7ddbcf888ca8bfa67cc34678208672bf38fecdaa3e52d",
-    "bytes": 46331238,
-    "lines": 21335,
-    "gzip_bytes": 7963670,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/32130d6ba7270b90f8c7ddbcf888ca8bfa67cc34678208672bf38fecdaa3e52d.jsonl.gz"
+    "sha256": "16e1398bc3234268a12953357ccd211d78754cef9196fc4aa09db75f7301d4c7",
+    "bytes": 46489027,
+    "lines": 21451,
+    "gzip_bytes": 7983190,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/16e1398bc3234268a12953357ccd211d78754cef9196fc4aa09db75f7301d4c7.jsonl.gz"
   },
   "subagents": [
     {
@@ -12981,6 +12981,14 @@
       "summary": "Recheck Spring Q findings on releases (verification pending)",
       "body": "Replay 32 histories with the original application binaries on published Spring releases. All four Q-series counterexamples reproduce on Spring 7.1.0, with one import change for the relocated retry API. On Artemis, Spring JMS 7.0.4 leaves uncorrelated replies waiting on the owned queue. Echoing either the request message ID or an explicit application correlation ID restores both replies and queue reuse. Confirm the historical servlet SSE report, the published parameter delegate, and both defensive copies in the later HTTP proxy factory.\n\nSixteen release-specific controls and six executions of the later and original factories repeated offline. Six negative checks rejected altered evidence. The older P-series release audit, all ten affected example validators and all 35 selected suites passed. The full Q replay and 40 original-method debugger trials also passed independently. Job 20261126-155839-repeat-spring-q-series-release-and-maint repeats the released callers and follow-ups and requires byte-identical results.",
       "log_sha256": "32130d6ba7270b90f8c7ddbcf888ca8bfa67cc34678208672bf38fecdaa3e52d"
+    },
+    {
+      "change_id": "xzmzqmttrqnrztpnukssprtqnxttvuto",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "16e1398bc3234268a12953357ccd211d78754cef9196fc4aa09db75f7301d4c7"
     }
   ],
   "logs": {
@@ -13097,6 +13105,12 @@
       "lines": 10517,
       "gzip_bytes": 4724030,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/14fa4380a76eddc9ff085d5fbcfb9227879db0fe1e5440d616aade55267184a2.jsonl.gz"
+    },
+    "16e1398bc3234268a12953357ccd211d78754cef9196fc4aa09db75f7301d4c7": {
+      "bytes": 46489027,
+      "lines": 21451,
+      "gzip_bytes": 7983190,
+      "url": null
     },
     "174dbae8ebdd6decd08e3ef8e9bc8d106e01ad7667d3ace52b2a69cb4485cea7": {
       "bytes": 21128183,

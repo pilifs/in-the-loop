@@ -3,6 +3,42 @@
   "shard": "2026/11/26",
   "results": [
     {
+      "id": "20261126-172339-setup-build-junit-at-both-pins-of-5839-a",
+      "title": "Setup: build JUnit at both pins of #5839 and #4466 and run their landed tests",
+      "status": "passed",
+      "summary": "passed: 8 passed step(s) in 9m50s, peak 3.7 GiB (estimated 1h00m, 6.0 GiB)",
+      "attention": [
+        "step 1 (R49 fix: JUnit 6.2.0-SNAPSHOT module jars, SuiteEngineTests + BeforeAndAfterSuiteTests, jars/classpaths kept) was held back 3m12s by its 3-CPU quota in 2m07s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (R49 parent: the same with the parent's own test files) was held back 3m21s by its 3-CPU quota in 1m54s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 3 (R49 landed: the fix's suite-engine test files on a copy of the parent (some expected to fail)) was held back 2m58s by its 3-CPU quota in 1m58s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 5 (R50 fix: JUnit 5.13.0-SNAPSHOT module jars, TempDirectoryCleanupTests, jars/classpaths kept) was held back 1m00s by its 3-CPU quota in 1m16s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 6 (R50 parent: the same with the parent's own test file) was held back 1m03s by its 3-CPU quota in 1m19s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 7 (R50 landed: the fix's TempDirectoryCleanupTests on a copy of the parent (some expected to fail)) was held back 51.6s by its 3-CPU quota in 1m11s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md"
+        ]
+      },
+      "sourceCommit": "b6859c0a994225e883f52f2acecc76708c124fde",
+      "finishedAt": "2026-11-26T17:39:07+00:00",
+      "wallSeconds": 590.1,
+      "peakMemoryBytes": 3959349248,
+      "estimate": {
+        "cpus": 3.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 3600.0,
+        "notes": "6 offline JUnit builds of 8 or 6 modules plus platform-tests/jupiter-tests compilation (an earlier setup's JUnit 6.2 jars took 4m18s online); Gradle daemon 1g, Kotlin in process, test JVMs"
+      },
+      "host": "vm-1",
+      "result": "2026/11/26/20261126-172339-setup-build-junit-at-both-pins-of-5839-a/result.json"
+    },
+    {
       "id": "20261126-155839-repeat-spring-q-series-release-and-maint",
       "title": "Repeat Spring Q-series release and maintainer comparisons",
       "status": "passed",

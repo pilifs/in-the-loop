@@ -1,0 +1,20 @@
+dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R50-junit-framework-fix gradle=8.13 jdk=21.0.13.0+9-tem gradle-exit=1 seconds=46 args=--offline --no-build-cache --no-scan -Dkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.auto-detect=false -Porg.gradle.java.installations.paths=/home/filip/.sdkman/candidates/java/8.0.512.0+9-tem,/home/filip/.sdkman/candidates/java/17.0.21.0+9-tem,/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem,/home/filip/.cache/in-the-loop/merged-pr-links/tools/jdk-24.0.2+12,/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem --continue :junit-jupiter-engine:jar :junit-jupiter-api:jar :junit-jupiter-params:jar :junit-platform-launcher:jar :junit-platform-engine:jar :junit-platform-commons:jar :jupiter-tests:test --tests org.junit.jupiter.engine.extension.TempDirectoryCleanupTests
+junit tests=0 failures=0 errors=0 skipped=0
+> Task :jupiter-tests:compileTestGroovy FAILED
+
+FAILURE: Build failed with an exception.
+--
+* What went wrong:
+Execution failed for task ':jupiter-tests:compileTestGroovy'.
+> Could not resolve all files for configuration ':jupiter-tests:detachedConfiguration8'.
+   > Could not resolve org.apache.groovy:groovy-ant:4.0.26.
+     Required by:
+         project :jupiter-tests
+--
+   > Could not resolve org.apache.groovy:groovy-astbuilder:4.0.26.
+/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R50-fix/junit-jupiter-engine.runtimeClasspath.txt 4 entries
+/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R50-fix/jupiter-tests.testRuntimeClasspath.txt 46 entries
+4bd0026871c013b22fa601cb5f619762e5d8b042967dc0586ee75e80793f8709  junit-jupiter-engine-5.13.0-SNAPSHOT.jar
+df7992741d06968c14832d691ba6dd1baa7892cae1d313b2734027d4ec70b40d  junit-jupiter-api-5.13.0-SNAPSHOT.jar
+bb0e0e1f67b71f9092ce03d24be98f6e1807d48697d52f8089bd03658781c612  junit-jupiter-params-5.13.0-SNAPSHOT.jar
+R50 fix test rc=1

@@ -1,0 +1,557 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-172339-setup-build-junit-at-both-pins-of-5839-a",
+  "title": "Setup: build JUnit at both pins of #5839 and #4466 and run their landed tests",
+  "status": "passed",
+  "summary": "passed: 8 passed step(s) in 9m50s, peak 3.7 GiB (estimated 1h00m, 6.0 GiB)",
+  "attention": [
+    "step 1 (R49 fix: JUnit 6.2.0-SNAPSHOT module jars, SuiteEngineTests + BeforeAndAfterSuiteTests, jars/classpaths kept) was held back 3m12s by its 3-CPU quota in 2m07s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (R49 parent: the same with the parent's own test files) was held back 3m21s by its 3-CPU quota in 1m54s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (R49 landed: the fix's suite-engine test files on a copy of the parent (some expected to fail)) was held back 2m58s by its 3-CPU quota in 1m58s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 5 (R50 fix: JUnit 5.13.0-SNAPSHOT module jars, TempDirectoryCleanupTests, jars/classpaths kept) was held back 1m00s by its 3-CPU quota in 1m16s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 6 (R50 parent: the same with the parent's own test file) was held back 1m03s by its 3-CPU quota in 1m19s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 7 (R50 landed: the fix's TempDirectoryCleanupTests on a copy of the parent (some expected to fail)) was held back 51.6s by its 3-CPU quota in 1m11s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-172339-setup-build-junit-at-both-pins-of-5839-a.json",
+    "sha256": "9e7bd2fa3f4f797dc00e3de553e75e18e44b5a2c0881c4e97eaeb4efd7e53a6a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-172339-setup-build-junit-at-both-pins-of-5839-a",
+      "title": "Setup: build JUnit at both pins of #5839 and #4466 and run their landed tests",
+      "description": "Setup for cases R49 (junit-team/junit-framework#5839, the suite engine counts dynamically registered tests) and R50 (junit-team/junit-framework#4466, @TempDir ON_SUCCESS cleanup scoped to the owning test) of llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md; no claims, no verifier. In standalone depth-1 clones under ~/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees (JUnit's build reads git metadata), with the Gradle cache resolved online there already (inline, 2026-11-26), offline: R49 with Gradle 9.6.1 on JDK 25, R50 with Gradle 8.13 on JDK 21, no build cache, no build scan, no test retries or predictive test selection. For each case: builds the platform and jupiter module jars at the fix and parent pins, runs the landed test classes (R49: platform-tests SuiteEngineTests, BeforeAndAfterSuiteTests; R50: jupiter-tests TempDirectoryCleanupTests), keeps jars, class digests and classpaths under $O/artifacts/CASE-ROLE/, then overlays the fix's changed test files on a copy of the parent and runs them again, where the new tests are expected to fail. JUnit's builds take several minutes each, so the runs are a job. The last steps delete the build trees.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md"
+        ]
+      },
+      "expected": "every step exits 0; the fix and parent steps print 'test rc=0'; each landed step prints LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED with the failing tests in $O/logs/CASE-parent-landed.test-offline.failures.txt; the clean steps print 'cleaned'",
+      "submitted": {
+        "at": "2026-11-26T17:23:39+00:00",
+        "session": "955141f5-9ccb-41fa-9e12-8a9dfab2ca8b",
+        "by": "setup agent (Claude Opus 5.5), fork D"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "6G",
+        "duration": "60m",
+        "notes": "6 offline JUnit builds of 8 or 6 modules plus platform-tests/jupiter-tests compilation (an earlier setup's JUnit 6.2 jars took 4m18s online); Gradle daemon 1g, Kotlin in process, test JVMs"
+      },
+      "steps": [
+        {
+          "name": "R49 fix: JUnit 6.2.0-SNAPSHOT module jars, SuiteEngineTests + BeforeAndAfterSuiteTests, jars/classpaths kept",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 fix",
+          "cwd": "."
+        },
+        {
+          "name": "R49 parent: the same with the parent's own test files",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 parent",
+          "cwd": "."
+        },
+        {
+          "name": "R49 landed: the fix's suite-engine test files on a copy of the parent (some expected to fail)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 landed",
+          "cwd": "."
+        },
+        {
+          "name": "R49 clean",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 clean",
+          "cwd": "."
+        },
+        {
+          "name": "R50 fix: JUnit 5.13.0-SNAPSHOT module jars, TempDirectoryCleanupTests, jars/classpaths kept",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 fix",
+          "cwd": "."
+        },
+        {
+          "name": "R50 parent: the same with the parent's own test file",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 parent",
+          "cwd": "."
+        },
+        {
+          "name": "R50 landed: the fix's TempDirectoryCleanupTests on a copy of the parent (some expected to fail)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 landed",
+          "cwd": "."
+        },
+        {
+          "name": "R50 clean",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "b6859c0a994225e883f52f2acecc76708c124fde",
+  "startedAt": "2026-11-26T17:29:07+00:00",
+  "finishedAt": "2026-11-26T17:39:07+00:00",
+  "wallSeconds": 600.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2815801,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 14400.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 3600.0,
+    "notes": "6 offline JUnit builds of 8 or 6 modules plus platform-tests/jupiter-tests compilation (an earlier setup's JUnit 6.2 jars took 4m18s online); Gradle daemon 1g, Kotlin in process, test JVMs"
+  },
+  "usage": {
+    "peakMemoryBytes": 3959349248,
+    "wallSeconds": 590.1,
+    "cpuSeconds": 1534.0,
+    "memoryOfEstimate": 0.61,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "R49 fix: JUnit 6.2.0-SNAPSHOT module jars, SuiteEngineTests + BeforeAndAfterSuiteTests, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 127.73,
+      "cpuSeconds": 338.607,
+      "cpuThrottledSeconds": 192.86,
+      "peakMemoryBytes": 2622033920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-r49-fix-junit-6-2-0-snapshot-m.log",
+        "lines": 11,
+        "bytes": 2003,
+        "sha256": "f84ad20fd05c7bd0af7bfebebca2ed6104ebe446d3fbacee19613bc5caa979b2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R49-junit-framework-fix gradle=9.6.1 jdk=25.0.5.0+8-tem gradle-exit=0 seconds=81 args=--offline --no-build-cache --no-scan -Pkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelecti",
+        "junit tests=59 failures=0 errors=0 skipped=0",
+        "BUILD SUCCESSFUL in 1m 20s",
+        "129 actionable tasks: 66 executed, 63 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R49-fix/junit-platform-suite-engine.runtimeClasspath.txt 5 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R49-fix/platform-tests.testRuntimeClasspath.txt 63 entries",
+        "f211c6e7c2ca40878df4397b46c04675b011c4e4c639458b2836feaf8a55cfcb  junit-platform-suite-engine-6.2.0-SNAPSHOT.jar",
+        "b7b87a57ffa9799d7ca3367e06f803eca667cc8cc3f2fb8362d0817988f2cb1e  junit-platform-suite-api-6.2.0-SNAPSHOT.jar",
+        "d552ff76b66152b19a5a616edd8b16ccd8a715a5d1b2fd0b4425bd53480926fd  junit-platform-launcher-6.2.0-SNAPSHOT.jar",
+        "R49 fix test rc=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "R49 parent: the same with the parent's own test files",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 114.899,
+      "cpuSeconds": 307.052,
+      "cpuThrottledSeconds": 201.484,
+      "peakMemoryBytes": 2561683456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-r49-parent-the-same-with-the-p.log",
+        "lines": 11,
+        "bytes": 2015,
+        "sha256": "10fef11d5424cca6cd094914fe6af5e3307af27e94932ab287aa78decbdac828",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R49-junit-framework-parent gradle=9.6.1 jdk=25.0.5.0+8-tem gradle-exit=0 seconds=77 args=--offline --no-build-cache --no-scan -Pkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSele",
+        "junit tests=59 failures=0 errors=0 skipped=0",
+        "BUILD SUCCESSFUL in 1m 17s",
+        "129 actionable tasks: 66 executed, 63 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R49-parent/junit-platform-suite-engine.runtimeClasspath.txt 5 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R49-parent/platform-tests.testRuntimeClasspath.txt 63 entries",
+        "a149e25f902b6a134775365f3efa2ad92109916e0791ad8d7edcd835a089091a  junit-platform-suite-engine-6.2.0-SNAPSHOT.jar",
+        "372c7c066c2744aa8d357478c3ff7a019b40fbdfeb259f2171582f110cbde96b  junit-platform-suite-api-6.2.0-SNAPSHOT.jar",
+        "7997b75331019cb834aa3ec57cb6db28f41a35237dfb29c6a1e3d0d5dc4949f7  junit-platform-launcher-6.2.0-SNAPSHOT.jar",
+        "R49 parent test rc=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "R49 landed: the fix's suite-engine test files on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 landed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 118.292,
+      "cpuSeconds": 317.027,
+      "cpuThrottledSeconds": 178.681,
+      "peakMemoryBytes": 3959349248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-r49-landed-the-fix-s-suite-eng.log",
+        "lines": 20,
+        "bytes": 2422,
+        "sha256": "475f969773b6176bcc825bfd2eb0314863006fc38d7b796b6802141c532897e5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "overlaid platform-tests/src/test/java/org/junit/platform/suite/engine/BeforeAndAfterSuiteTests.java",
+        "overlaid platform-tests/src/test/java/org/junit/platform/suite/engine/SuiteEngineTests.java",
+        "overlaid platform-tests/src/test/java/org/junit/platform/suite/engine/SuiteEventConditions.java",
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R49-parent-landed gradle=9.6.1 jdk=25.0.5.0+8-tem gradle-exit=1 seconds=118 args=--offline --no-build-cache --no-scan -Pkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enable",
+        "junit tests=59 failures=1 errors=0 skipped=0",
+        "junit failed SuiteEngineTests#dynamicSuite()",
+        "SuiteEngineTests > dynamicSuite() FAILED",
+        "    java.lang.AssertionError: ",
+        "    Expecting elements:",
+        "--",
+        "        Event [type = FINISHED, testDescriptor = SuiteTestDescriptor: [engine:junit-platform-suite]/[suite:org.junit.platform.suite.engine.testsuites.DynamicSuite], timestamp = 2026-11-26T17:35:16.027107271Z, payload = TestExecutionResult [status = FAILED, throwable = org.junit.platform.suite.engine",
+        "        Event [type = FINISHED, testDescriptor = SuiteEngineDescriptor: [engine:junit-platform-suite], timestamp = 2026-11-26T17:35:16.027129512Z, payload = TestExecutionResult [status = SUCCESSFUL, throwable = null]]]",
+        "    to have exactly 1 times all of:[",
+        "--",
+        "> Task :platform-tests:test FAILED",
+        "> Task :platform-tests:generateOpenTestHtmlReport",
+        "",
+        "--",
+        "R49 landed rc=1 (failures expected)",
+        "LANDED-TESTS-FAIL-ON-PARENT-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "R49 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R49 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.382,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6574080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-r49-clean.log",
+        "lines": 1,
+        "bytes": 8,
+        "sha256": "37c3dee866bc87fc3d52b6b053805dfbe5df3d394fdad9ec535f162a4e695941",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "R50 fix: JUnit 5.13.0-SNAPSHOT module jars, TempDirectoryCleanupTests, jars/classpaths kept",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 76.774,
+      "cpuSeconds": 198.408,
+      "cpuThrottledSeconds": 60.537,
+      "peakMemoryBytes": 2252509184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-r50-fix-junit-5-13-0-snapshot.log",
+        "lines": 20,
+        "bytes": 2060,
+        "sha256": "fc2e0285b42009a336809f6acc49ffbe21e1c6dc29cf7907cf54a184737af3d9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R50-junit-framework-fix gradle=8.13 jdk=21.0.13.0+9-tem gradle-exit=1 seconds=46 args=--offline --no-build-cache --no-scan -Dkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelecti",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :jupiter-tests:compileTestGroovy FAILED",
+        "",
+        "FAILURE: Build failed with an exception.",
+        "--",
+        "* What went wrong:",
+        "Execution failed for task ':jupiter-tests:compileTestGroovy'.",
+        "> Could not resolve all files for configuration ':jupiter-tests:detachedConfiguration8'.",
+        "   > Could not resolve org.apache.groovy:groovy-ant:4.0.26.",
+        "     Required by:",
+        "         project :jupiter-tests",
+        "--",
+        "   > Could not resolve org.apache.groovy:groovy-astbuilder:4.0.26.",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R50-fix/junit-jupiter-engine.runtimeClasspath.txt 4 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R50-fix/jupiter-tests.testRuntimeClasspath.txt 46 entries",
+        "4bd0026871c013b22fa601cb5f619762e5d8b042967dc0586ee75e80793f8709  junit-jupiter-engine-5.13.0-SNAPSHOT.jar",
+        "df7992741d06968c14832d691ba6dd1baa7892cae1d313b2734027d4ec70b40d  junit-jupiter-api-5.13.0-SNAPSHOT.jar",
+        "bb0e0e1f67b71f9092ce03d24be98f6e1807d48697d52f8089bd03658781c612  junit-jupiter-params-5.13.0-SNAPSHOT.jar",
+        "R50 fix test rc=1"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "R50 parent: the same with the parent's own test file",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 79.239,
+      "cpuSeconds": 193.696,
+      "cpuThrottledSeconds": 63.19,
+      "peakMemoryBytes": 2099888128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-r50-parent-the-same-with-the-p.log",
+        "lines": 20,
+        "bytes": 2072,
+        "sha256": "630442ae367a74bca14875b79756f4aa42e05be13fcfd97791c397c701278841",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/worktrees/R50-junit-framework-parent gradle=8.13 jdk=21.0.13.0+9-tem gradle-exit=1 seconds=48 args=--offline --no-build-cache --no-scan -Dkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSele",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :jupiter-tests:compileTestGroovy FAILED",
+        "",
+        "FAILURE: Build failed with an exception.",
+        "--",
+        "* What went wrong:",
+        "Execution failed for task ':jupiter-tests:compileTestGroovy'.",
+        "> Could not resolve all files for configuration ':jupiter-tests:detachedConfiguration8'.",
+        "   > Could not resolve org.apache.groovy:groovy-ant:4.0.26.",
+        "     Required by:",
+        "         project :jupiter-tests",
+        "--",
+        "   > Could not resolve org.apache.groovy:groovy-astbuilder:4.0.26.",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R50-parent/junit-jupiter-engine.runtimeClasspath.txt 4 entries",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/artifacts/R50-parent/jupiter-tests.testRuntimeClasspath.txt 46 entries",
+        "cf4e59e914c5b93325a7ea5f2221881480ea0e1b08db797c1eb15180518e4cbb  junit-jupiter-engine-5.13.0-SNAPSHOT.jar",
+        "dc675f2c063fd79ba68e89d862b6d634f687d98e2d3f3fe668a491aaa0b405c1  junit-jupiter-api-5.13.0-SNAPSHOT.jar",
+        "da7aabaac6e4f5a96615393a8894507e4213da56ff9f78b3e643c6d3c8032769  junit-jupiter-params-5.13.0-SNAPSHOT.jar",
+        "R50 parent test rc=1"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "R50 landed: the fix's TempDirectoryCleanupTests on a copy of the parent (some expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 landed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 71.97,
+      "cpuSeconds": 178.406,
+      "cpuThrottledSeconds": 51.603,
+      "peakMemoryBytes": 3498123264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-r50-landed-the-fix-s-tempdirec.log",
+        "lines": 16,
+        "bytes": 1605,
+        "sha256": "88b4e610357b4523912ca953a918ad45e0b685b27bf5327d82bff6d586cb609d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "overlaid jupiter-tests/src/test/java/org/junit/jupiter/engine/extension/TempDirectoryCleanupTests.java",
+        "dir=/home/filip/.cache/in-the-loop/merged-pr-links-r01-r50/build/R50-parent-landed gradle=8.13 jdk=21.0.13.0+9-tem gradle-exit=1 seconds=71 args=--offline --no-build-cache --no-scan -Dkotlin.compiler.execution.strategy=in-process -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :jupiter-tests:compileTestGroovy FAILED",
+        "",
+        "FAILURE: Build failed with an exception.",
+        "--",
+        "* What went wrong:",
+        "Execution failed for task ':jupiter-tests:compileTestGroovy'.",
+        "> Could not resolve all files for configuration ':jupiter-tests:detachedConfiguration8'.",
+        "   > Could not resolve org.apache.groovy:groovy-ant:4.0.26.",
+        "     Required by:",
+        "         project :jupiter-tests",
+        "--",
+        "   > Could not resolve org.apache.groovy:groovy-astbuilder:4.0.26.",
+        "R50 landed rc=1 (failures expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 8,
+      "name": "R50 clean",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-r01-r50/scripts/junit_job.sh R50 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.472,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5206016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/8-r50-clean.log",
+        "lines": 1,
+        "bytes": 8,
+        "sha256": "37c3dee866bc87fc3d52b6b053805dfbe5df3d394fdad9ec535f162a4e695941",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T17:39:34+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T173908Z-0011300dfcc4146c"
+    }
+  }
+}
