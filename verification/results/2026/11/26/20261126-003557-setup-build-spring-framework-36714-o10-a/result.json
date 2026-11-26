@@ -1,0 +1,378 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-003557-setup-build-spring-framework-36714-o10-a",
+  "title": "Setup: build Spring Framework #36714 (O10) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m17s, peak 3.2 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-003557-setup-build-spring-framework-36714-o10-a.json",
+    "sha256": "def7023c2bc7fe40239c810c9d614e2fd21f8bf004abea897edccdac51a28de4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-003557-setup-build-spring-framework-36714-o10-a",
+      "title": "Setup: build Spring Framework #36714 (O10) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md, case O10 (spring-projects/spring-framework#36714: DataBufferUtils.write of joined buffers). In the worktrees $O/worktrees/O10-{fix,parent} (O = ~/.cache/in-the-loop/spring-pr-links-o01-o20), offline (dependencies resolved online beforehand), it builds the jars of spring-core with the Gradle each checkout's wrapper names, runs the landed test classes (DataBufferUtilsTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-core in $O/artifacts/O10-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $O/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned O10",
+      "submitted": {
+        "at": "2026-11-26T00:35:57+00:00",
+        "session": "bfc9aed1-6b9f-409a-9ed4-c5515dca4d80",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "20m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "O10 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O10 fix",
+          "cwd": "."
+        },
+        {
+          "name": "O10 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O10 parent",
+          "cwd": "."
+        },
+        {
+          "name": "O10 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O10 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "O10 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O10 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "132ae3386c8914da894d7a90e5eb592dcf083f6b",
+  "startedAt": "2026-11-26T00:37:09+00:00",
+  "finishedAt": "2026-11-26T00:43:44+00:00",
+  "wallSeconds": 395.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1123013,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3481849856,
+    "wallSeconds": 377.2,
+    "cpuSeconds": 760.4,
+    "memoryOfEstimate": 0.54,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "O10 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O10 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 154.688,
+      "cpuSeconds": 266.805,
+      "cpuThrottledSeconds": 6.843,
+      "peakMemoryBytes": 2586017792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-o10-fix-offline-build-and-land.log",
+        "lines": 36,
+        "bytes": 4595,
+        "sha256": "6c26b5c5a5b08df054c39091974f76cce0dd920dcb2202a68b146921ab2caf15",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/worktrees/O10-fix gradle=9.5.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=97 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:jar :spring-core:test --tests org.springframew",
+        "junit tests=379 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.core.io.buffer.DataBufferUtilsTests junit tests=379 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O10-fix/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O10-fix/spring-core.testRuntimeClasspath.txt 77 entries",
+        "f565dbc70202a420da9e00b081b4897b73b0cadc7a033113fdf79aeca67c6a8d  jars/spring-core-7.0.8-SNAPSHOT.jar",
+        "f565dbc70202a420da9e00b081b4897b73b0cadc7a033113fdf79aeca67c6a8d  tree/spring-core/build/libs/spring-core-7.0.8-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.0.8-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "dc60bf0a878ecf12d2448107a6b3034b40946e2c7f828c52ebaeeabb58699d82  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$AbstractNestedMatcher.class",
+        "06f85db213ebeec443e99b6caac9a7986de5d8dc470114dc6efb26325dd82eb7  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$CompositeMatcher.class",
+        "8729bb141df90d6bbf8754d4a9dd537ee011dbbe648b852e69896b9caa04f38b  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$DataBufferMapper.class",
+        "3c2a63b79a0849ef35056155052b23f09c0a65d908d7077d35cb95c6f3e9b5dd  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$KnuthMorrisPrattMatcher.class",
+        "f01333bac7f2978176ab159b572dd62d67a0c7bbe5390e53be69d446923e960f  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$Matcher.class",
+        "b9d1cdf9e48b0940d91f08855f3c3245bef9069b4622e0d37c3f83b0259140d0  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$NestedMatcher.class",
+        "d4367af10ebd7954a15ccef675e8fa6c1d5b13507426dff50fa68dbf587bd520  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$ReadCompletionHandler$Attachment.class",
+        "9dd42aee9e2493af7d52dcd66021eb8bd4afbd4cda4e347ce916a43346c01679  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$ReadCompletionHandler$State.class",
+        "f1c45e13492bbd83db37b489dc2b3dc84cb3d6dcfe4fdc4c820c80aeca02e0e0  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$ReadCompletionHandler.class",
+        "a076442c02efa4eb8cbf9365ebf7480f8a1184a7f0b4697489be32dbaf704c76  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$ReadableByteChannelGenerator.class",
+        "0ef35e6322e399b1a1bf6c798bef77124b876e935269f6c82f058b2636dcf4c7  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$SingleByteMatcher.class",
+        "a107c2a8957cdf511c0c21c3ba3b3d0c5e6ac45acd6514b200ed9d1131d1e1c5  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$TwoByteMatcher.class",
+        "31c6704477a0526e6ab681e6cd5527ac948c6d2c661238c151f000aed6a00605  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$WritableByteChannelSubscriber.class",
+        "a5293d708240fffdcbf848af0d24e4a544802368a6b65374b9de4d77a1ccf7cf  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$WriteCompletionHandler$Attachment.class",
+        "c31061f4b2b9ee639bc303ebe5e531f5261be226ed9663ed4030f926d0e3ed77  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$WriteCompletionHandler.class",
+        "a67b79ca7da6dc952b444560f61700cc3c2c0a8b4b0e6d9e34a877fcde399a08  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "O10 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O10 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 120.13,
+      "cpuSeconds": 234.092,
+      "cpuThrottledSeconds": 4.831,
+      "peakMemoryBytes": 2518380544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-o10-parent-offline-build-and-t.log",
+        "lines": 36,
+        "bytes": 4604,
+        "sha256": "cb534193f0322defaec7da89c049a973526461e69785a1945143eebfcaf2fa7a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/worktrees/O10-parent gradle=9.5.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=74 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:jar :spring-core:test --tests org.springfra",
+        "junit tests=367 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.core.io.buffer.DataBufferUtilsTests junit tests=367 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O10-parent/spring-core.runtimeClasspath.txt 23 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O10-parent/spring-core.testRuntimeClasspath.txt 77 entries",
+        "6aa7010f26a043249446b67b210a406682070973619929404e29b5088fd2fb5d  jars/spring-core-7.0.8-SNAPSHOT.jar",
+        "6aa7010f26a043249446b67b210a406682070973619929404e29b5088fd2fb5d  tree/spring-core/build/libs/spring-core-7.0.8-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.0.8-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "dc60bf0a878ecf12d2448107a6b3034b40946e2c7f828c52ebaeeabb58699d82  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$AbstractNestedMatcher.class",
+        "06f85db213ebeec443e99b6caac9a7986de5d8dc470114dc6efb26325dd82eb7  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$CompositeMatcher.class",
+        "2afd6799e96ad8ecce93add102f2ba90f45f31d4e6d5f01a378b344e44e75408  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$DataBufferMapper.class",
+        "3c2a63b79a0849ef35056155052b23f09c0a65d908d7077d35cb95c6f3e9b5dd  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$KnuthMorrisPrattMatcher.class",
+        "f01333bac7f2978176ab159b572dd62d67a0c7bbe5390e53be69d446923e960f  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$Matcher.class",
+        "b9d1cdf9e48b0940d91f08855f3c3245bef9069b4622e0d37c3f83b0259140d0  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$NestedMatcher.class",
+        "d4367af10ebd7954a15ccef675e8fa6c1d5b13507426dff50fa68dbf587bd520  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$ReadCompletionHandler$Attachment.class",
+        "9dd42aee9e2493af7d52dcd66021eb8bd4afbd4cda4e347ce916a43346c01679  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$ReadCompletionHandler$State.class",
+        "f1c45e13492bbd83db37b489dc2b3dc84cb3d6dcfe4fdc4c820c80aeca02e0e0  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$ReadCompletionHandler.class",
+        "a076442c02efa4eb8cbf9365ebf7480f8a1184a7f0b4697489be32dbaf704c76  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$ReadableByteChannelGenerator.class",
+        "0ef35e6322e399b1a1bf6c798bef77124b876e935269f6c82f058b2636dcf4c7  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$SingleByteMatcher.class",
+        "a107c2a8957cdf511c0c21c3ba3b3d0c5e6ac45acd6514b200ed9d1131d1e1c5  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$TwoByteMatcher.class",
+        "13a944e20a195bc0993dbddd1752ed5b98d317ca93c49a4d8be6a4c63f6c6375  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$WritableByteChannelSubscriber.class",
+        "1b06115a968d771ccbca073a1728a0cd27c449b1000ac343ae7e8ec91657a8c6  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$WriteCompletionHandler$Attachment.class",
+        "0489cbdc502f6291c1f62013f09264578440849dad4189da0e9d1957f9e322a2  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils$WriteCompletionHandler.class",
+        "a67b79ca7da6dc952b444560f61700cc3c2c0a8b4b0e6d9e34a877fcde399a08  spring-core-7.0.8-SNAPSHOT.jar!/org/springframework/core/io/buffer/DataBufferUtils.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "O10 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O10 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 97.798,
+      "cpuSeconds": 257.5,
+      "cpuThrottledSeconds": 25.275,
+      "peakMemoryBytes": 3481849856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-o10-transplant-the-fix-s-tests.log",
+        "lines": 19,
+        "bytes": 1849,
+        "sha256": "b4c23ce1260cdbc5d85cd14c567b3525ff61c91f2d1f6691f46215d589ac3ea1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-core/src/test/java/org/springframework/core/io/buffer/DataBufferUtilsTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-o01-o20/build/O10-parent-landed gradle=9.5.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=97 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-core:test --tests org.springframework.core.io",
+        "junit tests=379 failures=4 errors=0 skipped=0",
+        "junit failed DataBufferUtilsTests#[1] NettyDataBufferFactory - UnpooledByteBufAllocator - preferDirect = true",
+        "junit failed DataBufferUtilsTests#[2] NettyDataBufferFactory - UnpooledByteBufAllocator - preferDirect = false",
+        "junit failed DataBufferUtilsTests#[3] NettyDataBufferFactory - PooledByteBufAllocator - preferDirect = true",
+        "junit failed DataBufferUtilsTests#[4] NettyDataBufferFactory - PooledByteBufAllocator - preferDirect = false",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.core.io.buffer.DataBufferUtilsTests junit tests=379 failures=4 errors=0 skipped=0 junit failed DataBufferUtilsTests#[1] NettyDataBufferFactory - UnpooledByteBufAllocator - preferDirect = true junit failed DataBufferUtilsTests#[2] NettyDataBufferFactory - UnpooledByteBufAllo",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "O10 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O10 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 4.618,
+      "cpuSeconds": 2.012,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 137478144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-o10-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "29602fc2667ff8d7f4f89c3835ae673d64d314413e1c14c0b478182e2f975d1e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned O10"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T00:44:11+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T004344Z-4325748fb4e25b4b"
+    }
+  }
+}
