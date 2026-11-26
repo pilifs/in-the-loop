@@ -110,14 +110,201 @@ Each checkout's wrapper names its own Gradle (table in [Build facts](#build-fact
 publishes no wrapper checksum (`$O/logs/wrapper-jars.txt`). **The wrapper is not used**: `$O/scripts/gradle_case.sh` runs the
 verified distribution the wrapper names. None of the wrapper properties sets `distributionSha256Sum`.
 
+### Gradle distributions
+
+zip sha256 (each equal to services.gradle.org's `gradle-V-bin.zip.sha256`, `$O/logs/gradle-dists.txt`; the `.sha256` files
+are kept beside the zips in `$O/dl/gradle/`):
+
+| Gradle | zip sha256 | checkouts' `gradle-wrapper.jar` sha256 |
+|---|---|---|
+| 3.4 | `72d0cd4dcdd5e3be165eb7cd7bbd25cf8968baf400323d9ab1bba622c3f72205` | `64e2fc1bb83222fd216e98d9f69496035d340ce45a3a7097e6cd0d6df2a5237b` (no published checksum) |
+| 6.5 | `23e7d37e9bb4f8dabb8a3ea7fdee9dd0428b9b1a71d298aefd65b11dccea220f` | `70239e6ca1f0d5e3b2808ef6d82390cf9ad58d3a3a0d271677a51d1b89475857` |
+| 7.6 | `7ba68c54029790ab444b39d7e293d3236b2632631fb5f2e012bb28b4ff669e4b` | `c5a643cf80162e665cc228f7b16f343fef868e47d3a4836f62e18b7e17ac018a` |
+| 8.0.2 | `ff7bf6a86f09b9b2c40bb8f48b25fc19cf2b2664fd1d220cd7ab833ec758d0d7` | `91941f522fbfd4431cf57e445fc3d5200c85f957bda2de5251353cf11174f4b5` |
+| 8.1.1 | `e111cb9948407e26351227dabce49822fb88c37ee72f1d1582a69c68af2e702f` | `ed2c26eba7cfb93cc2b7785d05e534f07b5b48b5e7fc941921cd098628abca58` |
+| 8.3 | `591855b517fc635b9e04de1d05d5e76ada3f89f5fc76f87978d1b245b4f69225` | `0336f591bc0ec9aa0c9988929b93ecc916b3c1d52aed202c7381db144aa0ef15` |
+| 8.4 | `3e1af3ae886920c3ac87f7a91f816c0c7c436f276a6eefdb3da152100fef72ae` | `0336f591bc0ec9aa0c9988929b93ecc916b3c1d52aed202c7381db144aa0ef15` |
+| 9.5.1 | `bafc141b619ad6350fd975fc903156dd5c151998cc8b058e8c1044ab5f7b031f` | `497c8c2a7e5031f6aa847f88104aa80a93532ec32ee17bdb8d1d2f67a194a9c7` |
+| 9.7.1 | `acd53f1edaf02f1a8ff99879f8a34b302661a057d9b063ae9e35b552f804d20a` | `7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d` |
+| 9.8.0 | `bafd5ce9cfaea0fbccfdc8439a1ac42fbd4cd9c89dc9a988228d8a2639a58e6c` | `238e777fcddd7e34f9708186085def2abd6e08e658505b38718d79d74c21abd5` |
+| 9.8.1 | `dce76f55f8e251a3a1f130eb120f30b3d271de2b76c9b0729d316b5a1b6dc01f` | `3b8a25775a69158b5ad2b1d17a80a88dc7b40a352a73eb27d06c612a7ce68e98` |
+| 9.8.2 | `21bd5da2de49b642904077f38c0efdc7778e92b3ed0889392dca61b97e389607` | `3b8a25775a69158b5ad2b1d17a80a88dc7b40a352a73eb27d06c612a7ce68e98` |
+| 9.9.0 | `0b00b0ffe07c4d4789c12d4935a44a7057d55774b7540bd4a3f76f336deb177a` | `621008afc4f5d59357fcf06ffa644dd5aade5e091bdc363742710445f73cdaf8` |
+
+## Build facts by era
+
+Both pins of every case have the same project version and the same Gradle.
+
+| Cases | Version | Gradle | Launcher JDK | Compiles with | Kotlin |
+|---|---|---|---|---|---|
+| O01 | 7.1.0-SNAPSHOT | 9.8.1 | 25.0.5 | toolchain 25, `release` 17 (`buildSrc` `JavaConventions`) | 2.4.20 |
+| O02, O20 | 7.0.11-SNAPSHOT | 9.9.0 (O02), 9.8.2 (O20) | 25.0.5 | toolchain 25, release 17 | 2.2.21 |
+| O04, O09 | 7.1.0-SNAPSHOT | 9.7.1 | 25.0.5 | toolchain 25, release 17 | 2.4.10 |
+| O06, O08 | 7.1.0-SNAPSHOT | 9.8.2 | 25.0.5 | toolchain 25, release 17 | 2.4.21 |
+| O12, O17 | 7.1.0-SNAPSHOT | 9.7.1 | 25.0.5 | toolchain 25, release 17 | 2.4.20 |
+| O07, O19 | 7.0.10-SNAPSHOT | 9.8.0 | 25.0.5 | toolchain 25, release 17 | 2.2.21 |
+| O10 | 7.0.8-SNAPSHOT | 9.5.1 | 25.0.5 | toolchain 25, release 17 | 2.2.21 |
+| O03 | 6.0.8-SNAPSHOT | 8.0.2 | 17.0.21 | the launcher JDK (17) | 1.7.21 |
+| O18 | 6.0.6-SNAPSHOT | 7.6 | 17.0.21 | the launcher JDK (17) | 1.7.21 |
+| O05, O13 | 6.1.0-SNAPSHOT | 8.1.1 | 17.0.21 | the launcher JDK (17) | 1.7.21 (O05), 1.8.21 (O13) |
+| O15 | 6.1.0-SNAPSHOT | 8.3 | 17.0.21 | the launcher JDK (17) | 1.9.10 |
+| O16 | 6.1.2-SNAPSHOT | 8.4 | 17.0.21 | **toolchain vendor BELLSOFT, 17** (Liberica, `$JL17`); spring-core's multi-release jar also compiles for 21 (Temurin 21) | 1.9.21 |
+| O14 | 5.3.0-SNAPSHOT | 6.5 | (8) | source 1.8 | **1.4-M2** — not buildable, see [O11 and O14](#o11-and-o14-the-historical-builds-cannot-be-configured) |
+| O11 | 5.0.0.BUILD-SNAPSHOT | 3.4 | (8) | source 1.8 | 1.1.1 — not buildable, same section |
+
+**Runner.** `$O/scripts/gradle_case.sh DIR TAG RESULTDIRS ARGS...` runs, in DIR, `JAVA_HOME=LAUNCHER timeout 3000 [choom -n 500 --]
+$O/tools/gradle-V/bin/gradle --no-daemon --console=plain --max-workers=4 --no-build-cache -Dorg.gradle.caching=false --no-scan
+-Porg.gradle.java.installations.auto-detect=false -Porg.gradle.java.installations.auto-download=false
+-Porg.gradle.java.installations.paths=$J8,$J11,$J17,$J21,$J25,$JL17 ARGS` with `GRADLE_USER_HOME=$O/gradle-home`, V read from DIR's
+wrapper properties and the launcher by era (above; `GJ=PATH` overrides). Log `$O/logs/TAG.log`, JUnit summary `$O/logs/TAG.junit.txt`.
+(`choom` is skipped when the process already runs at OOM score 500 or more, as a pipeline job does.) The 7.x and 6.x
+`settings.gradle` apply the Gradle Enterprise / Develocity conventions plugins; `--no-scan` and the disabled build cache keep
+them from publishing or reading anything remote.
+
+**Repositories the builds name**, checked anonymously on 2026-11-25: Maven Central and the Gradle Plugin Portal (all eras);
+`repo.spring.io/milestone` and `repo.spring.io/snapshot` (200; the 7.x and 6.x builds add them for a `-SNAPSHOT` version);
+`repo.spring.io/libs-spring-framework-build` (6.0 and 5.3 builds; reachable, answers 404 for what was probed);
+`repo.spring.io/release` (6.0, 6.1 builds' plugin management, **401**), `plugins-release`, `libs-release`, `libs-snapshot`,
+`libs-milestone` (5.3 and 5.0 builds, **401**). The 7.x and 6.x builds resolve without the 401 repositories (Gradle finds every
+module earlier in the list).
+
+**Online resolution** (inline, each Gradle run in a 6 GB scope; `$O/scripts/resolve_online.sh WORKTREE...`): two passes per
+worktree, `-I $O/scripts/resolve-all.init.gradle setupResolveAll -PsetupResolve=Classpath,kotlin,Kotlin,annotationProcessor,AnnotationProcessor`
+then `-PsetupResolve=ALL`, over **every project** of the build (the init script adds tasks `setupResolveAll` and
+`setupWriteClasspath` to every project and changes no upstream file). Per worktree 513–564 configurations in pass 1, all
+resolved; 718–1,131 in pass 2. Summaries: `$O/logs/resolve-7x.summary.txt`, `$O/logs/resolve-6x.summary.txt`,
+`$O/logs/resolve-6x-rerun.summary.txt`; logs `$O/logs/WORKTREE.resolve{1,2}.online.log`. Pass 2 failures, none used by a compile
+or test task: the Kotlin plugin's IDE-only `*DependenciesMetadata` configurations (66–122 per worktree at 7.0.x and 6.x; none at
+7.1), and at O18 (Gradle 7.6) the legacy `default` configuration of eight projects, whose `dependencies` report resolves every
+module (`$O/logs/O18-fix.web-default.online.log`).
+
+**Snapshot dependencies.** The 7.1.0-SNAPSHOT platforms import `reactor-bom:2026.0.0-SNAPSHOT` (reactor-core and reactor-test
+3.9.0-SNAPSHOT, reactor-netty 1.4.0-SNAPSHOT) and most also `micrometer-bom:1.18.0-SNAPSHOT`. What was cached is the snapshot
+current on 2026-11-25, not the one of each pin's date, and both pins of a case read the same bytes; build `--offline` to keep
+them ([digests](#snapshot-artifacts)).
+
+### Snapshot artifacts
+
+The snapshot jars in `$O/gradle-home` (one file per module; full paths in `$O/logs/snapshot-artifacts.txt`). reactor-core, reactor-test, micrometer-observation, micrometer-commons and micrometer-observation-test have the same digests as the spring-and-java-data setup cached on 2026-11-22, so these snapshots had not moved since then.
+
+| Module | sha256 |
+|---|---|
+| `io.micrometer:micrometer-commons:1.18.0-SNAPSHOT` | `1b3add3a081c9e9390fe3305dff43db944ea7a39b9a50a03acb1e3e65497eff9` |
+| `io.micrometer:micrometer-core:1.18.0-SNAPSHOT` | `048dcfc51a98e344c22bc17720bceca999f65f7a5fd403a967b7aea296547fa6` |
+| `io.micrometer:micrometer-jakarta9:1.18.0-SNAPSHOT` | `c5809b29a8458dd9128ff5e5f5beda7cdad73bbe72527f4b990a1c29a90fe6b1` |
+| `io.micrometer:micrometer-observation:1.18.0-SNAPSHOT` | `e1c8305e6b8e30563012c3aa6cea565a9367ba773202386e8015efa5a46e6964` |
+| `io.micrometer:micrometer-observation-test:1.18.0-SNAPSHOT` | `d4e85b7504c8621ba20e56a11bf4c0ff062b03a0b553bfce6d9e24c6d37da742` |
+| `io.projectreactor.netty:reactor-netty-core:1.4.0-SNAPSHOT` | `eec27fecf961e887aa8ec1d1add4173556bf46d9ca87c429295ae93c2ebbba03` |
+| `io.projectreactor.netty:reactor-netty-http:1.4.0-SNAPSHOT` | `e28e59e57bb53e643b71f8ec5aa253db868cbb5190bcd4ea67509c9d44533e55` |
+| `io.projectreactor:reactor-core:3.9.0-SNAPSHOT` | `51436b9a3967185ee445d5db4053c5c43886465121383f6196d8f383a66bfc72` |
+| `io.projectreactor:reactor-test:3.9.0-SNAPSHOT` | `129ede5ed343d6996fa427f48ffb29d56d0b7a6814d006c00e3c644a985b44a3` |
+
+## O11 and O14: the historical builds cannot be configured
+
+**O11 (#1366, 2017, Gradle 3.4).** The root `build.gradle`'s `buildscript` takes its plugins from `repo.spring.io/plugins-release`
+only, which answers 401. Of its classpath, `dependency-management-plugin:1.0.0.RELEASE` and `kotlin-gradle-plugin:1.1.1` are on
+Central, `asciidoctor-gradle-plugin:1.5.3` and `org.sonarqube` 2.2.1 on the Plugin Portal, but **`io.spring.gradle:propdeps-plugin:0.0.8`
+and `io.spring.gradle:docbook-reference-plugin:0.3.1` were found nowhere**: 404 at Central, the Plugin Portal, `repo.spring.io/milestone`
+and `snapshot`, `libs-spring-framework-build`, Grails, JBoss, Atlassian, Red Hat, JitPack, Alfresco, Jenkins, Sonatype OSS
+releases and MuleSoft; 401 at `repo.spring.io/plugins-release(-local)`, `plugins-snapshot` and `libs-release-local`. Without them the
+build script does not compile, so no init script can route around the 401. The project dependencies would also come from
+`libs-release`/`libs-snapshot` (401). Not built, not tested.
+
+**O14 (#25256, 2020, Gradle 6.5).** The root `build.gradle` applies `org.jetbrains.kotlin.jvm` **1.4-M2** and imports
+`kotlin-bom:1.4-M2` and `kotlinx-coroutines-bom:1.3.7-1.4-M2`, from `dl.bintray.com/kotlin/kotlin-eap` (Bintray closed in 2021).
+1.4-M2 was found nowhere: 404 at Central, the Plugin Portal, `repo.spring.io/milestone` and `snapshot`,
+`packages.jetbrains.team/maven/p/kt/{dev,eap,bootstrap}`, `redirector.kotlinlang.org/maven/{dev,kotlin-eap}`, Google, JBoss,
+Atlassian, Grails; `maven.pkg.jetbrains.space` does not resolve in DNS. The build also imports `reactor-bom:2020.0.0-SNAPSHOT`, which
+`repo.spring.io/snapshot` still serves, but as its last build (2020-10-26, `2020.0.0-20201026.191845-20`), not the June 2020 one. The
+settings plugin `io.spring.gradle-enterprise-conventions` 0.0.2 is not on the Plugin Portal either. Not built, not tested.
+
+Neither gap was worked around: getting either build needs a decision this setup does not take (a trusted source for the missing
+artifacts, or a change to the historical build). What the domain work can use instead is below.
+
+**Released artifacts whose changed sources match the pins** (git blob ids of the files in the `-sources.jar`, compared with the pins'
+blobs, `$O/logs/O11-O14-pinned-blobs.txt`; sources jars in `$O/dl/sources/`):
+
+| Case | File | Pin blob | Release |
+|---|---|---|---|
+| O11 parent | `spring-jdbc/.../namedparam/NamedParameterUtils.java` | `cbde6f799dfe98e5637e599bd7e38a94f3bb0643` | **spring-jdbc 5.0.0.M5: identical** |
+| O11 fix | the same | `6e47509b67b59265666a3bf53c25b8b4a127c348` | spring-jdbc 5.0.0.RC1 (`065a254bed4ac5328d187cb5cf8cf2a3b5f0a87e`): differs **only in the copyright line** (2002-2016 → 2002-2017); RC2 and 5.0.0.RELEASE differ further (`638a6ae5a410d5bd8a885bcdb692beedd788d816`) |
+| O14 parent | `spring-tx/.../reactive/TransactionalOperatorImpl.java` | `26e343d285b6a389e194c0ff4d9bd3f5d3efa466` | **spring-tx 5.2.7.RELEASE and 5.2.8.RELEASE: identical** |
+| O14 parent | `spring-tx/src/main/kotlin/.../TransactionalOperatorExtensions.kt` | `503ee4e2f3540e548767284035a1481c63360a68` | **5.2.7.RELEASE and 5.2.8.RELEASE: identical** |
+| O14 parent | `spring-tx/.../interceptor/TransactionAspectSupport.java` | `4c9a27ff1525b80a8c8a68ef09653e2ab64e2484` | 5.2.7.RELEASE differs (copyright year, `<p>` in three Javadoc comments, two `retVal != null &&` guards on the Vavr check, one `@Nullable`) |
+| O14 fix | `TransactionalOperatorImpl.java` | `7dc3de8842e62a5aeba14065ceb613005dc6f5c3` | **spring-tx 5.3.0-M1: identical** (5.3.0-M2 differs) |
+| O14 fix | `TransactionalOperatorExtensions.kt` | `67b93e764c6c57cccde8109954ad0770c1014836` | **5.3.0-M1 and 5.3.0-M2: identical** |
+| O14 fix | `TransactionAspectSupport.java` | `6752239a6e902677d71333b58efcf01eb3567675` | 5.3.0-M1 differs only in the `CallbackPreferringPlatformTransactionManager` branch (where `result` is declared and the throwable rethrown) and one Javadoc line |
+
+The rest of each module (and of spring-core, spring-beans) moved between these releases and the pins; which route, if any, stands in
+for a pin is the domain work's call. The source tree of each pin is in its worktree either way. At the O14 pins there is **no
+`spring-r2dbc` module** (`settings.gradle` lists none); 5.3.0-M1 has one.
+
+## Released artifacts
+
+From Maven Central, or `repo.spring.io/milestone` for milestones, resolved with Maven into `$O/m2`
+(`mvn -s $O/maven-settings.xml dependency:copy-dependencies` on a pom per set, `$O/releases/SET/pom.xml`); each set has its jars in
+`$O/releases/SET/jars/` and a `:`-joined `classpath.txt`. Every jar's sha1 equals its repository's `.sha1`; `.asc` signatures were
+fetched and checked in `$O/gnupg`, getting keys from keyserver.ubuntu.com / keys.openpgp.org (`$O/scripts/verify_releases.sh`,
+results with sha256 in `$O/logs/release-verify.txt`).
+
+| Set | Why | Jars |
+|---|---|---|
+| `spring-test-5.3.26` | the version issue #30220 reports (O03) | spring-test, spring-core, spring-jcl 5.3.26: good signatures, key `928FBF39003C0425` "Spring Builds" |
+| `spring-jdbc-5.0.0.M5` | O11 parent's parser (above) | spring-jdbc, -tx, -beans, -core 5.0.0.M5, commons-logging 1.2: Spring jars signed by `23EF3D2F93185045`, key not obtainable (unchecked); commons-logging good (`A41F13C999945293`) |
+| `spring-jdbc-5.0.0.RC1` | O11 fix's parser (above) | spring-jdbc, -tx, -beans, -core, -jcl 5.0.0.RC1: no `.asc` published |
+| `spring-tx-5.2.7.RELEASE` | O14 parent's reactive files (above) | spring-tx, -beans, -core, -jcl 5.2.7.RELEASE with reactor-core and reactor-test 3.3.6.RELEASE and reactive-streams 1.0.3 (`reactor-bom:Dysprosium-SR8`, as the `v5.2.7.RELEASE` tag's build declares): key `9A2C7A98E457C53D` / `1364C5E2DF3E99C5` not obtainable (unchecked) |
+| `spring-tx-5.3.0-M1` | O14 fix's reactive files (above) | spring-tx, -r2dbc, -beans, -core, -jcl 5.3.0-M1, reactor-core and reactor-test 3.4.0-M1, r2dbc-spi 0.8.2.RELEASE, r2dbc-h2 0.8.4.RELEASE, h2 1.4.200 (`reactor-bom:2020.0.0-M1`, `r2dbc-bom:Arabba-SR5`, h2 1.4.200, as the `v5.3.0-M1` tag's builds declare): milestones carry no `.asc`; r2dbc keys not obtainable; h2 good (`0A4B343F2A55FDAE`) |
+| `postgresql-42.7.15` | a pgJDBC for O11's database read (claim .3); the brief names no version, this is the current release | postgresql 42.7.15 (good, `305F296EAC47556B` "pgjdbc releases"), checker-qual 3.55.1 (good, `B16698A4ADF4D638`) |
+
+The optional Spring dependencies (Reactor and the R2DBC driver) do not appear in the Spring 5.x poms, so they were taken from the
+release tag's build files, read with `gh api repos/spring-projects/spring-framework/contents/...?ref=TAG`.
+
+**PostgreSQL smoke** (once, container removed): `docker run -d --rm --name o11-setup-pg-smoke -p 127.0.0.1:54331:5432
+-e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=setup postgres@sha256:0d938e975177bef9f1f61f3f9dbcf2e0aa0a139568f66d3415ed8892eb97f6ac`,
+ready (`pg_isready`) after about 2 s; `$J17/bin/java -cp $O/releases/postgresql-42.7.15/jars/postgresql-42.7.15.jar
+$O/scripts/smoke/PgSmoke.java jdbc:postgresql://127.0.0.1:54331/setup postgres` printed `driver=PostgreSQL JDBC Driver 42.7.15
+server=17.12 (Debian 17.12-1.pgdg13+1) autocommit=true`. No query of the brief was run.
+
 ## Jobs (verification pending)
 
-The six Spring 6.x cases (O03, O05, O13, O15, O16, O18) are queued; the record of their results and of the other cases follows
-in later commits of this setup.
+One job per buildable case (18; O11 and O14 have none, see above), each of four steps run by `$O/scripts/case_job.sh CASE STEP`
+(table of modules and test classes: `$O/scripts/cases.tsv`; submitted by `$O/scripts/submit_case.sh`):
 
-- `20261126-001149-setup-build-spring-framework-30238-o03-a`
-- `20261126-001149-setup-build-spring-framework-30045-o05-a`
-- `20261126-001149-setup-build-spring-framework-30530-o13-a`
-- `20261126-001149-setup-build-spring-framework-31133-o15-a`
-- `20261126-001149-setup-build-spring-framework-31699-o16-a`
-- `20261126-001149-setup-build-spring-framework-29116-o18-a`
+1. `fix`: in `$W/CASE-fix`, offline: `:M:jar` for the case's jar modules and `:M:test --tests CLASS` for each landed test class,
+   with `-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue`; then keeps
+   `$O/artifacts/CASE-fix/`: `jars/`, `SHA256SUMS` (jars, and every class compiled from a production source file the landing
+   changed, nested classes included) and, per classpath module M, `M.runtimeClasspath.txt` and `M.testRuntimeClasspath.txt`
+   (`:`-joined; the project outputs they name are copied under `tree/`, the rest are paths into `$O/gradle-home`; written by
+   `-I $O/scripts/resolve-all.init.gradle :M:setupWriteClasspath -PsetupCpConf=CONF -PsetupCpOut=FILE`).
+2. `parent`: the same in `$W/CASE-parent`, with those landed classes that exist at the parent (all but O13's two new classes).
+3. `transplant`: `git archive` of the parent into `$O/build/CASE-parent-landed`, every changed file under `src/test` or
+   `src/testFixtures` taken from the fix, then the same test classes. Passes when they fail (`TRANSPLANT-FAILS-AS-EXPECTED`) or do
+   not compile (`TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED`).
+4. `clean`: `git clean -fdxq` in both worktrees, transplant copy removed.
+
+Before submitting, `case_job.sh CASE dryrun` (offline `--dry-run` of both pins' task graphs, the classpath tasks included)
+configured for all 18 (`$O/logs/dryrun-{6x,7x-a,7x-b}.txt`). Logs per step: `$O/logs/CASE-ROLE.test.offline.{log,junit.txt,class.txt}`,
+`$O/logs/CASE-parent-landed.test.offline.*`, `$O/logs/CASE-ROLE.cp-M-CONF.log`.
+
+| Case | Job |
+|---|---|
+| O01 | `20261126-003556-setup-build-spring-framework-37434-o01-a` |
+| O02 | `20261126-003556-setup-build-spring-framework-37576-o02-a` |
+| O03 | `20261126-001149-setup-build-spring-framework-30238-o03-a` |
+| O04 | `20261126-003557-setup-build-spring-framework-36913-o04-a` |
+| O05 | `20261126-001149-setup-build-spring-framework-30045-o05-a` |
+| O06 | `20261126-003557-setup-build-spring-framework-37325-o06-a` |
+| O07 | `20261126-003557-setup-build-spring-framework-37378-o07-a` |
+| O08 | `20261126-003557-setup-build-spring-framework-37218-o08-a` |
+| O09 | `20261126-003557-setup-build-spring-framework-37193-o09-a` |
+| O10 | `20261126-003557-setup-build-spring-framework-36714-o10-a` |
+| O12 | `20261126-003557-setup-build-spring-framework-37308-o12-a` |
+| O13 | `20261126-001149-setup-build-spring-framework-30530-o13-a` |
+| O15 | `20261126-001149-setup-build-spring-framework-31133-o15-a` |
+| O16 | `20261126-001149-setup-build-spring-framework-31699-o16-a` |
+| O17 | `20261126-003557-setup-build-spring-framework-37047-o17-a` |
+| O18 | `20261126-001149-setup-build-spring-framework-29116-o18-a` |
+| O19 | `20261126-003558-setup-build-spring-framework-37403-o19-a` |
+| O20 | `20261126-003558-setup-build-spring-framework-37600-o20-a` |
+
+Results are recorded below as the jobs come back.
