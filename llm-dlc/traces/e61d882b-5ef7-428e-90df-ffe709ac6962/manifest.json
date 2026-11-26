@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e61d882b-5ef7-428e-90df-ffe709ac6962",
-  "status": "ended",
+  "status": "open",
   "title": "/run-brief invocation options",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-26T21:23:52.800Z",
-  "duration_seconds": 809169,
+  "ended": "2026-11-26T21:53:39.981Z",
+  "duration_seconds": 810957,
   "stats": {
     "turns": 296,
-    "api_calls": 2688,
-    "tool_calls": 2383,
+    "api_calls": 2691,
+    "tool_calls": 2385,
     "tool_errors": 27,
     "compactions": 10,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 105789,
-      "output_tokens": 1717218,
-      "cache_read_input_tokens": 841389125,
-      "cache_creation_input_tokens": 6570849
+      "input_tokens": 105797,
+      "output_tokens": 1718697,
+      "cache_read_input_tokens": 842357838,
+      "cache_creation_input_tokens": 6573786
     }
   },
   "tools": {
-    "Bash": 2084,
+    "Bash": 2086,
     "Edit": 80,
     "SendMessage": 73,
     "Read": 55,
@@ -251,24 +251,24 @@
     {
       "index": 10,
       "started": "2026-11-26T13:12:13.083Z",
-      "ended": "2026-11-26T21:23:52.800Z",
+      "ended": "2026-11-26T21:53:39.981Z",
       "turns": 9,
-      "api_calls": 169,
+      "api_calls": 172,
       "usage": {
-        "input_tokens": 398,
-        "output_tokens": 90235,
-        "cache_read_input_tokens": 40986061,
-        "cache_creation_input_tokens": 285514
+        "input_tokens": 406,
+        "output_tokens": 91714,
+        "cache_read_input_tokens": 41954774,
+        "cache_creation_input_tokens": 288451
       },
-      "peak_context_tokens": 321738
+      "peak_context_tokens": 324675
     }
   ],
   "log": {
-    "sha256": "8aee1df33eaf8d07a379dfc30c9548f4a1ed74c04f74c347555bf501a1d1055e",
-    "bytes": 46835403,
-    "lines": 21700,
-    "gzip_bytes": 8027770,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/8aee1df33eaf8d07a379dfc30c9548f4a1ed74c04f74c347555bf501a1d1055e.jsonl.gz"
+    "sha256": "a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb",
+    "bytes": 46873551,
+    "lines": 21726,
+    "gzip_bytes": 8033103,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb.jsonl.gz"
   },
   "subagents": [
     {
@@ -13253,6 +13253,54 @@
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "861b757bb0167b2aa9ade4e919fb057da3b6a6fbbce41f6459d4c07fa0e29339"
+    },
+    {
+      "change_id": "xrlmzqxpotrztkmvqloxuzvmkxzkrkvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on generated-observers-and-callers-setup",
+      "body": "The watcher's verdicts on the single-agent run generated-observers-and-callers-setup (llm-dlc/decisions/single-generated-observers-and-callers-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb"
+    },
+    {
+      "change_id": "mxwtmrrzlslskmynlmlkpumqulwvrrxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup for the generated callers and observers brief",
+      "body": "Every one of the brief's 13 campaign cases (examples 445, 458, 466, 484; product-behaviour cases J06, J10, J14, J16, J17, J19; Commons IO #520; successor slots 06 and 09) was already prepared by earlier campaigns, so nothing was fetched. The setup checked every deployment artifact against its recorded digest at the path its reader resolves, checked every source worktree against its pinned commit and tree, and listed each pair's changed production files with blob ids. It re-ran each case's registered public observation on its original JVMs, read-only: every fresh result equals the committed receipt and agrees with the outcome the brief states. It extracted the successor slots' original jars from their signed packages and rebuilt jvmcontract, which predated the last lib/src change. No claims, examples, callers or library code were written, and no verification job was needed.",
+      "log_sha256": "a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb"
+    },
+    {
+      "change_id": "ztxxpmntuouvkxwnstlqtlrlnsoqwqxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run generated-observers-and-callers-setup into the line",
+      "body": "The single-agent run generated-observers-and-callers-setup (session 8100a50d-f5f0-46e5-bef9-1e5a189c0c98) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb"
+    },
+    {
+      "change_id": "vxmlqzstlxpxxqkkxpwvykxvrkqrywsp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of generated-observers-and-callers into its brief",
+      "body": "The setup run generated-observers-and-callers-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/in-the-loop-generated-observers-and-callers-brief.md and ~/code/scripts/analysis/in-the-loop-generated-observers-and-callers-brief.md, for the domain agent.",
+      "log_sha256": "a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb"
+    },
+    {
+      "change_id": "ypsqsyolrssplxwwzwzlpqkyumvwwukv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb"
+    },
+    {
+      "change_id": "zxxqquukorkrqyznpmuqrusmzlxwumqm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261126-214343-qualify-generated-numeric-and-lazy-publi: failed: 1 failed, 1 skipped step(s) in 1.8s, peak 133.3 MiB (estimated 4m00s, 2.0 GiB) Collected by the watcher of the generated-observers-and-callers run, which keeps the queue while the run is under way.",
+      "log_sha256": "a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb"
     }
   ],
   "logs": {
@@ -14306,12 +14354,6 @@
       "gzip_bytes": 7904087,
       "url": null
     },
-    "8aee1df33eaf8d07a379dfc30c9548f4a1ed74c04f74c347555bf501a1d1055e": {
-      "bytes": 46835403,
-      "lines": 21700,
-      "gzip_bytes": 8027770,
-      "url": null
-    },
     "8e77d1023a7ffaa0ff7ee8308b52e9d2b8ad9e66416a86963149978211a9baf4": {
       "bytes": 24680354,
       "lines": 9591,
@@ -14502,6 +14544,12 @@
       "bytes": 39983518,
       "lines": 17529,
       "gzip_bytes": 6964600,
+      "url": null
+    },
+    "a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb": {
+      "bytes": 46873551,
+      "lines": 21726,
+      "gzip_bytes": 8033103,
       "url": null
     },
     "a6a009f33f53e86e55e4b0daefebf76e1b20f82e9856c20bbd9dcf789fa0245d": {
