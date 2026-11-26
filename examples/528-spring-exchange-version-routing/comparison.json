@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36602",
+  "revisions": {
+    "parent": "16ed0962237dc8245591490b2d4c2f65898b014f",
+    "fix": "091097db7982ef04660aa63358d87fc6675b3238"
+  },
+  "entry": "HttpExchange.version",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36602.1",
+      "role": "Intent",
+      "args": [
+        "exchange"
+      ],
+      "history": "GET /foo with API-Version 1.1 and the two exchange methods.",
+      "prediction": "Parent drops the condition and should fail registration as the two GET mappings coincide. The merge should start and return 200 with body v1.1.",
+      "basis": "Mapping identity includes the version. The MVC test resolves the method foo1_1 using this header.",
+      "refutation": "The merge rejects the controller, chooses base, or fails to return the selected method’s text.",
+      "expected": {
+        "fix": {
+          "return": "200:v1.1:1"
+        },
+        "parent": {
+          "return": "ambiguous"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36602.2",
+      "role": "Control",
+      "args": [
+        "request"
+      ],
+      "history": "Give a separate controller the same methods using @RequestMapping and @GetMapping instead.",
+      "prediction": "Both revisions should select v1.1 for 1.1 and reject unsupported version 99 under the same strict strategy.",
+      "basis": "The MVC suite already exercises this annotation family and these two headers.",
+      "refutation": "A valid header reaches base, or the unsupported value reaches either controller method.",
+      "expected": {
+        "fix": {
+          "return": "200:v1.1:1 / 400:0"
+        },
+        "parent": {
+          "return": "200:v1.1:1 / 400:0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36602.3",
+      "role": "Challenge",
+      "args": [
+        "stacks"
+      ],
+      "history": "Hold the method declarations and versioned request fixed and switch the server stack from MVC to WebFlux.",
+      "prediction": "On the merge both return v1.1. With API-Version 99 both must reject the request without invoking either method.",
+      "basis": "@HttpExchange describes the same contract on each stack. Body text and invocation counts independently identify the handler.",
+      "refutation": "The WebFlux condition exists on inspection but dispatch chooses base or invokes a method for 99.",
+      "expected": {
+        "fix": {
+          "return": "200:v1.1:1 / 400:0 | 200:v1.1:1 / 400:0"
+        }
+      }
+    }
+  ]
+}

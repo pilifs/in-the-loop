@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-154429-replay-92-spring-q-series-predictions-at",
+  "title": "Replay 92 Spring Q-series predictions at public APIs",
+  "description": "Recompile the Java and Kotlin callers in examples 508–537 and run each of 92 histories on the specified parent and landing. Check module or slice origins, original fixture inputs, and PostgreSQL 17 readback. Compare the complete audit with the recorded run.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay",
+    "kotlin:inline-callers",
+    "r2dbc:postgres-array-readback",
+    "jms:broker-reply"
+  ],
+  "links": {},
+  "expected": "184 original histories, 30 matched intended changes and unchanged controls, 88 matched merged predictions and four refuted preservation predictions. The repeated audit must match byte for byte.",
+  "submitted": {
+    "at": "2026-11-26T15:44:29+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "docker"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "Run every public history on both pins",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign q01-q30 --replay --output verification/merged-pr-links/q01-q30/repeated-audit.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the complete measured audit",
+      "run": "cmp verification/merged-pr-links/q01-q30/audit.json verification/merged-pr-links/q01-q30/repeated-audit.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/q01-q30/repeated-audit.json"
+  ]
+}

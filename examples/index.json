@@ -27137,6 +27137,1194 @@
       ],
       "source": "https://github.com/spring-projects/spring-framework/pull/36865",
       "target": null
+    },
+    {
+      "id": "508",
+      "path": "examples/508-spring-method-reservations",
+      "title": "Reserve each generated method name separately",
+      "summary": "Reserving two generated method names now produces apply1 and test1. A peer reserved one name at a time and returned the same four names, including the free applyTest spelling.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "GeneratedClass.reserveMethodNames",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both callers obtained a fresh GeneratedClass through DefaultGenerationContext. The parent threw while reserving the pair."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36912",
+      "target": null
+    },
+    {
+      "id": "509",
+      "path": "examples/509-spring-profile-parentheses",
+      "title": "Reject unmatched parentheses before selecting an active profile",
+      "summary": "Malformed profile expressions now fail during construction. A context with the malformed annotation also failed, while its valid twin supplied the requested bean.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "Profiles.of",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The parent matched both malformed expressions and activated the malformed bean. The valid conjunction changed truth when prod became active on both revisions."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36550",
+      "target": null
+    },
+    {
+      "id": "510",
+      "path": "examples/510-spring-repeatable-container",
+      "title": "Expand only the declared repeatable-annotation container",
+      "summary": "The merged annotation stream ignored the lookalike container and kept the real repeated tags. Java reflection still retrieved the nested decoy from the unrelated annotation.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "MergedAnnotations.from",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The official-container check preserves JDK declaration order and compares the Spring results as a multiset."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37326",
+      "target": null
+    },
+    {
+      "id": "511",
+      "path": "examples/511-spring-parameter-autowiring",
+      "title": "Resolve an individual reflected parameter from outside Spring Test",
+      "summary": "An external consumer on the landing resolved a qualified method parameter to west. Reusing one generic declaration with two containing classes selected the corresponding west and east singletons.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "AutowireUtils.resolveDependency",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The Jupiter control exercised SpringExtension on both revisions. These exact AutowireUtils signatures were subsequently replaced before a published release.",
+        "Each pin supplies its changed production classes on spring-5.2.0.M1-q04. The replay verifies the loaded class origins and all class digests of each compiled slice.",
+        "The unchanged external source also failed javac on the original parent because AutowireUtils was package-private. Changing to the shipped ParameterResolutionDelegate on Spring 5.2.0.M1 reproduced all three landing histories."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/2060",
+      "target": null
+    },
+    {
+      "id": "512",
+      "path": "examples/512-spring-named-generic-bean",
+      "title": "Check the named bean's generic type before returning it",
+      "summary": "Named generic lookup now rejects the count bean as Box<String> in Java and Kotlin. Both languages report the bean name, raw and generic requirement, and actual class, and both retrieve the same Box<Number> singleton.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "BeanFactory.getBean",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The Kotlin client was compiled against each revision because the extension is inline. The parent Kotlin binary accepted the mismatched count singleton."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/35808",
+      "target": null
+    },
+    {
+      "id": "513",
+      "path": "examples/513-spring-composite-map-values",
+      "title": "Removing one of two equal values from a composite map",
+      "summary": "Removing one of two equal values now succeeds and leaves the second mapping intact. A second removal through the same public values view throws UnsupportedOperationException with that mapping still present.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "CollectionUtils.compositeMap",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The first removal on the parent had already mutated the first backing map when it threw. The merged live view also exposed a previously shadowed value after the winning mapping was removed.",
+        "The same caller on Spring 7.1.0 reproduced all four observations, including the exception with b=x intact on the second removal. Removal through a collection is optional."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37332",
+      "target": null
+    },
+    {
+      "id": "514",
+      "path": "examples/514-spring-reference-map-remap",
+      "title": "Remapping deletion changes the reference-map count immediately",
+      "summary": "All three null-producing remaps immediately report an empty singleton map. In a one-segment map with a second key, the count now agrees with the surviving iterator entry.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ConcurrentReferenceHashMap.compute",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "agreement"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The caller keeps the entry objects reachable and reads size and emptiness before any lookup or purge. Replacing the value kept size one.",
+        "The reported 6.2.13 release reproduced the stale singleton and size-two survivor counts. The same caller on 7.1.0 reproduced all three merged outcomes."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37577",
+      "target": null
+    },
+    {
+      "id": "515",
+      "path": "examples/515-spring-mixed-parameter-batch",
+      "title": "Mixed named-parameter batches preserve an existing SQL parameter source",
+      "summary": "The mixed JDBC batch retained its supplied parameter source. Editing that source before binding committed (3,revised) alongside the map and bean rows.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "SqlParameterSourceUtils.createBatch",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each successful batch used a real transaction and a separate H2 connection for ordered readback. Both conversion overloads preserved the ordinary two-row input."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37524",
+      "target": null
+    },
+    {
+      "id": "516",
+      "path": "examples/516-spring-live-pool-settings",
+      "title": "Rejected live pool settings leave management getters consistent",
+      "summary": "Rejected pool settings now leave the Spring and JDK getters in agreement. A management caller recovered from a rejected size increase and ended at core and maximum two.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ThreadPoolTaskExecutor.setCorePoolSize",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The parent advertised the rejected core size and consequently tried another invalid update. Every pool was initialized before inspection and shut down afterward."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/26700",
+      "target": null
+    },
+    {
+      "id": "517",
+      "path": "examples/517-spring-cron-century",
+      "title": "Cron callers can distinguish an impossible date from a distant leap day",
+      "summary": "Both merged cron APIs returned no match for June 31 and found the leap day in 2104 after February 29, 2096. The old trigger threw for each search.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "CronTrigger.nextExecutionTime",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A fixed TriggerContext and UTC keep the calendar independent of the clock. Both triggers selected June 30, 2021 for the ordinary control.",
+        "Each pin supplies its changed production classes on spring-context-5.3.0-M1. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/25464",
+      "target": null
+    },
+    {
+      "id": "518",
+      "path": "examples/518-spring-r2dbc-array-brackets",
+      "title": "Bind a named R2DBC parameter immediately inside SQL array brackets",
+      "summary": "PostgreSQL returned the bound array for tight brackets and preserved the order and multiplicity of [7,2,7]. The parent required a space after the parameter name.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "DatabaseClient.sql",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each history subscribed through Spring DatabaseClient against PostgreSQL 17 and compared the driver's Integer[] with an independently executed literal array."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/27716",
+      "target": null
+    },
+    {
+      "id": "519",
+      "path": "examples/519-spring-optional-result-stream",
+      "title": "Preserve result cardinality and release streams when returning Optional",
+      "summary": "The new Optional accessors agreed for collections, iterators, and streams. The unsized two-row stream stopped at its second equal reference and closed once, including on the exception path.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "DataAccessUtils.optionalResult",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Singleton results retained object identity. The existing collection method continued to count equal rows separately."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/27735",
+      "target": null
+    },
+    {
+      "id": "520",
+      "path": "examples/520-spring-jdbc-row-limit",
+      "title": "Honor a JDBC row limit when the driver returns additional rows",
+      "summary": "At limit two, list, callback, and stream queries all delivered just 11 and 22 from an overlong JDBC cursor. At explicit zero the landing delivered no rows through any of the three APIs.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "JdbcTemplate.query",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The connection delegates to H2 and records the limit call without enforcing it. The parent returned all three rows at zero, the JDBC unlimited setting. The default limit left the driver alone.",
+        "On published Spring JDBC 7.1.0 the same driver fixture and application binary reproduced the limit-two prefix, the default full result, and zero delivered rows at explicit zero."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/34709",
+      "target": null
+    },
+    {
+      "id": "521",
+      "path": "examples/521-spring-duplicate-column-label",
+      "title": "Keep constructor values when a join returns duplicate column labels",
+      "summary": "With duplicate id labels, both the record and the final-field class now retain the first id, 1. Changing the decoy to 200 left the counting id setter untouched and still populated note.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "JdbcClient.query",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "On the parent the record threw and the final-field class silently retained 100. Each positional oracle and typed projection executed through JdbcClient against H2."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37602",
+      "target": null
+    },
+    {
+      "id": "522",
+      "path": "examples/522-spring-lazy-jdbc-settings",
+      "title": "Defer JDBC session settings while preserving physical connection state",
+      "summary": "Individual client-info and timeout settings now wait for first physical use. One consuming read applied the latest value, preserved the driver's unrelated key, and left the unused handle unmaterialized.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "LazyConnectionDataSourceProxy.getConnection",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each physical connection owns separate settings. The control observed an immediate checkout for both a driver-supplied value and a bulk Properties write."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37261",
+      "target": null
+    },
+    {
+      "id": "523",
+      "path": "examples/523-spring-line-delimiter-reset",
+      "title": "Retain data before a line feed after a lone carriage return",
+      "summary": "A lone carriage return now preserves both intervening bytes before the line feed. Splitting a UTF-8 character and adjacent carriage returns across buffers yielded the same two decoded strings.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "StringDecoder.decode",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each subscription received fresh heap buffers and was collected to completion. Both revisions retained ordinary CRLF and LF behavior."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37053",
+      "target": null
+    },
+    {
+      "id": "524",
+      "path": "examples/524-spring-indented-sse-data",
+      "title": "Serialize indented JSON as complete server-sent event data",
+      "summary": "The independent event reader now reconstructs both indented JSON objects. Nested structure and a newline inside a field survived transport and parsed into the intended events.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ServerSentEventHttpMessageWriter.write",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The caller consumed each flush group and its buffers in order, dispatched data at blank lines, then parsed the complete payload. The compact control passed on both revisions.",
+        "Each pin supplies its changed production classes on spring-web-5.0.0.M3-q17. The replay verifies the loaded class origins and all class digests of each compiled slice.",
+        "The original reactive caller reproduced the two revision outcomes on 5.0.0.M3 and M4. A separate MockMvc caller with SseEmitter on 4.3.3.RELEASE received two invalid indented JSON events and two valid compact events. On 5.0.0.RELEASE both servlet modes delivered both complete objects."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/1251",
+      "target": null
+    },
+    {
+      "id": "525",
+      "path": "examples/525-spring-reactive-resource-ranges",
+      "title": "Read the exact requested bytes of a static reactive HTTP resource",
+      "summary": "The merged resource handler returned exactly So for bytes 0–1. A multipart response decoded with its advertised boundary returned So and t., matching the two separate range requests.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ResourceWebHandler.handle",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The ten-byte upstream resource and the historical mock exchanges are read by Git revision and digest. The parent returned the complete representation to range requests.",
+        "Each pin supplies its changed production classes on spring-5.0.0.M2-q18. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/1175",
+      "target": null
+    },
+    {
+      "id": "526",
+      "path": "examples/526-spring-servlet-url-pattern",
+      "title": "Assert servlet redirect and forward destinations with Ant patterns",
+      "summary": "The new MockMvc matchers accepted the intended redirect and forward. A single star rejected the extra path segment and a double star accepted it.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "MockMvcResultMatchers.redirectedUrlPattern",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "A separate exact forward assertion retained its literal question mark. The caller checked the actual dispatched destination before applying each matcher.",
+        "Each pin supplies its changed production classes on spring-test-4.0.0.M3-q19. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/374",
+      "target": null
+    },
+    {
+      "id": "527",
+      "path": "examples/527-spring-handler-builder-clone",
+      "title": "Keep HTTP handler decorators when cloning a WebFlux handler builder",
+      "summary": "A clone retained its configured HTTP decorator. Independently extending the two builders produced ordered markers A,B and A,C, including A,C on another clone of the original.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "WebHttpHandlerBuilder.clone",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each fresh request completed at a terminal WebHandler that recorded the full path and every header value.",
+        "Each pin supplies its changed production classes on spring-web-5.3.0-RC1-q20. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/25656",
+      "target": null
+    },
+    {
+      "id": "528",
+      "path": "examples/528-spring-exchange-version-routing",
+      "title": "Dispatch versioned HTTP exchange controllers",
+      "summary": "Versioned HTTP exchange controllers now dispatch to v1.1 on MVC and WebFlux. Both stacks rejected version 99 with HTTP 400 and zero controller invocations.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "HttpExchange.version",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "MockMvc and WebTestClient used the same published Spring Test 7.0.10 client companion with both original server revisions. Standard request mappings provided the control."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36602",
+      "target": null
+    },
+    {
+      "id": "529",
+      "path": "examples/529-spring-async-version-order",
+      "title": "Resolve asynchronous API versions in registration order",
+      "summary": "A gated first version resolver now wins despite a ready second resolver. When the first failed, the subscriber received that exact error and the second publisher had zero subscriptions.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "DefaultApiVersionStrategy.resolveApiVersion",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "race-condition"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The parent returned the later value before the gate opened. An immediately empty first resolver selected the fallback on both revisions."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37096",
+      "target": null
+    },
+    {
+      "id": "530",
+      "path": "examples/530-spring-service-proxy-snapshot",
+      "title": "Isolate HTTP clients built from a reused service-proxy builder",
+      "summary": "Factories built from one service-proxy builder now isolate both late advice and request processors. Only the later factory added the transport header, even when a fresh client came from the first factory afterward.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "HttpServiceProxyFactory.createClient",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The advice test counted actual adapter calls. The header test ran all three service methods to the adapter without short-circuiting.",
+        "The named later revision moved both defensive copies into the factory constructor. Compiling both original factory sources against the same companions yielded the same advice, header, and adapter histories in six executions."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37601",
+      "target": null
+    },
+    {
+      "id": "531",
+      "path": "examples/531-spring-jms-reply-destination",
+      "title": "Request a JMS reply on a caller-owned queue",
+      "summary": "An embedded Artemis responder acknowledged both object- and name-addressed requests through the caller's reply queue. An independent exchange on the same queue then delivered C.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "JmsTemplate.sendAndReceive",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The existing overload returned its acknowledgement via a temporary queue on both revisions. The broker ran in-process with finite receives and one outstanding request.",
+        "Spring JMS 7.0.4 applies a correlation selector to the caller-owned queue. Uncorrelated replies remained there, and the same caller timed out. Copying the assigned message ID or an explicit request correlation ID into each reply restored ack-A, ack-B, and the subsequent marker C on Artemis."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36162",
+      "target": null
+    },
+    {
+      "id": "532",
+      "path": "examples/532-spring-absent-event-listener",
+      "title": "Publish an event when an optional listener bean is absent",
+      "summary": "A null listener factory now leaves its consumer empty and lets publication return. A later ordered listener received E1 and E2 exactly once each.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "ApplicationContext.publishEvent",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The parent threw before the later listener saw either event. A genuine optional listener still received E1 once on both revisions.",
+        "Each pin supplies its changed production classes on spring-context-5.2.1.RELEASE-q25. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/23784",
+      "target": null
+    },
+    {
+      "id": "533",
+      "path": "examples/533-spring-reactive-transaction-cleanup",
+      "title": "Complete reactive resource cleanup before reporting transaction completion",
+      "summary": "The merged reactive operator releases its owned lease before completion. On rollback it withheld the original application error until the cleanup gate opened and another caller could acquire the lease.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "TransactionalOperator.transactional",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "transactions"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The parent committed or rolled back but left the lease held. A participating transaction on both revisions kept its owner's lease and made no commit.",
+        "Each pin supplies its changed production classes on spring-tx-5.2.0.M2-q26. The replay verifies the loaded class origins and all class digests of each compiled slice."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/22881",
+      "target": null
+    },
+    {
+      "id": "534",
+      "path": "examples/534-spring-retry-coarse-time",
+      "title": "Invoke retry-annotated methods with coarse time units",
+      "summary": "Both coarse retry units now allow an immediately successful call. A real retry also recovered at attempt two with the very large seconds bound and its millisecond equivalent.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "RetryAnnotationBeanPostProcessor",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The parent seconds conversion raised ArithmeticException before target entry. A representable explicit maximum worked through the advised bean on both revisions.",
+        "The original caller reproduced pre-entry overflow on the reported Spring 7.0.9 release and recovered on Spring 7.1.0. The finite upper bound control worked on both."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37525",
+      "target": null
+    },
+    {
+      "id": "535",
+      "path": "examples/535-spring-reactive-retry-jitter",
+      "title": "Bound jitter on a reactive retry without changing attempt counts",
+      "summary": "Reactive retry now tolerates jitter larger than its five-millisecond delay and recovers on subscription two. A 107000-day jitter still overflowed during adaptation before the target publisher had any subscription.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "SimpleRetryInterceptor",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The large and small jitter inputs were both exercised with an immediately successful cold target. No long backoff was needed.",
+        "On Spring 7.1.0 this public interceptor is in org.springframework.resilience.retry. Recompiling the fixture with just that import changed reproduced all three results, including the synchronous overflow."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/35140",
+      "target": null
+    },
+    {
+      "id": "536",
+      "path": "examples/536-spring-retry-state-callbacks",
+      "title": "Read retry counts and exception history inside retry callbacks",
+      "summary": "RetryTemplate supplied retry counts and original exception identities to listeners. Direct calls to the old methods of a CompositeRetryListener stopped reaching its legacy delegate on the landing.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "RetryTemplate.execute",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "3/4 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Template-driven legacy callbacks still worked, and both delegate orders retained the expected records. The direct-call parent delivered both events.",
+        "The identical application class on Spring 7.1.0 again received no events via the old direct overloads. All three template and composite controls retained their original histories."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/37465",
+      "target": null
+    },
+    {
+      "id": "537",
+      "path": "examples/537-spring-manifest-dependency",
+      "title": "Read resources from an absolute manifest dependency in a launched JAR",
+      "summary": "A fresh java -jar launch now reads the asset from an absolute manifest entry. Replacing that JAR at the same path changed the bytes from amber to cobalt, with a same-named amber decoy outside the classpath.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "PathMatchingResourcePatternResolver.getResources",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The child checked the loaded Spring resolver origin. Both revisions also read the one amber resource through a relative Class-Path entry."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/35732",
+      "target": null
     }
   ]
 }

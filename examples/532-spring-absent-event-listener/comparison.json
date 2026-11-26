@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/23784",
+  "revisions": {
+    "parent": "d494621ee3d2e0d6c706f401028b0bbd62491495",
+    "fix": "fc55e66d50041893def2490f8f97dbffc9066454"
+  },
+  "entry": "ApplicationContext.publishEvent",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#23784.1",
+      "role": "Intent",
+      "args": [
+        "missing"
+      ],
+      "history": "The optional dependency is empty and the declared event type matches the missing listener’s method.",
+      "prediction": "Parent is expected to throw during invocation on the placeholder. The merge should return normally from publishEvent and keep the consumer’s Optional empty.",
+      "basis": "An absent bean has no listener method that can be invoked. The PR reports a multicaster failure and the regression asserts the dependency is absent.",
+      "refutation": "Publication on the merge throws or the optional dependency becomes present.",
+      "expected": {
+        "fix": {
+          "return": "empty:ok"
+        },
+        "parent": {
+          "return": "empty:IllegalStateException"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#23784.2",
+      "role": "Control",
+      "args": [
+        "present"
+      ],
+      "history": "In a fresh context change the factory to return a real listener that records the event’s ID. Publish E1 once.",
+      "prediction": "Both revisions should inject a present Optional and record exactly [E1].",
+      "basis": "The bean that the consumer received is eligible to hear this event.",
+      "refutation": "A real listener is skipped, invoked twice or receives another ID.",
+      "expected": {
+        "fix": {
+          "return": "present:[E1]"
+        },
+        "parent": {
+          "return": "present:[E1]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#23784.3",
+      "role": "Challenge",
+      "args": [
+        "ordered"
+      ],
+      "history": "Restore the null-returning factory. Register another real @EventListener with later @Order, targeting the same type. Publish distinct E1 and E2. Put @Order(0) on the optional listener method and @Order(1) on the real observer.",
+      "prediction": "On the merge the real listener should record [E1,E2] synchronously with no publication error.",
+      "basis": "Each publication must continue past the absent listener to the eligible subscriber. Distinct IDs detect replay or loss.",
+      "refutation": "Returning normally while delivering neither event, only one, or either twice refutes continued dispatch.",
+      "expected": {
+        "fix": {
+          "return": "ok:[E1, E2]"
+        }
+      }
+    }
+  ]
+}

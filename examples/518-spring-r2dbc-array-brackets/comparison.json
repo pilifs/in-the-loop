@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/27716",
+  "revisions": {
+    "parent": "aeff664cf9fd7817a2c699732b150e3691018f73",
+    "fix": "86eda279c82b79c7888558e7a2524db44c7ee108"
+  },
+  "entry": "DatabaseClient.sql",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#27716.1",
+      "role": "Intent",
+      "args": [
+        "scalar"
+      ],
+      "history": "Tight brackets and one integer binding",
+      "prediction": "The PR reports the parent parses the name as ext]. Expect failure to bind or execute with only ext supplied. The merge should return [7].",
+      "basis": "PostgreSQL array brackets delimit the constructor. The literal query fixes the expected value and type.",
+      "refutation": "The parent returns [7] with tight brackets, or the merge fails or returns another array.",
+      "expected": {
+        "fix": {
+          "return": "[7]:literal=[7]"
+        },
+        "parent": {
+          "return": "binding failed:literal=[7]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#27716.2",
+      "role": "Control",
+      "args": [
+        "space"
+      ],
+      "history": "Insert a space immediately before the closing bracket",
+      "prediction": "Both revisions should yield [7].",
+      "basis": "The PR reports that whitespace already terminates the name on the parent. Whitespace between SQL tokens has no bearing on array contents.",
+      "refutation": "Either revision rejects the binding or reads a different element.",
+      "expected": {
+        "fix": {
+          "return": "[7]:literal=[7]"
+        },
+        "parent": {
+          "return": "[7]:literal=[7]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#27716.3",
+      "role": "Challenge",
+      "args": [
+        "list"
+      ],
+      "history": "With tight brackets on the merge, bind the ordered List.of(7, 2, 7) as ext",
+      "prediction": "Expect the single row to contain [7,2,7], equal to the array constructed from those three literal integers.",
+      "basis": "Collection expansion must bind one value per element in encounter order. The repeated 7 makes multiplicity observable.",
+      "refutation": "Binding fails, an element is missing or reordered, or the collection becomes one nested element.",
+      "expected": {
+        "fix": {
+          "return": "[7, 2, 7]:literal=[7, 2, 7]"
+        }
+      }
+    }
+  ]
+}

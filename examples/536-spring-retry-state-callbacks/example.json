@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "536",
+  "title": "Read retry counts and exception history inside retry callbacks",
+  "summary": "RetryTemplate supplied retry counts and original exception identities to listeners. Direct calls to the old methods of a CompositeRetryListener stopped reaching its legacy delegate on the landing.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "RetryTemplate.execute"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "RetryTemplate and CompositeRetryListener pass RetryState to new success and failure overloads. Their default implementations call the existing overloads."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37465"
+  },
+  "notes": [
+    "Template-driven legacy callbacks still worked, and both delegate orders retained the expected records. The direct-call parent delivered both events.",
+    "The identical application class on Spring 7.1.0 again received no events via the old direct overloads. All three template and composite controls retained their original histories."
+  ],
+  "verdictLabel": "3/4 merged predictions matched"
+}

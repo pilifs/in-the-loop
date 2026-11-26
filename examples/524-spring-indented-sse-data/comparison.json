@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/1251",
+  "revisions": {
+    "parent": "8315a4033feea39f04a14c0b088e634b13fe774c",
+    "fix": "2735cba4b353027ac649b592bc9eb38c473b4fa1"
+  },
+  "entry": "ServerSentEventHttpMessageWriter.write",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#1251.1",
+      "role": "Intent",
+      "args": [
+        "pretty"
+      ],
+      "history": "Emit two indented objects with distinct foo and bar values as text/event-stream",
+      "prediction": "The parent is predicted to lose unprefixed continuation lines at the SSE reader. On the merge two dispatched events should each decode to the complete corresponding object in order.",
+      "basis": "In SSE each physical data line needs its own data field. Blank lines terminate events. Jackson JSON readback establishes whether all fields survived.",
+      "refutation": "There are fewer or additional events, JSON parsing fails, or any of the four values is missing or crosses the event boundary.",
+      "expected": {
+        "fix": {
+          "return": "events=2:A/one,B/two"
+        },
+        "parent": {
+          "return": "events=2:invalid,invalid"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1251.2",
+      "role": "Control",
+      "args": [
+        "compact"
+      ],
+      "history": "Disable indentation, retain the same two beans and SSE writer",
+      "prediction": "Both revisions should deliver the same two JSON objects in the same order.",
+      "basis": "Compact JSON needs only one physical data line per event and the existing writer already prefixes the initial line.",
+      "refutation": "Either event is incomplete or the parser combines the two.",
+      "expected": {
+        "fix": {
+          "return": "events=2:A/one,B/two"
+        },
+        "parent": {
+          "return": "events=2:A/one,B/two"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#1251.3",
+      "role": "Challenge",
+      "args": [
+        "nested"
+      ],
+      "history": "On the merge enable indentation again, replace one string value with a string containing an actual LF, and serialize an object nested inside the second event",
+      "prediction": "The consumer should still dispatch exactly two events. Its parsed fields should retain the embedded LF and the nested property.",
+      "basis": "An LF inside a JSON string is escaped on the wire, whereas structural pretty-print line breaks each need SSE framing. Varying nesting changes only the latter count.",
+      "refutation": "An LF within a value creates another event, a continuation is dropped, or the nested object changes.",
+      "expected": {
+        "fix": {
+          "return": "events=2:A<LF>B/one,B/nested"
+        }
+      }
+    }
+  ]
+}

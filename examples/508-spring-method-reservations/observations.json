@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "5496f9d295a6cf812b9dc2804266345106ffc702fd7a59c613d27add102de17c",
+  "runtimeSha256": "91e47f17f52c5c51e9ae509d4208110b86f91175832c7b23479c11a2942c955a",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "781ce13b67971edbd6e46e3e71e1e4a46f213af7097704c2e8e3965a9ec2532b"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "988ae82177969ec78d182a93e7cb16e46c4dc3a983b511ad8e88ee39efc9695d",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36912.1",
+          "outcome": {
+            "return": "IllegalStateException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36912.2",
+          "outcome": {
+            "return": "apply1,test"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#36912.3",
+          "outcome": {
+            "return": "IllegalStateException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36912.1",
+          "outcome": {
+            "return": "apply1,test1"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36912.2",
+          "outcome": {
+            "return": "apply1,test"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#36912.3",
+          "outcome": {
+            "return": "test1,applyTest,apply1,test2 / test1,applyTest,apply1,test2"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

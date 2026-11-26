@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "513",
+  "title": "Removing one of two equal values from a composite map",
+  "summary": "Removing one of two equal values now succeeds and leaves the second mapping intact. A second removal through the same public values view throws UnsupportedOperationException with that mapping still present.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "CollectionUtils.compositeMap"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The merged collection stops after its first successful removal. The PR identifies the single-occurrence rule for Collection.remove(Object)."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37332"
+  },
+  "notes": [
+    "The first removal on the parent had already mutated the first backing map when it threw. The merged live view also exposed a previously shadowed value after the winning mapping was removed.",
+    "The same caller on Spring 7.1.0 reproduced all four observations, including the exception with b=x intact on the second removal. Removal through a collection is optional."
+  ],
+  "verdictLabel": "3/4 merged predictions matched"
+}

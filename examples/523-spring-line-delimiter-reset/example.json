@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "523",
+  "title": "Retain data before a line feed after a lone carriage return",
+  "summary": "A lone carriage return now preserves both intervening bytes before the line feed. Splitting a UTF-8 character and adjacent carriage returns across buffers yielded the same two decoded strings.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "StringDecoder.decode"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The two-byte delimiter matcher resets an incomplete match on a mismatch and considers that same byte as a possible new start. The comparison uses the first parent of the branch merge, taking in the three changed files."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37053"
+  },
+  "notes": [
+    "Each subscription received fresh heap buffers and was collected to completion. Both revisions retained ordinary CRLF and LF behavior."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

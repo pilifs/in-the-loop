@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37577",
+  "revisions": {
+    "parent": "2934b2edb8e10e1dfa1d0665081e00990cbaabda",
+    "fix": "cb0da839a773a9957f8633d3b6b7a22d36bac40f"
+  },
+  "entry": "ConcurrentReferenceHashMap.compute",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37577.1",
+      "role": "Intent",
+      "args": [
+        "delete"
+      ],
+      "history": "For each singleton, use compute(a, (k,v) -> null), computeIfPresent(a, (k,v) -> null), or merge(a,\"2\", (v,w) -> null). Record whether the callback ran.",
+      "prediction": "The PR reports a null result with a stale size of 1 and isEmpty() false before. The merge should invoke the callback once, return null, and immediately report 0 and true. No mapping for a should be enumerable.",
+      "basis": "Each callback deliberately deletes the sole entry. Reads of the aggregate count immediately after deletion expose the error the PR describes.",
+      "refutation": "The merged callback returns null and lookup finds no a, yet either count accessor still treats a as present.",
+      "expected": {
+        "fix": {
+          "return": "1:null:0:true:null:[] / 1:null:0:true:null:[] / 1:null:0:true:null:[]"
+        },
+        "parent": {
+          "return": "1:null:1:false:null:[] / 1:null:1:false:null:[] / 1:null:1:false:null:[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37577.2",
+      "role": "Control",
+      "args": [
+        "replace"
+      ],
+      "history": "With a=1, remap a to the non-null value 2 through each of the same three APIs on separate maps.",
+      "prediction": "Both should return 2, report size 1 and isEmpty() false, and expose exactly a=2 to an entry iterator.",
+      "basis": "Replacing a mapped value does not change the number of keys.",
+      "refutation": "The entry count changes, the return differs, or iteration still exposes 1.",
+      "expected": {
+        "fix": {
+          "return": "1:2:1:false:2:[a=2] / 1:2:1:false:2:[a=2] / 1:2:1:false:2:[a=2]"
+        },
+        "parent": {
+          "return": "1:2:1:false:2:[a=2] / 1:2:1:false:2:[a=2] / 1:2:1:false:2:[a=2]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37577.3",
+      "role": "Challenge",
+      "args": [
+        "survivor"
+      ],
+      "history": "Place a=1 and b=keep in a map constructed with initial capacity 16 and concurrency level 1. Keep both entry handles live. Remove a via merge’s null result.",
+      "prediction": "On the merge expect size 1 and isEmpty() false immediately, then iteration yielding exactly b=keep. A second computeIfPresent(a,...) must skip its callback.",
+      "basis": "The count must equal the one surviving mapping even when both keys share a segment. isEmpty() alone would pass on the parent here.",
+      "refutation": "Size is 2 or 0, the iterator loses b or yields a, or the second callback runs.",
+      "expected": {
+        "fix": {
+          "return": "1:false:[b=keep]:0"
+        }
+      }
+    }
+  ]
+}

@@ -80,6 +80,50 @@ def measure(number, project, lock, local_cache, fetch, inputs=HERE / "release-in
     return receipt
 
 
+def check_observations(lock_file, result_file, references, release_changes=None):
+    """Bind released caller bytes and outcomes to their pinned side, including named later changes."""
+    release_changes = release_changes or {}
+    if release_changes.keys() - {(number, version) for number, versions in references.items() for version in versions}:
+        raise ValueError("override refers to an unregistered release")
+    lock = comparison.read(lock_file)
+    results = comparison.read(result_file)
+    if list(lock["projects"]) != list(references) or [r["example"] for r in results] != list(references):
+        raise ValueError("release example missing, duplicated or reordered")
+    total = 0
+    for r in results:
+        number = r["example"]
+        folder, = (ROOT / "examples").glob(number + "-*")
+        spec = comparison.read(folder / "comparison.json")
+        physical = comparison.read(folder / "observations.json")["deployments"]["pins"]
+        project = lock["projects"][number]
+        roles = references[number]
+        if (r["releaseInputsSha256"] != comparison.upgrade_replay.sha(lock_file)
+                or r["historicalObservationsSha256"] != comparison.upgrade_replay.sha(folder / "observations.json")
+                or r["jdkReleaseSha256"] != project["jdkReleaseSha256"] or r["callerClasses"] != physical["callerClasses"]
+                or list(r["versions"]) != list(roles) or list(project["versions"]) != list(roles)):
+            raise ValueError(f"{number}: different lock, caller or released version")
+        for version, side in roles.items():
+            measured = r["versions"][version]
+            coordinates = project["versions"][version]
+            classpath = [{"coordinate": k, "sha256": lock["sha256"][k]} for k in coordinates]
+            if measured["classpath"] != classpath:
+                raise ValueError(f"{number} {version}: altered classpath or digest")
+            actual = [row for row in physical["observations"] if row["side"] == side]
+            if [r["id"] for r in actual] != [q["id"] for q in spec["questions"]]:
+                raise ValueError(f"{number}: reordered original histories")
+            changes = release_changes.get((number, version), {})
+            if set(changes) - {row["id"] for row in actual}:
+                raise ValueError(f"{number} {version}: unknown release-specific question")
+            actual = [{**row, "outcome": changes.get(row["id"], row["outcome"])} for row in actual]
+            expected = [{"question": q["id"], "outcome": row["outcome"],
+                         "matchesMergedPrediction": comparison.agrees(q["expected"]["fix"], row["outcome"])}
+                        for q, row in zip(spec["questions"], actual, strict=True)]
+            if measured["observations"] != expected:
+                raise ValueError(f"{number} {version}: differs from the {side} observations")
+            total += len(expected)
+    return total
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inputs", type=Path, default=HERE / "release-inputs.json", help="campaign release input lock")

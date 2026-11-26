@@ -1,0 +1,84 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37465",
+  "revisions": {
+    "parent": "1cdb78d2a64035bdd983919e173fcae0f1336e59",
+    "fix": "85a532dce455655aec8fd5a301b37c6c5ceda5bb"
+  },
+  "entry": "RetryTemplate.execute",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37465.1",
+      "role": "Intent",
+      "args": [
+        "state"
+      ],
+      "history": "On the merge record the four-argument onRetryFailure and onRetrySuccess callbacks during E0, E1, R.",
+      "prediction": "Parent lacks these overloads. On the merge expect one failure callback for E1 with count 1 and exceptions [E0,E1], then one success callback for R with count 2 and the same exception sequence. execute returns R.",
+      "basis": "RetryState defines zero as the initial attempt. E0 initiates retries, E1 fails retry one, and R succeeds on retry two.",
+      "refutation": "A failure callback is emitted for E0, a count/history is wrong, or the returned result differs from the success callback’s result.",
+      "expected": {
+        "fix": {
+          "return": "[fail:E1:1:E0,E1, ok:R:2:E0,E1]:R"
+        },
+        "parent": {
+          "return": "absent"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37465.2",
+      "role": "Control",
+      "args": [
+        "old"
+      ],
+      "history": "For the same retry history install a listener overriding only the older three-argument callbacks. Then execute an immediately successful operation.",
+      "prediction": "Both revisions should deliver failure E1 and success R once for the first operation. Initial success in the second should produce neither retry callback.",
+      "basis": "The callbacks describe retry attempts. Default overload delegation promises compatibility for existing implementations.",
+      "refutation": "The legacy listener misses or duplicates an event or reports a retry for an initial success.",
+      "expected": {
+        "fix": {
+          "return": "[fail:E1, ok:R]:R:[]"
+        },
+        "parent": {
+          "return": "[fail:E1, ok:R]:R:[]"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37465.3",
+      "role": "Challenge",
+      "args": [
+        "fanout"
+      ],
+      "history": "Put one legacy listener and one state-aware listener into CompositeRetryListener and install it on the merged template.",
+      "prediction": "Both should see E1 then R once. The state-aware listener should observe counts 1 then 2, regardless of its position in the composite.",
+      "basis": "Fan-out must preserve the argument each delegate elected to receive. Per-delegate records catch missing forwarding.",
+      "refutation": "A delegate sees an extra event, misses a callback, or reads count zero on success.",
+      "expected": {
+        "fix": {
+          "return": "true/true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37465.4",
+      "role": "Compatibility challenge",
+      "args": [
+        "direct"
+      ],
+      "history": "With a composite holding just the legacy listener, directly call its public three-argument onRetryFailure and onRetrySuccess with E1 and R, as a pre-existing caller can.",
+      "prediction": "Parent forwards both to the listener. Preservation would forward them on the merge too. The landed composite overrides only the four-argument forms, predicting that both direct calls silently do nothing.",
+      "basis": "The same public receiver, method signatures, arguments and recording listener are available in both revisions.",
+      "refutation": "Empty delegate history on the merge refutes compatibility even if every RetryTemplate-driven assertion passes.",
+      "expected": {
+        "fix": {
+          "return": "[fail:E1, ok:R]"
+        },
+        "parent": {
+          "return": "[fail:E1, ok:R]"
+        }
+      }
+    }
+  ]
+}

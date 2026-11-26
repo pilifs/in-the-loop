@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "509",
+  "title": "Reject unmatched parentheses before selecting an active profile",
+  "summary": "Malformed profile expressions now fail during construction. A context with the malformed annotation also failed, while its valid twin supplied the requested bean.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "Profiles.of"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Profiles.of now rejects an unmatched closing or opening parenthesis during parsing. An application can otherwise enable a component from an invalid profile declaration."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36550"
+  },
+  "notes": [
+    "The parent matched both malformed expressions and activated the malformed bean. The valid conjunction changed truth when prod became active on both revisions."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

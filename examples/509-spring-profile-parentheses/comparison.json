@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36550",
+  "revisions": {
+    "parent": "2a1678f246fb34609440e07d723e09b780112842",
+    "fix": "d37d7abb1768c3fe8a71ba291f2e24082b26c27e"
+  },
+  "entry": "Profiles.of",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36550.1",
+      "role": "Intent",
+      "args": [
+        "parse"
+      ],
+      "history": "Parse dev) and (dev separately with dev active.",
+      "prediction": "The issue reports both accepted before. After, each Profiles.of call throws IllegalArgumentException before matching.",
+      "basis": "The grammar requires paired delimiters. The landed regression asserts both constructions fail.",
+      "refutation": "Either malformed expression produces a predicate on the merge.",
+      "expected": {
+        "fix": {
+          "return": "IllegalArgumentException/IllegalArgumentException"
+        },
+        "parent": {
+          "return": "true/true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36550.2",
+      "role": "Control",
+      "args": [
+        "valid"
+      ],
+      "history": "Construct (dev & !prod). Read with active profiles dev alone and then dev plus prod.",
+      "prediction": "Both revisions give true, then false.",
+      "basis": "Parentheses group a conjunction whose negated operand changes truth on the second call.",
+      "refutation": "Either evaluation changes across revisions or fails the truth table.",
+      "expected": {
+        "fix": {
+          "return": "true/false"
+        },
+        "parent": {
+          "return": "true/false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36550.3",
+      "role": "Challenge",
+      "args": [
+        "annotation"
+      ],
+      "history": "Keep the malformed annotation and active dev from the issue. Compare fresh contexts for @Profile(\"dev)\") and @Profile(\"dev\").",
+      "prediction": "Before, the issue observed the malformed bean loaded. After, expect registration or refresh of the malformed configuration to fail with a malformed-expression IllegalArgumentException in the cause chain. The valid twin should be retrievable.",
+      "basis": "Activation through annotation processing must parse the same expression. This probes whether the condition is silently ignored.",
+      "refutation": "With the malformed annotation the merged context starts normally, even if direct parsing rejects it, or the valid twin fails to load.",
+      "expected": {
+        "fix": {
+          "return": "malformed/loaded"
+        },
+        "parent": {
+          "return": "loaded/loaded"
+        }
+      }
+    }
+  ]
+}

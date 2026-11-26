@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "537",
+  "title": "Read resources from an absolute manifest dependency in a launched JAR",
+  "summary": "A fresh java -jar launch now reads the asset from an absolute manifest entry. Replacing that JAR at the same path changed the bytes from amber to cobalt, with a same-named amber decoy outside the classpath.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "PathMatchingResourcePatternResolver.getResources"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Classpath wildcard resolution now recognizes an existing dependency JAR when a launcher manifest gives its absolute filesystem path."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/35732"
+  },
+  "notes": [
+    "The child checked the loaded Spring resolver origin. Both revisions also read the one amber resource through a relative Class-Path entry."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "516",
+  "title": "Rejected live pool settings leave management getters consistent",
+  "summary": "Rejected pool settings now leave the Spring and JDK getters in agreement. A management caller recovered from a rejected size increase and ended at core and maximum two.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ThreadPoolTaskExecutor.setCorePoolSize"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "ThreadPoolTaskExecutor now records a new core size, maximum size or keep-alive value only after the initialized JDK executor accepts the change."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/26700"
+  },
+  "notes": [
+    "The parent advertised the rejected core size and consequently tried another invalid update. Every pool was initialized before inspection and shut down afterward."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

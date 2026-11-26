@@ -1,0 +1,81 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37332",
+  "revisions": {
+    "parent": "db4f57a54f6954b40cdb3062b8c904d422bb04ae",
+    "fix": "f5a71230440381427d7d652e94a44a8658357025"
+  },
+  "entry": "CollectionUtils.compositeMap",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37332.1",
+      "role": "Intent",
+      "args": [
+        "first"
+      ],
+      "history": "Remove x once from the two distinct keys.",
+      "prediction": "On the parent expect the first mapping to disappear before the extra second-view attempt, which may throw UnsupportedOperationException. On the merge expect true, first empty, second still {b=x}, and m.keySet() equal to {b}.",
+      "basis": "The two visible keys supply two equal occurrences. Collection.remove removes one, and the first view is visited first.",
+      "refutation": "The merged call throws, returns false, deletes both entries, or leaves the first key instead of the second.",
+      "expected": {
+        "fix": {
+          "return": "true:{}:{b=x}:[b]:1"
+        },
+        "parent": {
+          "return": "UnsupportedOperationException:{}:{b=x}:[b]:1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37332.2",
+      "role": "Control",
+      "args": [
+        "missing"
+      ],
+      "history": "Use first {a=x}, second {b=y}. Remove a value absent from both, then remove x.",
+      "prediction": "On both revisions the results should be false then true. The first call preserves both maps and the second leaves only b=y visible.",
+      "basis": "Both operations can be decided without deleting any second-map entry.",
+      "refutation": "A missing value reports success, the unrelated y disappears, or a still maps to x.",
+      "expected": {
+        "fix": {
+          "return": "false:{a=x}:{b=y} / true:{}:{b=y}"
+        },
+        "parent": {
+          "return": "false:{a=x}:{b=y} / true:{}:{b=y}"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37332.3",
+      "role": "Challenge",
+      "args": [
+        "shadow"
+      ],
+      "history": "Hold the first map {a=x} fixed. Give the second the same key a with the distinct value hidden. Capture m.values() before removing x.",
+      "prediction": "On the merge, a now resolves to hidden through m.get(\"a\"). The captured view contains hidden, excludes x and has size one. The first map is empty and the second still owns a.",
+      "basis": "The factory documents first-map precedence on colliding keys. Deleting the winning mapping re-exposes the shadowed value through the same view.",
+      "refutation": "The return flag is true but the captured values stay empty, both maps lose a, or get still returns x.",
+      "expected": {
+        "fix": {
+          "return": "true:hidden:[hidden]:1:{}:{a=hidden}"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37332.4",
+      "role": "Challenge",
+      "args": [
+        "second"
+      ],
+      "history": "After the merged first removal, call values.remove(\"x\") again while only b=x remains.",
+      "prediction": "The list regression predicts true followed by an empty collection. At the map boundary a competing source prediction is UnsupportedOperationException with b=x intact. Record the outcome and both maps.",
+      "basis": "The values view of the filtered second map comes from AbstractMap. Its entry view is a FilteredSet and the Spring FilteredIterator has no remove override. Removal through an iterator is optional.",
+      "refutation": "An exception with b intact disproves successful single removal on the second call. A true result with an empty second map disproves the iterator-limitation prediction. A false result with b visible satisfies neither.",
+      "expected": {
+        "fix": {
+          "return": "true:{}:{}:[]:0"
+        }
+      }
+    }
+  ]
+}

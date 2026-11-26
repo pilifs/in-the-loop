@@ -1,0 +1,80 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "9bb32ec79e02d7ecfb3b376d4488360bf5106531cbf53c7fdd68a495c93df3e9",
+  "runtimeSha256": "85549b593306a2bdf03b0b2b3e569ac56ee228a4afc20f29f286c9da2c2aa472",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "f7a8d4140699b901e89d2581aed77f37c90c406f6fe64077fb92a62dd844b1b3"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "1f71d16f4bc55cd6f6490bb792f6032f22f21717044748c610603136457e5170",
+        "UpgradeObservation.class": "231dd57596e8289c539eaf3c529f8601284ae07944e3470ef374cfab7abb8a13",
+        "org/springframework/web/testfixture/http/server/reactive/MockServerHttpRequest$BaseBuilder.class": "a45353de4af9ba2e290abcd86cf30787eeeee1539b121e09cf7234cc7e0e4897",
+        "org/springframework/web/testfixture/http/server/reactive/MockServerHttpRequest$BodyBuilder.class": "21947454848d3afb27443a3b51d33395b5516cefee035e62f68e80e7c2e72402",
+        "org/springframework/web/testfixture/http/server/reactive/MockServerHttpRequest$DefaultBodyBuilder.class": "7625feb8bd1e5c20fff60db344bee7b88951167a792cd5b7366a4a5ebbef393e",
+        "org/springframework/web/testfixture/http/server/reactive/MockServerHttpRequest.class": "80b875a73827f51fa82100094b488134383f068165600fa69db13335bb53bb01",
+        "org/springframework/web/testfixture/http/server/reactive/MockServerHttpResponse.class": "20f24dfb31d505a31d88445974ffc2104914bc027a35194bb77a216c9b446fef"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25656.1",
+          "outcome": {
+            "return": "/probe:[A] / /probe:[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25656.2",
+          "outcome": {
+            "return": "/probe:[] / /probe:[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-framework#25656.3",
+          "outcome": {
+            "return": "/probe:[B] / /probe:[A, C] / /probe:[]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25656.1",
+          "outcome": {
+            "return": "/probe:[A] / /probe:[A]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25656.2",
+          "outcome": {
+            "return": "/probe:[] / /probe:[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-framework#25656.3",
+          "outcome": {
+            "return": "/probe:[A, B] / /probe:[A, C] / /probe:[A, C]"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "preparedSliceClasses": {
+        "parent": {
+          "org/springframework/web/server/adapter/WebHttpHandlerBuilder.class": "e194325ebe7834c46217de92a676595946dd30412db710c42428453822848c14"
+        },
+        "fix": {
+          "org/springframework/web/server/adapter/WebHttpHandlerBuilder.class": "b19f2da0410c0c3e33a37cdcc62c0a43b3c67ac8706844c92766d149d5b23905"
+        }
+      }
+    }
+  }
+}

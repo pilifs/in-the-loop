@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "519",
+  "title": "Preserve result cardinality and release streams when returning Optional",
+  "summary": "The new Optional accessors agreed for collections, iterators, and streams. The unsized two-row stream stopped at its second equal reference and closed once, including on the exception path.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "DataAccessUtils.optionalResult"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "DataAccessUtils adds optionalResult overloads for Collection, Iterator and Stream and singleResult overloads for Iterator and Stream. Eleven submitted commits landed as one revision."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/27735"
+  },
+  "notes": [
+    "Singleton results retained object identity. The existing collection method continued to count equal rows separately."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

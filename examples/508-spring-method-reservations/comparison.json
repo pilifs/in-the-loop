@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/36912",
+  "revisions": {
+    "parent": "85c8bb674cd7dbef46f172da8b7fc048f45f53be",
+    "fix": "2b5229ff8fa5c7b2b117e85f2c72f6f2f1e62f78"
+  },
+  "entry": "GeneratedClass.reserveMethodNames",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#36912.1",
+      "role": "Intent",
+      "args": [
+        "names"
+      ],
+      "history": "Reserve apply and test together, then request apply and test in that order.",
+      "prediction": "The PR reports IllegalStateException on reservation before. After, the added methods are named apply1 and test1.",
+      "basis": "The two original names are occupied independently. The regression checks both returned names.",
+      "refutation": "The merged reservation throws, the first result differs from apply1, or the second differs from test1.",
+      "expected": {
+        "fix": {
+          "return": "apply1,test1"
+        },
+        "parent": {
+          "return": "IllegalStateException"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36912.2",
+      "role": "Control",
+      "args": [
+        "single"
+      ],
+      "history": "Reserve only apply, then request apply and test.",
+      "prediction": "Both revisions return apply1 and test respectively.",
+      "basis": "Only one name is occupied. The PR identifies the single-name caller as previously working.",
+      "refutation": "test gains a suffix, or apply is handed out without one.",
+      "expected": {
+        "fix": {
+          "return": "apply1,test"
+        },
+        "parent": {
+          "return": "apply1,test"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#36912.3",
+      "role": "Challenge",
+      "args": [
+        "peer"
+      ],
+      "history": "On the merge compare reserving both together with two separate calls on a fresh peer. Request test, applyTest, apply and test again on both.",
+      "prediction": "Both histories yield test1, applyTest, apply1, test2 in that order.",
+      "basis": "The two calls reserve the same set. Its camel-case concatenation is a third, free, name.",
+      "refutation": "The original regression passes but applyTest is suffixed or the second test differs between peers.",
+      "expected": {
+        "fix": {
+          "return": "test1,applyTest,apply1,test2 / test1,applyTest,apply1,test2"
+        }
+      }
+    }
+  ]
+}

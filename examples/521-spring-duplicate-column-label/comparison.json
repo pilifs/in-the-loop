@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/37602",
+  "revisions": {
+    "parent": "53783127de602eb41679cf6fdb6b1ff95e07dbad",
+    "fix": "610477de45ca9506415961a52b169f7f66079032"
+  },
+  "entry": "JdbcClient.query",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#37602.1",
+      "role": "Intent",
+      "args": [
+        "duplicate"
+      ],
+      "history": "Read a row with duplicate id values 1 and 100",
+      "prediction": "The original join reportedly threw IllegalStateException for a record and overwrote the final-field class id with 100 on the parent. Predict those same effects for this projection. The merge should return id 1 and item book for both types.",
+      "basis": "JDBC named lookup selects the first matching label and the mapper documents constructor precedence. Column-index readback distinguishes the two inputs.",
+      "refutation": "The merged read throws, yields id 100, or loses book.",
+      "expected": {
+        "fix": {
+          "return": "1/1:book/1:book"
+        },
+        "parent": {
+          "return": "1/IllegalStateException/100:book"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37602.2",
+      "role": "Control",
+      "args": [
+        "unique"
+      ],
+      "history": "Use a projection with distinct id and item labels and no duplicate id",
+      "prediction": "Both revisions should return id 1 and item book.",
+      "basis": "Each constructor parameter has exactly one corresponding input. The secondary mapping pass has nothing left to change.",
+      "refutation": "Either object differs from the two projected values.",
+      "expected": {
+        "fix": {
+          "return": "1/1:book/1:book"
+        },
+        "parent": {
+          "return": "1/1:book/1:book"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#37602.3",
+      "role": "Challenge",
+      "args": [
+        "decoy"
+      ],
+      "history": "Keep the first id and item fixed, vary only the second id from 100 to 200 and add a non-constructor note column with the value packed. Read a class with id constructor argument, a counting setId, and a writable note",
+      "prediction": "On the merge id should stay 1, setId should have zero calls and getNote() should return packed in both runs.",
+      "basis": "Constructor precedence applies to id. The mapping contract still assigns remaining writable properties. Both sides are visible through the same object.",
+      "refutation": "The decoy changes id, its setter runs even once, or suppressing it also suppresses the independent note.",
+      "expected": {
+        "fix": {
+          "return": "1:0:packed / 1:0:packed"
+        }
+      }
+    }
+  ]
+}

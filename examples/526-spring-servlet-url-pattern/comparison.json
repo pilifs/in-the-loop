@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-framework/pull/374",
+  "revisions": {
+    "parent": "4ca7d89a9222f4e8d0dd4bd32425b33da1358563",
+    "fix": "e39400ba75438cde38a6022f1637d0613584c004"
+  },
+  "entry": "MockMvcResultMatchers.redirectedUrlPattern",
+  "questions": [
+    {
+      "id": "spring-projects/spring-framework#374.1",
+      "role": "Intent",
+      "args": [
+        "factories"
+      ],
+      "history": "Call redirectedUrlPattern(\"/resource/*\") and forwardedUrlPattern(\"/api/**/?\") on the corresponding responses",
+      "prediction": "The pattern factories are absent on the parent. On the merge both expectations should pass. The same redirect should fail redirectedUrlPattern(\"/other/*\") with AssertionError.",
+      "basis": "A single path segment holds 12, and after /api the final one-character segment is 1. The literal /other disagrees with the actual prefix.",
+      "refutation": "Either valid assertion rejects its response, the wrong prefix passes, or a requested factory is unavailable on the merge.",
+      "expected": {
+        "fix": {
+          "return": "pass/pass/reject"
+        },
+        "parent": {
+          "return": "absent"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#374.2",
+      "role": "Control",
+      "args": [
+        "exact"
+      ],
+      "history": "Forward literally to /api/resource/1?arg=value. Use forwardedUrl with the exact string and then with /api/resource/1Xarg=value",
+      "prediction": "The first assertion should pass and the second should raise AssertionError on both revisions.",
+      "basis": "Exact comparison preserves the literal question mark used by existing assertions, a compatibility point in the PR discussion.",
+      "refutation": "The changed character is treated as a wildcard or the unchanged query string fails.",
+      "expected": {
+        "fix": {
+          "return": "/api/resource/1?arg=value:pass/reject"
+        },
+        "parent": {
+          "return": "/api/resource/1?arg=value:pass/reject"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-framework#374.3",
+      "role": "Challenge",
+      "args": [
+        "segments"
+      ],
+      "history": "Keep the expected /resource/* fixed, but change the emitted redirect from /resource/12 to /resource/a/12. Then use /resource/** on the nested destination",
+      "prediction": "On the merge the one-segment case should pass, the nested destination should reject *, and ** should accept it.",
+      "basis": "Ant * cannot cross a path separator, while ** spans multiple segments. Merely accepting every string beginning /resource/ would pass the happy path.",
+      "refutation": "Adding a path separator leaves the single-star expectation passing or the double-star expectation rejects the nested path.",
+      "expected": {
+        "fix": {
+          "return": "pass/reject/pass"
+        }
+      }
+    }
+  ]
+}

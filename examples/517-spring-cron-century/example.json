@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "517",
+  "title": "Cron callers can distinguish an impossible date from a distant leap day",
+  "summary": "Both merged cron APIs returned no match for June 31 and found the leap day in 2104 after February 29, 2096. The old trigger threw for each search.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "clocks-and-time",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "CronTrigger.nextExecutionTime"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "CronTrigger now computes future dates through the new java.time-based CronExpression. Existing Date callers can observe a null result for an impossible calendar date. The new API can also return a matching LocalDateTime or ZonedDateTime directly."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/25464"
+  },
+  "notes": [
+    "A fixed TriggerContext and UTC keep the calendar independent of the clock. Both triggers selected June 30, 2021 for the ordinary control.",
+    "Each pin supplies its changed production classes on spring-context-5.3.0-M1. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

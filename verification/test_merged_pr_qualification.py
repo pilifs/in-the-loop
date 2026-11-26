@@ -51,6 +51,24 @@ class QualifiedHistoryTest(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     audit.check_prepared_spring_pair(number, deployment, recorded, setup)
 
+        setup = (HERE.parent / "llm-dlc/loops/spring-framework-pr-links-q01-q30-brief-setup.md").read_text()
+        for number in (4, 5, 11, 18):
+            with self.subTest(campaign="Q", number=number):
+                folder, = (HERE.parent / "examples").glob(f"{507 + number}-*")
+                deployment = json.loads((folder / "runtime.json").read_text())["deployments"]["pins"]
+                recorded = json.loads((folder / "observations.json").read_text())["deployments"]["pins"]
+                audit.check_prepared_spring_pair(number, deployment, recorded, setup, "Q")
+                if number == 4:
+                    recorded["preparedSliceClasses"]["fix"] = recorded["preparedSliceClasses"]["parent"]
+                elif number == 5:
+                    recorded["callerClassesBySide"]["fix"] = recorded["callerClassesBySide"]["parent"]
+                elif number == 11:
+                    recorded["postgresVersionNumber"] = 160004
+                else:
+                    deployment["classpath"]["parent"][1] = deployment["classpath"]["parent"][0]
+                with self.assertRaises(ValueError):
+                    audit.check_prepared_spring_pair(number, deployment, recorded, setup, "Q")
+
     def test_original_zip_fixture_is_bound_to_the_method_entry(self):
         receipt = HERE / "merged-pr-links/m01-m10/intent/446-pins.json.gz"
         with tempfile.TemporaryDirectory() as temp:

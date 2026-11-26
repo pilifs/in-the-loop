@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "510",
+  "title": "Expand only the declared repeatable-annotation container",
+  "summary": "The merged annotation stream ignored the lookalike container and kept the real repeated tags. Java reflection still retrieved the nested decoy from the unrelated annotation.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "jvm-internals",
+    "validation-gap",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "MergedAnnotations.from"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Standard repeatable detection now verifies that the component annotation names the candidate container in @Repeatable. An unrelated array-valued annotation previously qualified by shape alone."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37326"
+  },
+  "notes": [
+    "The official-container check preserves JDK declaration order and compares the Spring results as a multiset."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

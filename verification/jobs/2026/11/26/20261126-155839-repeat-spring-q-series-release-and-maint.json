@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-155839-repeat-spring-q-series-release-and-maint",
+  "title": "Repeat Spring Q-series release and maintainer comparisons",
+  "description": "Repeat 32 original-caller histories on published Spring releases. Check the direct legacy retry listener, JDBC zero limit, composite map, reactive SSE, reported release baselines and the JMS reply selector. Recompile the relocated retry and autowiring clients, try two correlated Artemis responders, exercise SseEmitter through MockMvc, and compile the original and later HTTP service factories.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:released-runtime",
+    "java:source-overload-resolution",
+    "jms:broker-reply"
+  ],
+  "links": {},
+  "expected": "The 32 original-caller release observations, 16 separate published controls and 6 later-revision histories must reproduce. The result files must agree byte for byte, including source, bytecode, classpaths and the two JDBC/JMS provider controls in their respective fixtures.",
+  "submitted": {
+    "at": "2026-11-26T15:58:39+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Replay original clients on published releases",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/q01-q30/release-inputs.json --output verification/merged-pr-links/q01-q30/repeated-releases.json",
+      "cwd": "."
+    },
+    {
+      "name": "Check release digests and observed behaviors",
+      "run": "python3 verification/merged-pr-links/q01-q30/check_releases.py --results verification/merged-pr-links/q01-q30/repeated-releases.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the published-release observations",
+      "run": "cmp verification/merged-pr-links/q01-q30/release-observations.json verification/merged-pr-links/q01-q30/repeated-releases.json",
+      "cwd": "."
+    },
+    {
+      "name": "Run the later factory and release-specific responder and API variants",
+      "run": "python3 verification/merged-pr-links/q01-q30/followups.py --output verification/merged-pr-links/q01-q30/repeated-followups.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare exact results and class digests",
+      "run": "cmp verification/merged-pr-links/q01-q30/followup-observations.json verification/merged-pr-links/q01-q30/repeated-followups.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/q01-q30/repeated-releases.json",
+    "verification/merged-pr-links/q01-q30/repeated-followups.json"
+  ]
+}

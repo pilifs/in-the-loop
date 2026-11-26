@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "532",
+  "title": "Publish an event when an optional listener bean is absent",
+  "summary": "A null listener factory now leaves its consumer empty and lets publication return. A later ordered listener received E1 and E2 exactly once each.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "ApplicationContext.publishEvent"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "An event-listener factory method may return null. Dispatch now recognizes Spring’s placeholder and skips invocation on that absent listener."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/23784"
+  },
+  "notes": [
+    "The parent threw before the later listener saw either event. A genuine optional listener still received E1 once on both revisions.",
+    "Each pin supplies its changed production classes on spring-context-5.2.1.RELEASE-q25. The replay verifies the loaded class origins and all class digests of each compiled slice."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

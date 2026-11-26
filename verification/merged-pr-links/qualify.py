@@ -76,6 +76,12 @@ ENTRIES = {
     "497": ("P20", "spring-r2dbc/src/main/java",
             "org.springframework.r2dbc.connection.R2dbcTransactionManager#doCleanupAfterCompletion"
             "(Lorg/springframework/transaction/reactive/TransactionSynchronizationManager;Ljava/lang/Object;)Lreactor/core/publisher/Mono;"),
+    "513": ("Q06", "spring-core/src/main/java", "org.springframework.util.CompositeCollection#remove(Ljava/lang/Object;)Z"),
+    "520": ("Q13", "spring-jdbc/src/main/java", "org.springframework.jdbc.core.JdbcTemplate#queryForStream"
+            "(Ljava/lang/String;Lorg/springframework/jdbc/core/RowMapper;)Ljava/util/stream/Stream;"),
+    "535": ("Q28", "spring-aop/src/main/java", "org.springframework.aop.retry.AbstractRetryInterceptor$ReactorDelegate#adaptReactiveResult"
+            "(Ljava/lang/Object;Lorg/springframework/core/ReactiveAdapter;Lorg/springframework/aop/retry/MethodRetrySpec;"
+            "Ljava/lang/reflect/Method;)Ljava/lang/Object;"),
 }
 
 

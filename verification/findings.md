@@ -270,6 +270,16 @@ All three entries above reproduced on published Spring 7.1.0 with the original c
 
 **20. Spring TestContext, PR #34723. A test subclass cannot apply a bean override to a hierarchy inherited from its superclass in these fixtures.** The inherited hierarchy served both original beans, and both override scopes worked when the two context levels were declared on the concrete test. Moving only the hierarchy to its superclass made both fields fail before the test method on the landing and Spring 7.1.0. [Five histories, caller and released witness](../examples/501-spring-context-level-override/inherited-hierarchy/README.md)
 
+**21. Spring Framework, PR #37332. The second equal value cannot be removed through a composite map’s values view.** With mutable backing maps, the first removal returned true on the landing. The second threw UnsupportedOperationException and left the remaining mapping intact. The API describes a partially unmodifiable map, so the upstream question is which values-view removals it supports. [Both backing maps and the captured view](../examples/513-spring-composite-map-values/README.md)
+
+**22. Spring JDBC, PR #34709. Setting maxRows to zero suppresses every row.** A statement exposing three ordered rows received setMaxRows(0), the JDBC unlimited setting. All three template query forms returned the rows on the parent and delivered zero on the landing. At limit two they delivered the correct prefix. [List, callback, and stream readbacks](../examples/520-spring-jdbc-row-limit/README.md)
+
+**23. Spring AOP, PR #35140. A large jitter can overflow before a reactive target is subscribed.** A five-millisecond delay and 20-millisecond jitter allowed immediate success on the landing. Changing only jitter to 107000 days raised ArithmeticException synchronously. Both durations exceed the delay and the new conversion is intended to cap the jitter factor. [Proxy, target counter, and positive control](../examples/535-spring-reactive-retry-jitter/README.md)
+
+**24. Spring Core, PR #37465. Direct legacy callbacks on CompositeRetryListener stop reaching delegates.** The parent forwarded one failure and one success. Calling the same public signatures with the same inputs on the landing produced an empty delegate history. Both revisions forwarded the legacy callbacks when driven through RetryTemplate. [Direct and template-driven records](../examples/536-spring-retry-state-callbacks/README.md)
+
+All four Q-series cases reproduced on published Spring Framework 7.1.0. The reactive jitter fixture used the relocated interceptor package in spring-context. [Release witnesses and reporting scope](merged-pr-links/q01-q30/upstream.md)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

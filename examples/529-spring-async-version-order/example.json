@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "529",
+  "title": "Resolve asynchronous API versions in registration order",
+  "summary": "A gated first version resolver now wins despite a ready second resolver. When the first failed, the subscriber received that exact error and the second publisher had zero subscriptions.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "race-condition",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Framework",
+    "symbol": "DefaultApiVersionStrategy.resolveApiVersion"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Reactive version resolution now waits for the first configured resolver to produce a value, fail, or complete empty before considering a later resolver."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/37096"
+  },
+  "notes": [
+    "The parent returned the later value before the gate opened. An immediately empty first resolver selected the fallback on both revisions."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}
