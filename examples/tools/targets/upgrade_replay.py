@@ -522,8 +522,6 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if detail:
                         detail = base64.b64decode(detail, validate=True).decode("utf-16-be", "surrogatepass")
                         report["stoppedAt"]["exception"] = detail[:750]
-                    if spec.get("requiredDispatch") and class_origins(child_output).get(owner) != {files[side_record["entryProviderIndex"]]}:
-                        raise ValueError("the public dispatch interface came from a different provider")
                     if "UPGRADE-HIT " + live_entry not in marks:
                         outcome = typed_outcome(observation_text.splitlines())
                         if "throws" not in outcome:
@@ -565,6 +563,11 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         if escape:
                             escape["throws"] = outcome["throws"]
                             trial_record.setdefault("escapingExceptions", []).append(escape)
+                    if spec.get("requiredDispatch"):
+                        interface_origins = class_origins(child_output).get(owner,set())
+                        if interface_origins != {files[side_record["entryProviderIndex"]]}:
+                            raise ValueError(f"public interface {owner}: observed providers {sorted(map(str,interface_origins))}, "
+                                             f"expected {files[side_record['entryProviderIndex']]}")
                     site_marks = [line.removeprefix("UPGRADE-CALL-SITE ") for line in marks
                                   if line.startswith("UPGRADE-CALL-SITE ")]
                     if len(site_marks) != 1:

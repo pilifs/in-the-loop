@@ -1,0 +1,34 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-224614-verify-stable-changed-method-stacks-whil",
+  "title": "Verify stable changed-method stacks while preserving raw hidden lambda frames",
+  "description": "The first history check compared JDK 25 hidden lambda addresses literally. The same Lucene methods, providers and stack frames were present in both runs. Compare only the stable names while preserving both complete raw JVM receipts, and repeat the Commons IO, Lucene and subscribed Spring histories.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:class-bindings"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-26T22:46:14+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Recheck original changed bodies and exact public outcomes",
+      "run": "python3 verification/generated-observers/history_reach.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/generated-observers/receipts/history-reach.zip"
+  ]
+}

@@ -1,6 +1,6 @@
 """Check changed bodies seen later in the same public history against the original registered caller."""
-import hashlib
 import json
+import re
 from pathlib import Path
 import sys
 import tempfile
@@ -30,11 +30,18 @@ def changed_sort_methods(work):
     return sorted(selected)
 
 
+def stable_stacks(hits):
+    """A JVM assigns a fresh address to each hidden lambda class. Preserve the host, method, descriptor and every frame."""
+    suffix = re.compile(r"(\$\$Lambda(?:\$[0-9]+)?)/0x[0-9a-fA-F]+(?=#)")
+    return [{**hit, "stack":[suffix.sub(r"\1/<hidden>",frame) for frame in hit["stack"]]} for hit in hits]
+
+
 def measure(number,which,archive,work):
     work.mkdir()
     with zipfile.ZipFile(archive) as z:
         for member in z.namelist():
             if member.startswith("bundle/"):z.extract(member,work)
+        original = next(n for n in json.loads(z.read("cold.json"))["claims"] if n["id"]==which)
     bundle=work/"bundle"
     reg=campaign.read(bundle/"registration.json")
     workflows=campaign.read(bundle/"workflows.json")
@@ -50,18 +57,21 @@ def measure(number,which,archive,work):
     node,=campaign.read(work/"replay.json")["claims"]
     expected={"io":"established","J14":"refuted","466":"open"}[number]
     if node["status"]!=expected:raise ValueError("original adjudication differs on the unchanged public history")
+    if any(any(fresh.get(side)!=prior.get(side) or fresh.get(side) is None for side in ("old","new"))
+           for fresh,prior in zip(node.get("children",[]),original["children"],strict=True)):
+        raise ValueError(f"{number}: original raw observations differ: {node.get('reason',node['firstOpenDependency'])}")
     evidence=campaign.read(work/node["receipt"]["path"])
     sides={}
     for side,d in evidence["sides"].items():
         histories=[]
         for t in d["trials"]:
             reps=t["changedWithinHistory"]
-            if len(reps)!=2 or reps[0]!=reps[1]:
-                raise ValueError("changed-body observations did not repeat")
+            if len(reps)!=2 or stable_stacks(reps[0])!=stable_stacks(reps[1]):
+                raise ValueError(f"{number}/{side} input {t['input']}: changed-body observations did not repeat")
             for hit in reps[0]:
                 if hit["artifactSha256"]!=d["classpath"][hit["providerIndex"]] or hit["stack"][0] not in selectors:
                     raise ValueError("unbound changed-body event")
-            histories.append({"input":t["input"], "withinPublicHistory":reps[0],"underSelectedEntry":t["changedBodyChains"][0]})
+            histories.append({"input":t["input"], "withinPublicHistory":stable_stacks(reps[0]), "rawStackAddressChanged":reps[0]!=reps[1], "underSelectedEntry":t["changedBodyChains"][0]})
         sides[side]=histories
     if number in {"io","J14"} and not all(any(t["withinPublicHistory"] for t in v) for v in sides.values()):
         raise ValueError("missing marked stream reset or changed sort readback on an original release")
