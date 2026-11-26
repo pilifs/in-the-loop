@@ -1,0 +1,81 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "955141f5-9ccb-41fa-9e12-8a9dfab2ca8b",
+  "status": "open",
+  "title": null,
+  "first_prompt": "You are the SETUP AGENT for `llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md`. Your role is strictly limited to mechanical setup. The goal is that the domain agent who comes after you can ",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.332"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-26T16:14:29.015Z",
+  "ended": "2026-11-26T16:23:25.701Z",
+  "duration_seconds": 537,
+  "stats": {
+    "turns": 1,
+    "api_calls": 25,
+    "tool_calls": 25,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 164106,
+    "usage": {
+      "input_tokens": 50,
+      "output_tokens": 15712,
+      "cache_read_input_tokens": 3262725,
+      "cache_creation_input_tokens": 150453
+    }
+  },
+  "tools": {
+    "Bash": 24,
+    "Read": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-26T16:14:29.015Z",
+      "ended": "2026-11-26T16:23:25.701Z",
+      "turns": 1,
+      "api_calls": 25,
+      "usage": {
+        "input_tokens": 50,
+        "output_tokens": 15712,
+        "cache_read_input_tokens": 3262725,
+        "cache_creation_input_tokens": 150453
+      },
+      "peak_context_tokens": 164106
+    }
+  ],
+  "log": {
+    "sha256": "d2ef6d35e3c10530a3a37ab97c3e131b15fe0bc098da80527effdb4e07f74edf",
+    "bytes": 1073687,
+    "lines": 208,
+    "gzip_bytes": 247083,
+    "path": "llm-dlc/traces/955141f5-9ccb-41fa-9e12-8a9dfab2ca8b/logs/d2ef6d35e3c10530a3a37ab97c3e131b15fe0bc098da80527effdb4e07f74edf.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "uzltyvxzxtnyxpplzksrnsulwukqtxox",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Pin the 50 revision pairs of the R01-R50 brief",
+      "body": "Setup for llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, no claims. Fetched the 100 pinned commits (and the two middle commits of the two-commit ranges R24 and R50) into shallow mirrors under ~/.cache/in-the-loop/git-mirrors, created one worktree per revision in ~/.cache/in-the-loop/merged-pr-links-r01-r50, and checked with gh api that every PR is merged, its merge commit is the brief's after revision, the after revision's first parent is the before revision (R24 and R50 apart, as the brief says), and the landed diff names exactly the PR's files. Builds and landed-test checks follow.",
+      "log_sha256": "d2ef6d35e3c10530a3a37ab97c3e131b15fe0bc098da80527effdb4e07f74edf"
+    }
+  ],
+  "logs": {
+    "d2ef6d35e3c10530a3a37ab97c3e131b15fe0bc098da80527effdb4e07f74edf": {
+      "bytes": 1073687,
+      "lines": 208,
+      "gzip_bytes": 247083,
+      "url": null
+    }
+  },
+  "redaction_policy": 7,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}
