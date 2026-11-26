@@ -3261,7 +3261,13 @@ def show_finding(prefix: str, limit: int = 4) -> int:
     f = found[matches[0]]
     print(f"{matches[0][:8]}  {f['level']}  {f['kind']}  ×{f['count']}  {f['masked']}  in {', '.join(sorted(f['where']))}")
     excerpts: Counter = Counter()
-    for _, text in texts_to_check(redact, transcripts=preview_caches(redact, False)[2]):
+    # Only the texts of the sessions the finding is in are read. Reading every one decompressed each stored log, about
+    # 11 GB for 356 logs on 2026-11-26, and took 50 s to over 200 s for each finding an agent looked at (VF-070, item 6).
+    _, checks, transcripts = preview_caches(redact, False)
+    for where, _, _, content, _ in scan_targets(redact, False, transcripts, checks):
+        if where[:8] not in f["where"]:
+            continue
+        text = (content if isinstance(content, bytes) else content()).decode(errors="replace")
         for line in text.splitlines():
             if (at := line.find(f["value"])) >= 0:
                 excerpts[masked_excerpt(redact, line, at, len(f["value"]))] += 1
