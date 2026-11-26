@@ -211,9 +211,51 @@ def controls(number, work):
                   campaign.HERE/"receipts"/(number+"-controls.zip"))
 
 
+def wrong_prediction_at_setup(work):
+    work.mkdir()
+    jdk=campaign.prepare("458",work)
+    registration=campaign.HERE/"registrations/458.json"
+    question=read(registration)["questions"][0]["id"]
+    expected=read(campaign.HERE/"predictions/458.json")
+    for row in expected[question]["new"][0]:
+        row[2]="126"
+    wrong=work/"wrong-before-setup.json"
+    write(wrong,expected)
+    bundle=work/"bundle"
+    campaign.run([sys.executable,campaign.ROOT/"examples/tools/scaffold_example.py","generate","--jdk",jdk,
+                  "--registration",registration,"--predictions",wrong,"--before",work/"old.json",
+                  "--after",work/"new.json","--output",bundle])
+    original=campaign.HERE/"receipts/458-clean.zip"
+    with zipfile.ZipFile(original) as archive:
+        baseline=json.loads(archive.read("cold.json"))["claims"][0]
+        for name in ("UpgradeProbe.java","caller.zip","registration.json"):
+            if archive.read("bundle/"+name)!=(bundle/name).read_bytes():
+                raise ValueError("the wrong prediction altered measurement input or caller bytes")
+    ws=read(bundle/"workflows.json")
+    scope=bundle/"focused.json"
+    write(scope,{**ws,"workflows":[row for row in ws["workflows"] if row["id"]==question]})
+    result=app(work,bundle,jdk,scope,work/"replayed.json")
+    node,=result["claims"]
+    witness=node["children"][node["witness"]]
+    if (node["status"]!="refuted" or json.loads(witness["intendedChange"]["return"])!=expected[question]["new"][0]
+            or any(witness[side]!=baseline["children"][0][side] for side in ("old","new"))):
+        raise ValueError("setup or replay changed the registered false prediction or the original observations")
+    write(work/"control.json",{"source":"generated with the wrong prediction already present",
+        "referenceArchiveSha256":upgrade_replay.sha(original),"sameRegistrationSourceAndClasses":True,
+        "question":question,"status":node["status"],"old":witness["old"],"fixed":witness["new"],
+        "intendedFixed":witness["intendedChange"],"receipt":node["receipt"]})
+    campaign.pack(work,[*work.glob("*.json"),*bundle.glob("*"),*(work/"receipts").glob("*.json")],
+                  campaign.HERE/"receipts/458-wrong-at-setup.zip")
+
+
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("number",choices=["458","445","J16"])
+    parser.add_argument("--wrong-at-setup",action="store_true",help="seed a wrong Spring prediction before ordinary materialization")
     a=parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="generated-controls-") as tmp:
-        controls(a.number,Path(tmp)/a.number)
+        if a.wrong_at_setup:
+            if a.number!="458": parser.error("the seeded numeric challenge uses example 458")
+            wrong_prediction_at_setup(Path(tmp)/a.number)
+        else:
+            controls(a.number,Path(tmp)/a.number)

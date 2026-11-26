@@ -348,6 +348,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
 
 ### VF-063: the product's main gap is investigation and claim scaffolding, not solving
 
+- **Registered predictions, 2026-11-26.** Stage 3 generated old-API callers for all eight development cases. Its frozen first transfer recovered two of five disclosed cases. After additional recipe work all 31 questions on 13 cases had complete original-JVM observations. Three fixed-side predictions were refuted and two incorrect parent baselines stayed open. Cold discovery of customer intent remains open. [Campaign report](../llm-dlc/loops/in-the-loop-generated-observers-and-callers-brief-results.md) · [Per-question evidence](generated-observers/scorecard.json)
 - **Status**: open. This is an important product gap. The user asked on 2026-11-24 for it to be tracked, for future runs to be directed to scaffold before solving (`prompt=scaffold-first`), and for the beyond-JBMC brief to be queued again on that prompt.
 - **Raised**: 2026-11-24 by the watcher, at the user's request (relayed by the advisor), after the queued run `beyond-jbmc-java-change-verification-cam` (Astra 6.2 at max effort, session `c3caedf3`, 3 cycles).
 - **Found**:
