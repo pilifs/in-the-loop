@@ -265,7 +265,7 @@ ready (`pg_isready`) after about 2 s; `$J17/bin/java -cp $O/releases/postgresql-
 $O/scripts/smoke/PgSmoke.java jdbc:postgresql://127.0.0.1:54331/setup postgres` printed `driver=PostgreSQL JDBC Driver 42.7.15
 server=17.12 (Debian 17.12-1.pgdg13+1) autocommit=true`. No query of the brief was run.
 
-## Jobs (verification pending)
+## Jobs
 
 One job per buildable case (18; O11 and O14 have none, see above), each of four steps run by `$O/scripts/case_job.sh CASE STEP`
 (table of modules and test classes: `$O/scripts/cases.tsv`; submitted by `$O/scripts/submit_case.sh`):
@@ -307,13 +307,12 @@ configured for all 18 (`$O/logs/dryrun-{6x,7x-a,7x-b}.txt`). Logs per step: `$O/
 | O19 | `20261126-003558-setup-build-spring-framework-37403-o19-a` |
 | O20 | `20261126-003558-setup-build-spring-framework-37600-o20-a` |
 
-Results are recorded below as the jobs come back.
+All 18 jobs passed every step (results below). Time and peak memory per job, as the runner reported them: O01 5m20s 3.8 GiB, O02 7m27s 4.1 GiB, O03 17m47s 3.2 GiB, O04 5m46s 3.4 GiB, O05 12m50s 2.0 GiB, O06 12m07s 5.7 GiB, O07 10m53s 4.4 GiB, O08 11m47s 6.1 GiB, O09 10m06s 4.6 GiB, O10 6m17s 3.2 GiB, O12 6m35s 3.2 GiB, O13 17m38s 2.4 GiB, O15 20m15s 2.6 GiB, O16 18m29s 3.3 GiB, O17 6m49s 4.1 GiB, O18 15m31s 2.1 GiB, O19 7m21s 3.8 GiB, O20 7m03s 4.0 GiB (O08 went just past the 6G estimate, under its 9G limit). The result files are `verification/results/2026/11/26/JOB/result.json`, collected by the runner onto another head (seen in commit `d8e67216443f80a88470c272c2aef1e6c6ce39d0`), not in this record's commits.
 
 ## Job results
 
 **Spring 6.x cases: all six jobs passed every step** (read from the step logs in `$O/logs/` after the runner finished them on
-2026-11-26; the result files are collected onto the default line by the watcher, not in this record's commits). Fix and parent
-columns: the landed test classes at that pin (O13's two classes are new, so its parent step builds the jar only). Transplant: the
+2026-11-26). Fix and parent columns: the landed test classes at that pin (O13's two classes are new, so its parent step builds the jar only). Transplant: the
 fix's changed test files on a copy of the parent.
 
 | Case | Fix | Parent | Transplant |
@@ -332,13 +331,37 @@ create its context on the parent. O15 fails an `AssertionError` at `R2dbcTransac
 (`headerList`/`queryParamList`, `registerFunction(String, MethodHandle)`, the r2dbc row mappers). The `clean` step left no
 untracked or ignored file in any of the twelve worktrees.
 
-**Spring 7.x cases (O01, O02, O04, O06–O10, O12, O17, O19, O20): verification pending** (jobs in the table above).
+**Spring 7.x cases: all twelve jobs passed every step** (step logs in `$O/logs/`, read after the runner finished them on
+2026-11-26). Same columns; every transplant fails or does not compile. Failing tests are named in full from
+`$O/logs/CASE-parent-landed.test.offline.junit.txt`, parameterized ones with their method from the Gradle log.
+
+| Case | Fix | Parent | Transplant |
+|---|---|---|---|
+| O01 | exit 0, 22 tests, 0 failures, 0 errors (75 s) | exit 0, 21 tests, 0 failures, 0 errors (67 s) | **fails**: 22 tests, 1 failure; `NumberUtilsTests#parseNumberAsPositiveHex()` |
+| O02 | exit 0, 73 tests, 0 failures, 0 errors (116 s) | exit 0, 72 tests, 0 failures, 0 errors (96 s) | **fails**: 73 tests, 2 failures; `BitsCronFieldTests#parse()`, `CronExpressionTests#sundayToSunday()` |
+| O04 | exit 0, 157 tests, 0 failures, 0 errors (84 s) | exit 0, 152 tests, 0 failures, 0 errors (69 s) | **fails**: 157 tests, 2 failures; `DefaultConversionServiceTests$OptionalConversionTests#canConvertOptionalWithBoundedWildcardReflectsUpperBound()`, `#canConvertOptionalToObjectReflectsContainedElementType()` |
+| O06 | exit 0, 51 tests, 0 failures, 0 errors (171 s) | exit 0, 47 tests, 0 failures, 0 errors (138 s) | **fails**: 51 tests, 5 failures; `RestClientBuilderTests#copyConstructorCopiesDefaultCookiesImmutable()`, `#copyConstructorCopiesDefaultHeadersImmutable()`, `DefaultWebClientTests#mutateDoesNotShareDefaultHeaderAndCookieValues()`, `MockServerTests#buildDoesNotShareDefaultHeaderAndCookieValues()`, `#mutateDoesNotShareDefaultHeaderAndCookieValues()` |
+| O07 | exit 0, 24 tests, 0 failures, 0 errors (165 s) | exit 0, 22 tests, 0 failures, 0 errors (132 s) | **fails**: 24 tests, 2 failures; `DefaultRenderingResponseTests#from()` in spring-webmvc and in spring-webflux |
+| O08 | exit 0, 189 tests, 0 failures, 0 errors (155 s) | exit 0, 173 tests, 0 failures, 0 errors (146 s) | **spring-web does not compile**: `HttpRangeTests.java:118` cannot find symbol `resolveRanges(HttpHeaders,HttpHeaders)` (so `HttpRangeTests` and `ResourceHttpMessageWriterTests` did not run); **webmvc and webflux fail**: 156 tests, 4 failures; `ResourceHttpRequestHandlerTests$RangeRequestTests#ignoreRangeWhenIfRangeETagDoesNotMatch()`, `ResourceHandlerFunctionTests#ignoreRangeWhenIfRangeETagDoesNotMatch()`, `HttpEntityMethodProcessorMockTests#shouldIgnoreResourceByteRangeWhenIfRangeETagDoesNotMatch()`, `ResourceWebHandlerTests$RangeRequestTests#ignoreRangeWhenIfRangeETagDoesNotMatch()` |
+| O09 | exit 0, 14 tests, 0 failures, 0 errors (124 s) | exit 0, 13 tests, 0 failures, 0 errors (124 s) | **fails**: 14 tests, 1 failure; `ServerSentEventHttpMessageReaderTests#ignoreInvalidRetry()` |
+| O10 | exit 0, 379 tests, 0 failures, 0 errors (97 s) | exit 0, 367 tests, 0 failures, 0 errors (74 s) | **fails**: 379 tests, 4 failures; `DataBufferUtilsTests#writeWritableByteChannelWithJoinedBuffer(DataBufferFactory)` for its four Netty factories (`[1]`–`[4]`, Unpooled and Pooled, direct and heap), `AssertionFailedError` at `DataBufferUtilsTests.java:358` |
+| O12 | exit 0, 53 tests, 0 failures, 0 errors (93 s) | exit 0, 48 tests, 0 failures, 0 errors (87 s) | **fails**: 53 tests, 5 failures; `NamedParameterJdbcTemplateTests#batchUpdateWithGeneratedKeys()`, `JdbcClientIndexedParameterTests#batchUpdateWithGeneratedKeys()`, `#batchUpdateWithGeneratedKeysAndKeyColumnNames()`, `JdbcClientNamedParameterTests#batchUpdateWithGeneratedKeys()`, `#batchUpdateWithGeneratedKeysAndKeyColumnNames()` |
+| O17 | exit 0, 1 test, 0 failures, 0 errors (95 s) | exit 0, 1 test, 0 failures, 0 errors (87 s) | **fails**: 1 test, 1 failure; `ExpressionCachingIntegrationTests#expressionIsCacheBasedOnActualMethod()` |
+| O19 | exit 0, 24 tests, 0 failures, 0 errors (110 s) | exit 0, 22 tests, 0 failures, 0 errors (108 s) | **fails**: 24 tests, 2 failures; `ReactiveRetryInterceptorTests#withCacheableAnnotation()`, `#withCacheEvictAnnotation()` |
+| O20 | exit 0, 27 tests, 0 failures, 0 errors (114 s) | exit 0, 17 tests, 0 failures, 0 errors (94 s) | **fails**: 27 tests, 6 failures; `ReactiveCachingTests#cacheableFluxPropagatesContextOnCacheMiss(Class)` for all four configurations (`EarlyCacheHitDeterminationConfig`, `EarlyCacheHitDeterminationWithoutNullValuesConfig`, `LateCacheHitDeterminationConfig`, `LateCacheHitDeterminationWithValueWrapperConfig`), `#cachePutFluxPropagatesContext()`, `#cacheEvictFluxPropagatesContext()` |
+
+Two things a reader of these rows would otherwise miss. In O10 only the synchronous joined-buffer test fails on the parent; the
+landing's `writeAsynchronousFileChannelWithJoinedBuffer(DataBufferFactory)` passes there (the brief leaves that parent result to
+the provider). In O20 the landed `cacheableMonoPropagatesContextOnCacheMiss(Class)` passes on the parent; the failures are the
+Flux tests. The `clean` step left no untracked or ignored file in any of the
+24 7.x worktrees, and no `$O/build/` copy remains.
 
 ## Digests of the built artifacts
 
 Each `$O/artifacts/CASE-ROLE/SHA256SUMS` lists the module jars (`jars/`), the project jars on the kept classpaths (`tree/…`) and
 the class digests of every production source file the landing changed (nested classes included). Jar digests include build
-timestamps; the class digests are what compare across builds. Classpaths: `$O/artifacts/CASE-ROLE/M.runtimeClasspath.txt` and
+timestamps in the 6.x builds; the 7.x builds write reproducible jars (entries dated 1980-02-01), so a 7.x jar whose module the
+landing does not touch has the same digest at both pins (O08's spring-webflux). The class digests are what compare across builds. Classpaths: `$O/artifacts/CASE-ROLE/M.runtimeClasspath.txt` and
 `M.testRuntimeClasspath.txt` (`:`-joined).
 
 | Case | Role | Module jar sha256 | Changed classes (sha256) |
@@ -355,8 +378,32 @@ timestamps; the class digests are what compare across builds. Classpaths: `$O/ar
 | O16 | parent | `c896916a37e92a599dcf17746027c68c883c8d55f459d89a7fe0cd94c89fca63`, `2fdc2658b06bcc1d2242186110e5555e9523eed0a82a05d15379d881002b5bea` | `c8cedbf575df814cf9bff2032cea7d80dfb3c0418657157f625de2af14c7b914` |
 | O18 | fix | `spring-jms-6.0.6-SNAPSHOT.jar` `f6e94fef2e108adc75be33ae7559623421aeeaaa1bb2f471e51e0c2ba4910ab8` | `SingleConnectionFactory.class` `aa1d56c92469666a68cfe0a386954b1d7391299375b06037422533316bf1dbc0` (+2 nested) |
 | O18 | parent | `dc522913ca18d225698a7afccdf2340a1ccf5f48b942927b15e260333b70508a` | `30206f976e7c2e391e257de000d5866f9bbf8542d60f55960fdaaba80dff01d2` |
+| O01 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `244fb25bb3c97c6c5053e20c95b793399d6c17a8c12d2b3180720f949333ee55` | `NumberUtils.class` `579e9b79b7b91c10e620821427b0d71795510e3ae3a162268f297d0be0299af7` |
+| O01 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `b5443b2c1d2ee7fb9edd1ff8a41652b9650fec35fdd62de7e8991243860fb57e` | `804868652c8983aa6b1309671ff656d522971515db649599c71aaa1232ea1e15` (same order) |
+| O02 | fix | `spring-context-7.0.11-SNAPSHOT.jar` `8f413c79a5f90a0e5c7c3b4a831cf342a64112686feccc9b928b9e90e9eedd1a` | `BitsCronField.class` `cd8c93efbbbf6922b84808e4d38d28c5672893966f15a32f00ab8e7d1e9a660f` |
+| O02 | parent | `spring-context-7.0.11-SNAPSHOT.jar` `f89d1b6c7a77bac8ff76e778246a6eae1bad81f9043bd91c6dee6ada3d551526` | `1db3066a3bf680fe8e6330721deece0b5df1e0aafd4fe541a2e5625743126870` (same order) |
+| O04 | fix | `spring-core-7.1.0-SNAPSHOT.jar` `de7509824e61a15c3bc86b1880566afc18a8cfd96b033cb1eca6bc97c4da1300` | `OptionalToObjectConverter.class` `420639e8a8debdb6d761cded9c1a93dc6bdc2740dd44380787908cd610fee6a9` |
+| O04 | parent | `spring-core-7.1.0-SNAPSHOT.jar` `b8397dbe3ea855a4f6fab9a73b768a0497ee8cdce5d8a7624afaca00c03f2418` | `3dfe259d743a903da82e3902c14057a0729c7af9e1a0ccc724fbf10f076f91ea` (same order) |
+| O06 | fix | `spring-test-7.1.0-SNAPSHOT.jar` `15546e82d212d7710b2e9fa03aaf0194496a8ef046a52095b2ba3004caf4b470`, `spring-web-7.1.0-SNAPSHOT.jar` `ce6dcf80fefca587a85b8cdd61f9894cc912408fd765f8c2b925a975cd6cd137`, `spring-webflux-7.1.0-SNAPSHOT.jar` `499e4d5e283433e898d30cdf304db771bfff7852dea6a59154728d4356a201b9` | `spring-test DefaultWebTestClientBuilder.class` `67c00dfc5d6c2106f270c0ab71a6715c994d045f8dfc195a807902ddff753051`, `spring-web DefaultRestClientBuilder.class` `b2dad3b4d13ac614d1c7968ee2d56bb5ad1135e3467489d19fc08774a3cb2ddc`, `spring-webflux DefaultWebClientBuilder.class` `d343c1b3dff9af8d3304a36ce14e926df6f123e50711e0a26233138640d9206d` |
+| O06 | parent | `spring-test-7.1.0-SNAPSHOT.jar` `c0c597a09fc6d8be6c0fc8d1ae82d036b248f34a7a7036ef7f3abfd194dd97a9`, `spring-web-7.1.0-SNAPSHOT.jar` `fe8dca4072a4bde84ff2026a656968feaed22a5ad680380b5c54d8f69bff4baa`, `spring-webflux-7.1.0-SNAPSHOT.jar` `a888c3569708b3e50887ef718b9697ae5111383b2b0a45fca2dab1bedddc37d2` | `af223238ace09ef729364fa71085386ff1a9f53cabcabbcff4825755270545f4`, `6a146da54b963bc0949263d507999e2b44b43b5023c4e9d1e92c25f18c97ba29`, `340685d373e8dd34c677614620c17451c1551404465528bcbc118c2d2055138e` (same order) |
+| O07 | fix | `spring-webflux-7.0.10-SNAPSHOT.jar` `88239dd7548d74533fb4dad36d2d19e884d94d56330ac075e64b6b6b70dbf5dd`, `spring-webmvc-7.0.10-SNAPSHOT.jar` `d59708542c7a3d80b529bf390fae97696ed3d8a445487811ed8b4799b25c0126` | `spring-webflux DefaultRenderingResponseBuilder.class` `084ff712917c634ae299cf9d8daaa661b9d9bec33b505ae273c75868c4a1e544` (+1 nested), `spring-webflux RenderingResponse.class` `118905c8073875db1adbff6d12a8ea90df79cfdd4c2d7c295ff6eb8d7f26a61a` (+1 nested), `spring-webmvc DefaultRenderingResponseBuilder.class` `15df348607435245c4a4a694bac3fd2782e746efb816d72318d733055515ad67` (+1 nested), `spring-webmvc RenderingResponse.class` `67cd8769d6f35fa4a408fc2127e43ee72d2ce5eac67529bea2641c0f7736ff85` (+1 nested) |
+| O07 | parent | `spring-webflux-7.0.10-SNAPSHOT.jar` `0b86e5adf7efe4c08b0a3a694669cbaefc4f6cc83e1cc38d33c16eee7cc38bc2`, `spring-webmvc-7.0.10-SNAPSHOT.jar` `50e46ae58f2cc394fe32c6087457f0f92a193ea5d315c093573765aec2cf688c` | `6a889dcc26e2b78d899e011b6615eb6f998cf1f6acccbd716ee982e77ea7f9bf`, `5d1d721bf0bd7e5ea0d4bc106dca4e8d740dcc01f417174984576a888c3e645f`, `9f43452700cb646047b2d85937d9e572cd56a2b8b381e8186200050aa2589357`, `1a1eb27ab3080fc9021ca57f24384f32bcbe8b9c09d575e9c638abe1688e36a9` (same order) |
+| O08 | fix | `spring-web-7.1.0-SNAPSHOT.jar` `09d116a348b8e699ac69d952223c6ad4c68f43ce9739f51c3b918e11d665ce46`, `spring-webflux-7.1.0-SNAPSHOT.jar` `a888c3569708b3e50887ef718b9697ae5111383b2b0a45fca2dab1bedddc37d2`, `spring-webmvc-7.1.0-SNAPSHOT.jar` `df86969485f7c90f21d15b48f5e1a71406c61b91ebb3719b4fcbb744c701b02e` | `spring-web HttpHeaders.class` `b74d75df6759b71a5ad5096e52b4986406b4b79f304f8e19d3092c10ba1bc46d` (+5 nested), `spring-web HttpRange.class` `3b867c2b939ba137d0e1b82ae5ae7f17c4d7dd47903d69c45a86662db74229e0` (+2 nested), `spring-web ResourceHttpMessageWriter.class` `fc6e4a9f7e35d030e80e6db5f5b1ae715771f1be324bbbe9a688368be74240f2`, `spring-webmvc DefaultEntityResponseBuilder.class` `1ce5b828b227b6b85049190925ee6fa4c61297073cc944f44b19b1b230b89c38` (+6 nested), `spring-webmvc AbstractMessageConverterMethodProcessor.class` `b8ad20c1486418c8c1457d3195fcbfab82fee755cd24e2ad27458c416bd796c4` (+2 nested), `spring-webmvc ResourceHttpRequestHandler.class` `f650ea5dec48dae78469a52f1c10b326b34495a7ae936acd9f41287939d48225` |
+| O08 | parent | `spring-web-7.1.0-SNAPSHOT.jar` `4d397f543ecf83e88be03951e60b4fc9696abe8835709658a686665dbbb16c0e`, `spring-webflux-7.1.0-SNAPSHOT.jar` `a888c3569708b3e50887ef718b9697ae5111383b2b0a45fca2dab1bedddc37d2`, `spring-webmvc-7.1.0-SNAPSHOT.jar` `fa8182db94bc85b7b969d92b0c452b7200c4d83199aebf97e65957888e7dbcd0` | `a8146e389db954b4d99b4828127421d60bf4de49bb071e40cda535df2a477e28`, `3796fb044f06ab84a3309ada1d4d721a524bf7676334428456745ea12137f8f5`, `9b36713f89a9b34db77a66e5ac3a3f549788b79838fa8bd8dbbf070192735c90`, `99b15f6c15c61e2dcadcfff7168102b39a8c841f23b2f31a210eb0dc87277519`, `2a6ec238e19087307967a2386ce7298f38eac987801c3e9d7579aaaa25b2de91`, `04b3bf65d0716619fdd984858f2a5c51208a27d58acaadd88bb37e781888ff72` (same order) |
+| O09 | fix | `spring-web-7.1.0-SNAPSHOT.jar` `6f3145ab26e26a40402050dfef46d75489bffd872f1f6215d4044b4b19458e2a`, `spring-webflux-7.1.0-SNAPSHOT.jar` `2b93e6700e6ea9e50df6678733464f85df2499f6e355ddf4bb257cfc66ffc4a7` | `ServerSentEventHttpMessageReader.class` `4902dde3b5185ce5d5a548b25b28431614761daed22c237621ad68b47b1b90cd` (+1 nested) |
+| O09 | parent | `spring-web-7.1.0-SNAPSHOT.jar` `6672125c0192816603a8265304094e1f49c11374103769c7e17f83acd2196471`, `spring-webflux-7.1.0-SNAPSHOT.jar` `2b93e6700e6ea9e50df6678733464f85df2499f6e355ddf4bb257cfc66ffc4a7` | `84cecb493920ce290fc038cd5d59cade70150e5536935ea1de58c8de84437141` (same order) |
+| O10 | fix | `spring-core-7.0.8-SNAPSHOT.jar` `f565dbc70202a420da9e00b081b4897b73b0cadc7a033113fdf79aeca67c6a8d` | `DataBufferUtils.class` `a67b79ca7da6dc952b444560f61700cc3c2c0a8b4b0e6d9e34a877fcde399a08` (+15 nested) |
+| O10 | parent | `spring-core-7.0.8-SNAPSHOT.jar` `6aa7010f26a043249446b67b210a406682070973619929404e29b5088fd2fb5d` | `a67b79ca7da6dc952b444560f61700cc3c2c0a8b4b0e6d9e34a877fcde399a08` (same order) |
+| O12 | fix | `spring-jdbc-7.1.0-SNAPSHOT.jar` `ad2a45d3760e5fea45a79a9a3f64ac7ca20f3bab865b029519d37045366453d2` | `NamedParameterJdbcTemplate.class` `f75ab0ad2513426c9a7793acf5c85d0d2ba81bdbb51f89792df221cc3ead60d5` (+2 nested), `DefaultJdbcClient.class` `39f906a8238b1f00efc4ca72043d6a2c2bcbf5573369ef762cf60ad35acca90b` (+7 nested) |
+| O12 | parent | `spring-jdbc-7.1.0-SNAPSHOT.jar` `cabf379ce542fc2b1ef46aaab4df95e3ed4eb750b1ceff898036b27b47fe6e64` | `7be9e63f24c781a1694193ceff5e8f45779052e147b22798ef218458a2d0f305`, `39f906a8238b1f00efc4ca72043d6a2c2bcbf5573369ef762cf60ad35acca90b` (same order) |
+| O17 | fix | `spring-beans-7.1.0-SNAPSHOT.jar` `5b6874734e9d5dd07f585e7c705ed2b03bc71505df8e6bcba5fa0717e94df23a`, `spring-context-7.1.0-SNAPSHOT.jar` `1eeaeb19a637a19415870dccc7184dceb50f092ffe2512a508467848a773606f` | `AbstractBeanFactory.class` `bb03af74d0bbbbdf4e2dca36c5c27ed4fcbd2d105933d8e9b8d2ea2873b76e71` (+3 nested) |
+| O17 | parent | `spring-beans-7.1.0-SNAPSHOT.jar` `74976c36cc6a615be753bfa40580d22d9b9118041e550212635dd52e580fb424`, `spring-context-7.1.0-SNAPSHOT.jar` `1eeaeb19a637a19415870dccc7184dceb50f092ffe2512a508467848a773606f` | `db05c4cbda960abd92c0376c0f2527f72c2601e90a0c0a0109a77e6bb63f9715` (same order) |
+| O19 | fix | `spring-context-7.0.10-SNAPSHOT.jar` `b74d79a4e0acd7621c7cc56dc9fd1af5227190a937228fe10a425dfa32719e5d` | `CacheAspectSupport.class` `6c357c8fec1385f962bb01f107b52d99243201d1514ddaae0d2d8122e51a6790` (+8 nested) |
+| O19 | parent | `spring-context-7.0.10-SNAPSHOT.jar` `a9fdab03f69493ef5eb5a69a76a986a01dbd8bfb32c0c0789559094f283e1744` | `6c357c8fec1385f962bb01f107b52d99243201d1514ddaae0d2d8122e51a6790` (same order) |
+| O20 | fix | `spring-context-7.0.11-SNAPSHOT.jar` `734ff65ea07f28c2e92e9c9cd2363deba050a33d6a9b9ec6e3260047edd75f7b` | `CacheAspectSupport.class` `6c357c8fec1385f962bb01f107b52d99243201d1514ddaae0d2d8122e51a6790` (+8 nested) |
+| O20 | parent | `spring-context-7.0.11-SNAPSHOT.jar` `72f588b87daa22a0bd8a875cc5ac5aa98cf694281ee74be4b9aae2e73b7d96e3` | `6c357c8fec1385f962bb01f107b52d99243201d1514ddaae0d2d8122e51a6790` (same order) |
 
-Kept test runtime classpath sizes: O03 spring-test 218 entries, O05 49, O13 65, O15 64, O16 spring-context 108, O18 54.
+Kept test runtime classpath sizes (fix): O03 spring-test 218 entries, O05 49, O13 65, O15 64, O16 spring-context 108, O18 54; O01, O04, O10 spring-core 77; O02, O17, O19, O20 spring-context 92; O06 spring-web 202, spring-webflux 207, spring-test 253; O07 spring-webflux 195, spring-webmvc 184; O08 spring-web 202, spring-webflux 207, spring-webmvc 196; O09 spring-web 202, spring-webflux 195; O12 spring-jdbc 56. The 7.x rows above come from `$O/scripts/digest_rows.py`; a class the landing touches in two modules is prefixed with its module.
 
 ## Commands for a rerun by hand
 
@@ -394,9 +441,9 @@ offline. The `later` worktrees (`O01-later`, `O17-later`, `O20-later`) were reso
 - Two first-pass resolutions (O07 parent, O15 parent) and three O16 passes failed once, the first two because this session
   rewrote the runner script while they ran, O16 for want of the Liberica JDK; all reran cleanly.
 
-Disk after setup (7.x jobs still running): worktrees 11 GB while build outputs exist (the `clean` steps take them back to about
-3.8 GB), `gradle-home` 9.6 GB, Gradle distributions and the Liberica JDK 2.2 GB, Maven repository and release sets 62 MB, kept
-artifacts 112 MB, mirror 211 MB. The Gradle zips were deleted after their digests were recorded (the `.sha256` files stay).
+Disk after setup, all jobs done and cleaned: `$O` 17 GB in all: worktrees 3.8 GB, `gradle-home` 10 GB, Gradle distributions
+and the Liberica JDK 2.2 GB, downloads 209 MB, Maven repository and release sets 62 MB, kept artifacts 327 MB; the mirror
+`~/.cache/in-the-loop/git-mirrors/spring-framework.git` 211 MB. The Gradle zips were deleted after their digests were recorded (the `.sha256` files stay).
 
 ## Setup Agent Notes
 
@@ -412,7 +459,7 @@ artifacts 112 MB, mirror 211 MB. The Gradle zips were deleted after their digest
   `$O/scripts/case_job.sh CASE STEP` reruns a case's job steps.
 - **Built jars, class digests and classpaths** per case and pin in `$O/artifacts/CASE-ROLE/` (`jars/`, `SHA256SUMS`,
   `M.runtimeClasspath.txt`, `M.testRuntimeClasspath.txt`, `:`-joined, project jars copied under `tree/`). Digests: the table in
-  [Digests of the built artifacts](#digests-of-the-built-artifacts) (6.x cases now; the 7.x rows come with their jobs).
+  [Digests of the built artifacts](#digests-of-the-built-artifacts), all 18 cases.
 - **Released artifacts** in `$O/releases/SET/` (`jars/`, `classpath.txt`): spring-test 5.3.26 (the reporter's version for O03);
   spring-jdbc 5.0.0.M5 and 5.0.0.RC1 (O11); spring-tx 5.2.7.RELEASE and 5.3.0-M1 with their Reactor, and spring-r2dbc 5.3.0-M1 with
   r2dbc-h2 and H2 (O14); pgJDBC 42.7.15 ([Released artifacts](#released-artifacts)).
@@ -426,7 +473,10 @@ artifacts 112 MB, mirror 211 MB. The Gradle zips were deleted after their digest
   `ClassPathXmlApplicationContextTests`, context creation fails) and O18
   (`testWithConnectionFactoryAndExceptionListenerAndReconnectOnExceptionWithJMSException`), and **do not compile** for O03, O05 and
   O13 (the API they use is new in the landing). Row by row in [Job results](#job-results).
-- 7.x cases (O01, O02, O04, O06–O10, O12, O17, O19, O20): **pending**, jobs listed in [Jobs](#jobs-verification-pending).
+- 7.x cases, by their jobs (all steps passed): the same holds for O01, O02, O04, O06, O07, O09, O10, O12, O17, O19 and O20,
+  whose transplanted tests all compile and **fail** on the parent; for O08 the spring-web tests **do not compile** (they call the new
+  `HttpRange.resolveRanges(HttpHeaders,HttpHeaders)`) and the webmvc and webflux If-Range tests **fail**. In O10 only the
+  synchronous joined-buffer test fails on the parent, the asynchronous one passes; in O20 the Flux context tests fail, `cacheableMonoPropagatesContextOnCacheMiss` passes. Row by row, with every failing test named, in [Job results](#job-results).
 - O11, O14: no build, no test run. Only the source comparison with releases (below).
 - pgJDBC 42.7.15 connects to the PostgreSQL 17.12 image. No query from the brief was run anywhere.
 
