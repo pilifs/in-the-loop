@@ -1,0 +1,158 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "bfc9aed1-6b9f-409a-9ed4-c5515dca4d80",
+  "status": "open",
+  "title": null,
+  "first_prompt": "You are the SETUP AGENT for `llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md`. Your role is strictly limited to mechanical setup. The goal is that the domain agent who comes after you can sta",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.332"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-25T23:41:23.229Z",
+  "ended": "2026-11-26T01:20:59.205Z",
+  "duration_seconds": 5976,
+  "stats": {
+    "turns": 6,
+    "api_calls": 188,
+    "tool_calls": 188,
+    "tool_errors": 4,
+    "compactions": 1,
+    "peak_context_tokens": 303528,
+    "usage": {
+      "input_tokens": 380,
+      "output_tokens": 132559,
+      "cache_read_input_tokens": 34120547,
+      "cache_creation_input_tokens": 406378
+    }
+  },
+  "tools": {
+    "Bash": 175,
+    "Read": 5,
+    "Monitor": 2,
+    "TaskStop": 2,
+    "ToolSearch": 2,
+    "Edit": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-25T23:41:23.229Z",
+      "ended": "2026-11-26T01:16:08.862Z",
+      "turns": 2,
+      "api_calls": 160,
+      "usage": {
+        "input_tokens": 324,
+        "output_tokens": 115775,
+        "cache_read_input_tokens": 31438452,
+        "cache_creation_input_tokens": 289873
+      },
+      "peak_context_tokens": 303528
+    },
+    {
+      "index": 1,
+      "started": "2026-11-26T01:17:11.344Z",
+      "ended": "2026-11-26T01:20:59.205Z",
+      "turns": 4,
+      "api_calls": 28,
+      "usage": {
+        "input_tokens": 56,
+        "output_tokens": 16784,
+        "cache_read_input_tokens": 2682095,
+        "cache_creation_input_tokens": 116505
+      },
+      "peak_context_tokens": 130158
+    }
+  ],
+  "log": {
+    "sha256": "36542a499f34ef0742e2ef259e30a6e9be1cc965612a7c30f4df48d09e491968",
+    "bytes": 3755747,
+    "lines": 1400,
+    "gzip_bytes": 665374,
+    "path": "llm-dlc/traces/bfc9aed1-6b9f-409a-9ed4-c5515dca4d80/logs/36542a499f34ef0742e2ef259e30a6e9be1cc965612a7c30f4df48d09e491968.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "lvqlnyqrxqomovzsmqpvppnntxtnqymw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up Spring Framework O01-O20 sources, toolchains and the 6.x build jobs (verification pending)",
+      "body": "Setup for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md: all 43 pinned spring-framework commits fetched into the shared mirror with worktrees under ~/.cache/in-the-loop/spring-pr-links-o01-o20, each PR's merge commit checked against the brief's after pin, landed diffs checked against the PR file lists, and commit signatures checked in a keyring of the setup's own. Thirteen Gradle distributions verified against gradle.org, a BellSoft Liberica 17 fetched for the 6.1.2 build, and every configuration of every project resolved online for the 7.x and 6.x revisions.\n\nQueued jobs: 20261126-001149-setup-build-spring-framework-30238-o03-a, 20261126-001149-setup-build-spring-framework-30045-o05-a, 20261126-001149-setup-build-spring-framework-30530-o13-a, 20261126-001149-setup-build-spring-framework-31133-o15-a, 20261126-001149-setup-build-spring-framework-31699-o16-a, 20261126-001149-setup-build-spring-framework-29116-o18-a. Each builds the case's modules offline at both pins, runs the landed tests, and runs the fix's tests on the parent, where they must fail.",
+      "log_sha256": "dbdbe9be3d5dead86293f6c7439c0ec0af7861ebcba88d2da8fdca75ad93cb6c"
+    },
+    {
+      "change_id": "xwxzvnzqsupkyvlvlxtkrmyrnvrvnpny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the 7.x Spring Framework O01-O20 setup jobs and record the old builds' gaps (verification pending)",
+      "body": "Adds twelve setup jobs for the Spring 7.x cases of llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md (each builds both pins offline, runs the landed tests and runs the fix's tests on the parent), after every configuration of every project resolved online and an offline dry run of each job's task graph configured. The record now documents the Gradle distributions, build facts by era, snapshot digests, the released artifacts (checksums and signatures) and a PostgreSQL smoke, and why O11 (#1366) and O14 (#25256) cannot be built: their plugins and Kotlin 1.4-M2 are in no public repository. Released spring-jdbc and spring-tx versions whose changed files equal those pins' are identified instead.",
+      "log_sha256": "97bf9f16d3c292021faed8bf5a4cca2adce1c959b466adaccc39a9b49f9d72dc"
+    },
+    {
+      "change_id": "rxlolvqltspkkykpryrsmowwwtpwzyuk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the 6.x Spring Framework O01-O20 setup job results and the notes for the domain agent",
+      "body": "The six jobs for the Spring 6.x cases of llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md passed every step: each landed test class passes at the fix and the parent's at the parent, and the fix's tests on the parent fail (O15, O16, O18) or do not compile (O03, O05, O13). Their jar and changed-class digests are recorded. Adds the rerun commands, what failed or was not done, and the Setup Agent Notes; the twelve 7.x jobs are still pending.",
+      "log_sha256": "940ad66ee22fc2a64ff65986f522c4c3598a33b5695255a90afe72c1c549f8a9"
+    },
+    {
+      "change_id": "loorwnyrustqsqutookpwmvpunmtnxql",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose the Liberica version string 17.0.21.1 for the allow list",
+      "body": "The setup session for the Spring Framework O01-O20 brief fetched BellSoft Liberica JDK 17.0.21.1; the redactor's public-ip rule matches that version string in the session log. Proposed only; it stays a warning until a person approves it.",
+      "log_sha256": "c9a32d3ec5a44113063bcbd5e23de6bae5303a4b3e6fc8fc737d704a1e8eab4b"
+    },
+    {
+      "change_id": "rpwnkqnwoksrkqmqrnmqttznwprpxorr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the 7.x Spring Framework O01-O20 setup job results; setup complete",
+      "body": "All twelve 7.x setup jobs (O01, O02, O04, O06-O10, O12, O17, O19, O20) passed every step: each landed test class passes at its fix pin, the parent's version passes at the parent, and the fix's test files transplanted onto the parent fail (O08's spring-web tests do not compile against the parent; its webmvc and webflux If-Range tests fail). The setup record now has their per-test results with every failing test named, the full sha256 of every built module jar and changed class at both pins, the kept classpath sizes, job times and memory peaks, and the disk figures. The 7.x jars are reproducible (fixed entry dates), which the digest section now says. The worktrees were checked clean and the private keyring's dirmngr was stopped.",
+      "log_sha256": "36542a499f34ef0742e2ef259e30a6e9be1cc965612a7c30f4df48d09e491968"
+    }
+  ],
+  "logs": {
+    "36542a499f34ef0742e2ef259e30a6e9be1cc965612a7c30f4df48d09e491968": {
+      "bytes": 3755747,
+      "lines": 1400,
+      "gzip_bytes": 665374,
+      "url": null
+    },
+    "940ad66ee22fc2a64ff65986f522c4c3598a33b5695255a90afe72c1c549f8a9": {
+      "bytes": 2610642,
+      "lines": 1064,
+      "gzip_bytes": 429032,
+      "url": null
+    },
+    "97bf9f16d3c292021faed8bf5a4cca2adce1c959b466adaccc39a9b49f9d72dc": {
+      "bytes": 2467013,
+      "lines": 1009,
+      "gzip_bytes": 407551,
+      "url": null
+    },
+    "c9a32d3ec5a44113063bcbd5e23de6bae5303a4b3e6fc8fc737d704a1e8eab4b": {
+      "bytes": 2664593,
+      "lines": 1091,
+      "gzip_bytes": 436109,
+      "url": null
+    },
+    "dbdbe9be3d5dead86293f6c7439c0ec0af7861ebcba88d2da8fdca75ad93cb6c": {
+      "bytes": 1853796,
+      "lines": 764,
+      "gzip_bytes": 303119,
+      "url": null
+    }
+  },
+  "redaction_policy": 7,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}

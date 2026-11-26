@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261126-003557-setup-build-spring-framework-37047-o17-a",
+  "title": "Setup: build Spring Framework #37047 (O17) at both pins offline and run its landed tests",
+  "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md, case O17 (spring-projects/spring-framework#37047: getBean(String, ParameterizedTypeReference) on a JDK proxy). In the worktrees $O/worktrees/O17-{fix,parent} (O = ~/.cache/in-the-loop/spring-pr-links-o01-o20), offline (dependencies resolved online beforehand), it builds the jars of spring-beans spring-context with the Gradle each checkout's wrapper names, runs the landed test classes (ExpressionCachingIntegrationTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-context in $O/artifacts/O17-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $O/scripts/case_job.sh. No claims, no verifier.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-framework-pr-links-o01-o20-brief-setup.md"
+    ]
+  },
+  "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned O17",
+  "submitted": {
+    "at": "2026-11-26T00:35:57+00:00",
+    "session": "bfc9aed1-6b9f-409a-9ed4-c5515dca4d80",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "unzip"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "6G",
+    "duration": "25m",
+    "memoryLimit": "9G",
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "steps": [
+    {
+      "name": "O17 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O17 fix",
+      "cwd": "."
+    },
+    {
+      "name": "O17 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O17 parent",
+      "cwd": "."
+    },
+    {
+      "name": "O17 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O17 transplant",
+      "cwd": "."
+    },
+    {
+      "name": "O17 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-o01-o20/scripts/case_job.sh O17 clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}
