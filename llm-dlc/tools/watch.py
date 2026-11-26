@@ -771,10 +771,18 @@ def jobs(root: Path) -> dict:
             "finished": ids(status.get("finished, not collected", [])), "collected": collected}
 
 
+def since_revset(since: str) -> str:
+    """A revset for `since` that still names one commit when it is a change id that has turned divergent (VF-049: a
+    trace rewrite gave the base change a new commit, a bookmark kept the old one visible, and `BASE..@-` failed, so
+    the run's commit list went empty). A change id (jj writes them in the letters k to z) is read as its version on
+    this line; a commit id is taken as it is."""
+    return f"heads(change_id({since}) & ::@-)" if re.fullmatch(r"[k-z]+", since) else since
+
+
 def commits(root: Path, since: str | None) -> list[str]:
     """The commits on the loop's line after change `since`, oldest first: `change summary`. All of the last five
     without one."""
-    revset = f"{since}..@-" if since else "ancestors(@-, 5)"
+    revset = f"{since_revset(since)}..@-" if since else "ancestors(@-, 5)"
     r = subprocess.run(["jj", "--quiet", "log", "--no-graph", "--reversed", "-r", revset, "-T",
                         'change_id.short(8) ++ " " ++ description.first_line() ++ "\n"'],
                        capture_output=True, text=True, cwd=root)
