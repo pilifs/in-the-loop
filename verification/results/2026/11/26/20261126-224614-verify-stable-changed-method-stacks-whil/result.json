@@ -1,0 +1,169 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-224614-verify-stable-changed-method-stacks-whil",
+  "title": "Verify stable changed-method stacks while preserving raw hidden lambda frames",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 45.9s, peak 186.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-224614-verify-stable-changed-method-stacks-whil.json",
+    "sha256": "54bb11c0f51bce37907cee2135fe54dc3cbb412d628131bcdf1c227d63077e7a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-224614-verify-stable-changed-method-stacks-whil",
+      "title": "Verify stable changed-method stacks while preserving raw hidden lambda frames",
+      "description": "The first history check compared JDK 25 hidden lambda addresses literally. The same Lucene methods, providers and stack frames were present in both runs. Compare only the stable names while preserving both complete raw JVM receipts, and repeat the Commons IO, Lucene and subscribed Spring histories.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T22:46:14+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Recheck original changed bodies and exact public outcomes",
+          "run": "python3 verification/generated-observers/history_reach.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/generated-observers/receipts/history-reach.zip"
+      ]
+    }
+  },
+  "sourceCommit": "7ef3d22aaf842d7669093d8f8b91dbe832fb7754",
+  "startedAt": "2026-11-26T22:50:32+00:00",
+  "finishedAt": "2026-11-26T22:51:27+00:00",
+  "wallSeconds": 55.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2955844,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 195407872,
+    "wallSeconds": 45.9,
+    "cpuSeconds": 64.4,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recheck original changed bodies and exact public outcomes",
+      "run": "python3 verification/generated-observers/history_reach.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 45.906,
+      "cpuSeconds": 64.427,
+      "cpuThrottledSeconds": 7.965,
+      "peakMemoryBytes": 195407872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-original-changed-bodie.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/generated-observers/receipts/history-reach.zip",
+      "change": "added",
+      "bytes": 52447,
+      "sha256": "9a3fc8f8bb8a9c77a987fd1260d5bb8cb799ccc8ccb1fcee868f38d69e32bb1b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T22:51:45+00:00",
+    "applied": [
+      "verification/generated-observers/receipts/history-reach.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "53e17d263a9418acdd671a4d27e11cbe64a50b5d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53e17d263a9418acdd671a4d27e11cbe64a50b5d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T225127Z-147804aa3e4a1490",
+      "outputs": "20261126T225127Z-199560f3201fa15f",
+      "diff": "20261126T225127Z-2462870d5a0b1b23"
+    }
+  }
+}
