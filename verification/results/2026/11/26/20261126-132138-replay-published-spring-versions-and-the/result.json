@@ -1,0 +1,463 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-132138-replay-published-spring-versions-and-the",
+  "title": "Replay published Spring versions and the later cron revision",
+  "status": "passed",
+  "summary": "passed: 7 passed step(s) in 40.1s, peak 145.6 MiB (estimated 2m00s, 768.0 MiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-132138-replay-published-spring-versions-and-the.json",
+    "sha256": "1d0801e85120ae5d4c9ab6d46fedcd92a84f757fa3ba62a2029849b14637b823",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-132138-replay-published-spring-versions-and-the",
+      "title": "Replay published Spring versions and the later cron revision",
+      "description": "Use the exact original caller binaries for 13 histories on Spring 7.1.0, 46 on the seven historical release pairs and three on reported 5.3.18. Compare each output to its measured original side and reproduce six additional JVM histories on both original registrar sources at the cron landing and the maintainer revision.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay",
+        "jdbc:durable-transaction-readback"
+      ],
+      "links": {
+        "paths": [
+          "verification/merged-pr-links/p01-p30/upstream.md"
+        ]
+      },
+      "expected": "All 62 release histories match their original side. The current and historical release results and the cron follow-up match the three checked-in files byte for byte.",
+      "submitted": {
+        "at": "2026-11-26T13:21:38+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Replay the four current release cases",
+          "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/p01-p30/release-inputs.json --output verification/merged-pr-links/p01-p30/repeated-release.json",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the historical published versions",
+          "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/p01-p30/historical-inputs.json --output verification/merged-pr-links/p01-p30/repeated-historical.json",
+          "cwd": "."
+        },
+        {
+          "name": "Check the side and outcome of every released history",
+          "run": "python3 verification/merged-pr-links/p01-p30/check_releases.py --release verification/merged-pr-links/p01-p30/repeated-release.json --historical verification/merged-pr-links/p01-p30/repeated-historical.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare current release results",
+          "run": "cmp verification/merged-pr-links/p01-p30/release-observations.json verification/merged-pr-links/p01-p30/repeated-release.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare historical release results",
+          "run": "cmp verification/merged-pr-links/p01-p30/historical-observations.json verification/merged-pr-links/p01-p30/repeated-historical.json",
+          "cwd": "."
+        },
+        {
+          "name": "Measure the named maintainer cron revision",
+          "run": "python3 verification/merged-pr-links/p01-p30/cron_polish.py --output verification/merged-pr-links/p01-p30/repeated-cron.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the cron follow-up",
+          "run": "cmp verification/merged-pr-links/p01-p30/cron-polish.json verification/merged-pr-links/p01-p30/repeated-cron.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/p01-p30/repeated-release.json",
+        "verification/merged-pr-links/p01-p30/repeated-historical.json",
+        "verification/merged-pr-links/p01-p30/repeated-cron.json"
+      ]
+    }
+  },
+  "sourceCommit": "556b960c82b577f55a21d8e311bfabdf8fcb434b",
+  "startedAt": "2026-11-26T13:25:28+00:00",
+  "finishedAt": "2026-11-26T13:26:17+00:00",
+  "wallSeconds": 49.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 754538,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 152694784,
+    "wallSeconds": 40.1,
+    "cpuSeconds": 65.4,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.33
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay the four current release cases",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/p01-p30/release-inputs.json --output verification/merged-pr-links/p01-p30/repeated-release.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 5.814,
+      "cpuSeconds": 10.632,
+      "cpuThrottledSeconds": 0.741,
+      "peakMemoryBytes": 116994048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-the-four-current-releas.log",
+        "lines": 4,
+        "bytes": 125,
+        "sha256": "2435ed8cc2f9f8bf6d45a7c22909fcf91d03406951a4deb7af19588d408c27cd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "481 7.1.0 [True, True, False]",
+        "484 7.1.0 [True, True, False]",
+        "489 7.1.0 [True, True, False]",
+        "504 7.1.0 [True, True, True, True]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay the historical published versions",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --inputs verification/merged-pr-links/p01-p30/historical-inputs.json --output verification/merged-pr-links/p01-p30/repeated-historical.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 29.871,
+      "cpuSeconds": 48.456,
+      "cpuThrottledSeconds": 1.792,
+      "peakMemoryBytes": 152694784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-the-historical-publishe.log",
+        "lines": 22,
+        "bytes": 1147,
+        "sha256": "9662428baf4d4db33f1a72a79ee7f2c48f3c0386a950c6ff4d6db276d688fde0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261126-132138-replay-published-spring-versions-and-the/examples/495-spring-database-startup/caller/PublicCaller.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "warning: unknown enum constant When.MAYBE",
+        "  reason: class file for javax.annotation.meta.When not found",
+        "Note: /tmp/public-releases-w8903nrg/test-inputs/java/org/springframework/tests/sample/beans/IndexedTestBean.java uses unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "1 warning",
+        "482 5.1.6.RELEASE [False, True, False]",
+        "482 5.2.0.M1 [True, True, True]",
+        "486 5.1.0.RC1 [False, True, False]",
+        "486 5.1.0.RC2 [True, True, True]",
+        "488 5.0.0.RC4 [False, True, False]",
+        "488 5.0.0.RELEASE [True, True, True]",
+        "493 5.1.4.RELEASE [False, True, False, False]",
+        "493 5.1.5.RELEASE [True, True, True, True]",
+        "495 5.2.7.RELEASE [False, True, False]",
+        "495 5.3.0-M1 [True, True, True]",
+        "496 5.2.0.RC2 [False, True, False]",
+        "496 5.2.0.RELEASE [True, True, True]",
+        "500 5.1.4.RELEASE [False, False, True, False]",
+        "500 5.1.5.RELEASE [True, True, True, True]",
+        "503 5.3.18 [False, True, False]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check the side and outcome of every released history",
+      "run": "python3 verification/merged-pr-links/p01-p30/check_releases.py --release verification/merged-pr-links/p01-p30/repeated-release.json --historical verification/merged-pr-links/p01-p30/repeated-historical.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.056,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 12857344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-the-side-and-outcome-of.log",
+        "lines": 1,
+        "bytes": 99,
+        "sha256": "c5d5d9757ee39e42ed570b0b679065c5b4fa8dfd50631c90d802819c2fcb7456",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "49 historical-release and 13 Spring 7.1.0 histories match the corresponding original observations."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Compare current release results",
+      "run": "cmp verification/merged-pr-links/p01-p30/release-observations.json verification/merged-pr-links/p01-p30/repeated-release.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.011,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2342912,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-compare-current-release-result.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Compare historical release results",
+      "run": "cmp verification/merged-pr-links/p01-p30/historical-observations.json verification/merged-pr-links/p01-p30/repeated-historical.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.011,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2027520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-compare-historical-release-res.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "Measure the named maintainer cron revision",
+      "run": "python3 verification/merged-pr-links/p01-p30/cron_polish.py --output verification/merged-pr-links/p01-p30/repeated-cron.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 3.607,
+      "cpuSeconds": 6.186,
+      "cpuThrottledSeconds": 0.556,
+      "peakMemoryBytes": 100110336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-measure-the-named-maintainer-c.log",
+        "lines": 1,
+        "bytes": 92,
+        "sha256": "6fc92b2dc277392d29477bf71875b2843a26e713b4ae13c3b88412802b9cedde",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Two original registrar classes, identical instruction listings, six matching JVM histories."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "Compare the cron follow-up",
+      "run": "cmp verification/merged-pr-links/p01-p30/cron-polish.json verification/merged-pr-links/p01-p30/repeated-cron.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.009,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1798144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-compare-the-cron-follow-up.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/p01-p30/repeated-release.json",
+      "change": "added",
+      "bytes": 15455,
+      "sha256": "7f0d83cc590ca99f4ce6e736ae4265b689e62fc4e1837cedb7eea58bce81bf33",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/p01-p30/repeated-historical.json",
+      "change": "added",
+      "bytes": 59038,
+      "sha256": "392666f60ea93cecf83a49676d2b095d655eb56b480d7ada14bbfddc3527cdeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/p01-p30/repeated-cron.json",
+      "change": "added",
+      "bytes": 1895,
+      "sha256": "abb14af1fa3c5ee7b173af07e03c993b5b2b6a52fcf0104eef74278c816e7cc8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T13:26:37+00:00",
+    "applied": [
+      "verification/merged-pr-links/p01-p30/repeated-release.json",
+      "verification/merged-pr-links/p01-p30/repeated-historical.json",
+      "verification/merged-pr-links/p01-p30/repeated-cron.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T132617Z-318249975e31e290",
+      "outputs": "20261126T132617Z-34207988d392cd10",
+      "diff": "20261126T132617Z-367309c6832dc827"
+    }
+  }
+}
