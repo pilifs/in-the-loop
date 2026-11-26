@@ -1,0 +1,281 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-205143-reject-the-false-stock-multi-release-pro",
+  "title": "Reject the false stock multi-release proof at the actual checker boundary",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed, 1 skipped step(s) in 7.8s, peak 231.5 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "declared output verification/classpath-entry-discovery/stock-helper-guard.json was not produced",
+    "declared output verification/classpath-entry-discovery/final-backend.json was not produced",
+    "step 2 (Check an active helper and an earlier ordinary winner) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-205143-reject-the-false-stock-multi-release-pro.json",
+    "sha256": "86cf49e8117d5781d15d983f4ae3ef268bc0c16b34163f971fdba1fd6f030efb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-205143-reject-the-false-stock-multi-release-pro",
+      "title": "Reject the false stock multi-release proof at the actual checker boundary",
+      "description": "The original JVM returned 5 from META-INF/versions/21/Gate.class while the unguarded JBMC-backed command verified the base value 3. Repeat both assertions on JDK 8, 17 and 21. Require the direct property and equivalence routes to refuse an active versioned helper, with a plain earlier definition as a positive stock control. Re-run the ordinary staged proof recipe on both original orders.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jvmcontract:class-bindings"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-26T20:51:43+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Compare deployed versioned subjects on three JDKs",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py mr-proofs verification/classpath-entry-discovery/mr-guard.json",
+          "cwd": "."
+        },
+        {
+          "name": "Check an active helper and an earlier ordinary winner",
+          "run": "python3 verification/classpath-entry-discovery/check_stock_helpers.py verification/classpath-entry-discovery/stock-helper-guard.json",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat unchanged ordered and staged controls",
+          "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/final-backend.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/classpath-entry-discovery/mr-guard.json",
+        "verification/classpath-entry-discovery/stock-helper-guard.json",
+        "verification/classpath-entry-discovery/final-backend.json"
+      ]
+    }
+  },
+  "sourceCommit": "da50078f6f4ccbbcb7c98c16b14577d5560ae40b",
+  "startedAt": "2026-11-26T21:00:44+00:00",
+  "finishedAt": "2026-11-26T21:05:15+00:00",
+  "wallSeconds": 271.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 895996,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 242712576,
+    "wallSeconds": 7.8,
+    "cpuSeconds": 11.1,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 253.134,
+      "cpuSeconds": 253.34,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2377543680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "ece72ed05d79ece08f14dbbfabe65c5107257ec3ab942fc4c208a8c1a82696f6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261126-205143-reject-the-false-stock-multi-release-pro/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 12s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Compare deployed versioned subjects on three JDKs",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py mr-proofs verification/classpath-entry-discovery/mr-guard.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 5.414,
+      "cpuSeconds": 7.637,
+      "cpuThrottledSeconds": 0.438,
+      "peakMemoryBytes": 242712576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-deployed-versioned-sub.log",
+        "lines": 1,
+        "bytes": 44,
+        "sha256": "f43b0ae3501821bf7fe350e7a859e64582230261a7939c96690285728122e24e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mr-proofs: 12 qualified deployment controls"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check an active helper and an earlier ordinary winner",
+      "run": "python3 verification/classpath-entry-discovery/check_stock_helpers.py verification/classpath-entry-discovery/stock-helper-guard.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 2.404,
+      "cpuSeconds": 3.469,
+      "cpuThrottledSeconds": 0.126,
+      "peakMemoryBytes": 87797760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-an-active-helper-and-an.log",
+        "lines": 8,
+        "bytes": 619,
+        "sha256": "2bc09ee00a94a05059df9d0c9d0fcab78eac080742f1761712e2c0336bfa0a13",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261126-205143-reject-the-false-stock-multi-release-pro/verification/classpath-entry-discovery/check_stock_helpers.py\", line 62, in <module>",
+        "    run(parser.parse_args().output)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261126-205143-reject-the-false-stock-multi-release-pro/verification/classpath-entry-discovery/check_stock_helpers.py\", line 50, in run",
+        "    result, = json.loads(proc.stdout)",
+        "    ^^^^^^^",
+        "ValueError: too many values to unpack (expected 1, got 11)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Repeat unchanged ordered and staged controls",
+      "run": "python3 lib/benchmark/classpath-entry-discovery/controls.py backend verification/classpath-entry-discovery/final-backend.json",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/classpath-entry-discovery/mr-guard.json",
+      "change": "added",
+      "bytes": 38188,
+      "sha256": "7eaca496070a83a37e4112d78cb4244e7a34b144506e4b107d3eb3016b9ed4ff",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-26T21:05:33+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/classpath-entry-discovery/mr-guard.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "de13d8c5948e6f5abf5cab7a1224deece43f7946",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/de13d8c5948e6f5abf5cab7a1224deece43f7946/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T210515Z-386955db7b654b84",
+      "outputs": "20261126T210515Z-41475920261be0d0",
+      "diff": "20261126T210515Z-4314102ea7d71e6d",
+      "workdir": "20261126T210519Z-646349628408cd44"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261126-205143-reject-the-false-stock-multi-release-pro"
+}
