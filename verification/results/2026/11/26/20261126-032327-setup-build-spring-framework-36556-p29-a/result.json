@@ -1,0 +1,366 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261126-032327-setup-build-spring-framework-36556-p29-a",
+  "title": "Setup: build Spring Framework #36556 (P29) at both pins offline and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m44s, peak 3.6 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [
+    "step 3 (P29 transplant: the fix's tests on the parent) was held back 1m14s by its 4-CPU quota in 1m57s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/26/20261126-032327-setup-build-spring-framework-36556-p29-a.json",
+    "sha256": "37fd46c517d07957b67a0f94cb67b9ea938b722eceff1410b27d8d8e06bcf8aa",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261126-032327-setup-build-spring-framework-36556-p29-a",
+      "title": "Setup: build Spring Framework #36556 (P29) at both pins offline and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, case P29 (spring-projects/spring-framework#36556: Observe the zone of a programmatically registered cron task). In the worktrees $P/worktrees/P29-{fix,parent} (P = ~/.cache/in-the-loop/spring-pr-links-p01-p30), offline (dependencies resolved online beforehand), it builds the jars of spring-context with the Gradle each checkout's wrapper names, runs the landed test classes (ScheduledTaskRegistrarTests ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of spring-context in $P/artifacts/P29-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-framework-pr-links-p01-p30-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned P29",
+      "submitted": {
+        "at": "2026-11-26T03:23:27+00:00",
+        "session": "9f1d0bf2-a5d8-4e0e-bc51-dd3cbe46021f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+      },
+      "steps": [
+        {
+          "name": "P29 fix: offline build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P29 fix",
+          "cwd": "."
+        },
+        {
+          "name": "P29 parent: offline build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P29 parent",
+          "cwd": "."
+        },
+        {
+          "name": "P29 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P29 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "P29 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P29 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "629f1997d1f51f029e19cbf1f1fefaf3b197dc38",
+  "startedAt": "2026-11-26T03:31:45+00:00",
+  "finishedAt": "2026-11-26T03:38:40+00:00",
+  "wallSeconds": 415.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2262997,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc compiles once per worktree and once in the transplant copy"
+  },
+  "usage": {
+    "peakMemoryBytes": 3898720256,
+    "wallSeconds": 404.6,
+    "cpuSeconds": 1011.8,
+    "memoryOfEstimate": 0.61,
+    "durationOfEstimate": 0.45
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "P29 fix: offline build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P29 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 150.424,
+      "cpuSeconds": 347.352,
+      "cpuThrottledSeconds": 63.601,
+      "peakMemoryBytes": 3159375872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-p29-fix-offline-build-and-land.log",
+        "lines": 30,
+        "bytes": 3193,
+        "sha256": "3ce8f65cdaf64caa168eb5d37b9c28e6a2555e3d60ed38a46497f7a49a4ea21b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P29-fix gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=92 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context:jar :spring-context:test --tests org.spring",
+        "junit tests=8 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.scheduling.config.ScheduledTaskRegistrarTests junit tests=8 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P29-fix/spring-context.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P29-fix/spring-context.testRuntimeClasspath.txt 92 entries",
+        "f96bbd001c050a1fbdba2127d1e35c82cf16d2762ddd016a3aa0750557e94b2c  jars/spring-context-7.1.0-SNAPSHOT.jar",
+        "a15ce764b07608cb42ddc8ba06b8489058a2dce287139d397fdb7be817903230  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT.jar",
+        "fd6b9ac1392d8c3ec9fa20e9069c753197bfdde021ecbf7c9152ecf6d5d7bd9a  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "e12d2da98c29a063112b0bca5a7ad33aa18d601f33f90caa67726a9cafd2a794  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "295f57a2c6cfe148ccef619570fee8ed7df0a0caec21c9a2b73675c54059b5e4  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "f96bbd001c050a1fbdba2127d1e35c82cf16d2762ddd016a3aa0750557e94b2c  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT.jar",
+        "210443f19091dfaec6386a02494ec93819d68a3eaa23f36432c6600abf41dbe6  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "3bb972885161088ca4485a18f355c278e12760588abe2c5b3e5701ef7a720312  tree/spring-core-test/build/libs/spring-core-test-7.1.0-SNAPSHOT.jar",
+        "f92354e47c2cd1c0aa7d218f32aa1da659e0f65d04f206ce7afd20c6dfba80ba  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "2fc84f5d4524623ac9c847ec5a9975b70051906d39d568603c929605268cc97a  tree/spring-instrument/build/libs/spring-instrument-7.1.0-SNAPSHOT.jar",
+        "e6a78f7515fd5f94118263d1abb5bc3987b54d293c1d4a1a5ee98c5e56694b17  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/scheduling/config/ScheduledTaskRegistrar.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "P29 parent: offline build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P29 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 133.446,
+      "cpuSeconds": 321.726,
+      "cpuThrottledSeconds": 52.317,
+      "peakMemoryBytes": 3084107776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-p29-parent-offline-build-and-t.log",
+        "lines": 30,
+        "bytes": 3202,
+        "sha256": "e8fcff6fd2206e3e4ae50c8143acbd1b6772ac9614c9c1f8a868c892dffc39cd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/worktrees/P29-parent gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=82 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context:jar :spring-context:test --tests org.spr",
+        "junit tests=7 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "> Task :buildSrc:checkstyleMain UP-TO-DATE",
+        "> Task :buildSrc:compileTestJava UP-TO-DATE",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses UP-TO-DATE",
+        "class org.springframework.scheduling.config.ScheduledTaskRegistrarTests junit tests=7 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P29-parent/spring-context.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/artifacts/P29-parent/spring-context.testRuntimeClasspath.txt 92 entries",
+        "3fba1194a07379a627fc4f4dba1ee200bcda743e259401fe68865c498f368cc7  jars/spring-context-7.1.0-SNAPSHOT.jar",
+        "a15ce764b07608cb42ddc8ba06b8489058a2dce287139d397fdb7be817903230  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT.jar",
+        "fd6b9ac1392d8c3ec9fa20e9069c753197bfdde021ecbf7c9152ecf6d5d7bd9a  tree/spring-aop/build/libs/spring-aop-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "e12d2da98c29a063112b0bca5a7ad33aa18d601f33f90caa67726a9cafd2a794  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT.jar",
+        "295f57a2c6cfe148ccef619570fee8ed7df0a0caec21c9a2b73675c54059b5e4  tree/spring-beans/build/libs/spring-beans-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "3fba1194a07379a627fc4f4dba1ee200bcda743e259401fe68865c498f368cc7  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT.jar",
+        "210443f19091dfaec6386a02494ec93819d68a3eaa23f36432c6600abf41dbe6  tree/spring-context/build/libs/spring-context-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "fd0ee47e4659ae2f95b687752dd3cafe6ef4738e2ce24ded14f19e8c2a4cbb65  tree/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT-test-fixtures.jar",
+        "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd  tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar",
+        "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3  tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar",
+        "3bb972885161088ca4485a18f355c278e12760588abe2c5b3e5701ef7a720312  tree/spring-core-test/build/libs/spring-core-test-7.1.0-SNAPSHOT.jar",
+        "f92354e47c2cd1c0aa7d218f32aa1da659e0f65d04f206ce7afd20c6dfba80ba  tree/spring-expression/build/libs/spring-expression-7.1.0-SNAPSHOT.jar",
+        "2fc84f5d4524623ac9c847ec5a9975b70051906d39d568603c929605268cc97a  tree/spring-instrument/build/libs/spring-instrument-7.1.0-SNAPSHOT.jar",
+        "13defb65bb0d1515d0bf918c73c12efa4941bfa9a1c530c9467f6b5ce439d21d  spring-context-7.1.0-SNAPSHOT.jar!/org/springframework/scheduling/config/ScheduledTaskRegistrar.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "P29 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P29 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 117.1,
+      "cpuSeconds": 340.832,
+      "cpuThrottledSeconds": 74.933,
+      "peakMemoryBytes": 3898720256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-p29-transplant-the-fix-s-tests.log",
+        "lines": 17,
+        "bytes": 1494,
+        "sha256": "88fc8d3958788d2762ee159e5ec759be344253b531989b83bb7c8553158e0f8e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted spring-context/src/test/java/org/springframework/scheduling/config/ScheduledTaskRegistrarTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P29-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=117 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue :spring-context:test --tests org.springframework.sch",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "> Task :buildSrc:compileTestJava",
+        "> Task :buildSrc:compileTestGroovy NO-SOURCE",
+        "> Task :buildSrc:processTestResources NO-SOURCE",
+        "> Task :buildSrc:testClasses",
+        "> Task :buildSrc:pluginUnderTestMetadata",
+        "class org.springframework.scheduling.config.ScheduledTaskRegistrarTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P29-parent-landed/spring-context/src/test/java/org/springframework/scheduling/config/ScheduledTaskRegistrarTests.java:89: error: no suitable method found for addCronTask(Runnable,String,ZoneId)",
+        "  /home/filip/.cache/in-the-loop/spring-pr-links-p01-p30/build/P29-parent-landed/spring-context/src/test/java/org/springframework/scheduling/config/ScheduledTaskRegistrarTests.java:89: error: no suitable method found for addCronTask(Runnable,String,ZoneId)",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "P29 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-pr-links-p01-p30/scripts/case_job.sh P29 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 3.609,
+      "cpuSeconds": 1.902,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 130818048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-p29-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "816bb22f8d304a0f158aabea4a21fc227ae1555fccc5917f0bc1e9b4a5af53ff",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned P29"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-26T03:38:46+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261126T033841Z-06515861650755e5"
+    }
+  }
+}
