@@ -808,6 +808,19 @@ class TheGenerationPhase(unittest.TestCase):
                          "the setup texts are filled as before")
 
 
+class NestedStarts(unittest.TestCase):
+    """VF-045: `start` (and so `setup` and `generate`) refuses inside a running loop, before it touches anything."""
+
+    def test_start_inside_a_running_loop_is_refused_before_anything_is_written(self):
+        root = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, root, True)
+        with mock.patch.object(single_run.watch, "nested_run_refusal", return_value="refused: made-up loop"), \
+                contextlib.redirect_stderr(io.StringIO()) as err:
+            self.assertEqual(single_run.main(["--root", str(root), "start", "made-up", "--prompt", "work"]), 1)
+        self.assertIn("refused: made-up loop", err.getvalue())
+        self.assertFalse((root / "llm-dlc" / "loop-summaries" / "single-made-up").exists())
+
+
 class HungWaits(unittest.TestCase):
     """`unhang` ends a run's wait loop whose pgrep pattern matches only itself (VF-069), and nothing else."""
 

@@ -473,6 +473,16 @@ clear_leftovers() {
 
 contain() {
   grep -q "/$SCOPE\.scope\$" /proc/self/cgroup && return
+  # A loop started from inside another loop's scope is an agent starting a run: a new paid session nobody asked for
+  # (VF-045, 2026-11-27). Every loop passes here, single, stream and proof alike. The tests' made-up loops set
+  # IN_THE_LOOP_NESTED_RUN=allow (lib/tools/cost_tier.py).
+  local outer
+  outer=$(grep -o -E '/feature-loop-[^/]+\.scope' "${FEATURE_LOOP_CGROUP_FILE:-/proc/self/cgroup}" 2>/dev/null | head -1)
+  if [[ -n "$outer" && "${IN_THE_LOOP_NESTED_RUN:-}" != allow ]]; then
+    log "refused: this loop would start inside the running loop ${outer#/}; a loop's agent does not start runs (VF-045)"
+    log "say in the report what the work needs, and the watcher puts it to the user"
+    exit 1
+  fi
   if [[ -n "${FEATURE_LOOP_UNCAPPED:-}" ]]; then
     log "FEATURE_LOOP_UNCAPPED: running with no memory cap; a proof that runs away can exhaust the machine"
     return

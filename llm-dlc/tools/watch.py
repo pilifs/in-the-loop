@@ -775,6 +775,34 @@ def jobs(root: Path) -> dict:
             "finished": ids(status.get("finished, not collected", [])), "collected": collected}
 
 
+NESTED_RUN_OK = "IN_THE_LOOP_NESTED_RUN"  # "allow": the tests' made-up loops, which start stand-in clients only
+
+
+def enclosing_loop(cgroup: str = "/proc/self/cgroup") -> str | None:
+    """The feature loop whose systemd scope this process runs in (feature-loop-NAME), or None. Every loop, single,
+    stream or proof, runs its agent in such a scope, and everything the agent starts inherits it."""
+    try:
+        text = Path(cgroup).read_text()
+    except OSError:
+        return None
+    m = re.search(r"/(feature-loop-[^/\s]+)\.scope(?:/|$)", text, re.M)
+    return m.group(1) if m else None
+
+
+def nested_run_refusal(what: str, cgroup: str = "/proc/self/cgroup") -> str | None:
+    """Why WHAT may not start here, or None. A run started from inside a running loop is a new paid agent session
+    that nobody asked for: on 2026-11-27 a queued run's agent started a single-agent run of its own for part of its
+    brief, and another read the multi-agent skill to run its brief (VF-045). Starting a run is a person's decision,
+    and a watcher's at a person's word, never a step of an agent's work."""
+    loop = enclosing_loop(cgroup)
+    if not loop or os.environ.get(NESTED_RUN_OK) == "allow":
+        return None
+    return (f"{what} refused: this process runs inside the loop {loop}, and a loop's agent does not start runs, which "
+            f"are new paid sessions (VF-045). Say in your report what the work needs (an independent producer, more "
+            f"parallel work) and the watcher puts it to the user. Parallel deterministic work goes to verification "
+            f"jobs: python3 verification/pipeline.py submit.")
+
+
 def since_revset(since: str) -> str:
     """A revset for `since` that still names one commit when it is a change id that has turned divergent (VF-049: a
     trace rewrite gave the base change a new commit, a bookmark kept the old one visible, and `BASE..@-` failed, so

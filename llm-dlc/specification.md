@@ -312,7 +312,7 @@ Listing is open to anyone. Accepting is a person's decision: the command shows t
 
 ```bash
 python3 llm-dlc/tools/sync.py allow                                       # entries: approved values, proposals masked
-python3 llm-dlc/tools/sync.py allow propose <id>... --reason "why"         # anyone, an agent included
+python3 llm-dlc/tools/sync.py allow propose <id>... --reason "why"         # anyone, an agent included; commits it (--no-commit)
 python3 llm-dlc/tools/sync.py allow approve [<id>...] [--no-commit]        # a person, at a terminal; commits it
 python3 llm-dlc/tools/sync.py allow vouch                                   # a person, at a terminal: see below
 python3 llm-dlc/tools/sync.py allow add <value> --kind <kind> --reason "why" [--no-commit]  # likewise

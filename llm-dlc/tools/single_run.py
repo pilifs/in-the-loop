@@ -267,6 +267,8 @@ def brief_named(run: Run, file: str, workspace: str | None) -> str:
 
 
 def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int:
+    if refusal := watch.nested_run_refusal(f"single_run.py start {run.name}"):
+        raise Problem(refusal)
     data = run.read()
     if run.running():
         print(f"the run {run.name} is already under way (pid {data['loop']['pid']}): `single_run.py wait {run.name}`")

@@ -618,6 +618,18 @@ class ProveLoopTest(unittest.TestCase):
         self.assertFalse((self.tmp / "systemd-run.log").exists())
 
     @cost("tool")
+    def test_a_loop_started_inside_another_loops_scope_is_refused(self):
+        cgroup = self.tmp / "cgroup"
+        cgroup.write_text("0::/user.slice/user@1001.service/app.slice/feature-loop-single-made-up-outer.scope\n")
+        env = {k: v for k, v in self.env.items() if k not in ("FEATURE_LOOP_UNCAPPED", "IN_THE_LOOP_NESTED_RUN")}
+        r = subprocess.run([str(self.root / "llm-dlc/tools/feature-loop.sh"), "prove-change"], cwd=self.root,
+                           env={**env, "FEATURE_LOOP_ITEMS": "901", "FEATURE_LOOP_CGROUP_FILE": str(cgroup)},
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn("would start inside the running loop feature-loop-single-made-up-outer.scope", r.stdout + r.stderr)
+        self.assertEqual(self.calls(), [])  # no client was started
+
+    @cost("tool")
     def test_the_loop_runs_from_a_copy_of_its_scripts(self):
         marker = self.tmp / "ran-the-new-text"
         script = self.root / "llm-dlc/tools/feature-loop.sh"

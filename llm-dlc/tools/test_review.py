@@ -187,6 +187,32 @@ class Allowlist(unittest.TestCase):
         self.assertEqual(sync.load_allowlist()[self.fid]["status"], "approved")
         return jj_calls, commits
 
+    def propose_in(self, at, *extra):
+        """Propose the finding with @ as given, in a jj checkout; what was committed, how."""
+        jj_calls, commits = [], []
+        rel = str(sync.ALLOWLIST.relative_to(sync.REPO))
+        with mock.patch.object(sync, "has_jj", return_value=True), \
+                mock.patch.object(sync, "jj_commits", return_value=[{"description": at["description"]}]), \
+                mock.patch.object(sync, "uncommitted_work", return_value=[rel] + at["changed"]), \
+                mock.patch.object(sync, "jj", side_effect=lambda *a: jj_calls.append(a) or mock.Mock(returncode=0)), \
+                mock.patch.object(sync, "cmd_commit", side_effect=lambda a: commits.append(a) or 0):
+            self.assertEqual(sync.cmd_allow(["propose", self.fid[:8], "--reason", "a version", *extra]), 0)
+        self.assertEqual(sync.load_allowlist()[self.fid]["status"], "proposed")
+        return jj_calls, commits
+
+    def test_a_proposal_commits_itself_so_a_run_is_not_left_with_it_uncommitted(self):
+        # 2026-11-27: a setup agent's separate commit of its proposal was denied, and the uncommitted allow list kept
+        # its run from landing. The proposing command commits it, as an approval does, with the value masked.
+        jj_calls, commits = self.propose_in({"description": "", "changed": []})
+        self.assertEqual((jj_calls, len(commits)), ([], 1))
+        self.assertTrue(commits[0][1].startswith("Allow list: ") and " proposed " in commits[0][1] and self.fid[:8] in commits[0][1])
+        self.assertIn("waives nothing until a person approves it", commits[0][3])
+        self.assertNotIn(self.IP, "\n".join(commits[0]))
+        jj_calls, commits = self.propose_in({"description": "", "changed": ["src/Other.java"]})
+        self.assertEqual((commits, len(jj_calls)), ([], 1))  # the allow list alone; the other work stays in @
+        jj_calls, commits = self.propose_in({"description": "", "changed": []}, "--no-commit")
+        self.assertEqual((jj_calls, commits), ([], []))
+
     def test_an_approval_commits_itself_so_push_is_not_held_up(self):
         jj_calls, commits = self.approve_in({"description": "", "changed": []})
         self.assertEqual(jj_calls, [])
