@@ -9,7 +9,7 @@ import subprocess
 import zipfile
 
 from draw import committed
-from eligibility_inventory import BATCHES, CACHE, JDKS, RESERVED, digest, example, read, upstream_pr, worktree, write
+from eligibility_inventory import BATCHES, CACHE, JDKS, RESERVED, ROOT, digest, example, read, upstream_pr, worktree, write
 
 
 class PreparationStop(ValueError):
@@ -247,3 +247,16 @@ def export_product(revision, files, destination):
         target = destination / path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(blob)
+
+
+def export_checker(checksum, destination):
+    name = Path("lib/target/release/jvmcontract")
+    if not isinstance(checksum, str) or not re.fullmatch(r"[a-f0-9]{64}", checksum):
+        raise PreparationStop("the frozen checker has no SHA-256")
+    target = destination / name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / name, target)
+    if digest(target) != checksum:
+        raise PreparationStop("the available native checker differs from the producer freeze")
+    target.chmod(0o555)
+    return target

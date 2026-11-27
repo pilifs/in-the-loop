@@ -1,0 +1,210 @@
+"""Run a numbered draw slot behind immutable population, reference and prediction barriers."""
+import argparse
+from collections import Counter
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+
+from draw import committed
+from eligibility_inventory import HERE, digest, read, relative, write
+from packet_view import ARMS, PreparationStop, export_checker, export_packet, export_product
+from reference_rows import check_semantics, reviewed
+from sandbox_runner import launch
+
+
+def filename(arm, index, phase, name):
+    return HERE / "arms" / arm / f"{index:02d}" / phase / name
+
+
+def blob(revision, path):
+    if not revision:
+        raise ValueError("a committed phase seal is required")
+    try:
+        return committed(revision, relative(path))
+    except subprocess.CalledProcessError:
+        raise ValueError("phase barrier is incomplete at the specified revision") from None
+
+
+def at(revision, path):
+    return json.loads(blob(revision, path))
+
+
+def verify_predictions(revision, arm, draw):
+    """All 20 attempts, including stops, must exist in one immutable Git tree."""
+    records = []
+    for index, row in enumerate(draw["cases"], 1):
+        attempt = at(revision, filename(arm, index, "predict", "attempt.json"))
+        if (attempt["schema"] != "blind-caller-attempt/v1" or attempt["phase"] != "predict"
+                or attempt["arm"] != arm or attempt["url"] != row["url"] or attempt["index"] != index
+                or attempt["producerRevision"] != draw["producerRevision"]
+                or attempt["preregistration"] != draw["preregistration"]
+                or attempt["status"] not in ("sealed", "preparation stop", "operator stop")):
+            raise ValueError("prediction record belongs to a different arm, draw or producer")
+        if attempt["status"] == "sealed":
+            raw = blob(revision, filename(arm, index, "predict", "prediction.json"))
+            if hashlib.sha256(raw).hexdigest() != attempt["predictionSha256"]:
+                raise ValueError("prediction does not match its seal")
+        records.append(attempt)
+    return records
+
+
+def validate_prediction(value, url, arm):
+    if value.get("url") != url or value.get("arm") != arm or not isinstance(value.get("candidates"), list):
+        raise ValueError("prediction does not identify its public input and ranked candidates")
+    candidates = value["candidates"]
+    if len(candidates) > 64 or value.get("primary") != (0 if candidates else None):
+        raise ValueError("primary choice or candidate cap differs from the preregistration")
+    for candidate in candidates:
+        if not isinstance(candidate, dict) or not all(k in candidate for k in ("entry", "history", "fields", "inputs", "prediction")):
+            raise ValueError("candidate lacks a registered prediction or public history")
+    return len(candidates)
+
+
+def material_index(packet, counts):
+    spec = read(packet / "packet.json")
+    names = {"packet.json", spec["productionDiff"], *(p["file"] for p in spec["productionSources"]),
+             *(p["file"] for p in spec.get("upstreamTests", []))}
+    return {"counts": counts, "publicTitle": spec["title"], "visiblePRDescription": spec["description"],
+            "testScope": spec.get("testScope"), "reviewed": spec.get("reviewed"), "jdkReleaseSha256": spec["jdkReleaseSha256"],
+            "deployments": spec["deployments"], "files": {name: digest(packet / name) for name in sorted(names)}}
+
+
+def store_new(stage, destination):
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    # Keep incomplete output out of the repository. Both configured directories are on
+    # the same filesystem; EXDEV leaves the result unsealed and is explicit to the caller.
+    try:
+        stage.rename(destination)
+    except OSError:
+        if not destination.is_dir() or not (destination / "attempt.json").is_file():
+            raise
+        if read(stage / "attempt.json") != read(destination / "attempt.json"):
+            raise ValueError("a different immutable attempt already occupies this slot") from None
+
+
+def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, seconds):
+    draw = at(reference_seal, HERE / "draw.json")
+    refs = at(reference_seal, HERE / "references.json")
+    size = len(draw["cases"])
+    if not (1 <= index <= size) or size != 20:
+        raise ValueError("a draw slot from 1 through 20 is required")
+    if len(refs["references"]) != size or refs["producerRevision"] != draw["producerRevision"] or refs["preregistration"] != draw["preregistration"]:
+        raise ValueError("references were not sealed for this entire draw and producer")
+    for row, record in zip(draw["cases"], refs["references"], strict=True):
+        if row["url"] != record["url"]:
+            raise ValueError("reference and draw order differ")
+        check_semantics(record)
+    prior = None
+    if arm != "cold":
+        verify_predictions(cold_seal, "cold", draw)
+    if phase == "measure":
+        prior = verify_predictions(prediction_seal, arm, draw)[index - 1]
+    row = draw["cases"][index - 1]
+    ref = refs["references"][index - 1]
+    registered = next(r for r in at(draw["preregistration"], HERE / "eligibility.json")["rows"] if r["number"] == row["number"])
+    if not registered["eligible"] or registered["url"] != row["url"] or registered["pins"] != row["pins"]:
+        raise ValueError("selected case fails its eligibility join")
+    policy_ref = draw["producerFiles"][0]
+    policy_bytes = committed(draw["producerRevision"], policy_ref["path"])
+    if hashlib.sha256(policy_bytes).hexdigest() != policy_ref["sha256"]:
+        raise ValueError("different frozen producer policy")
+    policy = json.loads(policy_bytes)
+    destination = filename(arm, index, phase, "attempt.json").parent
+    if (destination / "attempt.json").is_file():
+        old = read(destination / "attempt.json")
+        if (old["producerRevision"], old["referenceSeal"], old["arm"], old["phase"], old["url"],
+            old.get("predictionSeal"), old.get("coldSeal")) != (draw["producerRevision"], reference_seal,
+                    arm, phase, row["url"], prediction_seal, cold_seal):
+            raise ValueError("this slot already holds a different attempt")
+        return old["status"]
+    with tempfile.TemporaryDirectory(prefix="caller-sealed-view-") as tmp:
+        work = Path(tmp)
+        stage = work / "receipt"
+        stage.mkdir()
+        attempt = {"schema": "blind-caller-attempt/v1", "index": index, "phase": phase, "arm": arm, "url": row["url"],
+                   "producerRevision": draw["producerRevision"], "preregistration": draw["preregistration"],
+                   "referenceSeal": reference_seal, "coldSeal": cold_seal, "predictionSeal": prediction_seal}
+        try:
+            if ref["safetyAbstention"]:
+                raise PreparationStop("scoped abstention for a possible real security vulnerability")
+            if prior is not None and prior["status"] != "sealed":
+                raise PreparationStop("prediction stopped before a candidate was sealed")
+            if prior is not None and prior["candidateCount"] == 0:
+                raise PreparationStop("frozen prediction abstained from nominating a candidate")
+            counts = export_packet(registered, arm, work / "view", registration=reviewed(ref) if arm == "reviewed" else None)
+            export_product(draw["producerRevision"], policy["sourceFiles"], work / "product")
+            if phase == "measure":
+                export_checker(policy["checkerSha256"], work / "product")
+            view = material_index(work / "view", counts)
+            write(stage / "view.json", view)
+            attempt["viewSha256"] = digest(stage / "view.json")
+            if prior and attempt["viewSha256"] != prior["viewSha256"]:
+                raise PreparationStop("deployment or visible material changed since prediction")
+            sentinel = work / "evaluator-only"
+            sentinel.write_bytes(os.urandom(32))
+            sealed = None
+            if prior:
+                sealed = work / "sealed"
+                sealed.mkdir()
+                (sealed / "prediction.json").write_bytes(blob(prediction_seal, filename(arm, index, "predict", "prediction.json")))
+                attempt["predictionSha256"] = prior["predictionSha256"]
+            jdk = Path(read(work / "view/packet.json")["jdk"])
+            out, boundary = launch(phase, work / "product", work / "view", work / "scratch", jdk, sentinel,
+                                   sealed=sealed, seconds=seconds)
+            attempt["boundary"] = boundary
+            if not boundary["landlockSentinelDenied"] or not boundary["networkDenied"]:
+                raise ValueError("worker isolation did not pass its independent controls")
+            if phase == "predict" and not boundary["predictionSubprocessDenied"]:
+                raise ValueError("prediction subprocess barrier failed")
+            if boundary["exitCode"] or boundary["timedOut"]:
+                attempt.update(status="operator stop", stoppedAt="candidate" if phase == "predict" else "generated and old-API compiled caller",
+                               reason="worker exceeded its time limit" if boundary["timedOut"] else f"worker exited {boundary['exitCode']}")
+            elif phase == "predict":
+                path = out / "prediction.json"
+                if not path.is_file():
+                    raise ValueError("worker produced no prediction record")
+                attempt["candidateCount"] = validate_prediction(read(path), row["url"], arm)
+                attempt["predictionSha256"] = digest(path)
+                shutil.copyfile(path, stage / path.name)
+                attempt["status"] = "sealed"
+            else:
+                path = out / "measurement.json"
+                if not path.is_file() or read(path).get("predictionSha256") != prior["predictionSha256"]:
+                    raise ValueError("measurement did not bind the sealed prediction bytes")
+                for file in sorted(out.rglob("*")):
+                    if file.is_symlink() or not file.resolve().is_relative_to(out.resolve()):
+                        raise ValueError("worker emitted an external evidence reference")
+                    if file.is_file():
+                        rel = file.relative_to(out)
+                        (stage / rel).parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copyfile(file, stage / rel)
+                attempt["measurementSha256"] = digest(path)
+                attempt["status"] = "measured"
+        except PreparationStop as error:
+            attempt.update(status="preparation stop", reason=str(error), stoppedAt="deployment" if not prior else prior.get("stoppedAt", "candidate"))
+        except (FileNotFoundError, PermissionError) as error:
+            attempt.update(status="preparation stop", stoppedAt="deployment", reason=type(error).__name__ + " for a required view input")
+        except ValueError as error:
+            attempt.update(status="operator stop", stoppedAt="candidate" if phase == "predict" else "required-side reach", reason=str(error))
+        write(stage / "attempt.json", attempt)
+        store_new(stage, destination)
+        return attempt["status"]
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("phase", choices=("predict", "measure"))
+    parser.add_argument("arm", choices=ARMS)
+    parser.add_argument("--slot", required=True, type=int, action="append")
+    parser.add_argument("--reference-seal", required=True)
+    parser.add_argument("--cold-seal")
+    parser.add_argument("--prediction-seal")
+    parser.add_argument("--seconds", type=int, default=50)
+    args = parser.parse_args()
+    counts = Counter(run_one(i, args.phase, args.arm, args.reference_seal, args.cold_seal, args.prediction_seal,
+                             seconds=args.seconds) for i in args.slot)
+    print(json.dumps(dict(counts)))

@@ -1,8 +1,6 @@
 """Capture the historical registrations and independently join their original observations."""
 import argparse
-from collections import Counter
 from pathlib import Path
-import re
 
 from eligibility_inventory import HERE, RESERVED, digest, example, read, write
 from packet_view import HAZARD
@@ -102,8 +100,9 @@ def check_semantics(record):
 def reviewed(record):
     sem = check_semantics(record)
     primary = record["questions"][record["primaryIndex"]]
-    return {k: sem[k] for k in ("entry", "history", "inputs", "fields", "actions", "bindings")} | {
-        "requiredSides": primary["requiredSides"]}
+    return {k: sem[k] for k in ("entry", "history", "inputs", "actions", "bindings")} | {
+        "fields": [item["name"] for item in sem["fields"]], "fieldTypes": sem["fields"],
+        "requiredSides": sorted(primary["requiredSides"], key=("old", "new").index)}
 
 
 def capture(draw, semantics, destination):

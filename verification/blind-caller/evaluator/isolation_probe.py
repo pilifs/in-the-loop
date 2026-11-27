@@ -18,8 +18,26 @@ MEASURE = """import json, pathlib, subprocess, sys
 packet, sealed, out = map(pathlib.Path, sys.argv[1:])
 jdk = pathlib.Path(json.loads((packet / "packet.json").read_bytes())["jdk"])
 (out / "Observation.java").write_text('public class Observation { public static void main(String[] args) { System.out.print(17); } }')
-subprocess.run([jdk / "bin/javac", "-proc:none", out / "Observation.java"], check=True)
+(out / "TraceCheck.java").write_text('''
+import com.sun.jdi.Bootstrap;
+public class TraceCheck {
+  public static void main(String[] args) throws Exception {
+    var connector = Bootstrap.virtualMachineManager().defaultConnector();
+    var configuration = connector.defaultArguments();
+    configuration.get("main").setValue("Observation");
+    configuration.get("options").setValue("-cp " + args[0]);
+    var vm = connector.launch(configuration);
+    vm.resume();
+    System.out.write(vm.process().getInputStream().readAllBytes());
+    if (vm.process().waitFor() != 0) throw new IllegalStateException("child failed");
+  }
+}
+''')
+subprocess.run([jdk / "bin/javac", "-proc:none", "--add-modules", "jdk.jdi", out / "TraceCheck.java", out / "Observation.java"], check=True)
 value = subprocess.check_output([jdk / "bin/java", "-cp", out, "Observation"])
+traced = subprocess.check_output([jdk / "bin/java", "--add-modules", "jdk.jdi", "-cp", out, "TraceCheck", out])
+if traced != value:
+    raise ValueError("plain and JDI child outputs differ")
 (out / "seen").write_bytes((sealed / "seen").read_bytes() + value)
 """
 
@@ -45,20 +63,21 @@ def probe(output):
         for phase, code, wanted in (("predict", STATIC, token), ("measure", MEASURE, token + "17")):
             worker = product / f"{phase}.py"
             worker.write_text(code)
+            diagnostic = scratch / "synthetic-stderr"
             out, policy = launch(phase, product, packet, scratch / phase, jdk, marker,
-                                 worker_path=worker, sealed=sealed)
+                                 worker_path=worker, sealed=sealed, diagnostic_path=diagnostic)
             if not (policy["landlockSentinelDenied"] and policy["networkDenied"] and policy["exitCode"] == 0
                     and (out / "seen").read_text() == wanted):
-                raise ValueError(f"boundary or public observation failed in {phase}: {policy}")
+                raise ValueError(f"synthetic {phase} failed: {diagnostic.read_text(errors='replace')[-1200:]}")
             if phase == "predict" and not (policy["predictionSubprocessDenied"] and policy["predictionExecutableMappingDenied"]):
                 raise ValueError("prediction retained executable access")
             policies.append({k: v for k, v in policy.items() if k not in ("stderrSha256", "stderrBytes")})
             sealed = out
         record = {"schema": "caller-isolation-probe/v1", "prediction": policies[0], "measurement": policies[1],
-                  "privateSentinelExisted": True, "embeddedListingOmitted": True,
+                  "privateSentinelExisted": True, "embeddedListingOmitted": True, "plainEqualsJdiChild": True,
                   "unchangedSyntheticOutput": token + "17", "jdkReleaseSha256": hashlib.sha256((jdk / "release").read_bytes()).hexdigest()}
         write(output, record)
-        print("two isolated phases, two sentinel denials, two socket denials, one observed Java output")
+        print("two isolated phases, two sentinel denials, private tracer loopback, one observed Java output")
 
 
 if __name__ == "__main__":
