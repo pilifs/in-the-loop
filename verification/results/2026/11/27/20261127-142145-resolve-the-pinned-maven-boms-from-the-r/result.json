@@ -1,0 +1,203 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-142145-resolve-the-pinned-maven-boms-from-the-r",
+  "title": "Resolve the pinned Maven BOMs from the retained local mirror",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m11s, peak 3.5 GiB (estimated 5m00s, 5.0 GiB)",
+  "attention": [
+    "declared output verification/merged-pr-links/s01-s50/maven-war/fix.json was not produced",
+    "step 1 (Resolve original BOMs locally and execute the Maven goal) exited 1, expected 0",
+    "step 1 (Resolve original BOMs locally and execute the Maven goal) was held back 39.7s by its 3-CPU quota in 1m11s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-142145-resolve-the-pinned-maven-boms-from-the-r.json",
+    "sha256": "445bc9ce7774112ce02e0aefccc651f684d56b87cfca6c54c6ae5c199750c296",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-142145-resolve-the-pinned-maven-boms-from-the-r",
+      "title": "Resolve the pinned Maven BOMs from the retained local mirror",
+      "description": "The first two S48 runs stopped before Maven at Gradle BOM resolution despite the exact published POM being in both machine caches. Give Gradle an offline, release-only file repository for retained BOMs, run the original fixed Maven WAR plugin and record the selected payload and entry order in both archives.",
+      "kind": "real-world",
+      "capabilities": [
+        "spring-boot-packaging"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T14:21:45+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "git"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "5m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Resolve original BOMs locally and execute the Maven goal",
+          "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/maven-war/fix.json"
+      ]
+    }
+  },
+  "sourceCommit": "be7623a9604eccf7806e3468113335167f37a48a",
+  "startedAt": "2026-11-27T14:22:33+00:00",
+  "finishedAt": "2026-11-27T14:23:54+00:00",
+  "wallSeconds": 81.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 834657,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3790209024,
+    "wallSeconds": 71.4,
+    "cpuSeconds": 171.4,
+    "memoryOfEstimate": 0.71,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Resolve original BOMs locally and execute the Maven goal",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 71.399,
+      "cpuSeconds": 171.417,
+      "cpuThrottledSeconds": 39.674,
+      "peakMemoryBytes": 3790209024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-resolve-original-boms-locally.log",
+        "lines": 73,
+        "bytes": 4997,
+        "sha256": "03faf5ba7a2a2ca173e91b5de92e62f66964224db8ef0c7a177da585d52d64b6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "\t\t^",
+        "/tmp/boot-maven-war-rt1uzd9g/tree/loader/spring-boot-loader-tools/src/main/java/org/springframework/boot/loader/tools/SignalUtils.java:39: warning: Signal is internal proprietary API and may be removed in a future release",
+        "\t\tSignal.handle(SIG_INT, (signal) -> runnable.run());",
+        "\t\t                        ^",
+        "5 warnings",
+        "",
+        "> Task :build-plugin:spring-boot-maven-plugin:copySettingsXml",
+        "> Task :platform:spring-boot-dependencies:createResolvedBom FAILED",
+        "> Task :buildpack:spring-boot-buildpack-platform:compileJava",
+        "> Task :test-support:spring-boot-test-support:compileJava",
+        "",
+        "[Incubating] Problems report is available at: file:///tmp/boot-maven-war-rt1uzd9g/tree/build/reports/problems/problems-report.html",
+        "",
+        "FAILURE: Build failed with an exception.",
+        "",
+        "* What went wrong:",
+        "Execution failed for task ':platform:spring-boot-dependencies:createResolvedBom' (registered by plugin 'org.springframework.boot.bom').",
+        "> Could not download activemq-bom-6.1.8.pom (org.apache.activemq:activemq-bom:6.1.8): No cached version available for offline mode",
+        "",
+        "* Try:",
+        "> Run with --stacktrace option to get the stack trace.",
+        "> Run with --info or --debug option to get more log output.",
+        "> Get more help at https://help.gradle.org.",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD FAILED in 1m 8s",
+        "21 actionable tasks: 21 executed",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-142145-resolve-the-pinned-maven-boms-from-the-r/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 126, in <module>",
+        "    result = run(args.side,args.check_inputs)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-142145-resolve-the-pinned-maven-boms-from-the-r/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 107, in run",
+        "    raise RuntimeError(\"original Maven integration build failed\")",
+        "RuntimeError: original Maven integration build failed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T14:24:31+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T142354Z-123011fcacef82b0",
+      "outputs": "20261127T142354Z-1396613968a6111c",
+      "workdir": "20261127T142357Z-8366633f0727912c"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-142145-resolve-the-pinned-maven-boms-from-the-r"
+}

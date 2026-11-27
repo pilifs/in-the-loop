@@ -1,0 +1,73 @@
+to resolve Node.js version in offline mode. Reverting to default version.
+
+> Configure project :documentation:spring-boot-docs
+No cached version of Node.js release data to resolve Node.js version in offline mode. Reverting to default version.
+
+> Task :build-plugin:spring-boot-maven-plugin:syncHelpMojoInputs
+
+> Task :build-plugin:spring-boot-maven-plugin:generateHelpMojo
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.google.common.util.concurrent.AbstractFuture$UnsafeAtomicHelper (file:/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/gradle-home/caches/modules-2/files-2.1/com.google.guava/guava/25.1-android/bdaab946ca5ad20253502d873ba0c3313d141036/guava-25.1-android.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.common.util.concurrent.AbstractFuture$UnsafeAtomicHelper
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+
+> Task :loader:spring-boot-loader-tools:compileJava
+/tmp/boot-maven-war-rt1uzd9g/tree/loader/spring-boot-loader-tools/src/main/java/org/springframework/boot/loader/tools/SignalUtils.java:19: warning: Signal is internal proprietary API and may be removed in a future release
+import sun.misc.Signal;
+               ^
+
+> Task :build-plugin:spring-boot-maven-plugin:formatHelpMojoSource
+> Task :build-plugin:spring-boot-maven-plugin:processResources
+> Task :build-plugin:spring-boot-maven-plugin:xsdResources
+> Task :build-plugin:spring-boot-maven-plugin:extractLegalResources
+> Task :build-plugin:spring-boot-maven-plugin:sourcesJar
+
+> Task :loader:spring-boot-loader-tools:compileJava
+/tmp/boot-maven-war-rt1uzd9g/tree/loader/spring-boot-loader-tools/src/main/java/org/springframework/boot/loader/tools/SignalUtils.java:29: warning: Signal is internal proprietary API and may be removed in a future release
+	private static final Signal SIG_INT = new Signal("INT");
+	                     ^
+/tmp/boot-maven-war-rt1uzd9g/tree/loader/spring-boot-loader-tools/src/main/java/org/springframework/boot/loader/tools/SignalUtils.java:29: warning: Signal is internal proprietary API and may be removed in a future release
+	private static final Signal SIG_INT = new Signal("INT");
+	                                          ^
+/tmp/boot-maven-war-rt1uzd9g/tree/loader/spring-boot-loader-tools/src/main/java/org/springframework/boot/loader/tools/SignalUtils.java:39: warning: Signal is internal proprietary API and may be removed in a future release
+		Signal.handle(SIG_INT, (signal) -> runnable.run());
+		^
+/tmp/boot-maven-war-rt1uzd9g/tree/loader/spring-boot-loader-tools/src/main/java/org/springframework/boot/loader/tools/SignalUtils.java:39: warning: Signal is internal proprietary API and may be removed in a future release
+		Signal.handle(SIG_INT, (signal) -> runnable.run());
+		                        ^
+5 warnings
+
+> Task :build-plugin:spring-boot-maven-plugin:copySettingsXml
+> Task :platform:spring-boot-dependencies:createResolvedBom FAILED
+> Task :buildpack:spring-boot-buildpack-platform:compileJava
+> Task :test-support:spring-boot-test-support:compileJava
+
+[Incubating] Problems report is available at: file:///tmp/boot-maven-war-rt1uzd9g/tree/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':platform:spring-boot-dependencies:createResolvedBom' (registered by plugin 'org.springframework.boot.bom').
+> Could not download activemq-bom-6.1.8.pom (org.apache.activemq:activemq-bom:6.1.8): No cached version available for offline mode
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1m 8s
+21 actionable tasks: 21 executed
+The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.
+
+Traceback (most recent call last):
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261127-142145-resolve-the-pinned-maven-boms-from-the-r/verification/merged-pr-links/s01-s50/maven-war/replay.py", line 126, in <module>
+    result = run(args.side,args.check_inputs)
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261127-142145-resolve-the-pinned-maven-boms-from-the-r/verification/merged-pr-links/s01-s50/maven-war/replay.py", line 107, in run
+    raise RuntimeError("original Maven integration build failed")
+RuntimeError: original Maven integration build failed
