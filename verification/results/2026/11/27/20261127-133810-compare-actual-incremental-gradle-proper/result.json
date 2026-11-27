@@ -1,0 +1,172 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-133810-compare-actual-incremental-gradle-proper",
+  "title": "Compare actual incremental Gradle property descriptions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 32.5s, peak 966.1 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Build the pinned Gradle fixtures and inspect consumer output) was held back 24.8s by its 2-CPU quota in 32.5s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-133810-compare-actual-incremental-gradle-proper.json",
+    "sha256": "d4d74ed98c762b2f2601b286fe60993309c43b66f7c755eb13da16ef0df59f25",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-133810-compare-actual-incremental-gradle-proper",
+      "title": "Compare actual incremental Gradle property descriptions",
+      "description": "Read both configuration property descriptions after editing and deleting one comment. Check which Java sources were compiled, and compare each warm result with a clean build. Use the offline plugin graphs and exact Gradle launcher identified in the campaign.",
+      "kind": "real-world",
+      "capabilities": [
+        "public-api-comparison",
+        "spring-boot-packaging"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T13:38:10+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "gradle",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Build the pinned Gradle fixtures and inspect consumer output",
+          "run": "python3 verification/merged-pr-links/s01-s50/gradle/replay.py S10 --output verification/merged-pr-links/s01-s50/gradle/S10.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/gradle/S10.json"
+      ]
+    }
+  },
+  "sourceCommit": "54d4dcac80d0b04aff409e2433d72f9670cbcf82",
+  "startedAt": "2026-11-27T13:48:26+00:00",
+  "finishedAt": "2026-11-27T13:49:09+00:00",
+  "wallSeconds": 43.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 420350,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1013002240,
+    "wallSeconds": 32.5,
+    "cpuSeconds": 63.7,
+    "memoryOfEstimate": 0.47,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build the pinned Gradle fixtures and inspect consumer output",
+      "run": "python3 verification/merged-pr-links/s01-s50/gradle/replay.py S10 --output verification/merged-pr-links/s01-s50/gradle/S10.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 32.5,
+      "cpuSeconds": 63.668,
+      "cpuThrottledSeconds": 24.821,
+      "peakMemoryBytes": 1013002240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-the-pinned-gradle-fixtur.log",
+        "lines": 2,
+        "bytes": 1139,
+        "sha256": "e5e5884fb517b36c347ba45fc1e7ead4392666f3ce5907acdfef17cb7315e3fa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "S10 parent {\"editedClean\": {\"more\": \"Edited description.\", \"parsed\": [\"MoreProperties\", \"SomeProperties\"], \"some\": \"Original description.\"}, \"editedIncremental\": {\"more\": \"Edited description.\", \"parsed\": [\"MoreProperties\"], \"some\": null}, \"initial\": {\"more\": \"Before edit.\", \"parsed\": [\"MorePropertie",
+        "S10 fix {\"editedClean\": {\"more\": \"Edited description.\", \"parsed\": [\"MoreProperties\", \"SomeProperties\"], \"some\": \"Original description.\"}, \"editedIncremental\": {\"more\": \"Edited description.\", \"parsed\": [\"MoreProperties\"], \"some\": \"Original description.\"}, \"initial\": {\"more\": \"Before edit.\", \"parsed\":"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/s01-s50/gradle/S10.json",
+      "change": "added",
+      "bytes": 1642,
+      "sha256": "71836ae1b7a5b373abb2eede649ee6fa3f7106046cebed76d824b61e66df9054",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T13:49:17+00:00",
+    "applied": [
+      "verification/merged-pr-links/s01-s50/gradle/S10.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T134909Z-532607e689fa40f3",
+      "outputs": "20261127T134909Z-55774252c72ff48e",
+      "diff": "20261127T134909Z-577317a9d31902c9"
+    }
+  }
+}
