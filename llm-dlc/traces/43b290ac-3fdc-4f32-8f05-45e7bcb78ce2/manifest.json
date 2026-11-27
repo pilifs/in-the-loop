@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T18:45:51.790Z",
-  "duration_seconds": 12730,
+  "ended": "2026-11-27T18:47:25.963Z",
+  "duration_seconds": 12825,
   "stats": {
     "turns": 14,
-    "api_calls": 297,
-    "tool_calls": 347,
+    "api_calls": 301,
+    "tool_calls": 351,
     "tool_errors": 4,
     "compactions": 2,
     "peak_context_tokens": 564675,
     "usage": {
-      "input_tokens": 600,
-      "output_tokens": 504953,
-      "cache_read_input_tokens": 92723503,
-      "cache_creation_input_tokens": 1314681
+      "input_tokens": 608,
+      "output_tokens": 511133,
+      "cache_read_input_tokens": 94864561,
+      "cache_creation_input_tokens": 1322672
     }
   },
   "tools": {
-    "Bash": 265,
+    "Bash": 269,
     "Read": 54,
     "Write": 13,
     "Edit": 12,
@@ -86,24 +86,24 @@
     {
       "index": 2,
       "started": "2026-11-27T17:39:27.601Z",
-      "ended": "2026-11-27T18:45:51.790Z",
+      "ended": "2026-11-27T18:47:25.963Z",
       "turns": 2,
-      "api_calls": 112,
+      "api_calls": 116,
       "usage": {
-        "input_tokens": 226,
-        "output_tokens": 195632,
-        "cache_read_input_tokens": 40909665,
-        "cache_creation_input_tokens": 519929
+        "input_tokens": 234,
+        "output_tokens": 201812,
+        "cache_read_input_tokens": 43050723,
+        "cache_creation_input_tokens": 527920
       },
-      "peak_context_tokens": 531836
+      "peak_context_tokens": 539827
     }
   ],
   "log": {
-    "sha256": "a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1",
-    "bytes": 9427015,
-    "lines": 2888,
-    "gzip_bytes": 1771608,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1.jsonl.gz"
+    "sha256": "90beb730a6faaa94cb7e0bb45fac257262d3861245e7280defa3cb6840db98ff",
+    "bytes": 9475486,
+    "lines": 2918,
+    "gzip_bytes": 1777883,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/90beb730a6faaa94cb7e0bb45fac257262d3861245e7280defa3cb6840db98ff.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -210,6 +210,14 @@
       "summary": "Point the historical pages and findings that name something retired at the register",
       "body": "The user's decision of 2026-11-27 for the convergence on /orchestrate-run: live files are rewritten, records are never edited, and a historical page that names something retired keeps its text and gets one dated line that points at llm-dlc/retired.md. This adds that line to the 38 pages of llm-dlc/loops that name a retired skill, command or script (the briefs of earlier loops and their streams, results pages, the brief template of that time) and to the 11 entries of verification/findings.md that do. Each line says what the page names, the change that removed it, and the register entry that says what replaced it. The 6 pages there that the queue's log names, its copies of the user's briefs, are records and are untouched.\n\nretired.py writes the lines from the register's entries (banners --write) and its check now fails on a historical page or a finding that lacks one, so the next retirement is one command and a page added later is caught by the default test run. The fixtures' pages under lib/tests are held to the live rule, and the two that sent a reader to an integration script now say it went with the streams workflow.\n\nVF-045 and VF-072 each gain a dated note of what the convergence changed for them: one run skill is left and is the user's alone to start in Codex, the refusal of a run started inside a loop moved to run_common.py, and CLAUDE.md names the skill without its page, which a test now holds. Neither is closed: what the agents wanted (fan-out, sealed producers, a worker request) is untouched.\n\nVerified: test_retired.py passes (9 tests, 4 of them new: the line a page and a finding lack, that it is written once and a record is left alone, a line that names two changes, and this repository's own pages); retired.py check finds nothing; the changed-tests run passed 22 of 22 test files; the cost lint agrees.",
       "log_sha256": "a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1"
+    },
+    {
+      "change_id": "lukpqrqtoorrytyrllnsmznnzxlqnqly",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Operating notes: what a session from before the one run skill has to drop",
+      "body": "On 2026-11-27 the repository converged on one run skill, /orchestrate-run (llm-dlc/retired.md). A watcher that was started before that day, a compacted session or a client's own memory may still hold the older names, and the user asked that the watcher update its memory and procedures from the change before the queue resumes.\n\nThe operating notes, which every agent reads, now open with a section for that reader: the skill's new name and its split into pages, the commands that did not change, what is gone with nothing to call in its place, what moved (the example checks of the proof run's tool), that the watcher keeps the queue itself and defers to no other kind of run, and that a procedure of its own which names an old command is checked against the register before it is acted on.\n\nVerified: retired.py check finds nothing (each paragraph of the section that names something retired points at the register), and the changed-tests run passed 3 of 3 test files.",
+      "log_sha256": "90beb730a6faaa94cb7e0bb45fac257262d3861245e7280defa3cb6840db98ff"
     }
   ],
   "logs": {
@@ -259,6 +267,12 @@
       "bytes": 1641815,
       "lines": 500,
       "gzip_bytes": 303020,
+      "url": null
+    },
+    "90beb730a6faaa94cb7e0bb45fac257262d3861245e7280defa3cb6840db98ff": {
+      "bytes": 9475486,
+      "lines": 2918,
+      "gzip_bytes": 1777883,
       "url": null
     },
     "a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1": {

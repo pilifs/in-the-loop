@@ -9,6 +9,38 @@ find them.
 A rule that another agent would need is written here or in `CLAUDE.md`, not only in a client's own memory.
 "The user" is the person who runs this repository. A date is when the rule was learned or decided.
 
+## One run skill since 2026-11-27: what a session from before then has to drop
+
+On 2026-11-27 the user had the repository converge on one run skill, `/orchestrate-run`. A watcher started before
+that day, a session that was compacted, or a client's own memory may still hold the older names.
+[`retired.md`](retired.md) is the register of what went. In short:
+
+- **The skill** is `orchestrate-run`; it was `single-agent-run` ([`retired.md`](retired.md#single-agent-run)). Its
+  commands did not change: `single_run.py`, `brief_queue.py`, a run's folder
+  `llm-dlc/loop-summaries/single-NAME/` and its decision record `single-NAME`. A watcher reloads the skill by its
+  new name. The one page was split: beside `SKILL.md` are `setup.md`, `generation.md`, `queue.md` and
+  `redaction.md`, and a watcher reads the page of the kind of run it is watching, in full.
+- **Gone, with nothing to call in their place** (each has an entry in `retired.md`): `brief_run.py` and
+  `run-streams.sh` (a brief's streams, their inboxes, the integration line, the helpers), `watch.py` and
+  `prove-loop.sh` (the proof loop over examples), `verification-loop.sh`, `feature-loop.sh` under any name but
+  `single-agent`, and the plugin with `mode.py`, `release.py` and runtime mode. `python3 llm-dlc/tools/retired.py
+  list` prints every name.
+- **Moved:** what `watch.py preflight NNN` said is `python3 examples/tools/preflight.py NNN`, and its
+  `startup-facts` and `public-observation` are `python3 examples/tools/observe.py` (the proof-loop entry of
+  `retired.md`). Landing, trial merges and the keeping of the queue are in `landing.py`, `queue_keeping.py` and
+  `run_common.py`, behind the same `single_run.py` commands.
+- **The queue is the watcher's.** No verification loop keeps it, and a watcher no longer defers to another kind
+  of run: `single_run.py wait` collects and commits results and starts the runner whenever its run keeps the
+  queue (`--no-verification` leaves it alone).
+- **A landing that conflicts** is resolved as the section of that name below says.
+- **Before the queue resumes after the change**, its watcher checkpoints `develop` and updates its own memory and
+  procedures from the register (the user, 2026-11-27).
+- **A procedure of your own that names one of these** (a memory, a note, a text that points at an old command)
+  is out of date. Check it against the register before acting on it, and correct or drop it.
+
+**Why:** three watchers implemented one protocol three times, agents kept reaching for the wrong run skill
+(VF-045, VF-072), and a session's memory of a command outlives the command.
+
 ## Temporary files stay off /tmp
 
 On the machine these loops run on, `/tmp` is memory (a tmpfs) with a quota per user, and test runs leave a great
