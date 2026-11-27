@@ -1,0 +1,208 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-010332-quantify-charset-choices-and-challenge-o",
+  "title": "Quantify charset choices and challenge ordered startup captures",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1.2s, peak 89.7 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "declared output verification/startup-facts/startup-controls.zip was not produced",
+    "step 1 (Native profile quantification and startup controls) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-010332-quantify-charset-choices-and-challenge-o.json",
+    "sha256": "6cfb5812fc16d0b82eb8b763dd99295372abcb08afd4d440692da454a50f5115",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-010332-quantify-charset-choices-and-challenge-o",
+      "title": "Quantify charset choices and challenge ordered startup captures",
+      "description": "Prove explicit encoding independence and the two-charset selection relation, reproduce all six legacy setting refusals and original values, then check both ordered joint heaps, an opaque use, overlapping application threads, and an interrupted capture followed by a fresh retry.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T01:03:32+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Native profile quantification and startup controls",
+          "run": "python3 lib/benchmark/startup-facts/controls.py --output verification/startup-facts/startup-controls.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/startup-controls.zip"
+      ]
+    }
+  },
+  "sourceCommit": "54db78725b8ce2c14f9128950acc1cde83879308",
+  "startedAt": "2026-11-27T01:17:10+00:00",
+  "finishedAt": "2026-11-27T01:20:26+00:00",
+  "wallSeconds": 196.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 995674,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 94089216,
+    "wallSeconds": 1.2,
+    "cpuSeconds": 1.9,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 186.541,
+      "cpuSeconds": 186.896,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2343010304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "3b561be3926ce9c609f5d86f82d15b94b3eeed784bf81a48e2e116bb6d47149c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-010332-quantify-charset-choices-and-challenge-o/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 06s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Native profile quantification and startup controls",
+      "run": "python3 lib/benchmark/startup-facts/controls.py --output verification/startup-facts/startup-controls.zip",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 1.212,
+      "cpuSeconds": 1.882,
+      "cpuThrottledSeconds": 0.188,
+      "peakMemoryBytes": 94089216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-native-profile-quantification.log",
+        "lines": 8,
+        "bytes": 1768,
+        "sha256": "8ecc837f32e9b7c55e475d810865e95e45c1e3ba414060776d5f2ee1ee65932d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-010332-quantify-charset-choices-and-challenge-o/lib/benchmark/startup-facts/controls.py\", line 115, in <module>",
+        "    if __name__==\"__main__\":main()",
+        "                            ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-010332-quantify-charset-choices-and-challenge-o/lib/benchmark/startup-facts/controls.py\", line 33, in main",
+        "    assert code==0 and out[\"verdict\"]==\"verified\" and out[\"stated\"][\"bounds\"][\"complete\"],(out,why)",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "AssertionError: ({'wire_version': 1, 'verdict': 'unverifiable', 'target': 'StartupControls#selected(Z)I', 'domain': None, 'assume': None, 'assert': '(arg0 && result == 1) || (!arg0 && result == 2)', 'throws': [], 'throws_checked': [], 'counterexample': None, 'proof': None, 'problem': 'the property i"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T01:20:47+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "02124d6deabf1b649e93c8b89c57513bf604f456",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/02124d6deabf1b649e93c8b89c57513bf604f456/jvmcontract",
+    "built": true
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T012026Z-4120390b9e7e1a5e",
+      "outputs": "20261127T012026Z-4306561f797cf6a1",
+      "workdir": "20261127T012030Z-416895e0118935a3"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-010332-quantify-charset-choices-and-challenge-o"
+}
