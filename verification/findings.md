@@ -58,7 +58,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - **To watch in the first brief written under the rules:**
     - a case now has four claim rows or more, where it had three. The `Variation` row reuses the main observation's call and fixture, so setup should not grow, but the domain run decides more claims: compare its time for each case with the earlier batches;
     - whether rule 3 costs sharpness: a public call that shows less than the database did is a weaker observation, not a cheaper one.
-  - **This session's log** (the user): the session that made this change read the advisor's memory notes at its start, before it had weighed what they were, and they describe the control files. Its transcript holds them, and nothing from them is in the change. A note the advisor left in that memory on 2026-11-27 says the user has ruled on both: the session may have that context, and its log is published as it stands. This entry has the ruling from that note alone.
+  - **This session's log** (decided by the user, 2026-11-27): the session read the advisor's memory notes at its start, including the notes on the control files, and its transcript holds them. Nothing from them is in the change. The user decided the log is published as it stands. This session runs no jobs, and the user would rather it had the context.
 - **Tracked in**: this entry, and the note at the head of `llm-dlc/loops/brief-generation-template.md`.
 - **Closes when**: the user's comparison of the next generated list that has a rationale file meets the aim above. If one rule did not hold, the entry narrows to that rule.
 
