@@ -18,16 +18,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
-### VF-071: stock JBMC requires qualification for an active versioned application class
-
-- **Status**: open for stock support on active multi-release members. The ordinary native route is qualified.
-- **Raised**: 2026-11-26 on vm-1. Job `20261126-203730-verify-multi-release-entry-binding-acros` at `9a2aa43232d1` ran both assertions on JDKs 8, 17 and 21.
-- **Found**: the JDK 21 application returned 5 from its versioned Gate class. The unguarded direct JBMC-backed property command verified `result == 3`. The native engine refuted that assertion. Both engines agreed on 3 on the two profiles where only the base member was eligible.
-- **Guard verified**: the direct property and equivalence commands now return unverifiable for an active versioned subject or helper. They still accept an ordinary earlier winner. The JDK 8 and 17 base controls retained both their matching proof and their counterexample. [Guarded subject](classpath-entry-discovery/mr-guard.json) · [Guarded helper and paired route](classpath-entry-discovery/stock-helper-guard.json)
-- **Needs**: the backend owner can enable active multi-release proofs when the actual stock invocation can identify and consume the selected bytes for its subject and helpers. The demonstrated verdict belongs to this repository's integrated stock route.
-- **Closes when**: the stock route verifies the versioned value 5 and refutes the base value 3 for both a direct subject and a versioned helper on JDK 21, while retaining the JDK 8, JDK 17 and earlier-shadow controls.
-- **Tracked in**: [Original assertions and physical bindings](classpath-entry-discovery/mr-proofs.json) and the [classpath discovery report](../llm-dlc/loops/in-the-loop-classpath-and-entry-discovery-brief-results.md).
-
 ### VF-070: what stops or slows an unattended setup phase: a register from the organic PR queue of 2026-11-25 and 26
 
 - **Status**: open, a register to address later (the user, 2026-11-26). Each item says what happened, what it cost and a direction for a fix; none is chosen yet. Items with a finding of their own point to it.
@@ -1529,6 +1519,16 @@ that did not execute can also cause refusal.
   through `run()`; then resubmit 147 and 148 unchanged. VF-002 stays open.
 
 ## Decided and closed
+
+### VF-071: stock JBMC requires qualification for an active versioned application class
+
+- **Status**: closed for the recorded subject, helper and deployment controls by `20261127-062828-check-stock-physical-input-reads-and-typ`.
+- **Raised**: 2026-11-26 on vm-1. Job `20261126-203730-verify-multi-release-entry-binding-acros` at `9a2aa43232d1` ran both assertions on JDKs 8, 17 and 21.
+- **Found**: the JDK 21 application returned 5 from its versioned Gate class. The unguarded direct JBMC-backed property command verified `result == 3`. The native engine refuted that assertion. Both engines agreed on 3 on the two profiles where only the base member was eligible.
+- **Guard verified**: the direct property and equivalence commands now return unverifiable for an active versioned subject or helper. They still accept an ordinary earlier winner. The JDK 8 and 17 base controls retained both their matching proof and their counterexample. [Guarded subject](classpath-entry-discovery/mr-guard.json) · [Guarded helper and paired route](classpath-entry-discovery/stock-helper-guard.json)
+- **Resolution**: the managed `build.py --stock-property` route binds the original JVM-selected entries for a closed integral subject and its static callees. A fresh private projection records which physical class files the deciding stock JBMC 6.11.0 command opened and read. The qualified JDK 21 subject and helper each verified 5 and refuted 3. JDK 8 and 17 used 3, and the earlier helper returned 7. Four negative controls cover absent read evidence, a different binding and the unqualified raw property and paired routes. [Sixteen checks and raw stock evidence](blind-caller/stock-profiles.zip)
+- **Scope**: the raw property and paired/equivalence commands continue to refuse active versioned members without evidence from the deciding invocation. Broader application and initialization behavior needs its own backend binding.
+- **Tracked in**: [Original assertions and physical bindings](classpath-entry-discovery/mr-proofs.json) and the [classpath discovery report](../llm-dlc/loops/in-the-loop-classpath-and-entry-discovery-brief-results.md).
 
 ### VF-062: the checker's before/after renaming was visible to the program, in both directions
 
