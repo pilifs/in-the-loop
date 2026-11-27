@@ -1,0 +1,124 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-050122-verify-the-six-actual-math-min-tuples-us",
+  "title": "Verify the six actual Math.min tuples using the bootstrap bytes",
+  "status": "error",
+  "summary": "error: ",
+  "attention": [
+    "its source revision 072e300c7d92 is a conflicted jj commit, so its tree is jj's conflict layout, not the sources: resolve the conflict and submit the job again"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-050122-verify-the-six-actual-math-min-tuples-us.json",
+    "sha256": "4dc136f9f8d1d4571b2687f4f7fa6df3492758f1ea2c8bebb6c4ef740ed108b4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-050122-verify-the-six-actual-math-min-tuples-us",
+      "title": "Verify the six actual Math.min tuples using the bootstrap bytes",
+      "description": "The original JDK exports its own java.base helper. Prove the generated native lemma, check all six concrete uses inside the guarded summary, and compare the applications in both original Commons IO public histories. Challenge a missing used row, wrong value, wrong binding, missing public consumption and an unused native lemma.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "java:helper-qualification"
+      ],
+      "links": {},
+      "expected": "Each complete public question retains its finite disposition with strict helper evidence and the six native call sites. Every planted false qualification is rejected.",
+      "submitted": {
+        "at": "2026-11-27T05:01:22+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/strict_helper.py",
+          "run": "python3 verification/blind-caller/strict_helper.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/strict-helper.zip"
+      ]
+    }
+  },
+  "sourceCommit": "072e300c7d9207c9924f4a89c5cd9b3b412effcf",
+  "startedAt": "2026-11-27T05:14:50+00:00",
+  "finishedAt": "2026-11-27T05:14:51+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 94101,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": null,
+    "wallSeconds": 0,
+    "cpuSeconds": 0,
+    "memoryOfEstimate": null,
+    "durationOfEstimate": null
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T05:15:02+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job error"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T051451Z-107237ad98e2e942",
+      "outputs": "20261127T051451Z-12535162b887e4ad",
+      "workdir": "20261127T051451Z-43142964c13ef822"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-050122-verify-the-six-actual-math-min-tuples-us"
+}
