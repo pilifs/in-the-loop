@@ -741,6 +741,21 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
     a minute the agent said it would "use the repository's run-brief skill to check the implementation checkpoint
     and recover prior work", and read `.agents/skills/run-brief/SKILL.md` twice. At 21:38:07 it decided the brief
     was for one agent and worked on it directly. Again it started nothing.
+  - **2026-11-27, the first time an agent started a run.** The domain agent of the queue's entry 25,
+    `blind-caller-and-pr-verification` (Codex, `gpt-6.2-astra`, session `c3caedf3…`), read
+    `.agents/skills/single-agent-run/SKILL.md` at 04:17 UTC. For the brief's part C, which needs a producer with a
+    fresh view of five PR links, it then started an ordinary single-agent run itself: `blind-public-five-links`,
+    Codex `gpt-6.2-sol` at high effort, a new session (`c5de983b…`), in a fresh isolated checkout under its own
+    root. It ran from about 04:45 to 05:03 UTC (1 cycle, 68 steps) and ended with status 1 when the client
+    flagged a possible cybersecurity risk during replay. It committed nothing, and its cost is unknown. The
+    agent's record is `verification/blind-caller/url-run/producer-seal.json` in its workspace; its "watcher
+    verdict" is empty. Nobody asked for the run: a new paid session started as a step of other work.
+  - The watcher's checks missed it while it ran. `single_run.py list` and the active feature-loop scopes, read
+    from this checkout, showed only entry 25. The nested run's scope and run entry lived under the other
+    checkout's root. The advisor found it afterwards. A machine-wide listing of every `feature-loop-*` scope, in
+    every state, would have shown it.
+  - It also bears on VF-061: the producer's model calls stopped on the client's cybersecurity filter for the
+    five N links.
 - **Needs**: a choice by the user, one or both of:
   - Mark `run-brief`, and likely `single-agent-run` and `prove-java-change` (which also start hours-long runs), as
     started by a person only: `disable-model-invocation: true` in each `SKILL.md`, and `agents/openai.yaml` with
