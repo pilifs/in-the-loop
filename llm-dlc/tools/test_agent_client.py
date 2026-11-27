@@ -526,6 +526,17 @@ class TheInstructions(Fixture):
         # The run skill is the user's alone to start in Codex (VF-045); Claude Code keeps model invocation.
         self.assertEqual(sorted(name for name, s in found.items() if s.get("codexUserOnly")), ["orchestrate-run"])
         self.assertTrue(all(s["linked"] for s in found.values()), found)
+
+    def test_this_checkouts_instructions_send_no_work_turn_to_a_skill_only_a_person_starts(self):
+        # Codex is given CLAUDE.md whole, and the check below it reads a skill's page named there as that skill
+        # offered to a work turn, which refuses every Codex run at its start (2026-11-27: a link to the run skill's
+        # page, added to CLAUDE.md and found by this check only after the commit).
+        root = TOOLS.parents[1]
+        found = agent_client.skills(root, "", [], [])
+        given = (root / "CLAUDE.md").read_text()
+        for name, skill in found.items():
+            if skill["userOnly"] or skill.get("codexUserOnly"):
+                self.assertNotIn(f"/{name}/SKILL.md", given, f"CLAUDE.md names the page of {name}, which only a person starts")
         self.assertFalse(any((root / name).exists() for name in agent_client.SHADOWS), "an AGENTS.md would shadow CLAUDE.md for Codex")
 
 

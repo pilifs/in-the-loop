@@ -52,7 +52,7 @@ Every test, Rust and Python, has a cost tier, listed in `lib/tests/costs.json` (
 
 ## Runs
 
-- Work that takes hours is a run: one agent toward one outcome, with a watcher session outside it, started by a person with `/orchestrate-run` ([`.claude/skills/orchestrate-run`](.claude/skills/orchestrate-run/SKILL.md)). It is the repository's one run skill. An agent never starts a run as a step of its own work, and a run's agent starts none.
+- Work that takes hours is a run: one agent toward one outcome, with a watcher session outside it, started by a person with `/orchestrate-run`. It is the repository's one run skill, and its pages are for the watcher a person starts, not for an agent at work: an agent never starts a run as a step of its own work, and a run's agent starts none. [`llm-dlc/README.md`](llm-dlc/README.md#a-single-agents-run) describes how a run goes.
 - [`llm-dlc/retired.md`](llm-dlc/retired.md) lists the workflows and commands the repository had before it (a brief's streams, the proof loop over examples, loops started by hand, the verification loop, the published plugin and its runtime mode), what replaced each, and where to read it as it was. A page, a note or a memory that sends you to one of them is out of date: don't look for its commands. `python3 llm-dlc/tools/retired.py check` lists any live file that still does.
 
 ## Operating notes
