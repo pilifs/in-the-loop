@@ -1,0 +1,71 @@
+{
+  "counts": {
+    "changedFiles": 2,
+    "productionSources": 1,
+    "testFilesVisible": 0,
+    "productionListingsWithheld": 0,
+    "testFilesWithheld": 0,
+    "testSourcesOutsideSelection": 0,
+    "publicDocumentationFiles": 2,
+    "prDescriptionOriginalBytes": 985
+  },
+  "publicTitle": "Fix connectivity listener updates with an uninitialized cache",
+  "visiblePRDescription": "## Summary\n\n- Keep vertex and edge additions safe before full connectivity computation and after cache invalidation.\n- Clear individually cached components on edge additions while retaining lazy computation and existing incremental updates for initialized caches.\n- Add directed and undirected regression tests for initial updates, removal/addition sequences, and partial component queries.\n- Prepared with Codex assistance.\n\n## Testing\n\nFixes #1162",
+  "testScope": null,
+  "reviewed": null,
+  "jdkReleaseSha256": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
+  "functionalReview": {
+    "classification": "ordinary product behavior",
+    "decisionSha256": "61f2dd9d22af9f049ec1236925dc88ff4e87c0a1f585ef43ab29555d72e943b4"
+  },
+  "approvedTestLaunches": [],
+  "testTraceAvailability": null,
+  "testTrace": null,
+  "deployments": [
+    {
+      "name": "pins",
+      "old": {
+        "classpath": [
+          {
+            "file": "artifacts/000-1b86ba03a6b8edc3.jar",
+            "sha256": "1b86ba03a6b8edc39797b1e72c243d9b508105fbd4ca2a5f11b6d3bd9ce4e309"
+          },
+          {
+            "file": "artifacts/001-49a9898da3758659.jar",
+            "sha256": "49a9898da3758659388f1333c53ccadb6fbd142a7d18aa7b1a33577090684279"
+          },
+          {
+            "file": "artifacts/002-c80cb4c15dfc0616.jar",
+            "sha256": "c80cb4c15dfc061684c51655fc7a29e573d2ab4baae4d2f239b2bb315faa6e3d"
+          }
+        ],
+        "revision": "fabfabe6f279c0dd61b417a543d33d94fd039249"
+      },
+      "new": {
+        "classpath": [
+          {
+            "file": "artifacts/003-6c00ebfda532ab5b.jar",
+            "sha256": "6c00ebfda532ab5bff639bb32cc820d0bd0386c491651a61d95b65b61391aa54"
+          },
+          {
+            "file": "artifacts/001-49a9898da3758659.jar",
+            "sha256": "49a9898da3758659388f1333c53ccadb6fbd142a7d18aa7b1a33577090684279"
+          },
+          {
+            "file": "artifacts/002-c80cb4c15dfc0616.jar",
+            "sha256": "c80cb4c15dfc061684c51655fc7a29e573d2ab4baae4d2f239b2bb315faa6e3d"
+          }
+        ],
+        "revision": "955e5cfb9b22d7ac2ef956849523d22041baf730"
+      }
+    }
+  ],
+  "files": {
+    "api-docs/new/jgrapht-core/src/main/java/org/jgrapht/alg/connectivity/ConnectivityInspector.java.txt": "723e7a3fcc8dbf2a11135cc0020d1e1e43119eabbba01477ce2746ce7b9d69b6",
+    "api-docs/old/jgrapht-core/src/main/java/org/jgrapht/alg/connectivity/ConnectivityInspector.java.txt": "723e7a3fcc8dbf2a11135cc0020d1e1e43119eabbba01477ce2746ce7b9d69b6",
+    "packet.json": "fe199835390516d1b77e3405ec185b841119c548e59f5412e20e918b73b25fa9",
+    "production.diff": "9216776d01c6f91282beea1e32b5f3ea3262780183641b3eef8eee16a7459f0e",
+    "source/new/jgrapht-core/src/main/java/org/jgrapht/alg/connectivity/ConnectivityInspector.java": "7500407f853d8895957e8e94bb199a89aada61725861e09ff5c96cea504617a1",
+    "source/old/jgrapht-core/src/main/java/org/jgrapht/alg/connectivity/ConnectivityInspector.java": "e18a7297e116c95670ee4c8d00ad009547b02e3cdee54e90bb896cf525d09a35"
+  }
+}
