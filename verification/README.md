@@ -12,7 +12,10 @@ it at once can exhaust the machine. So they go through a queue instead.
    jobs produced (an example's `result.json` and `README.md`) to the working copy, and commits them.
 4. Anyone reads the results in a batch with **`report`**.
 
-Everything goes through [`pipeline.py`](pipeline.py):
+Everything goes through one command. Since 2026-11-27 it is [`jobs/pipeline.py`](../jobs/pipeline.py), the
+pipeline for every kind of job ([`jobs/README.md`](../jobs/README.md)); verification is one workload of it
+([`jobs/workloads/verification.py`](../jobs/workloads/verification.py)). [`pipeline.py`](pipeline.py) here is the
+same command under the name it always had, and the commands below work with either path:
 
 ```bash
 python3 verification/pipeline.py submit ...      # write verification/jobs/ID.json
@@ -38,7 +41,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | Path | What it is | Written by |
 |---|---|---|
 | [`README.md`](README.md) | this page: the lifecycle, [submitting a job](#for-agents-making-changes-submitting-a-job), [managing the pipeline](#for-the-agent-managing-the-pipeline), [reading results](#reading-results), [the runner's resources](#running-resources-isolation-configuration), [other backends](#backends-other-machines-and-the-cloud) | |
-| [`pipeline.py`](pipeline.py) | every command: `submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`; [`test_pipeline.py`](test_pipeline.py) tests it | |
+| [`pipeline.py`](pipeline.py) | the entry point of before 2026-11-27: it runs [`jobs/pipeline.py`](../jobs/pipeline.py), which has every command (`submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`, `prune`, `recover`); [`test_pipeline.py`](test_pipeline.py) tests it through this path | |
 | [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill, for a session with no run's watcher keeping the queue | |
 | [`capture.py`](capture.py) | hands each run's originals to the private archive before they are cut or removed (see [Originals](#originals-the-whole-logs-and-outputs)); [`test_capture.py`](test_capture.py) tests it | |
 | [`layout.py`](layout.py) | where a job and its result are kept, by id: flat, or under the day the job was submitted (see [Two layouts](#two-layouts-flat-and-by-day)); every reader goes through it; [`test_layout.py`](test_layout.py) tests it | |

@@ -11,11 +11,36 @@ is read in. What is intended and not built is in [`ARCHITECTURE.md`](../ARCHITEC
 
 | File | What it is |
 |---|---|
+| [`pipeline.py`](pipeline.py) | the one implementation of admission, claiming, execution, collection and reporting, and every command. It was `verification/pipeline.py` until 2026-11-27, and that path is still an entry point that runs this file, so every command a job, a hook or a note names keeps working |
+| [`workloads/`](workloads) | what a kind of work means: [`generic.py`](workloads/generic.py) (nothing: commands, exit codes, outputs) and [`verification.py`](workloads/verification.py) (the checkers, the build of `jvmcontract`, the verdict lines, numbered examples) |
+| [`schema/job.schema.json`](schema/job.schema.json) | the second job format, `itl-job/v2`: a purpose, a workload, labels, prerequisites, a permitted environment, required outputs |
+| [`sandbox.py`](sandbox.py) | runs a command where the network is demonstrably off, and records how that was shown |
 | [`records.py`](records.py) | reads the committed records by id, from a git revision or from a working copy; computes the result indexes from the receipts, for `collect` to write and for the audit to compare |
 | [`audit.py`](audit.py) | the reconciliation: a read-only join of specifications, receipts, indexes and the runner's state |
 | [`test_audit.py`](test_audit.py) | tests both, on a made-up corpus with one fault at a time and on the corpus of the pinned revision |
 | [`attempts.py`](attempts.py) | the record and the folders every execution of a job gets before its first byte; [`test_attempts.py`](test_attempts.py) tests it, and [`verification/test_capture.py`](../verification/test_capture.py) what the runner, `prune` and `recover` do with it |
 | [`fixtures/`](fixtures) | the census and the manifest of the corpus at `b52a084f5d11`, the revision the migration started from |
+
+## What the pipeline owns, and what a workload owns
+
+| The pipeline, for every job | A workload, for its kind of work |
+|---|---|
+| The job's and each attempt's identity, who submitted it and from which run, its case or batch, the source revision, its prerequisites, its resource estimate, its permitted environment, its declared steps and outputs | What a Gradle task, a Maven goal, a test selector or a checker's command means |
+| Claiming a job once, scheduling it when it is ready, saying why when it is blocked, deferred or cannot run here, enforcing its budget, capturing its outputs, retrying and superseding | Looking for the tools the work needs and building the ones it builds (`missing`, `prepare`), and what a step's environment needs (`step_env`) |
+| The lifecycle, the measured use, the outputs' digests and the links to the evidence | Reading what a log says (`scan`), and what that means for the question asked (`verdicts`, `conclusion`): "the named tests executed", "the claim is refuted" |
+
+A job of the first format (`verification-job/v1`) is the verification workload's, as every job was until
+2026-11-27, and runs exactly as it did. A job of the second format names its workload, `generic` when it names
+none. A job's **purpose** (`resolve`, `build`, `test`, `verify`, `maintenance`) is kept apart from its labels
+(`project`, `tool`, `capability`): a purpose says how to read the result, and a label only groups.
+
+A result's record of its machine lists the pipeline's own tools and those of the job's workload, so a build job's
+result does not list checkers and a machine with none installed is not asked for them.
+
+**A job that ran and a claim that held are two things.** The verification workload's `conclusion` reads the
+checkers' verdict lines apart from the job's status: `established`, `refuted`, `open`, `mixed`, or `none` when no
+checker's line was found, which is never read as established. A job whose every step exits as its specification
+expects has passed, and may have refuted its claim.
 
 ## Attempts
 

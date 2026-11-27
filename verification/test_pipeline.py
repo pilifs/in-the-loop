@@ -40,11 +40,10 @@ class Repo:
         shutil.copy(HERE / "pipeline.py", self.dir / "verification/pipeline.py")
         shutil.copy(HERE / "layout.py", self.dir / "verification/layout.py")  # where jobs and results are, by id
         shutil.copytree(HERE / "schema", self.dir / "verification/schema")
-        # The pipeline's shared modules (jobs/): the code alone, not their tests or fixtures.
-        (self.dir / "jobs").mkdir()
-        for module in sorted((HERE.parent / "jobs").glob("*.py")):
-            if not module.name.startswith("test_"):
-                shutil.copy(module, self.dir / "jobs" / module.name)
+        # The pipeline itself (jobs/), which verification/pipeline.py is an entry point of: the code and the
+        # schemas, not the tests or their fixtures.
+        shutil.copytree(HERE.parent / "jobs", self.dir / "jobs", ignore=lambda folder, names: [
+            n for n in names if n.startswith("test_") or n in ("fixtures", "__pycache__", "README.md")])
         settings = {"isolation": "none", "workers": 2, "cpus": 4, "memory": "2G", "job_memory_max": "1G", "link": [],
                     "after_collect": [], "keep_workdirs": "never", **runner}
         (self.dir / "verification/pipeline.toml").write_text(

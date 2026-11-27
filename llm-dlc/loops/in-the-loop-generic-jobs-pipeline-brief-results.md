@@ -11,7 +11,7 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 |---|---|---|
 | 1. Protect and measure: the census | done | `jobs/audit.py`, `jobs/records.py`, the frozen census and manifest of `b52a084f5d11` |
 | 1. Protect and measure: retention on retry and prune | done | `jobs/attempts.py`; `prune`, `recover` and a collect that can be run again, in `verification/pipeline.py`; the brief queue's cleanup is that `prune` |
-| 2. Switch one queue | open | |
+| 2. Switch one queue | in progress | Done: the pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification workload and a generic one (`jobs/workloads/`); the second job format's schema; a network-off sandbox. Open: see *What is left*, below |
 | 3. Qualify delayed setup (S48) | open | |
 | 4. Tune from measurements | open | |
 | 5. Adopt and verify | open | |
@@ -40,6 +40,52 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
    its own (every original of the *job* verified), with the fault the brief names. It now calls `prune`.
 7. **A stopped collect is finished, not repeated.** The collected receipt records the digest of the staged
    result it came from. A collect that finds it for the staged result it holds writes nothing and only releases.
+
+8. **The second job format is refused by a runner of before the move, by construction.** A job of `itl-job/v2`
+   has no top-level `capabilities` (they are `labels.capability`), which the old runner's own check requires, and
+   its `schema` is not the one the old schema allows. A runner still at work from the old code therefore says
+   "invalid, not run" and leaves the job pending, instead of running a job whose prerequisites or network policy
+   it does not know. A test is to run the pinned old command against such a job.
+9. **A job's workload is chosen by its format.** Every job of the first format is the verification workload's and
+   runs exactly as before. A job of the second names its workload, `generic` when it names none.
+10. **Network policy is explicit and enforced where it is declared.** A step declared `network: none` runs in a
+    network namespace with a loopback interface alone (bubblewrap), and its result keeps the probe that showed
+    it. `unshare -rn` is refused on this machine (AppArmor restricts unprivileged user namespaces) and bubblewrap
+    is not; a systemd user scope's `IPAddressDeny` does nothing here. A job of the first format gets the host's
+    network, as it always did.
+11. **The originating run is read from the loop's scope.** A loop's agent is given nothing of its run by design,
+    but everything it starts is in the systemd scope `feature-loop-single-NAME`. `submit` is to read the run's
+    name from there, so a job carries its run without a variable an agent could set or lose.
+
+## What is left, in the order planned
+
+For whoever continues (this run's later cycles): each item is one commit, with its test.
+
+1. **The second format in `submit`, `validate` and the runner** (`jobs/schema/job.schema.json` is written):
+   `--purpose`, `--workload`, `--label`, `--case`, `--needs`, `--network`, required outputs, `promises.tests`
+   (`jobs/evidence.py` and its test are written, not yet called). In the result: `execution`, `fulfillment`,
+   `evidence`, `conclusion` (the workload's), `timing` with its scopes, each declared output's state. An
+   unfulfilled job of the second format is `failed`, never `passed`.
+2. **Scheduling states**: `needs` (waiting, blocked), unschedulable (no adapter, a missing tool, a network that
+   cannot be enforced), deferred; a dependent starts as soon as its prerequisite finishes.
+3. **The lifecycle view** (`itl-job-lifecycle/v1`): one function, from which `status`, `status --json` (the old
+   shape, as a projection), `wait --json`, `collect --json` and the batch views are rendered; a corrupt
+   specification as a diagnostic with path and revision; an unreadable queue as unknown, never idle. Then the
+   keepers (`queue_keeping.py`, `run_common.py`, `single_run.py`, the `/run-verification` skill) on it, with no
+   regular expression over prose, and on `jobs/pipeline.py`.
+4. **Manifest fan-out** (`jobs/batch.py`): `submit --manifest`, deterministic ids from batch, row and work
+   identity, the published map under `verification/batches/`, convergence of a concurrent or interrupted
+   submission, `resubmit` following the map, `wait --batch`, the 49-row fixture.
+5. **Old and new together**: the pinned old command and the new one from two workspaces on one lock; the old
+   runner refusing a second-format job; a rollback with a job in flight.
+6. **Delayed setup** (gate 3): `jobs/readiness.py` (the operation's description and key, receipts, bundles
+   published atomically and verified), `jobs/workloads/resolution.py` (online resolution in an isolated home, an
+   offline proof in the sandbox, bounded rounds), `needs: readiness`, the nested Gradle and Maven fixture, then
+   S48 as one job that runs the new scheduler in a throwaway repository inside it (the default checkout's runner
+   is the old code until this line lands).
+7. **Fetch admission and its measurements** (gate 4): a ceiling of ten fetch slots, taken while a fetch step runs.
+8. **Adoption** (gate 5): `ARCHITECTURE.md`, `CLAUDE.md`, the skills, the script inventory under `verification/`,
+   the findings named by the brief.
 
 ## Gate 1: the census
 
