@@ -1,0 +1,370 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110824-setup-build-spring-boot-52530-s47-at-bot",
+  "title": "Setup: build Spring Boot #52530 (S47) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 5m24s, peak 4.3 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S47 fix: build and landed tests) was held back 2m07s by its 4-CPU quota in 2m44s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S47 transplant: the fix's tests on the parent) was held back 1m28s by its 4-CPU quota in 55.2s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110824-setup-build-spring-boot-52530-s47-at-bot.json",
+    "sha256": "e5eaa99545fa77b9f189afb9b0ad3a78e56d7a509e26fb26b8ed33809253d325",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110824-setup-build-spring-boot-52530-s47-at-bot",
+      "title": "Setup: build Spring Boot #52530 (S47) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S47 (spring-projects/spring-boot#52530: An excluded archive entry remains available to the next Gradle layer). In the worktrees $P/worktrees/S47-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of build-plugin:spring-boot-gradle-plugin with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (LayeredSpecTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of build-plugin:spring-boot-gradle-plugin in $P/artifacts/S47-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S47",
+      "submitted": {
+        "at": "2026-11-27T11:08:24+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S47 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S47 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S47 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S47 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S47 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S47 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S47 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S47 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091106-setup-build-spring-boot-52530-s47-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:59:30+00:00",
+  "finishedAt": "2026-11-27T12:05:06+00:00",
+  "wallSeconds": 336.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 4595699712,
+    "wallSeconds": 324.4,
+    "cpuSeconds": 877.3,
+    "memoryOfEstimate": 0.71,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S47 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S47 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 164.284,
+      "cpuSeconds": 441.402,
+      "cpuThrottledSeconds": 127.414,
+      "peakMemoryBytes": 4595699712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s47-fix-build-and-landed-tests.log",
+        "lines": 30,
+        "bytes": 4234,
+        "sha256": "0d325503e0116cec6e86124a3cc63dda32c1864c11ac246646fa6caad06901ed",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S47-fix gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=99 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/sc",
+        "junit tests=4 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.gradle.tasks.bundling.LayeredSpecTests junit tests=4 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S47-fix/build-plugin_spring-boot-gradle-plugin.runtimeClasspath.txt 94 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S47-fix/build-plugin_spring-boot-gradle-plugin.testRuntimeClasspath.txt 152 entries",
+        "5105654f3969b598938d5efb9706e7bf50668ceb9aa08f1a8d0665e39a9d8d89  jars/spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar",
+        "326036787952615adc04a4b50aadb261b9e28941ccab61482ea2d31f8572cc71  gradle-home/caches/9.8.1/generated-gradle-jars/gradle-api-9.8.1.jar",
+        "630ee97a7f1cdc75e8afc279a96b18766a38b2a5a2c8d1a75d16c2e3825bc10e  gradle-home/caches/9.8.1/generated-gradle-jars/gradle-test-kit-9.8.1.jar",
+        "7466a893469b4821f0c23a88eab9c2801b2bd0da124242c4a11b42cf27dbdc34  tree/buildpack/spring-boot-buildpack-platform/build/libs/spring-boot-buildpack-platform-4.0.10-SNAPSHOT.jar",
+        "6a83747509c953cdeb4d5701023032b58db6142ece0d69b9ed784f83c91179e8  tree/loader/spring-boot-loader-tools/build/libs/spring-boot-loader-tools-4.0.10-SNAPSHOT.jar",
+        "dc26d677e049508fc78ebdca11f13db609336e8be5f78f6e283711309906105b  tree/test-support/spring-boot-gradle-test-support/build/libs/spring-boot-gradle-test-support-4.0.10-SNAPSHOT.jar",
+        "389ba14f806fe174cf99df2d5e28d6c25389dc0b06f3fb750bca80a4b31b89f4  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.10-SNAPSHOT.jar",
+        "5f519a78fb4b0a699ad562104f8e5713d39663ba011aaa84269166db1211f9e3  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$ApplicationSpec$IntoLayerSpecFactory.class",
+        "34255720623f762da253a967c479a933ce23679040d53e9d89c21b7f9c295d7d  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$ApplicationSpec.class",
+        "5880b220c5c4f841cddcfc5f3eab972461f94064fe875781879a8ca1dbc5ef90  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$DependenciesIntoLayerSpec.class",
+        "df106dcdf1cdfd22775a157be8bff5939923b49b30f566ad10e615628b37d302  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$DependenciesSpec$IntoLayerSpecFactory.class",
+        "baf21901677763df3eb0b9112641111cf159fbdaa6a222af836857a2c4fd0916  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$DependenciesSpec.class",
+        "53f8e9e31448dd1fe3f5f7c9dcf420898947bd5c1a0c9ca1a604d8f0bf01da3c  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$IntoLayerSpec.class",
+        "1f45b75264d0d1fd4228473d8232a87dd8e0b1bd8f666ac025518938ca50d258  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$IntoLayersSpec.class",
+        "13f5e96370db47012cce0a2d49d51b0f9a51e80afa2702bbffc72db47209c203  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S47 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S47 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 101.546,
+      "cpuSeconds": 270.298,
+      "cpuThrottledSeconds": 16.083,
+      "peakMemoryBytes": 2140377088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s47-parent-build-and-the-paren.log",
+        "lines": 30,
+        "bytes": 4091,
+        "sha256": "fdae6c10e9095af78259a7a3d5e5283740126d05a0b879333f2b3916a3b18af7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S47-parent gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=39 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.gradle.tasks.bundling.LayeredSpecTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S47-parent/build-plugin_spring-boot-gradle-plugin.runtimeClasspath.txt 94 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S47-parent/build-plugin_spring-boot-gradle-plugin.testRuntimeClasspath.txt 152 entries",
+        "86796434210cd2429f81bfebc1c43c9a6816d8794c7e6ffaf6ee802fa5a3b289  jars/spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar",
+        "326036787952615adc04a4b50aadb261b9e28941ccab61482ea2d31f8572cc71  gradle-home/caches/9.8.1/generated-gradle-jars/gradle-api-9.8.1.jar",
+        "630ee97a7f1cdc75e8afc279a96b18766a38b2a5a2c8d1a75d16c2e3825bc10e  gradle-home/caches/9.8.1/generated-gradle-jars/gradle-test-kit-9.8.1.jar",
+        "7466a893469b4821f0c23a88eab9c2801b2bd0da124242c4a11b42cf27dbdc34  tree/buildpack/spring-boot-buildpack-platform/build/libs/spring-boot-buildpack-platform-4.0.10-SNAPSHOT.jar",
+        "6a83747509c953cdeb4d5701023032b58db6142ece0d69b9ed784f83c91179e8  tree/loader/spring-boot-loader-tools/build/libs/spring-boot-loader-tools-4.0.10-SNAPSHOT.jar",
+        "dc26d677e049508fc78ebdca11f13db609336e8be5f78f6e283711309906105b  tree/test-support/spring-boot-gradle-test-support/build/libs/spring-boot-gradle-test-support-4.0.10-SNAPSHOT.jar",
+        "389ba14f806fe174cf99df2d5e28d6c25389dc0b06f3fb750bca80a4b31b89f4  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.10-SNAPSHOT.jar",
+        "5f519a78fb4b0a699ad562104f8e5713d39663ba011aaa84269166db1211f9e3  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$ApplicationSpec$IntoLayerSpecFactory.class",
+        "34255720623f762da253a967c479a933ce23679040d53e9d89c21b7f9c295d7d  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$ApplicationSpec.class",
+        "5880b220c5c4f841cddcfc5f3eab972461f94064fe875781879a8ca1dbc5ef90  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$DependenciesIntoLayerSpec.class",
+        "df106dcdf1cdfd22775a157be8bff5939923b49b30f566ad10e615628b37d302  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$DependenciesSpec$IntoLayerSpecFactory.class",
+        "baf21901677763df3eb0b9112641111cf159fbdaa6a222af836857a2c4fd0916  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$DependenciesSpec.class",
+        "0436b5d9c308d614d4ccdb00f05300d049fc7809d9d3d8d4d9c0ebd54f3b6b78  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$IntoLayerSpec.class",
+        "1f45b75264d0d1fd4228473d8232a87dd8e0b1bd8f666ac025518938ca50d258  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec$IntoLayersSpec.class",
+        "13f5e96370db47012cce0a2d49d51b0f9a51e80afa2702bbffc72db47209c203  spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/LayeredSpec.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S47 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S47 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 55.181,
+      "cpuSeconds": 163.743,
+      "cpuThrottledSeconds": 88.984,
+      "peakMemoryBytes": 3380699136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s47-transplant-the-fix-s-tests.log",
+        "lines": 19,
+        "bytes": 1840,
+        "sha256": "fcf519d1644efe5c0dc52fbe86faa841d6a3bcfd9b63e9241a66abe938d74f7e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/java/org/springframework/boot/gradle/tasks/bundling/LayeredSpecTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S47-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=54 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=4 failures=4 errors=0 skipped=0",
+        "junit failed LayeredSpecTests#includeAndExcludeSelectApplicationContent()",
+        "junit failed LayeredSpecTests#includeAndExcludeSelectDependencies()",
+        "junit failed LayeredSpecTests#excludeExcludesApplicationContent()",
+        "junit failed LayeredSpecTests#excludeExcludesDependencies()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.gradle.tasks.bundling.LayeredSpecTests junit tests=4 failures=4 errors=0 skipped=0 junit failed LayeredSpecTests#includeAndExcludeSelectApplicationContent() junit failed LayeredSpecTests#includeAndExcludeSelectDependencies() junit failed LayeredSpecTests#excludeExclude",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S47 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S47 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.407,
+      "cpuSeconds": 1.857,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 90320896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s47-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "9bb400f7026df7a8b8761e062e751d37f572785eb947bd6ba97eb9cebe07327e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S47"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T12:05:41+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T120506Z-55064348d7d598bc"
+    }
+  }
+}
