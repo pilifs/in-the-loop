@@ -1,0 +1,371 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110822-setup-build-spring-boot-50296-s31-at-bot",
+  "title": "Setup: build Spring Boot #50296 (S31) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m36s, peak 4.4 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S31 fix: build and landed tests) was held back 1m32s by its 4-CPU quota in 2m56s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S31 transplant: the fix's tests on the parent) was held back 59.2s by its 4-CPU quota in 1m25s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110822-setup-build-spring-boot-50296-s31-at-bot.json",
+    "sha256": "64d6dffe26da02a6b2e1f350df945334cecafe83cd7d6ab0a8c404cc0c3589ac",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110822-setup-build-spring-boot-50296-s31-at-bot",
+      "title": "Setup: build Spring Boot #50296 (S31) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S31 (spring-projects/spring-boot#50296: A custom liveness URL retains liveness-only membership). In the worktrees $P/worktrees/S31-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-health with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (AvailabilityProbesHealthEndpointGroupsPostProcessorTests (test) AvailabilityProbesHealthEndpointGroupsTests (test) DelegatingAvailabilityProbesHealthEndpointGroupTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-health in $P/artifacts/S31-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S31",
+      "submitted": {
+        "at": "2026-11-27T11:08:22+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S31 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S31 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S31 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S31 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S31 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S31 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S31 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S31 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091104-setup-build-spring-boot-50296-s31-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:35:57+00:00",
+  "finishedAt": "2026-11-27T11:42:45+00:00",
+  "wallSeconds": 408.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 4742930432,
+    "wallSeconds": 396.8,
+    "cpuSeconds": 1095.0,
+    "memoryOfEstimate": 0.74,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S31 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S31 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 176.01,
+      "cpuSeconds": 483.849,
+      "cpuThrottledSeconds": 92.15,
+      "peakMemoryBytes": 4742930432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s31-fix-build-and-landed-tests.log",
+        "lines": 28,
+        "bytes": 4000,
+        "sha256": "aa98d51e5b2580b2dc17ebd977b4090df088c9dbc752ab6dada7b511ca45df7c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S31-fix gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=111 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/s",
+        "junit tests=26 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.AvailabilityProbesHealthEndpointGroupsPostProcessorTests no-result",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.AvailabilityProbesHealthEndpointGroupsTests no-result",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.DelegatingAvailabilityProbesHealthEndpointGroupTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S31-fix/module_spring-boot-health.runtimeClasspath.txt 16 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S31-fix/module_spring-boot-health.testRuntimeClasspath.txt 79 entries",
+        "9ecad597478dd17ed156825d87542672cad85fa6e4ca2d907ad779ea4764e5a6  jars/spring-boot-health-4.2.0-SNAPSHOT.jar",
+        "d068765653fface12faa91dcd9ffedd5a0d16047b5d944ebfd84f51c661dcdfd  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "49dcb19167e3fc3afbba246f5ed86f79cf813f0ff01309fd8fe947eeb67ba936  tree/core/spring-boot/build/libs/spring-boot-4.2.0-SNAPSHOT.jar",
+        "f41ac1e32a6e29c82400c1b476e5cd91f1f5eaea55a3b19cfe207fe6a19ff2d0  tree/core/spring-boot-test/build/libs/spring-boot-test-4.2.0-SNAPSHOT.jar",
+        "a7e234c510bc0a4827d5cdea59f271f39c61f0e038ceb77765289bffc0092c7f  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "5cd192dcf36825d4b499081b008654a620f2b0e66546d097c321aac0cf935ee0  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "d8ae94fe11a9d9ba5190fc021de8ca55a7b591bd293288a663a298e4a0fbac65  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesAutoConfiguration.class",
+        "e60d4dd330ccd3bc21d384a0b407651c15df28d723f7ac0fc05e37edda59a715  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroups.class",
+        "dada35009e984c9df543c9d5cf50d032a6badc901aca02b4b72f10829b1d8ab7  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsPostProcessor.class",
+        "ac0832b603a642913e5b96e43d31a4ad3e7361202acc106f66f4317a0036b8c7  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/autoconfigure/actuate/endpoint/DelegatingAvailabilityProbesHealthEndpointGroup.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S31 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S31 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 131.614,
+      "cpuSeconds": 364.299,
+      "cpuThrottledSeconds": 52.34,
+      "peakMemoryBytes": 3650502656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s31-parent-build-and-the-paren.log",
+        "lines": 28,
+        "bytes": 4008,
+        "sha256": "6a2173697d42872d673b9df65f7048ee34e63959d3e01f871a4189723d7a97f9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S31-parent gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=68 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=20 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.AvailabilityProbesHealthEndpointGroupsPostProcessorTests no-result",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.AvailabilityProbesHealthEndpointGroupsTests no-result",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.DelegatingAvailabilityProbesHealthEndpointGroupTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S31-parent/module_spring-boot-health.runtimeClasspath.txt 16 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S31-parent/module_spring-boot-health.testRuntimeClasspath.txt 79 entries",
+        "0300087a3db7fbd75c1821fd7a0e198e660d316cd7e932c80fdcdaefa78824ce  jars/spring-boot-health-4.2.0-SNAPSHOT.jar",
+        "d068765653fface12faa91dcd9ffedd5a0d16047b5d944ebfd84f51c661dcdfd  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "49dcb19167e3fc3afbba246f5ed86f79cf813f0ff01309fd8fe947eeb67ba936  tree/core/spring-boot/build/libs/spring-boot-4.2.0-SNAPSHOT.jar",
+        "f41ac1e32a6e29c82400c1b476e5cd91f1f5eaea55a3b19cfe207fe6a19ff2d0  tree/core/spring-boot-test/build/libs/spring-boot-test-4.2.0-SNAPSHOT.jar",
+        "a7e234c510bc0a4827d5cdea59f271f39c61f0e038ceb77765289bffc0092c7f  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "5cd192dcf36825d4b499081b008654a620f2b0e66546d097c321aac0cf935ee0  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "73e0c9e47692e91610a9b2c0595ceef8177be543abe8ab8bce5c46218dae546e  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesAutoConfiguration.class",
+        "a57b489b09ca56de235bda7e8688724260c5f7c60623961ac7e9105ec1dd038f  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroups.class",
+        "8242f03408d6209ce1559c693fdf951cc985fc1cde8d0759ca9a89ceb80db429  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsPostProcessor.class",
+        "28d538cc96d147f82490fafa405bb19dc2f5867c50d66115a7023a4f32f7581e  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/autoconfigure/actuate/endpoint/DelegatingAvailabilityProbesHealthEndpointGroup.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S31 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S31 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 85.983,
+      "cpuSeconds": 244.951,
+      "cpuThrottledSeconds": 59.18,
+      "peakMemoryBytes": 4103950336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s31-transplant-the-fix-s-tests.log",
+        "lines": 24,
+        "bytes": 4354,
+        "sha256": "d326964195e10350db680113ef28c42daaadae6c7a7e45b7e26e5c13288999e5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-health/src/test/java/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsPostProcessorTests.java",
+        "transplanted module/spring-boot-health/src/test/java/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsTests.java",
+        "transplanted module/spring-boot-health/src/test/java/org/springframework/boot/health/autoconfigure/actuate/endpoint/DelegatingAvailabilityProbesHealthEndpointGroupTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S31-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=86 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.AvailabilityProbesHealthEndpointGroupsPostProcessorTests no-result",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.AvailabilityProbesHealthEndpointGroupsTests no-result",
+        "class org.springframework.boot.health.autoconfigure.actuate.endpoint.DelegatingAvailabilityProbesHealthEndpointGroupTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S31-parent-landed/module/spring-boot-health/src/test/java/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsPostProcessorTests.java:45: error: constructor AvailabilityProbesHealthEndp",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S31-parent-landed/module/spring-boot-health/src/test/java/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsPostProcessorTests.java:104: error: constructor AvailabilityProbesHealthEnd",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S31-parent-landed/module/spring-boot-health/src/test/java/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsPostProcessorTests.java:122: error: constructor AvailabilityProbesHealthEnd",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S31-parent-landed/module/spring-boot-health/src/test/java/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsPostProcessorTests.java:139: error: constructor AvailabilityProbesHealthEnd",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S31-parent-landed/module/spring-boot-health/src/test/java/org/springframework/boot/health/autoconfigure/actuate/endpoint/AvailabilityProbesHealthEndpointGroupsPostProcessorTests.java:151: error: constructor AvailabilityProbesHealthEnd",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S31 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S31 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.207,
+      "cpuSeconds": 1.913,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 60551168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s31-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "19fe7c032f7e03ff511656e0c7dcb5839d5efd30911aaa087ad186fd94bd4523",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S31"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:43:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T114245Z-63003754b9845a27"
+    }
+  }
+}
