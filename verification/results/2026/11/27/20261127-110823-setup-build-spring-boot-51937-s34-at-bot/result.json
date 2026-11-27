@@ -1,0 +1,388 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110823-setup-build-spring-boot-51937-s34-at-bot",
+  "title": "Setup: build Spring Boot #51937 (S34) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 7m32s, peak 4.8 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S34 fix: build and landed tests) was held back 3m45s by its 4-CPU quota in 3m12s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S34 parent: build and the parent's tests) was held back 3m42s by its 4-CPU quota in 2m29s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S34 transplant: the fix's tests on the parent) was held back 3m01s by its 4-CPU quota in 1m45s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110823-setup-build-spring-boot-51937-s34-at-bot.json",
+    "sha256": "a0e5aac0f359501997ddc40eed2db7577727ad23f2a73e589e83219a2b61e7f4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110823-setup-build-spring-boot-51937-s34-at-bot",
+      "title": "Setup: build Spring Boot #51937 (S34) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S34 (spring-projects/spring-boot#51937: Apply the Actuator endpoint mapper on a separate Jersey management port). In the worktrees $P/worktrees/S34-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-jersey with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (JerseyEndpointIntegrationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-jersey in $P/artifacts/S34-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S34",
+      "submitted": {
+        "at": "2026-11-27T11:08:23+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S34 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S34 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S34 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S34 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S34 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S34 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S34 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S34 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091104-setup-build-spring-boot-51937-s34-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:51:44+00:00",
+  "finishedAt": "2026-11-27T11:59:28+00:00",
+  "wallSeconds": 464.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 5156515840,
+    "wallSeconds": 452.1,
+    "cpuSeconds": 1342.1,
+    "memoryOfEstimate": 0.8,
+    "durationOfEstimate": 0.3
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S34 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S34 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 192.562,
+      "cpuSeconds": 562.64,
+      "cpuThrottledSeconds": 225.705,
+      "peakMemoryBytes": 5156515840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s34-fix-build-and-landed-tests.log",
+        "lines": 42,
+        "bytes": 6264,
+        "sha256": "e0a197c184a30c94a6b3fdca4ce5da626d8a36e60ea227656f13060f15a0debf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web.JerseyEndpointIntegrationTests junit tests=5 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S34-fix/module_spring-boot-jersey.runtimeClasspath.txt 58 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S34-fix/module_spring-boot-jersey.testRuntimeClasspath.txt 125 entries",
+        "2809d47028f7ebbe3c72234d2184360d1dd4544ec5b1e8295b4f083dc4e37f8b  jars/spring-boot-jersey-4.0.9-SNAPSHOT.jar",
+        "1dd2e1f76b03bc68ad25b75116dcd878e602971edcdf988ebea2134eb02fe30f  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.9-SNAPSHOT.jar",
+        "c00ee7123212e04074e215da517e5a1b297924e8915d4d72e9b6b257e132d264  tree/core/spring-boot/build/libs/spring-boot-4.0.9-SNAPSHOT.jar",
+        "a4485606c2d0e6ae2b92ef54fa9561c4f45ef386435e1948ca23071c4ad8f3bc  tree/core/spring-boot-test/build/libs/spring-boot-test-4.0.9-SNAPSHOT.jar",
+        "1f553fdb6afca8fd1c2396b7860a496edc064b69ed4768c238909f6b23d0b2b0  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.0.9-SNAPSHOT.jar",
+        "e043486ea1757e92a1012e451e7ffc725ec9c7ab97f0ee666c1616a07f4430ea  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.0.9-SNAPSHOT-test-fixtures.jar",
+        "25b911ed3dcd1c0063272d0211eea676333267fba0c3baf9333842386275ff59  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.0.9-SNAPSHOT.jar",
+        "e9d8d4e117bfb15d8ba53ab07ab67828d72e4be9623793822f448515a8a46063  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.0.9-SNAPSHOT-test-fixtures.jar",
+        "c977afe25315686ed1108c73df3ff0a8529382f35eca0ae882e22dba9553b6e0  tree/module/spring-boot-health/build/libs/spring-boot-health-4.0.9-SNAPSHOT.jar",
+        "594f9dda9ddce705d926d80d8e48de18a4acb287cb7775ea5e8e3a26b4ba4a67  tree/module/spring-boot-http-client/build/libs/spring-boot-http-client-4.0.9-SNAPSHOT.jar",
+        "c74e569e28dfd01d8afdfb41f3e00a69b0b76e5d2c83116bfedcb328527baea7  tree/module/spring-boot-http-converter/build/libs/spring-boot-http-converter-4.0.9-SNAPSHOT.jar",
+        "25f9e939c692fa1022f2547b94e55fb85808cbea704e0e0e535b04573d1a1fa2  tree/module/spring-boot-jackson2/build/libs/spring-boot-jackson2-4.0.9-SNAPSHOT.jar",
+        "2809d47028f7ebbe3c72234d2184360d1dd4544ec5b1e8295b4f083dc4e37f8b  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.0.9-SNAPSHOT.jar",
+        "cf205f3bc3e4221feef5add728a009d3312abde7dd949e313e7c094bf7aebb58  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.0.9-SNAPSHOT-test-fixtures.jar",
+        "211703dee173495f40401f23c4dfcea6e620cd2495ec450783e4934878eb3589  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.0.9-SNAPSHOT.jar",
+        "c80bec4a8a6cbeb4377d4ab72339be4b79a8080b3b1e3a21284b7bca1856c07c  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.0.9-SNAPSHOT.jar",
+        "d2d02ea5ed9dbb109a1ba2c571b3c3b15509dc1ed514e0b2d254a242e76027ed  tree/module/spring-boot-restclient/build/libs/spring-boot-restclient-4.0.9-SNAPSHOT.jar",
+        "3a3556ea77b9b03e0954ae9a9c2bb0557f6683389d0ba00da9349dc86c4be816  tree/module/spring-boot-resttestclient/build/libs/spring-boot-resttestclient-4.0.9-SNAPSHOT.jar",
+        "669d0911f4cb5463b4212fe86f17b402f518861380d402843fa9f4ffc6f6c2fa  tree/module/spring-boot-servlet/build/libs/spring-boot-servlet-4.0.9-SNAPSHOT.jar",
+        "f2a46dd7c6c985cc866d00e6119a7a09e363b5493fc71218edd911bc5f96068e  tree/module/spring-boot-tomcat/build/libs/spring-boot-tomcat-4.0.9-SNAPSHOT.jar",
+        "5a64a165fea406a88a4df0d71ec96ea19935b98893e945270918cfa23945fbf6  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.0.9-SNAPSHOT.jar",
+        "bbced0ef9e1d5d7404e383e53b8f0d42ee282711bc99ec213cdc64acccad5039  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.9-SNAPSHOT.jar",
+        "026f58eebb2fde390e395b8c24e44669624044945c275495b599d7160e831d06  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration$EndpointJackson2ObjectMapperContextResolver.class",
+        "95eca175706aec4795dede815af2feb7ecdfbe904f0245adf2bc0566dccb2ac9  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration$HealthConfiguration.class",
+        "64cd592829798e178bd3b42cba52705c4dff7210290a27b46124b15ce6674b6c  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration$JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar.class",
+        "9d62877e5fef850b9b18540c5e412025424c89a2e5452f9b81f29f0b6e7efea5  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration$JerseyWebEndpointsResourcesRegistrar.class",
+        "0dfcf01793e0e771eff9a694ac88d30955d65e62b206a40d9d24404038173559  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S34 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S34 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 149.738,
+      "cpuSeconds": 447.433,
+      "cpuThrottledSeconds": 222.479,
+      "peakMemoryBytes": 4015714304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s34-parent-build-and-the-paren.log",
+        "lines": 42,
+        "bytes": 6272,
+        "sha256": "b98d84a74a3e1a0b68e2633253fa5e65cc11f4dd39f728c4f3de0f8ef6709c17",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web.JerseyEndpointIntegrationTests junit tests=4 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S34-parent/module_spring-boot-jersey.runtimeClasspath.txt 58 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S34-parent/module_spring-boot-jersey.testRuntimeClasspath.txt 125 entries",
+        "cc213865389c18c427b861dcf399f6a5152ec1158bf91c3b62dedac96e5098bf  jars/spring-boot-jersey-4.0.9-SNAPSHOT.jar",
+        "1dd2e1f76b03bc68ad25b75116dcd878e602971edcdf988ebea2134eb02fe30f  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.9-SNAPSHOT.jar",
+        "c00ee7123212e04074e215da517e5a1b297924e8915d4d72e9b6b257e132d264  tree/core/spring-boot/build/libs/spring-boot-4.0.9-SNAPSHOT.jar",
+        "a4485606c2d0e6ae2b92ef54fa9561c4f45ef386435e1948ca23071c4ad8f3bc  tree/core/spring-boot-test/build/libs/spring-boot-test-4.0.9-SNAPSHOT.jar",
+        "1f553fdb6afca8fd1c2396b7860a496edc064b69ed4768c238909f6b23d0b2b0  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.0.9-SNAPSHOT.jar",
+        "e043486ea1757e92a1012e451e7ffc725ec9c7ab97f0ee666c1616a07f4430ea  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.0.9-SNAPSHOT-test-fixtures.jar",
+        "25b911ed3dcd1c0063272d0211eea676333267fba0c3baf9333842386275ff59  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.0.9-SNAPSHOT.jar",
+        "e9d8d4e117bfb15d8ba53ab07ab67828d72e4be9623793822f448515a8a46063  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.0.9-SNAPSHOT-test-fixtures.jar",
+        "c977afe25315686ed1108c73df3ff0a8529382f35eca0ae882e22dba9553b6e0  tree/module/spring-boot-health/build/libs/spring-boot-health-4.0.9-SNAPSHOT.jar",
+        "594f9dda9ddce705d926d80d8e48de18a4acb287cb7775ea5e8e3a26b4ba4a67  tree/module/spring-boot-http-client/build/libs/spring-boot-http-client-4.0.9-SNAPSHOT.jar",
+        "c74e569e28dfd01d8afdfb41f3e00a69b0b76e5d2c83116bfedcb328527baea7  tree/module/spring-boot-http-converter/build/libs/spring-boot-http-converter-4.0.9-SNAPSHOT.jar",
+        "25f9e939c692fa1022f2547b94e55fb85808cbea704e0e0e535b04573d1a1fa2  tree/module/spring-boot-jackson2/build/libs/spring-boot-jackson2-4.0.9-SNAPSHOT.jar",
+        "cc213865389c18c427b861dcf399f6a5152ec1158bf91c3b62dedac96e5098bf  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.0.9-SNAPSHOT.jar",
+        "cf205f3bc3e4221feef5add728a009d3312abde7dd949e313e7c094bf7aebb58  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.0.9-SNAPSHOT-test-fixtures.jar",
+        "211703dee173495f40401f23c4dfcea6e620cd2495ec450783e4934878eb3589  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.0.9-SNAPSHOT.jar",
+        "c80bec4a8a6cbeb4377d4ab72339be4b79a8080b3b1e3a21284b7bca1856c07c  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.0.9-SNAPSHOT.jar",
+        "d2d02ea5ed9dbb109a1ba2c571b3c3b15509dc1ed514e0b2d254a242e76027ed  tree/module/spring-boot-restclient/build/libs/spring-boot-restclient-4.0.9-SNAPSHOT.jar",
+        "3a3556ea77b9b03e0954ae9a9c2bb0557f6683389d0ba00da9349dc86c4be816  tree/module/spring-boot-resttestclient/build/libs/spring-boot-resttestclient-4.0.9-SNAPSHOT.jar",
+        "669d0911f4cb5463b4212fe86f17b402f518861380d402843fa9f4ffc6f6c2fa  tree/module/spring-boot-servlet/build/libs/spring-boot-servlet-4.0.9-SNAPSHOT.jar",
+        "f2a46dd7c6c985cc866d00e6119a7a09e363b5493fc71218edd911bc5f96068e  tree/module/spring-boot-tomcat/build/libs/spring-boot-tomcat-4.0.9-SNAPSHOT.jar",
+        "5a64a165fea406a88a4df0d71ec96ea19935b98893e945270918cfa23945fbf6  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.0.9-SNAPSHOT.jar",
+        "bbced0ef9e1d5d7404e383e53b8f0d42ee282711bc99ec213cdc64acccad5039  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.9-SNAPSHOT.jar",
+        "026f58eebb2fde390e395b8c24e44669624044945c275495b599d7160e831d06  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration$EndpointJackson2ObjectMapperContextResolver.class",
+        "95eca175706aec4795dede815af2feb7ecdfbe904f0245adf2bc0566dccb2ac9  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration$HealthConfiguration.class",
+        "64cd592829798e178bd3b42cba52705c4dff7210290a27b46124b15ce6674b6c  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration$JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar.class",
+        "9d62877e5fef850b9b18540c5e412025424c89a2e5452f9b81f29f0b6e7efea5  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration$JerseyWebEndpointsResourcesRegistrar.class",
+        "1d2000c37a5e33d095b96d0f955a87a4bf6df02cf5200c41263be46f7611ac75  spring-boot-jersey-4.0.9-SNAPSHOT.jar!/org/springframework/boot/jersey/autoconfigure/actuate/web/JerseyWebEndpointManagementContextConfiguration.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S34 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S34 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 105.989,
+      "cpuSeconds": 329.887,
+      "cpuThrottledSeconds": 181.371,
+      "peakMemoryBytes": 4484046848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s34-transplant-the-fix-s-tests.log",
+        "lines": 16,
+        "bytes": 1537,
+        "sha256": "c157d954e79d423b6e33ef1ed7d7c8728af8044e3f71faab3e4236ebee0e6570",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-jersey/src/test/java/org/springframework/boot/jersey/autoconfigure/actuate/endpoint/web/JerseyEndpointIntegrationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S34-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=106 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01",
+        "junit tests=5 failures=1 errors=0 skipped=0",
+        "junit failed JerseyEndpointIntegrationTests#[2] separateManagementPort = true",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web.JerseyEndpointIntegrationTests junit tests=5 failures=1 errors=0 skipped=0 junit failed JerseyEndpointIntegrationTests#[2] separateManagementPort = true ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S34 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S34 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.84,
+      "cpuSeconds": 2.121,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 86843392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s34-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "f52b669f22144f62e26082376c1f4ca93db99cb8b4e59acb76d5ca53f09b51cb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S34"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T12:00:05+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T115928Z-1108789681270d41"
+    }
+  }
+}
