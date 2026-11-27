@@ -1,0 +1,209 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-061049-qualify-stock-jbmc-reads-on-original-ver",
+  "title": "Qualify stock JBMC reads on original versioned subjects and helpers",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 18.7s, peak 312.2 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "declared output verification/blind-caller/stock-profiles.zip was not produced",
+    "step 1 (python3 verification/blind-caller/stock_profiles.py) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-061049-qualify-stock-jbmc-reads-on-original-ver.json",
+    "sha256": "3ba8aa403cd0ee1ac51defab45dc676d447c85ed52145c34c6a4802944409393",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-061049-qualify-stock-jbmc-reads-on-original-ver",
+      "title": "Qualify stock JBMC reads on original versioned subjects and helpers",
+      "description": "Run sixteen stock checks over the original JDK 8, 17, 21 and earlier-shadow classpaths. Require the deciding assertion to read the exact JVM-selected private application classfiles. Retain refusals for changed input, unobserved reads and unqualified raw or paired launches.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T06:10:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/stock_profiles.py",
+          "run": "python3 verification/blind-caller/stock_profiles.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/stock-profiles.zip"
+      ]
+    }
+  },
+  "sourceCommit": "c89b8d97eb6f573ccf85eae885a2585b9356a6d9",
+  "startedAt": "2026-11-27T06:20:33+00:00",
+  "finishedAt": "2026-11-27T06:24:26+00:00",
+  "wallSeconds": 233.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 824956,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 327348224,
+    "wallSeconds": 18.7,
+    "cpuSeconds": 26.8,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 204.283,
+      "cpuSeconds": 204.425,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2450661376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "beed5ce3ebece798353c7ca0a017ff9c55b20a88d915d47ce67781eb058341d4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-061049-qualify-stock-jbmc-reads-on-original-ver/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 24s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/stock_profiles.py",
+      "run": "python3 verification/blind-caller/stock_profiles.py",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 18.657,
+      "cpuSeconds": 26.811,
+      "cpuThrottledSeconds": 2.066,
+      "peakMemoryBytes": 327348224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 7,
+        "bytes": 612,
+        "sha256": "881a0642388bfd7e01dd9ca31e2946c0511f161ec30d4422ca1a007f68624593",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-061049-qualify-stock-jbmc-reads-on-original-ver/verification/blind-caller/stock_profiles.py\", line 93, in <module>",
+        "    data=original(Path(os.environ.get(\"JVMCONTRACT\",CHECKER)),Path(shutil.which(\"jbmc\")),Path(scratch))",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-061049-qualify-stock-jbmc-reads-on-original-ver/verification/blind-caller/stock_profiles.py\", line 82, in original",
+        "    row,=json.loads(proc.stdout)",
+        "    ^^^^",
+        "ValueError: too many values to unpack (expected 1, got 11)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T06:24:51+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "80ff2b5eb5c42e6c1d7f07ad2fdd997589bb1d35",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/80ff2b5eb5c42e6c1d7f07ad2fdd997589bb1d35/jvmcontract",
+    "built": true
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T062426Z-1505988f710e103f",
+      "outputs": "20261127T062426Z-1659880c7f5a52de",
+      "workdir": "20261127T062430Z-006511f7eab7d185"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-061049-qualify-stock-jbmc-reads-on-original-ver"
+}

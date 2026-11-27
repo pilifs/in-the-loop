@@ -1,0 +1,174 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-061049-reproduce-masked-parquet-ranking-through",
+  "title": "Reproduce masked Parquet ranking through ordinary Stage 2 discovery",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.0s, peak 1.1 GiB (estimated 4m00s, 5.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-061049-reproduce-masked-parquet-ranking-through.json",
+    "sha256": "f0deefde72bbaf5372028d306f08cdc82eceb79acde197a439ca568f883d76e7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-061049-reproduce-masked-parquet-ranking-through",
+      "title": "Reproduce masked Parquet ranking through ordinary Stage 2 discovery",
+      "description": "Bind the top five from original upstream JVM events on 113-entry deployments, then compare with both historical public histories. Retain representative dispatch stacks and same-receiver edges, the ambiguity decision and the class bytes selected on the reversed overlay.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:classes"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T06:10:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/stage2_histories.py",
+          "run": "python3 verification/blind-caller/stage2_histories.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/stage2-histories.zip"
+      ]
+    }
+  },
+  "sourceCommit": "d5337b0b90e46b5052645222600f680e3cc1884c",
+  "startedAt": "2026-11-27T06:21:08+00:00",
+  "finishedAt": "2026-11-27T06:24:13+00:00",
+  "wallSeconds": 185.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 824956,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1137070080,
+    "wallSeconds": 6.0,
+    "cpuSeconds": 6.6,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/stage2_histories.py",
+      "run": "python3 verification/blind-caller/stage2_histories.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 6.011,
+      "cpuSeconds": 6.56,
+      "cpuThrottledSeconds": 0.113,
+      "peakMemoryBytes": 1137070080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 2,
+        "bytes": 148,
+        "sha256": "df9b7c9c7141e71d968c52d568259f46ad5b6dfba278d96ab075a6376e47ddbb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0 claims in /tmp/stage2-original-histories-_k8a9lyk/stage2.json",
+        "Stage 2 bound the historical file and page entries among five unhinted alternatives"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/stage2-histories.zip",
+      "change": "added",
+      "bytes": 67065,
+      "sha256": "893788607a2993943681d2a5cdfa187640480ee8e1d4cdc96433097265a79e05",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T06:24:51+00:00",
+    "applied": [
+      "verification/blind-caller/stage2-histories.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "80ff2b5eb5c42e6c1d7f07ad2fdd997589bb1d35",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/80ff2b5eb5c42e6c1d7f07ad2fdd997589bb1d35/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T062413Z-5097322e4aaf65d3",
+      "outputs": "20261127T062413Z-535039570c1bb497",
+      "diff": "20261127T062413Z-555494d979a2f106"
+    }
+  }
+}
