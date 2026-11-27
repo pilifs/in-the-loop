@@ -2,6 +2,7 @@
 import re
 
 from targets import observer_actions, runtime_jar
+from targets.change_inventory import instructions
 from targets.observer_recipes import Unsupported
 
 FIELDS = ["call.outcome", "return.scalar"]
@@ -27,6 +28,40 @@ def accepts(typ, value):
         return isinstance(value,str) and len(value.encode("utf-16-be","surrogatepass")) == 2
     bounds = {"I": 32, "J": 32, "S": 16, "B": 8}
     return type(value) is int and -(2**(bounds[typ]-1)) <= value < 2**(bounds[typ]-1)
+
+
+def closed_data_operation(data, name, desc):
+    """Whether an unreviewed bounded input can reach only closed numeric or String operations."""
+    if runtime_jar.super_class(data) != "java/lang/Object" or runtime_jar.interfaces(data):
+        return False
+    pool, methods, _ = runtime_jar._declarations(data,with_code=True)
+    if (name,desc) not in methods or methods[name,desc][0] & 9 != 9 or methods[name,desc][0] & 0x0120:
+        return False
+    pure = {0x00,0x01,*range(0x02,0x12),*range(0x15,0x2e),*range(0x36,0x4f),*range(0x57,0x99),
+            *range(0x99,0xa8),0xaa,0xab,*range(0xac,0xb2),0xc6,0xc7,0xc8}
+    strings = {("length","()I"),("isEmpty","()Z"),("trim","()Ljava/lang/String;"),("charAt","(I)C"),
+               ("startsWith","(Ljava/lang/String;)Z"),("endsWith","(Ljava/lang/String;)Z"),
+               ("equals","(Ljava/lang/Object;)Z"),("compareTo","(Ljava/lang/String;)I")}
+    def closed(key):
+        _, code, _ = methods[key]
+        if not code:
+            return False
+        for pos, op in instructions(code):
+            if op in pure:
+                continue
+            if op in (0x12,0x13,0x14):
+                index = int.from_bytes(code[pos+1:pos+(2 if op==0x12 else 3)],"big")
+                if pool[index][0] in (3,4,5,6,8):
+                    continue
+            if op in (0xb6,0xb8):
+                index = int.from_bytes(code[pos+1:pos+3],"big")
+                owner, member, signature = runtime_jar._member_ref(pool,pool[index][1])
+                if ((owner=="java/lang/String" and (member,signature) in strings)
+                        or (owner=="java/lang/Math" and member in {"min","max","abs"} and signature in {"(I)I","(II)I","(J)J","(JJ)J"})):
+                    continue
+            return False
+        return True
+    return closed((name,desc)) and (("<clinit>","()V") not in methods or closed(("<clinit>","()V")))
 
 
 def select(entry, inputs, api):

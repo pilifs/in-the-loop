@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from targets import blind_prediction, change_evidence, change_inventory, change_plan, observer_generation, upgrade_replay
+from targets import blind_prediction, change_evidence, change_inventory, change_plan, observer_generation, observer_recipes, observer_scalar, runtime_jar, runtime_jdk, upgrade_replay
 
 
 def read(path):
@@ -74,7 +74,7 @@ def side_names(candidate):
     return [s for s in ("old","new") if s in requested]
 
 
-def measure_candidate(index, candidate, root, directory, manifests, jdk, jdk_pin, base_args, bindings):
+def measure_candidate(index, candidate, root, directory, manifests, jdk, jdk_pin, base_args, bindings, functional_review):
     directory.mkdir()
     entry = candidate["entry"]
     sides = side_names(candidate)
@@ -88,6 +88,23 @@ def measure_candidate(index, candidate, root, directory, manifests, jdk, jdk_pin
         return row
     if not candidate["inputs"]:
         row.update(stoppedAt="public caller inputs", reason="Which public construction, inputs and readback expose " + entry + "?")
+        return row
+    if candidate["fields"] == observer_scalar.FIELDS:
+        owner, method, desc = runtime_jar.parse_target(entry)
+        feature = int(runtime_jdk.feature(runtime_jdk.release(jdk)["JAVA_VERSION"]))
+        for side,bound in row["entryBindings"].items():
+            provider = Path(read(manifests[side])["classpath"][bound["providerIndex"]]["file"])
+            name = runtime_jar.internal(owner)
+            data = (provider/(name+".class")).read_bytes() if provider.is_dir() else runtime_jar.effective_class(provider,name,feature)
+            if (not data or not observer_scalar.closed_data_operation(data,method,desc)
+                    or any(not blind_prediction.ordinary_text(v) for item in candidate["inputs"]
+                           for v in (item.get("arguments",[]) if isinstance(item,dict) else []))):
+                row.update(stoppedAt="reviewed functional scope",reason="the selected original method needs a reviewed public fixture on "+side)
+                return row
+    elif (functional_review.get("classification") != "ordinary product behavior" or not functional_review.get("decisionSha256")
+          or candidate["fields"] not in (observer_recipes.NUMBER_FIELDS,[*observer_recipes.NUMBER_FIELDS,observer_recipes.FORMAT_FIELD],
+                                          ["peek.outcome","peek.value"],["peek.outcome","peek.value","pop.afterPeek"])):
+        row.update(stoppedAt="reviewed functional scope",reason="register the side-scoped public inputs and readback before execution")
         return row
     predicate = candidate["prediction"]
     expected = predicate.get("expected") if isinstance(predicate,dict) else None
@@ -206,7 +223,8 @@ def measure(packet_dir, sealed, output):
                     while attempt.exists():
                         counter += 1
                         attempt = target/f"candidate-{i+1}-retry-{counter}"
-                    row = measure_candidate(i,candidate,output,attempt,manifests,jdk,jdk_pin,base,bindings)
+                    row = measure_candidate(i,candidate,output,attempt,manifests,jdk,jdk_pin,base,bindings,
+                                            packet.get("functionalReview") or {})
                     change_evidence.write_json(saved,row)
                 item["measurements"].append(row)
                 change_evidence.write_json(output/"measurement.json",out)

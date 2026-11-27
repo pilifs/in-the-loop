@@ -29,6 +29,12 @@ def ordinary_text(value):
     return not isinstance(value,str) or (SAMPLE_TEXT.fullmatch(value) is not None and ".." not in value)
 
 
+def sensitive_scope(text):
+    return bool(re.search(r"\b(?:CVE-\d{4}-\d+|vulnerabilit\w*|exploit\w*|authentication|authorization|"
+                          r"privilege|cryptograph\w*|remote code execution|path traversal|command injection|deserialization gadget)\b",
+                          text,re.I))
+
+
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -91,7 +97,7 @@ def definitions(root, rows, owners, feature):
     return result
 
 
-def signature_candidates(sides, diff, hint, test_text, reviewed):
+def signature_candidates(sides, diff, hint, test_text, reviewed, observed):
     changed = set()
     public = {}
     for owner in sorted(set(sides["old"]) | set(sides["new"])):
@@ -122,9 +128,10 @@ def signature_candidates(sides, diff, hint, test_text, reviewed):
         review_entry = reviewed.get("entry", "")
         reviewed_match = bool(review_entry and any(review_entry == k for k in
             (full, owner+"."+name, owner+"#"+name, simple+"."+name, simple+"#"+name, simple+"."+short)))
-        if not (in_diff or direct or reviewed_match or nominated):
+        witnessed = full in observed
+        if not (in_diff or direct or reviewed_match or nominated or witnessed):
             continue
-        priority = (not reviewed_match, not nominated, not in_diff, not direct, -len(sides_for_entry), full)
+        priority = (not reviewed_match, not witnessed, not nominated, not in_diff, not direct, -len(sides_for_entry), full)
         eligible.append((priority,owner,name,desc,short,full,in_diff,direct,nominated,reviewed_match,sides_for_entry))
     inspected = sorted(eligible, key=lambda r:r[0])[:LIMIT]
     ranked = []
@@ -132,11 +139,12 @@ def signature_candidates(sides, diff, hint, test_text, reviewed):
         test_reference = bool(test_text and re.search(r"\b" + re.escape(short) + r"\s*\(", test_text))
         arguments, returned = observer_scalar.parts(desc)
         scalar = all(arg in SCALAR_TYPES for arg in arguments) and returned in SCALAR_TYPES and name != "<init>"
-        weight = (100*reviewed_match + 16*nominated + 10*in_diff + 9*direct + 12*test_reference
+        weight = (100*reviewed_match + 24*len(observed.get(full,{})) + 16*nominated + 10*in_diff + 9*direct + 12*test_reference
                   + 4*(len(sides_for_entry) == 2) + 3*scalar + min(6,len(tokens(short) & tokens(hint))*2)
                   + 3*(short + "(" in diff) + 2*(name != "<init>"))
         basis = [label for label, visible in (("reviewed entry",reviewed_match), ("named in PR prose",nominated),
-                 ("changed declaration",in_diff), ("calls a changed member",direct), ("upstream test reference",test_reference)) if visible]
+                 ("changed declaration",in_diff), ("calls a changed member",direct), ("upstream test reference",test_reference),
+                 ("witnessed by an original upstream unit test",full in observed)) if visible]
         ranked.append((weight,full,scalar,basis,{s:{k:v for k,v in value.items() if k != "calls"}
                                                 for s,value in sides_for_entry.items()}))
     ranked.sort(key=lambda row: (-row[0], row[1]))
@@ -232,12 +240,17 @@ def derive(root, packet):
     arm = packet["arm"]
     if arm not in {"cold","test-assisted","reviewed"}:
         raise ValueError("unknown public evidence phase")
-    if (arm != "test-assisted" and packet.get("upstreamTests")) or (arm != "reviewed" and packet.get("reviewed")):
+    if (arm != "test-assisted" and any(packet.get(k) for k in ("upstreamTests","testTrace","approvedTestLaunches"))) or (arm != "reviewed" and packet.get("reviewed")):
         raise ValueError("additional evidence in a sealed public view")
-    sources = visible_sources(root, packet)
-    diff = read_local(root, packet["productionDiff"]).read_bytes()[:SOURCE_BYTES].decode("utf-8","replace")
     title = packet.get("title","")
     prose = title + "\n" + packet.get("description","")
+    if sensitive_scope(prose):
+        return {"schema":"blind-public-prediction/v1","url":packet["url"],"arm":arm,"assistance":arm,"primary":None,
+                "candidates":[],"candidateBudget":LIMIT,"candidatesInspected":0,"inspectedEntries":[],
+                "subjectLaunches":0,"productionDiffSha256":digest(read_local(root,packet["productionDiff"]).read_bytes()),
+                "firstOpenDependency":"outside the ordinary functional regression evaluation"}
+    sources = visible_sources(root, packet)
+    diff = read_local(root, packet["productionDiff"]).read_bytes()[:SOURCE_BYTES].decode("utf-8","replace")
     reviewed = packet.get("reviewed") or {}
     tests = []
     for row in (packet.get("upstreamTests") or [])[:32]:
@@ -245,8 +258,31 @@ def derive(root, packet):
     test_text = "\n".join(tests)
     version = runtime_jdk.release(Path(packet["jdk"]))["JAVA_VERSION"]
     feature = int(runtime_jdk.feature(version))
-    sides = {s:definitions(root, packet[s]["classpath"], sources, feature) for s in ("old","new")}
-    ranked, count, inspected = signature_candidates(sides, diff, prose, test_text, reviewed)
+    trace = None
+    witnesses = []
+    if reference := packet.get("testTrace"):
+        trace_bytes = read_local(root,reference["file"]).read_bytes()
+        trace = json.loads(trace_bytes)
+        if digest(trace_bytes) != reference["sha256"]:
+            raise ValueError("the supplied original test trace has changed")
+        if trace.get("schema") != "approved-original-unit-trace/v1" and not trace.get("runs") and reference.get("status") in ("source-only","source only"):
+            trace = None
+        elif (trace["url"] != packet["url"] or trace["schema"] != "approved-original-unit-trace/v1"
+                or trace["jdkReleaseSha256"] != digest((Path(packet["jdk"])/"release").read_bytes())
+                or any(trace["artifacts"][s] != [r["sha256"] for r in packet[s]["classpath"]] for s in ("old","new"))):
+            raise ValueError("the supplied upstream trace belongs to another original deployment")
+        if trace:
+            witnesses = [w for run in trace["runs"] if run["plainParity"] for w in run["witnesses"]]
+    owners = set(sources) | {w["entry"].partition("#")[0].split("$")[0] for w in witnesses}
+    sides = {s:definitions(root, packet[s]["classpath"], owners, feature) for s in ("old","new")}
+    observed = defaultdict(set)
+    for w in witnesses:
+        definition = sides[w["side"]].get(w["entry"].partition("#")[0])
+        if definition and (definition[0].sha,definition[1],definition[2]) == (w["classSha256"],w["providerIndex"],w["artifactSha256"]):
+            observed[w["entry"]].add(w["side"])
+        else:
+            raise ValueError("a witnessed public method has a different current physical definition")
+    ranked, count, inspected = signature_candidates(sides, diff, prose, test_text, reviewed, observed)
     candidates = []
     for rank,(weight, entry, scalar, basis, bindings) in enumerate(ranked[:LIMIT], 1):
         if len(candidates) == 3:
@@ -300,13 +336,14 @@ def derive(root, packet):
                            "prediction":predicate, "requiredSides":reviewed.get("requiredSides",["old","new"]),
                            "source":basis, "score":weight,"bindings":bindings, "publicChange":title,
                            "sourceMethodSha256":{s:digest(b.encode()) for s,(_,b) in bodies.items() if b},
-                           "literalTestInputs":len(tests_for_call),
+                           "literalTestInputs":len(tests_for_call),"upstreamWitnesses":[w for w in witnesses if w["entry"]==entry],
                            "recipe":"public scalar method" if scalar and fields == SCALAR_FIELDS else "reviewed public history"})
     return {"schema":"blind-public-prediction/v1", "url":packet["url"], "arm":arm,
             "assistance":{"cold":"public production changes", "test-assisted":"upstream test sources", "reviewed":"semantic registration"}[arm],
             "primary":0 if candidates else None, "candidates":candidates, "candidateBudget":LIMIT,
             "candidatesInspected":len(inspected), "inspectedEntries":inspected, "candidateCount":count,
             "sourceClasses":{s:len(v) for s,v in sides.items()}, "testsInspected":len(tests), "subjectLaunches":0,
+            "upstreamTrace":packet.get("testTrace"), "upstreamUnitRuns":len(trace["runs"]) if trace else 0,
             "visibleDescription":packet.get("description",""), "productionDiffSha256":digest(read_local(root,packet["productionDiff"]).read_bytes()),
             "firstOpenDependency":None if candidates else "which original public production entry exposes this change?"}
 

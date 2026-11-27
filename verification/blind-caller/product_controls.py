@@ -92,7 +92,7 @@ def verify(root, work):
     results["warm"] = replay("warm",bundle/"new.json",cache)
     results["clean"] = replay("clean",bundle/"new.json",work/"empty-cache")
     assert results["warm"]["raw"] == results["clean"]["raw"]
-    assert set(results["warm"]["sides"].values()) == {"reused"}
+    assert set(results["warm"]["sides"].values()) == {"exact reuse"}, results["warm"]["sides"]
     try:
         src = root/"new/PublicValue.java"
         modified = work/"mutation"
@@ -112,8 +112,8 @@ def verify(root, work):
         manifest = modified/"new.json"
         change_evidence.write_json(manifest,after)
         results["replaced"] = replay("replaced",manifest,cache)
-        assert results["replaced"]["status"] == "refuted" and results["replaced"]["sides"]["old"] == "reused"
-        assert results["replaced"]["sides"]["new"] != "reused"
+        assert results["replaced"]["status"] == "refuted" and results["replaced"]["sides"]["old"] == "exact reuse"
+        assert results["replaced"]["sides"]["new"] == "executed"
     finally:
         artifact.write_bytes(saved)
     results["restored"] = replay("restored",bundle/"new.json",cache)
