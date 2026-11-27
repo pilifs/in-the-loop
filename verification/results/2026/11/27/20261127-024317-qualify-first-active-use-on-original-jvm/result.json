@@ -1,0 +1,249 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-024317-qualify-first-active-use-on-original-jvm",
+  "title": "Qualify first active use on original JVM startup deployments",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8m56s, peak 334.4 MiB (estimated 9m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-024317-qualify-first-active-use-on-original-jvm.json",
+    "sha256": "6c261abaa853a26862f679d8df87f6e7ce33691c5fc1ad1ddb249f77c0d10f29",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-024317-qualify-first-active-use-on-original-jvm",
+      "title": "Qualify first active use on original JVM startup deployments",
+      "description": "Compare the same original reflective field and public arity with a fresh JVM and a deliberately preinitialized subject. Require the actual native checker to decline the earlier initialization with a diagnostic and zero premises, reestablish the four-root Avro bounds obligation, and requalify all six motivating charset, reflection, table and resource matrices.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T02:43:17+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "9m"
+      },
+      "steps": [
+        {
+          "name": "Original first-use countermodel, ordered Avro and six original matrices",
+          "run": "python3 lib/benchmark/startup-facts/postfreeze_originals.py --qualify-first-use --output verification/startup-facts/first-use-originals.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/first-use-originals.zip"
+      ],
+      "supersedes": "20261127-023629-qualify-first-active-use-on-original-jvm",
+      "revision": "68c5c99dbad6b76e10839b85e073a428c748ea7d"
+    }
+  },
+  "sourceCommit": "68c5c99dbad6b76e10839b85e073a428c748ea7d",
+  "startedAt": "2026-11-27T02:44:52+00:00",
+  "finishedAt": "2026-11-27T02:57:04+00:00",
+  "wallSeconds": 732.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2678050,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2160.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 350695424,
+    "wallSeconds": 536.3,
+    "cpuSeconds": 626.6,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.99
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 186.649,
+      "cpuSeconds": 186.957,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2357010432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "720b2a6aa72c98a2049cdcaee3af97f53866043ff2c98c9657cd18294008592a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-024317-qualify-first-active-use-on-original-jvm/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 06s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Original first-use countermodel, ordered Avro and six original matrices",
+      "run": "python3 lib/benchmark/startup-facts/postfreeze_originals.py --qualify-first-use --output verification/startup-facts/first-use-originals.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 536.259,
+      "cpuSeconds": 626.615,
+      "cpuThrottledSeconds": 36.005,
+      "peakMemoryBytes": 350695424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-original-first-use-countermode.log",
+        "lines": 74,
+        "bytes": 8089,
+        "sha256": "161a57e87837c7de88ee2510ae14cd5fb0ea9fcd670770dcbfa32cca62e6b21d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Recording  fresh JVM trace  1d0f2419228b95d81608ab32147e889a8b514a3c03959fd854aa00b969b88e1f",
+        "Conditional retry  unverifiable",
+        "Consumed assumptions  observed-initializer:org.apache.commons.io.Charsets:1d252090d6d4a98f141f9d5bc5df2c4f8bb382212409f8e74c24337f6f27db8d:6fdf9d4e2351aa3cae273f2b237eb8823bc09c8d27b53d323ceb0372927cd0ae",
+        "Remaining  the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13 (java.nio.charset.Charset.newEncoder() at org.apache.commons.io.inpu",
+        "Original property  unverifiable  UpgradeProbe#rewind()Z",
+        "Startup  org.apache.commons.io.Charsets  C  US-ASCII",
+        "Recording  fresh JVM trace  0361fd246db765123691f3f50a073a662b2c822699b5efdb18d1d4f9ec3185e6",
+        "Conditional retry  unverifiable",
+        "Consumed assumptions  observed-initializer:org.apache.commons.io.Charsets:1d252090d6d4a98f141f9d5bc5df2c4f8bb382212409f8e74c24337f6f27db8d:6fdf9d4e2351aa3cae273f2b237eb8823bc09c8d27b53d323ceb0372927cd0ae",
+        "Remaining  the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13 (java.nio.charset.Charset.newEncoder() at org.apache.commons.io.inpu",
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Original property  unverifiable  UpgradeProbe#rewind()Z",
+        "Startup  org.apache.commons.io.Charsets  C.UTF-8  UTF-8",
+        "Recording  fresh JVM trace  3153bb6e911133963a8e55697e6cb7723885df06c01f2c779a3e78c537e800d9",
+        "Conditional retry  unverifiable",
+        "Consumed assumptions  observed-initializer:org.apache.commons.io.Charsets:1d252090d6d4a98f141f9d5bc5df2c4f8bb382212409f8e74c24337f6f27db8d:6fdf9d4e2351aa3cae273f2b237eb8823bc09c8d27b53d323ceb0372927cd0ae",
+        "Remaining  the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13 (java.nio.charset.Charset.newEncoder() at org.apache.commons.io.inpu",
+        "Original property  unverifiable  UpgradeProbe#rewind()Z",
+        "Startup  org.apache.commons.io.Charsets  C  US-ASCII",
+        "Recording  fresh JVM trace  e223922afa8ac7b2b031827c9ca7902cc7cf91d1db9e3270de220b6eb037c147",
+        "Conditional retry  unverifiable",
+        "Consumed assumptions  observed-initializer:org.apache.commons.io.Charsets:1d252090d6d4a98f141f9d5bc5df2c4f8bb382212409f8e74c24337f6f27db8d:6fdf9d4e2351aa3cae273f2b237eb8823bc09c8d27b53d323ceb0372927cd0ae",
+        "Remaining  the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13 (java.nio.charset.Charset.newEncoder() at org.apache.commons.io.inpu",
+        "io 8 qualified rows",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-024317-qualify-first-active-use-on-original-jvm/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "old outside the fragment: reads the static field org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME, which the class's observed initializer left as an object of org.threeten.bp.format.DateTimeFormatter: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
+        "new outside the fragment: reads the static field org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME, which the class's observed initializer left as an object of org.threeten.bp.format.DateTimeFormatter: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
+        "2 original deployments and 12 original histories; reflective metadata and alias controls passed",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-024317-qualify-first-active-use-on-original-jvm/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "both POI deployments, twelve original histories and controlled live table tests qualified",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-024317-qualify-first-active-use-on-original-jvm/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "batik 10 qualified paired original histories",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-024317-qualify-first-active-use-on-original-jvm/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "file 10 qualified paired original histories",
+        "all six original qualification matrices passed on the follow-up producer"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/first-use-originals.zip",
+      "change": "added",
+      "bytes": 63698,
+      "sha256": "b9a47c5a6b8bf0ccedd8885621075c920da6900c123701089784d0530122aefd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T02:57:09+00:00",
+    "applied": [
+      "verification/startup-facts/first-use-originals.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3ecfea0a399f548bb29cef31a9031d831cfc48e5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3ecfea0a399f548bb29cef31a9031d831cfc48e5/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T025704Z-136946637227b494",
+      "outputs": "20261127T025704Z-159383a1fb587431",
+      "diff": "20261127T025704Z-179367c78a6ee06b"
+    }
+  }
+}
