@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-141531-inspect-maven-repackaged-spring-boot-par",
+  "title": "Inspect Maven-repackaged Spring Boot parent WARs by entry bytes",
+  "description": "Build the exact S48 parent Maven plugin in its original integration harness. Run the Maven WAR 3.5.1 and Boot repackage goals on a small consumer. Read both SBOM manifest attributes and the bytes of the named entry with and without a differently located CycloneDX file, and record actual archive ordering. Restrict dependency resolution to prepared local caches.",
+  "kind": "real-world",
+  "capabilities": [
+    "spring-boot-packaging",
+    "public-api-comparison"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T14:15:31+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "git"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "5G",
+    "duration": "7m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Run the original Maven integration and inspect both WAR outputs",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output verification/merged-pr-links/s01-s50/maven-war/parent.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/maven-war/parent.json"
+  ]
+}
