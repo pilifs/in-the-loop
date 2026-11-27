@@ -1,0 +1,210 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-055129-qualify-process-timezone-changes-on-orig",
+  "title": "Qualify process timezone changes on original Log4j schedules",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 26.9s, peak 149.2 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-055129-qualify-process-timezone-changes-on-orig.json",
+    "sha256": "9157e8c7448abc1b625f8d9f76dd63e43374cd49cd13dbdadd53f9daddb614e6",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-055129-qualify-process-timezone-changes-on-orig",
+      "title": "Qualify process timezone changes on original Log4j schedules",
+      "description": "Measure both pinned fixed-offset JVM profiles, default clone isolation, installation, mutation and restoration, and reject a crossed receipt. Repeat the original strict scheduling query with and without the startup fact on the API/core deployments. Replay all eight timestamp histories twice and retain the four explicit counterexamples and four omitted-zone controls.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "java:process-timezone"
+      ],
+      "links": {},
+      "expected": "Native fixture scope follows the original offset, overwritten defaults consume no initial-offset premise, and the source query advances beyond its documented refusal or records a scoped decision. All original timestamp and plugin class bindings match.",
+      "submitted": {
+        "at": "2026-11-27T05:51:29+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/timezones.py",
+          "run": "python3 verification/blind-caller/timezones.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/process-zones.zip"
+      ]
+    }
+  },
+  "sourceCommit": "ae66ae8a1dbb5d454aa37e2dd7a9ffaa7702f633",
+  "startedAt": "2026-11-27T05:52:32+00:00",
+  "finishedAt": "2026-11-27T05:56:16+00:00",
+  "wallSeconds": 224.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 516849,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 156426240,
+    "wallSeconds": 26.9,
+    "cpuSeconds": 43.7,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 187.912,
+      "cpuSeconds": 188.191,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2460061696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "f8527fc0cb5728ec31d3ccd50e376566b6b94e2069a2fd356fe0cf9cec28ecaf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-055129-qualify-process-timezone-changes-on-orig/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 07s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/timezones.py",
+      "run": "python3 verification/blind-caller/timezones.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 26.861,
+      "cpuSeconds": 43.676,
+      "cpuThrottledSeconds": 4.585,
+      "peakMemoryBytes": 156426240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 1,
+        "bytes": 124,
+        "sha256": "f0638a89eb02116e0f0215b159e827c29605b6f0055b985e3d5753235c3614c3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Both original defaults, isolation, change and restore, crossed-profile refusal and eight original Log4j histories qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/process-zones.zip",
+      "change": "added",
+      "bytes": 9512,
+      "sha256": "f2db2350caf5126c12b338d298f268b653e28ed238bc849dcb2fdbb3db42b48b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T05:56:48+00:00",
+    "applied": [
+      "verification/blind-caller/process-zones.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "c8ea2f27b0638f6675709ce9df758b391e67b97e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c8ea2f27b0638f6675709ce9df758b391e67b97e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T055616Z-0626864f1f8ea9d8",
+      "outputs": "20261127T055616Z-117618c0cf80218a",
+      "diff": "20261127T055616Z-1606666dae98bac7"
+    }
+  }
+}
