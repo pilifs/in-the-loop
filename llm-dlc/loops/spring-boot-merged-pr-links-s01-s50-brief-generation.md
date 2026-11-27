@@ -16,12 +16,12 @@
 | spring-projects/spring-boot#52310 | written | Compared the after-refresh and started-listener close fixtures with their running-state guards. Post-close creation of a runner dependency remains unmeasured. |
 | spring-projects/spring-boot#52309 | written | Compared the owning-context identity guard with the child-close regression and PR process report. Sibling service access after main returns remains open. |
 | spring-projects/spring-boot#52831 | written | Read the hidden-then-visible regression with `foo=bar`; it asserts the second context’s public message. The reverse-order bean and message checks are open. |
-| spring-projects/spring-boot#50886 | written | Read the old registry snapshot, the landed tracking calls and the maintainer’s removal of the test-default change. Two live contexts with late real registries remain unexecuted. |
-| spring-projects/spring-boot#9558 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52251 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52304 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51173 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52162 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#50886 | written | Read the old snapshot, registration tracking, test-default decision and Framework #36737’s test JVM report. Two live contexts with late registries remain unexecuted. |
+| spring-projects/spring-boot#9558 | written | Read the Jackson factory and three WebFlux paths. The upstream tests check customizer delivery and cloned builders. Typed decoding of independently supplied snake_case bytes remains open. |
+| spring-projects/spring-boot#52251 | written | Read the two builder customizers, UTF-8 default assertion and replacement registration tests. ISO-8859-1 response and request body bytes remain predictions. |
+| spring-projects/spring-boot#52304 | written | Compared the JSON-B provider, API-only, and Kotlin-only fixtures. The first two reject `Map` in Kotlin; the last accepts it. Client and server ordered writes with a real provider remain open. |
+| spring-projects/spring-boot#51173 | written | Checked the PR’s strict-mode account against the merged literal true and raw-header tests. Strict-mode HTTP behavior at the landed pin remains open. |
+| spring-projects/spring-boot#52162 | written | Both landed server start methods reset graceful shutdown. Both shared regressions restart before one blocked request. The two-request drain and body check remain unexecuted. |
 | spring-projects/spring-boot#51410 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#50271 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52824 | not yet | Awaiting source review and claims. |
