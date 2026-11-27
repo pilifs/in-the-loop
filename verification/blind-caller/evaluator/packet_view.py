@@ -85,9 +85,9 @@ def related_tests(path, stems, packages):
             or any(folder.endswith("/" + package) for package in packages))
 
 
-def source_material(row, destination, metadata, arm):
-    batch = row["batch"]
-    tree = worktree(CACHE / BATCHES[batch][3], row["slot"], "fix")
+def source_material(row, destination, metadata, arm, *, tree=None):
+    if tree is None:
+        tree = worktree(CACHE / BATCHES[row["batch"]][3], row["slot"], "fix")
     old, new = row["pins"]["parent"], row["pins"]["fix"]
     raw = raw_git(tree, "diff", "--no-renames", "--no-ext-diff", "--name-only", "-z", old, new)
     changed = [p.decode("utf-8") for p in raw.split(b"\0") if p]
@@ -164,6 +164,19 @@ def scan_jar(path, against):
                 raise PreparationStop("a deployment embeds upstream test sources or fixtures")
 
 
+def upstream_test_classes(tree, pins):
+    # Names alone allow the evaluator to deny mixed subject artifacts without exporting tests.
+    test_classes = set()
+    for revision in pins.values():
+        for name in source_names(tree, revision):
+            file = PurePosixPath(name)
+            if file.suffix in SOURCE_EXTENSIONS and is_test(name) and TEST_CLASS.search(file.stem):
+                package_path = re.search(r"(?:^|/)((?:com|org|net|io|edu|dev)/[\w$/]+)\.\w+$", name)
+                if package_path:
+                    test_classes.add(package_path[1])
+    return test_classes
+
+
 def deployments(row, destination):
     runtime = read(example(row["number"]) / "runtime.json")
     cache = CACHE / BATCHES[row["batch"]][3]
@@ -173,15 +186,7 @@ def deployments(row, destination):
     if not jdk.is_relative_to(JDKS.resolve()) or digest(jdk / "release") != runtime["jdkReleaseSha256"]:
         raise PreparationStop("original JDK is unavailable or has changed")
     tree = worktree(cache, row["slot"], "fix")
-    # Names alone allow the evaluator to deny mixed subject artifacts without exporting tests.
-    test_classes = set()
-    for revision in row["pins"].values():
-        for name in source_names(tree, revision):
-            file = PurePosixPath(name)
-            if file.suffix in SOURCE_EXTENSIONS and is_test(name) and TEST_CLASS.search(file.stem):
-                package_path = re.search(r"(?:^|/)((?:com|org|net|io|edu|dev)/[\w$/]+)\.\w+$", name)
-                if package_path:
-                    test_classes.add(package_path[1])
+    test_classes = upstream_test_classes(tree, row["pins"])
     exported, variants = {}, []
     for variant, dep in runtime["deployments"].items():
         if dep.get("service") or dep.get("postgresImage") or dep.get("mysqlImage"):

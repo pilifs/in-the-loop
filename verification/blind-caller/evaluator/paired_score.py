@@ -43,25 +43,25 @@ def member(raw, pointer):
     return raw
 
 
-def get_evidence(revision, arm, index, desc):
+def get_evidence(revision, arm, index, desc, *, directory=None):
     content = {}
     for name in ("registration", "generation", "source", "bytecode", "plan", "receipt"):
         ref = desc.get(name, {})
         rel = Path(ref.get("path", ""))
         require(not rel.is_absolute() and ".." not in rel.parts and rel.parts, "invalid measurement evidence path")
-        data = blob(revision, filename(arm, index, "measure", rel))
+        data = blob(revision, directory / rel if directory else filename(arm, index, "measure", rel))
         require(hashlib.sha256(data).hexdigest() == ref.get("sha256"), "measurement evidence digest mismatch")
         content[name] = data
     return content
 
 
-def verified_bindings(revision, arm, index, measurement, ref, variant):
+def verified_bindings(revision, arm, index, measurement, ref, variant, *, directory=None):
     descriptor = measurement.get("evidence", {}).get("bindings")
     if not descriptor:
         return False
     path = Path(descriptor["path"])
     require(not path.is_absolute() and ".." not in path.parts, "binding receipt outside the case output")
-    raw = blob(revision, filename(arm, index, "measure", path))
+    raw = blob(revision, directory / path if directory else filename(arm, index, "measure", path))
     require(hashlib.sha256(raw).hexdigest() == descriptor["sha256"], "binding file differs from its digest")
     plan = json.loads(raw)
     require(change_plan.saved_bindings(plan)["status"] == "recorded", "saved binding evidence has no independently checked graph")

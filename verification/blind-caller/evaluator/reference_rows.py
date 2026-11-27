@@ -26,7 +26,7 @@ def disposition(expected, actual):
     return "established", "every required side matched"
 
 
-def reference(row, *, requested_safety_stop=False):
+def reference(row, *, requested_safety_stop=False, metadata=None):
     if row["number"] in RESERVED:
         raise ValueError("reserved case")
     folder = example(row["number"])
@@ -44,7 +44,7 @@ def reference(row, *, requested_safety_stop=False):
             "providers": {owner: {"classpathIndex": index, "artifactSha256": runtime["sha256"][dep["classpath"][original][index]]}
                           for owner, index in dep["providers"].items()}}
             for original, side in SIDES.items()}, "jdkReleaseSha256": runtime["jdkReleaseSha256"]}
-    metadata = upstream_pr(row)
+    metadata = upstream_pr(row) if metadata is None else metadata
     safety_stop = bool(requested_safety_stop or HAZARD.search(metadata["title"] + "\n" + (metadata["body"] or ""))
                        or any(HAZARD.search(q[field]) for q in spec["questions"] for field in ("history", "prediction", "refutation")))
     questions = []
