@@ -1,0 +1,179 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-062252-measure-the-separately-sealed-production",
+  "title": "Measure the separately sealed production-origin repair",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.0s, peak 159.3 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-062252-measure-the-separately-sealed-production.json",
+    "sha256": "ab353be4ad90cc59630fe42382caa75111598265144b1978e1b1f966f34c7194",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-062252-measure-the-separately-sealed-production",
+      "title": "Measure the separately sealed production-origin repair",
+      "description": "After all three original arms were committed and scored, rerun the single affirmatively ordinary packaging stop on the unchanged original JARs. The evaluator attested that the test-like class was a production declaration on both pins and sealed the fresh production-only view, exact old-API caller choices and hypothesis before measuring. Its result belongs only to the post-reveal column.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:blind-public-caller",
+        "java:original-jvm-evidence"
+      ],
+      "links": {
+        "jobs": [
+          "20261127-054728-measure-sealed-cold-callers-with-the-ret"
+        ]
+      },
+      "expected": "A separate single-slot original-JVM result or explicit stop bound to the repair prediction. The original twenty-case cold result stays unchanged.",
+      "submitted": {
+        "at": "2026-11-27T06:22:52+00:00",
+        "session": "01a21b25-ec86-7b41-b54d-c5febc54e1da"
+      },
+      "requires": [
+        "python3",
+        "git",
+        "java",
+        "javac",
+        "javap",
+        "/home/filip/.cache/in-the-loop/blind-caller-pr-verification/checkers/89e73def0524c7d1a7d56d43185c75e7c8e82853755ac7b646c05b541e59fe1e/jvmcontract",
+        "bwrap",
+        "setpriv"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Measure the separately sealed benign packaging repair",
+          "run": "python3 verification/blind-caller/evaluator/repair_case.py measure --original-score c917d2eaa364aa3082f344604cfd7b4a21379a8e --prediction-seal 9751cdeb5249d647232aa8873efe9029ca67e5ff --output verification/blind-caller/evaluator/shards/repaired-measure.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/evaluator/shards/repaired-measure.zip"
+      ]
+    }
+  },
+  "sourceCommit": "77f7e8a682d470ea9fea725006ca1ed05281dd4a",
+  "startedAt": "2026-11-27T06:23:19+00:00",
+  "finishedAt": "2026-11-27T06:23:29+00:00",
+  "wallSeconds": 10.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 824956,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 167043072,
+    "wallSeconds": 2.0,
+    "cpuSeconds": 2.4,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure the separately sealed benign packaging repair",
+      "run": "python3 verification/blind-caller/evaluator/repair_case.py measure --original-score c917d2eaa364aa3082f344604cfd7b4a21379a8e --prediction-seal 9751cdeb5249d647232aa8873efe9029ca67e5ff --output verification/blind-caller/evaluator/shards/repaired-measure.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 2.005,
+      "cpuSeconds": 2.396,
+      "cpuThrottledSeconds": 0.177,
+      "peakMemoryBytes": 167043072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-separately-sealed.log",
+        "lines": 1,
+        "bytes": 46,
+        "sha256": "256405aa0364b3a3547bfc5e6716ca4501220a78ae61a47533144a1f6a7cdbc2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "post-reveal original-origin attempt: measured"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/evaluator/shards/repaired-measure.zip",
+      "change": "added",
+      "bytes": 14100,
+      "sha256": "400018b7f2e39bcc91b9118e30995dca13b78b5223b8094cc0a5721058594f5c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T06:23:38+00:00",
+    "applied": [
+      "verification/blind-caller/evaluator/shards/repaired-measure.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T062329Z-925063e86c51a437",
+      "outputs": "20261127T062329Z-947724b0a1e17426",
+      "diff": "20261127T062329Z-96601765d11410a1"
+    }
+  }
+}
