@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-27T03:56:39.964Z",
-  "ended": "2026-11-27T04:22:47.447Z",
-  "duration_seconds": 1567,
+  "ended": "2026-11-27T04:32:17.298Z",
+  "duration_seconds": 2137,
   "stats": {
     "turns": 0,
-    "api_calls": 84,
-    "tool_calls": 216,
-    "tool_errors": 12,
+    "api_calls": 111,
+    "tool_calls": 280,
+    "tool_errors": 15,
     "compactions": 0,
-    "peak_context_tokens": 163637,
+    "peak_context_tokens": 201331,
     "usage": {
-      "input_tokens": 169512,
-      "output_tokens": 57314,
-      "cache_read_input_tokens": 9872384,
+      "input_tokens": 209286,
+      "output_tokens": 80183,
+      "cache_read_input_tokens": 14843392,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 120,
-    "exec": 69,
-    "apply_patch": 16,
-    "send_message": 11
+    "Bash": 151,
+    "exec": 91,
+    "apply_patch": 23,
+    "send_message": 15
   },
   "files_touched": [
     "verification/blind-caller/evaluator/draw.py",
@@ -40,32 +40,34 @@
     "verification/blind-caller/evaluator/inventory.py",
     "verification/blind-caller/evaluator/isolation_probe.py",
     "verification/blind-caller/evaluator/packet_view.py",
+    "verification/blind-caller/evaluator/paired_score.py",
     "verification/blind-caller/evaluator/protocol.json",
     "verification/blind-caller/evaluator/reference_rows.py",
-    "verification/blind-caller/evaluator/sandbox_runner.py"
+    "verification/blind-caller/evaluator/sandbox_runner.py",
+    "verification/blind-caller/evaluator/score_controls.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-27T03:56:39.964Z",
-      "ended": "2026-11-27T04:22:47.447Z",
+      "ended": "2026-11-27T04:32:17.298Z",
       "turns": 0,
-      "api_calls": 84,
+      "api_calls": 111,
       "usage": {
-        "input_tokens": 169512,
-        "output_tokens": 57314,
-        "cache_read_input_tokens": 9872384,
+        "input_tokens": 209286,
+        "output_tokens": 80183,
+        "cache_read_input_tokens": 14843392,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 163637
+      "peak_context_tokens": 201331
     }
   ],
   "log": {
-    "sha256": "416b7e05f8e5bf6230c113887c767d2fe8774f39e42e8fda680dc80a3e551b1a",
-    "bytes": 1658564,
-    "lines": 672,
-    "gzip_bytes": 338228,
-    "path": "llm-dlc/traces/01a21b25-ec86-7b41-b54d-c5febc54e1da/logs/416b7e05f8e5bf6230c113887c767d2fe8774f39e42e8fda680dc80a3e551b1a.jsonl.gz"
+    "sha256": "35a731921ca3ac090c632e217c75a56c85d15239b5eff7425185726ce08e9c84",
+    "bytes": 2096232,
+    "lines": 880,
+    "gzip_bytes": 409209,
+    "path": "llm-dlc/traces/01a21b25-ec86-7b41-b54d-c5febc54e1da/logs/35a731921ca3ac090c632e217c75a56c85d15239b5eff7425185726ce08e9c84.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -102,20 +104,28 @@
       "log_sha256": "da14cbb1f6b99fefe08f1b357e07bcd1c6a3ed4ae013d2bc51d2bfdc834b1d67"
     },
     {
-      "change_id": "tzuyvuwntnssmlotnlsyoqxqnsznyunm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "416b7e05f8e5bf6230c113887c767d2fe8774f39e42e8fda680dc80a3e551b1a"
-    },
-    {
       "change_id": "qkyyvzoylqxsytzpwpylxuyyqsyolxsx",
       "commit_id": null,
       "immutable": false,
       "summary": "Enforce per-arm prediction seals and private JDI loopback",
       "body": "Require a single committed reference set for the draw, twenty committed cold predictions before diagnostic assistance, and twenty committed predictions for an arm before measuring. Bind the re-exported view and the prediction bytes in each measurement. Grant the original checker only to measurement. Its isolated network permits the original JDI launch and child JVM on private loopback.\n\nA synthetic JDK 17 caller compiled and produced exactly the same public output in a plain JVM and a JDI child. The evaluator sentinel was inaccessible in both phases; the independent namespace check confirmed the only interface was loopback and an external route was unavailable. Synthetic incomplete-arm and displaced-primary controls were refused.",
       "log_sha256": "416b7e05f8e5bf6230c113887c767d2fe8774f39e42e8fda680dc80a3e551b1a"
+    },
+    {
+      "change_id": "nukxyrmktmwkktuvzuuoqszvyotvwrrk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "35a731921ca3ac090c632e217c75a56c85d15239b5eff7425185726ce08e9c84"
+    },
+    {
+      "change_id": "qppoqpkpyknyxowyswukuvqklomskrnr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Score frozen caller predictions against typed original observations",
+      "body": "Require an independent semantic review of each ranked route, ordered action, input, field and side. Check the old compilation and source, ordered original providers, checker and JVM class bytes, repeated public projections and finite disposition on every deployment. Keep partial measurements and retain every stop. A possible security case can preserve its denominator and role counts without publishing operational inputs.\n\nThe disclosed synthetic scalar qualified on four inputs and two sides. Eight separately altered claims were rejected, including a wrong class, different archive, missing return, swapped-side values with equal totals, wrong field type, missing action and changed conclusion. Checked the committed time-limit and phase barriers and compiled the evaluator modules.",
+      "log_sha256": "35a731921ca3ac090c632e217c75a56c85d15239b5eff7425185726ce08e9c84"
     }
   ],
   "logs": {
@@ -123,6 +133,12 @@
       "bytes": 1072073,
       "lines": 313,
       "gzip_bytes": 246316,
+      "url": null
+    },
+    "35a731921ca3ac090c632e217c75a56c85d15239b5eff7425185726ce08e9c84": {
+      "bytes": 2096232,
+      "lines": 880,
+      "gzip_bytes": 409209,
       "url": null
     },
     "416b7e05f8e5bf6230c113887c767d2fe8774f39e42e8fda680dc80a3e551b1a": {

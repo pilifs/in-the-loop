@@ -113,6 +113,9 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
     if hashlib.sha256(policy_bytes).hexdigest() != policy_ref["sha256"]:
         raise ValueError("different frozen producer policy")
     policy = json.loads(policy_bytes)
+    limit = policy["predictionSeconds" if phase == "predict" else "measurementSeconds"]
+    if seconds is not None and seconds != limit:
+        raise ValueError("requested time budget differs from the frozen producer policy")
     destination = filename(arm, index, phase, "attempt.json").parent
     if (destination / "attempt.json").is_file():
         old = read(destination / "attempt.json")
@@ -154,15 +157,20 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
                 attempt["predictionSha256"] = prior["predictionSha256"]
             jdk = Path(read(work / "view/packet.json")["jdk"])
             out, boundary = launch(phase, work / "product", work / "view", work / "scratch", jdk, sentinel,
-                                   sealed=sealed, seconds=seconds)
+                                   sealed=sealed, seconds=limit)
             attempt["boundary"] = boundary
             if not boundary["landlockSentinelDenied"] or not boundary["networkDenied"]:
                 raise ValueError("worker isolation did not pass its independent controls")
             if phase == "predict" and not boundary["predictionSubprocessDenied"]:
                 raise ValueError("prediction subprocess barrier failed")
-            if boundary["exitCode"] or boundary["timedOut"]:
+            stopped = boundary["exitCode"] or boundary["timedOut"]
+            if stopped and (phase == "predict" or not (out / "measurement.json").is_file()):
                 attempt.update(status="operator stop", stoppedAt="candidate" if phase == "predict" else "generated and old-API compiled caller",
                                reason="worker exceeded its time limit" if boundary["timedOut"] else f"worker exited {boundary['exitCode']}")
+                if phase == "measure":
+                    # Preserve complete per-candidate receipts even if the worker stopped
+                    # before publishing its aggregate record. They do not earn implicit credit.
+                    shutil.copytree(out, stage / "partial")
             elif phase == "predict":
                 path = out / "prediction.json"
                 if not path.is_file():
@@ -183,7 +191,10 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
                         (stage / rel).parent.mkdir(parents=True, exist_ok=True)
                         shutil.copyfile(file, stage / rel)
                 attempt["measurementSha256"] = digest(path)
-                attempt["status"] = "measured"
+                attempt["status"] = "partial measurement" if stopped else "measured"
+                if stopped:
+                    attempt.update(stoppedAt="required-side reach", reason="worker exceeded its time limit" if boundary["timedOut"]
+                                   else f"worker exited {boundary['exitCode']}")
         except PreparationStop as error:
             attempt.update(status="preparation stop", reason=str(error), stoppedAt="deployment" if not prior else prior.get("stoppedAt", "candidate"))
         except (FileNotFoundError, PermissionError) as error:
@@ -203,7 +214,7 @@ if __name__ == "__main__":
     parser.add_argument("--reference-seal", required=True)
     parser.add_argument("--cold-seal")
     parser.add_argument("--prediction-seal")
-    parser.add_argument("--seconds", type=int, default=50)
+    parser.add_argument("--seconds", type=int, help="assert the committed per-phase time limit")
     args = parser.parse_args()
     counts = Counter(run_one(i, args.phase, args.arm, args.reference_seal, args.cold_seal, args.prediction_seal,
                              seconds=args.seconds) for i in args.slot)

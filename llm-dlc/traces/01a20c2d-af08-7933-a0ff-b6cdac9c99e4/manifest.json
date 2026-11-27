@@ -12,29 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T04:22:32.996Z",
-  "duration_seconds": 252702,
+  "ended": "2026-11-27T04:32:18.374Z",
+  "duration_seconds": 253288,
   "stats": {
     "turns": 41,
-    "api_calls": 6648,
-    "tool_calls": 16377,
+    "api_calls": 6670,
+    "tool_calls": 16413,
     "tool_errors": 354,
     "compactions": 28,
     "peak_context_tokens": 550925,
     "usage": {
-      "input_tokens": 8395067,
-      "output_tokens": 3868282,
-      "cache_read_input_tokens": 1803886592,
+      "input_tokens": 8408401,
+      "output_tokens": 3889206,
+      "cache_read_input_tokens": 1809215232,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8965,
-    "exec": 6350,
-    "apply_patch": 837,
+    "Bash": 8978,
+    "exec": 6365,
+    "apply_patch": 843,
     "wait": 113,
     "sleep": 97,
-    "send_message": 7,
+    "send_message": 9,
     "send_message_to_user_async": 6,
     "request_user_input_async": 1,
     "spawn_agent": 1
@@ -167,6 +167,7 @@
     "examples/schema/target-claim.schema.json",
     "examples/tools/build.py",
     "examples/tools/scaffold_example.py",
+    "examples/tools/targets/blind_measure.py",
     "examples/tools/targets/blind_prediction.py",
     "examples/tools/targets/change_evidence.py",
     "examples/tools/targets/change_helpers.py",
@@ -174,6 +175,7 @@
     "examples/tools/targets/change_plan.py",
     "examples/tools/targets/deployment_graph.py",
     "examples/tools/targets/entry_discovery.py",
+    "examples/tools/targets/java/PublicHistoryAgent.cpp",
     "examples/tools/targets/java/ResourceObserver.java.template",
     "examples/tools/targets/java/UpgradeClassLookup.java",
     "examples/tools/targets/java/UpgradeTrace.java",
@@ -387,6 +389,7 @@
     "verification/beyond-jbmc/successor/RESULTS.md",
     "verification/blind-caller/development.py",
     "verification/blind-caller/formatter.py",
+    "verification/blind-caller/product_controls.py",
     "verification/findings.md",
     "verification/generated-observers/campaign.py",
     "verification/generated-observers/falsifiers.py",
@@ -995,24 +998,24 @@
     {
       "index": 28,
       "started": "2026-11-27T03:04:15.564Z",
-      "ended": "2026-11-27T04:22:32.996Z",
+      "ended": "2026-11-27T04:32:18.374Z",
       "turns": 2,
-      "api_calls": 76,
+      "api_calls": 98,
       "usage": {
-        "input_tokens": 172806,
-        "output_tokens": 65379,
-        "cache_read_input_tokens": 12209152,
+        "input_tokens": 186140,
+        "output_tokens": 86303,
+        "cache_read_input_tokens": 17537792,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 239256
+      "peak_context_tokens": 266439
     }
   ],
   "log": {
-    "sha256": "904be2b72c64cfdeeccbe56611a3ab35f93bba3b57305b792ed6f4d0e522210e",
-    "bytes": 106457348,
-    "lines": 52420,
-    "gzip_bytes": 19462583,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/904be2b72c64cfdeeccbe56611a3ab35f93bba3b57305b792ed6f4d0e522210e.jsonl.gz"
+    "sha256": "7861549c2ae219ac89cbb781d80f047a5ced16e731c1aca354cc16476c86da0e",
+    "bytes": 106711372,
+    "lines": 52588,
+    "gzip_bytes": 19504281,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/7861549c2ae219ac89cbb781d80f047a5ced16e731c1aca354cc16476c86da0e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3193,20 +3196,28 @@
       "log_sha256": "d9b4a7fc018dc1d9fefe33374a12214869a503cdb5b2896f99dcac33c1f0e11a"
     },
     {
-      "change_id": "tzuyvuwntnssmlotnlsyoqxqnsznyunm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "904be2b72c64cfdeeccbe56611a3ab35f93bba3b57305b792ed6f4d0e522210e"
-    },
-    {
       "change_id": "qkyyvzoylqxsytzpwpylxuyyqsyolxsx",
       "commit_id": null,
       "immutable": false,
       "summary": "Enforce per-arm prediction seals and private JDI loopback",
       "body": "Require a single committed reference set for the draw, twenty committed cold predictions before diagnostic assistance, and twenty committed predictions for an arm before measuring. Bind the re-exported view and the prediction bytes in each measurement. Grant the original checker only to measurement. Its isolated network permits the original JDI launch and child JVM on private loopback.\n\nA synthetic JDK 17 caller compiled and produced exactly the same public output in a plain JVM and a JDI child. The evaluator sentinel was inaccessible in both phases; the independent namespace check confirmed the only interface was loopback and an external route was unavailable. Synthetic incomplete-arm and displaced-primary controls were refused.",
       "log_sha256": "904be2b72c64cfdeeccbe56611a3ab35f93bba3b57305b792ed6f4d0e522210e"
+    },
+    {
+      "change_id": "nukxyrmktmwkktuvzuuoqszvyotvwrrk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "7861549c2ae219ac89cbb781d80f047a5ced16e731c1aca354cc16476c86da0e"
+    },
+    {
+      "change_id": "qppoqpkpyknyxowyswukuvqklomskrnr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Score frozen caller predictions against typed original observations",
+      "body": "Require an independent semantic review of each ranked route, ordered action, input, field and side. Check the old compilation and source, ordered original providers, checker and JVM class bytes, repeated public projections and finite disposition on every deployment. Keep partial measurements and retain every stop. A possible security case can preserve its denominator and role counts without publishing operational inputs.\n\nThe disclosed synthetic scalar qualified on four inputs and two sides. Eight separately altered claims were rejected, including a wrong class, different archive, missing return, swapped-side values with equal totals, wrong field type, missing action and changed conclusion. Checked the committed time-limit and phase barriers and compiled the evaluator modules.",
+      "log_sha256": "7861549c2ae219ac89cbb781d80f047a5ced16e731c1aca354cc16476c86da0e"
     }
   ],
   "logs": {
@@ -3616,6 +3627,12 @@
       "bytes": 105994472,
       "lines": 52254,
       "gzip_bytes": 19370545,
+      "url": null
+    },
+    "7861549c2ae219ac89cbb781d80f047a5ced16e731c1aca354cc16476c86da0e": {
+      "bytes": 106711372,
+      "lines": 52588,
+      "gzip_bytes": 19504281,
       "url": null
     },
     "7a7a5cc8b3b1adcca15aa956c69bc6ad091e47a3c082f0291ba195ca8b22ea18": {

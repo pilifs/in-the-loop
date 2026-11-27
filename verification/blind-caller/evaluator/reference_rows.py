@@ -2,7 +2,7 @@
 import argparse
 from pathlib import Path
 
-from eligibility_inventory import HERE, RESERVED, digest, example, read, write
+from eligibility_inventory import HERE, RESERVED, digest, example, read, upstream_pr, write
 from packet_view import HAZARD
 
 
@@ -26,7 +26,7 @@ def disposition(expected, actual):
     return "established", "every required side matched"
 
 
-def reference(row):
+def reference(row, *, requested_safety_stop=False):
     if row["number"] in RESERVED:
         raise ValueError("reserved case")
     folder = example(row["number"])
@@ -44,9 +44,17 @@ def reference(row):
             "providers": {owner: {"classpathIndex": index, "artifactSha256": runtime["sha256"][dep["classpath"][original][index]]}
                           for owner, index in dep["providers"].items()}}
             for original, side in SIDES.items()}, "jdkReleaseSha256": runtime["jdkReleaseSha256"]}
+    metadata = upstream_pr(row)
+    safety_stop = bool(requested_safety_stop or HAZARD.search(metadata["title"] + "\n" + (metadata["body"] or ""))
+                       or any(HAZARD.search(q[field]) for q in spec["questions"] for field in ("history", "prediction", "refutation")))
     questions = []
     for q in spec["questions"]:
         expected = {SIDES[s]: outcome(v) for s, v in q["expected"].items()}
+        if safety_stop:
+            questions.append({"id": q["id"], "role": q["role"], "requiredSides": list(expected),
+                              "variants": {label: {"finiteDisposition": "withheld", "reason": "scoped security abstention"}
+                                           for label in physical["deployments"]}})
+            continue
         results = {}
         for label, dep in physical["deployments"].items():
             hits = [entry for entry in dep["observations"] if entry["id"] == q["id"]]
@@ -66,12 +74,16 @@ def reference(row):
     return {"canonicalPR": row["canonicalPR"], "url": row["url"], "entry": spec["entry"], "variants": variants,
             "comparisonSha256": digest(cp), "runtimeSha256": digest(rp), "observationsSha256": digest(op),
             "primaryIndex": primary, "questions": questions,
-            "safetyAbstention": any(HAZARD.search(q[field]) for q in questions for field in ("registeredHistory", "registeredPrediction", "refutation"))}
+            "safetyAbstention": safety_stop}
 
 
 def check_semantics(record):
     """The evaluator supplies semantic rows before any prediction is inspected or measured."""
     sem = record.get("semantics")
+    if record["safetyAbstention"]:
+        if sem != {"withheldForSafety": True}:
+            raise ValueError("scoped security abstention cannot include operational inputs")
+        return sem
     if not isinstance(sem, dict):
         raise ValueError("the primary needs evaluator-registered public semantics")
     for key in ("entry", "history"):
@@ -94,6 +106,16 @@ def check_semantics(record):
         raise ValueError("missing ordered action")
     if not isinstance(sem.get("bindings"), list) or not sem["bindings"]:
         raise ValueError("a primary needs a public entry or receiver binding obligation")
+    names = {item["name"] for item in sem["fields"]}
+    observed = sem.get("observedFields", {})
+    primary = record["questions"][record["primaryIndex"]]
+    if set(observed) != set(record["variants"]):
+        raise ValueError("typed public observations must cover all original deployment variants")
+    for label, variant in primary["variants"].items():
+        if set(observed[label]) != set(variant["actual"]):
+            raise ValueError("typed public observations must identify every measured side")
+        if any(set(fields) != names for fields in observed[label].values()):
+            raise ValueError("typed public observations must identify every registered field")
     return sem
 
 
@@ -112,9 +134,10 @@ def capture(draw, semantics, destination):
         row = population[item["number"]]
         if not row["eligible"] or row["url"] != item["url"] or row["pins"] != item["pins"]:
             raise ValueError("draw is inconsistent with sealed population")
-        ref = reference(row)
+        entry = semantics.get(row["canonicalPR"], {}) if semantics is not None else {}
+        ref = reference(row, requested_safety_stop=entry.get("withheldForSafety", False))
         if semantics is not None:
-            ref["semantics"] = semantics[row["canonicalPR"]]
+            ref["semantics"] = {"withheldForSafety": True} if ref["safetyAbstention"] else entry
             check_semantics(ref)
         records.append(ref)
     if semantics is not None and set(semantics) != {r["canonicalPR"] for r in records}:
