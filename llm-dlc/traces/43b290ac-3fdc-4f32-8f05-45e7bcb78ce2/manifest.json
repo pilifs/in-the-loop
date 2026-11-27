@@ -1,0 +1,88 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "43b290ac-3fdc-4f32-8f05-45e7bcb78ce2",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Review and implement `~/code/scripts/analysis/brief-generation-quality-takeaway.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize quality and e",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.332"
+  },
+  "models": [
+    "claude-fable-5-2"
+  ],
+  "started": "2026-11-27T15:13:41.381Z",
+  "ended": "2026-11-27T15:29:10.975Z",
+  "duration_seconds": 930,
+  "stats": {
+    "turns": 1,
+    "api_calls": 44,
+    "tool_calls": 75,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 212283,
+    "usage": {
+      "input_tokens": 88,
+      "output_tokens": 78021,
+      "cache_read_input_tokens": 6271615,
+      "cache_creation_input_tokens": 200444
+    }
+  },
+  "tools": {
+    "Bash": 45,
+    "Read": 20,
+    "Edit": 9,
+    "Write": 1
+  },
+  "files_touched": [
+    "llm-dlc/loops/brief-generation-template.md",
+    "llm-dlc/tools/brief_queue.py",
+    "llm-dlc/tools/test_single_run.py",
+    "verification/findings.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-27T15:13:41.381Z",
+      "ended": "2026-11-27T15:29:10.975Z",
+      "turns": 1,
+      "api_calls": 44,
+      "usage": {
+        "input_tokens": 88,
+        "output_tokens": 78021,
+        "cache_read_input_tokens": 6271615,
+        "cache_creation_input_tokens": 200444
+      },
+      "peak_context_tokens": 212283
+    }
+  ],
+  "log": {
+    "sha256": "87055e7cc0abe270b09bcf7cf705929e21cc61b9dabc202a95b39d31fa590a0f",
+    "bytes": 1641815,
+    "lines": 500,
+    "gzip_bytes": 303020,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/87055e7cc0abe270b09bcf7cf705929e21cc61b9dabc202a95b39d31fa590a0f.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "ntuqprskyppsztouplnkuuunvvywtoqm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Give the brief author four rules for each case, and count what a brief shows of them",
+      "body": "The user compared six generated briefs (155 cases) with rationale files of their own, which stay private, and wrote the result up as llm-dlc/loops/brief-generation-quality-takeaway.md. The brief author misread and missed nothing, but in every batch it dropped or blurred the second observation that changes one input, three times accepted \"either order\" where the behaviour defines an order, and reached for a database, JMS or a child process where a public call would show the same. Its own predictions that the merged code is still wrong were a strength worth keeping. The rate did not vary with the size of the list, so the gap is in the instructions. This is now VF-075 in verification/findings.md, with the cause, what landed, the baseline and what the user's next comparison should count.\n\nllm-dlc/loops/brief-generation-template.md gives the author four rules for each case, in the first text in full and in the continue message in short (a later cycle starts after a compaction with the continue message alone): a claim row with the role Variation that repeats the main observation with exactly one input changed and says what each revision should do, the reversal where the behaviour depends on order; the order stated and checked wherever the code under change produces one; the cheapest observation that shows the change, with the reason in the technical notes when more than a public call is needed; and a claim row with the role Remaining defect wherever the landed code still looks wrong. The two are claim rows because the agent that verifies a brief decides every claim row. The author checks the rules before a cycle ends and gives its counts with \"The brief is complete\" and in its record. The user's handoff is unchanged, and single_run.py renders the template as before.\n\nbrief_queue.py counts what a written brief shows of the rules: the cases with a Variation row and those without, the Remaining defect rows, and the cases whose words leave an order open. The brief step of next gives the count when it queues a generated brief (caseRules, a line for the user, the queue's log) and refuses nothing; brief_queue.py rules FILE counts any brief. Over the nine generated briefs on the line (235 cases) it finds no such rows, as the roles did not exist, and 13 cases that leave an order open. The single-agent-run skill page describes the rules and the count for the watcher.\n\nVerified by tests of the texts an author is given, not of the template file: both texts as generate renders them hold each rule (they lacked all four before the change, in both); the text the Codex stand-in was started with and the run's continue message hold them; and so do the first and the continued prompt of an author the queue started, whose brief the brief step then counts. python3 lib/tools/test_costs.py run --changed passed 7 of 7 test files, and the lint of the test inventory agrees (two new unit rows). Nothing here runs a prover, so there is no verification job. Not shown yet: that an author follows the rules, which the user's comparison of the next generated list with a rationale file will show.",
+      "log_sha256": "87055e7cc0abe270b09bcf7cf705929e21cc61b9dabc202a95b39d31fa590a0f"
+    }
+  ],
+  "logs": {
+    "87055e7cc0abe270b09bcf7cf705929e21cc61b9dabc202a95b39d31fa590a0f": {
+      "bytes": 1641815,
+      "lines": 500,
+      "gzip_bytes": 303020,
+      "url": null
+    }
+  },
+  "redaction_policy": 7,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}

@@ -28,6 +28,24 @@ TOOLS = Path(__file__).resolve().parent
 NOTES = "## Setup Agent Notes\n\n- Everything the brief names is cached under ~/.cache/in-the-loop/made-up.\n"
 
 
+def a_case(ident: str, url: str, *rows: tuple[str, str]) -> str:
+    """One case section of a made-up generated brief in the handoff's format, with a claim row for each (role, expectation)."""
+    table = "".join(f"| {ident}.{n} · {role} | a made-up input | {expected} | a made-up basis | a made-up refutation |\n"
+                    for n, (role, expected) in enumerate(rows, 1))
+    return (f"## {ident} · A made-up behaviour\n\n**Change and revisions.** [Merged PR]({url}).\n\n### Claims\n\n"
+            "| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |\n"
+            f"|---|---|---|---|---|\n{table}\n**Technical notes.** A plain public call shows it.\n")
+
+
+# Two cases for the count of the four case rules (VF-075): one keeps them, and one has no `Variation` row and leaves an
+# order open.
+KEPT = a_case("made/up#1", "https://github.com/made/up/pull/1", ("Intent", "a, then b"), ("Control", "unchanged"),
+              ("Challenge", "the same"), ("Variation", "with the two calls reversed: b, then a"),
+              ("Remaining defect", "still null on the merge"))
+DROPPED = a_case("other/thing#22", "https://github.com/other/thing/pull/22", ("Intent", "a and b, in either order"),
+                 ("Control", "unchanged"), ("Challenge", "the same"))
+
+
 class TheQueuesRules(unittest.TestCase):
     def test_a_briefs_front_matter_and_settings_override_the_defaults_and_nothing_unknown_passes(self):
         text = "---\nqueue.setup: none\nqueue.session: new\ntitle: kept for the reader\n---\n# A brief\n"
@@ -117,6 +135,33 @@ class TheQueuesRules(unittest.TestCase):
             (analysis / "more-brief.md").write_text("# Someone's own brief\n")
             with self.assertRaisesRegex(brief_queue.Problem, "would overwrite it"):
                 brief_queue.make_entry(root, data, analysis / "more.md")
+
+    def test_what_a_written_brief_shows_of_the_four_case_rules_is_counted_for_a_person(self):
+        brief = "# Made-up behaviour\n\n## Objective\n\nCallers may read these in any order: not a case.\n\n" + KEPT + "\n" + DROPPED
+        rules = brief_queue.case_rules(brief)
+        self.assertEqual(rules, {"cases": 2, "variation": 1, "withoutVariation": ["other/thing#22"], "remainingDefect": 1,
+                                 "orderLeftOpen": ["other/thing#22"]})
+        self.assertEqual(brief_queue.rules_note(rules),
+                         "a `Variation` row in 1 of its 2 cases (none in other/thing#22), 1 `Remaining defect` row, and words "
+                         "that leave an order open in 1 case (other/thing#22), which is right only where a contract leaves "
+                         "the order unspecified")
+        # The control: a brief that keeps the rules has nothing named, and a role with emphasis or a qualifier is its role.
+        kept = brief_queue.case_rules("# Made-up behaviour\n\n" + KEPT.replace("· Variation", "· **Order variation**"))
+        self.assertEqual(kept, {"cases": 1, "variation": 1, "withoutVariation": [], "remainingDefect": 1, "orderLeftOpen": []})
+        self.assertEqual(brief_queue.rules_note(kept), "a `Variation` row in 1 of its 1 case, 1 `Remaining defect` row")
+        many = brief_queue.case_rules("# Made-up behaviour\n\n" + "\n".join(DROPPED.replace("#22", f"#{n}") for n in range(10)))
+        self.assertIn("(none in other/thing#0, other/thing#1, other/thing#2, other/thing#3, other/thing#4, other/thing#5, "
+                      "other/thing#6, other/thing#7 and 2 more), 0 `Remaining defect` rows", brief_queue.rules_note(many))
+        # What cannot be counted is said, not counted as none: a brief in another format has no case to count.
+        prose = brief_queue.case_rules("# Made-up behaviour\n\n## made/up#1\n\nIt returns a, then b.\n")
+        self.assertEqual(prose["cases"], 0)
+        self.assertIn("could not be counted", brief_queue.rules_note(prose))
+        # The roles counted are the roles the author is given, in the texts as `generate` renders them.
+        template = (TOOLS.parent / "loops/brief-generation-template.md").read_text()
+        fills = {key: f"`{key}.md`" for key in ("input", "output", "record", "handoff")}
+        for text in test_single_run.single_run.template_texts(template, fills, test_single_run.single_run.GENERATE_TEMPLATE):
+            for role in (brief_queue.VARIATION, brief_queue.REMAINING_DEFECT):
+                self.assertIn(f"role `{role}`", text)
 
     def test_a_generated_brief_goes_right_after_its_list_unless_the_list_says_end(self):
         entry = {"name": "prs"}
@@ -383,6 +428,8 @@ class TheHandover(unittest.TestCase):
         self.assertEqual((run["compactAt"], run["generate"]["output"]), ("600k", "llm-dlc/loops/prs-brief.md"))
         self.wait("prs-generate")
         self.assertTrue(self.prompts()[0].startswith("You are the BRIEF AUTHOR for the pull requests listed in `llm-dlc/loops/prs.md`."))
+        self.assertEqual(test_single_run.missing_case_rules(self.prompts()[0]), {},
+                         "the author the queue starts is given the four case rules (VF-075)")
         args = self.calls()[0]["args"]
         self.assertEqual(args[args.index("--autocompact") + 1], "600k")
         queue = json.loads((self.root / brief_queue.QUEUE).read_text())
@@ -394,7 +441,7 @@ class TheHandover(unittest.TestCase):
         self.wait("prs-generate", kind="ended")
         folder = test_single_run.single_run.brief_run.workspaces(self.root)["ws"]
         written = folder / "llm-dlc/loops/prs-brief.md"
-        written.write_text("# Made-up behaviour\n\n## made/up#1\n\nhttps://github.com/made/up/pull/1\n")
+        written.write_text("# Made-up behaviour\n\n" + KEPT)
         subprocess.run(["jj", "--quiet", "commit", "-m", "The brief, part of it"], cwd=folder, check=True, capture_output=True)
         out = self.data("next", "--finished")
         self.assertEqual(out["failedAt"], "brief")
@@ -406,12 +453,20 @@ class TheHandover(unittest.TestCase):
         #    of the brief already waiting, and runs as any: the list is generated, set up and proved before the next.
         self.tool("generate", "prs-generate")
         self.finish("prs-generate")
-        written.write_text(written.read_text() + "\n## other/thing#22\n\nhttps://github.com/other/thing/pull/22\n")
+        later = [p for p in self.prompts() if p.startswith("Continue writing the brief `llm-dlc/loops/prs-brief.md`")]
+        self.assertEqual(len(later), 1, "the continued author is given the continue message")
+        self.assertEqual(test_single_run.missing_case_rules(later[0]), {}, "which holds the four case rules as well")
+        written.write_text(written.read_text() + "\n" + DROPPED)
         subprocess.run(["jj", "--quiet", "commit", "-m", "The brief, whole"], cwd=folder, check=True, capture_output=True)
         out = self.data("next", "--finished")
         self.assertEqual(out["steps"], ["prs: generate-land", "prs: brief", "prs: checkpoint"], out)
         self.assertEqual((out["done"], out["queued"]), (["prs"], ["prs-brief"]))
         self.assertIn("queued right after it as prs-brief", out["forTheUser"][0])
+        # What the brief shows of the four case rules is counted and said, and holds nothing up: its setup starts.
+        self.assertEqual(out["caseRules"], {"prs-brief": {"cases": 2, "variation": 1, "withoutVariation": ["other/thing#22"],
+                                                          "remainingDefect": 1, "orderLeftOpen": ["other/thing#22"]}})
+        self.assertIn("prs-brief, by the four case rules its author was given: a `Variation` row in 1 of its 2 cases "
+                      "(none in other/thing#22)", out["forTheUser"][1])
         self.assertEqual((self.analysis / "prs-brief.md").read_text(), (self.root / "llm-dlc/loops/prs-brief.md").read_text())
         self.assertEqual(out.get("started"), "prs-brief-setup", f"then the generated brief's setup phase, as for any brief: {out}")
         rows = self.data("status", "--json")["queue"]
@@ -422,6 +477,8 @@ class TheHandover(unittest.TestCase):
         actions = [json.loads(line)["action"] for line in (self.root / brief_queue.LOG).read_text().splitlines()]
         self.assertEqual(actions[:4], ["defaults", "add", "add", "start"])
         self.assertIn("brief", actions)
+        logged = [json.loads(line) for line in (self.root / brief_queue.LOG).read_text().splitlines()]
+        self.assertEqual([e["caseRules"]["variation"] for e in logged if e["action"] == "brief"], [1], "the count is in the queue's log")
 
     @cost("tool")
     def test_a_step_that_fails_is_named_and_the_next_call_carries_on_from_it(self):

@@ -50,6 +50,11 @@ Commands (python3 llm-dlc/tools/brief_queue.py COMMAND ...):
   resume                        end a hold: the next `next` starts what is due. A brief with holdAfter=yes holds the
                                 queue itself once it is done, so that the briefs before it run on and it stops after
   report [--json]               each brief with its runs, cycles, landing and state
+  rules BRIEF ...               what each written brief shows of the four rules a brief author is given for each case
+                                (llm-dlc/loops/brief-generation-template.md): the cases with a `Variation` row and
+                                those without, the `Remaining defect` rows, and the cases whose words leave an order
+                                open. A count, which `next` also gives for a generated brief when it queues it: it
+                                refuses nothing, and whether a row keeps its rule takes reading the case
 
 Standard library only.
 """
@@ -342,6 +347,59 @@ def pull_requests(text: str) -> list[str]:
     return out
 
 
+# The four rules for each case that the generation template gives a brief author (VF-075), as far as a written brief
+# shows them to a count: the two roles the rules name for a claim row, and the words that leave an order open. The
+# count is for whoever compares the brief, and is never a verdict: whether a `Variation` row changes one input, and
+# whether an order may stay open, takes reading the case.
+VARIATION, REMAINING_DEFECT = "Variation", "Remaining defect"
+CLAIM_ROW = re.compile(r"^\|[^|\n]*?\.\d+\s*·\s*([^|\n]+?)\s*\|", re.M)  # `| ID.N · Role |`, the handoff's format
+ORDER_OPEN = re.compile(r"\b(?:either|any|no particular|arbitrary) order\b|\bas (?:a |an unordered )?sets?\b"
+                        r"|\border[- ]insensitive\b|\b(?:regardless|irrespective) of (?:the |their )?order\b", re.I)
+
+
+def case_rules(text: str) -> dict:
+    """What a brief shows of the four case rules. Its cases are the sections with claim rows in the handoff's format:
+    how many have a `Variation` row and which have none, how many `Remaining defect` rows there are, and which cases
+    have words that leave an order open."""
+    cases, variation, remaining, without, order_open = 0, 0, 0, [], []
+    for section in re.split(r"^## ", text, flags=re.M)[1:]:
+        roles = [role.lower() for role in CLAIM_ROW.findall(section)]
+        if not roles:
+            continue
+        cases += 1
+        name = re.split(r" [·—] ", section.splitlines()[0], maxsplit=1)[0].strip()
+        if any(VARIATION.lower() in role for role in roles):
+            variation += 1
+        else:
+            without.append(name)
+        remaining += sum(REMAINING_DEFECT.lower() in role for role in roles)
+        if ORDER_OPEN.search(section):
+            order_open.append(name)
+    return {"cases": cases, "variation": variation, "withoutVariation": without, "remainingDefect": remaining,
+            "orderLeftOpen": order_open}
+
+
+def rules_note(rules: dict) -> str:
+    """The count of `case_rules` in a sentence, for a person."""
+    if not rules["cases"]:
+        return ("no section of it has claim rows in the handoff's format (`| ID.N · Role |`), so the four case rules "
+                "could not be counted")
+
+    def some(n: int, what: str) -> str:
+        return f"{n} {what}" + ("" if n == 1 else "s")
+
+    def named(names: list[str]) -> str:
+        return ", ".join(names[:8]) + (f" and {len(names) - 8} more" if len(names) > 8 else "")
+    note = f"a `{VARIATION}` row in {rules['variation']} of its {some(rules['cases'], 'case')}"
+    if rules["withoutVariation"]:
+        note += f" (none in {named(rules['withoutVariation'])})"
+    note += f", {some(rules['remainingDefect'], f'`{REMAINING_DEFECT}` row')}"
+    if rules["orderLeftOpen"]:
+        note += (f", and words that leave an order open in {some(len(rules['orderLeftOpen']), 'case')} "
+                 f"({named(rules['orderLeftOpen'])}), which is right only where a contract leaves the order unspecified")
+    return note
+
+
 # A line of a list of pull requests: the URL alone, or as a Markdown link, bulleted, numbered or bare.
 PULL_LINE = re.compile(r"\s*(?:[-*+]|\d+[.)])?\s*(?:\[[^\]]*\]\(\s*<?|<)?" + PULL.pattern + r"[^\s)>]*>?\s*\)?\s*")
 
@@ -608,8 +666,10 @@ def written_brief(root: Path, data: dict, entry: dict) -> None:
     if beside.exists() and beside.read_text() != text:
         raise Problem(f"{entry['beside']} exists and differs from the generated brief: move it away, then run `next` again")
     beside.write_text(text)
+    # What the brief shows of the four case rules is counted and said, and refuses nothing: a person compares it.
+    entry["caseRules"] = case_rules(text)
     log(root, "brief", entry["name"], brief=entry["brief"], copy=entry["beside"],
-        pullRequests=len(entry.get("pullRequests") or []))
+        pullRequests=len(entry.get("pullRequests") or []), caseRules=entry["caseRules"])
     # The list's own settings, but the generation's; and a brief, whatever it looks like (one that is only links
     # and headings would otherwise be taken for another list).
     own = {**{k: v for k, v in entry.get("settings", {}).items() if not k.startswith("generate")}, "generate": "none"}
@@ -679,6 +739,7 @@ def cmd_next(root: Path, finished: bool) -> dict:
                     report["heldAfter"] = name
                 made = entry.get("queued")
                 made_at = "right after it" if entry.get("queuedAt") == "next" else "at the end"
+                rules = entry.get("caseRules")
         if stop == "failed":
             log(root, "failed", name, step=report["failedAt"], problem=report["problem"])
             break
@@ -695,6 +756,9 @@ def cmd_next(root: Path, finished: bool) -> dict:
                 report.setdefault("forTheUser", []).append(
                     f"{name}'s brief is written and queued {made_at} as {made}; it is on develop: review it whenever "
                     f"you like, before its setup phase starts or while it runs")
+                if rules:
+                    report.setdefault("caseRules", {})[made] = rules
+                    report["forTheUser"].append(f"{made}, by the four case rules its author was given: {rules_note(rules)}")
             else:
                 report.setdefault("forTheUser", []).append(
                     f"{name} is landed and on develop: promoting main and running the default tests are yours to decide")
@@ -791,6 +855,7 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     sub.add_parser("report", help="each brief's runs and state").add_argument("--json", action="store_true")
     sub.add_parser("hold", help="land what finishes, start nothing until `resume`").add_argument("--reason", default="")
     sub.add_parser("resume", help="end a hold")
+    sub.add_parser("rules", help="what a written brief shows of the four case rules").add_argument("briefs", nargs="+", type=Path)
     args = ap.parse_args(argv)
     root = (args.root or root).resolve()
     try:
@@ -896,6 +961,15 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
                               if was else "the queue was not held"}, indent=1))
         elif args.command == "next":
             print(json.dumps(cmd_next(root, args.finished), indent=1))
+        elif args.command == "rules":
+            out = {}
+            for path in args.briefs:
+                try:
+                    rules = case_rules(path.read_text())
+                except OSError:
+                    raise Problem(f"no brief at {path}")
+                out[str(path)] = {**rules, "note": rules_note(rules)}
+            print(json.dumps(out, indent=1))
         elif args.command == "report":
             rows = cmd_report(root)
             if args.json:
