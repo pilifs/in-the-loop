@@ -1,0 +1,388 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110822-setup-build-spring-boot-51844-s26-at-bot",
+  "title": "Setup: build Spring Boot #51844 (S26) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 10m03s, peak 5.2 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S26 fix: build and landed tests) was held back 5m22s by its 4-CPU quota in 4m08s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S26 parent: build and the parent's tests) was held back 5m12s by its 4-CPU quota in 3m22s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S26 transplant: the fix's tests on the parent) was held back 5m01s by its 4-CPU quota in 2m30s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110822-setup-build-spring-boot-51844-s26-at-bot.json",
+    "sha256": "7863f602171019967a850333ca40d5989ab006bf577074bbd7ac44bfd509e508",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110822-setup-build-spring-boot-51844-s26-at-bot",
+      "title": "Setup: build Spring Boot #51844 (S26) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S26 (spring-projects/spring-boot#51844: Retrieve asynchronous values from a Boot-configured Caffeine cache). In the worktrees $P/worktrees/S26-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-cache with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (CacheAutoConfigurationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-cache in $P/artifacts/S26-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S26",
+      "submitted": {
+        "at": "2026-11-27T11:08:22+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S26 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S26 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S26 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S26 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S26 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S26 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S26 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S26 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091103-setup-build-spring-boot-51844-s26-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:38:39+00:00",
+  "finishedAt": "2026-11-27T11:48:55+00:00",
+  "wallSeconds": 616.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 5593174016,
+    "wallSeconds": 603.8,
+    "cpuSeconds": 1616.2,
+    "memoryOfEstimate": 0.87,
+    "durationOfEstimate": 0.4
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S26 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S26 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 248.155,
+      "cpuSeconds": 666.393,
+      "cpuThrottledSeconds": 322.464,
+      "peakMemoryBytes": 5593174016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s26-fix-build-and-landed-tests.log",
+        "lines": 61,
+        "bytes": 8795,
+        "sha256": "57712a7d0ff214837f1ab7d7676e57504ea1ed93853f5a8702d4994cf0dadc60",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "a7e234c510bc0a4827d5cdea59f271f39c61f0e038ceb77765289bffc0092c7f  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "5cd192dcf36825d4b499081b008654a620f2b0e66546d097c321aac0cf935ee0  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT.jar",
+        "d0e07fed611d7fa4189c5f76685191e2c8200c39e5f83a7991b5073a82a5aefb  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "cd731f8e02cd82a2e823710333235681144d74289ee1010acb2ebc417d130208  tree/module/spring-boot-couchbase/build/libs/spring-boot-couchbase-4.2.0-SNAPSHOT.jar",
+        "6ea4875c500e4be20aa1516559b7b9b0dedfada89c8da621e488e23df8f26eeb  tree/module/spring-boot-data-commons/build/libs/spring-boot-data-commons-4.2.0-SNAPSHOT.jar",
+        "12a06f34a3f078b2e1b86156b3e178ee11ce527379175cacd31cc1a8aa33b1c3  tree/module/spring-boot-data-couchbase/build/libs/spring-boot-data-couchbase-4.2.0-SNAPSHOT.jar",
+        "1c80a44711f6fe6b5586d6f1165d327c635349f3e30847aaa301bba8ebc6357a  tree/module/spring-boot-data-redis/build/libs/spring-boot-data-redis-4.2.0-SNAPSHOT.jar",
+        "fb6513d11930c77184928039076fae09afa11ca16def40330c5db601f8fcbd4c  tree/module/spring-boot-hazelcast/build/libs/spring-boot-hazelcast-4.2.0-SNAPSHOT.jar",
+        "60ab4fb74d8b86f357841dd78083fbeb1ef9de66e5c0f7bfbb8e832b0313f8ed  tree/module/spring-boot-hibernate/build/libs/spring-boot-hibernate-4.2.0-SNAPSHOT.jar",
+        "abd7d1357576b044ae0ed47c82bd151b76be0fa3e0d3b1c7117c6e1c57af6e6a  tree/module/spring-boot-http-codec/build/libs/spring-boot-http-codec-4.2.0-SNAPSHOT.jar",
+        "b59323dfd918d3ee3d50650fa948361024322864a0cfe72a6b90f6652da3f147  tree/module/spring-boot-http-converter/build/libs/spring-boot-http-converter-4.2.0-SNAPSHOT.jar",
+        "604d547557ce62b8417f095887f9510c761ed702e2b6d0ffbf7d67aa5c796af9  tree/module/spring-boot-jackson2/build/libs/spring-boot-jackson2-4.2.0-SNAPSHOT.jar",
+        "f963dbe85b65fdbf4e93cbc6458cd5b37cc5fd2298d2f8cc22ca63ac4dbfd951  tree/module/spring-boot-jackson/build/libs/spring-boot-jackson-4.2.0-SNAPSHOT.jar",
+        "b7ef1bec1f55aa5d1b3fabaff6220caddff89e429ccf42ba7b27ead109e36f6f  tree/module/spring-boot-jdbc/build/libs/spring-boot-jdbc-4.2.0-SNAPSHOT.jar",
+        "639b8c5af94a49879ee82e769de94092f4bc881fe051fa326f6345575dce4563  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.2.0-SNAPSHOT.jar",
+        "d36713db46f9d41077defe12daf252e8b685845b51e1925307df2fa898bdf524  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "a830a418b0ba8cab74ab50d8c3061db7b5c4917126cbb1561a7f7dda06877038  tree/module/spring-boot-jpa/build/libs/spring-boot-jpa-4.2.0-SNAPSHOT.jar",
+        "98625003e327ce43fa35b52d3184311f242ab3f92613ea5442160bd8282b0493  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "a8a2231ea65623a4e7a8a84760091e2346204ad49ae868b57ae7cce04fc9d330  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "31641ebdbbe63a4054a82ecab87dbc9f550032f2e74930424d3e7032f33517d3  tree/module/spring-boot-netty/build/libs/spring-boot-netty-4.2.0-SNAPSHOT.jar",
+        "ba29f300cc7b5de4da06a6b08067be7166965006970366b9597e64a74950545d  tree/module/spring-boot-persistence/build/libs/spring-boot-persistence-4.2.0-SNAPSHOT.jar",
+        "86d4c92d0c306525faf7a054493c8e140500b73b9fc4c70e3d5e3bc90f432cc7  tree/module/spring-boot-reactor-netty/build/libs/spring-boot-reactor-netty-4.2.0-SNAPSHOT.jar",
+        "5b621c58d05a3025e25b5e4861b13c62e4d3f26bf4998a54e4eca35ead653532  tree/module/spring-boot-servlet/build/libs/spring-boot-servlet-4.2.0-SNAPSHOT.jar",
+        "f222de2091c1a5c7fc70413e7f90d95f7f677c6d78ea7ff1b6adba26a825b2ec  tree/module/spring-boot-sql/build/libs/spring-boot-sql-4.2.0-SNAPSHOT.jar",
+        "28d872836630b05795363adadfecb34bb421d298230d52c4f77b3c15c3986700  tree/module/spring-boot-tomcat/build/libs/spring-boot-tomcat-4.2.0-SNAPSHOT.jar",
+        "bc20120327747d8b0c71841cc1358c6c9c2326b55194100e768a4f9cbef1b322  tree/module/spring-boot-transaction/build/libs/spring-boot-transaction-4.2.0-SNAPSHOT.jar",
+        "fd245c2918dbd3c7a11561911927f07402f825e3c0514d20c7d18ccfdefd1931  tree/module/spring-boot-webflux/build/libs/spring-boot-webflux-4.2.0-SNAPSHOT.jar",
+        "6f2da2f502968ccfb3b3145e62fb7426d0333ca8043e44d0f42c523734c0db0e  tree/module/spring-boot-webflux/build/libs/spring-boot-webflux-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "1b15a14dfe84badf4d935031d2db2c359d8911e81378ab8618c10c8f0ff89104  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT.jar",
+        "81bb9457a999c5fec6e206a3da06f3da79f0d4f78ee36d0cd72822dd511c1147  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "3fc2229e3df0b9feda795e06e107fbf3b9dfc5929bb50ef5ab7d9db2fd04a414  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "adc2e115e4bf0cde082eeb61dbfa30690db7ad2c9346730efdefe0fb30d574c2  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Caffeine$CacheMode.class",
+        "6fd4584914c89c58751bec3f874855475b9bdaaddbc7804474d07fece6de4ba9  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Caffeine.class",
+        "b38a2cf1b28e93457cd6d8f7b6fbe70c2c2f86bced196e4e147052dfb8b9d763  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Couchbase.class",
+        "e8585741d8e21d1b8ed7c8168fb7bb990bbf61876b2d814becac719db0ca0d51  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Infinispan.class",
+        "49ab88559d099b90830b0b29782a04a69e875860171bb6c4b142cd3b6b4db1f2  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$JCache.class",
+        "ac384975c4fc24a32491b2e9de18c2f9a75cdffc8e1e19e3edab5bb416acbb8c  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Redis.class",
+        "a05b2ac73073602c5542ba46c0738624ba38b37bab963ae2061e0bab0855ffd0  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties.class",
+        "2194f40c8974118770fbda64e8473912c990344903f877f32eeb44e404305e58  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CaffeineCacheConfiguration.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S26 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S26 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 202.062,
+      "cpuSeconds": 544.987,
+      "cpuThrottledSeconds": 312.917,
+      "peakMemoryBytes": 4656340992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s26-parent-build-and-the-paren.log",
+        "lines": 60,
+        "bytes": 8614,
+        "sha256": "4d3217347a1adeee51747a1ab5e601579c1c71feaac143cc5d538ef26b9f468d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "75466984bc3b4ce78754693d5b07dc1793ca7363227d441b617fb1d2cc1e8c1b  tree/core/spring-boot-test/build/libs/spring-boot-test-4.2.0-SNAPSHOT.jar",
+        "a7e234c510bc0a4827d5cdea59f271f39c61f0e038ceb77765289bffc0092c7f  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "5cd192dcf36825d4b499081b008654a620f2b0e66546d097c321aac0cf935ee0  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT.jar",
+        "d0e07fed611d7fa4189c5f76685191e2c8200c39e5f83a7991b5073a82a5aefb  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "cd731f8e02cd82a2e823710333235681144d74289ee1010acb2ebc417d130208  tree/module/spring-boot-couchbase/build/libs/spring-boot-couchbase-4.2.0-SNAPSHOT.jar",
+        "6ea4875c500e4be20aa1516559b7b9b0dedfada89c8da621e488e23df8f26eeb  tree/module/spring-boot-data-commons/build/libs/spring-boot-data-commons-4.2.0-SNAPSHOT.jar",
+        "12a06f34a3f078b2e1b86156b3e178ee11ce527379175cacd31cc1a8aa33b1c3  tree/module/spring-boot-data-couchbase/build/libs/spring-boot-data-couchbase-4.2.0-SNAPSHOT.jar",
+        "1c80a44711f6fe6b5586d6f1165d327c635349f3e30847aaa301bba8ebc6357a  tree/module/spring-boot-data-redis/build/libs/spring-boot-data-redis-4.2.0-SNAPSHOT.jar",
+        "fb6513d11930c77184928039076fae09afa11ca16def40330c5db601f8fcbd4c  tree/module/spring-boot-hazelcast/build/libs/spring-boot-hazelcast-4.2.0-SNAPSHOT.jar",
+        "60ab4fb74d8b86f357841dd78083fbeb1ef9de66e5c0f7bfbb8e832b0313f8ed  tree/module/spring-boot-hibernate/build/libs/spring-boot-hibernate-4.2.0-SNAPSHOT.jar",
+        "abd7d1357576b044ae0ed47c82bd151b76be0fa3e0d3b1c7117c6e1c57af6e6a  tree/module/spring-boot-http-codec/build/libs/spring-boot-http-codec-4.2.0-SNAPSHOT.jar",
+        "b59323dfd918d3ee3d50650fa948361024322864a0cfe72a6b90f6652da3f147  tree/module/spring-boot-http-converter/build/libs/spring-boot-http-converter-4.2.0-SNAPSHOT.jar",
+        "604d547557ce62b8417f095887f9510c761ed702e2b6d0ffbf7d67aa5c796af9  tree/module/spring-boot-jackson2/build/libs/spring-boot-jackson2-4.2.0-SNAPSHOT.jar",
+        "f963dbe85b65fdbf4e93cbc6458cd5b37cc5fd2298d2f8cc22ca63ac4dbfd951  tree/module/spring-boot-jackson/build/libs/spring-boot-jackson-4.2.0-SNAPSHOT.jar",
+        "b7ef1bec1f55aa5d1b3fabaff6220caddff89e429ccf42ba7b27ead109e36f6f  tree/module/spring-boot-jdbc/build/libs/spring-boot-jdbc-4.2.0-SNAPSHOT.jar",
+        "639b8c5af94a49879ee82e769de94092f4bc881fe051fa326f6345575dce4563  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.2.0-SNAPSHOT.jar",
+        "d36713db46f9d41077defe12daf252e8b685845b51e1925307df2fa898bdf524  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "a830a418b0ba8cab74ab50d8c3061db7b5c4917126cbb1561a7f7dda06877038  tree/module/spring-boot-jpa/build/libs/spring-boot-jpa-4.2.0-SNAPSHOT.jar",
+        "98625003e327ce43fa35b52d3184311f242ab3f92613ea5442160bd8282b0493  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "a8a2231ea65623a4e7a8a84760091e2346204ad49ae868b57ae7cce04fc9d330  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "31641ebdbbe63a4054a82ecab87dbc9f550032f2e74930424d3e7032f33517d3  tree/module/spring-boot-netty/build/libs/spring-boot-netty-4.2.0-SNAPSHOT.jar",
+        "ba29f300cc7b5de4da06a6b08067be7166965006970366b9597e64a74950545d  tree/module/spring-boot-persistence/build/libs/spring-boot-persistence-4.2.0-SNAPSHOT.jar",
+        "86d4c92d0c306525faf7a054493c8e140500b73b9fc4c70e3d5e3bc90f432cc7  tree/module/spring-boot-reactor-netty/build/libs/spring-boot-reactor-netty-4.2.0-SNAPSHOT.jar",
+        "5b621c58d05a3025e25b5e4861b13c62e4d3f26bf4998a54e4eca35ead653532  tree/module/spring-boot-servlet/build/libs/spring-boot-servlet-4.2.0-SNAPSHOT.jar",
+        "f222de2091c1a5c7fc70413e7f90d95f7f677c6d78ea7ff1b6adba26a825b2ec  tree/module/spring-boot-sql/build/libs/spring-boot-sql-4.2.0-SNAPSHOT.jar",
+        "28d872836630b05795363adadfecb34bb421d298230d52c4f77b3c15c3986700  tree/module/spring-boot-tomcat/build/libs/spring-boot-tomcat-4.2.0-SNAPSHOT.jar",
+        "bc20120327747d8b0c71841cc1358c6c9c2326b55194100e768a4f9cbef1b322  tree/module/spring-boot-transaction/build/libs/spring-boot-transaction-4.2.0-SNAPSHOT.jar",
+        "fd245c2918dbd3c7a11561911927f07402f825e3c0514d20c7d18ccfdefd1931  tree/module/spring-boot-webflux/build/libs/spring-boot-webflux-4.2.0-SNAPSHOT.jar",
+        "6f2da2f502968ccfb3b3145e62fb7426d0333ca8043e44d0f42c523734c0db0e  tree/module/spring-boot-webflux/build/libs/spring-boot-webflux-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "1b15a14dfe84badf4d935031d2db2c359d8911e81378ab8618c10c8f0ff89104  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT.jar",
+        "81bb9457a999c5fec6e206a3da06f3da79f0d4f78ee36d0cd72822dd511c1147  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "3fc2229e3df0b9feda795e06e107fbf3b9dfc5929bb50ef5ab7d9db2fd04a414  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "21ab46a04d2f8027e298b291c67a5058b465f82b68d2d60c667a4f353c29aa50  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Caffeine.class",
+        "efd427f64c0c809ade673007f3b909edef6921e963234360fb92dc2f01193b32  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Couchbase.class",
+        "f4a9e69820631678d516a6108fb8e8aa5d8679453730c25f6a6dcb13740f2c38  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Infinispan.class",
+        "3fb4087f785c956d80ccc8bc2d0f2f1dca273f179edf6cb6df8c6763566299e1  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$JCache.class",
+        "b786d9fbfefd3134c63638dba17f1b3dab16e89d0e63485a84b2202cd80348c0  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties$Redis.class",
+        "7937963e43a56d0bb4c599d805c65a921dc66f81402d8e93ff39b37c4adbd167  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CacheProperties.class",
+        "24a4af0b48a9175a8a6f972e866a8bf1ceef1891e4bfa9e6fef075011f26fdbd  spring-boot-cache-4.2.0-SNAPSHOT.jar!/org/springframework/boot/cache/autoconfigure/CaffeineCacheConfiguration.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S26 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S26 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 150.598,
+      "cpuSeconds": 402.807,
+      "cpuThrottledSeconds": 301.634,
+      "peakMemoryBytes": 5350289408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s26-transplant-the-fix-s-tests.log",
+        "lines": 16,
+        "bytes": 1456,
+        "sha256": "1d0e19247a2696b9e8140cec6e685a6e671a1d137efa579b024294ff49b1d128",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-cache/src/test/java/org/springframework/boot/cache/autoconfigure/CacheAutoConfigurationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S26-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=150 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01",
+        "junit tests=61 failures=1 errors=0 skipped=0",
+        "junit failed CacheAutoConfigurationTests#caffeineCacheWithAsyncCacheMode()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.cache.autoconfigure.CacheAutoConfigurationTests junit tests=61 failures=1 errors=0 skipped=0 junit failed CacheAutoConfigurationTests#caffeineCacheWithAsyncCacheMode() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S26 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S26 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.006,
+      "cpuSeconds": 1.989,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 54140928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s26-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "b7472fbe5dbf507b5d1d272c6972475a2df4f4941137cb8a77528f336db80fc2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S26"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:49:13+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T114855Z-265110cc5a90f6f4"
+    }
+  }
+}
