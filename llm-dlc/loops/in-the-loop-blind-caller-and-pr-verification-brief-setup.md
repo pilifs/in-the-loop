@@ -17,7 +17,9 @@ the MySQL and Postgres images, and the historical observers. This session:
   `parquet-column` and `parquet-hadoop` test trees at both pins, over the original 113-entry graphs. It fetched only
   the test dependencies and launchers those needed, from Maven Central, with checksums and signatures checked, and
   ran the landed regressions both ways;
-- queued two verification jobs: the five campaign replays at this head, and Parquet's full upstream suites.
+- queued two verification jobs: the five campaign replays at this head, and Parquet's full upstream suites. **Both
+  passed** ([Verification jobs](#verification-jobs)): every P, Q, R, N and M audit replays byte-identical, and the
+  Parquet suites differ between the graphs in exactly the two landed `TestDictionary` tests.
 
 It wrote no claims, examples, sidecars, adapters, callers, recipes or library code, and allocated no example ids. It
 ran no verifier or prover on a claim and did not run the product's change plan, `construct`, discovery or any
@@ -53,7 +55,7 @@ with [results](in-the-loop-jvm-startup-facts-brief-results.md). Part D says to r
 
 | Path | What it holds |
 |---|---|
-| `$B/scripts/` | `check_examples.py`, `check_inputs.py`, `physical_copy.py` and `io_observe.py` (copied from the brief-23 setup), `o09_upstream_test.sh`, `j08_upstream_tests.sh`, `j08_suite.sh`, `resolve.sh`, `verify_sigs.sh`. Digests in `$B/logs/scripts.sha256`. |
+| `$B/scripts/` | `check_examples.py`, `check_inputs.py`, `physical_copy.py` and `io_observe.py` (copied from the brief-23 setup), `o09_upstream_test.sh`, `j08_upstream_tests.sh`, `j08_suite.sh`, `resolve.sh`, `verify_sigs.sh`. Digests in `$B/logs/scripts.sha256`, rewritten after the launch fix below: `j08_suite.sh` `43bf4aea056dada9b09b97ccafda01d9a7dfe86f543d14940a78f205d23aa4e8`, `j08_upstream_tests.sh` `892b0b18f5cf106fe1f08f74c3f6e273c5ffe8864ddc95bbac37efb4f947101b`. |
 | `$B/logs/examples.json`, `inputs.json` | The digest and pin check of every example and input (below). |
 | `$B/logs/audit-{p01-p30,q01-q30,r01-r50,n01-n05,m01-m10}.json` | Static (non-replay) audits, byte-identical to the committed `audit.json`. |
 | `$B/logs/replay-{458,466,484}.txt`, `physical-J{08,14}.txt`, `io-observe.txt` | The JVM re-runs. |
@@ -62,7 +64,9 @@ with [results](in-the-loop-jvm-startup-facts-brief-results.md). Part D says to r
 | `$B/logs/sigs-*.txt`, `releases.sha256` | Signature results and digests of every fetched jar. |
 | `$B/m2`, `$B/maven-settings.xml`, `$B/resolve/`, `$B/releases/NAME/{lib,classpath.txt,tree.txt}` | Maven cache and the three resolved sets (below). |
 | `$B/upstream-tests/O09/test-ROLE-on-ROLE/` | Compiled `ServerSentEventHttpMessageReaderTests` per pin (`SHA256SUMS`). |
-| `$B/upstream-tests/J08/{fix,parent}/{classes,resources,sources.txt,compiled.txt,SHA256SUMS}` | Compiled `parquet-column` and `parquet-hadoop` test trees per pin. `reports/` is written by the job. |
+| `$B/upstream-tests/J08/{fix,parent}/{classes,resources,sources.txt,compiled.txt,SHA256SUMS}` | Compiled `parquet-column` and `parquet-hadoop` test trees per pin. |
+| `$B/upstream-tests/J08/reports/{fix-on-fix,parent-on-parent,fix-on-parent}/` | Job 2's suite runs: per module the candidate, excluded and run class lists, the launcher log, JUnit XML, and `summary.txt` (below). |
+| `$B/logs/j08-cp-launch-fix-on-{fix,parent}.txt` | The probe of the corrected `-cp` launch (below). |
 | `$B/probes/` | Scratch copies from the re-runs. **Evaluator material**: they hold historical observers and actual outcomes. |
 | `$B/gnupg` | Private keyring; its daemons were stopped (`gpgconf --homedir $B/gnupg --kill all`). |
 | `$B/tmp` | `TMPDIR` for this work. |
@@ -125,7 +129,8 @@ byte-identical to each campaign's committed `audit.json`:
 | n01-n05 | 5 | 17 | 34 |
 | m01-m10 | 10 | 30 | 60 |
 
-They check records against records and do not read the deployments. The JVM replay is job 1 below.
+They check records against records and do not read the deployments. The JVM replay is job 1 below, and it **passed**:
+every campaign's `--replay` audit equals its `audit.json` byte for byte.
 
 ## Other inputs: J08, J14, Log4j #1173, Commons IO #520
 
@@ -238,7 +243,47 @@ The older `$P20/scripts/j08_overlay_test.sh` (JUnit 4, parquet-column classpath 
 results ([log](#layout-of-b)). `TestParquetWriter` exercises the public `ParquetWriter` file path on both graphs and
 passes on both. Whether it reaches the changed writer bodies is for the domain's trace run to show.
 
-Job 2 runs the whole suites. That shows which upstream tests run at all on the overlays, before the domain agent freezes its test-selection policy.
+#### The whole suites (job 2, passed)
+
+Job `20261127-032259-setup-run-parquet-3638-s-upstream-parque` ran `$B/scripts/j08_suite.sh ROLE GRAPH` (the version
+with sha256 `f2e8fa09c378a8757551143984251728d69c87e55360e851683e8d241ef9ac11`) at
+`5c57e715acb8e32f1ed7fc1dc2f7ba684882837c`, from 2026-11-27T03:30:23Z to 03:41:52Z. Peak memory was 3.0 GiB, and each
+run took 223–233 s. Its result is in commit `2c45066adba0` (`verification/results/2026/11/27/20261127-032259-setup-run-parquet-3638-s-upstream-parque/`),
+which this line has not merged. Each run covers 138 classes: 66 in `parquet-column` and 72 in `parquet-hadoop`. Of
+`parquet-hadoop`'s 78 name-matching files, seven are excluded: `InterOpTester` itself and the six classes that use it.
+
+| Tests from | Graph | `parquet-column` (found / passed / failed) | `parquet-hadoop` (found / passed / failed / aborted) | `summary.txt` sha256 |
+|---|---|---|---|---|
+| fix | fix | 664 / 649 / 15 | 725 / 690 / 9 / 24 | `e364ee98ddf2babb34cb325a4abef9d1c24105943207ec6629d330ffb9f6db64` |
+| parent | parent | 662 / 647 / 15 | 725 / 690 / 9 / 24 | `f129655e6c5799836085cfc30a18082009ba8f5ce26105e673ee620004fe8ddf` |
+| fix | parent | 664 / 647 / **17** | 725 / 690 / 9 / 24 | `37d431f19796081b2ff1be4ae142a418d316a8dd1c0e01a9961cadbb288d55e0` |
+
+**Results that differ between the runs.** The lists of failing tests are identical in fix-on-fix and
+parent-on-parent. Fix-on-parent adds exactly the two landed `TestDictionary` tests, the same two as above. The other
+24 failures and 24 aborts fall on both pins, so they come from the deployment, not from #3638.
+
+| Tests | Count | Cause |
+|---|---|---|
+| `TestStatisticsNanCount` (7), `TestStatistics#testSpecBuilderFor{Double,Float}`, `TestColumnIndexBuilderNaN` (3), `TestColumnIndexBuilder#testBuild{Double,Float}ZeroNaN`, `TestMessageType#testMergeSchemaWithColumnOrder`, `TestParquetMetadataConverter#{testBinaryStatsV1,testBinaryStatsV2,testNestedColumnOrdersUseLeafOrder}`, `TestFloat16ReadWriteRoundTrip` (2), `TestFloat16Statistics` (2) | 20 | Version skew in the overlay: the pins' tests exercise NaN-count, float16 and column-order behaviour that released Parquet 1.18.2 does not have. Two examples: `IEEE754Float16Statistics cannot be cast to … Float16Statistics`, and `Num nulls should match expected:<3004> but was:<0>`. |
+| `TestDirectCodecFactory#compressionCodecs` | 1 | `ClassNotFoundException: org.apache.hadoop.io.compress.BrotliCodec`: `brotli-codec` 0.1.1 is absent. |
+| `TestLargeColumnChunk#validateAllData`, `#validateFiltering` | 2 | `Java heap space` at the JVM's default heap. The POM sets no `-Xmx`, and these tests run only with `enableResourceIntensiveTests=true`. |
+| `TestParquetWriterError#testInSeparateProcess` | 1 | **A launcher artifact, now fixed.** The test starts a child JVM with `-cp ${java.class.path}`. Under `java -jar console-standalone`, that is the launcher jar alone, so the child failed with `ClassNotFoundException: …TestParquetWriterError$Main`. |
+| `TestVectorIoBridge` (20), `TestFileRangeBridge` (4) | 24 aborted | JUnit assumptions: Hadoop 3.3.0 has no vectored IO (`ClassNotFoundException: org.apache.hadoop.fs.FileRange`, "Bridge not available"). |
+
+**The launch fix.** `j08_suite.sh` and `j08_upstream_tests.sh run` now start
+`org.junit.platform.console.ConsoleLauncher` from `-cp "$CP"` instead of `-jar … --class-path "$CP"`. The
+console-standalone 1.14.4 jar was already on `$CP`, so only `java.class.path` changes, and child test JVMs inherit the
+whole test classpath. A probe ran `j08_upstream_tests.sh run fix GRAPH --select-class` on `TestParquetWriterError`,
+`TestDictionary` and `TestParquetWriter`, from `parquet-hadoop`, under the probe cap:
+
+| Graph | Result |
+|---|---|
+| fix | 57/57 pass in 5 s, including `testInSeparateProcess` |
+| parent | 55 pass; the 2 landed `TestDictionary` tests fail as before |
+
+Logs: `$B/logs/j08-cp-launch-fix-on-{fix,parent}.txt`. The job's reports were written by the older launch, so they
+still show `testInSeparateProcess` failing. The whole suites were not run again: the probe shows the one changed test,
+and no other test source in `parquet-column`, `parquet-hadoop`, `parquet-common` or `parquet-encoding` reads `java.class.path` or starts a process (grep for `java.class.path`, `ProcessBuilder`, `Runtime.getRuntime().exec`).
 
 ## Fetched artifacts and signatures
 
@@ -258,8 +303,8 @@ The keyring's daemons were stopped with `gpgconf --homedir $B/gnupg --kill all`.
 
 | Job | What | Status |
 |---|---|---|
-| `20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob` | `audit.py --campaign C --replay` for p01-p30, q01-q30, r01-r50, n01-n05 and m01-m10 at this head, each compared byte for byte with the committed `audit.json`: every historical caller recompiled, every physical trial rerun on the original deployments (Docker for 457 and 518). 2 CPU, 1 GiB, ~15 min. | pending |
-| `20261127-032259-setup-run-parquet-3638-s-upstream-parque` | `$B/scripts/j08_suite.sh ROLE GRAPH` for fix/fix, parent/parent and fix/parent. Each runs the whole `parquet-column` and `parquet-hadoop` suites, one JVM per module as surefire forks them. It uses the POM's argLine (`-XX:MaxJavaStackTraceDepth=8` and the 13 `--add-opens`/`--add-exports` of `extraJavaTestArgs`) and its properties (`enableResourceIntensiveTests=true`, simpleLogger ERROR), and surefire's default includes minus `**/benchmark/*`. The six `InterOpTester` classes are left out because they download parquet-testing files: `TestEncryptionOptions`, `TestInterOpReadFloatingPointNanCount`, `TestInterOpReadFloat16`, `TestInteropBloomFilter`, `TestInterOpReadByteStreamSplit`, `codec.TestInteropReadLz4RawCodec`. That leaves 144 classes per run (66 + 78). Reports go to `$B/upstream-tests/J08/reports/ROLE-on-GRAPH/`. 2 CPU, 4 GiB, ~45 min. | pending |
+| `20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob` | `audit.py --campaign C --replay` for p01-p30, q01-q30, r01-r50, n01-n05 and m01-m10 at this head, each compared byte for byte with the committed `audit.json`: every historical caller recompiled, every physical trial rerun on the original deployments (Docker for 457 and 518). 2 CPU, 1 GiB, ~15 min. | **passed**: 10/10 steps at `5c57e715acb8e32f1ed7fc1dc2f7ba684882837c`, 2026-11-27T03:30:23Z–03:35:05Z, 4 min 32 s, peak 296 MiB. All five `repeated-audit.json` equal `audit.json`. Result in commit `dc6fd6c8f17f` (`verification/results/2026/11/27/20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob/`), not yet merged into this line. |
+| `20261127-032259-setup-run-parquet-3638-s-upstream-parque` | `$B/scripts/j08_suite.sh ROLE GRAPH` for fix/fix, parent/parent and fix/parent. Each runs the whole `parquet-column` and `parquet-hadoop` suites, one JVM per module as surefire forks them. It uses the POM's argLine (`-XX:MaxJavaStackTraceDepth=8` and the 13 `--add-opens`/`--add-exports` of `extraJavaTestArgs`) and its properties (`enableResourceIntensiveTests=true`, simpleLogger ERROR), and surefire's default includes minus `**/benchmark/*`. The six `InterOpTester` classes are left out because they download parquet-testing files: `TestEncryptionOptions`, `TestInterOpReadFloatingPointNanCount`, `TestInterOpReadFloat16`, `TestInteropBloomFilter`, `TestInterOpReadByteStreamSplit`, `codec.TestInteropReadLz4RawCodec`. That leaves 138 classes per run (66 + 72; the seventh excluded file is `InterOpTester` itself). Reports go to `$B/upstream-tests/J08/reports/ROLE-on-GRAPH/`. 2 CPU, 4 GiB, ~45 min. | **passed**: 3/3 steps in 11 min 19 s, peak 3.0 GiB. Result in commit `2c45066adba0`, not yet merged into this line. Outcomes are in [the whole suites](#the-whole-suites-job-2-passed). |
 
 ## What was not done, and why
 
@@ -317,10 +362,20 @@ The keyring's daemons were stopped with `gpgconf --homedir $B/gnupg --kill all`.
   `testDictionaryWriterReusableAfterFirstPageFallBack` and `testDictionaryWriterReusableAfterFallBack`. Upstream
   `TestParquetWriter` (31 tests, the public file path) passes on both graphs.
 - Example 333 validates.
-- **Pending as jobs** (results land in `verification/results/`):
-  - `20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob` replays every historical P, Q, R, N and M observation
-    at this head. Until it passes, the 110-case inventory is digest-checked but not re-run here.
-  - `20261127-032259-setup-run-parquet-3638-s-upstream-parque` runs Parquet's whole upstream suites on the overlays.
+- **Job `20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob` passed.** Every historical P, Q, R, N and M
+  observation was replayed in fresh JVMs on the original deployments at `5c57e715acb8e32f1ed7fc1dc2f7ba684882837c`,
+  including the MySQL 9.1.0 and Postgres 17 sidecars. Each audit equals its committed `audit.json` byte for byte. The
+  110-case draw inventory, N01–N05 and the M controls are re-run, not only digest-checked.
+- **Job `20261127-032259-setup-run-parquet-3638-s-upstream-parque` passed.** Parquet's whole `parquet-column` and
+  `parquet-hadoop` suites (138 classes) ran on the original 113-entry graphs, fix on fix, parent on parent, and fix on
+  parent. The fix-on-fix and parent-on-parent failure lists are identical. Fix-on-parent adds exactly the two landed
+  `TestDictionary` tests. The 24 failures and 24 aborts common to both pins are causes of the deployment, listed in
+  [the whole suites](#the-whole-suites-job-2-passed).
+- One of those shared failures was this setup's own: `TestParquetWriterError#testInSeparateProcess`, whose child JVM
+  got only the launcher jar as its classpath. The launch now uses `-cp`, and a probe shows the test passing on the fix
+  graph (57/57 with `TestDictionary` and `TestParquetWriter`). On the parent graph, only the two landed tests fail.
+- Both results are in commits that this line has not merged: `dc6fd6c8f17f` and `2c45066adba0` (the latter also
+  holds the first). `pipeline.py status` lists both jobs as "in commit 2c45066adba0 … merge it".
 
 ### What to know before starting
 
@@ -338,6 +393,14 @@ The keyring's daemons were stopped with `gpgconf --homedir $B/gnupg --kill all`.
   unshaded fastutil 8.5.19. The upstream `parquet-hadoop` tests run against 1.18.2's `parquet-hadoop`, not the pin's.
   Label trace evidence from it that way. `brotli-codec` 0.1.1 (runtime-only, not on Central) is absent. The six
   network `InterOpTester` classes are left out of the job.
+- **Which upstream tests run usefully on J08's graphs.** 24 tests fail on both pins for reasons of the deployment, not
+  #3638: 20 from version skew against 1.18.2 (NaN counts, float16, column orders), one from the missing Brotli codec,
+  two from heap at the default `-Xmx`, and `TestParquetWriterError#testInSeparateProcess` from the old launch, now
+  fixed. A further 24 abort because Hadoop 3.3.0 has no vectored IO. A selection policy should treat these as
+  coverage gaps of the overlay, and they are listed by name in each run's `summary.txt`.
+- Launch J08 tests with `j08_upstream_tests.sh run` or `j08_suite.sh`. Both now start the console launcher from
+  `-cp`, so a child test JVM inherits the whole classpath. A tracer that must follow a child JVM needs the same
+  `java.class.path`.
 - **Spring 466's classpath has snapshot dependencies**: `reactor-core` and `reactor-test` `3.9.0-SNAPSHOT`, and
   micrometer `1.18.0-SNAPSHOT` on the P cases. They are fixed bytes, digest-checked, from the O, P and Q setups'
   Gradle homes. Do not re-resolve them. Gradle's test JVM for O09 was JDK 25 with `--release 17`; example 466's
