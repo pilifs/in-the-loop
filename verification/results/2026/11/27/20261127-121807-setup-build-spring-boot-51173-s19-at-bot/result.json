@@ -1,0 +1,403 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-121807-setup-build-spring-boot-51173-s19-at-bot",
+  "title": "Setup: build Spring Boot #51173 (S19) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 10m46s, peak 5.3 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S19 fix: build and landed tests) was held back 5m06s by its 4-CPU quota in 4m54s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S19 parent: build and the parent's tests) was held back 5m41s by its 4-CPU quota in 4m00s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S19 transplant: the fix's tests on the parent) was held back 5m06s by its 4-CPU quota in 1m49s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-121807-setup-build-spring-boot-51173-s19-at-bot.json",
+    "sha256": "2d0de207f2e0d7ca5d65f2d991a219ef98699befbd988419e6f5410104527659",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-121807-setup-build-spring-boot-51173-s19-at-bot",
+      "title": "Setup: build Spring Boot #51173 (S19) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S19 (spring-projects/spring-boot#51173: Embedded Tomcat returns a relative redirect by default). In the worktrees $P/worktrees/S19-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-tomcat with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (TomcatServletWebServerFactoryCustomizerTests (test) TomcatServerPropertiesTests (test) SampleOAuth2ClientApplicationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-tomcat smoke-test:spring-boot-smoke-test-oauth2-client in $P/artifacts/S19-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S19",
+      "submitted": {
+        "at": "2026-11-27T12:18:07+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "the reruns of 2026-11-27 took 5-7 minutes with a peak of 3.8-4.6 GiB"
+      },
+      "steps": [
+        {
+          "name": "S19 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S19 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S19 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S19 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S19 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S19 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S19 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S19 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-110820-setup-build-spring-boot-51173-s19-at-bot"
+    }
+  },
+  "sourceCommit": "f71b269ca68832ef710001ba03a350d05e3b374e",
+  "startedAt": "2026-11-27T12:21:25+00:00",
+  "finishedAt": "2026-11-27T12:32:31+00:00",
+  "wallSeconds": 666.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3132296,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "the reruns of 2026-11-27 took 5-7 minutes with a peak of 3.8-4.6 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 5680431104,
+    "wallSeconds": 647.0,
+    "cpuSeconds": 1907.0,
+    "memoryOfEstimate": 0.88,
+    "durationOfEstimate": 0.72
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S19 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S19 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 294.073,
+      "cpuSeconds": 843.601,
+      "cpuThrottledSeconds": 306.68,
+      "peakMemoryBytes": 5680431104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s19-fix-build-and-landed-tests.log",
+        "lines": 66,
+        "bytes": 10025,
+        "sha256": "68b725eec2712602b6f00989a6cdddd021557bdbc8d3e982e85c37cf3c6c00f0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "a7e234c510bc0a4827d5cdea59f271f39c61f0e038ceb77765289bffc0092c7f  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "5cd192dcf36825d4b499081b008654a620f2b0e66546d097c321aac0cf935ee0  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT.jar",
+        "09373a9fe0929f419eb9daef8d4d921d5f7efe1d52637db1e991d3a97dd3bdaa  tree/module/spring-boot-http-client/build/libs/spring-boot-http-client-4.2.0-SNAPSHOT.jar",
+        "b59323dfd918d3ee3d50650fa948361024322864a0cfe72a6b90f6652da3f147  tree/module/spring-boot-http-converter/build/libs/spring-boot-http-converter-4.2.0-SNAPSHOT.jar",
+        "f963dbe85b65fdbf4e93cbc6458cd5b37cc5fd2298d2f8cc22ca63ac4dbfd951  tree/module/spring-boot-jackson/build/libs/spring-boot-jackson-4.2.0-SNAPSHOT.jar",
+        "76a34350dc62a03c9ae91fcda1571a0cfde33836db4d64277548c1cfcb47f185  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "c2ea7f57146d8670dd61f5bac490d5be4c731bfae0b70533c18b42d6295641f5  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "ebec182527bdc0bd164e99e40835b7d0b7d236ec00efb328d4ab51c20d51cc8c  tree/module/spring-boot-restclient/build/libs/spring-boot-restclient-4.2.0-SNAPSHOT.jar",
+        "ffe3ff7ee68da360cb584f5ff0c4667680c96840792110a29e5087f087984951  tree/module/spring-boot-resttestclient/build/libs/spring-boot-resttestclient-4.2.0-SNAPSHOT.jar",
+        "b53eaf4a2b11c302c3ccdde763a066f14dcde0ef461e4426995397406e286358  tree/module/spring-boot-security/build/libs/spring-boot-security-4.2.0-SNAPSHOT.jar",
+        "0a87186e775362b8aa514a53e34f41f5f0cdb710641095eb2eebe3527654bd3b  tree/module/spring-boot-security-oauth2-client/build/libs/spring-boot-security-oauth2-client-4.2.0-SNAPSHOT.jar",
+        "110721dbce3335ff73e7b0a8a3fece7bf4c88f996e0e99558f32a983dafb879e  tree/module/spring-boot-security-test/build/libs/spring-boot-security-test-4.2.0-SNAPSHOT.jar",
+        "5b621c58d05a3025e25b5e4861b13c62e4d3f26bf4998a54e4eca35ead653532  tree/module/spring-boot-servlet/build/libs/spring-boot-servlet-4.2.0-SNAPSHOT.jar",
+        "5a7abd52e8eebbe35249e1d30c2bffb063914239c6cb7dba10f84e84996913ce  tree/module/spring-boot-tomcat/build/libs/spring-boot-tomcat-4.2.0-SNAPSHOT.jar",
+        "5db2dd9f5fd11d8bd40529ec287b5ce450a7484f82043927871a4bd385654b47  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT.jar",
+        "150f4ec3a6b6cd56fcc81b70a3c7dd7cd34a24fff3ad41d3fe21cd2eb6f77913  tree/module/spring-boot-webmvc-test/build/libs/spring-boot-webmvc-test-4.2.0-SNAPSHOT.jar",
+        "3fc2229e3df0b9feda795e06e107fbf3b9dfc5929bb50ef5ab7d9db2fd04a414  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT.jar",
+        "08cd6af1ccbd87f5aa3e984e795d85f7c00992d829d7bb62b6f9407fc8d4d042  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "980c73237121544509daad3a196af2f627115e6f7e1e4ba4025af341242a3aa3  tree/module/spring-boot-web-server-test/build/libs/spring-boot-web-server-test-4.2.0-SNAPSHOT.jar",
+        "18bcdc33cfc04d50f680f285d2d8615ce9b9ee2e9b84b1459dd39787005228a6  tree/starter/spring-boot-starter/build/libs/spring-boot-starter-4.2.0-SNAPSHOT.jar",
+        "77f57f64ef7ae0b3225323cd28c9933ba398ca93ed7fd0df7ef681906b0d34aa  tree/starter/spring-boot-starter-jackson/build/libs/spring-boot-starter-jackson-4.2.0-SNAPSHOT.jar",
+        "72b487bc4c8976308a2be9492314f50f8c871784f311ad532b2e0d7fa6750b48  tree/starter/spring-boot-starter-jackson-test/build/libs/spring-boot-starter-jackson-test-4.2.0-SNAPSHOT.jar",
+        "c55ab7ba87f68b4c9c3d8133dadd18394289de785b53428ccbb49783c7f022ba  tree/starter/spring-boot-starter-logging/build/libs/spring-boot-starter-logging-4.2.0-SNAPSHOT.jar",
+        "c263b09870fffac3093e614cf1b9df414bd701880a48615712c26bb3ff75684e  tree/starter/spring-boot-starter-security/build/libs/spring-boot-starter-security-4.2.0-SNAPSHOT.jar",
+        "eac5f53f648e492dde12c74ef57dc0c61fa414a232457a7002c9a94c61b134c5  tree/starter/spring-boot-starter-security-oauth2-client/build/libs/spring-boot-starter-security-oauth2-client-4.2.0-SNAPSHOT.jar",
+        "d233f716ecc75cf5f5ffb302a7c58eab35bf9d9a1c361ff49e8fdeb8418030aa  tree/starter/spring-boot-starter-security-oauth2-client-test/build/libs/spring-boot-starter-security-oauth2-client-test-4.2.0-SNAPSHOT.jar",
+        "e34e5350ce0d12ada9b5753a3d5b88f7d8aeea4c71e57dd1ea538b933ddf26b8  tree/starter/spring-boot-starter-security-test/build/libs/spring-boot-starter-security-test-4.2.0-SNAPSHOT.jar",
+        "730818846feb0cf345ea9b90b50ad1f25483364ca562fd88445eda9df09f113c  tree/starter/spring-boot-starter-test/build/libs/spring-boot-starter-test-4.2.0-SNAPSHOT.jar",
+        "cac3be4e90cf31920a2e027ac7831c205fd98e6bf733645211c93d4f40978364  tree/starter/spring-boot-starter-tomcat/build/libs/spring-boot-starter-tomcat-4.2.0-SNAPSHOT.jar",
+        "22230240212671a7c0ec3500acef443dd03d0c16125fb0c4f926ee1b6834972c  tree/starter/spring-boot-starter-tomcat-runtime/build/libs/spring-boot-starter-tomcat-runtime-4.2.0-SNAPSHOT.jar",
+        "c3384b165c9ff6bac8bc9deb5a399b4220f9e4d722df5a4bf35cbb95163fd966  tree/starter/spring-boot-starter-webmvc/build/libs/spring-boot-starter-webmvc-4.2.0-SNAPSHOT.jar",
+        "d1325155d20f87cb040cc88b6707b4b7eba9474a07bffb8b1586575a6b3c304e  tree/starter/spring-boot-starter-webmvc-test/build/libs/spring-boot-starter-webmvc-test-4.2.0-SNAPSHOT.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "93e596c023fc2a768db9f0aeb2549a4a04d7ee4750edfea9e5b47f2d2389916f  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Accesslog.class",
+        "fde12104476da53d4f48c758e3470329735991d5ab83a62ffe849c8334ccc082  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Mbeanregistry.class",
+        "eb4176bebb159c57fca99c1acf2dc8f22f2cb5b7a798d2271d1941f60b041eef  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Remoteip.class",
+        "22a56b3a8958d2e59522f5b295aab57901acced663181a7a3843cbf8b26800da  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Resource.class",
+        "0935bc6464d71ba7f043857df693d8165170f8f877edbe0b10be3a3ac691ebe0  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Threads.class",
+        "73ac093cfe7fb934b4394b894b0f0af6202e9a315c6c68930088f9f9b67995ef  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$UseApr.class",
+        "93504ca960311fedb6cb6c19047f6c9e53880ee06cf1e8e8f423b4f6e5adf6b5  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S19 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S19 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 240.77,
+      "cpuSeconds": 698.175,
+      "cpuThrottledSeconds": 341.227,
+      "peakMemoryBytes": 4375605248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s19-parent-build-and-the-paren.log",
+        "lines": 66,
+        "bytes": 10040,
+        "sha256": "be03ebae35cf1f25e095f43ef582753a2a79fa3ea00e5f0dde81dbab214bb1c5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "a7e234c510bc0a4827d5cdea59f271f39c61f0e038ceb77765289bffc0092c7f  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "5cd192dcf36825d4b499081b008654a620f2b0e66546d097c321aac0cf935ee0  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT.jar",
+        "09373a9fe0929f419eb9daef8d4d921d5f7efe1d52637db1e991d3a97dd3bdaa  tree/module/spring-boot-http-client/build/libs/spring-boot-http-client-4.2.0-SNAPSHOT.jar",
+        "b59323dfd918d3ee3d50650fa948361024322864a0cfe72a6b90f6652da3f147  tree/module/spring-boot-http-converter/build/libs/spring-boot-http-converter-4.2.0-SNAPSHOT.jar",
+        "f963dbe85b65fdbf4e93cbc6458cd5b37cc5fd2298d2f8cc22ca63ac4dbfd951  tree/module/spring-boot-jackson/build/libs/spring-boot-jackson-4.2.0-SNAPSHOT.jar",
+        "76a34350dc62a03c9ae91fcda1571a0cfde33836db4d64277548c1cfcb47f185  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "c2ea7f57146d8670dd61f5bac490d5be4c731bfae0b70533c18b42d6295641f5  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "ebec182527bdc0bd164e99e40835b7d0b7d236ec00efb328d4ab51c20d51cc8c  tree/module/spring-boot-restclient/build/libs/spring-boot-restclient-4.2.0-SNAPSHOT.jar",
+        "ffe3ff7ee68da360cb584f5ff0c4667680c96840792110a29e5087f087984951  tree/module/spring-boot-resttestclient/build/libs/spring-boot-resttestclient-4.2.0-SNAPSHOT.jar",
+        "b53eaf4a2b11c302c3ccdde763a066f14dcde0ef461e4426995397406e286358  tree/module/spring-boot-security/build/libs/spring-boot-security-4.2.0-SNAPSHOT.jar",
+        "0a87186e775362b8aa514a53e34f41f5f0cdb710641095eb2eebe3527654bd3b  tree/module/spring-boot-security-oauth2-client/build/libs/spring-boot-security-oauth2-client-4.2.0-SNAPSHOT.jar",
+        "110721dbce3335ff73e7b0a8a3fece7bf4c88f996e0e99558f32a983dafb879e  tree/module/spring-boot-security-test/build/libs/spring-boot-security-test-4.2.0-SNAPSHOT.jar",
+        "5b621c58d05a3025e25b5e4861b13c62e4d3f26bf4998a54e4eca35ead653532  tree/module/spring-boot-servlet/build/libs/spring-boot-servlet-4.2.0-SNAPSHOT.jar",
+        "dc584d6dcf270314c310b3f415573942d2d060d6772b0fefc144968e06b0cb2b  tree/module/spring-boot-tomcat/build/libs/spring-boot-tomcat-4.2.0-SNAPSHOT.jar",
+        "5db2dd9f5fd11d8bd40529ec287b5ce450a7484f82043927871a4bd385654b47  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT.jar",
+        "150f4ec3a6b6cd56fcc81b70a3c7dd7cd34a24fff3ad41d3fe21cd2eb6f77913  tree/module/spring-boot-webmvc-test/build/libs/spring-boot-webmvc-test-4.2.0-SNAPSHOT.jar",
+        "3fc2229e3df0b9feda795e06e107fbf3b9dfc5929bb50ef5ab7d9db2fd04a414  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT.jar",
+        "08cd6af1ccbd87f5aa3e984e795d85f7c00992d829d7bb62b6f9407fc8d4d042  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "980c73237121544509daad3a196af2f627115e6f7e1e4ba4025af341242a3aa3  tree/module/spring-boot-web-server-test/build/libs/spring-boot-web-server-test-4.2.0-SNAPSHOT.jar",
+        "18bcdc33cfc04d50f680f285d2d8615ce9b9ee2e9b84b1459dd39787005228a6  tree/starter/spring-boot-starter/build/libs/spring-boot-starter-4.2.0-SNAPSHOT.jar",
+        "77f57f64ef7ae0b3225323cd28c9933ba398ca93ed7fd0df7ef681906b0d34aa  tree/starter/spring-boot-starter-jackson/build/libs/spring-boot-starter-jackson-4.2.0-SNAPSHOT.jar",
+        "72b487bc4c8976308a2be9492314f50f8c871784f311ad532b2e0d7fa6750b48  tree/starter/spring-boot-starter-jackson-test/build/libs/spring-boot-starter-jackson-test-4.2.0-SNAPSHOT.jar",
+        "c55ab7ba87f68b4c9c3d8133dadd18394289de785b53428ccbb49783c7f022ba  tree/starter/spring-boot-starter-logging/build/libs/spring-boot-starter-logging-4.2.0-SNAPSHOT.jar",
+        "c263b09870fffac3093e614cf1b9df414bd701880a48615712c26bb3ff75684e  tree/starter/spring-boot-starter-security/build/libs/spring-boot-starter-security-4.2.0-SNAPSHOT.jar",
+        "eac5f53f648e492dde12c74ef57dc0c61fa414a232457a7002c9a94c61b134c5  tree/starter/spring-boot-starter-security-oauth2-client/build/libs/spring-boot-starter-security-oauth2-client-4.2.0-SNAPSHOT.jar",
+        "d233f716ecc75cf5f5ffb302a7c58eab35bf9d9a1c361ff49e8fdeb8418030aa  tree/starter/spring-boot-starter-security-oauth2-client-test/build/libs/spring-boot-starter-security-oauth2-client-test-4.2.0-SNAPSHOT.jar",
+        "e34e5350ce0d12ada9b5753a3d5b88f7d8aeea4c71e57dd1ea538b933ddf26b8  tree/starter/spring-boot-starter-security-test/build/libs/spring-boot-starter-security-test-4.2.0-SNAPSHOT.jar",
+        "730818846feb0cf345ea9b90b50ad1f25483364ca562fd88445eda9df09f113c  tree/starter/spring-boot-starter-test/build/libs/spring-boot-starter-test-4.2.0-SNAPSHOT.jar",
+        "cac3be4e90cf31920a2e027ac7831c205fd98e6bf733645211c93d4f40978364  tree/starter/spring-boot-starter-tomcat/build/libs/spring-boot-starter-tomcat-4.2.0-SNAPSHOT.jar",
+        "22230240212671a7c0ec3500acef443dd03d0c16125fb0c4f926ee1b6834972c  tree/starter/spring-boot-starter-tomcat-runtime/build/libs/spring-boot-starter-tomcat-runtime-4.2.0-SNAPSHOT.jar",
+        "c3384b165c9ff6bac8bc9deb5a399b4220f9e4d722df5a4bf35cbb95163fd966  tree/starter/spring-boot-starter-webmvc/build/libs/spring-boot-starter-webmvc-4.2.0-SNAPSHOT.jar",
+        "d1325155d20f87cb040cc88b6707b4b7eba9474a07bffb8b1586575a6b3c304e  tree/starter/spring-boot-starter-webmvc-test/build/libs/spring-boot-starter-webmvc-test-4.2.0-SNAPSHOT.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "93e596c023fc2a768db9f0aeb2549a4a04d7ee4750edfea9e5b47f2d2389916f  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Accesslog.class",
+        "fde12104476da53d4f48c758e3470329735991d5ab83a62ffe849c8334ccc082  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Mbeanregistry.class",
+        "eb4176bebb159c57fca99c1acf2dc8f22f2cb5b7a798d2271d1941f60b041eef  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Remoteip.class",
+        "22a56b3a8958d2e59522f5b295aab57901acced663181a7a3843cbf8b26800da  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Resource.class",
+        "0935bc6464d71ba7f043857df693d8165170f8f877edbe0b10be3a3ac691ebe0  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$Threads.class",
+        "73ac093cfe7fb934b4394b894b0f0af6202e9a315c6c68930088f9f9b67995ef  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties$UseApr.class",
+        "df674a9326091f18e91a6faa8c9a7bc016b2ebd79575af7884e871244ebed03b  spring-boot-tomcat-4.2.0-SNAPSHOT.jar!/org/springframework/boot/tomcat/autoconfigure/TomcatServerProperties.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S19 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S19 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 109.907,
+      "cpuSeconds": 363.389,
+      "cpuThrottledSeconds": 306.766,
+      "peakMemoryBytes": 4581142528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s19-transplant-the-fix-s-tests.log",
+        "lines": 31,
+        "bytes": 3967,
+        "sha256": "7aa3f020a552d5d6e694942799f246790d742d62b8f03bdb5a231ba122b4a079",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-tomcat/src/test/java/org/springframework/boot/tomcat/autoconfigure/servlet/TomcatServletWebServerFactoryCustomizerTests.java",
+        "transplanted module/spring-boot-tomcat/src/test/java/org/springframework/boot/tomcat/autoconfigure/TomcatServerPropertiesTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-oauth2-authorization-server/src/test/java/smoketest/oauth2/server/SampleOAuth2AuthorizationServerApplicationTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-oauth2-client/src/test/java/smoketest/oauth2/client/SampleOAuth2ClientApplicationTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-saml2-service-provider/src/test/java/smoketest/saml2/serviceprovider/SampleSaml2RelyingPartyApplicationTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-web-groovy-templates/src/test/java/smoketest/groovytemplates/SampleGroovyTemplateApplicationTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-web-method-security/src/test/java/smoketest/security/method/SampleMethodSecurityApplicationTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-web-secure-custom/src/test/java/smoketest/web/secure/custom/SampleWebSecureCustomApplicationTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-web-secure-jdbc/src/test/java/smoketest/web/secure/jdbc/SampleWebSecureJdbcApplicationTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-web-secure/src/test/java/smoketest/web/secure/SampleWebSecureApplicationTests.java",
+        "transplanted smoke-test/spring-boot-smoke-test-web-thymeleaf/src/test/java/smoketest/web/thymeleaf/SampleWebUiApplicationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S19-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=109 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01",
+        "junit tests=36 failures=4 errors=0 skipped=0",
+        "junit failed TomcatServletWebServerFactoryCustomizerTests#useRelativeRedirectsDefaultsToTrue()",
+        "junit failed TomcatServerPropertiesTests#tomcatUseRelativeRedirectsMatchesDefault()",
+        "junit failed TomcatServerPropertiesTests#tomcatUseRelativeRedirectsDefaultsToTrue()",
+        "junit failed SampleOAuth2ClientApplicationTests#everythingShouldRedirectToLogin()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerFactoryCustomizerTests junit tests=5 failures=1 errors=0 skipped=0 junit failed TomcatServletWebServerFactoryCustomizerTests#useRelativeRedirectsDefaultsToTrue() ",
+        "class org.springframework.boot.tomcat.autoconfigure.TomcatServerPropertiesTests junit tests=29 failures=2 errors=0 skipped=0 junit failed TomcatServerPropertiesTests#tomcatUseRelativeRedirectsMatchesDefault() junit failed TomcatServerPropertiesTests#tomcatUseRelativeRedirectsDefaultsToTrue() ",
+        "class smoketest.oauth2.client.SampleOAuth2ClientApplicationTests junit tests=2 failures=1 errors=0 skipped=0 junit failed SampleOAuth2ClientApplicationTests#everythingShouldRedirectToLogin() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S19 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S19 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 2.206,
+      "cpuSeconds": 1.788,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 22388736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s19-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "2b4e0409f9c28fb96ffce558acfab0ac0e7a1113a76bbe8e58fcefa14ed777f9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S19"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T12:32:46+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T123231Z-93017300c21d563b"
+    }
+  }
+}
