@@ -150,7 +150,7 @@ pub(super) fn qualify(binary: &str, line: &str, jvm: &Jvm, tool: &ClassPath, bin
     let refs: Vec<_> = class.pool.entries().iter().enumerate().filter_map(|(i, _)| class.pool.member(i as u16).ok())
         .filter(supported_reference).map(|m| format!("{}#{}{}", m.owner, m.name, m.descriptor)).collect();
     let mut receipt = json!({"schema":"jvm-startup-receipt/v1","binding":binding,"root":binary,"rootSha256":observed.on.sha256,
-        "rootOrigin":observed.on.from,"jdk":observed.jdk,"vendor":observed.on.vendor,"locale":raw["on"]["locale"],"zone":observed.on.zone,
+        "rootOrigin":observed.on.from,"loader":observed.on.loader,"jdk":observed.jdk,"vendor":observed.on.vendor,"locale":raw["on"]["locale"],"zone":observed.on.zone,
         "observationBoundary":"first active initialization, before inspecting fields","profile":profile,"potentialReferences":refs,
         "executed":events,"supportedOperation":if encoding.is_some() { "encode the bound original UTF-16 literal" } else { "no default charset call in the recorded initializer" }});
     let id = sha256_hex(receipt.to_string().as_bytes());

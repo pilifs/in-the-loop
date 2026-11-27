@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T01:16:45.479Z",
-  "duration_seconds": 241555,
+  "ended": "2026-11-27T01:28:32.316Z",
+  "duration_seconds": 242262,
   "stats": {
     "turns": 39,
-    "api_calls": 6305,
-    "tool_calls": 15550,
-    "tool_errors": 343,
+    "api_calls": 6346,
+    "tool_calls": 15627,
+    "tool_errors": 344,
     "compactions": 26,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 8077633,
-      "output_tokens": 3635746,
-      "cache_read_input_tokens": 1698151296,
+      "input_tokens": 8088636,
+      "output_tokens": 3659527,
+      "cache_read_input_tokens": 1714872576,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8531,
-    "exec": 6041,
-    "apply_patch": 777,
+    "Bash": 8561,
+    "exec": 6082,
+    "apply_patch": 783,
     "wait": 113,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -199,6 +199,7 @@
     "examples/tools/targets/upgrade_replay.py",
     "examples/tools/targets/workflow.py",
     "examples/tools/validate_example.py",
+    "lib/README.md",
     "lib/benchmark/beyond-jbmc/README.md",
     "lib/benchmark/beyond-jbmc/additional_controls.py",
     "lib/benchmark/beyond-jbmc/blind/LoaderObservations.java",
@@ -310,6 +311,7 @@
     "lib/benchmark/run.py",
     "lib/benchmark/startup-facts/TableControls.java",
     "lib/benchmark/startup-facts/controls.py",
+    "lib/benchmark/startup-facts/freeze.py",
     "lib/benchmark/startup-facts/members.py",
     "lib/benchmark/startup-facts/tables.py",
     "lib/benchmark/test_run.py",
@@ -947,24 +949,24 @@
     {
       "index": 26,
       "started": "2026-11-26T23:39:02.233Z",
-      "ended": "2026-11-27T01:16:45.479Z",
+      "ended": "2026-11-27T01:28:32.316Z",
       "turns": 2,
-      "api_calls": 288,
+      "api_calls": 329,
       "usage": {
-        "input_tokens": 226314,
-        "output_tokens": 171891,
-        "cache_read_input_tokens": 73006592,
+        "input_tokens": 237317,
+        "output_tokens": 195672,
+        "cache_read_input_tokens": 89727872,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 390894
+      "peak_context_tokens": 422792
     }
   ],
   "log": {
-    "sha256": "3a2b01cb4f655c8c985c5b9fdbbe7e453dc8f6ba4d948145559e792e9ff64113",
-    "bytes": 100172892,
-    "lines": 49556,
-    "gzip_bytes": 18309417,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/3a2b01cb4f655c8c985c5b9fdbbe7e453dc8f6ba4d948145559e792e9ff64113.jsonl.gz"
+    "sha256": "3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c",
+    "bytes": 100661044,
+    "lines": 49864,
+    "gzip_bytes": 18385835,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2945,20 +2947,28 @@
       "log_sha256": "1566d08aafeeae3dd6dd6aef16b7fa4679b618f4f75ac5ff18b16e4093507e0b"
     },
     {
-      "change_id": "kokrvvplnqqnqplrzzoyrrurxoulukkw",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "3a2b01cb4f655c8c985c5b9fdbbe7e453dc8f6ba4d948145559e792e9ff64113"
-    },
-    {
       "change_id": "okonnyprlxwnmpquxzktzqqprukozrop",
       "commit_id": null,
       "immutable": false,
       "summary": "Qualify consumed startup premises and root order (verification pending)",
       "body": "Expose complete startup recordings separately from consumed proof assumptions. The registered workflow checks the exact premise, class bytes and state. Record the actual joint initialization order and refuse application initializers running on different JVM threads. Report a live named read with its observed value identity, absence or fallback and actual caller.\n\nThe native checker proved the two-charset selection for both Boolean inputs. Original JVMs recorded the two different root orders and refused a concurrent child initializer. A live named read matched its actual property value and caller. All 56 selected suites passed. Job 20261127-010332-quantify-charset-choices-and-challenge-o covers conditional proof scope, the six historical countermodels, both aliasing orders and a deliberately interrupted capture.",
       "log_sha256": "3a2b01cb4f655c8c985c5b9fdbbe7e453dc8f6ba4d948145559e792e9ff64113"
+    },
+    {
+      "change_id": "wvqokyzoomrksspqsnyrspqmumwxnupp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c"
+    },
+    {
+      "change_id": "xpkstyysrwosylvtxwszuvupoqkxwlqm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind startup receipts to revisions and loaders (verification pending)",
+      "body": "Record and check the actual application loader and its platform parent in the subject. Bind both the requested and resolved ordered provider paths, plus the prepared revision when supplied. Document ordinary recovery, resume, ordered roots and frozen consumed premises. The symbolic control now discovers the parameter name from its compiled class.\n\nA JDK 21 subject reported the application loader, platform parent and ASCII singleton at the original initializer. The release build passed. All 56 selected suites passed; a JBMC deadline test passed on its isolated rerun. Jobs 20261127-012007-reject-crossed-startup-evidence-by-revis and 20261127-012105-verify-startup-scope-controls-using-the qualify crossed physical and logical revisions and repeat the full scope and interruption controls.",
+      "log_sha256": "3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c"
     }
   ],
   "logs": {
@@ -3152,6 +3162,12 @@
       "bytes": 87396766,
       "lines": 43721,
       "gzip_bytes": 16063783,
+      "url": null
+    },
+    "3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c": {
+      "bytes": 100661044,
+      "lines": 49864,
+      "gzip_bytes": 18385835,
       "url": null
     },
     "3f734d16d432069a7ca570a059c779f912f08a286fe7dc4efe834abb3895fef2": {

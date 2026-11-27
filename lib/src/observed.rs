@@ -209,6 +209,7 @@ pub struct On {
     pub(crate) table_receipt: Option<String>,
     pub(crate) table_read: bool,
     pub(crate) joint_receipt: Option<String>,
+    pub(crate) loader: Option<serde_json::Value>,
     /// The sha256 of the class file the JVM's class loader read, and the location it came from.
     pub sha256: String,
     pub from: Option<String>,
@@ -288,6 +289,8 @@ pub struct Runtime {
     pub live_properties: bool,
     pub startup_properties: BTreeMap<String, String>,
     pub record_joint_startup: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub startup_revision: Option<String>,
 }
 
 impl std::str::FromStr for Runtime {
@@ -305,6 +308,12 @@ impl std::str::FromStr for Runtime {
         }
         r.validate_charset()?;
         table::validate(&r).map_err(|e| e.to_string())?;
+        if r.startup_revision.as_ref().is_some_and(|s| s.is_empty() || s.len()>128 || !s.bytes().all(|b| b.is_ascii_alphanumeric() || b"._-".contains(&b))) {
+            return Err("startupRevision requires a revision name of up to 128 letters, digits, periods, dashes or underscores".into());
+        }
+        if r.startup_revision.is_some() && !(r.charset_locale.is_some() || r.reflective_members || r.live_properties || r.record_joint_startup) {
+            return Err("startupRevision needs a typed or ordered startup recording".into());
+        }
         if r.record_joint_startup && !r.preinitialize_together { return Err("recordJointStartup requires preinitializeTogether".into()); }
         Ok(r)
     }
@@ -440,6 +449,13 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         } else { None };
         let line = jvm.run(&binary, Some(&log), saved.is_none())?;
         let mut observed = parse(&binary, &line)?;
+        if traced || runtime.record_joint_startup {
+            let loader = observed.on.loader.as_ref().ok_or_else(|| Error::new("startup root has no defining loader evidence"))?;
+            if loader["system"] != true || loader["defining"] != "jdk.internal.loader.ClassLoaders$AppClassLoader"
+                || loader["parent"] != "jdk.internal.loader.ClassLoaders$PlatformClassLoader" {
+                return Err(Error::new("startup root uses an unqualified defining loader or delegation chain"));
+            }
+        }
         if runtime.preinitialize_together != observed.joint_fields.is_some()
             || runtime.reflective_members != observed.on.reflective_members
             || runtime.weak_map_values != observed.on.weak_map_values
@@ -459,7 +475,7 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
             let raw: serde_json::Value = serde_json::from_str(&line).map_err(|e| Error::new(e.to_string()))?;
             let evidence = member::capture(&binary, &raw, &receipt::trace(&jvm, &binary, "")?, &tool)?;
             Some(serde_json::json!({"schema":"jvm-startup-member/v1", "binding":binding, "root":binary,
-                "rootSha256":observed.on.sha256, "rootOrigin":observed.on.from, "snapshotSha256":observed.state_sha256,
+                "rootSha256":observed.on.sha256, "rootOrigin":observed.on.from, "loader":observed.on.loader, "snapshotSha256":observed.state_sha256,
                 "jdk":observed.jdk, "vendor":observed.on.vendor, "locale":raw["on"]["locale"], "zone":observed.on.zone,
                 "capture":evidence, "alone":[], "supportedOperations":["reference identity", "getDeclaringClass", "getName", "getReturnType", "getModifiers", "getParameterCount"]}))
         } else { None };
@@ -537,7 +553,7 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
                 return Err(Error::new("joint capture did not account for the application's actual initialization order"));
             }
             let mut record = serde_json::json!({"schema":"jvm-ordered-startup/v1","binding":binding,"requestedRoots":classes,
-                "actualApplicationOrder":order,"primaryRootSha256":observed.on.sha256,"additionalRoots":observed.additional_roots,
+                "actualApplicationOrder":order,"primaryRootSha256":observed.on.sha256,"loader":observed.on.loader,"additionalRoots":observed.additional_roots,
                 "stateSha256":observed.state_sha256,"jdk":observed.jdk,"vendor":observed.on.vendor,"locale":raw["on"]["locale"],
                 "zone":observed.on.zone,"classes":1+observed.on.initialized.len(),"objects":observed.objects.len(),
                 "startupJvms":1,"observationBytes":line.len(),"rawSha256":crate::digest::sha256_hex(line.as_bytes()),
@@ -1109,6 +1125,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         table_receipt: None,
         table_read: false,
         joint_receipt: None,
+        loader: on.get("loader").cloned(),
         sha256: text(on, "sha256")?,
         from: on.get("from").and_then(|f| f.as_str()).map(String::from),
         classpath: list("classpath")?.iter().map(|e| e.as_str().map(String::from).ok_or_else(|| bad("the class path"))).collect::<Result<_, _>>()?,

@@ -372,6 +372,18 @@ The five properties of the [Quorum](../examples/apps/quorum/README.md) module (q
 
 ## Proof output
 
+A strict native property that stops at a class initializer can be retried on the original JVM deployment. The startup workflow derives the root from the checker's diagnostic and records the first refusal, launch settings, actual observations, consumed premise IDs and remaining gap. A charset retry can execute the original initializer's bytecode using the measured default. A reflective or live-table capture can qualify a particular heap under its recorded prestate. The JSON property outcome lists completed recordings under `startup_evidence`. The statement's library assumptions identify the ones actually used. [Startup workflow](../examples/tools/targets/startup_facts.py)
+
+For example, with the setting countermodel classes compiled in `classes`, these commands retain the unrestricted result and the conditional result on JDK 21.
+
+```sh
+python3 examples/tools/targets/startup_facts.py --work "$TMPDIR/encoded" --locale C --revision fixture-v1 -- \
+  lib/target/release/jvmcontract prove 'sc.M#encoded()I' --classes classes --assert 'result == 2' --engine native --gaps strict --json
+python3 llm-dlc/tools/watch.py startup-facts "$TMPDIR/encoded/startup-report.json"
+```
+
+Run the first command again with `--resume` before the argument separator to revalidate the saved recording. A new JVM checks the effective charset and the captured field, and the native checker runs the property again. The ordinary proof cache continues to refuse observed initializers. For a joint startup, `recordJointStartup` records actual class order, heap size and the number of startup JVMs. A file or local-JAR read can be measured independently at lazy first use with `PYTHONPATH=examples/tools python3 -m targets.property_reads MANIFEST --output RECEIPT`. [Properties-read manifest and admission checks](../examples/tools/targets/property_reads.py)
+
 What `prove --json` and `equivalence --json` print, and what the process exit says beside it, is a contract with one
 writer and one reader. [`src/proof_wire.rs`](src/proof_wire.rs) owns the Rust side, and the command line is one
 caller of it. [`python/jvmcontract_io.py`](python/jvmcontract_io.py) owns the Python side, and every Python consumer

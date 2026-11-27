@@ -79,6 +79,7 @@
       "properties": {"processors": {"type": "integer", "minimum": 1, "maximum": 2147483647}, "emptyEnvironment": {"const": true}, "preinitializeTogether": {"const": true}, "rootWorkingDirectory": {"const": true}, "weakMapValues": {"const": true},
         "captureObjects": {"type": "array", "items": {"$ref": "#/$defs/javaClass"}, "minItems": 1, "uniqueItems": true},
         "recordJointStartup": {"const":true}, "reflectiveMembers":{"const":true}, "liveProperties":{"const":true},
+        "startupRevision":{"type":"string","pattern":"^[A-Za-z0-9._-]{1,128}$"},
         "startupProperties":{"type":"object","additionalProperties":{"type":"string"}}, "charsetLocale":{"enum":["C","C.UTF-8"]},
         "expectedCharsetName":{"enum":["UTF-8","US-ASCII"]}, "expectedCharsetReceipt":{"type":"string","pattern":"^[0-9a-f]{64}$"}},
       "dependentRequired": {"weakMapValues": ["preinitializeTogether"], "captureObjects": ["preinitializeTogether"],

@@ -516,9 +516,13 @@ public final class ObservedInitializer {
         String internal = c.getName().replace('.', '/');
         java.security.CodeSource source = c.getProtectionDomain().getCodeSource();
         String from = source == null || source.getLocation() == null ? null : source.getLocation().toString();
+        ClassLoader defining = c.getClassLoader();
+        String loader = "{\"defining\":" + text(defining == null ? "bootstrap" : defining.getClass().getName())
+                + ",\"system\":" + (defining == app) + ",\"parent\":" + text(defining == null || defining.getParent() == null
+                ? "bootstrap" : defining.getParent().getClass().getName()) + "}";
         List<String> applicationOrder = seen.stream().filter(n -> n.equals(internal) || members.containsKey(n)).map(ObservedInitializer::text).toList();
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
-                + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
+                + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"loader\":" + loader + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
                 + text(display) + "},\"zone\":" + text(zone) + profile + ",\"preinitializeTogether\":" + together
                 + ",\"weakMapValues\":" + weakMapValues

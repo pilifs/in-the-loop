@@ -47,7 +47,7 @@ def first_root(outcome):
     return None
 
 
-def recover(command, work, locale=None, *, resume=False, receipts=None, env=None, properties=None):
+def recover(command, work, locale=None, *, resume=False, receipts=None, env=None, properties=None, revision=None):
     """Return the original verdict and the separately scoped retry. Never reuse a verdict."""
     command = list(map(str, command))
     if len(command) < 3 or command[1] != "prove" or "--json" not in command:
@@ -69,7 +69,7 @@ def recover(command, work, locale=None, *, resume=False, receipts=None, env=None
     expected = None
     if resume:
         old = json.loads(previous.read_bytes())
-        if (old["claimSha256"], old["locale"], old.get("propertyInputsSha256", property_key)) != (frozen, locale, property_key) or not old.get("receiptId"):
+        if (old["claimSha256"], old["locale"], old.get("revision"), old.get("propertyInputsSha256", property_key)) != (frozen, locale, revision, property_key) or not old.get("receiptId"):
             raise ValueError("saved startup report lacks a matching frozen claim, launch profile or successful recording")
         expected = old["receiptId"]
     attempt = Path(tempfile.mkdtemp(prefix="attempt-", dir=work))
@@ -77,6 +77,8 @@ def recover(command, work, locale=None, *, resume=False, receipts=None, env=None
               "attempt": attempt.name, "route": "native strict", "original": None, "root": None, "receiptId": None,
               "consumed": [], "recording": "none", "resume": resume, "retry": None, "remaining": None}
     report["propertyInputsSha256"] = property_key
+    report["revision"] = revision
+    revision_option = {"startupRevision": revision} if revision else {}
     _, original, diagnostic = run_step(command, [], attempt / "original", env)
     if original:
         report["original"] = {"verdict": original["verdict"], "reason": original.get("problem"), "target": original["target"]}
@@ -89,7 +91,7 @@ def recover(command, work, locale=None, *, resume=False, receipts=None, env=None
         _, initial, stop = run_step(command, observed, attempt / "initializer", env)
         report["initializerStop"] = (initial or {}).get("problem") or stop.strip()
         if initial is None and "holds an object of java.lang.reflect.Method" in stop and "neither holds nor describes" in stop:
-            _, outcome, diagnostic = run_step(command, [*observed, "--observed-runtime", '{"reflectiveMembers":true}'], attempt / "retry", env)
+            _, outcome, diagnostic = run_step(command, [*observed, "--observed-runtime", json.dumps({"reflectiveMembers":True,**revision_option})], attempt / "retry", env)
             captures = list((attempt / "retry" / "startup-receipts").glob("*.json"))
             if len(captures) == 1 and outcome:
                 record = json.loads(captures[0].read_bytes())
@@ -107,7 +109,7 @@ def recover(command, work, locale=None, *, resume=False, receipts=None, env=None
                 report["remaining"] = diagnostic.strip()
         elif initial is None and "read the system properties as a whole" in stop:
             runtime = {"liveProperties": True, "emptyEnvironment": True, "rootWorkingDirectory": True,
-                       "processors": 2, "startupProperties": properties or {}}
+                       "processors": 2, "startupProperties": properties or {}, **revision_option}
             _, outcome, diagnostic = run_step(command, [*observed, "--observed-runtime", json.dumps(runtime)], attempt / "retry", env)
             retry_dir = attempt / "retry"
             full = list((retry_dir / "startup-receipts").glob("*.json"))
@@ -129,7 +131,7 @@ def recover(command, work, locale=None, *, resume=False, receipts=None, env=None
                     report.update(diagnosticId=capture["id"], recording="table observation only")
             report["remaining"] = outcome.get("problem") if outcome else diagnostic.strip()
         elif locale and initial is None and re.search(r"reads the default charset \(.+\), which the observation cannot bind", stop):
-            runtime = {"charsetLocale": locale, "charsetReceiptDirectory": str(receipts)}
+            runtime = {"charsetLocale": locale, "charsetReceiptDirectory": str(receipts), **revision_option}
             if expected:
                 runtime["expectedCharsetReceipt"] = expected
             _, outcome, diagnostic = run_step(command, [*observed, "--observed-runtime", json.dumps(runtime)], attempt / "retry", env)
@@ -172,6 +174,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--locale", choices=("C", "C.UTF-8"), help="requested COMPAT charset profile when the diagnostic needs one")
     ap.add_argument("--work", type=Path, required=True)
+    ap.add_argument("--revision", help="revision identity from the original deployment registration")
     ap.add_argument("--property", action="append", default=[], metavar="KEY=VALUE",
                     help="controlled system property supplied to a live-table startup retry")
     ap.add_argument("--receipts", type=Path)
@@ -184,7 +187,7 @@ def main():
         key, separator, value = item.partition("=")
         if not separator or not key or key in settings: ap.error("--property requires a unique KEY=VALUE")
         settings[key] = value
-    result = recover(command, args.work, args.locale, resume=args.resume, receipts=args.receipts, properties=settings)
+    result = recover(command, args.work, args.locale, resume=args.resume, receipts=args.receipts, properties=settings, revision=args.revision)
     print(summary(result))
     return 0 if result["receiptId"] else 1
 

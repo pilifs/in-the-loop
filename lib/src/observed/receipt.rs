@@ -19,7 +19,7 @@ pub(super) fn bindings(tool: &ClassPath, home: &Path, entries: &[PathBuf], roots
     for path in entries {
         let digest = if path.is_dir() { crate::classpath::lookup_directory(path, &mut Vec::new())? }
             else { sha256_reader(File::open(path)?)? };
-        artifacts.push(json!({"origin": path.canonicalize()?, "sha256": digest}));
+        artifacts.push(json!({"path":path,"origin": path.canonicalize()?, "sha256": digest}));
     }
     let image = tool.jdk().ok_or_else(|| Error::new("startup receipt requires a JDK image"))?;
     let mut classes = serde_json::Map::new();

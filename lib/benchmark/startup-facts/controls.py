@@ -11,7 +11,7 @@ from types import SimpleNamespace
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from charset import compile_to, command, ENV, JDK, ROOT, SMALL, startup_facts
-from targets import qualification
+from targets import qualification, runtime_jar
 
 JOINT="oc.JointStartup"
 JOINT_SOURCE=ROOT / "lib/tests/fixtures/observed-countermodels/app/oc/JointStartup.java"
@@ -28,7 +28,9 @@ def main():
         w=Path(tmp);classes=w/"classes"
         compile_to(classes,[*sorted(SMALL.glob("*.java")),JOINT_SOURCE,Path(__file__).with_name("StartupControls.java")])
         symbolic=[]
-        for name,predicate in [("explicit","result == 2"),("selected","(arg0 && result == 1) || (!arg0 && result == 2)")]:
+        names,_=runtime_jar.parameter_names((classes/"StartupControls.class").read_bytes(),"selected","(Z)I")
+        choice,=names
+        for name,predicate in [("explicit","result == 2"),("selected",f"({choice} && result == 1) || (!{choice} && result == 2)")]:
             code,out,why=evaluate(w/name,classes,"StartupControls#"+name+"(Z)I",predicate)
             assert code==0 and out["verdict"]=="verified" and out["stated"]["bounds"]["complete"],(out,why)
             ids=[a.get("id") for a in out["stated"]["assumptions"] if a.get("id")]
