@@ -558,6 +558,6 @@ RULES_STAMP = f"{{RULES_HASH}}@{{RULES_GENERATED}}"
 
 _STAMP_MARK = "# --- " + "stamp"
 # --- stamp: written by `sync.py stamp`; the hash covers everything above this line.
-RULES_HASH = "5a55f9a800855c2f891d1a60c22c2aed54d700e83e51feb3a2da224d75a987eb"
-RULES_GENERATED = "2026-11-22T23:16:20+00:00"
+RULES_HASH = "dec004553e377015cdccd1abb13b508ef2d29bb67901f3156e928c1095925959"
+RULES_GENERATED = "2026-11-27T21:51:53+00:00"
 RULES_STAMP = f"{RULES_HASH}@{RULES_GENERATED}"
