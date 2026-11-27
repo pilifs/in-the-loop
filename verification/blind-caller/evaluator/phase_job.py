@@ -1,6 +1,7 @@
 """Run or collect one contiguous shard of frozen arm slots with a per-case durable receipt."""
 import argparse
 from collections import Counter
+import errno
 import hashlib
 import io
 import json
@@ -31,7 +32,15 @@ def pack(directories, destination):
                         raise ValueError("incomplete case receipt")
                     compression = zipfile.ZIP_STORED if file.name == "artifacts.zip" else zipfile.ZIP_DEFLATED
                     archive.writestr(zipfile.ZipInfo(file.relative_to(HERE).as_posix()), file.read_bytes(), compression)
-        os.replace(staged, destination)
+        try:
+            os.replace(staged, destination)
+        except OSError as error:
+            if error.errno != errno.EXDEV:
+                raise
+            with tempfile.TemporaryDirectory(prefix=".shard-publication-", dir=destination.parent) as transfer:
+                complete = Path(transfer) / "shard.zip"
+                shutil.copyfile(staged, complete)
+                os.replace(complete, destination)
 
 
 def run(args):
@@ -90,7 +99,8 @@ def collect(args):
                     raise ValueError("a distinct attempt already occupies a collected slot")
             else:
                 dest.parent.mkdir(parents=True, exist_ok=True)
-                incoming.rename(dest)
+                from evaluate_arm import store_new
+                store_new(incoming, dest)
     record = {"job": job, "collectorRevision": revision, "sourceRevision": result["sourceCommit"],
               "result": str(result_path), "output": str(rel), "sha256": ref["sha256"], "bytes": ref["bytes"],
               "slots": len(folders)}

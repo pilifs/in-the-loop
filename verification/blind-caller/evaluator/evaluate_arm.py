@@ -1,6 +1,7 @@
 """Run a numbered draw slot behind immutable population, reference and prediction barriers."""
 import argparse
 from collections import Counter
+import errno
 import hashlib
 import json
 import os
@@ -95,15 +96,26 @@ def material_index(packet, counts):
 
 def store_new(stage, destination):
     destination.parent.mkdir(parents=True, exist_ok=True)
-    # Keep incomplete output out of the repository. Both configured directories are on
-    # the same filesystem; EXDEV leaves the result unsealed and is explicit to the caller.
     try:
         stage.rename(destination)
-    except OSError:
-        if not destination.is_dir() or not (destination / "attempt.json").is_file():
+        return
+    except OSError as error:
+        if error.errno == errno.EXDEV:
+            # The command sandbox can bind the checkout and the private cache as
+            # distinct mounts even when stat reports the same device number.
+            with tempfile.TemporaryDirectory(prefix=".receipt-publication-", dir=destination.parent) as transfer:
+                complete = Path(transfer) / "case"
+                shutil.copytree(stage, complete)
+                try:
+                    complete.rename(destination)
+                    return
+                except OSError as concurrent:
+                    if concurrent.errno not in (errno.EEXIST, errno.ENOTEMPTY):
+                        raise
+        elif error.errno not in (errno.EEXIST, errno.ENOTEMPTY):
             raise
-        if read(stage / "attempt.json") != read(destination / "attempt.json"):
-            raise ValueError("a different immutable attempt already occupies this slot") from None
+    if not (destination / "attempt.json").is_file() or read(stage / "attempt.json") != read(destination / "attempt.json"):
+        raise ValueError("a different immutable attempt already occupies this slot")
 
 
 def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, seconds, trace_seal=None):
