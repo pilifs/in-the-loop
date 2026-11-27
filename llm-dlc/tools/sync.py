@@ -455,11 +455,20 @@ def session_transcripts() -> list[Path]:
 
 
 def transcript_of(sid: str) -> Path:
-    """A session's transcript: Claude Code's if there is one, else the Codex rollout with that id."""
+    """A session's transcript: Claude Code's if there is one, else the Codex rollout with that id, else the transcript
+    wherever it is on this machine (another workspace's project folder). The last is what lets `sync.py sync SESSION`
+    re-render a session that ran in another workspace after a merge left its manifest in conflict (2026-11-27: the
+    merge of a promotion's record with the line, on the Fable session's manifest)."""
     claude = claude_project_dir() / f"{sid}.jsonl"
     if claude.exists():
         return claude
-    return next((p for p in codex_transcripts() if sid_of(p) == sid), claude)
+    elsewhere = transcript_anywhere(sid) if sid not in asked_threads() else None  # a thread only asked is no session here
+    return next((p for p in codex_transcripts() if sid_of(p) == sid), None) or elsewhere or claude
+
+
+def own_transcript(transcript: Path) -> bool:
+    """Whether a transcript is one of this checkout's own: in its project folder, or a Codex rollout started in it."""
+    return transcript.parent == claude_project_dir() or transcript in codex_transcripts()
 
 
 def log_entries(data: bytes) -> list[dict]:
@@ -895,6 +904,9 @@ def sync_session(transcript: Path, redact: Redactor, status: str,
     id, the manifest, the log's entries, and (agent, entries) of each subagent log."""
     sid = sid_of(transcript)
     old = load_manifest(sid)
+    # A session that ran in another workspace keeps that workspace, which its log's paths name: rendered here, it is
+    # rendered as its own workspace would render it.
+    workspace = old["workspace"] if old.get("workspace") and not own_transcript(transcript) else redact.string(str(REPO))
     data = redacted(transcript, sid, old.get("log", {}).get("sha256"), redact, sid, cache)
     entries = log_entries(data)
     log = store_log(sid, data)
@@ -921,7 +933,7 @@ def sync_session(transcript: Path, redact: Redactor, status: str,
         "generator": "llm-dlc/tools/sync.py",
         # The workspace the session ran in, as its log names it: a summary rendered elsewhere (a promotion's
         # candidate) shortens the paths of edited files by it, as the workspace's own sync does.
-        "workspace": redact.string(str(REPO)),
+        "workspace": workspace,
     }
     save_manifest(sid, m)
     return sid, m, entries, subagent_entries
@@ -1636,7 +1648,7 @@ def render_traces_readme(manifests: dict[str, dict] | None = None) -> str:
     calls = sum(c for c, _ in tools.values())
 
     logs = {(sid, sha): info for sid, m in active for sha, info in m.get("logs", {}).items()}
-    gzip_mb = lambda sizes: f"{sum(sizes) / 1e6:.1f} MB"
+    gzip_mb = lambda sizes: f"{sum(n or 0 for n in sizes) / 1e6:.1f} MB"  # a log not stored here has no size yet
     notes = [(sid, notes_path(sid).read_text().strip().split("\n")[0]) for sid in manifests if notes_path(sid).exists()]
     dates = [m[k] for _, m in active for k in ("started", "ended") if m.get(k)]
 
@@ -2433,7 +2445,7 @@ def process(transcript: Path, redact: Redactor, status: str, live: bool, current
     finalize_logs(sid, m)
     with perf.phase("summary and metrics"):
         if render or not summary_path(sid).exists():
-            render_summary(sid, m, entries, redact.string(str(REPO)))
+            render_summary(sid, m, entries, m.get("workspace") or redact.string(str(REPO)))
         if render or not metrics_path(sid).exists():
             write_if_changed(metrics_path(sid), session_metrics(sid, m, entries, redact, subagents))
         else:

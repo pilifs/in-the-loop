@@ -75,6 +75,21 @@ class SessionStatus(unittest.TestCase):
         self.session(C, "open", ended=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
         self.assertEqual(sync.end_idle_elsewhere({D}), [], "a session with no transcript here, active just now")
 
+    def test_a_session_from_another_workspace_is_found_and_keeps_its_workspace(self):
+        # 2026-11-27: `sync.py sync SESSION` could not re-render the Fable session's manifest after a merge left it in
+        # conflict, because its transcript was in another workspace's project folder.
+        self.transcript(A, "-made-up-other-workspace", 0)
+        p = mock.patch.object(sync, "asked_threads", lambda: frozenset())  # which would ask jj
+        p.start()
+        self.addCleanup(p.stop)
+        found = sync.transcript_of(A)
+        self.assertEqual(found.parent.name, "-made-up-other-workspace")
+        with mock.patch.object(sync, "codex_transcripts", lambda: []):
+            self.assertFalse(sync.own_transcript(found))
+            here = sync.claude_project_dir() / f"{B}.jsonl"
+            self.assertTrue(sync.own_transcript(here))
+            self.assertEqual(sync.transcript_of(B), here, "none anywhere: this checkout's own name, as before")
+
     def test_a_standing_session_is_listed_under_its_role_and_returns_when_it_ends(self):
         self.session(A, "open", title="Its first topic")
         self.session(B, "ended", title="An ordinary session")
