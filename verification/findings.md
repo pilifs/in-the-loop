@@ -75,10 +75,10 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     - accept `56b88bc7`. The reviewer recommends accepting it. Removing it would mean adding the encoded strings to `~/.config/llm-traces/redact.txt` and running `sync.py unpublish` on 56 or more logs, for no real gain;
     - say whether the masked checks of the list above should be dropped. Every value on it is resolved here.
   - **Fixes, one per gap:**
-    1. **Keep a person's terminal out of agents' reach, and unmasked values off it.**
-       - Add an operating rule: an agent never captures a pane a person is working in. It may read the panes and logs of runs.
-       - `sync.py allow` and `allow approve` print masked values by default, with an explicit flag to unmask.
-       - The user's interim practice: approve in a window no agent reads, or clear its history afterwards (`tmux clear-history`).
+    1. **Keep sensitive output in a terminal agents don't read, and make commands less sensitive where possible** (the user's direction, 2026-11-27):
+       - **Two places to work.** The user runs sensitive commands in a separate tmux session that agents never read. They run everything else in their usual session, where agents may read the panes, so that they can help and can see when work is done. An operating rule says so: agents read the user's usual session freely, and never read the sensitive one.
+       - **Less sensitive by design.** A command that can be made less sensitive without losing what it is for is made so. For example, `sync.py allow` and `allow approve` print masked values by default; unmasking takes an explicit flag, and only the unmasked output belongs in the sensitive session.
+       - **Commands that say what they are.** A command whose output may hold a real value is designated sensitive, for instance in its usage text. When it runs outside a terminal of its own, it says so before it prints. That way the user and agents know which session it belongs in. Most commands stay ordinary, and run where agents can watch.
     2. **Show published-only findings in `review`,** marked as already public, so that a person decides them like any other.
     3. **Match values across a wrap.** When a rule matches a value at the end of a line, check the next line for its continuation, as a terminal wraps a long token.
     4. **Match encoded personal values.** Add rules for the home path base64-encoded at each of its three byte offsets, plus any other encoding a run is seen to print. Then rescan, with `sync.py stamp`.
