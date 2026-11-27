@@ -1,0 +1,213 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-004741-qualify-poi-live-properties-and-table-id",
+  "title": "Qualify POI live properties and table identity controls",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4m10s, peak 142.4 MiB (estimated 7m00s, 2.0 GiB)",
+  "attention": [
+    "declared output verification/startup-facts/poi-tables.zip was not produced",
+    "step 1 (POI first use and controlled table projections) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-004741-qualify-poi-live-properties-and-table-id.json",
+    "sha256": "22cae60936e70119523459ec7303e5cd3d9e931e47a393714496e5a2b41721af",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-004741-qualify-poi-live-properties-and-table-id",
+      "title": "Qualify POI live properties and table identity controls",
+      "description": "Observe Log4j on the untouched system table during DataFormatter initialization. Check twelve original public histories with and without JDI, actual iteration and membership under addition and removal, the post-retry dependency, and saved, inherited, mutated, replaced and non-string table controls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T00:47:41+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "7m"
+      },
+      "steps": [
+        {
+          "name": "POI first use and controlled table projections",
+          "run": "python3 lib/benchmark/startup-facts/tables.py --output verification/startup-facts/poi-tables.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/poi-tables.zip"
+      ]
+    }
+  },
+  "sourceCommit": "b5f12f283bc6d5065e6bf12ebea0f027c1d5bc56",
+  "startedAt": "2026-11-27T00:51:49+00:00",
+  "finishedAt": "2026-11-27T00:59:11+00:00",
+  "wallSeconds": 442.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 628824,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 149307392,
+    "wallSeconds": 250.5,
+    "cpuSeconds": 256.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.6
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 183.135,
+      "cpuSeconds": 183.403,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2339508224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "e6d4cca9e631ff96ee9a5fadce4665b8c969992222cd6e6c9ffea6b623df5e38",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-004741-qualify-poi-live-properties-and-table-id/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 02s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "POI first use and controlled table projections",
+      "run": "python3 lib/benchmark/startup-facts/tables.py --output verification/startup-facts/poi-tables.zip",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 250.459,
+      "cpuSeconds": 256.034,
+      "cpuThrottledSeconds": 3.282,
+      "peakMemoryBytes": 149307392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-poi-first-use-and-controlled-t.log",
+        "lines": 13,
+        "bytes": 1136,
+        "sha256": "1f84f064236d467d71b42f13270ea6fd9e4872217509d62b1215cf34adff1b67",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-004741-qualify-poi-live-properties-and-table-id/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-004741-qualify-poi-live-properties-and-table-id/lib/benchmark/startup-facts/tables.py\", line 131, in <module>",
+        "    main()",
+        "    ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-004741-qualify-poi-live-properties-and-table-id/lib/benchmark/startup-facts/tables.py\", line 122, in main",
+        "    result={\"cases\":poi(work,tools),\"controls\":controls(work,tools),\"caseSpecificStartupProbes\":0}",
+        "                    ~~~^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-004741-qualify-poi-live-properties-and-table-id/lib/benchmark/startup-facts/tables.py\", line 50, in poi",
+        "    assert plain.decode().strip() == \"ORIGINAL-VALUE \"+historic[\"actual\"]",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "AssertionError"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T00:59:45+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "45d38c8fc0f7d287761e7da48e15b098612c9533",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/45d38c8fc0f7d287761e7da48e15b098612c9533/jvmcontract",
+    "built": true
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T005911Z-6841013e55d39e76",
+      "outputs": "20261127T005911Z-701150531165aae8",
+      "workdir": "20261127T005915Z-3201200287e28d1f"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-004741-qualify-poi-live-properties-and-table-id"
+}
