@@ -1,0 +1,180 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-044829-qualify-a-sealed-pr-prediction-independe",
+  "title": "Qualify a sealed PR prediction, independent readback and scoped cache",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 46.1s, peak 104.4 MiB (estimated 2m00s, 1.0 GiB)",
+  "attention": [
+    "declared output verification/blind-caller/product-controls.zip was not produced",
+    "step 1 (python3 verification/blind-caller/product_controls.py --outp) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-044829-qualify-a-sealed-pr-prediction-independe.json",
+    "sha256": "66b623a961615b5e81946f5ca7f5928c1306e119d001d84d1e4285ee55c9a277",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-044829-qualify-a-sealed-pr-prediction-independe",
+      "title": "Qualify a sealed PR prediction, independent readback and scoped cache",
+      "description": "Create a labelled public scalar change. Freeze a prediction from production declarations with no JVM execution. Bind both original providers, compile on the old API, recover all original argument and return values twice and re-score the same receipts against opposite predicates. Compare a cold, warm and independently empty cache, replace the object at the same path and restore it.",
+      "kind": "library",
+      "capabilities": [
+        "java:public-caller-replay",
+        "java:pr-intent"
+      ],
+      "links": {},
+      "expected": "Public entry, normal returns and the independently measured finite disposition agree. A wrong oracle reverses the verdict without new observations. A changed side is rerun, an unchanged side reused, and the watcher refuses stale original bytes.",
+      "submitted": {
+        "at": "2026-11-27T04:48:29+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/product_controls.py --outp",
+          "run": "python3 verification/blind-caller/product_controls.py --output verification/blind-caller/product-controls.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/product-controls.zip"
+      ]
+    }
+  },
+  "sourceCommit": "17d134d1a0e7d522284520f78b7649756580029d",
+  "startedAt": "2026-11-27T04:57:43+00:00",
+  "finishedAt": "2026-11-27T04:58:38+00:00",
+  "wallSeconds": 55.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3995515,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 109449216,
+    "wallSeconds": 46.1,
+    "cpuSeconds": 49.6,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/product_controls.py --outp",
+      "run": "python3 verification/blind-caller/product_controls.py --output verification/blind-caller/product-controls.zip",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 46.111,
+      "cpuSeconds": 49.619,
+      "cpuThrottledSeconds": 3.062,
+      "peakMemoryBytes": 109449216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 13,
+        "bytes": 987,
+        "sha256": "fd29350e1049d1b7e1d9189dcf05480f8264c4484b3d30cb32b23f30569265ff",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0 claims in /tmp/blind-public-product-gc61z0bq/cold/deployment-1/bindings.json",
+        "1 claims in /tmp/blind-public-product-gc61z0bq/cold/deployment-1/candidate-1/scaffold.json",
+        "1 claims in /tmp/blind-public-product-gc61z0bq/cold/deployment-1/candidate-1/plan.json",
+        "1 claims in /tmp/blind-public-product-gc61z0bq/warm.json",
+        "1 claims in /tmp/blind-public-product-gc61z0bq/clean.json",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-044829-qualify-a-sealed-pr-prediction-independe/verification/blind-caller/product_controls.py\", line 140, in <module>",
+        "    verify(work/\"packet\",work)",
+        "    ~~~~~~^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-044829-qualify-a-sealed-pr-prediction-independe/verification/blind-caller/product_controls.py\", line 95, in verify",
+        "    assert set(results[\"warm\"][\"sides\"].values()) == {\"reused\"}",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "AssertionError"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T04:59:02+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "3ecfea0a399f548bb29cef31a9031d831cfc48e5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3ecfea0a399f548bb29cef31a9031d831cfc48e5/jvmcontract",
+    "built": false
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T045838Z-845243cde3834aa2",
+      "outputs": "20261127T045838Z-861257fa77995254",
+      "workdir": "20261127T045842Z-518147533df08e06"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-044829-qualify-a-sealed-pr-prediction-independe"
+}
