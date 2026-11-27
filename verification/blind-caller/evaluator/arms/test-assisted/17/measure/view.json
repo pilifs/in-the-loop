@@ -1,0 +1,107 @@
+{
+  "counts": {
+    "changedFiles": 7,
+    "productionSources": 5,
+    "testFilesVisible": 33,
+    "productionListingsWithheld": 0,
+    "testFilesWithheld": 160,
+    "testSourcesOutsideSelection": 2306,
+    "publicDocumentationFiles": 8,
+    "prDescriptionOriginalBytes": 2032
+  },
+  "publicTitle": "fix: notify observers from the typed literal setters",
+  "visiblePRDescription": "No issue filed (CONTRIBUTING: \"If you know how to fix a problem, please fix it and open a pull request instead of opening an issue\").\n\nThe typed setters of the literal expressions assigned the `value` field directly instead of going through `setValue`, so they never sent a property change:\n\n- `StringLiteralExpr.setString` and `setEscapedValue`\n- `CharLiteralExpr.setChar`\n- `DoubleLiteralExpr.setDouble`\n- `IntegerLiteralExpr.setInt` and `LongLiteralExpr.setLong` (both deprecated)\n\nAs a result `LexicalPreservingPrinter` kept printing the old literal, while the pretty printer printed the new one:\n\nEach setter now calls `setValue(...)` and returns `this`, so the observers are notified and the same-value short-circuit from #4791 applies. One side effect: a `null` argument is now rejected by `setValue`'s `assertNotNull`. Before, `setString(null)` stored a `null` value (which then failed later, for example when printing) and `setEscapedValue(null)` already threw.\n\nChecks run (JDK 17, Maven wrapper 3.10.0):\n- `./mvnw -pl javaparser-core,javaparser-core-testing,javaparser-core-testing-bdd install`: 2910 tests (8 skipped) and 625 BDD tests, no failures.\n- `./mvnw -pl javaparser-symbol-solver-core,javaparser-symbol-solver-testing install`: 2165 tests (27 skipped), no failures.\n- `./run_core_metamodel_generator.sh && ./run_core_generators.sh`: no diff afterwards.\n\nNot run: the AppVeyor/CI matrix on other JDKs and operating systems.",
+  "testScope": "Only original changed or related test sources affirmatively reviewed for the same ordinary operation and matched byte-for-byte at this pin.",
+  "reviewed": null,
+  "jdkReleaseSha256": "9568390645661374febde48f3c7a019f21cb116d6e4c627de29c119aa7bd0efc",
+  "functionalReview": {
+    "classification": "ordinary product behavior",
+    "decisionSha256": "16ab91c0fa8e77fd1e1c2b91979f5e203727a99d6dd9abc3ed3363c8fe97cabe"
+  },
+  "approvedTestLaunches": [],
+  "testTraceAvailability": null,
+  "testTrace": {
+    "file": "trace.json",
+    "sha256": "7c43a2275298092717739441ee9c6db6b3f0f4ad418166d5a2253421395359b3",
+    "status": "source-only"
+  },
+  "deployments": [
+    {
+      "name": "pins",
+      "old": {
+        "classpath": [
+          {
+            "file": "artifacts/000-8418dbc58bc19938.jar",
+            "sha256": "8418dbc58bc19938b6ea07dce99389cc2f9f3255fd344a7748044e4475b1d726"
+          }
+        ],
+        "revision": "a322c502cfac7d97495fc3f41c6b74a06924267f"
+      },
+      "new": {
+        "classpath": [
+          {
+            "file": "artifacts/001-2e89b5a194e58944.jar",
+            "sha256": "2e89b5a194e58944554311eea01e74227768de721aa30c957b9db774b46e7adf"
+          }
+        ],
+        "revision": "c9c78dd4c965646dd97bbf3108ff1faefa1ae198"
+      }
+    }
+  ],
+  "files": {
+    "api-docs/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java.txt": "ba44c9a048eb879ec3a989d396a70d9a750998df309ff6042f63a1e0c7d591fd",
+    "api-docs/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/IntegerLiteralExpr.java.txt": "09f107dfc8a9b570319e514ce86f5f6ee1cfc66cd7bc462965f997c1c8034472",
+    "api-docs/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/LongLiteralExpr.java.txt": "2fa8ba7bc269154a2b7f677ff451e3bee0b6c225435f1c175b0e6eb592a0b0e2",
+    "api-docs/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java.txt": "83eb04dc0f74a27090b2e957747418f80ee87aa14cf347746712cdfe7e83f875",
+    "api-docs/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java.txt": "ba44c9a048eb879ec3a989d396a70d9a750998df309ff6042f63a1e0c7d591fd",
+    "api-docs/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/IntegerLiteralExpr.java.txt": "09f107dfc8a9b570319e514ce86f5f6ee1cfc66cd7bc462965f997c1c8034472",
+    "api-docs/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/LongLiteralExpr.java.txt": "2fa8ba7bc269154a2b7f677ff451e3bee0b6c225435f1c175b0e6eb592a0b0e2",
+    "api-docs/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java.txt": "83eb04dc0f74a27090b2e957747418f80ee87aa14cf347746712cdfe7e83f875",
+    "packet.json": "b5478b319a74c9e318381bca06bf870757503681309958d193a3fcba6143fd87",
+    "production.diff": "8f58bc266fd2fd5e93230799c225c22379250f56b70096c4f9200815695915ae",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java": "41a0ddc1cd73ce6936a3784e7db98dc042d09bc6a5e72e38c4de734b1e9d0052",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/DoubleLiteralExpr.java": "17e7629256af18605f61316d5376f687c279685119c193e76b12cfedec89c124",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/IntegerLiteralExpr.java": "f76b8f85e4296d056668d59d9c24d88688c2f77891528308685823ec825d226e",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/LongLiteralExpr.java": "7d545ea5cc74c29b926a414c3a2876fd0acc50ecb605b9c26427d36f940aeaa0",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java": "b47b190edd47ed07c745b2135f7cace8525d009aad7d5c581cfa0df6496d8e2f",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java": "6a8258e5844d17edd5e7b843305dd1853148755af738ff3e012be1dd6e3499ec",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/DoubleLiteralExpr.java": "6b8876f1d3a3a0c219a8f6692d9e5aa0cbedd0aa1356f29a2659a3a246d4972a",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/IntegerLiteralExpr.java": "6e407d5fc0ae2dc270b73bf46ef3cfc3d400f1842ab79d1196a43fb8c058f49e",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/LongLiteralExpr.java": "6df4210daf6b29f93b95014a32ca007490b47d7698f388bcf68ef0217712c786",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java": "670421f1a331ca1928be0a326faad0030f6cda32b0167defcc93b94c8f50f4f8",
+    "trace.json": "7c43a2275298092717739441ee9c6db6b3f0f4ad418166d5a2253421395359b3",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/ArrayCreationExprTest.java": "0198b5b5f9742e50fa49f569c76867c092d99a71f5da16fd445147063270a670",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/BinaryExprTest.java": "f015536570aa8513fc0bec6009433b8b841533eafb8690885c3c50df632d09bb",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/CharLiteralExprTest.java": "518e97be7cb343c09b2580576ec47b460f9950ce66fd6c47cf6f46bac9269469",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/InstanceOfExprTest.java": "c2eed4f4fb5c69ab52144adff9acf6a28532b7c04c44f19f611d9068c265698a",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/LambdaExprTest.java": "5a1faef3de69604de055f570d089e01f60aa4a7c38d76f5d59b9cea4b9b59730",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/LiteralStringValueExprTest.java": "898436a1e9c59c30d811fd8d6c2401ff57b5613326e02b596e72fde4bb519d6f",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/MethodReferenceExprTest.java": "81bec72d038d627504da8097ccf192ce9b9623f1eb2f8e8470fcf9fda9609fcc",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/NameTest.java": "10bf3f64963e03d26c1feb701545c879a47c352483f14fada4113186034a5573",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/ObjectCreationExprTest.java": "168a179b92d4a27fa9a5c13845541eef90fa5c82eacca470903dbdcc84e21422",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/PatternExprTest.java": "9b1380ab8665567f231b9566cfe406b01337104cc76bd433c0396bae1cb6683b",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/SimpleNameTest.java": "aa0de95990551379ed94686ba84bdb83cb34c98f2117062cb91b4e2983609699",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/StringLiteralExprTest.java": "ad37d86cac9bd4bd3705642414d7de55af011352945a6822f445365878ed4bc1",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/SuperExprTest.java": "02bbb7c2333e07ec470e8e839261c118739dc933fa88b34f9044d3cabdce85e5",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/SwitchExprTest.java": "43535044db670983176c8f97cb0865622bcdf623973112ce790b99adc8d16b16",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/ThisExprTest.java": "822bd5ea5fb54e10253fbef03f776a1d82c014717478ae4ceaa7478175b9490c",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/UnaryExprTest.java": "66997d5effb3b04462a691385a967dca7324a1f3dcbca386a0322f3c138a8941",
+    "upstream-tests/new/javaparser-core-testing/src/test/java/com/github/javaparser/printer/lexicalpreservation/LiteralValueSettersTest.java": "fa4060fdfcdfce286624994732aad94c9a5e430c36af9cb5a3cf6a7d1c0df677",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/ArrayCreationExprTest.java": "0198b5b5f9742e50fa49f569c76867c092d99a71f5da16fd445147063270a670",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/BinaryExprTest.java": "f015536570aa8513fc0bec6009433b8b841533eafb8690885c3c50df632d09bb",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/CharLiteralExprTest.java": "518e97be7cb343c09b2580576ec47b460f9950ce66fd6c47cf6f46bac9269469",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/InstanceOfExprTest.java": "c2eed4f4fb5c69ab52144adff9acf6a28532b7c04c44f19f611d9068c265698a",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/LambdaExprTest.java": "5a1faef3de69604de055f570d089e01f60aa4a7c38d76f5d59b9cea4b9b59730",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/LiteralStringValueExprTest.java": "39f996fe378813e703a84a61aa217d80c2c4ebf6d365a3c9ca10492b8c8d9da6",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/MethodReferenceExprTest.java": "81bec72d038d627504da8097ccf192ce9b9623f1eb2f8e8470fcf9fda9609fcc",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/NameTest.java": "10bf3f64963e03d26c1feb701545c879a47c352483f14fada4113186034a5573",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/ObjectCreationExprTest.java": "168a179b92d4a27fa9a5c13845541eef90fa5c82eacca470903dbdcc84e21422",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/PatternExprTest.java": "9b1380ab8665567f231b9566cfe406b01337104cc76bd433c0396bae1cb6683b",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/SimpleNameTest.java": "aa0de95990551379ed94686ba84bdb83cb34c98f2117062cb91b4e2983609699",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/StringLiteralExprTest.java": "ad37d86cac9bd4bd3705642414d7de55af011352945a6822f445365878ed4bc1",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/SuperExprTest.java": "02bbb7c2333e07ec470e8e839261c118739dc933fa88b34f9044d3cabdce85e5",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/SwitchExprTest.java": "43535044db670983176c8f97cb0865622bcdf623973112ce790b99adc8d16b16",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/ThisExprTest.java": "822bd5ea5fb54e10253fbef03f776a1d82c014717478ae4ceaa7478175b9490c",
+    "upstream-tests/old/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/UnaryExprTest.java": "66997d5effb3b04462a691385a967dca7324a1f3dcbca386a0322f3c138a8941"
+  }
+}
