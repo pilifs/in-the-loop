@@ -132,5 +132,5 @@ if __name__ == "__main__":
     parser.add_argument("--overrides", type=Path)
     parser.add_argument("--output", type=Path, default=HERE / "judgments.json")
     args = parser.parse_args()
-    adjudicate(args.reference_seal, {a: getattr(args, a.replace("-", "_")+"-seal") for a in ARMS},
+    adjudicate(args.reference_seal, {a: getattr(args, a.replace("-", "_")+"_seal") for a in ARMS},
                args.output, read(args.overrides) if args.overrides else {})
