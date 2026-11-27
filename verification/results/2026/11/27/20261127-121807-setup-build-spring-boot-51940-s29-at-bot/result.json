@@ -1,0 +1,402 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-121807-setup-build-spring-boot-51940-s29-at-bot",
+  "title": "Setup: build Spring Boot #51940 (S29) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 11m57s, peak 5.5 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [
+    "step 3 (S29 transplant: the fix's tests on the parent) was held back 2m03s by its 4-CPU quota in 1m21s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-121807-setup-build-spring-boot-51940-s29-at-bot.json",
+    "sha256": "c4d8a4cd5f309ffa86e6fca3dd319f5500ca979255b16b594e92b4627764b5f3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-121807-setup-build-spring-boot-51940-s29-at-bot",
+      "title": "Setup: build Spring Boot #51940 (S29) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S29 (spring-projects/spring-boot#51940: Connect to the RabbitMQ virtual host configured by Compose). In the worktrees $P/worktrees/S29-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-amqp-rabbitmq module:spring-boot-rabbitmq with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests (dockerTest) RabbitEnvironmentTests (test) RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests (dockerTest) RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests (dockerTest) RabbitMqEnvironmentTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-amqp-rabbitmq module:spring-boot-rabbitmq in $P/artifacts/S29-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S29",
+      "submitted": {
+        "at": "2026-11-27T12:18:07+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip",
+        "docker"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "the reruns of 2026-11-27 took 5-7 minutes with a peak of 3.8-4.6 GiB"
+      },
+      "steps": [
+        {
+          "name": "S29 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S29 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S29 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S29 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S29 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S29 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S29 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S29 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-110822-setup-build-spring-boot-51940-s29-at-bot"
+    }
+  },
+  "sourceCommit": "f71b269ca68832ef710001ba03a350d05e3b374e",
+  "startedAt": "2026-11-27T12:21:25+00:00",
+  "finishedAt": "2026-11-27T12:33:43+00:00",
+  "wallSeconds": 738.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3132296,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "the reruns of 2026-11-27 took 5-7 minutes with a peak of 3.8-4.6 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 5857513472,
+    "wallSeconds": 717.3,
+    "cpuSeconds": 1707.4,
+    "memoryOfEstimate": 0.91,
+    "durationOfEstimate": 0.8
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S29 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S29 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 351.092,
+      "cpuSeconds": 796.601,
+      "cpuThrottledSeconds": 134.542,
+      "peakMemoryBytes": 5857513472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s29-fix-build-and-landed-tests.log",
+        "lines": 42,
+        "bytes": 6734,
+        "sha256": "00d66e83b16ebcf1f6c9f95f0c05bf9542a049e48a6823846b9e07fa116c5b29",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.amqp.rabbitmq.docker.compose.AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests junit tests=3 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.amqp.rabbitmq.docker.compose.RabbitEnvironmentTests junit tests=13 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests junit tests=3 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests junit tests=3 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqEnvironmentTests junit tests=13 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S29-fix/module_spring-boot-amqp-rabbitmq.runtimeClasspath.txt 55 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S29-fix/module_spring-boot-amqp-rabbitmq.testRuntimeClasspath.txt 106 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S29-fix/module_spring-boot-rabbitmq.runtimeClasspath.txt 61 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S29-fix/module_spring-boot-rabbitmq.testRuntimeClasspath.txt 112 entries",
+        "3d8ccd05465cd48eb99d98f4e24aa70a55f21a1a394c69b1cf97b663bb9a7af5  jars/spring-boot-amqp-rabbitmq-4.2.0-SNAPSHOT.jar",
+        "734a71b95924cc1bd15a4d4c684590caf1bafc4d902e1b91e8c7e241e00ce1ef  jars/spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar",
+        "5ea05160c059a44a683954ebc904933a20433c79d8967e0828dbe1fad4ba43c5  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "7cd55f2dadcf959d3405aad88dfe926752377fc13bec6913e99c703eed7b199f  tree/core/spring-boot/build/libs/spring-boot-4.2.0-SNAPSHOT.jar",
+        "4f9efab164f195ee5b30e395817be54522abc3535702d460e7fca98aa5581528  tree/core/spring-boot-docker-compose/build/libs/spring-boot-docker-compose-4.2.0-SNAPSHOT.jar",
+        "75466984bc3b4ce78754693d5b07dc1793ca7363227d441b617fb1d2cc1e8c1b  tree/core/spring-boot-test/build/libs/spring-boot-test-4.2.0-SNAPSHOT.jar",
+        "12e2e687d0c8847f7f2675eae6f840e81303d60f29d256dd1f8ac71e135e0d3a  tree/core/spring-boot-testcontainers/build/libs/spring-boot-testcontainers-4.2.0-SNAPSHOT.jar",
+        "9ecad597478dd17ed156825d87542672cad85fa6e4ca2d907ad779ea4764e5a6  tree/module/spring-boot-health/build/libs/spring-boot-health-4.2.0-SNAPSHOT.jar",
+        "7e4feac8a22d60d6fc153d26fc91a02d30707cf6995eae84442e8c3136c44222  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "a8a2231ea65623a4e7a8a84760091e2346204ad49ae868b57ae7cce04fc9d330  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "ba29f300cc7b5de4da06a6b08067be7166965006970366b9597e64a74950545d  tree/module/spring-boot-persistence/build/libs/spring-boot-persistence-4.2.0-SNAPSHOT.jar",
+        "bc20120327747d8b0c71841cc1358c6c9c2326b55194100e768a4f9cbef1b322  tree/module/spring-boot-transaction/build/libs/spring-boot-transaction-4.2.0-SNAPSHOT.jar",
+        "c1193c28948bd53a2ca6d0e3f5b152ec9bb13ce15f4b5539063745fe1238db21  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "77c2e2688dd2fecca646f697e17f4b4b576880e3802890de7dcb0a27167ef2fe  spring-boot-amqp-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/amqp/rabbitmq/docker/compose/AmqpRabbitMqDockerComposeConnectionDetailsFactory$AmqpRabbitMqDockerComposeRabbitConnectionDetails.class",
+        "623a1d2dc295fc412f2f50c57f748fb401ac59f0fe00ce79c1ed210593282d3c  spring-boot-amqp-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/amqp/rabbitmq/docker/compose/AmqpRabbitMqDockerComposeConnectionDetailsFactory.class",
+        "7647207d53a65026e6964a4f31b3bad81f8bc3ca1f92147feb9027987d4b4952  spring-boot-amqp-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/amqp/rabbitmq/docker/compose/RabbitEnvironment.class",
+        "5716cd73232c629f5b3fcc1d314fb833957d540c6563ec59d30f10e3d4446d67  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqDockerComposeConnectionDetailsFactory$RabbitDockerComposeConnectionDetails.class",
+        "208f9e19b7e504eb97f4c2fa1b7872433c7eeb44efa3343c6db7db309218b8be  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqDockerComposeConnectionDetailsFactory.class",
+        "714c081593f6a0ddc4963ef2c212508b966282258bbb69bb167a43e6233bc89a  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqEnvironment.class",
+        "65e68a462722bc0bb9ea06b99c14de7fe0de83897412d8705ae27568a347a692  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqStreamDockerComposeConnectionDetailsFactory$RabbitStreamDockerComposeConnectionDetails.class",
+        "042924f826e2d09be74719061117488d030f2bfa78e950bb004e0799899acd48  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqStreamDockerComposeConnectionDetailsFactory.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S29 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S29 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 281.778,
+      "cpuSeconds": 650.165,
+      "cpuThrottledSeconds": 139.004,
+      "peakMemoryBytes": 4349927424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s29-parent-build-and-the-paren.log",
+        "lines": 42,
+        "bytes": 6747,
+        "sha256": "5112b3ae7221f9d4f3f6637e2689f1cc75f6e3fec3abcc8f841544dc2e59b85e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.amqp.rabbitmq.docker.compose.AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests junit tests=2 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.amqp.rabbitmq.docker.compose.RabbitEnvironmentTests junit tests=9 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests junit tests=2 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests junit tests=2 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqEnvironmentTests junit tests=9 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S29-parent/module_spring-boot-amqp-rabbitmq.runtimeClasspath.txt 55 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S29-parent/module_spring-boot-amqp-rabbitmq.testRuntimeClasspath.txt 106 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S29-parent/module_spring-boot-rabbitmq.runtimeClasspath.txt 61 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S29-parent/module_spring-boot-rabbitmq.testRuntimeClasspath.txt 112 entries",
+        "1fbca66c6150cd1891efda333e097c3521ab4cb12419fa889627b2bda0044d92  jars/spring-boot-amqp-rabbitmq-4.2.0-SNAPSHOT.jar",
+        "9d52697473e3c2280e3df924629e7b7a666f7cd59ced5315183033ff21285124  jars/spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar",
+        "5ea05160c059a44a683954ebc904933a20433c79d8967e0828dbe1fad4ba43c5  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "7cd55f2dadcf959d3405aad88dfe926752377fc13bec6913e99c703eed7b199f  tree/core/spring-boot/build/libs/spring-boot-4.2.0-SNAPSHOT.jar",
+        "4f9efab164f195ee5b30e395817be54522abc3535702d460e7fca98aa5581528  tree/core/spring-boot-docker-compose/build/libs/spring-boot-docker-compose-4.2.0-SNAPSHOT.jar",
+        "75466984bc3b4ce78754693d5b07dc1793ca7363227d441b617fb1d2cc1e8c1b  tree/core/spring-boot-test/build/libs/spring-boot-test-4.2.0-SNAPSHOT.jar",
+        "12e2e687d0c8847f7f2675eae6f840e81303d60f29d256dd1f8ac71e135e0d3a  tree/core/spring-boot-testcontainers/build/libs/spring-boot-testcontainers-4.2.0-SNAPSHOT.jar",
+        "9ecad597478dd17ed156825d87542672cad85fa6e4ca2d907ad779ea4764e5a6  tree/module/spring-boot-health/build/libs/spring-boot-health-4.2.0-SNAPSHOT.jar",
+        "7e4feac8a22d60d6fc153d26fc91a02d30707cf6995eae84442e8c3136c44222  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "a8a2231ea65623a4e7a8a84760091e2346204ad49ae868b57ae7cce04fc9d330  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "ba29f300cc7b5de4da06a6b08067be7166965006970366b9597e64a74950545d  tree/module/spring-boot-persistence/build/libs/spring-boot-persistence-4.2.0-SNAPSHOT.jar",
+        "bc20120327747d8b0c71841cc1358c6c9c2326b55194100e768a4f9cbef1b322  tree/module/spring-boot-transaction/build/libs/spring-boot-transaction-4.2.0-SNAPSHOT.jar",
+        "c1193c28948bd53a2ca6d0e3f5b152ec9bb13ce15f4b5539063745fe1238db21  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "478d621baf961d66d714419022393f419af855e1e4a799f90dfebf1b90cbf195  spring-boot-amqp-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/amqp/rabbitmq/docker/compose/AmqpRabbitMqDockerComposeConnectionDetailsFactory$AmqpRabbitMqDockerComposeRabbitConnectionDetails.class",
+        "623a1d2dc295fc412f2f50c57f748fb401ac59f0fe00ce79c1ed210593282d3c  spring-boot-amqp-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/amqp/rabbitmq/docker/compose/AmqpRabbitMqDockerComposeConnectionDetailsFactory.class",
+        "94066d2b3cbe79961122512ae403c2f9fd6c2afc8f1bbcb8f0ddd06edf493196  spring-boot-amqp-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/amqp/rabbitmq/docker/compose/RabbitEnvironment.class",
+        "6108b487a7eb2b0930aced6e261ba5fd52833aceeeff0fe4f863b74eedd09986  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqDockerComposeConnectionDetailsFactory$RabbitDockerComposeConnectionDetails.class",
+        "208f9e19b7e504eb97f4c2fa1b7872433c7eeb44efa3343c6db7db309218b8be  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqDockerComposeConnectionDetailsFactory.class",
+        "1693a1c1eba0e4dedf6230f735a190f01fe77cb12ad8404b6693e9435b4310c9  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqEnvironment.class",
+        "9308a3cd2a710663754e71ee75a720e98c575bdb7a14e5a8f6f91bfdc346ae3c  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqStreamDockerComposeConnectionDetailsFactory$RabbitStreamDockerComposeConnectionDetails.class",
+        "042924f826e2d09be74719061117488d030f2bfa78e950bb004e0799899acd48  spring-boot-rabbitmq-4.2.0-SNAPSHOT.jar!/org/springframework/boot/rabbitmq/docker/compose/RabbitMqStreamDockerComposeConnectionDetailsFactory.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S29 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S29 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 81.455,
+      "cpuSeconds": 258.624,
+      "cpuThrottledSeconds": 123.371,
+      "peakMemoryBytes": 4303642624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s29-transplant-the-fix-s-tests.log",
+        "lines": 31,
+        "bytes": 4753,
+        "sha256": "d37493c80703e7b86bcc0f87999a3ebe1b0b9562ae46c8d91f6e1781a091c7ad",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-amqp-rabbitmq/src/dockerTest/java/org/springframework/boot/amqp/rabbitmq/docker/compose/AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests.java",
+        "transplanted module/spring-boot-amqp-rabbitmq/src/dockerTest/resources/org/springframework/boot/amqp/rabbitmq/docker/compose/rabbitmq-with-default-vhost-compose.yaml",
+        "transplanted module/spring-boot-amqp-rabbitmq/src/test/java/org/springframework/boot/amqp/rabbitmq/docker/compose/RabbitEnvironmentTests.java",
+        "transplanted module/spring-boot-rabbitmq/src/dockerTest/java/org/springframework/boot/rabbitmq/docker/compose/RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests.java",
+        "transplanted module/spring-boot-rabbitmq/src/dockerTest/java/org/springframework/boot/rabbitmq/docker/compose/RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests.java",
+        "transplanted module/spring-boot-rabbitmq/src/dockerTest/resources/org/springframework/boot/rabbitmq/docker/compose/rabbitmq-stream-with-default-vhost-compose.yaml",
+        "transplanted module/spring-boot-rabbitmq/src/dockerTest/resources/org/springframework/boot/rabbitmq/docker/compose/rabbitmq-with-default-vhost-compose.yaml",
+        "transplanted module/spring-boot-rabbitmq/src/test/java/org/springframework/boot/rabbitmq/docker/compose/RabbitMqEnvironmentTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S29-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=81 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.amqp.rabbitmq.docker.compose.AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests no-result ",
+        "class org.springframework.boot.amqp.rabbitmq.docker.compose.RabbitEnvironmentTests no-result ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests no-result ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests no-result ",
+        "class org.springframework.boot.rabbitmq.docker.compose.RabbitMqEnvironmentTests no-result ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S29-parent-landed/module/spring-boot-amqp-rabbitmq/src/test/java/org/springframework/boot/amqp/rabbitmq/docker/compose/RabbitEnvironmentTests.java:102: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S29-parent-landed/module/spring-boot-amqp-rabbitmq/src/test/java/org/springframework/boot/amqp/rabbitmq/docker/compose/RabbitEnvironmentTests.java:108: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S29-parent-landed/module/spring-boot-amqp-rabbitmq/src/test/java/org/springframework/boot/amqp/rabbitmq/docker/compose/RabbitEnvironmentTests.java:114: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S29-parent-landed/module/spring-boot-amqp-rabbitmq/src/test/java/org/springframework/boot/amqp/rabbitmq/docker/compose/RabbitEnvironmentTests.java:122: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S29-parent-landed/module/spring-boot-rabbitmq/src/test/java/org/springframework/boot/rabbitmq/docker/compose/RabbitMqEnvironmentTests.java:102: error: cannot find symbol",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S29 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S29 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 3.018,
+      "cpuSeconds": 2.018,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 60243968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s29-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "c199afa8c8072c518319138a01ac70e3c37bd986e0b53b04f2d8c9f16cf666c5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S29"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T12:34:27+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T123343Z-6376742c69df007e"
+    }
+  }
+}
