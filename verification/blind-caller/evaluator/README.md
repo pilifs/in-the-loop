@@ -1,5 +1,7 @@
 # Blind caller evaluation
 
+The frozen draw qualified 0/20 primaries in each original arm. The separately sealed packaging repair restored a public entry binding on one further PR and qualified 0/1. [Per-PR results, stage counts and fourth column](RESULTS.md)
+
 The committed inventory starts with 110 pull requests. The evaluator reconstructed both deployed commits from the original worktrees and joined canonical repositories, PR numbers, explicit backports, submitted or cherry-picked commits and ordered revision pairs. Each excluded row names its matching record. The previous startup-fact exercise and the shared change-plan qualifications account for exclusions beyond the development case named in the brief. Only the public URL list and worktree HEADs were used for the two reserved entries.
 
 | Batch | Inventory | Eligible | Excluded | Eligible repositories | Eligible PRs in previously seen repositories | Eligible PRs sharing an exact prior API package |
