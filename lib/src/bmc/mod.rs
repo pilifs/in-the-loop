@@ -5071,6 +5071,31 @@ impl<'a> Engine<'a> {
         Ok(Initialising::Ready)
     }
 
+    /// A generated lemma stub obtains its symbolic result only after its guard holds. Its other arm calls
+    /// the original method. Bind a concrete use to the actual caller instruction as well as the stub.
+    fn record_integral_summary(&mut self, path: &Path) {
+        let [.., caller, stub] = path.frames.as_slice() else { return };
+        let Some(Insn::InvokeStatic(index)) = caller.code.insns.get(caller.at) else { return };
+        let pc = caller.pc();
+        let Ok(target) = caller.class.pool.member(*index) else { return };
+        if !self.summaries.iter().any(|s| s.stub == stub.method && s.stub != crate::summary::HYPOTHESIS &&
+            (s.owner.as_str(), s.name.as_str(), s.descriptor.as_str()) ==
+            (target.owner.as_str(), target.name.as_str(), target.descriptor.as_str())) { return }
+        let Some((params, _)) = target.descriptor.strip_prefix('(').and_then(|d| d.split_once(')')) else { return };
+        if !params.bytes().all(|c| matches!(c, b'I' | b'J' | b'Z' | b'C' | b'B' | b'S')) { return }
+        let values: Option<Vec<i64>> = stub.locals.iter().flatten().take(params.len()).map(|v| match v {
+            Val::I(bits) | Val::J(bits) => self.b.constant_value(bits),
+            _ => None,
+        }).collect();
+        let Some(values) = values.filter(|v| v.len() == params.len()) else { return };
+        let args = values.iter().map(i64::to_string).collect::<Vec<_>>().join(",");
+        let entry = format!("{}#{}{}", target.owner.replace('/', "."), target.name, target.descriptor);
+        let site = format!("{}#{}@{pc}", caller.class.name.replace('/', "."), caller.method);
+        let text = format!("The proved summary of {entry} supplied the result for ({args}) at {site}");
+        self.assumption_ids.insert(text.clone(), format!("summary-use:{entry}:{site}:{args}"));
+        self.assumed.insert(text);
+    }
+
     /// The value of the static field `name` that `declaring`, an application class, declares, once the class is
     /// initialized: what the path wrote, else its `ConstantValue`, else zero or null. `None` for a JDK class, read
     /// by [`Engine::get_static`]. A class taken to be initialized has only its constants.
@@ -5273,6 +5298,10 @@ impl<'a> Engine<'a> {
     /// a model's is called, a JDK method the engine models is computed, and any other is a gap or refused. A
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
+        if caller == crate::harness::expr::CLAIM_CLASS && member.owner == crate::gap_contracts::INTRINSICS
+            && matches!(member.name.as_str(), "anyInt" | "anyLong" | "anyBoolean") {
+            self.record_integral_summary(path);
+        }
         if let Some(provider) = self.cp.data_input_access(caller, &path.frames.last().expect("a frame").method, member) {
             let access = self.literal(path, Literal::JavaLangAccess(provider.clone()), &provider);
             self.push(path, Val::R(Some(access)));
