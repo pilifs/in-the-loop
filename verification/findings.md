@@ -18,6 +18,19 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-078: a run's reported spend leaves out its last turns, and a run in a workspace of its own is in no published record
+
+- **Status**: open, minor. Neither came with the convergence on one run skill: both were there before it, and it fixed neither.
+- **Raised**: 2026-11-27 by the session that did the convergence on `/orchestrate-run` (`43b290ac…`), from the tools' code and from a rehearsal of them: one run on Claude Opus 5.5 at low effort, two cycles, in a throwaway copy of the repository. The copy and the run's transcript were deleted afterwards, as the user wished, so the rehearsal has no record here beyond this entry.
+- **Found**:
+  - **The spend a run reports is short.** `single_run.py` notes what a cycle cost when it puts that cycle's question to the watcher (`assessment`). A cycle that ends the run with no question, the last of its count or one ended by a stop, is never noted, and neither are the compact and the summary that close a run. The rehearsal's status said `spent: 0.19`, for its first cycle; the client's running total for the session stood at $0.63 after the summary. A long run that the watcher ends by an answer misses its last compact and its summary. One that ends by its count misses its last cycle too.
+  - **A run in a workspace of its own is in no published record.** `sync.py` publishes the run records of the default workspace only (`llm-dlc/loop-summaries/`, redacted, under each session's `runs/`). `run_records.py collect` copies a workspace's records there, and nothing has called it since the streams workflow went ([`llm-dlc/retired.md`](../llm-dlc/retired.md#multi-agent-brief)). The queue's runs work in a workspace: on 2026-11-27 that workspace held 91 records of single runs, the default checkout held none, and `llm-dlc/traces/loops.md` counted no single run. The runs' sessions, commits and decisions are published as always; what is missing is the run as a unit: its cycles, how it ended, and its place in the loop statistics.
+- **Needs**: product work, small, for whoever next works on run records (the architecture work that follows the convergence names "a run record with its measured cost" as the intent):
+  1. Note the cost of every turn of a run, the last cycle, the compacts and the summary included, where the loop ends a turn and not where the watcher is asked.
+  2. Have `single_run.py land` copy the run's records into the default workspace before its commit (`run_records.collect` does the copying), and decide whether the records already in a workspace are brought in once.
+- **Tracked in**: this entry.
+- **Closes when**: a run's reported spend equals the client's total for its session, and a run that worked in a workspace of its own is a row of `llm-dlc/traces/loops.md` after it lands.
+
 ### VF-076: a domain run meets offline gaps the setup never resolved, and only a job that fails finds each one
 
 - **Status**: open, product work (the user, 2026-11-27). The user let the run retry, because each try was cheap and the work underneath valuable, and asked for this finding afterwards.

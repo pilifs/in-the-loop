@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T19:09:01.208Z",
-  "duration_seconds": 14120,
+  "ended": "2026-11-27T19:20:29.000Z",
+  "duration_seconds": 14808,
   "stats": {
-    "turns": 19,
-    "api_calls": 353,
-    "tool_calls": 400,
+    "turns": 20,
+    "api_calls": 367,
+    "tool_calls": 414,
     "tool_errors": 4,
     "compactions": 3,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 720,
-      "output_tokens": 571411,
-      "cache_read_input_tokens": 108317218,
-      "cache_creation_input_tokens": 1529828
+      "input_tokens": 750,
+      "output_tokens": 583468,
+      "cache_read_input_tokens": 111162032,
+      "cache_creation_input_tokens": 1548215
     }
   },
   "tools": {
-    "Bash": 316,
+    "Bash": 328,
     "Read": 55,
-    "Edit": 13,
+    "Edit": 15,
     "Write": 13,
     "AskUserQuestion": 3
   },
@@ -100,24 +100,24 @@
     {
       "index": 3,
       "started": "2026-11-27T18:53:05.659Z",
-      "ended": "2026-11-27T19:09:01.208Z",
-      "turns": 3,
-      "api_calls": 39,
+      "ended": "2026-11-27T19:20:29.000Z",
+      "turns": 4,
+      "api_calls": 53,
       "usage": {
-        "input_tokens": 82,
-        "output_tokens": 41055,
-        "cache_read_input_tokens": 6240920,
-        "cache_creation_input_tokens": 179660
+        "input_tokens": 112,
+        "output_tokens": 53112,
+        "cache_read_input_tokens": 9085734,
+        "cache_creation_input_tokens": 198047
       },
-      "peak_context_tokens": 195006
+      "peak_context_tokens": 213393
     }
   ],
   "log": {
-    "sha256": "689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406",
-    "bytes": 10917624,
-    "lines": 3434,
-    "gzip_bytes": 2083246,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406.jsonl.gz"
+    "sha256": "747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4",
+    "bytes": 11102876,
+    "lines": 3544,
+    "gzip_bytes": 2107303,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -240,6 +240,22 @@
       "summary": "The register's check: a folder that keeps only a bytecode cache is gone",
       "body": "The user's whole default test run on the default line (xksklxrk) failed on 2026-11-27 at 18:30 UTC. Its output was not kept, and the cause found afterwards is test_retired.py: retired.py check said `plugins/` was still here, though the change that retired the plugin had removed every file it tracked. The folder held one file, the bytecode cache Python had written when a test imported the plugin's bootstrap. jj removes the files it tracks and leaves what it ignores, so any checkout that ran those tests before the removal keeps such a folder; a workspace where the folder was removed by hand, as the one the removal was made in, does not, which is why the tests passed there.\n\nA retired folder now counts as still here by the files in it, and a file under __pycache__ (or a .pyc) is not one; an empty folder is not either. A link still counts, whatever it points at. Two tests hold this: a folder with only a cache is gone, and one with a file of its own is reported.\n\nAlso: the headers of two Rust tests still said an integration script runs them; they now say it went with the streams workflow, and lib/tests/*.rs is held to the rule for live files.\n\nVerified: test_retired.py passes (11 tests) and the two Rust test binaries pass (12 and 5 tests) in the changed-tests run; the fixed check, pointed at the default checkout's files while the leftover folder was there, reported nothing; the old check in the default checkout failed on it and passes once the folder is removed, which was done (it held that one cache file and nothing tracked). The whole default run on the tree before this fix passed in this workspace, 85 of 85; one on the tree with it follows.",
       "log_sha256": "689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406"
+    },
+    {
+      "change_id": "oxqtlxmxywtpqxmrvzuxrskysnsrwwvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "614ccbcc12c9cad4d8afea1e10055b72ed6f5d49c68c49826f566292c8e214a4"
+    },
+    {
+      "change_id": "mvxtlyouwnvpxqzvuyvoxtnpnmnqtzzu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-078: a run's reported spend is short, and a workspace's run is in no published record",
+      "body": "Two gaps found while converging the run skills on /orchestrate-run, recorded for whoever next works on run records. Neither came with that work and it fixed neither.\n\nA run's reported spend counts a cycle when its question is put to the watcher, so a cycle that ends the run with no question, the last compact and the summary are left out: a rehearsal of the tools reported 0.19 dollars where the client's total for the session was 0.63. And the records of a run that worked in a workspace of its own are published nowhere, since only the default workspace's are and nothing copies them there since the streams workflow was retired: the workspace the queue's runs work in holds 91 such records, the default checkout none, and the loop statistics count no single run.\n\nThe entry is the rehearsal's only record: the run was made in a throwaway copy on Claude Opus 5.5 at low effort, and the copy and its transcript were deleted afterwards at the user's wish.\n\nVerified: retired.py check finds nothing in the new entry, and the changed-tests run passed 6 of 6 test files. The findings page is one no test of the default run reads, so the passed run recorded for the tree before this commit still covers it.",
+      "log_sha256": "747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4"
     }
   ],
   "logs": {
@@ -273,10 +289,22 @@
       "gzip_bytes": 1682024,
       "url": null
     },
+    "614ccbcc12c9cad4d8afea1e10055b72ed6f5d49c68c49826f566292c8e214a4": {
+      "bytes": null,
+      "lines": null,
+      "gzip_bytes": null,
+      "url": null
+    },
     "689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406": {
       "bytes": 10917624,
       "lines": 3434,
       "gzip_bytes": 2083246,
+      "url": null
+    },
+    "747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4": {
+      "bytes": 11102876,
+      "lines": 3544,
+      "gzip_bytes": 2107303,
       "url": null
     },
     "7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e": {
