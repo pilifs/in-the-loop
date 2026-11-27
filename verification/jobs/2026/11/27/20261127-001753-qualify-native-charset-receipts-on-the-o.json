@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-001753-qualify-native-charset-receipts-on-the-o",
+  "title": "Qualify native charset receipts on the original encoded fixture",
+  "description": "Derive the missing startup dependency from the unchanged strict native claim. Run the two pinned locale profiles, confirm the separating byte length on untouched JVMs and check cold, resumed, crossed, tampered and restored receipts including a second claim.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T00:17:53+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Original property, profile replays and invalidations",
+      "run": "python3 lib/benchmark/startup-facts/charset.py small --output verification/startup-facts/charset-small.zip",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/startup-facts/charset-small.zip"
+  ]
+}

@@ -292,7 +292,28 @@ public final class ObservedInitializer {
         }
     }
 
+    // The tracer breaks on this invocation and its normal return. Snapshot inspection runs afterwards.
+    private static Class<?> initializeRoots(String[] args, ClassLoader app, boolean together, int end) throws Exception {
+        Class<?> root = Class.forName(args[0], true, app);
+        if (together) {
+            for (int i = 3; i < end; i++) Class.forName(args[i], true, app);
+        }
+        return root;
+    }
+
+    private static String charsetProfile() {
+        var value = java.nio.charset.Charset.defaultCharset();
+        Class<?> type = value.getClass();
+        return "{\"canonical\":" + text(value.name()) + ",\"implementation\":" + text(type.getName())
+                + ",\"bootstrap\":" + (type.getClassLoader() == null) + ",\"module\":" + text(type.getModule().getName())
+                + ",\"standardSingleton\":" + (value == StandardCharsets.UTF_8 || value == StandardCharsets.US_ASCII)
+                + ",\"fileEncoding\":" + text(System.getProperty("file.encoding")) + ",\"locale\":" + text(System.getenv("LC_ALL"))
+                + ",\"vm\":" + text(System.getProperty("java.vm.name")) + ",\"vmVersion\":" + text(System.getProperty("java.vm.version")) + "}";
+    }
+
     public static void main(String[] args) throws Exception {
+        boolean charset = args[0].equals("--record-charset");
+        if (charset) args = java.util.Arrays.copyOfRange(args, 1, args.length);
         ClassLoader app = ClassLoader.getSystemClassLoader();
         String jdk = System.getProperty("java.version");
         String vendor = System.getProperty("java.vendor");
@@ -320,10 +341,7 @@ public final class ObservedInitializer {
         Class<?> c;
         System.setProperties(recording);
         try {
-            c = Class.forName(args[0], true, app);
-            if (together) {
-                for (int i = 3; i < rootsEnd; i++) Class.forName(args[i], true, app);
-            }
+            c = initializeRoots(args, app, together, rootsEnd);
         }
         catch (Throwable t) {
             System.setProperties(original);
@@ -334,7 +352,8 @@ public final class ObservedInitializer {
         System.setProperties(original);
         // Reflection and serialization can initialize additional classes. The boundary is
         // the return of Class.forName, before the observer inspects any subject fields.
-        byte[] logged = together ? Files.readAllBytes(log) : null;
+        byte[] logged = log == null ? null : Files.readAllBytes(log);
+        String profile = charset ? ",\"charsetProfile\":" + charsetProfile() : "";
         // The JDK's settings the initialization changed, read again after it: the check runs what follows under the
         // ones before it.
         List<String> changed = new ArrayList<>();
@@ -352,7 +371,7 @@ public final class ObservedInitializer {
         changed.addAll(recording.changedFrom(original));
         // Alone, the class is what another initialization's is compared with: described in full.
         if (log == null) {
-            System.out.println("@observed {\"jdk\":" + text(jdk) + ",\"fixedProcessors\":" + fixedProcessors()
+            System.out.println("@observed {\"jdk\":" + text(jdk) + profile + ",\"fixedProcessors\":" + fixedProcessors()
                     + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment()) + ",\"rootWorkingDirectory\":" + (atRoot && unixRoot()) + "," + new Dump(true).of(c) + "}");
             return;
         }
@@ -361,7 +380,6 @@ public final class ObservedInitializer {
         dump.weakMapValues = weakMapValues;
         dump.captureObjects = captured;
         String fields = together ? null : dump.fieldsOf(c);
-        if (!together) logged = Files.readAllBytes(log);
         String after = new String(logged, (int) Math.min(mark, logged.length), (int) Math.max(0, logged.length - mark), StandardCharsets.UTF_8);
         Map<String, Class<?>> members = new LinkedHashMap<>();
         List<String> seen = new ArrayList<>();
@@ -431,7 +449,7 @@ public final class ObservedInitializer {
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
-                + text(display) + "},\"zone\":" + text(zone) + ",\"preinitializeTogether\":" + together
+                + text(display) + "},\"zone\":" + text(zone) + profile + ",\"preinitializeTogether\":" + together
                 + ",\"weakMapValues\":" + weakMapValues
                 + ",\"captureObjects\":[" + String.join(",", captured.stream().map(ObservedInitializer::text).toList()) + "]"
                 + ",\"additionalRoots\":[" + String.join(",", additionalRoots) + "],\"rootWorkingDirectory\":" + (atRoot && unixRoot())
@@ -509,7 +527,7 @@ public final class ObservedInitializer {
     }
 
     /** A JSON string. */
-    private static String text(String s) {
+    static String text(String s) {
         StringBuilder o = new StringBuilder("\"");
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);

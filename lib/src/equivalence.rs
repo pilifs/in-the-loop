@@ -1049,6 +1049,9 @@ fn as_parameter(v: Value, t: &Type) -> Value {
 
 /// Runs the regression proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
+    if options.observed_runtime.charset_locale.is_some() {
+        return Err(Error::new("charset receipts bind one original deployment; run the property separately on each revision"));
+    }
     if options.observed_runtime != Default::default() && options.observed_initializers.is_empty() {
         return Err(Error::new("--observed-runtime requires an initializer to observe"));
     }

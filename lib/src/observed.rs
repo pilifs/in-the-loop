@@ -103,6 +103,8 @@ use crate::Error;
 
 /// The program that observes one class, as Java: javac compiles it and a JVM runs it once for each class.
 const SOURCE: &str = include_str!("observed/ObservedInitializer.java");
+pub(crate) mod charset;
+pub use charset::CharsetLocale;
 const CLASS: &str = "ObservedInitializer";
 pub(crate) const ENUM: &str = "java/lang/Enum";
 /// The line of its output that holds the observation.
@@ -194,6 +196,7 @@ pub struct Observed {
 /// What an observation was observed on, as the observer's JVM said it ([`observe`] checks it against the check's).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct On {
+    pub(crate) charset: Option<charset::Fact>,
     /// The sha256 of the class file the JVM's class loader read, and the location it came from.
     pub sha256: String,
     pub from: Option<String>,
@@ -240,7 +243,7 @@ pub struct Initialized {
 pub type Observations = BTreeMap<String, Observed>;
 
 /// Launch settings for a separately scoped initializer observation and its comparison JVMs.
-#[derive(Debug, Default, Clone, PartialEq, Eq, serde::Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 #[serde(default, rename_all = "camelCase", deny_unknown_fields)]
 pub struct Runtime {
     pub processors: Option<std::num::NonZeroI32>,
@@ -249,6 +252,9 @@ pub struct Runtime {
     pub root_working_directory: bool,
     pub weak_map_values: bool,
     pub capture_objects: BTreeSet<String>,
+    pub charset_locale: Option<CharsetLocale>,
+    pub expected_charset_receipt: Option<String>,
+    pub charset_receipt_directory: Option<PathBuf>,
 }
 
 impl std::str::FromStr for Runtime {
@@ -264,6 +270,7 @@ impl std::str::FromStr for Runtime {
         if !r.capture_objects.is_empty() && !r.preinitialize_together {
             return Err("captureObjects requires preinitializeTogether".into());
         }
+        r.validate_charset()?;
         Ok(r)
     }
 }
@@ -320,6 +327,10 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
 }
 
 fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
+    runtime.validate_charset().map_err(Error::new)?;
+    if runtime.charset_locale.is_some() && classes.len() != 1 {
+        return Err(Error::new("charsetLocale requires one first-use initializer per recording"));
+    }
     if runtime.weak_map_values && !runtime.preinitialize_together {
         return Err(Error::new("--observed-runtime weakMapValues requires preinitializeTogether"));
     }
@@ -330,13 +341,28 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     }
     let home = crate::jimage::JImage::find_java_home().ok_or_else(|| Error::new("--observed-initializer: no JDK to observe a class initializer on (set JAVA_HOME)"))?;
     // Absolute: the JVM runs in this folder, and is given the log's path in it (an option and an argument).
-    let dir = std::path::absolute(work.join("observed"))?;
-    let _ = std::fs::remove_dir_all(&dir);
+    let temp;
+    let dir = if runtime.charset_locale.is_some() {
+        std::fs::create_dir_all(work)?;
+        temp = tempfile::Builder::new().prefix("startup-capture-").tempdir_in(work)?;
+        std::path::absolute(temp.path())?
+    } else {
+        let dir = std::path::absolute(work.join("observed"))?;
+        let _ = std::fs::remove_dir_all(&dir);
+        dir
+    };
     std::fs::create_dir_all(&dir)?;
     let source = dir.join(format!("{CLASS}.java"));
     std::fs::write(&source, SOURCE)?;
     let javac = home.join("bin").join("javac");
-    let compiled = Command::new(&javac).args(["-proc:none", "-Xlint:none", "-nowarn", "-d"]).arg(&dir).arg(&source).output().map_err(|e| Error::new(format!("{}: {e}", javac.display())))?;
+    let mut compile = Command::new(&javac);
+    compile.args(["-proc:none", "-Xlint:none", "-nowarn", "-encoding", "UTF-8", "-d"]).arg(&dir).arg(&source);
+    if runtime.charset_locale.is_some() {
+        let tracer = dir.join("StartupTrace.java");
+        std::fs::write(&tracer, charset::TRACER)?;
+        compile.arg(tracer);
+    }
+    let compiled = compile.output().map_err(|e| Error::new(format!("{}: {e}", javac.display())))?;
     if !compiled.status.success() {
         return Err(Error::new(format!("--observed-initializer: javac did not compile the observer: {}", String::from_utf8_lossy(&compiled.stderr).trim())));
     }
@@ -355,13 +381,17 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     }
     let additional: Vec<String> = if runtime.preinitialize_together { classes.iter().skip(1).map(|c| c.replace('/', ".")).collect() } else { vec![] };
     let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime: runtime.clone(), additional };
+    let binding = runtime.charset_locale.map(|_| charset::bindings(&tool, &home, &entries[1..], classes, &runtime)).transpose()?;
     let mut alone: BTreeMap<String, serde_json::Value> = BTreeMap::new();
     for class in classes.iter().take(if runtime.preinitialize_together { 1 } else { classes.len() }) {
         let internal = class.replace('.', "/");
         let binary = internal.replace('/', ".");
         let log = dir.join(format!("{binary}.init.log"));
-        let line = jvm.run(&binary, Some(&log))?;
-        let observed = parse(&binary, &line)?;
+        let saved = if let Some(binding) = &binding {
+            charset::reusable(work, &tool, &internal, &runtime, binding)?
+        } else { None };
+        let line = jvm.run(&binary, Some(&log), saved.is_none())?;
+        let mut observed = parse(&binary, &line)?;
         if runtime.preinitialize_together != observed.joint_fields.is_some()
             || runtime.weak_map_values != observed.on.weak_map_values
             || runtime.capture_objects != observed.on.capture_objects
@@ -373,6 +403,11 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         }
         bind(&binary, &internal, &observed.on, &entries, &tool)?;
         bind_values(&binary, &observed, &tool)?;
+        let receipt = if let Some(binding) = &binding {
+            let (fact, receipt) = charset::qualify(&binary, &line, &jvm, &tool, binding, &observed, saved.as_ref())?;
+            observed.on.charset = Some(fact);
+            Some(receipt)
+        } else { None };
         for ran in std::iter::once(internal.as_str()).chain(observed.on.initialized.iter().map(|i| i.name.as_str())) {
             if let Some((setting, call)) = unbound_setting(&tool, ran, &observed.on)? {
                 let whose = if ran == internal { "its code".to_string() } else { format!("its initialization initialized {}, whose code", ran.replace('/', ".")) };
@@ -388,7 +423,10 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
             }
             if observed.joint_fields.is_some() { continue; }
             if !alone.contains_key(&other.name) {
-                let line = jvm.run(&name, None)?;
+                let line = jvm.run(&name, None, true)?;
+                if let Some(fact) = &observed.on.charset {
+                    charset::compare_alone(&name, &line, &jvm, fact)?;
+                }
                 alone.insert(other.name.clone(), state(&name, &line, &observed.on)?);
             }
             if let Some(value) = undescribed(&other.state).or_else(|| undescribed(&alone[&other.name])) {
@@ -401,6 +439,12 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
                     "--observed-initializer {binary}: its initialization initialized {name} and left it other than it is initialized alone ({field}): it wrote another class's static state, which an observation does not carry (it holds only {binary}'s own fields), so the check cannot take it"
                 )));
             }
+        }
+        if let Some(receipt) = receipt {
+            if binding != Some(charset::bindings(&tool, &home, &entries[1..], classes, &runtime)?) {
+                return Err(Error::new("startup capture inputs changed during observation"));
+            }
+            charset::publish(work, &runtime, &receipt, saved.is_some())?;
         }
         out.insert(internal, observed);
     }
@@ -419,7 +463,7 @@ struct Jvm {
 impl Jvm {
     /// Runs the observer on `binary`, with its class initializations logged to `log` where given, and returns the
     /// line of the observation.
-    fn run(&self, binary: &str, log: Option<&Path>) -> Result<String, Error> {
+    fn run(&self, binary: &str, log: Option<&Path>, charset_trace: bool) -> Result<String, Error> {
         let suffix = if log.is_some() { "" } else { ".alone" };
         let stdout = self.dir.join(format!("{binary}{suffix}.stdout"));
         let stderr = self.dir.join(format!("{binary}{suffix}.stderr"));
@@ -433,7 +477,20 @@ impl Jvm {
             let _ = std::fs::remove_file(log);
             command.arg(format!("-Xlog:class+init=info:file={}::filecount=0", log.display()));
         }
-        command.arg("-cp").arg(&self.class_path).arg(CLASS).arg(binary);
+        command.arg("-cp").arg(&self.class_path);
+        if self.runtime.charset_locale.is_some() {
+            command.arg("-Dfile.encoding=COMPAT");
+            if charset_trace {
+                let mut traced = Command::new(&self.java);
+                traced.args(["-Xmx192m", "-cp"]).arg(&self.dir).arg("StartupTrace")
+                    .arg(self.dir.join(format!("{binary}{suffix}.trace.json"))).arg(charset::BOUNDARY)
+                    .args(command.get_args()).arg("--main");
+                command = traced;
+            }
+            command.args([CLASS, "--record-charset"]);
+            self.runtime.charset_locale.unwrap().apply(&mut command);
+        } else { command.arg(CLASS); }
+        command.arg(binary);
         if let Some(log) = log {
             command.arg(log);
             if self.runtime.preinitialize_together {
@@ -459,7 +516,9 @@ impl Jvm {
             std::thread::sleep(Duration::from_millis(20));
         }
         let text = std::fs::read_to_string(&stdout).unwrap_or_default();
-        match text.lines().find_map(|l| l.strip_prefix(MARK)) {
+        let mut lines = text.lines().filter_map(|l| l.strip_prefix(MARK));
+        let line = lines.next().filter(|_| lines.next().is_none() && child.wait().is_ok_and(|s| s.success()));
+        match line {
             Some(line) => Ok(line.to_string()),
             None => {
                 let said = std::fs::read_to_string(&stderr).unwrap_or_default();
@@ -585,6 +644,7 @@ fn unbound_setting(tool: &crate::classpath::ClassPath, internal: &str, on: &On) 
             ("java/lang/String", "<init>") if matches!(member.descriptor.as_str(), "([B)V" | "([BII)V") => "the default charset",
             _ => continue,
         };
+        if on.charset.is_some() && !handle && charset::supported_reference(&member) { continue; }
         return Ok(Some((setting, member.display())));
     }
     Ok(None)
@@ -911,6 +971,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         if !additional_roots.is_empty() { state["additionalRoots"] = roots.clone(); }
     }
     let on = On {
+        charset: None,
         sha256: text(on, "sha256")?,
         from: on.get("from").and_then(|f| f.as_str()).map(String::from),
         classpath: list("classpath")?.iter().map(|e| e.as_str().map(String::from).ok_or_else(|| bad("the class path"))).collect::<Result<_, _>>()?,

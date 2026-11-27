@@ -288,6 +288,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
 }
 
 pub(crate) fn run_with_pair(options: &Options, original_pair: Option<&mut crate::pairing::replay::ScalarPair<'_>>) -> Result<Outcome, Error> {
+    if options.observed_runtime.charset_locale.is_some() && (options.previous.is_some() || options.engine != crate::Engine::Native
+        || options.search_startup_witness || options.gaps != crate::bmc::gaps::GapMode::Strict) {
+        return Err(Error::new("a charset recording requires a single original deployment with --engine native --gaps strict"));
+    }
     if options.search_startup_witness && (options.engine != crate::Engine::Native || options.gaps != crate::bmc::gaps::GapMode::Strict) {
         return Err(Error::new("--search-startup-witness requires --engine native --gaps strict"));
     }
@@ -1063,11 +1067,16 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
     if !options.observed_initializers.is_empty() && options.engine == crate::Engine::Jbmc {
         return Err(Error::new("--observed-initializer is for the tool's own checker (--engine native or auto): JBMC runs no observation"));
     }
-    let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, &entries, &work, options.observed_runtime.clone())?;
+    // Record startup on the original deployment. The generated assertion harness is
+    // specific to a claim and supplies no application classes to a charset capture.
+    let observation_entries = if options.observed_runtime.charset_locale.is_some() { &entries[1..] } else { &entries[..] };
+    let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, observation_entries, &work, options.observed_runtime.clone())?;
     if let Some((previous, classes)) = &options.previous {
         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime.clone())?);
     }
     let observed = std::sync::Arc::new(observed);
+    let witness_charset = options.observed_runtime.charset_locale.and_then(|locale| observed.values().find_map(|o|
+        o.on.charset.as_ref().map(|fact| (locale, fact.canonical.as_str()))));
     let previous = options.previous.as_ref().map(|(p, _)| std::sync::Arc::new(p.clone()));
     gap_setting.observed = observed.clone();
     gap_setting.previous = previous.clone();
@@ -1414,6 +1423,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
             let through_contracts = unreplayed.as_deref().and_then(|t| crate::equivalence::unconfirmed_through_contracts(&last, &render(&found).0, t));
             let contracted = through_contracts.is_some();
             let mut unconfirmed = through_contracts.or_else(|| unreplayed.as_deref().map(|t| crate::equivalence::unreplayed(&last, &render(&found).0, t, "the method")));
+            if witness_charset.is_some() { unconfirmed = Some("this witness requires the recorded startup profile on an original JVM".into()); }
             let resource_pair = previous.as_deref().filter(|_| last.native.as_ref().is_some_and(crate::bmc::Stats::reads_jar_resources));
             if resource_pair.is_some() {
                 unconfirmed = Some("a witness to this paired property reads an original release's resources and needs the complete postcondition replayed on separate original classpaths".into());
@@ -1428,7 +1438,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
                 let physical = match resource_pair {
                     Some(versions) => original_pair.ok_or_else(|| "this paired observation needs an original-graph witness".to_string())
                         .and_then(|pair| pair.replay(&work.join("original-jvm-witness"), versions, &layout, &harness, &found)),
-                    None => crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &found, &calls, &entries),
+                    None => crate::jvm_witness::run_with_charset(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &found, &calls, &entries, witness_charset),
                 };
                 match physical {
                     Ok(run) if run.check == crate::jvm_witness::Check::Refuted => {
@@ -1520,7 +1530,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
                 entries.extend(options.classes.iter().cloned());
                 entries.extend(options.classpath.iter().cloned());
                 let rendered = render(&arguments).0;
-                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &arguments, &[], &entries) {
+                match crate::jvm_witness::run_with_charset(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &arguments, &[], &entries, witness_charset) {
                     Ok(run) if run.check == crate::jvm_witness::Check::Refuted => jvm_note = Some((true, format!("and run on a JVM (JDK {}), where the harness fails on it too", run.jdk))),
                     Ok(run) if run.check == crate::jvm_witness::Check::Holds => {
                         let p = if compiled {

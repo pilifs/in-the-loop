@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize q",
   "client": {
@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-26T23:41:53.626Z",
-  "duration_seconds": 235863,
+  "ended": "2026-11-27T00:20:57.599Z",
+  "duration_seconds": 238207,
   "stats": {
-    "turns": 38,
-    "api_calls": 6024,
-    "tool_calls": 14998,
-    "tool_errors": 322,
+    "turns": 39,
+    "api_calls": 6106,
+    "tool_calls": 15168,
+    "tool_errors": 332,
     "compactions": 26,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 7892008,
-      "output_tokens": 3471268,
-      "cache_read_input_tokens": 1625443072,
+      "input_tokens": 8005554,
+      "output_tokens": 3513822,
+      "cache_read_input_tokens": 1638455424,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8303,
-    "exec": 5760,
-    "apply_patch": 734,
+    "Bash": 8381,
+    "exec": 5842,
+    "apply_patch": 744,
     "wait": 113,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -162,6 +162,7 @@
     "examples/537-spring-manifest-dependency/caller/AssetReader.java",
     "examples/537-spring-manifest-dependency/caller/PublicCaller.java",
     "examples/schema/example.schema.json",
+    "examples/schema/target-claim.schema.json",
     "examples/tools/build.py",
     "examples/tools/scaffold_example.py",
     "examples/tools/targets/change_evidence.py",
@@ -185,11 +186,15 @@
     "examples/tools/targets/public_comparison.py",
     "examples/tools/targets/public_mysql.py",
     "examples/tools/targets/public_postgres.py",
+    "examples/tools/targets/recipes.py",
+    "examples/tools/targets/replay_candidate.py",
     "examples/tools/targets/resource_workflows.py",
     "examples/tools/targets/test_change_plan.py",
     "examples/tools/targets/test_observer_generation.py",
     "examples/tools/targets/test_observer_review.py",
+    "examples/tools/targets/test_recipes.py",
     "examples/tools/targets/upgrade_replay.py",
+    "examples/tools/targets/workflow.py",
     "examples/tools/validate_example.py",
     "lib/benchmark/beyond-jbmc/README.md",
     "lib/benchmark/beyond-jbmc/additional_controls.py",
@@ -316,6 +321,9 @@
     "lib/src/interp/mod.rs",
     "lib/src/interp/natives.rs",
     "lib/src/jvm_witness.rs",
+    "lib/src/observed.rs",
+    "lib/src/observed/ObservedInitializer.java",
+    "lib/src/observed/charset.rs",
     "lib/src/pairing.rs",
     "lib/src/pairing/replay.rs",
     "lib/src/proof_cache.rs",
@@ -924,24 +932,24 @@
     {
       "index": 26,
       "started": "2026-11-26T23:39:02.233Z",
-      "ended": "2026-11-26T23:41:53.626Z",
-      "turns": 1,
-      "api_calls": 7,
+      "ended": "2026-11-27T00:20:57.599Z",
+      "turns": 2,
+      "api_calls": 89,
       "usage": {
-        "input_tokens": 40689,
-        "output_tokens": 7413,
-        "cache_read_input_tokens": 298368,
+        "input_tokens": 154235,
+        "output_tokens": 49967,
+        "cache_read_input_tokens": 13310720,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 57256
+      "peak_context_tokens": 210902
     }
   ],
   "log": {
-    "sha256": "34a3a46840abb29bbd5d7b8458e420a9de6e6fb26a2d14fcead6499d86f15eba",
-    "bytes": 95740609,
-    "lines": 47493,
-    "gzip_bytes": 17584370,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/34a3a46840abb29bbd5d7b8458e420a9de6e6fb26a2d14fcead6499d86f15eba.jsonl.gz"
+    "sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42",
+    "bytes": 97458188,
+    "lines": 48084,
+    "gzip_bytes": 17921737,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2824,6 +2832,62 @@
       "summary": "Record six supplementary generated-observer questions",
       "body": "Preserve the initial formatter stop, all five established supplementary questions and the sixth question that needs a read of the same formatter after the public call. Record why the changed locale, pattern, parsing mode, text and target class lose qualification even when their output is identical. Keep the original transfer and cold-discovery denominators separate.\n\nAll three follow-up jobs passed, with the last result at collector revision 2427ecd586d3. Verified the five collected archive digests, all 43 case ZIPs and all 43 report links. The scorecard and offline baseline corrections reproduced byte for byte, both numbered examples resumed from their saved classes and all 55 suites selected for the evidence passed.",
       "log_sha256": "ed77e53e7c3992d0ea1d28c90b5ca85fb3f4ce19d55bc2924e37bdccd13f0b39"
+    },
+    {
+      "change_id": "uwoturnskmuwnwoztpyylpyrrxvqxvyk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup for the JVM startup facts brief",
+      "body": "Mechanical setup for llm-dlc/loops/in-the-loop-jvm-startup-facts-brief.md, recorded in llm-dlc/loops/in-the-loop-jvm-startup-facts-brief-setup.md. Every case the brief names (Commons IO #520, ThreeTenBP #77, POI #1420 with log4j-api, Batik 1.17, Commons Configuration #565/#601, JavaParser #4538 / example 360, Avro #3878 / example 355, Spring example 480) was already prepared by earlier campaigns; a script checked every deployment against its recorded digest and every worktree against its pin and tree, and all match. The one new download is Batik's upstream source at tag 1_17 (3c83de345f21cae4f4a64dfe6244483f87885808, the commit the brief's batik-1_17 branch link points at), in a shallow bare mirror; its XMLResourceDescriptor source and properties have the same git blobs as the Debian .orig and the deployed jars.\n\nVerified on fresh JVMs, read-only: the registered public observations of Commons IO (8/8), ThreeTenBP (12/12), POI (12/12) and Spring 480 equal their receipts; the 16 historical Commons IO charset trials reproduce byte for byte; \"é\".getBytes().length is 2 under C.UTF-8 and 1 under C with -Dfile.encoding=COMPAT (whose file.encoding reads ANSI_X3.4-1968); Configuration's own invalid lookup name gives ExceptionInInitializerError then NoClassDefFoundError while the inherited one does not; JavaParser's cleared line.separator gives ExceptionInInitializerError with a NullPointerException cause. No claim, example, adapter or library code was written, no verifier or capture was run, and no verification job was needed.",
+      "log_sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42"
+    },
+    {
+      "change_id": "xkrllwzlknszloxlmlqywmspqkkurqno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42"
+    },
+    {
+      "change_id": "rvorllrvzulmtwlvorvtnouxzqxowuzx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on jvm-startup-facts-setup",
+      "body": "The watcher's verdicts on the single-agent run jvm-startup-facts-setup (llm-dlc/decisions/single-jvm-startup-facts-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42"
+    },
+    {
+      "change_id": "rlyypupxyxpmwrukqvpkwozzkrtmprmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run jvm-startup-facts-setup into the line",
+      "body": "The single-agent run jvm-startup-facts-setup (session 6fdab7f9-e790-4ce0-8e67-c4ad063e1f99) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42"
+    },
+    {
+      "change_id": "uzvutpvvtxqwvxnplxtlpqqzqwmykzzo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of jvm-startup-facts into its brief",
+      "body": "The setup run jvm-startup-facts-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/in-the-loop-jvm-startup-facts-brief.md and ~/code/scripts/analysis/in-the-loop-jvm-startup-facts-brief.md, for the domain agent.",
+      "log_sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42"
+    },
+    {
+      "change_id": "wpqqmolrtknutxrvzpkqrwytzwvtvxnl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42"
+    },
+    {
+      "change_id": "pvvxtrqqvxqkzlrxvvzrpvsywtvysqno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind native default encoding to startup receipts (verification pending)",
+      "body": "Derive the recording request from a strict initializer diagnostic. Trace actual calls and returns on the original JVM during first use and bind the profile, ordered deployments, JDK, code units, bytes and bytecode site. The native checker executes the literal encoder and field store. A pinned recording can be revalidated for another claim while each proof runs afresh. A watcher report retains the original and conditional results.\n\nThe selected Rust tests passed across 59 test binaries and all eight selected Python suites passed. A capped native check verified one byte under ASCII, and the unchanged two-byte expectation yielded a witness of one on the original JVM. Jobs 20261127-001753-qualify-native-charset-receipts-on-the-o and 20261127-001759-retry-both-commons-io-originals-with-obs qualify the two profiles, resume and invalidation controls, and both original Commons IO deployments.",
+      "log_sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42"
     }
   ],
   "logs": {
@@ -2976,12 +3040,6 @@
       "lines": 16723,
       "gzip_bytes": 5457938,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/344ff7eceea840a27f215a1c2fc7c1f9d697ce24adabfd64430bfd28f43b0eef.jsonl.gz"
-    },
-    "34a3a46840abb29bbd5d7b8458e420a9de6e6fb26a2d14fcead6499d86f15eba": {
-      "bytes": 95740609,
-      "lines": 47493,
-      "gzip_bytes": 17584370,
-      "url": null
     },
     "36d58481ab1962167756084410457abe57225531cf2b69bcf7f4426964490964": {
       "bytes": 27571162,
@@ -3186,6 +3244,12 @@
       "lines": 908,
       "gzip_bytes": 575374,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/7f98fa8256fb85b3d92503dab626a3c518dcde62b652498d697280ba5bd50da8.jsonl.gz"
+    },
+    "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42": {
+      "bytes": 97458188,
+      "lines": 48084,
+      "gzip_bytes": 17921737,
+      "url": null
     },
     "815cdc145e9c97a2ff96e85f1a81b58f5e114cb858751c05000e26f3de9127fb": {
       "bytes": 30383003,

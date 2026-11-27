@@ -64,8 +64,13 @@ pub struct Run {
 /// `entries` is the class path: the harness's directory and the application's classes, never the tool's JDK
 /// models or extracted JDK classes, which the JVM has of its own.
 pub fn run(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
+    run_with_charset(dir, harness_class, types, slots, arguments, calls, entries, None)
+}
+
+pub(crate) fn run_with_charset(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument],
+    calls: &[DirectCall], entries: &[PathBuf], charset: Option<(crate::observed::CharsetLocale, &str)>) -> Result<Run, String> {
     crate::phases::timed(crate::phases::Step::Jvm, || {
-        let (jdk, check, calls) = run_untimed(dir, Some(harness_class), types, slots, arguments, calls, entries)?;
+        let (jdk, check, calls) = run_untimed(dir, Some(harness_class), types, slots, arguments, calls, entries, charset)?;
         Ok(Run { jdk, check: check.ok_or("the JVM run printed no outcome of the harness")?, calls })
     })
 }
@@ -78,7 +83,7 @@ pub(crate) fn original_pair(dir: &Path, types: &[Type], slots: &[u16], arguments
         let mut calls = Vec::with_capacity(2);
         let mut release = None;
         for (label, (call, entries)) in ["old", "new"].into_iter().zip(sides) {
-            let (jdk, _, mut observed) = run_untimed(&dir.join(label), None, types, slots, arguments, std::slice::from_ref(call), entries)?;
+            let (jdk, _, mut observed) = run_untimed(&dir.join(label), None, types, slots, arguments, std::slice::from_ref(call), entries, None)?;
             if release.as_ref().is_some_and(|r| r != &jdk) { return Err("the two original JVM releases differ".into()); }
             let value = observed.pop().filter(|r| r.outcome != "<not run>").ok_or("the original JVM did not return its direct observation")?;
             release = Some(jdk);
@@ -92,7 +97,8 @@ pub(crate) fn original_pair(dir: &Path, types: &[Type], slots: &[u16], arguments
 
 type Execution = (String, Option<Check>, Vec<Replayed>);
 
-fn run_untimed(dir: &Path, harness_class: Option<&str>, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Execution, String> {
+fn run_untimed(dir: &Path, harness_class: Option<&str>, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf],
+    charset: Option<(crate::observed::CharsetLocale, &str)>) -> Result<Execution, String> {
     for t in types {
         // A String is passed as a new String of the witness's code units ([`push`]).
         if crate::values::is_string(t) || crate::harness::is_string_array(t) || crate::bmc::reference_inputs::heap_array(t) {
@@ -239,6 +245,16 @@ fn run_untimed(dir: &Path, harness_class: Option<&str>, types: &[Type], slots: &
             print_elements(&mut main, &mut writer, *local, element);
         }
     }
+    if charset.is_some() {
+        print(&mut main, &mut writer, "@charset ");
+        out(&mut main, &mut writer);
+        let selected = writer.pool.method_ref("java/nio/charset/Charset", "defaultCharset", "()Ljava/nio/charset/Charset;");
+        main.op_u16(0xb8, selected);
+        let name = writer.pool.method_ref("java/nio/charset/Charset", "name", "()Ljava/lang/String;");
+        main.op_u16(0xb6, name);
+        let println = writer.pool.method_ref("java/io/PrintStream", "println", "(Ljava/lang/String;)V");
+        main.op_u16(0xb6, println);
+    }
     print_line(&mut main, &mut writer, "@end");
     main.return_(None);
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: "main".into(), descriptor: "([Ljava/lang/String;)V".into(), code: Some(main) });
@@ -259,7 +275,12 @@ fn run_untimed(dir: &Path, harness_class: Option<&str>, types: &[Type], slots: &
     let class_path = std::env::join_paths(&class_path).map_err(|e| format!("a class path entry cannot be joined: {e}"))?;
     let stdout = std::fs::File::create(dir.join("stdout")).map_err(|e| e.to_string())?;
     let stderr = std::fs::File::create(dir.join("stderr")).map_err(|e| e.to_string())?;
-    let mut child = Command::new(&java)
+    let mut command = Command::new(&java);
+    if let Some((locale, _)) = charset {
+        locale.apply(&mut command);
+        command.arg("-Dfile.encoding=COMPAT");
+    }
+    let mut child = command
         .args(["-Xmx256m", "-XX:+UseSerialGC", "-XX:TieredStopAtLevel=1", "-XX:-UsePerfData", "-cp"])
         .arg(&class_path)
         .arg(driver.replace('/', "."))
@@ -281,6 +302,11 @@ fn run_untimed(dir: &Path, harness_class: Option<&str>, types: &[Type], slots: &
         std::thread::sleep(Duration::from_millis(20));
     }
     let text = std::fs::read_to_string(dir.join("stdout")).unwrap_or_default();
+    if let Some((_, name)) = charset {
+        if text.lines().filter_map(|s| s.strip_prefix("@charset ")).collect::<Vec<_>>() != [name] {
+            return Err("witness JVM did not reproduce the recorded default charset".into());
+        }
+    }
     if !text.lines().any(|l| l == "@end") {
         let err = std::fs::read_to_string(dir.join("stderr")).unwrap_or_default();
         let tail: Vec<&str> = err.lines().rev().take(3).collect();

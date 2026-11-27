@@ -1244,6 +1244,7 @@ def main(argv: list[str] | None = None) -> int:
     w.add_argument("--interval", type=float)
     w.add_argument("--timeout", type=float, default=3300)
     sub.add_parser("summary")
+    sub.add_parser("startup-facts", help="show an original property and its separately scoped startup retry").add_argument("record", type=Path)
     sub.add_parser("status").add_argument("--json", action="store_true")
     sub.add_parser("interval").add_argument("seconds", type=int)
     m = sub.add_parser("merge")
@@ -1259,6 +1260,14 @@ def main(argv: list[str] | None = None) -> int:
     at = 2 if argv[:1] == ["--root"] else 0
     loop_arguments = argv[at + 1:] if argv[at:at + 1] == ["loop"] else []
     args = ap.parse_args(argv[:at + 1] if argv[at:at + 1] == ["loop"] else argv)
+    if args.command == "startup-facts":
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "examples" / "tools"))
+        from targets.startup_facts import summary
+        report = json.loads(args.record.read_bytes())
+        if report.get("schema") != "startup-claim-report/v1":
+            ap.error("expected a startup claim report")
+        print(summary(report))
+        return 0
     run = Run(args.root.resolve())
     if args.command == "session":
         print(fixed_session(run, args.new, args.use))
