@@ -610,6 +610,13 @@ class Archive:
             raise SpoolFull(f"the spool's disk has {free:,} bytes free; a capture of {needed:,} would leave less than "
                             f"the {reserve:,} reserve. Nothing was sealed: keep the source")
 
+    def workdir_verified(self, job: str) -> bool:
+        """Whether JOB's latest captured work directory (its job-workdir original, the files that differ from its
+        source commit) is remote_verified: read back from the store, so the copy on disk can go."""
+        row = self.db.execute("SELECT state FROM occurrences WHERE job=? AND kind='job-workdir' "
+                              "ORDER BY attempt DESC, captured_at DESC LIMIT 1", (job,)).fetchone()
+        return bool(row) and row[0] == "remote_verified"
+
     def begin_attempt(self, job: str) -> int:
         """The number of a job's new attempt: one more than its last, whoever ran it on this machine."""
         with self.transaction():

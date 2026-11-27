@@ -782,6 +782,30 @@ class PipelineTest(unittest.TestCase):
         self.assertIn("no app builds it", proc.stderr)
 
 
+class PruneWorkdirsTest(unittest.TestCase):
+    """A failed job's kept work directory goes once it is collected and its original is remote_verified, not before."""
+
+    def test_only_collected_and_verified_work_directories_are_removed(self):
+        with tempfile.TemporaryDirectory() as d:
+            root, state = Path(d) / "repo", Path(d) / "state"
+            for job in ("j-done", "j-unverified", "j-uncollected", "j-pending"):
+                (state / "work" / job).mkdir(parents=True)
+                (state / "work" / job / "big.bin").write_bytes(b"x" * 1000)
+            (state / "results" / "j-pending").mkdir(parents=True)
+            (state / "results" / "j-pending" / "result.json").write_text("{}")  # finished, not collected yet
+            collected = {"j-done", "j-unverified", "j-pending"}
+            verified = {"j-done", "j-uncollected", "j-pending"}
+            archive = mock.Mock(workdir_verified=lambda job: job in verified)
+            with mock.patch.object(pipeline, "ROOT", root), \
+                    mock.patch.object(pipeline.layout, "find_result", side_effect=lambda r, job: Path(d) if job in collected else None):
+                self.assertEqual(pipeline.prune_workdirs(state, archive, dry_run=True), [("j-done", 1000)])
+                self.assertTrue((state / "work" / "j-done").exists())
+                self.assertEqual(pipeline.prune_workdirs(state, archive), [("j-done", 1000)])
+            self.assertEqual(sorted(p.name for p in (state / "work").iterdir()), ["j-pending", "j-uncollected", "j-unverified"])
+            nothing_verified = mock.Mock(workdir_verified=lambda job: False)
+            self.assertEqual(pipeline.prune_workdirs(state, nothing_verified), [])
+
+
 class OneRunnerPerRepositoryTest(unittest.TestCase):
     """VF-051: a runner in one jj workspace turns away a runner in another workspace of the same repository."""
 
