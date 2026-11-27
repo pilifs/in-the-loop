@@ -1,0 +1,223 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-005516-qualify-batik-lazy-resources-and-origina",
+  "title": "Qualify Batik lazy resources and original JDK properties decoding",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 20.3s, peak 103.8 MiB (estimated 2m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-005516-qualify-batik-lazy-resources-and-origina.json",
+    "sha256": "81e70d80ccd17118656fbea14c4e1537e231324a6ecc9d38ddf3581f99bd0d65",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-005516-qualify-batik-lazy-resources-and-origina",
+      "title": "Qualify Batik lazy resources and original JDK properties decoding",
+      "description": "On both ordered Batik deployments follow the actual Class.getResourceAsStream return into the original Properties.load, its LineReader refills and the first property read. Qualify fresh, memoized, same-path replaced and setter-first histories. On ordinary files distinguish Latin-1 and UTF-8 Reader input, escapes, continuations, duplicate precedence, partial failure and absence.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T00:55:16+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Ten Batik getter histories",
+          "run": "python3 lib/benchmark/startup-facts/files.py batik --output verification/startup-facts/batik-resource.zip",
+          "cwd": "."
+        },
+        {
+          "name": "Ten original file and reader histories",
+          "run": "python3 lib/benchmark/startup-facts/files.py file --output verification/startup-facts/properties-file.zip",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/startup-facts/batik-resource.zip",
+        "verification/startup-facts/properties-file.zip"
+      ]
+    }
+  },
+  "sourceCommit": "0dceb53afb98c81d7d605c4dd5d38d61ef175f57",
+  "startedAt": "2026-11-27T01:00:41+00:00",
+  "finishedAt": "2026-11-27T01:01:10+00:00",
+  "wallSeconds": 29.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 740656,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 108814336,
+    "wallSeconds": 20.3,
+    "cpuSeconds": 22.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Ten Batik getter histories",
+      "run": "python3 lib/benchmark/startup-facts/files.py batik --output verification/startup-facts/batik-resource.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 10.623,
+      "cpuSeconds": 11.569,
+      "cpuThrottledSeconds": 0.995,
+      "peakMemoryBytes": 107569152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-ten-batik-getter-histories.log",
+        "lines": 3,
+        "bytes": 293,
+        "sha256": "e4de0737e0f7b014ccdec199dd342f4144d3b2cb62de1c02808634a713cdde10",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-005516-qualify-batik-lazy-resources-and-origina/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "batik 10 qualified paired original histories"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Ten original file and reader histories",
+      "run": "python3 lib/benchmark/startup-facts/files.py file --output verification/startup-facts/properties-file.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 9.628,
+      "cpuSeconds": 10.422,
+      "cpuThrottledSeconds": 0.709,
+      "peakMemoryBytes": 108814336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-ten-original-file-and-reader-h.log",
+        "lines": 3,
+        "bytes": 292,
+        "sha256": "e0031c8a0c93c9e13633e5c5dbfad54cd35b1220b76e5ecb0745921a191d2444",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-005516-qualify-batik-lazy-resources-and-origina/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "file 10 qualified paired original histories"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/batik-resource.zip",
+      "change": "added",
+      "bytes": 16948,
+      "sha256": "46fb9ad8cd2aea3df226fecf26d20f3746dd2bc458684bf38b83dbcc00d144be",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/startup-facts/properties-file.zip",
+      "change": "added",
+      "bytes": 3668,
+      "sha256": "212ca3f72a5f05ac2984eb39103f56ce33929b83f9f5be4267fa277207f25da3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T01:01:21+00:00",
+    "applied": [
+      "verification/startup-facts/batik-resource.zip",
+      "verification/startup-facts/properties-file.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T010110Z-6241159f03c4b8e5",
+      "outputs": "20261127T010110Z-6470400097740fc1",
+      "diff": "20261127T010110Z-665830108e42a915"
+    }
+  }
+}
