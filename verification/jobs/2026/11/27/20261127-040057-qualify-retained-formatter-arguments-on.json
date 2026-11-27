@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-040057-qualify-retained-formatter-arguments-on",
+  "title": "Qualify retained formatter arguments on both original Spring releases",
+  "description": "Use ordinary numbered setup, watcher preflight and build resume on Spring 458. Compare two initial flags on both original releases. Compile and run the genuine caller, a separate equal formatter and an early getter. Compare plain and traced JVM outputs and require the independent identity and order checks to reject both planted callers.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay",
+    "java:retained-argument"
+  ],
+  "links": {
+    "examples": [
+      "458"
+    ]
+  },
+  "expected": "All four genuine histories qualify and all eight output-identical planted histories lose qualification.",
+  "submitted": {
+    "at": "2026-11-27T04:00:57+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "Numbered handoff and original JVM checks",
+      "run": "python3 verification/blind-caller/formatter.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/formatter.zip"
+  ]
+}

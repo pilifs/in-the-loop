@@ -7,6 +7,7 @@ import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.StringReference;
+import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.Value;
 import com.sun.jdi.VMDisconnectedException;
@@ -329,6 +330,14 @@ public final class UpgradeTrace {
     private static final class NumericInputs {
         final Map<Long,String> builders = new LinkedHashMap<>(), locales = new LinkedHashMap<>();
         final Map<Long,String> symbols = new LinkedHashMap<>(), formats = new LinkedHashMap<>();
+        final Map<Long,Integer> formatterAliases = new LinkedHashMap<>();
+        final Map<Long,Integer> threads = new LinkedHashMap<>();
+
+        String identity(ThreadReference thread, ObjectReference formatter) {
+            int caller = threads.computeIfAbsent(thread.uniqueID(), key -> threads.size());
+            int argument = formatter == null ? -1 : formatterAliases.computeIfAbsent(formatter.uniqueID(), key -> formatterAliases.size());
+            return caller + "\t" + argument;
+        }
 
         void watchFormats(VirtualMachine vm) {
             for (String type : Arrays.asList("java.util.Locale$Builder", "java.text.DecimalFormatSymbols", "java.text.DecimalFormat")) {
@@ -365,6 +374,12 @@ public final class UpgradeTrace {
                     break;
                 case "java.text.DecimalFormat#setParseBigDecimal(Z)V":
                     break; // Read the object's current flag at the public parser entry.
+                case "java.text.DecimalFormat#isParseBigDecimal()Z":
+                    if (CheckedReplay.entry(event.thread().frame(1).location()).equals(
+                            observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) {
+                        System.err.println("UPGRADE-FORMAT-READ " + identity(event.thread(), receiver) + "\t" + event.returnValue());
+                    }
+                    break;
                 default:
                     // Other direct configuration invalidates the recorded construction.
                     if (event.method().name().startsWith("set") || event.method().name().startsWith("apply")
@@ -381,6 +396,7 @@ public final class UpgradeTrace {
             String fields = textArgument(args.get(0)) + "\t" + ((ClassObjectReference)args.get(1)).reflectedType().name();
             if (args.size() == 2) return fields;
             ObjectReference format = (ObjectReference)args.get(2);
+            System.err.println("UPGRADE-FORMAT-ARG " + identity(frame.thread(), format));
             if (format == null) return fields + "\tnull";
             String fixture = formats.get(format.uniqueID());
             Field mode = format.referenceType().fieldByName("parseBigDecimal");

@@ -49,17 +49,17 @@ def run(root):
     plan = campaign.read(workspace/"plan.json")
     setup = plan["examples"][0]["publicComparison"]
     stops = {}
-    for name in ("formatter-unspecified", "formatter-after-return"):
+    for name in ("formatter-unspecified", "unregistered-rounding-mode"):
         if name == "formatter-unspecified":
             setup["inputDefaults"] = {}
             wanted = "which NumberFormat"
         else:
             setup["inputDefaults"] = {"numberFormat": fmt}
-            q = question("numbered.formatter-after-return",
-                         "Parse `1,5` as BigDecimal using the registered NumberFormat, then read `isParseBigDecimal()` from that formatter.",
-                         "BigDecimal=1.5 parseBigDecimal=false")
+            q = question("numbered.rounding-mode",
+                         "Parse `1,5` as BigDecimal using the registered NumberFormat, then read `getRoundingMode()` from that formatter.",
+                         "BigDecimal=1.5 roundingMode=HALF_EVEN")
             inputs["questions"] = [q]
-            wanted = "isParseBigDecimal()"
+            wanted = "getRoundingMode()"
         campaign.write(folder/"comparison.json", inputs)
         campaign.write(limit/"plan.json", plan)
         result = scaffold_example.scaffold("458", limit/"plan.json", True, root=limit)
@@ -71,11 +71,11 @@ def run(root):
         stops[name] = {"questions": inputs["questions"], "inputDefaults": setup["inputDefaults"], "review": review}
     jdk = campaign.JDKS / campaign.read(folder/"runtime.json")["jdk"]
     getters = subprocess.check_output([jdk/"bin/javap", "-public", "-s", "java.text.DecimalFormat"], text=True)
-    if "public boolean isParseBigDecimal();\n    descriptor: ()Z" not in getters:
+    if "public java.math.RoundingMode getRoundingMode();" not in getters:
         raise ValueError("the registered read is absent from the pinned formatter API")
     record = campaign.read(spring/"records/public-observer/generation.json")
-    stops["formatter-after-return"].update(entry=reg["entry"], declarations=record["declarations"],
-        read="java.text.DecimalFormat#isParseBigDecimal()Z", jdkReleaseSha256=record["jdkReleaseSha256"])
+    stops["unregistered-rounding-mode"].update(entry=reg["entry"], declarations=record["declarations"],
+        read="java.text.DecimalFormat#getRoundingMode()Ljava/math/RoundingMode;", jdkReleaseSha256=record["jdkReleaseSha256"])
     def must_reject(reason):
         try:
             observer_review.saved_setup(spring)

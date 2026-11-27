@@ -54,7 +54,7 @@ def dynamic(bundle, jdk, directory, source, question, index, side):
         [], time.monotonic()+35, ".")
     value = upgrade_replay.typed_outcome(obs.splitlines())
     result = {"sourceSha256":upgrade_replay.sha(candidate),"staticSites":sites,"raw":value,
-              "marks":[m for m in marks if m.startswith(("UPGRADE-NUMBER ", "UPGRADE-NUMERIC-INPUT ", "UPGRADE-PUBLIC-"))]}
+              "marks":[m for m in marks if m.startswith(("UPGRADE-NUMBER ", "UPGRADE-NUMERIC-INPUT ", "UPGRADE-FORMAT-", "UPGRADE-PUBLIC-"))]}
     try:
         result["projection"] = observer_generation.correspondence(recipe, inputs, marks, value)
     except ValueError as e:

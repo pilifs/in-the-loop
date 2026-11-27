@@ -305,6 +305,33 @@ def numeric_input(mark):
     return value
 
 
+def formatter_reads(conversions, marks, outcomes):
+    """Match each direct getter to this call's argument and normal exit on the original JVM."""
+    kinds = {"UPGRADE-FORMAT-ARG", "UPGRADE-NUMBER", "UPGRADE-FORMAT-READ"}
+    actions = iter((kind, payload) for line in marks for kind, _, payload in [line.partition(" ")] if kind in kinds)
+
+    def take(kind):
+        name, payload = next(actions, (None, None))
+        if name != kind:
+            raise ValueError("formatter readback is missing or out of order at " + kind)
+        return payload.split("\t")
+
+    records = []
+    for index, (call, outcome) in enumerate(zip(conversions, outcomes, strict=True)):
+        thread, alias = map(int, take("UPGRADE-FORMAT-ARG"))
+        take("UPGRADE-NUMBER")
+        if "readAfterReturn" in call and outcome[0] == "return":
+            reader, receiver, value = take("UPGRADE-FORMAT-READ")
+            if (thread != int(reader) or alias != int(receiver) or alias < 0 or value not in ("true", "false")):
+                raise ValueError("the getter must read the same retained argument on the calling thread")
+            outcome.append(value == "true")
+            records.append({"call": index, "argument": 2, "receiverAlias": alias, "threadAlias": thread,
+                            "member": observer_recipes.FORMAT_GETTER, "afterNormalReturn": True, "value": outcome[-1]})
+    if next(actions, None) is not None:
+        raise ValueError("unexpected formatter action after the registered history")
+    return records
+
+
 def correspondence(recipe, inputs, marks, observation):
     """Independent JVM call counts and receiver identities; the scalar projection also reads each return or throw."""
     aliases = [int(m.split()[1]) for m in marks if m.startswith("UPGRADE-PUBLIC-CALL ")]
@@ -317,7 +344,8 @@ def correspondence(recipe, inputs, marks, observation):
     result = {"entryCalls": len(aliases), "receiverAliases": aliases, "observationSha256": digest(values)}
     if family == "typed numeric conversions":
         actual_inputs = [numeric_input(m.partition(" ")[2]) for m in marks if m.startswith("UPGRADE-NUMERIC-INPUT ")]
-        if actual_inputs != inputs["conversions"]:
+        conversions = inputs["conversions"]
+        if actual_inputs != [{k:v for k,v in call.items() if k != "readAfterReturn"} for call in conversions]:
             raise ValueError("actual numeric arguments at public entry differ from the reviewed conversions")
         result["numericArguments"] = actual_inputs
         events = [m.partition(" ")[2] for m in marks if m.startswith("UPGRADE-NUMBER ")]
@@ -332,7 +360,9 @@ def correspondence(recipe, inputs, marks, observation):
                 reads.append(["return", *fields])
             else:
                 raise ValueError("unsupported live numeric representation: " + event)
-        if reads != values or len(aliases) != len(inputs["conversions"]) or len(reads) != len(aliases):
+        if recipe.get("argumentRead") == observer_recipes.FORMAT_GETTER:
+            result["argumentReads"] = formatter_reads(conversions, marks, reads)
+        if wire(reads) != wire(values) or len(aliases) != len(conversions) or len(reads) != len(aliases):
             raise ValueError("numeric projection disagrees with the returns or exceptions of the live public invocations")
     elif family == "selection and lazy default":
         if (len(aliases) != len(inputs["selections"]) or len(values) != len(aliases)
