@@ -18,6 +18,7 @@ public final class StartupTrace {
     private final EventRequestManager requests;
     private final String owner, selector;
     private final boolean members;
+    private final LiveTableTrace table;
     private final Map<Long, Integer> aliases = new HashMap<>();
     private static final String LOOKUP = "getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;";
     private static final String INVOKE = "invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;";
@@ -37,13 +38,14 @@ public final class StartupTrace {
         }
     }
 
-    private StartupTrace(VirtualMachine vm, String boundary, boolean members) {
+    private StartupTrace(VirtualMachine vm, String boundary, String mode) {
         this.vm = vm;
         requests = vm.eventRequestManager();
         int hash = boundary.indexOf('#');
         owner = boundary.substring(0, hash);
         selector = boundary.substring(hash + 1);
-        this.members = members;
+        this.members = mode.equals("--methods");
+        this.table = mode.equals("--live-table") ? new LiveTableTrace(vm, events) : null;
     }
 
     private static String quote(String text) { return ObservedInitializer.text(text); }
@@ -72,11 +74,12 @@ public final class StartupTrace {
         return types.get(0);
     }
 
-    private void begin(BreakpointEvent at) {
+    private void begin(BreakpointEvent at) throws Exception {
         if (thread != null || finished) throw new IllegalStateException("repeated or overlapping startup boundary");
         thread = at.thread();
         active.add(exitFor(at.location().declaringType(), thread));
-        if (members) {
+        if (table != null) table.begin(thread);
+        else if (members) {
             if (!vm.canWatchFieldModification()) throw new IllegalStateException("JDI field modification evidence unavailable");
             ClassPrepareRequest applications = requests.createClassPrepareRequest();
             for (String prefix : List.of("java.*", "javax.*", "jdk.*", "sun.*", "com.sun.*")) applications.addClassExclusionFilter(prefix);
@@ -186,6 +189,7 @@ public final class StartupTrace {
     private void returned(MethodExitEvent at) throws Exception {
         if (at.method().declaringType().name().equals(owner) && method(at.method()).equals(selector)) {
             if (!calls.isEmpty()) throw new IllegalStateException("charset operation did not return normally");
+            if (table != null) table.finish();
             requests.deleteEventRequests(active);
             thread = null;
             finished = true;
@@ -252,6 +256,7 @@ public final class StartupTrace {
             EventSet set = vm.eventQueue().remove(60000);
             if (set == null) throw new IllegalStateException("startup trace timed out");
             for (Event event : set) {
+                if (table != null && table.handle(event)) continue;
                 if (event instanceof ClassPrepareEvent e) {
                     if (e.referenceType().name().equals(owner)) breakpoint(e.referenceType(), selector);
                     if (members && thread != null) {
@@ -294,14 +299,14 @@ public final class StartupTrace {
         LaunchingConnector connector = Bootstrap.virtualMachineManager().defaultConnector();
         Map<String, Connector.Argument> launch = connector.defaultArguments();
         launch.get("home").setValue(System.getProperty("java.home"));
-        boolean members = args[2].equals("--methods");
-        launch.get("options").setValue(launchArgs(all.subList(members ? 3 : 2, split)));
+        String mode = Set.of("--methods","--live-table").contains(args[2]) ? args[2] : "";
+        launch.get("options").setValue(launchArgs(all.subList(mode.isEmpty() ? 2 : 3, split)));
         launch.get("main").setValue(launchArgs(all.subList(split + 1, all.size())));
         VirtualMachine vm = connector.launch(launch);
         Process child = vm.process();
         try {
             Thread out = copy(child.getInputStream(), System.out), err = copy(child.getErrorStream(), System.err);
-            StartupTrace trace = new StartupTrace(vm, args[1], members);
+            StartupTrace trace = new StartupTrace(vm, args[1], mode);
             trace.record();
             if (child.waitFor() != 0) throw new IllegalStateException("subject JVM failed");
             out.join(); err.join();

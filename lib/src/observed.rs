@@ -107,6 +107,7 @@ pub(crate) mod charset;
 pub use charset::CharsetLocale;
 mod member;
 mod receipt;
+mod table;
 pub use member::MethodFact;
 const CLASS: &str = "ObservedInitializer";
 pub(crate) const ENUM: &str = "java/lang/Enum";
@@ -205,6 +206,7 @@ pub struct On {
     pub(crate) charset: Option<charset::Fact>,
     pub reflective_members: bool,
     pub(crate) member_receipt: Option<String>,
+    pub(crate) table_receipt: Option<String>,
     /// The sha256 of the class file the JVM's class loader read, and the location it came from.
     pub sha256: String,
     pub from: Option<String>,
@@ -264,6 +266,8 @@ pub struct Runtime {
     pub expected_charset_receipt: Option<String>,
     pub charset_receipt_directory: Option<PathBuf>,
     pub reflective_members: bool,
+    pub live_properties: bool,
+    pub startup_properties: BTreeMap<String, String>,
 }
 
 impl std::str::FromStr for Runtime {
@@ -280,6 +284,7 @@ impl std::str::FromStr for Runtime {
             return Err("captureObjects requires preinitializeTogether".into());
         }
         r.validate_charset()?;
+        table::validate(&r).map_err(|e| e.to_string())?;
         Ok(r)
     }
 }
@@ -337,6 +342,8 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
 
 fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
     runtime.validate_charset().map_err(Error::new)?;
+    table::validate(&runtime)?;
+    if runtime.live_properties && classes.len() != 1 { return Err(Error::new("liveProperties requires one first-use root")); }
     if runtime.reflective_members && (classes.len() != 1 || runtime.preinitialize_together) {
         return Err(Error::new("reflectiveMembers captures one first-use root and compares transitive reflective fields on independent JVMs"));
     }
@@ -354,7 +361,7 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     let home = crate::jimage::JImage::find_java_home().ok_or_else(|| Error::new("--observed-initializer: no JDK to observe a class initializer on (set JAVA_HOME)"))?;
     // Absolute: the JVM runs in this folder, and is given the log's path in it (an option and an argument).
     let temp;
-    let traced = runtime.charset_locale.is_some() || runtime.reflective_members;
+    let traced = runtime.charset_locale.is_some() || runtime.reflective_members || runtime.live_properties;
     let dir = if traced {
         std::fs::create_dir_all(work)?;
         temp = tempfile::Builder::new().prefix("startup-capture-").tempdir_in(work)?;
@@ -374,6 +381,9 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         let tracer = dir.join("StartupTrace.java");
         std::fs::write(&tracer, receipt::TRACER)?;
         compile.arg(tracer);
+        let table = dir.join("LiveTableTrace.java");
+        std::fs::write(&table, table::SOURCE)?;
+        compile.arg(table);
     }
     let compiled = compile.output().map_err(|e| Error::new(format!("{}: {e}", javac.display())))?;
     if !compiled.status.success() {
@@ -417,6 +427,9 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         }
         bind(&binary, &internal, &observed.on, &entries, &tool)?;
         bind_values(&binary, &observed, &tool)?;
+        let table_record = if runtime.live_properties {
+            Some(table::qualify(&jvm, &binary, Some(&log), &line, binding.as_ref().unwrap(), &observed)?)
+        } else { None };
         let mut member_record = if runtime.reflective_members {
             let raw: serde_json::Value = serde_json::from_str(&line).map_err(|e| Error::new(e.to_string()))?;
             let evidence = member::capture(&binary, &raw, &receipt::trace(&jvm, &binary, "")?, &tool)?;
@@ -449,8 +462,9 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
             }
             if observed.joint_fields.is_some() { continue; }
             if !alone.contains_key(&other.name) {
-                let needs_trace = runtime.charset_locale.is_some() || member::has_methods(&other.state);
+                let needs_trace = runtime.charset_locale.is_some() || member::has_methods(&other.state) || runtime.live_properties;
                 let line = jvm.run(&name, None, needs_trace)?;
+                if let Some(record) = &table_record { table::compare_alone(&jvm, &name, &line, record)?; }
                 if let Some(fact) = &observed.on.charset {
                     charset::compare_alone(&name, &line, &jvm, fact)?;
                 }
@@ -485,6 +499,11 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
             charset::publish(work, &runtime, &receipt, saved.is_some())?;
         }
         if let Some(record) = member_record { observed.on.member_receipt = Some(member::publish(work, record, true)?); }
+        if let Some(record) = table_record {
+            let consumed = record["events"].as_array().is_some_and(|events| events.iter().any(|e| e["operation"] != "table boundary" || e["keyedReads"].as_u64().unwrap_or(0) != 0));
+            let id = table::publish(work, record, true)?;
+            if consumed { observed.on.table_receipt = Some(id); }
+        }
         out.insert(internal, observed);
     }
     Ok(out)
@@ -518,30 +537,41 @@ impl Jvm {
         }
         command.arg("-cp").arg(&self.class_path);
         if self.runtime.charset_locale.is_some() { command.arg("-Dfile.encoding=COMPAT"); }
-        if trace && (self.runtime.charset_locale.is_some() || self.runtime.reflective_members) {
+        for (key, value) in &self.runtime.startup_properties { command.arg(format!("-D{key}={value}")); }
+        if trace && (self.runtime.charset_locale.is_some() || self.runtime.reflective_members || self.runtime.live_properties) {
             let mut traced = Command::new(&self.java);
             traced.args(["-Xmx192m", "-cp"]).arg(&self.dir).arg("StartupTrace")
                 .arg(self.dir.join(format!("{binary}{suffix}.trace.json"))).arg(receipt::BOUNDARY);
             if self.runtime.reflective_members { traced.arg("--methods"); }
+            if self.runtime.live_properties { traced.arg("--live-table"); }
             traced.args(command.get_args()).arg("--main");
             command = traced;
         }
         command.arg(CLASS);
+        if self.runtime.empty_environment { command.env_clear(); }
+        let mut options = Vec::new();
         if let Some(locale) = self.runtime.charset_locale {
             locale.apply(&mut command);
-            command.arg("--record-charset");
+            options.push("--record-charset".to_owned());
         }
-        if self.runtime.reflective_members { command.arg("--record-methods"); }
-        command.arg(binary);
+        if self.runtime.reflective_members { options.push("--record-methods".into()); }
+        if self.runtime.live_properties { options.push("--record-table".into()); }
+        options.push(binary.to_owned());
         if let Some(log) = log {
-            command.arg(log);
+            options.push(log.to_str().ok_or_else(|| Error::new("startup log path is not UTF-8"))?.to_owned());
             if self.runtime.preinitialize_together {
-                command.arg(if self.runtime.weak_map_values { "together-weak-map-values" } else { "together" }).args(&self.additional);
+                options.push(if self.runtime.weak_map_values { "together-weak-map-values" } else { "together" }.into());
+                options.extend_from_slice(&self.additional);
                 if !self.runtime.capture_objects.is_empty() {
-                    command.arg(format!("--capture-objects={}", self.runtime.capture_objects.iter().cloned().collect::<Vec<_>>().join(",")));
+                    options.push(format!("--capture-objects={}", self.runtime.capture_objects.iter().cloned().collect::<Vec<_>>().join(",")));
                 }
             }
         }
+        if self.runtime.live_properties {
+            if options.iter().any(|s| s.contains(['\r','\n'])) { return Err(Error::new("unrepresentable startup request path")); }
+            std::fs::write(self.dir.join("startup.request"), options.join("\n"))?;
+            command.arg("--table-request");
+        } else { command.args(options); }
         let mut child = command
             .current_dir(if self.runtime.root_working_directory { Path::new("/") } else { &self.dir })
             .stdout(std::fs::File::create(&stdout)?)
@@ -1028,6 +1058,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         charset: None,
         reflective_members: on.get("reflectiveMembers").map(|v| v.as_bool().ok_or_else(|| bad("reflectiveMembers"))).transpose()?.unwrap_or(false),
         member_receipt: None,
+        table_receipt: None,
         sha256: text(on, "sha256")?,
         from: on.get("from").and_then(|f| f.as_str()).map(String::from),
         classpath: list("classpath")?.iter().map(|e| e.as_str().map(String::from).ok_or_else(|| bad("the class path"))).collect::<Result<_, _>>()?,

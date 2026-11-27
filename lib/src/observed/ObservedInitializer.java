@@ -86,6 +86,18 @@ public final class ObservedInitializer {
         }
 
         @Override
+        public int hashCode() {
+            all();
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            all();
+            return super.equals(other);
+        }
+
+        @Override
         public java.util.Set<Object> keySet() {
             all();
             return super.keySet();
@@ -311,11 +323,45 @@ public final class ObservedInitializer {
                 + ",\"vm\":" + text(System.getProperty("java.vm.name")) + ",\"vmVersion\":" + text(System.getProperty("java.vm.version")) + "}";
     }
 
+    static byte[] tablePair(String key, String value) throws Exception {
+        MessageDigest hash = MessageDigest.getInstance("SHA-256");
+        for (String s : List.of(key, value)) {
+            var buf = java.nio.ByteBuffer.allocate(4 + 2 * s.length()).putInt(s.length());
+            for (int i = 0; i < s.length(); i++) buf.putChar(s.charAt(i));
+            hash.update(buf.array());
+        }
+        return hash.digest();
+    }
+
+    static String tableDigest(List<byte[]> values) throws Exception {
+        MessageDigest hash = MessageDigest.getInstance("SHA-256");
+        for (byte[] value : values) hash.update(value);
+        return java.util.HexFormat.of().formatHex(hash.digest());
+    }
+
+    static String tableSnapshot(Properties table) throws Exception {
+        if (table.getClass() != Properties.class) throw new IllegalStateException("custom system-properties table");
+        List<byte[]> pairs = new ArrayList<>();
+        table.forEach((k, v) -> {
+            if (!(k instanceof String key) || !(v instanceof String value)) throw new IllegalStateException("non-string system property");
+            try { pairs.add(tablePair(key, value)); } catch (Exception e) { throw new IllegalStateException(e); }
+        });
+        String order = tableDigest(pairs);
+        pairs.sort(java.util.Arrays::compareUnsigned);
+        return "{\"type\":\"java.util.Properties\",\"count\":" + pairs.size() + ",\"orderSha256\":" + text(order)
+                + ",\"entriesSha256\":" + text(tableDigest(pairs)) + ",\"hashCode\":" + table.hashCode() + "}";
+    }
+
     public static void main(String[] args) throws Exception {
-        boolean charset = false;
+        if (args.length == 1 && args[0].equals("--table-request")) {
+            Path dir = Path.of(ObservedInitializer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            args = Files.readAllLines(dir.resolve("startup.request"), StandardCharsets.UTF_8).toArray(String[]::new);
+        }
+        boolean charset = false, liveTable = false;
         while (args[0].startsWith("--record-")) {
             if (args[0].equals("--record-charset")) charset = true;
             else if (args[0].equals("--record-methods")) methodOwners = new IdentityHashMap<>();
+            else if (args[0].equals("--record-table")) liveTable = true;
             else throw new IllegalArgumentException("unknown recorder option");
             args = java.util.Arrays.copyOfRange(args, 1, args.length);
         }
@@ -340,25 +386,31 @@ public final class ObservedInitializer {
         boolean atRoot = unixRoot();
         boolean emptyEnvironment = emptyEnvironment();
         Properties original = System.getProperties();
+        String beforeTable = liveTable ? tableSnapshot(original) : null;
         Recording recording = new Recording();
-        recording.putAll(original);
+        if (!liveTable) recording.putAll(original);
         long mark = log == null ? 0 : Files.size(log);
         Class<?> c;
-        System.setProperties(recording);
+        if (!liveTable) System.setProperties(recording);
         try {
             c = initializeRoots(args, app, together, rootsEnd);
         }
         catch (Throwable t) {
-            System.setProperties(original);
+            if (!liveTable) System.setProperties(original);
             Throwable cause = (t instanceof ExceptionInInitializerError && t.getCause() != null) ? t.getCause() : t;
             System.out.println("@observed {\"threw\":\"" + cause.getClass().getName() + "\"}");
             return;
         }
-        System.setProperties(original);
+        if (!liveTable) System.setProperties(original);
         // Reflection and serialization can initialize additional classes. The boundary is
         // the return of Class.forName, before the observer inspects any subject fields.
         byte[] logged = log == null ? null : Files.readAllBytes(log);
         String profile = (charset ? ",\"charsetProfile\":" + charsetProfile() : "") + (methodOwners != null ? ",\"reflectiveMembers\":true" : "");
+        if (liveTable) {
+            if (original != System.getProperties() || !beforeTable.equals(tableSnapshot(original)))
+                throw new IllegalStateException("live system-properties table changed during startup");
+            profile += ",\"liveTable\":" + beforeTable;
+        }
         // The JDK's settings the initialization changed, read again after it: the check runs what follows under the
         // ones before it.
         List<String> changed = new ArrayList<>();
@@ -373,7 +425,7 @@ public final class ObservedInitializer {
                 changed.add(s[0] + ", from " + s[1] + " to " + s[2]);
             }
         }
-        changed.addAll(recording.changedFrom(original));
+        if (!liveTable) changed.addAll(recording.changedFrom(original));
         // Alone, the class is what another initialization's is compared with: described in full.
         if (log == null) {
             System.out.println("@observed {\"jdk\":" + text(jdk) + profile + ",\"fixedProcessors\":" + fixedProcessors()

@@ -292,6 +292,10 @@ pub(crate) fn run_with_pair(options: &Options, original_pair: Option<&mut crate:
         || options.search_startup_witness || options.gaps != crate::bmc::gaps::GapMode::Strict) {
         return Err(Error::new("a charset recording requires a single original deployment with --engine native --gaps strict"));
     }
+    if options.observed_runtime.live_properties && (options.previous.is_some() || options.engine != crate::Engine::Native
+        || options.gaps != crate::bmc::gaps::GapMode::Strict || options.search_startup_witness) {
+        return Err(Error::new("a live properties recording requires a strict native property on one original deployment"));
+    }
     if options.search_startup_witness && (options.engine != crate::Engine::Native || options.gaps != crate::bmc::gaps::GapMode::Strict) {
         return Err(Error::new("--search-startup-witness requires --engine native --gaps strict"));
     }
@@ -1069,7 +1073,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
     }
     // Record startup on the original deployment. The generated assertion harness is
     // specific to a claim and supplies no application classes to a charset capture.
-    let observation_entries = if options.observed_runtime.charset_locale.is_some() || options.observed_runtime.reflective_members {
+    let observation_entries = if options.observed_runtime.charset_locale.is_some() || options.observed_runtime.reflective_members || options.observed_runtime.live_properties {
         &entries[1..]
     } else { &entries[..] };
     let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, observation_entries, &work, options.observed_runtime.clone())?;
@@ -1369,6 +1373,9 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
             }
         }
         Verdict::Violation => {
+            if options.observed_runtime.live_properties {
+                return Err(Error::new("a live-table counterexample requires replay with matching table identity, membership and iteration order"));
+            }
             let found = last.arguments(&entry_types)?;
             let replay_cp = witness::classpath(replay_entries.iter().map(PathBuf::as_path)).map(replay_config)?;
             let replay_on = |arguments: &[Argument]| witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);

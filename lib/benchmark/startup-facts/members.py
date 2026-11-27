@@ -17,7 +17,7 @@ def qualify(work):
     rows = []
     receipts = work / "receipts"
     tools = work / "recorder"
-    compile_to(tools, [OBSERVER / "ObservedInitializer.java", OBSERVER / "StartupTrace.java"])
+    compile_to(tools, sorted(OBSERVER.glob("*.java")))
     case = IO.parent / "threeten"
     workflows = json.loads((case / "workflows.json").read_bytes())["workflows"]
     for side in ("old", "new"):

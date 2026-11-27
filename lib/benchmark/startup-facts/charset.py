@@ -105,7 +105,7 @@ def small(work):
 
 def io(work):
     tools = work / "recorder"
-    compile_to(tools, [OBSERVER / "ObservedInitializer.java", OBSERVER / "StartupTrace.java"])
+    compile_to(tools, sorted(OBSERVER.glob("*.java")))
     historical = json.loads((ROOT / "verification/organic-composition/io/charset-profiles.json").read_bytes())["profiles"]
     rows = []
     for side in ("old", "new"):

@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T00:39:53.969Z",
-  "duration_seconds": 239343,
+  "ended": "2026-11-27T00:51:19.258Z",
+  "duration_seconds": 240028,
   "stats": {
     "turns": 39,
-    "api_calls": 6181,
-    "tool_calls": 15312,
+    "api_calls": 6211,
+    "tool_calls": 15365,
     "tool_errors": 338,
     "compactions": 26,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 8033673,
-      "output_tokens": 3555272,
-      "cache_read_input_tokens": 1656703872,
+      "input_tokens": 8042300,
+      "output_tokens": 3581781,
+      "cache_read_input_tokens": 1665392384,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8436,
-    "exec": 5917,
-    "apply_patch": 758,
+    "Bash": 8454,
+    "exec": 5947,
+    "apply_patch": 763,
     "wait": 113,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -325,10 +325,13 @@
     "lib/src/interp/natives.rs",
     "lib/src/jvm_witness.rs",
     "lib/src/observed.rs",
+    "lib/src/observed/LiveTableTrace.java",
     "lib/src/observed/ObservedInitializer.java",
     "lib/src/observed/StartupTrace.java",
     "lib/src/observed/charset.rs",
     "lib/src/observed/member.rs",
+    "lib/src/observed/receipt.rs",
+    "lib/src/observed/table.rs",
     "lib/src/pairing.rs",
     "lib/src/pairing/replay.rs",
     "lib/src/proof_cache.rs",
@@ -938,24 +941,24 @@
     {
       "index": 26,
       "started": "2026-11-26T23:39:02.233Z",
-      "ended": "2026-11-27T00:39:53.969Z",
+      "ended": "2026-11-27T00:51:19.258Z",
       "turns": 2,
-      "api_calls": 164,
+      "api_calls": 194,
       "usage": {
-        "input_tokens": 182354,
-        "output_tokens": 91417,
-        "cache_read_input_tokens": 31559168,
+        "input_tokens": 190981,
+        "output_tokens": 117926,
+        "cache_read_input_tokens": 40247680,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 275460
+      "peak_context_tokens": 307874
     }
   ],
   "log": {
-    "sha256": "d84f323750d9bd7f2c4e4551452b06c43d57d7fcd327d1cf37847b994b7da118",
-    "bytes": 98447113,
-    "lines": 48631,
-    "gzip_bytes": 18064490,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/d84f323750d9bd7f2c4e4551452b06c43d57d7fcd327d1cf37847b994b7da118.jsonl.gz"
+    "sha256": "56ee918cbd94629142b36eb3417197ef371bd6a5c1249be3a2b7beb051412719",
+    "bytes": 98869269,
+    "lines": 48864,
+    "gzip_bytes": 18121410,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/56ee918cbd94629142b36eb3417197ef371bd6a5c1249be3a2b7beb051412719.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2904,20 +2907,28 @@
       "log_sha256": "3698b5106b31bbd78b788abc1e0b24ed0ce2a6821eef5506a7238eb398e33e78"
     },
     {
-      "change_id": "qvxwtpkqsqqpyurprpzuwypvpxpyywnl",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "d84f323750d9bd7f2c4e4551452b06c43d57d7fcd327d1cf37847b994b7da118"
-    },
-    {
       "change_id": "plvnnvuywkvsznprrrpxuyzqupvwsksz",
       "commit_id": null,
       "immutable": false,
       "summary": "Keep reflective capture buildable alone (verification pending)",
       "body": "The preceding revision included a reference to an unfinished live-table recorder. Restore the standalone tracer that passed the selected tests. Compiling the two shipped sources on JDK 21 and tracing Chronology again produced matching one-argument lookup and static assignment events. Job 20261127-003930-repeat-both-reflective-startup-histories qualifies both deployments at the corrected source revision.",
       "log_sha256": "d84f323750d9bd7f2c4e4551452b06c43d57d7fcd327d1cf37847b994b7da118"
+    },
+    {
+      "change_id": "pzuzyxxsynqnqlptoyvmspmlnlqomkmv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "56ee918cbd94629142b36eb3417197ef371bd6a5c1249be3a2b7beb051412719"
+    },
+    {
+      "change_id": "uyxurtwnvoyzwlqkkqnuvlkznyswssnw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Trace original live system-property tables (verification pending)",
+      "body": "Observe the actual System.props object on a controlled JVM, compare its own string entries, iteration sequence and hash with ordinary Java, and bind each forEach callback to the original receiver. Reject inherited defaults, custom tables, writes, replacements and escaped references. Record partial evidence independently of native admission and keep values out of public receipts.\n\nThe original POI parent reached Log4j normalizeProperties at bytecode 36. Its table observation passed ordinary initializer parity and exposed a multi-release StackLocator provider as the next dependency. A standalone hashCode observation matched the original table projection. All six selected suites passed, including 59 Rust test binaries. Job 20261127-004741-qualify-poi-live-properties-and-table-id compares twelve public observations, property perturbations and failure controls on both deployments.",
+      "log_sha256": "56ee918cbd94629142b36eb3417197ef371bd6a5c1249be3a2b7beb051412719"
     }
   ],
   "logs": {
@@ -3196,6 +3207,12 @@
       "lines": 10286,
       "gzip_bytes": 3474406,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/55f27a906af324f924cf3a5090fa0852dd3dbf1396e9b78c02110e65b036842f.jsonl.gz"
+    },
+    "56ee918cbd94629142b36eb3417197ef371bd6a5c1249be3a2b7beb051412719": {
+      "bytes": 98869269,
+      "lines": 48864,
+      "gzip_bytes": 18121410,
+      "url": null
     },
     "5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0": {
       "bytes": 15337602,
