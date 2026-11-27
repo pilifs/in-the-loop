@@ -1,0 +1,392 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110821-setup-build-spring-boot-50271-s22-at-bot",
+  "title": "Setup: build Spring Boot #50271 (S22) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 9m57s, peak 5.0 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S22 fix: build and landed tests) was held back 2m47s by its 4-CPU quota in 4m27s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S22 parent: build and the parent's tests) was held back 2m44s by its 4-CPU quota in 3m40s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S22 transplant: the fix's tests on the parent) was held back 2m26s by its 4-CPU quota in 1m45s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110821-setup-build-spring-boot-50271-s22-at-bot.json",
+    "sha256": "749a6015fbcb06f2b4f069761ed3ae0d6dbb65b527ffa5784189b2d4a9e884cb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110821-setup-build-spring-boot-50271-s22-at-bot",
+      "title": "Setup: build Spring Boot #50271 (S22) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S22 (spring-projects/spring-boot#50271: Derive a migration data source through a lazy connection proxy). In the worktrees $P/worktrees/S22-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-jdbc with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (DataSourceBuilderTests (test) DataSourceUnwrapperTests (test) LiquibaseAutoConfigurationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-jdbc module:spring-boot-liquibase in $P/artifacts/S22-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S22",
+      "submitted": {
+        "at": "2026-11-27T11:08:21+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S22 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S22 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S22 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S22 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091103-setup-build-spring-boot-50271-s22-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:25:23+00:00",
+  "finishedAt": "2026-11-27T11:35:32+00:00",
+  "wallSeconds": 609.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 5373644800,
+    "wallSeconds": 597.8,
+    "cpuSeconds": 1678.2,
+    "memoryOfEstimate": 0.83,
+    "durationOfEstimate": 0.4
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S22 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 267.877,
+      "cpuSeconds": 741.714,
+      "cpuThrottledSeconds": 167.506,
+      "peakMemoryBytes": 5373644800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s22-fix-build-and-landed-tests.log",
+        "lines": 59,
+        "bytes": 8856,
+        "sha256": "d57e5335d116b9a4133e1889d5b63513fc24e5efa7ada2f0e59c854c2382160f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d84d0b6ba77896feb4e2cfa0a6b91290701820fdf066823d145f90c2a31fa7f0  jars/spring-boot-jdbc-4.1.0-SNAPSHOT.jar",
+        "561a3f7486654ec22c824e047f58ee45878de89bb474634cad8cd5da143932b2  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.1.0-SNAPSHOT.jar",
+        "4d083df5326c2c68963428ba85e372e20957d4f46d95382c35fd7f2a91b37f6f  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.1.0-SNAPSHOT-test-fixtures.jar",
+        "204ad39d6953c52fe6651835cc1eaa503a466677c5330bb827ef6f12fbd6ada7  tree/core/spring-boot/build/libs/spring-boot-4.1.0-SNAPSHOT.jar",
+        "c9186172a1f2a78d8eac37d6d07892f738666f19eebee003a26900460e2f974a  tree/core/spring-boot/build/libs/spring-boot-4.1.0-SNAPSHOT-test-fixtures.jar",
+        "f1a18f541acec21f6439d3b7ab84bbaa7628aceceee163993ca3132c665c976a  tree/core/spring-boot-docker-compose/build/libs/spring-boot-docker-compose-4.1.0-SNAPSHOT.jar",
+        "67a10087092095ef313c87c668d1ec44be663ba501cdf5a06ccd0abd487c9865  tree/core/spring-boot-test-autoconfigure/build/libs/spring-boot-test-autoconfigure-4.1.0-SNAPSHOT.jar",
+        "325471bd2315b62ef16cbebf6c853ba396e4c37a221cd22a36b0ab123c8dd538  tree/core/spring-boot-test/build/libs/spring-boot-test-4.1.0-SNAPSHOT.jar",
+        "5d9e96f6239a6e839ac365557c7b7a2e27d9f7ed48000a8490ae459852126b12  tree/core/spring-boot-testcontainers/build/libs/spring-boot-testcontainers-4.1.0-SNAPSHOT.jar",
+        "6a7c3d06d86a06e525d5f7f5ef394c8e62b4df9044984f61d68d55c4e585814d  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.1.0-SNAPSHOT.jar",
+        "b72e445705bef645fac89a21d8a70ad99e8c0ae74766b691c0ca5e99447f3a08  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.1.0-SNAPSHOT.jar",
+        "65ceb621940d3221ad022c15f3a220d595af0e2c81c94c44ce925a6b2d8844c3  tree/module/spring-boot-health/build/libs/spring-boot-health-4.1.0-SNAPSHOT.jar",
+        "d84d0b6ba77896feb4e2cfa0a6b91290701820fdf066823d145f90c2a31fa7f0  tree/module/spring-boot-jdbc/build/libs/spring-boot-jdbc-4.1.0-SNAPSHOT.jar",
+        "64e2e56424954ba99cdd3ea79b581f257fc3cfa2480048dc8e7b6900c7fe9628  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.1.0-SNAPSHOT.jar",
+        "b1c368edba42644cb850c6661ff071e55120e564bb4bf82870092d416404aff8  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.1.0-SNAPSHOT.jar",
+        "f49ca0ebeeb4df4d1118b4f407b1fd76ea09b6a9eba9f872731d1891c8b6f6b4  tree/module/spring-boot-persistence/build/libs/spring-boot-persistence-4.1.0-SNAPSHOT.jar",
+        "f0acf77e7d95f58a9d3976a8164810cb3b945d5b35f18d3d2af26139846275d1  tree/module/spring-boot-sql/build/libs/spring-boot-sql-4.1.0-SNAPSHOT.jar",
+        "f8b8dccae675eac949f2c4f509380af79fd0a3d2765e26d50f1f460b8db21a17  tree/module/spring-boot-sql/build/libs/spring-boot-sql-4.1.0-SNAPSHOT-test-fixtures.jar",
+        "787e11741b79399a84e477181eedfffda913420e307e64c64b422962002a8ac9  tree/module/spring-boot-transaction/build/libs/spring-boot-transaction-4.1.0-SNAPSHOT.jar",
+        "8f7c13b55dfe0374212bfabc5644a860867b9b3787ff32e436bbbe7515e7249b  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.1.0-SNAPSHOT.jar",
+        "43525d9cf87ceee6ddc76ad6e8896b2934c54b58551e98d3479f994639397e78  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$ComboPooledDataSourceProperties.class",
+        "60f1b4516ea45e2cdadb6a363648a9d56e42bedf19b050c104a6a97e7287b02e  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$DataSourceProperties.class",
+        "3c2c74d6c0d47d606df0e1d6cb6abfed436ee21e9e5796b11e577d686c7aaf0d  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$DataSourceProperty.class",
+        "0e4351af979e070688fb58f8a1522daa06df3d24a198d5145e518cba74a31c96  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$Getter.class",
+        "d9e50b0209bad28dfd1d0afccd2739f1339591c0128caf3467ad3ce5b39c55f0  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$H2DataSourceProperties.class",
+        "50783512b599707a77a83aead66eef88284934e30fc9d19064edccf1dfb511ba  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$HikariDataSourceProperties.class",
+        "1b50b8760c28e497800d40613778cff12f998d9acafe798e0702e7cb6818e2a8  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$MappedDataSourceProperties.class",
+        "7e36f9d754599b3b6fc07d9dcc3dd56fe5af06d5b43a19f005271488ac8d84f8  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$MappedDataSourceProperty.class",
+        "3c29f28f147305ae76ee21aa6af00635b03f8bc5fa9d28a8fce4401a5571babe  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$MappedDbcp2DataSource.class",
+        "7d36eb34f81378d4f65073c8c4e20bdd87a0a0b8c1b231ccb06ceeb28ca5a47b  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$OracleDataSourceProperties.class",
+        "1f25573b81257dd28fd1d5e429e40e8780e4c8a3929ec91f75deae6ee499caa1  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$OraclePoolDataSourceProperties.class",
+        "49e1308e406b649dcd3c2a3e981003f6121be5590e20bee0bcdd69378899d52a  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$PostgresDataSourceProperties.class",
+        "e4b4b6b70aed4042ad478098723c5ddc307aaab8f7d9fa1110f835f454afa28d  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$ReflectionDataSourceProperties.class",
+        "12f652e4cc7dfb23785dbd804a4b330af92b4a2e7f2435862a08468f042adb6f  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$Setter.class",
+        "84e41092bff961c9f091ac4381e26e8b5c91716693d362dded8825067417948b  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$SimpleDataSourceProperties.class",
+        "8681d401f40ae56143655be1e6c8c7ddfd6079d98aedd081a237c692671789ef  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$TomcatPoolDataSourceProperties.class",
+        "c0b452a8432b6972c94a699251b0f412c1278672bc922607e5babf1c54fe918c  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$ViburDataSourceProperties.class",
+        "581c71ac69d6c1b4083536ce9d2c4e311b1736f0032fb859fca3a1427223a347  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder.class",
+        "a89add04bcf58aad0003e496f11c31da580953bbbffd5d463b9471499528d776  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceUnwrapper$DelegatingDataSourceUnwrapper.class",
+        "665e332e4b5b2583cbddcc79851eebcc04ff144e1459d0c123c6ca1b52f5885f  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceUnwrapper.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S22 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 220.165,
+      "cpuSeconds": 618.657,
+      "cpuThrottledSeconds": 164.659,
+      "peakMemoryBytes": 4150095872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s22-parent-build-and-the-paren.log",
+        "lines": 59,
+        "bytes": 8870,
+        "sha256": "e6a8a3cce3cff818140f2e87fba2f28e8b7612af3a95766d1cc42d0f57c37e2e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "7c6c0083608fa959926e14c30d60eb520987d102bf11f9c50af9539624cab110  jars/spring-boot-jdbc-4.1.0-SNAPSHOT.jar",
+        "561a3f7486654ec22c824e047f58ee45878de89bb474634cad8cd5da143932b2  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.1.0-SNAPSHOT.jar",
+        "4d083df5326c2c68963428ba85e372e20957d4f46d95382c35fd7f2a91b37f6f  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.1.0-SNAPSHOT-test-fixtures.jar",
+        "204ad39d6953c52fe6651835cc1eaa503a466677c5330bb827ef6f12fbd6ada7  tree/core/spring-boot/build/libs/spring-boot-4.1.0-SNAPSHOT.jar",
+        "c9186172a1f2a78d8eac37d6d07892f738666f19eebee003a26900460e2f974a  tree/core/spring-boot/build/libs/spring-boot-4.1.0-SNAPSHOT-test-fixtures.jar",
+        "f1a18f541acec21f6439d3b7ab84bbaa7628aceceee163993ca3132c665c976a  tree/core/spring-boot-docker-compose/build/libs/spring-boot-docker-compose-4.1.0-SNAPSHOT.jar",
+        "67a10087092095ef313c87c668d1ec44be663ba501cdf5a06ccd0abd487c9865  tree/core/spring-boot-test-autoconfigure/build/libs/spring-boot-test-autoconfigure-4.1.0-SNAPSHOT.jar",
+        "325471bd2315b62ef16cbebf6c853ba396e4c37a221cd22a36b0ab123c8dd538  tree/core/spring-boot-test/build/libs/spring-boot-test-4.1.0-SNAPSHOT.jar",
+        "5d9e96f6239a6e839ac365557c7b7a2e27d9f7ed48000a8490ae459852126b12  tree/core/spring-boot-testcontainers/build/libs/spring-boot-testcontainers-4.1.0-SNAPSHOT.jar",
+        "6a7c3d06d86a06e525d5f7f5ef394c8e62b4df9044984f61d68d55c4e585814d  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.1.0-SNAPSHOT.jar",
+        "b72e445705bef645fac89a21d8a70ad99e8c0ae74766b691c0ca5e99447f3a08  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.1.0-SNAPSHOT.jar",
+        "65ceb621940d3221ad022c15f3a220d595af0e2c81c94c44ce925a6b2d8844c3  tree/module/spring-boot-health/build/libs/spring-boot-health-4.1.0-SNAPSHOT.jar",
+        "7c6c0083608fa959926e14c30d60eb520987d102bf11f9c50af9539624cab110  tree/module/spring-boot-jdbc/build/libs/spring-boot-jdbc-4.1.0-SNAPSHOT.jar",
+        "64e2e56424954ba99cdd3ea79b581f257fc3cfa2480048dc8e7b6900c7fe9628  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.1.0-SNAPSHOT.jar",
+        "b1c368edba42644cb850c6661ff071e55120e564bb4bf82870092d416404aff8  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.1.0-SNAPSHOT.jar",
+        "f49ca0ebeeb4df4d1118b4f407b1fd76ea09b6a9eba9f872731d1891c8b6f6b4  tree/module/spring-boot-persistence/build/libs/spring-boot-persistence-4.1.0-SNAPSHOT.jar",
+        "f0acf77e7d95f58a9d3976a8164810cb3b945d5b35f18d3d2af26139846275d1  tree/module/spring-boot-sql/build/libs/spring-boot-sql-4.1.0-SNAPSHOT.jar",
+        "f8b8dccae675eac949f2c4f509380af79fd0a3d2765e26d50f1f460b8db21a17  tree/module/spring-boot-sql/build/libs/spring-boot-sql-4.1.0-SNAPSHOT-test-fixtures.jar",
+        "787e11741b79399a84e477181eedfffda913420e307e64c64b422962002a8ac9  tree/module/spring-boot-transaction/build/libs/spring-boot-transaction-4.1.0-SNAPSHOT.jar",
+        "8f7c13b55dfe0374212bfabc5644a860867b9b3787ff32e436bbbe7515e7249b  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.1.0-SNAPSHOT.jar",
+        "fa91db8352991551dfbefdcfabc5d7b3806c4c4ec4497d82ff65cecccabead49  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$ComboPooledDataSourceProperties.class",
+        "cc17eee0c99ba179007a0b7a7c8ff749a23f73471300787689b0137dd2c34afa  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$DataSourceProperties.class",
+        "75ec72144e90df0e9bb1a64d38a9e3681d7b4ef80b2dc2df27f8ce11870f539c  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$DataSourceProperty.class",
+        "0e4351af979e070688fb58f8a1522daa06df3d24a198d5145e518cba74a31c96  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$Getter.class",
+        "98904ebf03209850cbde3056d7aa6f6d9f3dd3f20d747430cb898f05d5c9ee3b  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$H2DataSourceProperties.class",
+        "525670381cbaef8acd8524fa98d406ada8198216305c7a4deb148821331a389e  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$HikariDataSourceProperties.class",
+        "d61cca6e6446bf8234a09f7c7aa24418534c43ed35f02f9755294f493cc592a9  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$MappedDataSourceProperties.class",
+        "932cc8f50dcb55b46225f22716ed0e37113f764df0a53b345bea0e494885a22d  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$MappedDataSourceProperty.class",
+        "560c0e790d3206f65e46183305ee7ff63a1652d59fc28e815e1debf11f57e845  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$MappedDbcp2DataSource.class",
+        "5f45b46e9e7c369ea45cb3c0cf0792111122996a5986b5a2a25c243a6006b710  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$OracleDataSourceProperties.class",
+        "ccb94d239bfab31c62018d3feb2f7b90a5bb3fd38107545aed8a0ae6afdde0dd  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$OraclePoolDataSourceProperties.class",
+        "e30007f48efe184eaedbcc0520e68501d08491cd768bdc83eef5ecc0e6099273  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$PostgresDataSourceProperties.class",
+        "d5b2df291b874f9c0ca3f07fe619f9ac732372e68b3823f9e398f8e69606930b  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$ReflectionDataSourceProperties.class",
+        "12f652e4cc7dfb23785dbd804a4b330af92b4a2e7f2435862a08468f042adb6f  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$Setter.class",
+        "9c32de809ce15ab50b5316f6326387765973aecf857ab243cb21f6093d04e645  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$SimpleDataSourceProperties.class",
+        "9d300e7617ab1295caca079e3086e004ba28ac784500d7fd6628f2da7600d4c1  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$TomcatPoolDataSourceProperties.class",
+        "1d23e1aeafe4a2763e2c5ec9fbfa5efb6e3a0bc54b49149d0336d1145fff1b12  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder$ViburDataSourceProperties.class",
+        "17525efe25f1fa6453ac3eec2c88922d113a7196b84721789479749337ceee8f  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceBuilder.class",
+        "96c9a809a97a0a930ffb4c3a884d455c55648311d2c4eb5476714b608dd26e50  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceUnwrapper$DelegatingDataSourceUnwrapper.class",
+        "36a6a04272697a269c151f8412995c723374af808d26ccf176da857278d6ed43  spring-boot-jdbc-4.1.0-SNAPSHOT.jar!/org/springframework/boot/jdbc/DataSourceUnwrapper.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S22 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 105.298,
+      "cpuSeconds": 315.475,
+      "cpuThrottledSeconds": 146.66,
+      "peakMemoryBytes": 4582854656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s22-transplant-the-fix-s-tests.log",
+        "lines": 20,
+        "bytes": 1993,
+        "sha256": "f92f441c2f1cc64006b99b42d048d5990ff5893658cfa39f5989aa33d57c4f1d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/DataSourceBuilderTests.java",
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/DataSourceUnwrapperTests.java",
+        "transplanted module/spring-boot-liquibase/src/test/java/org/springframework/boot/liquibase/autoconfigure/LiquibaseAutoConfigurationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S22-parent-landed gradle=9.5.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=104 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01",
+        "junit tests=43 failures=1 errors=0 skipped=0",
+        "junit failed LiquibaseAutoConfigurationTests#lazyConnectionDataSource()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:validatePlugins",
+        "> Task :buildSrc:check",
+        "> Task :buildSrc:pluginDescriptors",
+        "class org.springframework.boot.jdbc.DataSourceBuilderTests no-result",
+        "class org.springframework.boot.jdbc.DataSourceUnwrapperTests no-result",
+        "class org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfigurationTests junit tests=43 failures=1 errors=0 skipped=0 junit failed LiquibaseAutoConfigurationTests#lazyConnectionDataSource() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S22 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 4.41,
+      "cpuSeconds": 2.326,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 95113216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s22-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "2a4fccbd71862c26f3d203c6c7c7d010a11b26e77eb2f6dd530a3860144eb7aa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S22"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:36:13+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T113532Z-5368626e5341347f"
+    }
+  }
+}

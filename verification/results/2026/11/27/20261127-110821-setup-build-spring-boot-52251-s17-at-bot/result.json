@@ -1,0 +1,368 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110821-setup-build-spring-boot-52251-s17-at-bot",
+  "title": "Setup: build Spring Boot #52251 (S17) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m30s, peak 3.6 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S17 fix: build and landed tests) was held back 1m44s by its 4-CPU quota in 2m54s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S17 transplant: the fix's tests on the parent) was held back 1m06s by its 4-CPU quota in 1m23s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110821-setup-build-spring-boot-52251-s17-at-bot.json",
+    "sha256": "83d198c3d141b287d1ee21deaf7d5ce17a9b5ce09e02f1d88084303b378c88fe",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110821-setup-build-spring-boot-52251-s17-at-bot",
+      "title": "Setup: build Spring Boot #52251 (S17) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S17 (spring-projects/spring-boot#52251: An application customizer can select the string converter). In the worktrees $P/worktrees/S17-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-http-converter with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (HttpMessageConvertersAutoConfigurationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-http-converter in $P/artifacts/S17-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S17",
+      "submitted": {
+        "at": "2026-11-27T11:08:21+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S17 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S17 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S17 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S17 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S17 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S17 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S17 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S17 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091102-setup-build-spring-boot-52251-s17-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:29:12+00:00",
+  "finishedAt": "2026-11-27T11:35:54+00:00",
+  "wallSeconds": 402.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 3902431232,
+    "wallSeconds": 390.6,
+    "cpuSeconds": 1088.6,
+    "memoryOfEstimate": 0.61,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S17 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S17 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 174.657,
+      "cpuSeconds": 481.158,
+      "cpuThrottledSeconds": 104.146,
+      "peakMemoryBytes": 3902431232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s17-fix-build-and-landed-tests.log",
+        "lines": 30,
+        "bytes": 4356,
+        "sha256": "f2a9b1987dddca42f7b9c909954bbac79ca9b7e330668cff6f47957baaf86ad7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S17-fix gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=110 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/s",
+        "junit tests=40 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfigurationTests junit tests=40 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S17-fix/module_spring-boot-http-converter.runtimeClasspath.txt 40 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S17-fix/module_spring-boot-http-converter.testRuntimeClasspath.txt 105 entries",
+        "e82d397be044b1c03d5f0c384b70a17973703c2cfa1d4d3d0ca7187c457882a1  jars/spring-boot-http-converter-4.0.10-SNAPSHOT.jar",
+        "8c9300d868ab0bed70020389cb6d236c94149f20b8babe11468dd00cd00e71c3  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.10-SNAPSHOT.jar",
+        "afce47c45984ddd9b7c7629ca292d73710d56fc2e44437352503676d7ceb2fb2  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT.jar",
+        "2df98367083e94f46b09b14a4d1f09f6b72df5c91ed9fcb71a8143984d1dea27  tree/core/spring-boot-test/build/libs/spring-boot-test-4.0.10-SNAPSHOT.jar",
+        "184a1a856b3f4520513561da0beefa8c585bd624a5da9391fa1a254738c6ca8d  tree/module/spring-boot-gson/build/libs/spring-boot-gson-4.0.10-SNAPSHOT.jar",
+        "455d9cd0aa43f99ee373d829cf5e1762c4db3f66356ece446cbb5f2d0d99763a  tree/module/spring-boot-jackson2/build/libs/spring-boot-jackson2-4.0.10-SNAPSHOT.jar",
+        "e02fef34d4f34dd63a4a9f1d0791db41fff9d8d3d275e1fc535180410daec53b  tree/module/spring-boot-jackson/build/libs/spring-boot-jackson-4.0.10-SNAPSHOT.jar",
+        "d9f6802bfa7c992bff2b8ba82cb4733c27fcd7e14c5055d0629baac3ee546a83  tree/module/spring-boot-jsonb/build/libs/spring-boot-jsonb-4.0.10-SNAPSHOT.jar",
+        "432a4fc60c2ec4c600ba5d979eba2264fc7d89fa9067366619406f75097ec16c  tree/module/spring-boot-kotlinx-serialization-json/build/libs/spring-boot-kotlinx-serialization-json-4.0.10-SNAPSHOT.jar",
+        "389ba14f806fe174cf99df2d5e28d6c25389dc0b06f3fb750bca80a4b31b89f4  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.10-SNAPSHOT.jar",
+        "2243b35604ecfaaa673cd9972e04a6c228f16a868522f30bb2c35c455b8da0a7  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration$NotReactiveWebApplicationCondition$ReactiveWebApplication.class",
+        "ffcfd434eb37c0d17bc1bad0c9cc10e344c06bf9c65f5d1743f6f5c19da064e1  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration$NotReactiveWebApplicationCondition.class",
+        "92dcc08dab9330460a1120d34be519294f3caf08fb033f3e76da5178c3ee48df  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration$StringHttpMessageConverterConfiguration.class",
+        "2eb0c5609f6a4cef3e48c64e66c26e0df0892211dbb49f43cb3fe0f758b0094f  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration$StringHttpMessageConvertersCustomizer.class",
+        "b8182d82f4cf517a499a832f2fba4212e8f06e585f9fda51bb950397aae78630  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S17 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S17 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 130.555,
+      "cpuSeconds": 364.336,
+      "cpuThrottledSeconds": 62.389,
+      "peakMemoryBytes": 3251613696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s17-parent-build-and-the-paren.log",
+        "lines": 30,
+        "bytes": 4364,
+        "sha256": "5692b643ccf71081dbc6b0ce32ad7aef00fefe151d225d89720888a56fb4672f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S17-parent gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=67 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=38 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfigurationTests junit tests=38 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S17-parent/module_spring-boot-http-converter.runtimeClasspath.txt 40 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S17-parent/module_spring-boot-http-converter.testRuntimeClasspath.txt 105 entries",
+        "1b53fe6cd434ff27db0dab0ef38ce3d1a3ded32800e11e15a90ceefb3b5d2d9b  jars/spring-boot-http-converter-4.0.10-SNAPSHOT.jar",
+        "8c9300d868ab0bed70020389cb6d236c94149f20b8babe11468dd00cd00e71c3  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.10-SNAPSHOT.jar",
+        "afce47c45984ddd9b7c7629ca292d73710d56fc2e44437352503676d7ceb2fb2  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT.jar",
+        "2df98367083e94f46b09b14a4d1f09f6b72df5c91ed9fcb71a8143984d1dea27  tree/core/spring-boot-test/build/libs/spring-boot-test-4.0.10-SNAPSHOT.jar",
+        "184a1a856b3f4520513561da0beefa8c585bd624a5da9391fa1a254738c6ca8d  tree/module/spring-boot-gson/build/libs/spring-boot-gson-4.0.10-SNAPSHOT.jar",
+        "455d9cd0aa43f99ee373d829cf5e1762c4db3f66356ece446cbb5f2d0d99763a  tree/module/spring-boot-jackson2/build/libs/spring-boot-jackson2-4.0.10-SNAPSHOT.jar",
+        "e02fef34d4f34dd63a4a9f1d0791db41fff9d8d3d275e1fc535180410daec53b  tree/module/spring-boot-jackson/build/libs/spring-boot-jackson-4.0.10-SNAPSHOT.jar",
+        "d9f6802bfa7c992bff2b8ba82cb4733c27fcd7e14c5055d0629baac3ee546a83  tree/module/spring-boot-jsonb/build/libs/spring-boot-jsonb-4.0.10-SNAPSHOT.jar",
+        "432a4fc60c2ec4c600ba5d979eba2264fc7d89fa9067366619406f75097ec16c  tree/module/spring-boot-kotlinx-serialization-json/build/libs/spring-boot-kotlinx-serialization-json-4.0.10-SNAPSHOT.jar",
+        "389ba14f806fe174cf99df2d5e28d6c25389dc0b06f3fb750bca80a4b31b89f4  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.10-SNAPSHOT.jar",
+        "80c2d532e67ead1a75d88d52af94bd3e63ddbbea3db4dff7e5dd4ec493c68f5a  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration$NotReactiveWebApplicationCondition$ReactiveWebApplication.class",
+        "e977b20e3e908aa64179e7f3ddc8a4910d53ab62aab85b53efb5886f154658fd  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration$NotReactiveWebApplicationCondition.class",
+        "11918bebd1b7074788a179e67e3c6dce15443a4783d4c7c423f15c823563b645  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration$StringHttpMessageConverterConfiguration.class",
+        "57a9dacea600468c696ebdd76bb9adb6b3159c54380ab6bf4bab26e5e42e3092  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration$StringHttpMessageConvertersCustomizer.class",
+        "b8182d82f4cf517a499a832f2fba4212e8f06e585f9fda51bb950397aae78630  spring-boot-http-converter-4.0.10-SNAPSHOT.jar!/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfiguration.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S17 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S17 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 83.192,
+      "cpuSeconds": 241.52,
+      "cpuThrottledSeconds": 66.234,
+      "peakMemoryBytes": 3828072448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s17-transplant-the-fix-s-tests.log",
+        "lines": 17,
+        "bytes": 1784,
+        "sha256": "7a3d887e7ec06fa29f6b4fe7c170c9514a7701089c5f49d6739c0d7138e0b68b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-http-converter/src/test/java/org/springframework/boot/http/converter/autoconfigure/HttpMessageConvertersAutoConfigurationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S17-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=83 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=40 failures=2 errors=0 skipped=0",
+        "junit failed HttpMessageConvertersAutoConfigurationTests#stringConvertersCustomizerHasOrderZero()",
+        "junit failed HttpMessageConvertersAutoConfigurationTests#stringCustomConverterWithCustomizer()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfigurationTests junit tests=40 failures=2 errors=0 skipped=0 junit failed HttpMessageConvertersAutoConfigurationTests#stringConvertersCustomizerHasOrderZero() junit failed HttpMessageConvertersAutoConfigurationTe",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S17 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S17 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 2.206,
+      "cpuSeconds": 1.593,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 47923200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s17-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "d17abc62870c829cd54014b6f93ef58236f1825e40f18f55ab584d15eb983b52",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S17"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:36:13+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T113554Z-715993c139f1b3ec"
+    }
+  }
+}
