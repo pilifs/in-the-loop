@@ -28,6 +28,7 @@ def stopped(revision, output):
         require(m and item.get("stop") and not item.get("measurement"), "stopped accounting requires explicit stops and no claimed measurement")
         original = prior[pr_key(*m.groups())]
         rows.append({"url": item["url"], "producerStop": item["stop"], "qualifiedNewMeasurement": False,
+                     "unsealedStageAccounting": {k: item[k] for k in ("privateDraftStages", "upstreamTestAssistance", "buildAttempt") if k in item},
                      "comparison": "No sealed producer measurement to compare.",
                      "historicalOriginal": {"observationsSha256": original["observationsSha256"], "deployments": original["deployments"],
                                             "allHistoriesPaired": original["allHistoriesPaired"], "fixedRefutations": original["fixedRefutations"]}})
