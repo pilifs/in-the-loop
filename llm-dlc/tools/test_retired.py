@@ -87,6 +87,17 @@ class TheRegister(Fixture):
         self.put("llm-dlc/tools/new_run.py", '"""For one agent."""\n')
         self.assertEqual(retired.scan(self.root, found), [])
 
+    def test_the_jobs_pipelines_folder_is_live_code_and_pages(self):
+        """The neutral pipeline (jobs/) is instructions and code agents act on, whatever its depth: a page or a
+        workload adapter there that sends a reader to a retired command is reported like any other live file."""
+        self.put("jobs/README.md", "Submit with `old_run.py submit`.\n")
+        self.put("jobs/pipeline.py", '"""The queue."""\n')
+        self.put("jobs/workloads/resolution.py", '"""Resolves a task, as old-run did for a stream."""\n')
+        self.put("jobs/fixtures/notes.txt", "old_run.py\n")  # neither code nor a page
+        rows = retired.scan(self.root, retired.register(self.root))
+        self.assertEqual([(r["file"], r["names"]) for r in rows],
+                         [("jobs/README.md", ["old_run.py"]), ("jobs/workloads/resolution.py", ["old-run"])])
+
     def test_a_name_is_a_word_of_its_own_and_a_planned_entry_counts_only_when_asked(self):
         self.put("README.md", "Use `old-loop.sh   fast` or old-loop.sh slow.\n\nlater.py is still here.\n")
         found = retired.register(self.root)

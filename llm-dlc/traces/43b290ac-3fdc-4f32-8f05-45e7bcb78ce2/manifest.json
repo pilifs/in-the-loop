@@ -12,27 +12,27 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T20:24:39.642Z",
-  "duration_seconds": 18658,
+  "ended": "2026-11-27T22:24:51.112Z",
+  "duration_seconds": 25870,
   "stats": {
-    "turns": 24,
-    "api_calls": 452,
-    "tool_calls": 498,
-    "tool_errors": 7,
-    "compactions": 3,
+    "turns": 31,
+    "api_calls": 524,
+    "tool_calls": 580,
+    "tool_errors": 9,
+    "compactions": 4,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 928,
-      "output_tokens": 697355,
-      "cache_read_input_tokens": 136642822,
-      "cache_creation_input_tokens": 1717375
+      "input_tokens": 1074,
+      "output_tokens": 827263,
+      "cache_read_input_tokens": 156531062,
+      "cache_creation_input_tokens": 2099657
     }
   },
   "tools": {
-    "Bash": 396,
-    "Read": 56,
-    "Edit": 17,
-    "Write": 15,
+    "Bash": 450,
+    "Read": 76,
+    "Write": 21,
+    "Edit": 19,
     "AskUserQuestion": 3,
     "mcp__chrome-devtools__take_screenshot": 3,
     "ToolSearch": 2,
@@ -47,7 +47,12 @@
     "README.md",
     "examples/tools/observe.py",
     "examples/tools/preflight.py",
+    "jobs/README.md",
+    "jobs/audit.py",
+    "jobs/records.py",
+    "jobs/test_audit.py",
     "llm-dlc/loops/brief-generation-template.md",
+    "llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md",
     "llm-dlc/retired.md",
     "llm-dlc/tools/brief_queue.py",
     "llm-dlc/tools/feature-loop.sh",
@@ -58,6 +63,7 @@
     "llm-dlc/tools/test_single_run.py",
     "verification/findings.md",
     "~/.cache/in-the-loop/tmp/orch/advisor-note.md",
+    "~/.cache/in-the-loop/tmp/orch/advisor-verify.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/MEMORY.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/architecture-md-update-after-orchestrate-run.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/architecture-md-update-after-run-workflow.md",
@@ -109,24 +115,38 @@
     {
       "index": 3,
       "started": "2026-11-27T18:53:05.659Z",
-      "ended": "2026-11-27T20:24:39.642Z",
-      "turns": 8,
-      "api_calls": 138,
+      "ended": "2026-11-27T21:16:20.354Z",
+      "turns": 11,
+      "api_calls": 146,
       "usage": {
-        "input_tokens": 290,
-        "output_tokens": 166999,
-        "cache_read_input_tokens": 34566524,
-        "cache_creation_input_tokens": 367207
+        "input_tokens": 308,
+        "output_tokens": 178143,
+        "cache_read_input_tokens": 37684411,
+        "cache_creation_input_tokens": 380669
       },
-      "peak_context_tokens": 383635
+      "peak_context_tokens": 397097
+    },
+    {
+      "index": 4,
+      "started": "2026-11-27T21:27:46.543Z",
+      "ended": "2026-11-27T22:24:51.112Z",
+      "turns": 4,
+      "api_calls": 64,
+      "usage": {
+        "input_tokens": 128,
+        "output_tokens": 118764,
+        "cache_read_input_tokens": 16770353,
+        "cache_creation_input_tokens": 368820
+      },
+      "peak_context_tokens": 380659
     }
   ],
   "log": {
-    "sha256": "c2be2a0b0f7cbd6da36e6642cb3e25c2360fc4e25e3520a0f93e22f352b35b1e",
-    "bytes": 13015213,
-    "lines": 4237,
-    "gzip_bytes": 2739650,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/c2be2a0b0f7cbd6da36e6642cb3e25c2360fc4e25e3520a0f93e22f352b35b1e.jsonl.gz"
+    "sha256": "2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010",
+    "bytes": 15920935,
+    "lines": 5043,
+    "gzip_bytes": 3327223,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -220,48 +240,48 @@
     },
     {
       "change_id": "rqrlwptqvoqmokslvqrmkslrwmrzkmpk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8253ac150f331b76dcab2bcd0dbc4f19dd3d99cf",
+      "immutable": true,
       "summary": "Restructure the front page around results, with a way in for a reader",
       "body": "The front page was an interim one since the plugin was retired. The user chose its structure on 2026-11-27: results first, one status line for the retired plugin, a round figure for the examples with a link to the generated router, a way to reproduce one result, and a short section on how the repository is built with a placeholder for an architecture diagram.\n\nREADME.md now runs: what this is; the three answers and example 285; what is here; how to explore it with an agent or reproduce a result, and what that takes; how it is built; status; for agents; background; licence. The section on exploring says how the artifacts link (an example to its result, a job to the session that submitted it and the commit it ran on, a commit to its session and log, a session to its summary, metrics and transcript), since everything is public and a coding agent can follow the links from a checkout. The hardware note gives the minimums and comfortable figures doctor.py holds, and says that running the workflow itself needs a large machine and is for people who want to work on the verifier. The count of examples was stale (183; there are 515, 305 of them real-world): the page now says more than 500 and links the router, whose tables are generated.\n\nVerified: python3 examples/tools/build.py 002 was run once under a memory and time cap and ended with the line the page quotes, in 16 seconds; the files it rewrote were put back. The other claims were checked against the files they describe (a job's submitted.session, a result's sourceCommit, a summary's link to its log, the pipeline's max_timeout). The changed-tests run passed 38 of 38 test files, and retired.py check finds nothing.",
       "log_sha256": "16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd"
     },
     {
       "change_id": "trwkwtqwrqytoqxsomqtrnlqrzrwmouo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f3e46870969222a99ddc4fefaaf0aac9f6294dd0",
+      "immutable": true,
       "summary": "Point the historical pages and findings that name something retired at the register",
       "body": "The user's decision of 2026-11-27 for the convergence on /orchestrate-run: live files are rewritten, records are never edited, and a historical page that names something retired keeps its text and gets one dated line that points at llm-dlc/retired.md. This adds that line to the 38 pages of llm-dlc/loops that name a retired skill, command or script (the briefs of earlier loops and their streams, results pages, the brief template of that time) and to the 11 entries of verification/findings.md that do. Each line says what the page names, the change that removed it, and the register entry that says what replaced it. The 6 pages there that the queue's log names, its copies of the user's briefs, are records and are untouched.\n\nretired.py writes the lines from the register's entries (banners --write) and its check now fails on a historical page or a finding that lacks one, so the next retirement is one command and a page added later is caught by the default test run. The fixtures' pages under lib/tests are held to the live rule, and the two that sent a reader to an integration script now say it went with the streams workflow.\n\nVF-045 and VF-072 each gain a dated note of what the convergence changed for them: one run skill is left and is the user's alone to start in Codex, the refusal of a run started inside a loop moved to run_common.py, and CLAUDE.md names the skill without its page, which a test now holds. Neither is closed: what the agents wanted (fan-out, sealed producers, a worker request) is untouched.\n\nVerified: test_retired.py passes (9 tests, 4 of them new: the line a page and a finding lack, that it is written once and a record is left alone, a line that names two changes, and this repository's own pages); retired.py check finds nothing; the changed-tests run passed 22 of 22 test files; the cost lint agrees.",
       "log_sha256": "a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1"
     },
     {
       "change_id": "lukpqrqtoorrytyrllnsmznnzxlqnqly",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e5706fdd92d25e14dd4f20021c2ae49dc28676cb",
+      "immutable": true,
       "summary": "Operating notes: what a session from before the one run skill has to drop",
       "body": "On 2026-11-27 the repository converged on one run skill, /orchestrate-run (llm-dlc/retired.md). A watcher that was started before that day, a compacted session or a client's own memory may still hold the older names, and the user asked that the watcher update its memory and procedures from the change before the queue resumes.\n\nThe operating notes, which every agent reads, now open with a section for that reader: the skill's new name and its split into pages, the commands that did not change, what is gone with nothing to call in its place, what moved (the example checks of the proof run's tool), that the watcher keeps the queue itself and defers to no other kind of run, and that a procedure of its own which names an old command is checked against the register before it is acted on.\n\nVerified: retired.py check finds nothing (each paragraph of the section that names something retired points at the register), and the changed-tests run passed 3 of 3 test files.",
       "log_sha256": "90beb730a6faaa94cb7e0bb45fac257262d3861245e7280defa3cb6840db98ff"
     },
     {
       "change_id": "qvsumqompyyyvtwvtwvtrwsxxvtqolsn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9a930319de60a023eb3db45b0f4e069b99c29cbe",
+      "immutable": true,
       "summary": "The register's check: a folder that keeps only a bytecode cache is gone",
       "body": "The user's whole default test run on the default line (xksklxrk) failed on 2026-11-27 at 18:30 UTC. Its output was not kept, and the cause found afterwards is test_retired.py: retired.py check said `plugins/` was still here, though the change that retired the plugin had removed every file it tracked. The folder held one file, the bytecode cache Python had written when a test imported the plugin's bootstrap. jj removes the files it tracks and leaves what it ignores, so any checkout that ran those tests before the removal keeps such a folder; a workspace where the folder was removed by hand, as the one the removal was made in, does not, which is why the tests passed there.\n\nA retired folder now counts as still here by the files in it, and a file under __pycache__ (or a .pyc) is not one; an empty folder is not either. A link still counts, whatever it points at. Two tests hold this: a folder with only a cache is gone, and one with a file of its own is reported.\n\nAlso: the headers of two Rust tests still said an integration script runs them; they now say it went with the streams workflow, and lib/tests/*.rs is held to the rule for live files.\n\nVerified: test_retired.py passes (11 tests) and the two Rust test binaries pass (12 and 5 tests) in the changed-tests run; the fixed check, pointed at the default checkout's files while the leftover folder was there, reported nothing; the old check in the default checkout failed on it and passes once the folder is removed, which was done (it held that one cache file and nothing tracked). The whole default run on the tree before this fix passed in this workspace, 85 of 85; one on the tree with it follows.",
       "log_sha256": "689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406"
     },
     {
       "change_id": "mvxtlyouwnvpxqzvuyvoxtnpnmnqtzzu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "92f1f28c60c6921e8c64b50e58ec349cde685526",
+      "immutable": true,
       "summary": "VF-078: a run's reported spend is short, and a workspace's run is in no published record",
       "body": "Two gaps found while converging the run skills on /orchestrate-run, recorded for whoever next works on run records. Neither came with that work and it fixed neither.\n\nA run's reported spend counts a cycle when its question is put to the watcher, so a cycle that ends the run with no question, the last compact and the summary are left out: a rehearsal of the tools reported 0.19 dollars where the client's total for the session was 0.63. And the records of a run that worked in a workspace of its own are published nowhere, since only the default workspace's are and nothing copies them there since the streams workflow was retired: the workspace the queue's runs work in holds 91 such records, the default checkout none, and the loop statistics count no single run.\n\nThe entry is the rehearsal's only record: the run was made in a throwaway copy on Claude Opus 5.5 at low effort, and the copy and its transcript were deleted afterwards at the user's wish.\n\nVerified: retired.py check finds nothing in the new entry, and the changed-tests run passed 6 of 6 test files. The findings page is one no test of the default run reads, so the passed run recorded for the tree before this commit still covers it.",
       "log_sha256": "747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4"
     },
     {
       "change_id": "zyqvwuqmntrulyswplppkplkwllvpqpk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "fd4a6e32d0c063383b47528c9b9255d5b1b5dfa9",
+      "immutable": true,
       "summary": "VF-079: a session's trace line lands on commits it did not make",
       "body": "Recorded for the user's decision. sync.py takes a session to have made every mutable ancestor of @ dated while it ran, and @ itself while it is live, so a line can land on a commit another session or a person made. It was seen twice during the convergence on /orchestrate-run and came with neither.\n\nFirst, the convergence's first commit put its session's line on three unpublished commits under it, two allow-list proposals and the user's own approval; each now names three sessions. Second, a sync of this session run in another workspace, merge-fixes, by a session with an uncommitted change that renders a session from another workspace's transcript, gave that workspace's working-copy change this session's line and stored the log it names there alone. That failed the check of the commit before this one in this workspace (log 614ccbcc12c9 neither stored locally nor uploaded); sync.py adopt-logs brought the log over and the check is back at 0 errors.\n\nThe entry puts two readings of a trace line to the user and asks that, under either, a session rendered from another workspace's transcript is not given the rendering checkout's working copy. No trace line was edited.\n\nVerified: retired.py check finds nothing in the entry, and the changed-tests run passed 6 of 6 test files. The findings page is one no test of the default run reads, so the passed whole run recorded for the tree at qvsumqom still covers this commit.",
       "log_sha256": "50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388"
@@ -300,27 +320,43 @@
     },
     {
       "change_id": "nzvqnwtwxzzqvtuqsqypnxtolopxpznq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4006f681db26fc4adec717d04c1d4757a8c0a932",
+      "immutable": true,
       "summary": "ARCHITECTURE.md: the map of who owns what, who may do what and what is not built",
       "body": "The user asked for the architecture page to become a first-class file of the project once the run skills had converged, written from their draft and updated to the implementation and the direction as they now are. This is its first version, at the repository's root, for their review.\n\nThe page has one path (a person, a watcher, a run, its jobs, a checker, the line, develop, main) with a diagram, the four kinds of run, where the judgment is and where it is not, a table of owners with each one's contract, a table of who may do what and what holds each rule, the record that answers each question, and one section for what is intended and not built: a product entry, the job pipeline the user wants to grow out of /run-verification, fan-out from a manifest, a sealed producer, a worker request, the filter-stop wording, machine-wide run visibility, a run's record and cost (VF-078), the meaning of a trace line (VF-079), network capacity. It also says how a finding becomes the next plan, how something is retired, and how the page is kept. Against the draft: the released product and its mode, the streams' controller and the proof run's watcher are gone from the owners, links are relative so that they resolve at the commit being read, and measurements are left with their owners.\n\nHeld by two checks in the default run: test_architecture.py fails when a link of ARCHITECTURE.md or README.md leads to a file or a heading that is not in the repository (with a made-up page as its control), and the register's check now reads the page as a live file. The front page's placeholder becomes a small diagram and a link to the page, and CLAUDE.md gains a section that sends an agent to it before it adds a tool or moves a responsibility, and has it updated in the same commit.\n\nVerified: test_architecture.py passes (4 tests) and so does the changed-tests run, 40 of 40 test files; retired.py check finds nothing; agent_client.py instructions --client codex reports no problem with the longer CLAUDE.md (read, not chained); both diagrams were rendered once with Mermaid 10.9.1 in the headless browser and came out with the nodes and edges written (8 and 11, 6 and 5).",
       "log_sha256": "5d2af750c69bbcea45f7eafa7f89fe38966aabad1a71c6516ac8914937713a44"
     },
     {
       "change_id": "xxkyptnqprnyruvqlvpsvspyssmooruz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "1b38b23589bdbc065ca99d0db922afab795f15ec",
+      "immutable": true,
       "summary": "Merge the published line into the convergence's last commits",
       "body": "Brings this workspace's seven unlanded commits (the front page, the dated lines on historical pages, the handover section, the register check's fix, VF-078, VF-079 and ARCHITECTURE.md) together with the line as develop has it since 2026-11-27: the advisor's merge mptxuyqt of the promotion record (692c455f, 612 commits of develop to main), the three VF-077 commits and the change that lets sync SESSION render a session from another workspace's transcript. After this merge the default line can move forward to it with no merge of its own.\n\nTwo files met. verification/findings.md: both sides added entries at the top of the open findings; all three are kept, newest first (VF-079, VF-078, VF-077), and the page equals this line's page with the VF-077 entry put before VF-076. This session's manifest: the line's side was taken, which holds the URL of the log the promotion uploaded, and this commit's sync adds the later logs to it, as the advisor's merge did. sync.py regenerate rewrote the generated trace files and found no other conflict. The test inventory merged without one.\n\nVerified: the tests of what came together passed, 48 of 48 (47 Python test files, the two Rust test binaries), among them the advisor's test_session_status.py and this line's test_retired.py and test_architecture.py; retired.py check finds nothing, so the VF-077 entry names nothing retired; the cost lint agrees; agent_client.py instructions --client codex reports no problem.",
       "log_sha256": "ad5bbf09054f95e92d9ba261e51f9e702df72572d4b32b5d7de48ed050096896"
     },
     {
       "change_id": "ynzzzokptxwyplxozlykymmnwlumyxtw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7dae4e11676fd0c321c11ea52d6342690fe4b536",
+      "immutable": true,
       "summary": "VF-079: the change that showed it is on the line now",
       "body": "The entry said the change that lets sync SESSION render a session from another workspace's transcript was uncommitted in the workspace merge-fixes. It was committed that evening (oxqtlxmx), with this session's trace line on it and on the three VF-077 commits under it, and is on develop since the advisor's merge. The entry now says so, and that the rule is unchanged in the line's sync.py: a sync of a live session from another workspace's transcript stamps that checkout's working copy again. The user's word of 2026-11-27 is that the attribution itself is not a concern for now, so nothing in sync.py is changed here.\n\nVerified: retired.py check finds nothing; the page is one no test of the default run reads.",
       "log_sha256": "c2be2a0b0f7cbd6da36e6642cb3e25c2360fc4e25e3520a0f93e22f352b35b1e"
+    },
+    {
+      "change_id": "rzvolkkvysmktvurlpvlmxswzxnoyqox",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the brief generic-jobs-pipeline",
+      "body": "The brief ~/code/scripts/analysis/in-the-loop-generic-jobs-pipeline-brief.md is copied unchanged to llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the head, with its own settings {\"client\": \"claude\", \"model\": \"claude-fable-5-2\", \"effort\": \"xhigh\", \"session\": \"43b290ac-3fdc-4f32-8f05-45e7bcb78ce2\", \"holdAfter\": \"yes\", \"setup\": \"none\"}.",
+      "log_sha256": "2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010"
+    },
+    {
+      "change_id": "yoyzuurkkoprttrtkszrvrrknxprxuut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add a read-only audit of the job records, with the pinned corpus as its fixture",
+      "body": "First slice of the brief for one jobs pipeline (llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief.md), its gate 'protect and measure'. jobs/records.py reads the committed specifications and receipts by job id, from a git revision (git objects alone) or from a working copy, and computes the result indexes from the receipts. jobs/audit.py joins specifications, receipts, what each receipt names in its own folder, the indexes and, for a working copy, the runner's claims and staged results. It reports a discrepancy where two records of one job cannot both be right (exit 1), a gap where a record names something the revision does not hold, and a note for a fact of the layout. It can write and verify a manifest of the paths and git ids of every specification, receipt and result folder. verification/pipeline.py now writes the indexes with the function the audit recomputes them with. The retirement check reads the new jobs/ folder as live code and pages.\n\nThe corpus at b52a084f5d11 is frozen as jobs/fixtures/census-b52a084f5d11.json and manifest-b52a084f5d11.jsonl.gz (1,906 rows, 32,071 files). It has 1,906 job ids with a specification, a receipt and an index row each, 1,469 passed, 420 failed and 17 error, three flat specifications of 2026-11-22 with a result under their day, no discrepancy, and seven index files that the receipts give back to the byte. The audit also found 947 kept outputs of 19 jobs that receipts name and no commit holds, 945 under an ignored path and 2 over the commit limit, none sealed as an original; 944 are still on disk in the default checkout. That is recorded as VF-080.\n\nVerified: jobs/test_audit.py, 16 tests (a made-up corpus with one fault at a time, the pinned corpus against its census and its manifest at the pinned revision and at this commit); verification/test_pipeline.py, 48 tests; the tests of what changed, 30 of 30 files; retired.py check finds nothing; the cost lint agrees.",
+      "log_sha256": "2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010"
     }
   ],
   "logs": {
@@ -340,6 +376,12 @@
       "bytes": 5657533,
       "lines": 1807,
       "gzip_bytes": 1059212,
+      "url": null
+    },
+    "2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010": {
+      "bytes": 15920935,
+      "lines": 5043,
+      "gzip_bytes": 3327223,
       "url": null
     },
     "40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3": {

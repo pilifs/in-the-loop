@@ -18,6 +18,21 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-080: 947 kept outputs that receipts name are in no commit and no archive; 944 survive in one working copy
+
+- **Status**: open. Nothing is lost that was not already out of the commit; what is still on disk has one copy.
+- **Raised**: 2026-11-27, by the run on the generic jobs pipeline (`llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief.md`), from the first run of its reconciliation, `python3 jobs/audit.py --rev b52a084f5d11`. Machine `vm-1`; no job ran for it.
+- **Found**:
+  - **What the receipts say.** A job that did not pass keeps its outputs under `results/ID/outputs/`, and its receipt lists them in `collected.kept`. 19 receipts of 2026-11-06 to 2026-11-20 list 947 such files that the pinned revision does not hold.
+  - **Why the commit left them out.** 945 have a path the repository's ignore rules match: 655 are compiled classes (`*.class`, most under `outputs/verification/.work-NNN/`), 288 are under a `target/` folder (`outputs/lib/target/...`), and 2 are in a `__pycache__/`. 2 are over the 1 MiB a commit takes (`lib/target/benchmark-native.json`, twice; the limit is VF-020's and VF-025's). The collect commits succeeded and said nothing: an ignored file is not an error to a commit.
+  - **Where the bytes are.** No original of them was sealed: the 19 jobs ran before originals were captured, or kept them with a collector that had no capture. 944 of the files, 10 MB, are still in the default checkout as ignored files of that one working copy. Three, of 2026-11-06, are in no checkout of this machine.
+  - **By day:** 2026-11-06, 186 files; 11-07, 101; 11-08, 651; 11-14, 2; 11-20, 7.
+- **Needs**:
+  - **The watcher or the user, in the default checkout:** hand the 944 files to the private archive while they exist. `python3 jobs/audit.py --json` there lists each under `gaps` with the kind `artifact-not-committed`.
+  - **The pipeline** (this run): a collect that keeps an output says so when the commit will not take its path, and the audit keeps counting what is still outside.
+- **Tracked in**: this entry; [`jobs/README.md`](../jobs/README.md#the-baseline) for the baseline; the run's [results page](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md).
+- **Closes when**: the audit of the default checkout lists no `artifact-not-committed` gap without a sealed original, or the user decides the 947 are not worth keeping.
+
 ### VF-079: a session's trace line lands on commits it did not make
 
 - **Status**: open, for the user to decide whether the rule changes. It did not come with the convergence on one run skill; it was seen twice during it.
