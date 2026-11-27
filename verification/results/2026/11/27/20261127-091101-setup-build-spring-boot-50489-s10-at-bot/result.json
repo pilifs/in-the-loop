@@ -1,0 +1,361 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-091101-setup-build-spring-boot-50489-s10-at-bot",
+  "title": "Setup: build Spring Boot #50489 (S10) at both pins and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 2 failed, 2 passed step(s) in 8m33s, peak 6.6 GiB (estimated 40m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S10 fix: build and landed tests) exited 1, expected 0",
+    "step 1 (S10 fix: build and landed tests) was held back 2m34s by its 4-CPU quota in 3m46s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S10 parent: build and the parent's tests) exited 1, expected 0",
+    "step 2 (S10 parent: build and the parent's tests) was held back 2m08s by its 4-CPU quota in 2m38s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S10 transplant: the fix's tests on the parent) was held back 2m10s by its 4-CPU quota in 1m59s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-091101-setup-build-spring-boot-50489-s10-at-bot.json",
+    "sha256": "ccd6d1c55ba07824f5af3c96b89d2bb79a6c095837856e78923d3c961ef93ff2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-091101-setup-build-spring-boot-50489-s10-at-bot",
+      "title": "Setup: build Spring Boot #50489 (S10) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S10 (spring-projects/spring-boot#50489: Preserve metadata descriptions for properties Gradle leaves uncompiled). In the worktrees $P/worktrees/S10-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), ONLINE: its landed test needs the network at test time (see the setup record), it builds the jars of build-plugin:spring-boot-gradle-plugin configuration-metadata:spring-boot-configuration-processor with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (JavaPluginActionIntegrationTests (test) DescriptionCacheTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of build-plugin:spring-boot-gradle-plugin configuration-metadata:spring-boot-configuration-processor in $P/artifacts/S10-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S10",
+      "submitted": {
+        "at": "2026-11-27T09:11:01+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "40m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "steps": [
+        {
+          "name": "S10 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S10 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S10 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S10 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+  "startedAt": "2026-11-27T09:18:56+00:00",
+  "finishedAt": "2026-11-27T09:27:50+00:00",
+  "wallSeconds": 534.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2137390,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 9600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 2400.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "usage": {
+    "peakMemoryBytes": 7070490624,
+    "wallSeconds": 513.3,
+    "cpuSeconds": 1361.4,
+    "memoryOfEstimate": 1.1,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S10 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 fix",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 226.559,
+      "cpuSeconds": 585.924,
+      "cpuThrottledSeconds": 154.904,
+      "peakMemoryBytes": 7070490624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s10-fix-build-and-landed-tests.log",
+        "lines": 20,
+        "bytes": 2289,
+        "sha256": "30907a4505ba56fa592f4d32afa2926795d13f06effdaf8f22ea03db920f6d93",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S10-fix gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=166 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/set",
+        "junit tests=98 failures=1 errors=0 skipped=0",
+        "junit failed JavaPluginActionIntegrationTests#Gradle 9.7.0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.gradle.plugin.JavaPluginActionIntegrationTests no-result",
+        "class org.springframework.boot.configurationprocessor.DescriptionCacheTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S10-fix/build-plugin_spring-boot-gradle-plugin.runtimeClasspath.txt 94 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S10-fix/build-plugin_spring-boot-gradle-plugin.testRuntimeClasspath.txt 152 entries",
+        "classpath build-plugin:spring-boot-gradle-plugin testRuntimeClasspath names files in the case's own Gradle home:",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/gradle-homes/S10/caches/9.7.0/generated-gradle-jars/gradle-test-kit-9.7.0.jar",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/gradle-homes/S10/caches/9.7.0/generated-gradle-jars/gradle-api-9.7.0.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S10 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 parent",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 158.468,
+      "cpuSeconds": 437.721,
+      "cpuThrottledSeconds": 128.758,
+      "peakMemoryBytes": 4861718528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s10-parent-build-and-the-paren.log",
+        "lines": 19,
+        "bytes": 2096,
+        "sha256": "e607c86d8ba7029a596fa9ca483ec7319f0e9320f1cce07de757925324f38eaa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S10-parent gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=101 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/",
+        "junit tests=87 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.gradle.plugin.JavaPluginActionIntegrationTests no-result",
+        "class org.springframework.boot.configurationprocessor.DescriptionCacheTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S10-parent/build-plugin_spring-boot-gradle-plugin.runtimeClasspath.txt 94 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S10-parent/build-plugin_spring-boot-gradle-plugin.testRuntimeClasspath.txt 152 entries",
+        "classpath build-plugin:spring-boot-gradle-plugin testRuntimeClasspath names files in the case's own Gradle home:",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/gradle-homes/S10/caches/9.7.0/generated-gradle-jars/gradle-test-kit-9.7.0.jar",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/gradle-homes/S10/caches/9.7.0/generated-gradle-jars/gradle-api-9.7.0.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S10 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 119.824,
+      "cpuSeconds": 334.01,
+      "cpuThrottledSeconds": 130.97,
+      "peakMemoryBytes": 5691584512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s10-transplant-the-fix-s-tests.log",
+        "lines": 27,
+        "bytes": 2909,
+        "sha256": "3a572ddf0b986927d52e1370dc598c7b4000bdb3c3fa74cd169d3a5696e6eb87",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/java/org/springframework/boot/gradle/plugin/JavaPluginActionIntegrationTests.java",
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/resources/org/springframework/boot/gradle/plugin/JavaPluginActionIntegrationTests-compileJavaIsUpToDateOnSecondInvocation.gradle",
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/resources/org/springframework/boot/gradle/plugin/JavaPluginActionIntegrationTests-configurationPropertiesCompilerArgumentsConfiguredWhenProcessorIsPresent.gradle",
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/resources/org/springframework/boot/gradle/plugin/JavaPluginActionIntegrationTests-configurationPropertiesCompilerArgumentsNotConfiguredWhenProcessorIsAbsent.gradle",
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/resources/org/springframework/boot/gradle/plugin/JavaPluginActionIntegrationTests-descriptionCacheLocationIsAnOutputOfCompileJava.gradle",
+        "transplanted configuration-metadata/spring-boot-configuration-processor/src/test/java/org/springframework/boot/configurationprocessor/DescriptionCacheTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S10-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=119 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scrip",
+        "junit tests=93 failures=6 errors=0 skipped=0",
+        "junit failed JavaPluginActionIntegrationTests#Gradle 9.0.0",
+        "junit failed JavaPluginActionIntegrationTests#Gradle 9.7.0",
+        "junit failed JavaPluginActionIntegrationTests#Gradle 9.7.0 --configuration-cache",
+        "junit failed JavaPluginActionIntegrationTests#Gradle 9.0.0",
+        "junit failed JavaPluginActionIntegrationTests#Gradle 9.7.0",
+        "junit failed JavaPluginActionIntegrationTests#Gradle 9.7.0 --configuration-cache",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.gradle.plugin.JavaPluginActionIntegrationTests no-result",
+        "class org.springframework.boot.configurationprocessor.DescriptionCacheTests no-result",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S10 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 8.481,
+      "cpuSeconds": 3.707,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 215339008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s10-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "212a7223020714c54edbf288d602f85a64a4edc60b5dc43a9dd90c5a5901151e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S10"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T09:28:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T092750Z-85474914e2521102",
+      "workdir": "20261127T092809Z-38878809072b92e4"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-091101-setup-build-spring-boot-50489-s10-at-bot"
+}
