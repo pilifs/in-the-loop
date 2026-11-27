@@ -90,6 +90,24 @@ class SessionStatus(unittest.TestCase):
             self.assertTrue(sync.own_transcript(here))
             self.assertEqual(sync.transcript_of(B), here, "none anywhere: this checkout's own name, as before")
 
+    def test_a_standing_session_is_not_ended_by_another_workspace_when_idle(self):
+        # 2026-11-27: a merge in the Fable session's workspace marked the queue's watcher, a standing session, ended.
+        self.session(A, "open")
+        self.transcript(A, "-made-up-other-workspace", 3600)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(sync.cmd_standing([A, "the", "watcher"]), 0)
+        self.assertEqual(sync.end_idle_elsewhere(set()), [])
+        self.assertEqual(sync.all_manifests()[A]["status"], "open")
+
+    def test_a_live_session_from_another_workspace_is_not_given_this_checkouts_working_copy(self):
+        # 2026-11-27 (VF-079): a sync of the live Fable session from another workspace stamped that workspace's @.
+        here, there = sync.claude_project_dir() / f"{A}.jsonl", self.home / ".claude" / "projects" / "-other" / f"{B}.jsonl"
+        with mock.patch.object(sync, "codex_transcripts", lambda: []):
+            self.assertTrue(sync.current_here(A, True, here, None), "live, and this checkout's own")
+            self.assertFalse(sync.current_here(A, False, here, None), "this checkout's own, but idle")
+            self.assertFalse(sync.current_here(B, True, there, None), "live, but another workspace's")
+            self.assertTrue(sync.current_here(B, False, there, B), "the session running the command")
+
     def test_a_standing_session_is_listed_under_its_role_and_returns_when_it_ends(self):
         self.session(A, "open", title="Its first topic")
         self.session(B, "ended", title="An ordinary session")

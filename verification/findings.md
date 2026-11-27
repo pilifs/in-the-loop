@@ -30,6 +30,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - **Leave the rule.** A line then means "a session that was running when this was made", a commit with several lines does not say which of them made it, and [`llm-dlc/specification.md`](../llm-dlc/specification.md) should say so.
   - **Tie a commit to the session whose command made it:** the changes its own `sync.py commit` and its commit hook recorded, with the date window kept for a commit that has no line at all.
   - Under either, a session rendered from another workspace's transcript should not be given the rendering checkout's `@`.
+    - **Done 2026-11-27,** by the advisor's change after `ynzzzokp`: `sync.py`'s `current_here`. Only the session running the command, or a live session whose transcript is the checkout's own, is given its `@`. A live session synced by name from another workspace's transcript is not. The rule for what a trace line means is still the user's to decide.
   - The three commits keep their lines: trace lines are not edited by hand.
 - **Tracked in**: this entry.
 - **Closes when**: the rule is decided and written down, and a sync of a session from another workspace's transcript leaves that workspace's working copy as it found it.

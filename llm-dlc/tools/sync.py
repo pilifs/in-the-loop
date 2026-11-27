@@ -466,6 +466,14 @@ def transcript_of(sid: str) -> Path:
     return next((p for p in codex_transcripts() if sid_of(p) == sid), None) or elsewhere or claude
 
 
+def current_here(sid: str, live: bool, transcript: Path, me: str | None) -> bool:
+    """Whether a sync gives a session this checkout's @ (link_commits): the session running the command, or a live
+    one whose transcript is this checkout's own. A live session synced by name from another workspace's transcript
+    is not: on 2026-11-27 a sync of the live Fable session in the workspace merge-fixes put its trace line on that
+    workspace's working copy, and its own workspace's check failed until adopt-logs (VF-079)."""
+    return sid == me or (live and own_transcript(transcript))
+
+
 def own_transcript(transcript: Path) -> bool:
     """Whether a transcript is one of this checkout's own: in its project folder, or a Codex rollout started in it."""
     return transcript.parent == claude_project_dir() or transcript in codex_transcripts()
@@ -741,9 +749,10 @@ def end_idle_elsewhere(here: set[str], now: float | None = None) -> list[str]:
     running, and nothing else read it again, so its row stayed `open` for good (VF-074). Only the status changes:
     the log, which the commits' trailers name, is as its workspace stored it. Returns the sessions it ended."""
     now = time.time() if now is None else now
-    ended = []
+    ended, standing = [], set(standing_sessions())
     for sid, m in all_manifests().items():
-        if sid in here or m.get("status") != "open":
+        # A standing session is meant to stay open between its turns: its own workspace's sync says when it ends.
+        if sid in here or sid in standing or m.get("status") != "open":
             continue
         transcript = transcript_anywhere(sid)
         if transcript is not None:
@@ -2765,7 +2774,7 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
         for p in paths:
             live = time.time() - p.stat().st_mtime < LIVE_SECONDS
             sid = sid_of(p)
-            status, current = "open" if live else "ended", live or sid == me
+            status, current = "open" if live else "ended", current_here(sid, live, p, me)
             was = states.entries.get(sid) or {}
             if not named and not every and (was.get("rendered", True) or not render) and \
                     {k: v for k, v in was.items() if k != "rendered"} == session_state(p, status, current, index):
