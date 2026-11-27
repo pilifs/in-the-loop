@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 
-from targets import qualification, runtime, runtime_jar
+from targets import qualification, recipes, runtime, runtime_jar
 from accept import descriptor_parameters
 
 
@@ -92,7 +92,7 @@ def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
     if settings.get("rootWorkingDirectory"):
         statements.append('if (!"/".equals(System.getProperty("user.dir")) || !"/".equals(new java.io.File("").getAbsolutePath())) throw new IllegalStateException("working directory");')
     if settings.get("preinitializeTogether"):
-        for name in sorted(claim["observedInitializers"]):
+        for name in recipes.initializer_order(claim):
             if not re.fullmatch(r"[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*", name):
                 raise ValueError("invalid binary name for JVM initialization")
             statements.append(f'Class.forName("{name}", true, ClassLoader.getSystemClassLoader());')

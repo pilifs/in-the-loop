@@ -9,6 +9,17 @@ from typing import Optional
 from targets.interfaces import RUNTIME, TaskPlan, Unsupported
 
 
+def initializer_order(claim):
+    names = sorted(claim.get("observedInitializers") or {})
+    if "observedInitializerOrder" not in claim:
+        return names
+    order = claim["observedInitializerOrder"]
+    if (not claim.get("observedRuntime", {}).get("preinitializeTogether") or not isinstance(order, list)
+            or not order or not all(isinstance(n, str) for n in order) or sorted(order) != names):
+        raise ValueError("joint startup order must name every bound initializer exactly once")
+    return order
+
+
 @dataclass(frozen=True)
 class Argument:
     field: str
@@ -160,6 +171,10 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     if claim.get("observedRuntime") and not claim.get("observedInitializers"):
         return refused("observedRuntime", "startup settings require a named observed initializer")
     settings = claim.get("observedRuntime", {})
+    try:
+        roots = initializer_order(claim)
+    except ValueError as e:
+        return refused("observedInitializerOrder", str(e))
     if settings.get("weakMapValues") and not settings.get("preinitializeTogether"):
         return refused("observedRuntime", "weakMapValues requires a shared pre-entry heap")
     if settings.get("captureObjects") and not settings.get("preinitializeTogether"):
@@ -204,7 +219,7 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     add("engine", "--engine", [plan.engine])
     add("gaps", "--gaps", [plan.gaps])
     add("namedModels", "--model", claim.get("namedModels") or [])
-    add("observedInitializers", "--observed-initializer", sorted(claim.get("observedInitializers") or {}))
+    add("observedInitializers", "--observed-initializer", roots)
     if "observedRuntime" in claim:
         add("observedRuntime", "--observed-runtime", [json.dumps(claim["observedRuntime"], sort_keys=True, separators=(",", ":"))])
     for field, flag in (("unwind", "--unwind"), ("maxArrayLength", "--max-array-length")):

@@ -271,6 +271,19 @@ class RecipesTest(unittest.TestCase):
                                             if a.flag == "--observed-runtime"))
         src = replay_candidate.source("p.C#check(I)I", eager, [{"name": "n", "type": "int", "value": 1}], ["n"])
         self.assertLess(src.index("Class.forName("), src.index("p.C.check("))
+        ordered = {**plan.claim, **eager, "observedInitializers": {"z.Root": "a" * 64, "a.Reader": "b" * 64},
+                   "observedInitializerOrder": ["z.Root", "a.Reader"]}
+        def ordered_flags(claim):
+            return [arg.value for arg in recipes.translate(replace(plan, claim=claim)).arguments if arg.flag == "--observed-initializer"]
+        self.assertEqual(ordered_flags(ordered), ["z.Root", "a.Reader"])
+        self.assertEqual(ordered_flags({k: v for k, v in ordered.items() if k != "observedInitializerOrder"}), ["a.Reader", "z.Root"])
+        replay = replay_candidate.source("p.C#check(I)I", ordered, [{"name": "n", "type": "int", "value": 1}], ["n"])
+        self.assertLess(replay.index('"z.Root"'), replay.index('"a.Reader"'))
+        swapped = {**ordered, "observedInitializerOrder": list(reversed(ordered["observedInitializerOrder"]))}
+        self.assertNotEqual(workflow.claim_key(ordered), workflow.claim_key(swapped))
+        for invalid in (["z.Root"], ["z.Root", "z.Root"], ["z.Root", "other.Missing"]):
+            bad = {**ordered, "observedInitializerOrder": invalid}
+            self.assertIsInstance(recipes.translate(replace(plan, claim=bad)), interfaces.Unsupported)
         self.assertIn("availableProcessors() != 2", src)
         self.assertIn("System.getenv().isEmpty()", src)
         self.assertIsInstance(recipes.translate(replace(original, claim={**original.claim, "observedRuntime": settings})), interfaces.Unsupported)
