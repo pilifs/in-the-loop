@@ -1,0 +1,212 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-003930-repeat-both-reflective-startup-histories",
+  "title": "Repeat both reflective startup histories with the standalone tracer",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 53.3s, peak 142.0 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-003930-repeat-both-reflective-startup-histories.json",
+    "sha256": "e947a346f24b2aecc57662f73288d59e5ce1d86263f4fb1e347ed381b5c00baf",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-003930-repeat-both-reflective-startup-histories",
+      "title": "Repeat both reflective startup histories with the standalone tracer",
+      "description": "Repeat the two guarded ThreeTen retries, twelve untouched and instrumented public observations and the Method controls from the exact revision containing the standalone recorder sources.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T00:39:30+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Original deployments, aliases, metadata and refusal controls",
+          "run": "python3 lib/benchmark/startup-facts/members.py --output verification/startup-facts/threeten-members.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/threeten-members.zip"
+      ]
+    }
+  },
+  "sourceCommit": "138bb5cb8206f04bd72b7415937aa027ce15a487",
+  "startedAt": "2026-11-27T00:40:20+00:00",
+  "finishedAt": "2026-11-27T00:46:02+00:00",
+  "wallSeconds": 342.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 434043,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 148885504,
+    "wallSeconds": 53.3,
+    "cpuSeconds": 71.9,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.3
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 190.97,
+      "cpuSeconds": 191.258,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2344120320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "31bfb27a84828b9dcbb34d57942df60cf593c9150ed648e4c77cb13ee3b685bd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-003930-repeat-both-reflective-startup-histories/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 10s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Original deployments, aliases, metadata and refusal controls",
+      "run": "python3 lib/benchmark/startup-facts/members.py --output verification/startup-facts/threeten-members.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 53.319,
+      "cpuSeconds": 71.915,
+      "cpuThrottledSeconds": 7.061,
+      "peakMemoryBytes": 148885504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-original-deployments-aliases-m.log",
+        "lines": 5,
+        "bytes": 936,
+        "sha256": "f20bc2dff02440bef7f42623785d1fc7a90468abeb0d9d0d59d456b74bf9fb4e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-003930-repeat-both-reflective-startup-histories/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "old outside the fragment: reads the static field org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME, which the class's observed initializer left as an object of org.threeten.bp.format.DateTimeFormatter: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
+        "new outside the fragment: reads the static field org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME, which the class's observed initializer left as an object of org.threeten.bp.format.DateTimeFormatter: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
+        "2 original deployments and 12 original histories; reflective metadata and alias controls passed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/threeten-members.zip",
+      "change": "added",
+      "bytes": 7671,
+      "sha256": "4a4cb1e561a224dec60caeb1cf7f0273a9fa4dd1156493301d91fba1a42f4136",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T00:46:23+00:00",
+    "applied": [
+      "verification/startup-facts/threeten-members.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9f3651ed77a687f1d6d62e7a7fe4c7ce45db9550",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9f3651ed77a687f1d6d62e7a7fe4c7ce45db9550/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T004602Z-0454124eb73d0b6d",
+      "outputs": "20261127T004602Z-0688319d2ac14a8b",
+      "diff": "20261127T004602Z-088957fcabb08b30"
+    }
+  }
+}
