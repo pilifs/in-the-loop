@@ -356,6 +356,10 @@ your plan asks for.
 
 ### Stage 3: set the examples up
 
+When a prepared strict native property stops at a class initializer, retain its entry, assertion, bounds and classpath. Pass that same proof command to `examples/tools/targets/startup_facts.py` with a work directory and the prepared revision identity. The first diagnostic selects the initializer. The recorder observes an effective charset, reflective lookup or live properties operation when it can bind that use. The watcher can read the original result, the scoped retry and its remaining dependency with `watch.py startup-facts WORK/startup-report.json`. [Command and resume example](../lib/README.md#proof-output)
+
+For a reviewed scoped claim, `observedInitializers` binds the field-state digest and `observedRuntime` holds the launch profile. List the typed assumption IDs the property must consume in `startupPremises`. A diagnostic-only observation stays in the recording. When roots share a pre-entry heap, `observedInitializerOrder` freezes their order for the checker and the original JVM witness. [Target claim schema](../examples/schema/target-claim.schema.json)
+
 For the session `watch.py stage setup` starts. You are given the plan. You turn each of its examples into a prepared
 one, in the plan's order and under the plan's numbers, as [`examples/README.md`](../examples/README.md#add-an-example)
 describes for a real-world example ([285](../examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md)

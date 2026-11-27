@@ -253,6 +253,14 @@ class RecipesTest(unittest.TestCase):
         self.assertIsNone(checker_output.solver_candidate({**outcome, "pair": {**pair, "target": "Other#check"}}))
 
     def test_observed_states_bind_each_revision_and_the_executed_model(self):
+        from targets import startup_facts
+        def requested(sites):
+            gap = {"id":"jdk-static-method:java.lang.System.getProperties()Ljava/util/Properties;@jdk-21",
+                   "sites":sites,"treatment":"refused"}
+            return startup_facts.first_root({"search":{"gaps":[gap]}})
+        self.assertEqual(requested(["p.Facts.<clinit>:17","p.Facts.<clinit>:42"]), "p.Facts")
+        self.assertIsNone(requested(["p.Facts.read:17"]))
+        self.assertIsNone(requested(["p.Facts.<clinit>:17","p.Other.<clinit>:42"]))
         plan = self.plan("310", "same-day-observed")
         original = self.plan("310", "same-day")
         self.assertNotEqual(original.claim["key"], plan.claim["key"])
@@ -271,6 +279,19 @@ class RecipesTest(unittest.TestCase):
                                             if a.flag == "--observed-runtime"))
         src = replay_candidate.source("p.C#check(I)I", eager, [{"name": "n", "type": "int", "value": 1}], ["n"])
         self.assertLess(src.index("Class.forName("), src.index("p.C.check("))
+        ordered = {**plan.claim, **eager, "observedInitializers": {"z.Root": "a" * 64, "a.Reader": "b" * 64},
+                   "observedInitializerOrder": ["z.Root", "a.Reader"]}
+        def ordered_flags(claim):
+            return [arg.value for arg in recipes.translate(replace(plan, claim=claim)).arguments if arg.flag == "--observed-initializer"]
+        self.assertEqual(ordered_flags(ordered), ["z.Root", "a.Reader"])
+        self.assertEqual(ordered_flags({k: v for k, v in ordered.items() if k != "observedInitializerOrder"}), ["a.Reader", "z.Root"])
+        replay = replay_candidate.source("p.C#check(I)I", ordered, [{"name": "n", "type": "int", "value": 1}], ["n"])
+        self.assertLess(replay.index('"z.Root"'), replay.index('"a.Reader"'))
+        swapped = {**ordered, "observedInitializerOrder": list(reversed(ordered["observedInitializerOrder"]))}
+        self.assertNotEqual(workflow.claim_key(ordered), workflow.claim_key(swapped))
+        for invalid in (["z.Root"], ["z.Root", "z.Root"], ["z.Root", "other.Missing"]):
+            bad = {**ordered, "observedInitializerOrder": invalid}
+            self.assertIsInstance(recipes.translate(replace(plan, claim=bad)), interfaces.Unsupported)
         self.assertIn("availableProcessors() != 2", src)
         self.assertIn("System.getenv().isEmpty()", src)
         self.assertIsInstance(recipes.translate(replace(original, claim={**original.claim, "observedRuntime": settings})), interfaces.Unsupported)
@@ -288,6 +309,17 @@ class RecipesTest(unittest.TestCase):
             outcome = {"stated": {"assumptions": [{"id": i, "kind": "library", "basis": "engine"} for i in actual]}}
             return qualification.library_bindings_problem(plan, outcome, classes)
         self.assertIsNone(problem(ids))
+        receipt = "e" * 64
+        typed_id = "startup-charset:" + receipt
+        typed = replace(plan, kind="prove", revisions=["fix"], claim={**plan.claim, "namedModels": [],
+                        "observedRuntime":{"charsetLocale":"C"}, "startupPremises":[typed_id]})
+        row = {"kind":"default-charset", "root":name, "classSha256":"b"*64, "stateSha256":state,
+               "route":"execute initializer bytecode","receipt":receipt}
+        outcome = {"startup_evidence":[row],"stated":{"assumptions":[{"id":typed_id,"kind":"library","basis":"engine"}]}}
+        self.assertIsNone(qualification.library_bindings_problem(typed,outcome,classes))
+        for wrong in ({"receipt":"f"*64},{"classSha256":"a"*64},{"stateSha256":"0"*64}):
+            self.assertIsNotNone(qualification.library_bindings_problem(typed,{**outcome,"startup_evidence":[{**row,**wrong}]},classes))
+        self.assertIsNotNone(qualification.library_bindings_problem(typed,{**outcome,"stated":{"assumptions":[]}},classes))
         for changed in [ids[1:], ids[:-1], ids + ["jdk-model:other.Model"],
                         [*ids[:2], ids[2].replace("b" * 64, "c" * 64)],
                         [*ids[:2], ids[2].replace(state, "0" * 64)]]:

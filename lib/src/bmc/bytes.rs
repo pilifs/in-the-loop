@@ -217,6 +217,29 @@ impl Engine<'_> {
         self.advance(path);
         Some(Ok(None))
     }
+    /// Re-execute the observed call on its original constant, using the existing symbolic
+    /// encoder. No application field value is imported on this route.
+    pub(super) fn observed_default_bytes(&mut self, path: &mut Path, receiver: usize) -> Option<Step> {
+        let frame = path.frames.last()?;
+        let fact = self.observed.get(&frame.class.name)?.on.charset.as_ref()?;
+        let (pc, input) = fact.encoding.as_ref()?;
+        if frame.method != "<clinit>" || frame.code.pcs[frame.at] != *pc { return None; }
+        let units = self.constant_units(path, receiver)?;
+        if crate::observed::charset::units_digest(&units) != *input {
+            return Some(unsupported("default charset receipt does not cover this string at the observed instruction"));
+        }
+        let id = format!("startup-charset:{}", fact.id);
+        let text = format!("String.getBytes() in {}.<clinit> at bytecode {} used the original JVM's {} default charset for the bound UTF-16 input (startup receipt {})",
+            frame.class.name.replace('/', "."), pc, fact.canonical, fact.id);
+        let field = if fact.canonical == "UTF-8" { "UTF_8" } else { "US_ASCII" };
+        let content = path.objects[receiver].content().cloned()?;
+        let charset = self.literal(path, Literal::Charset(field), CHARSET);
+        let step = self.string_bytes(path, &content, "(Ljava/nio/charset/Charset;)[B", &[Val::R(Some(charset))])?;
+        self.assumption_ids.insert(text.clone(), id);
+        self.assumed.insert(text);
+        Some(step)
+    }
+
     /// `String.getBytes(Charset)` and `String.getBytes(String)` on a String of content `s`: see the module's notes.
     /// `None` where the call stays the JDK's.
     pub(super) fn string_bytes(&mut self, path: &mut Path, s: &Array, descriptor: &str, args: &[Val]) -> Option<Step> {

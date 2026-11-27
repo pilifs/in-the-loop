@@ -13,6 +13,8 @@ pub(super) struct Member {
     name: String,
     modifiers: u16,
     ty: Type,
+    arity: usize,
+    receipt: Option<String>,
 }
 
 // getDeclaredFields0 and getDeclaredMethods0 also resolve types of the *other* declarations.
@@ -45,30 +47,46 @@ fn plain_interface(cp: &ClassPath, cf: &ClassFile) -> bool {
 }
 
 impl Engine<'_> {
+    pub(super) fn captured_method(&mut self, path: &mut Path, m: &crate::observed::MethodFact, state: &str) -> Result<usize, String> {
+        let descriptor = MethodDescriptor::parse(&m.descriptor).map_err(|e| e.to_string())?;
+        let o = self.alloc(path, METHOD);
+        path.objects[o].member = Some(Rc::new(Member { owner: m.owner.clone(), name: m.name.clone(), modifiers: m.modifiers,
+            ty: descriptor.ret, arity: descriptor.params.len(), receipt: Some(format!("startup-method:{state}:{}:{}{}", m.declaring_sha256, m.name, m.descriptor)) }));
+        path.objects[o].unknown = true;
+        Ok(o)
+    }
+
     pub(super) fn reflection_method(&mut self, path: &mut Path, o: usize, call: &MemberRef, args: &[Val]) -> Option<Step> {
         let (name, desc) = (call.name.as_str(), call.descriptor.as_str());
         if let Some(member) = path.objects[o].member.clone() {
+            let unsupported_use = || unsupported(format!("observed reflective member {}#{}: unsupported {}{} at {}.{}",
+                member.owner, member.name, name, desc, path.frames.last().unwrap().class.name, path.frames.last().unwrap().method));
             if !matches!(call.owner.as_str(), METHOD | FIELD | "java/lang/reflect/Executable" | "java/lang/reflect/Member")
                 || !self.cp.is_subtype(&path.objects[o].class, &call.owner)
-                || self.cp.find_method(&call.owner, name, desc).is_none() { return None; }
+                || self.cp.find_method(&call.owner, name, desc).is_none() { return member.receipt.as_ref().map(|_| unsupported_use()); }
             let value = match (name, desc) {
                 ("getName", "()Ljava/lang/String;") => {
                     let text = self.literal(path, Literal::Str(member.name.encode_utf16().collect()), STRING);
                     Val::R(Some(text))
                 }
                 ("getModifiers", "()I") => Val::I(self.b.constant(i64::from(member.modifiers), 32)),
-                ("getParameterCount", "()I") if path.objects[o].class == METHOD => Val::I(self.b.constant(0, 32)),
+                ("getParameterCount", "()I") if path.objects[o].class == METHOD => Val::I(self.b.constant(member.arity as i64, 32)),
                 ("getDeclaringClass", "()Ljava/lang/Class;") =>
                     Val::R(Some(self.literal(path, Literal::Class(member.owner.clone()), CLASS))),
-                ("getGenericReturnType", "()Ljava/lang/reflect/Type;") if path.objects[o].class == METHOD =>
+                ("getGenericReturnType", "()Ljava/lang/reflect/Type;") if path.objects[o].class == METHOD && member.arity == 0 && member.receipt.is_none() =>
                     return self.generic_method_return(path, o, &member.owner, &member.name, &member.ty),
                 ("getReturnType", "()Ljava/lang/Class;") if path.objects[o].class == METHOD => {
                     let key = if member.ty.is_reference() { Literal::Class(class_of(&member.ty)) }
                         else { Literal::PrimitiveClass(member.ty.descriptor()) };
                     Val::R(Some(self.literal(path, key, CLASS)))
                 }
-                _ => return None,
+                _ => return member.receipt.as_ref().map(|_| unsupported_use()),
             };
+            if let Some(id) = &member.receipt {
+                let text = format!("{}#{} metadata from the selected declaring class supplied {}{} ({id})", member.owner, member.name, name, desc);
+                self.assumption_ids.insert(text.clone(), id.clone());
+                self.assumed.insert(text);
+            }
             self.push(path, value);
             self.advance(path);
             return Some(Ok(None));
@@ -104,7 +122,7 @@ impl Engine<'_> {
             (f.access, Type::parse(&f.descriptor).ok()?)
         };
         let copy = self.alloc(path, if method { METHOD } else { FIELD });
-        path.objects[copy].member = Some(Rc::new(Member { owner: declaring, name: member_name, modifiers, ty }));
+        path.objects[copy].member = Some(Rc::new(Member { owner: declaring, name: member_name, modifiers, ty, arity: 0, receipt: None }));
         path.objects[copy].unknown = true; // other VM fields were never supplied
         self.push(path, Val::R(Some(copy)));
         self.advance(path);

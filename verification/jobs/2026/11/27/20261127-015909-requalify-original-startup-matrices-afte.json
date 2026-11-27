@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-015909-requalify-original-startup-matrices-afte",
+  "title": "Requalify original startup matrices after the debugger fixes",
+  "description": "On the follow-up producer rerun the measured charset fixture, both Commons IO releases, ThreeTenBP metadata and public histories, POI table iteration, both Batik deployments and ordinary file/Reader decoding. Preserve the full typed archives and output hashes separately from the first-run receipts.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T01:59:09+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "7m"
+  },
+  "steps": [
+    {
+      "name": "Original startup captures and public parity",
+      "run": "python3 lib/benchmark/startup-facts/postfreeze_originals.py --output verification/startup-facts/postfreeze-originals.zip",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/startup-facts/postfreeze-originals.zip"
+  ]
+}

@@ -9,6 +9,17 @@ from typing import Optional
 from targets.interfaces import RUNTIME, TaskPlan, Unsupported
 
 
+def initializer_order(claim):
+    names = sorted(claim.get("observedInitializers") or {})
+    if "observedInitializerOrder" not in claim:
+        return names
+    order = claim["observedInitializerOrder"]
+    if (not claim.get("observedRuntime", {}).get("preinitializeTogether") or not isinstance(order, list)
+            or not order or not all(isinstance(n, str) for n in order) or sorted(order) != names):
+        raise ValueError("joint startup order must name every bound initializer exactly once")
+    return order
+
+
 @dataclass(frozen=True)
 class Argument:
     field: str
@@ -160,10 +171,20 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     if claim.get("observedRuntime") and not claim.get("observedInitializers"):
         return refused("observedRuntime", "startup settings require a named observed initializer")
     settings = claim.get("observedRuntime", {})
+    try:
+        roots = initializer_order(claim)
+    except ValueError as e:
+        return refused("observedInitializerOrder", str(e))
     if settings.get("weakMapValues") and not settings.get("preinitializeTogether"):
         return refused("observedRuntime", "weakMapValues requires a shared pre-entry heap")
     if settings.get("captureObjects") and not settings.get("preinitializeTogether"):
         return refused("observedRuntime", "captureObjects requires a shared pre-entry heap")
+    if settings.get("recordJointStartup") and not settings.get("preinitializeTogether"):
+        return refused("observedRuntime", "ordered recording requires a jointly initialized heap")
+    if (settings.get("liveProperties") or settings.get("charsetLocale")) and (plan.kind != "prove" or plan.gaps != "strict" or len(roots) != 1):
+        return refused("observedRuntime", "this setting recording requires a strict property on one original root")
+    if settings.get("liveProperties") and not settings.get("emptyEnvironment"):
+        return refused("observedRuntime", "a live properties recording requires a controlled empty environment")
     arguments = []
     def add(field, flag, values):
         arguments.extend(Argument(field, flag, str(value)) for value in values)
@@ -204,7 +225,7 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     add("engine", "--engine", [plan.engine])
     add("gaps", "--gaps", [plan.gaps])
     add("namedModels", "--model", claim.get("namedModels") or [])
-    add("observedInitializers", "--observed-initializer", sorted(claim.get("observedInitializers") or {}))
+    add("observedInitializers", "--observed-initializer", roots)
     if "observedRuntime" in claim:
         add("observedRuntime", "--observed-runtime", [json.dumps(claim["observedRuntime"], sort_keys=True, separators=(",", ":"))])
     for field, flag in (("unwind", "--unwind"), ("maxArrayLength", "--max-array-length")):

@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-013122-score-frozen-startup-transfer-for-common",
+  "title": "Score frozen startup transfer for Commons Configuration",
+  "description": "Use all four original Configuration deployments. Replay the registered selectors with an own invalid lookup and an inherited lookup, trace the original holder on each prestate and compare the retained, replaced and subsequently mutated table history. Keep unsupported and failed initializer boundaries in the score.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T01:31:22+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "First frozen transfer",
+      "run": "python3 lib/benchmark/startup-facts/transfers.py configuration --output verification/startup-facts/transfer-configuration.zip",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/startup-facts/transfer-configuration.zip"
+  ]
+}

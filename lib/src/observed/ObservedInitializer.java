@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
  */
 public final class ObservedInitializer {
     private static final Pattern INITIALIZING = Pattern.compile("Initializing '([^']+)'");
+    private static final Pattern INITIALIZING_THREAD = Pattern.compile("(?m)^\\[\\s*(\\d+)\\s*\\].*?Initializing '([^']+)'");
 
     private ObservedInitializer() {
     }
@@ -83,6 +84,18 @@ public final class ObservedInitializer {
         public boolean containsKey(Object key) {
             keyed(key, super.get(key));
             return super.containsKey(key);
+        }
+
+        @Override
+        public int hashCode() {
+            all();
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            all();
+            return super.equals(other);
         }
 
         @Override
@@ -292,7 +305,69 @@ public final class ObservedInitializer {
         }
     }
 
+    // The tracer breaks on this invocation and its normal return. Snapshot inspection runs afterwards.
+    private static Class<?> initializeRoots(String[] args, ClassLoader app, boolean together, int end) throws Exception {
+        Class<?> root = Class.forName(args[0], true, app);
+        if (together) {
+            for (int i = 3; i < end; i++) Class.forName(args[i], true, app);
+        }
+        return root;
+    }
+
+    private static String charsetProfile() {
+        var value = java.nio.charset.Charset.defaultCharset();
+        Class<?> type = value.getClass();
+        return "{\"canonical\":" + text(value.name()) + ",\"implementation\":" + text(type.getName())
+                + ",\"bootstrap\":" + (type.getClassLoader() == null) + ",\"module\":" + text(type.getModule().getName())
+                + ",\"standardSingleton\":" + (value == StandardCharsets.UTF_8 || value == StandardCharsets.US_ASCII)
+                + ",\"fileEncoding\":" + text(System.getProperty("file.encoding")) + ",\"locale\":" + text(System.getenv("LC_ALL"))
+                + ",\"vm\":" + text(System.getProperty("java.vm.name")) + ",\"vmVersion\":" + text(System.getProperty("java.vm.version")) + "}";
+    }
+
+    static byte[] tablePair(String key, String value) throws Exception {
+        MessageDigest hash = MessageDigest.getInstance("SHA-256");
+        for (String s : List.of(key, value)) {
+            var buf = java.nio.ByteBuffer.allocate(4 + 2 * s.length()).putInt(s.length());
+            for (int i = 0; i < s.length(); i++) buf.putChar(s.charAt(i));
+            hash.update(buf.array());
+        }
+        return hash.digest();
+    }
+
+    static String tableDigest(List<byte[]> values) throws Exception {
+        MessageDigest hash = MessageDigest.getInstance("SHA-256");
+        for (byte[] value : values) hash.update(value);
+        return java.util.HexFormat.of().formatHex(hash.digest());
+    }
+
+    static String tableSnapshot(Properties table) throws Exception {
+        if (table.getClass() != Properties.class) throw new IllegalStateException("custom system-properties table");
+        List<byte[]> pairs = new ArrayList<>();
+        table.forEach((k, v) -> {
+            if (!(k instanceof String key) || !(v instanceof String value)) throw new IllegalStateException("non-string system property");
+            try { pairs.add(tablePair(key, value)); } catch (Exception e) { throw new IllegalStateException(e); }
+        });
+        String order = tableDigest(pairs);
+        pairs.sort(java.util.Arrays::compareUnsigned);
+        return "{\"type\":\"java.util.Properties\",\"count\":" + pairs.size() + ",\"orderSha256\":" + text(order)
+                + ",\"entriesSha256\":" + text(tableDigest(pairs)) + ",\"hashCode\":" + table.hashCode() + "}";
+    }
+
     public static void main(String[] args) throws Exception {
+        if (args.length == 1 && args[0].equals("--table-request")) {
+            Path dir = Path.of(ObservedInitializer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            args = Files.readAllLines(dir.resolve("startup.request"), StandardCharsets.UTF_8).toArray(String[]::new);
+        }
+        boolean charset = false, liveTable = false;
+        Path audit = null;
+        while (args[0].startsWith("--record-") || args[0].startsWith("--audit-init=")) {
+            if (args[0].startsWith("--audit-init=")) audit = Path.of(args[0].substring("--audit-init=".length()));
+            else if (args[0].equals("--record-charset")) charset = true;
+            else if (args[0].equals("--record-methods")) methodOwners = new IdentityHashMap<>();
+            else if (args[0].equals("--record-table")) liveTable = true;
+            else throw new IllegalArgumentException("unknown recorder option");
+            args = java.util.Arrays.copyOfRange(args, 1, args.length);
+        }
         ClassLoader app = ClassLoader.getSystemClassLoader();
         String jdk = System.getProperty("java.version");
         String vendor = System.getProperty("java.vendor");
@@ -314,27 +389,33 @@ public final class ObservedInitializer {
         boolean atRoot = unixRoot();
         boolean emptyEnvironment = emptyEnvironment();
         Properties original = System.getProperties();
+        String beforeTable = liveTable ? tableSnapshot(original) : null;
         Recording recording = new Recording();
-        recording.putAll(original);
-        long mark = log == null ? 0 : Files.size(log);
+        if (!liveTable) recording.putAll(original);
+        Path evidenceLog = log == null ? audit : log;
+        long mark = evidenceLog == null ? 0 : Files.size(evidenceLog);
         Class<?> c;
-        System.setProperties(recording);
+        if (!liveTable) System.setProperties(recording);
         try {
-            c = Class.forName(args[0], true, app);
-            if (together) {
-                for (int i = 3; i < rootsEnd; i++) Class.forName(args[i], true, app);
-            }
+            c = initializeRoots(args, app, together, rootsEnd);
         }
         catch (Throwable t) {
-            System.setProperties(original);
+            if (!liveTable) System.setProperties(original);
             Throwable cause = (t instanceof ExceptionInInitializerError && t.getCause() != null) ? t.getCause() : t;
             System.out.println("@observed {\"threw\":\"" + cause.getClass().getName() + "\"}");
             return;
         }
-        System.setProperties(original);
+        if (!liveTable) System.setProperties(original);
         // Reflection and serialization can initialize additional classes. The boundary is
         // the return of Class.forName, before the observer inspects any subject fields.
-        byte[] logged = together ? Files.readAllBytes(log) : null;
+        byte[] logged = evidenceLog == null ? null : Files.readAllBytes(evidenceLog);
+        String profile = (charset ? ",\"charsetProfile\":" + charsetProfile() : "") + (methodOwners != null ? ",\"reflectiveMembers\":true" : "");
+        if (audit != null) profile += ",\"startupBoundary\":" + startupBoundary(c, app, logged, mark);
+        if (liveTable) {
+            if (original != System.getProperties() || !beforeTable.equals(tableSnapshot(original)))
+                throw new IllegalStateException("live system-properties table changed during startup");
+            profile += ",\"liveTable\":" + beforeTable;
+        }
         // The JDK's settings the initialization changed, read again after it: the check runs what follows under the
         // ones before it.
         List<String> changed = new ArrayList<>();
@@ -349,10 +430,10 @@ public final class ObservedInitializer {
                 changed.add(s[0] + ", from " + s[1] + " to " + s[2]);
             }
         }
-        changed.addAll(recording.changedFrom(original));
+        if (!liveTable) changed.addAll(recording.changedFrom(original));
         // Alone, the class is what another initialization's is compared with: described in full.
         if (log == null) {
-            System.out.println("@observed {\"jdk\":" + text(jdk) + ",\"fixedProcessors\":" + fixedProcessors()
+            System.out.println("@observed {\"jdk\":" + text(jdk) + profile + ",\"fixedProcessors\":" + fixedProcessors()
                     + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment()) + ",\"rootWorkingDirectory\":" + (atRoot && unixRoot()) + "," + new Dump(true).of(c) + "}");
             return;
         }
@@ -361,9 +442,16 @@ public final class ObservedInitializer {
         dump.weakMapValues = weakMapValues;
         dump.captureObjects = captured;
         String fields = together ? null : dump.fieldsOf(c);
-        if (!together) logged = Files.readAllBytes(log);
         String after = new String(logged, (int) Math.min(mark, logged.length), (int) Math.max(0, logged.length - mark), StandardCharsets.UTF_8);
         Map<String, Class<?>> members = new LinkedHashMap<>();
+        Map<String, String> initThreads = new HashMap<>();
+        if (together) {
+            Matcher threads = INITIALIZING_THREAD.matcher(after);
+            while (threads.find()) initThreads.putIfAbsent(threads.group(2), threads.group(1));
+        }
+        String initiatingThread = initThreads.get(c.getName().replace('.', '/'));
+        if (together && initiatingThread == null)
+            throw new IllegalStateException("missing initiating thread of the joint startup root");
         List<String> seen = new ArrayList<>();
         Matcher m = INITIALIZING.matcher(after);
         while (m.find()) {
@@ -382,12 +470,16 @@ public final class ObservedInitializer {
                     throw new IllegalStateException("cannot bind logged class " + internal, t);
                 continue;
             }
-            if (k == c || k.getClassLoader() != app || k.getName().startsWith(ObservedInitializer.class.getName())) {
+            if (k == c || k.getClassLoader() != app || recorderClass(k)) {
                 continue;
             }
             // An initializer may have caught another class's initialization failure.
             // An erroneous member cannot be installed as successfully initialized.
-            if (together) Class.forName(k.getName(), true, app);
+            if (together) {
+                if (!initiatingThread.equals(initThreads.get(internal)))
+                    throw new IllegalStateException("overlapping application initialization on different JVM threads: " + c.getName() + " and " + k.getName());
+                Class.forName(k.getName(), true, app);
+            }
             members.put(internal, k);
         }
         if (together) {
@@ -428,16 +520,60 @@ public final class ObservedInitializer {
         String internal = c.getName().replace('.', '/');
         java.security.CodeSource source = c.getProtectionDomain().getCodeSource();
         String from = source == null || source.getLocation() == null ? null : source.getLocation().toString();
+        ClassLoader defining = c.getClassLoader();
+        String loader = "{\"defining\":" + text(defining == null ? "bootstrap" : defining.getClass().getName())
+                + ",\"system\":" + (defining == app) + ",\"parent\":" + text(defining == null || defining.getParent() == null
+                ? "bootstrap" : defining.getParent().getClass().getName()) + "}";
+        List<String> applicationOrder = seen.stream().filter(n -> n.equals(internal) || members.containsKey(n)).map(ObservedInitializer::text).toList();
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
-                + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
+                + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"loader\":" + loader + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
-                + text(display) + "},\"zone\":" + text(zone) + ",\"preinitializeTogether\":" + together
+                + text(display) + "},\"zone\":" + text(zone) + profile + ",\"preinitializeTogether\":" + together
                 + ",\"weakMapValues\":" + weakMapValues
+                + ",\"applicationInitializationOrder\":[" + String.join(",", applicationOrder) + "]"
                 + ",\"captureObjects\":[" + String.join(",", captured.stream().map(ObservedInitializer::text).toList()) + "]"
                 + ",\"additionalRoots\":[" + String.join(",", additionalRoots) + "],\"rootWorkingDirectory\":" + (atRoot && unixRoot())
                 + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())
                 + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
                 + (recording.whole == null ? "null" : text(recording.whole)) + ",\"changed\":[" + changes + "],\"initialized\":[" + initialized + "]}}");
+    }
+
+    private static boolean recorderClass(Class<?> type) {
+        String name = type.getName();
+        String tool = ObservedInitializer.class.getName();
+        return type == ObservedInitializer.class || (name.startsWith(tool + "$") && type.getNestHost() == ObservedInitializer.class);
+    }
+
+    /** The VM log window is closed before inspecting either set of classes. */
+    private static String startupBoundary(Class<?> root, ClassLoader app, byte[] log, long mark) throws Exception {
+        if (mark < 0 || mark > log.length) throw new IllegalStateException("initialization log was truncated");
+        String name = root.getName().replace('.', '/');
+        int start = Math.toIntExact(mark);
+        Matcher before = INITIALIZING.matcher(new String(log,0,start,StandardCharsets.UTF_8));
+        java.util.Set<String> application = new java.util.LinkedHashSet<>();
+        boolean priorRoot = false, active = false;
+        while (before.find()) {
+            String n = before.group(1);
+            if (n.equals(name)) priorRoot = true;
+            // java.* is reserved to the VM. Other names, including javax.*, can
+            // belong to the application and have to be resolved by its loader.
+            if (n.startsWith("java/")) continue;
+            // HotSpot includes the hidden lambda's defining host and an address.
+            // Resolve the host without initializing it. Keep addresses out of receipts.
+            String owner = n.replaceFirst("\\$\\$Lambda(?:\\$[0-9]+)?(?:\\+|/)0x[0-9a-fA-F]+$", "");
+            try {
+                Class<?> type = Class.forName(owner.replace('/','.'),false,app);
+                ClassLoader loader = type.getClassLoader();
+                if (loader != null && loader != ClassLoader.getPlatformClassLoader() && !recorderClass(type)) application.add(owner);
+            } catch (ClassNotFoundException | LinkageError unresolved) {
+                // An original hidden or unbound class also prevents a cold-start admission.
+                application.add(n.replaceFirst("(?:\\+|/)0x[0-9a-fA-F]+$", ""));
+            }
+        }
+        Matcher during = INITIALIZING.matcher(new String(log,start,log.length-start,StandardCharsets.UTF_8));
+        while (during.find()) if (during.group(1).equals(name)) { active = true; break; }
+        return "{\"alreadyInitializedApplication\":[" + String.join(",",application.stream().map(ObservedInitializer::text).toList())
+                + "],\"rootPreviouslyInitialized\":" + priorRoot + ",\"rootInitializedDuring\":" + active + "}";
     }
 
     private static boolean emptyEnvironment() {
@@ -509,7 +645,7 @@ public final class ObservedInitializer {
     }
 
     /** A JSON string. */
-    private static String text(String s) {
+    static String text(String s) {
         StringBuilder o = new StringBuilder("\"");
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
@@ -530,6 +666,30 @@ public final class ObservedInitializer {
      * One class's static state, with the objects it holds numbered from 0; where `describe`, each value not held is
      * described in full beside what it is said to be (Describe).
      */
+    private static IdentityHashMap<java.lang.reflect.Method, Dump> methodOwners;
+    private static final class MemberCaptureFailure extends RuntimeException {
+        MemberCaptureFailure(String reason, Throwable cause) { super(reason, cause); }
+    }
+
+    private static String methodRecord(java.lang.reflect.Method method) throws Exception {
+        Class<?> declaring = method.getDeclaringClass();
+        ClassLoader loader = declaring.getClassLoader();
+        if (loader != null && loader != ClassLoader.getSystemClassLoader())
+            throw new IllegalStateException("unsupported reflective declaring loader for " + declaring.getName());
+        String owner = declaring.getName().replace('.', '/');
+        String descriptor = java.lang.invoke.MethodType.methodType(method.getReturnType(), method.getParameterTypes()).descriptorString();
+        try (InputStream bytes = declaring.getResourceAsStream("/" + owner + ".class")) {
+            if (bytes == null) throw new IllegalStateException("no declaring bytes for " + owner);
+            String digest = java.util.HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes.readAllBytes()));
+            String module = declaring.getModule().getName();
+            // isAccessible reads the override bit. canAccess also depends on a caller and a receiver.
+            return "{\"k\":\"method\",\"owner\":" + text(owner) + ",\"name\":" + text(method.getName())
+                    + ",\"descriptor\":" + text(descriptor) + ",\"modifiers\":" + method.getModifiers()
+                    + ",\"accessibleOverride\":" + method.isAccessible() + ",\"loader\":" + text(loader == null ? "bootstrap" : "application")
+                    + ",\"module\":" + (module == null ? "null" : text(module)) + ",\"declaringSha256\":" + text(digest) + "}";
+        }
+    }
+
     private static final class Dump {
         private final IdentityHashMap<Object, Integer> ids = new IdentityHashMap<>();
         private final List<String> objects = new ArrayList<>();
@@ -565,6 +725,7 @@ public final class ObservedInitializer {
                     value = f.getType().isPrimitive() ? primitive(f.getType(), f.get(null)) : value(f.get(null));
                 }
                 catch (Throwable t) {
+                    if (t instanceof MemberCaptureFailure failure) throw failure;
                     value = unread("a field reflection does not read (" + t.getClass().getName() + ")");
                 }
                 if (fields.length() > 0) {
@@ -698,6 +859,18 @@ public final class ObservedInitializer {
                 return "{\"o\":" + known + "}";
             }
             Class<?> type = v.getClass();
+            if (methodOwners != null && v instanceof java.lang.reflect.Method method) {
+                Dump previous = methodOwners.putIfAbsent(method, this);
+                if (previous != null && previous != this)
+                    throw new MemberCaptureFailure("reflective object shared across separately captured classes; requires a joint heap", null);
+                try {
+                    String body = methodRecord(method);
+                    int id = objects.size();
+                    ids.put(v, id);
+                    objects.add(body);
+                    return "{\"o\":" + id + "}";
+                } catch (Exception e) { throw new MemberCaptureFailure("cannot bind reflective member", e); }
+            }
             boolean requested = captureObjects.contains(type.getName());
             boolean atomic = requested && type == java.util.concurrent.atomic.AtomicReference.class;
             List<Class<?>> captured = requested ? capturedHierarchy(type) : null;

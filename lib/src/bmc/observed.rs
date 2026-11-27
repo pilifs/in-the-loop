@@ -76,6 +76,11 @@ impl Engine<'_> {
         let text = crate::observed::assumption(class, observed);
         self.assumption_ids.insert(text.clone(), format!("observed-initializer:{}:{}:{}", class.replace('/', "."), observed.on.sha256, observed.state_sha256));
         self.assumed.insert(text);
+        if let Some(id) = observed.on.table_receipt.as_ref().filter(|_| observed.on.table_read) {
+            let text = format!("The imported startup state of {} used the exact original live system-properties table and its observed iteration order (receipt {id})", class.replace('/', "."));
+            self.assumption_ids.insert(text.clone(), format!("startup-table:{id}"));
+            self.assumed.insert(text);
+        }
         for (index, (name, digest)) in observed.additional_roots.iter().enumerate() {
             let binary = name.replace('/', ".");
             let text = format!("{binary} was startup root {} in the same JVM as {}, before the checked entry", index + 2, class.replace('/', "."));
@@ -160,6 +165,7 @@ impl Engine<'_> {
             Object::Str { units, interned: true } => self.literal(path, Literal::Str(units.clone()), STRING),
             Object::Str { units, interned: false } => self.string(path, units),
             Object::Class(name) => self.literal(path, Literal::Class(name.clone()), "java/lang/Class"),
+            Object::Method(method) => self.captured_method(path, method, observed.on.member_receipt.as_deref().ok_or("unqualified reflective member capture")?)?,
             Object::Value(chain) | Object::Instance(chain) => {
                 let class = &chain.first().ok_or("an immutable value without a runtime class")?.name;
                 let o = self.alloc(path, class);

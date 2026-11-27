@@ -24,7 +24,7 @@ enum Entry {
     Jar(crate::zip::ZipArchive, PathBuf, JarVersions),
 }
 
-fn lookup_directory(path: &Path, ancestors: &mut Vec<PathBuf>) -> Result<String, Error> {
+pub(crate) fn lookup_directory(path: &Path, ancestors: &mut Vec<PathBuf>) -> Result<String, Error> {
     let resolved = path.canonicalize()?;
     if ancestors.contains(&resolved) {
         return Err(Error::new("cycle in a class path directory"));

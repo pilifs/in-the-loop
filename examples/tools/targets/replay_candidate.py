@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 
-from targets import qualification, runtime, runtime_jar
+from targets import qualification, recipes, runtime, runtime_jar
 from accept import descriptor_parameters
 
 
@@ -92,7 +92,7 @@ def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
     if settings.get("rootWorkingDirectory"):
         statements.append('if (!"/".equals(System.getProperty("user.dir")) || !"/".equals(new java.io.File("").getAbsolutePath())) throw new IllegalStateException("working directory");')
     if settings.get("preinitializeTogether"):
-        for name in sorted(claim["observedInitializers"]):
+        for name in recipes.initializer_order(claim):
             if not re.fullmatch(r"[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*", name):
                 raise ValueError("invalid binary name for JVM initialization")
             statements.append(f'Class.forName("{name}", true, ClassLoader.getSystemClassLoader());')
@@ -152,6 +152,11 @@ def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
         else:
             raise ValueError(f"replay cannot observe {o}")
         statements.append(f"System.out.println({expr});")
+    if settings.get("charsetLocale"):
+        name = settings.get("expectedCharsetName")
+        if name not in ("UTF-8","US-ASCII"):
+            raise ValueError("a charset-scoped JVM witness needs its recorded effective charset name")
+        statements.append(f'if (!java.nio.charset.Charset.defaultCharset().name().equals("{name}")) throw new IllegalStateException("witness charset differs");')
     throws = " throws ClassNotFoundException" if settings.get("preinitializeTogether") else ""
     return "class CandidateReplay { public static void main(String[] args)" + throws + " {\n" + "\n".join(statements) + "\n} " + helper + "}\n"
 
@@ -218,8 +223,15 @@ def check(plan, prepared, inputs, work, entry=None, *, checker=None):
                     raise ValueError(f"{rev}: replay classpath differs from the bound checker invocation")
             settings = claim.get("observedRuntime", {})
             flags = [f"-XX:ActiveProcessorCount={settings['processors']}"] if settings.get("processors") else []
+            if settings.get("liveProperties"):
+                raise ValueError("an independent live-table witness requires matching table membership and order")
+            if settings.get("charsetLocale"):
+                flags.append("-Dfile.encoding=COMPAT")
             command = [str(Path(jdk["home"]) / "bin/java"), *flags, "-cp", os.pathsep.join(str((where / a.path).absolute()) for a in cp), str(path.absolute())]
             env = {} if settings.get("emptyEnvironment") else runtime._verifier_env(jdk)
+            if settings.get("charsetLocale"):
+                env = {k:v for k,v in env.items() if k not in ("JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS")}
+                env.update(LC_ALL=settings["charsetLocale"], LANG=settings["charsetLocale"])
             result = subprocess.run(command, capture_output=True, text=True, timeout=30, env=env,
                                     cwd="/" if settings.get("rootWorkingDirectory") else None)
             if result.returncode:

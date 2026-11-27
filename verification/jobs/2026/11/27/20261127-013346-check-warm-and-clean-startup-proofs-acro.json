@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-013346-check-warm-and-clean-startup-proofs-acro",
+  "title": "Check warm and clean startup proofs across a same-path replacement",
+  "description": "Freeze an identical two-byte prediction on two original class directories. Replace one class at its original path to make the defaulted result one byte, then restore it. Check cold, pinned warm and independent empty-cache proofs in every phase, preserve the other side, reject stale receipts, and retain the native verdict-cache refusal.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T01:33:46+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "Two sides, three phases and proof-cache guard",
+      "run": "python3 lib/benchmark/startup-facts/reuse_profiles.py --output verification/startup-facts/reuse-profiles.zip",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/startup-facts/reuse-profiles.zip"
+  ]
+}

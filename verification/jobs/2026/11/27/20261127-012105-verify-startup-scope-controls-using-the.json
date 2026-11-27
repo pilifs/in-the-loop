@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-012105-verify-startup-scope-controls-using-the",
+  "title": "Verify startup scope controls using the compiled selector parameter",
+  "description": "Read the Boolean parameter name from the class that the verifier will actually inspect. Repeat explicit and defaulted profile selection, all six setting refusals, scoped evidence matching, the two joint orders, an opaque read, concurrent initialization and interruption followed by a fresh run.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T01:21:05+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Qualified choices and startup failure controls",
+      "run": "python3 lib/benchmark/startup-facts/controls.py --output verification/startup-facts/startup-controls.zip",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/startup-facts/startup-controls.zip"
+  ]
+}

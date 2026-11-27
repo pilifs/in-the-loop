@@ -4581,6 +4581,9 @@ impl<'a> Engine<'a> {
     /// `None` for any other call, and for one whose String has no content, which stays the JDK call it was (a
     /// gap), unless what it lacks is a named limit ([`Obj::limit`]), which ends the path with no verdict.
     fn string_method(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        if name == "getBytes" && descriptor == "()[B" && args.is_empty() {
+            if let Some(step) = self.observed_default_bytes(path, o) { return Some(step); }
+        }
         if name == "equals" && descriptor == "(Ljava/lang/Object;)Z" {
             if let [Val::R(Some(other))] = args {
                 if let Some(step) = self.separator_equals(path, o, *other) { return Some(step); }
@@ -5022,7 +5025,9 @@ impl<'a> Engine<'a> {
             path.classes.insert(class.to_string(), ClassState::Done);
             return Ok(Initialising::Ready);
         };
-        if self.is_observed(class) {
+        let replay_encoding = self.observed.get(class).and_then(|o| o.on.charset.as_ref())
+            .is_some_and(|fact| fact.encoding.is_some());
+        if self.is_observed(class) && !replay_encoding {
             if self.in_summary(path) {
                 return unsupported(format!("the method initializes the class {}, whose initializer is observed, {}", class.replace('/', "."), self.result_only()));
             }
@@ -5052,7 +5057,7 @@ impl<'a> Engine<'a> {
             return unsupported(format!("{}.{name} initializes the class {}, {}", owner.replace('/', "."), class.replace('/', "."), self.result_only()));
         }
         self.initializes_in_frame(path, class)?;
-        if runs {
+        if runs || replay_encoding {
             self.call(path, class, "<clinit>", "()V", Vec::new())?;
             path.frames.last_mut().expect("a frame").initializes = Some(class.to_string());
             return Ok(Initialising::Running);

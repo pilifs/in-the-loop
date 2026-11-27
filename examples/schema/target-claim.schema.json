@@ -65,19 +65,35 @@
       "type": "object", "minProperties": 1, "propertyNames": { "$ref": "#/$defs/javaClass" },
       "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
     },
+    "observedInitializerOrder": {
+      "description": "Order of the requested roots in one joint JVM initialization. Every name in observedInitializers occurs exactly once.",
+      "type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/javaClass"}
+    },
+    "startupPremises": {
+      "description": "Exact typed startup assumption IDs that this scoped property is registered to consume.",
+      "type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^startup-(charset|method|table):[0-9a-f]{64}($|:)"}
+    },
     "observedRuntime": {
       "description": "Process settings confirmed inside the initializer observer and every comparison JVM.",
       "type": "object", "minProperties": 1, "additionalProperties": false,
       "properties": {"processors": {"type": "integer", "minimum": 1, "maximum": 2147483647}, "emptyEnvironment": {"const": true}, "preinitializeTogether": {"const": true}, "rootWorkingDirectory": {"const": true}, "weakMapValues": {"const": true},
-        "captureObjects": {"type": "array", "items": {"$ref": "#/$defs/javaClass"}, "minItems": 1, "uniqueItems": true}},
-      "dependentRequired": {"weakMapValues": ["preinitializeTogether"], "captureObjects": ["preinitializeTogether"]}
+        "captureObjects": {"type": "array", "items": {"$ref": "#/$defs/javaClass"}, "minItems": 1, "uniqueItems": true},
+        "recordJointStartup": {"const":true}, "reflectiveMembers":{"const":true}, "liveProperties":{"const":true},
+        "startupRevision":{"type":"string","pattern":"^[A-Za-z0-9._-]{1,128}$"},
+        "startupProperties":{"type":"object","additionalProperties":{"type":"string"}}, "charsetLocale":{"enum":["C","C.UTF-8"]},
+        "expectedCharsetName":{"enum":["UTF-8","US-ASCII"]}, "expectedCharsetReceipt":{"type":"string","pattern":"^[0-9a-f]{64}$"}},
+      "dependentRequired": {"weakMapValues": ["preinitializeTogether"], "captureObjects": ["preinitializeTogether"],
+        "recordJointStartup":["preinitializeTogether"],"liveProperties":["emptyEnvironment"],"startupProperties":["liveProperties"],
+        "expectedCharsetName":["charsetLocale"],"expectedCharsetReceipt":["charsetLocale"]}
     },
     "plan": { "description": "A construction plan (`--plan`), in the example's folder.", "$ref": "#/$defs/file" },
     "contracts": { "description": "Gap contracts for `--gaps advised` (`--contracts`), in the example's folder.", "$ref": "#/$defs/file" },
     "notes": { "type": "array", "items": { "type": "string" } }
   },
   "allOf": [
+    { "if": { "required": ["observedInitializerOrder"] }, "then": { "required": ["observedInitializers", "observedRuntime"], "properties": {"observedRuntime": {"required": ["preinitializeTogether"]}} } },
     { "if": { "required": ["observedRuntime"] }, "then": { "required": ["observedInitializers"] } },
+    { "if": { "required": ["startupPremises"] }, "then": { "required": ["observedInitializers","observedRuntime"] } },
     { "if": { "properties": { "kind": { "const": "property" } } }, "then": { "required": ["assert"] } },
     { "if": { "properties": { "kind": { "enum": ["preservation", "compatibility"] } } }, "then": { "not": { "anyOf": [{ "required": ["assert"] }, { "required": ["throws"] }] } } }
   ],

@@ -489,6 +489,7 @@ pub fn property_lookup(options: &Options) -> Result<Option<Outcome>, Unsupported
     let _ = writeln!(output, "note: reused from the proof cache: an exact hit of property claim {}, the result of {}; {how}", key.0, record.provenance);
     let _ = writeln!(output, "note: the proof cache took {:.3} s to compute this claim's key (its closure and the tools') and {:.3} s in all", keyed.as_secs_f64(), started.elapsed().as_secs_f64());
     Ok(Some(Outcome {
+        startup_evidence: Vec::new(),
         verdict,
         target: options.target.clone(),
         domain: stored.domain,
