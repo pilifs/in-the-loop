@@ -1,0 +1,179 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-040057-qualify-retained-formatter-arguments-on",
+  "title": "Qualify retained formatter arguments on both original Spring releases",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 47.7s, peak 192.5 MiB (estimated 3m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-040057-qualify-retained-formatter-arguments-on.json",
+    "sha256": "eded8363a6e5dfc654682897453d231c84b754683205edd1113582d250362861",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-040057-qualify-retained-formatter-arguments-on",
+      "title": "Qualify retained formatter arguments on both original Spring releases",
+      "description": "Use ordinary numbered setup, watcher preflight and build resume on Spring 458. Compare two initial flags on both original releases. Compile and run the genuine caller, a separate equal formatter and an early getter. Compare plain and traced JVM outputs and require the independent identity and order checks to reject both planted callers.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay",
+        "java:retained-argument"
+      ],
+      "links": {
+        "examples": [
+          "458"
+        ]
+      },
+      "expected": "All four genuine histories qualify and all eight output-identical planted histories lose qualification.",
+      "submitted": {
+        "at": "2026-11-27T04:00:57+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Numbered handoff and original JVM checks",
+          "run": "python3 verification/blind-caller/formatter.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/formatter.zip"
+      ]
+    }
+  },
+  "sourceCommit": "20e9935a49b11fed180d6d548bae79cbf150961d",
+  "startedAt": "2026-11-27T04:07:23+00:00",
+  "finishedAt": "2026-11-27T04:08:19+00:00",
+  "wallSeconds": 56.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3482783,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 201850880,
+    "wallSeconds": 47.7,
+    "cpuSeconds": 63.4,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Numbered handoff and original JVM checks",
+      "run": "python3 verification/blind-caller/formatter.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 47.706,
+      "cpuSeconds": 63.381,
+      "cpuThrottledSeconds": 4.956,
+      "peakMemoryBytes": 201850880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-numbered-handoff-and-original.log",
+        "lines": 1,
+        "bytes": 114,
+        "sha256": "644d936d8d15260ad2db84e62e892f98efae5fb03cc687f751d5c4660318d769",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Two original releases, two initial flags, four genuine readbacks and eight independently rejected planted callers"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/formatter.zip",
+      "change": "added",
+      "bytes": 63674,
+      "sha256": "b8316f9cf0540d5bfe9c221c62da0d9cb8cd833feab1425047c49b9f217bae09",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T04:08:38+00:00",
+    "applied": [
+      "verification/blind-caller/formatter.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3ecfea0a399f548bb29cef31a9031d831cfc48e5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3ecfea0a399f548bb29cef31a9031d831cfc48e5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T040819Z-3552665a81b5420c",
+      "outputs": "20261127T040819Z-377455a553be0d48",
+      "diff": "20261127T040819Z-396534d1496d609c"
+    }
+  }
+}
