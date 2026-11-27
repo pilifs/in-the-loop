@@ -17,6 +17,8 @@ llm-dlc/
   runtime.md                        runtime mode: a released copy on a user's machine, where none of the tracing applies
   operating-notes.md                rules of practice learned in earlier runs, each with its reason; CLAUDE.md points
                                     at it, so every agent reads it, whichever client runs it
+  retired.md                        what the repository no longer has (skills, commands, scripts), what replaced each,
+                                    and the commit that still has it; tools/retired.py holds the live files to it
   research-router.md                where an agent looks on the web for outside evidence, by question and by task
   performance.md                    where sync.py's time goes, measured, and why it stays in Python for now
   index.json                        every session and the commits it made (generated)
@@ -89,6 +91,8 @@ llm-dlc/
   tools/loop_stats.py               adds up the loops from the metrics tables, the run records and the verification jobs;
                                     test_loop_stats.py tests it
   tools/streams_status.py           the state and status bar of run-streams.sh; test_streams_status.py tests it
+  tools/retired.py                  reads retired.md and lists every live file that still names something retired
+                                    without pointing at it; test_retired.py runs that in the default test run
   tools/unstale.py                  puts a jj workspace right after another session's operation met its own (stale, or a
                                     second copy of the working-copy change); test_unstale.py tests it
   tools/brief_run.py                the watcher's tools for a brief's run (/multi-agent-brief): preflight, the foundation
