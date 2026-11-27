@@ -1,0 +1,432 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "itl-job-result/v2",
+  "title": "Job result",
+  "description": "The result of one attempt of a job of the second format (itl-job/v2, jobs/README.md). It is the first format's result (verification-result/v1, verification/schema/result.schema.json) with the questions a status word answered at once kept apart: what the processes did (execution), what the job delivered (fulfillment, declared, each step's evidence), what it means for the question asked (conclusion, the workload's), what it cost by scope (timing), and what was kept of it (attempt, originals, collected).",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "status",
+    "summary",
+    "attention",
+    "job",
+    "sourceCommit",
+    "startedAt",
+    "finishedAt",
+    "runner",
+    "limits",
+    "estimate",
+    "usage",
+    "environment",
+    "steps",
+    "outputs",
+    "execution",
+    "fulfillment",
+    "timing"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "itl-job-result/v2"},
+    "id": {"type": "string"},
+    "title": {"type": ["string", "null"]},
+    "status": {
+      "description": "passed: every step exited as expected, kept what it promised, and every required output is there. failed: a step did not go as expected, or the job did not deliver what it declared (fulfillment says which; execution says what the processes did). timeout and out-of-memory: a step was stopped at a limit. error: the pipeline could not run the job (a missing tool, a network it could not take away, a conflicted source). cancelled: the runner was stopped, or stopped the job once for the machine's memory; it runs again.",
+      "enum": ["passed", "failed", "timeout", "out-of-memory", "error", "cancelled"]
+    },
+    "summary": {"description": "One line: status, steps, time and memory against the estimate, changed outputs, and the verdict lines found in the logs.", "type": "string"},
+    "attention": {
+      "description": "What a reader should look at, in words: a step that did not pass, a pass with a suspicious log (JBMC with no verdict, an out-of-memory line), an estimate far off, outputs not applied. Empty for a clean pass.",
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "job": {
+      "type": "object",
+      "required": ["path", "sha256", "spec"],
+      "properties": {"path": {"type": "string"}, "sha256": {"type": "string"}, "spec": {"description": "The job as it was run.", "type": "object"}}
+    },
+    "sourceCommit": {"description": "The commit whose tree was run.", "type": "string"},
+    "startedAt": {"type": "string"},
+    "finishedAt": {"type": ["string", "null"]},
+    "wallSeconds": {"type": ["number", "null"]},
+    "runner": {
+      "type": "object",
+      "properties": {
+        "backend": {"type": "string"},
+        "isolation": {
+          "description": "systemd: each step in a scope with hard memory and CPU caps, measured by the cgroup. none: timeouts only, memory measured per process.",
+          "enum": ["systemd", "none"]
+        },
+        "host": {"type": "string"},
+        "pid": {"type": "integer"},
+        "workers": {"type": "integer"},
+        "cpus": {"type": "number"},
+        "memoryBudgetBytes": {"type": "integer"}
+      }
+    },
+    "memoryStop": {
+      "description": "The runner stopped the job because the machine's available memory fell under the runner's memory_floor; not the job's own limit. The first time the job is cancelled and runs again; the second it is out-of-memory, for its submitter to regroup.",
+      "type": "object",
+      "properties": {
+        "at": {"type": "string"},
+        "availableBytes": {"type": "integer"},
+        "floorBytes": {"type": "integer"},
+        "running": {"description": "Jobs running when it was stopped, itself included.", "type": "integer"},
+        "count": {"description": "Times this job has been stopped this way, across runners.", "type": "integer"}
+      }
+    },
+    "limits": {"type": "object", "properties": {"cpus": {"type": "number"}, "memoryLimitBytes": {"type": "integer"}, "timeoutSeconds": {"type": "number"}}},
+    "estimate": {
+      "type": "object",
+      "properties": {"cpus": {"type": "number"}, "memoryBytes": {"type": "integer"}, "durationSeconds": {"type": "number"}, "notes": {"type": ["string", "null"]}}
+    },
+    "usage": {
+      "description": "What the steps used, without the jvmcontract build. The ratios against the estimate are for calibrating the next estimate.",
+      "type": ["object", "null"],
+      "properties": {
+        "peakMemoryBytes": {"type": ["integer", "null"]},
+        "wallSeconds": {"type": "number"},
+        "cpuSeconds": {"type": "number"},
+        "memoryOfEstimate": {"type": ["number", "null"]},
+        "durationOfEstimate": {"type": ["number", "null"]}
+      }
+    },
+    "environment": {
+      "description": "The machine and tool versions.",
+      "type": "object",
+      "properties": {
+        "host": {"type": "string"},
+        "os": {"type": "string"},
+        "machine": {"type": "string"},
+        "cpuModel": {"type": ["string", "null"]},
+        "cpuCount": {"type": ["integer", "null"]},
+        "memoryTotalBytes": {"type": ["integer", "null"]},
+        "python": {"type": "string"},
+        "tools": {"type": "object", "additionalProperties": {"type": ["string", "null"]}}
+      }
+    },
+    "jvmcontract": {
+      "description": "The jvmcontract the job ran with: built from lib/ at the job's commit, cached by the tree id of lib/.",
+      "type": "object",
+      "properties": {"libTree": {"type": "string"}, "path": {"type": "string"}, "built": {"type": "boolean"}}
+    },
+    "steps": {
+      "description": "Every step, in order. Index 0 is the jvmcontract build, when the job needed one that was not cached.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["index", "name", "run", "status"],
+        "properties": {
+          "index": {"type": "integer"},
+          "name": {"type": "string"},
+          "run": {"type": "string"},
+          "cwd": {"type": "string"},
+          "status": {"enum": ["passed", "failed", "timeout", "out-of-memory", "cancelled", "skipped"]},
+          "why": {"description": "Why a step was skipped.", "type": "string"},
+          "exitCode": {"type": ["integer", "null"]},
+          "expectExit": {"type": "array", "items": {"type": "integer"}},
+          "signal": {"description": "The signal that ended the step's process, if one did.", "type": ["string", "null"]},
+          "timedOut": {"type": "boolean"},
+          "stoppedFor": {
+            "description": "Why the runner stopped the step: stalled (past its timeout, no CPU and no output for the stall window) or ceiling (still working at the runner's max_timeout). Null when it ended by itself or was cancelled.",
+            "enum": ["stalled", "ceiling", null]
+          },
+          "overranTimeout": {"description": "The step ran past its timeout while still working and was left to run.", "type": "boolean"},
+          "timeoutSeconds": {"description": "The step's timeout: where the runner starts looking for a stall, not a deadline.", "type": "number"},
+          "cancelled": {"type": "boolean"},
+          "wallSeconds": {"type": "number"},
+          "cpuSeconds": {"type": ["number", "null"]},
+          "cpuThrottledSeconds": {"description": "Time held back by the CPU cap: high means the job wanted more CPUs than it asked for.", "type": ["number", "null"]},
+          "peakMemoryBytes": {"type": ["integer", "null"]},
+          "peakMemoryMeasure": {"type": "string"},
+          "oomKills": {"description": "Processes the kernel killed in the step: at its memory limit, or when the machine ran out (then limitOoms is 0).", "type": "integer"},
+          "limitOoms": {
+            "description": "Times the step's own memory limit ran out (memory.events oom). Kills with none of these came from the machine running out, not from the step's limit.",
+            "type": "integer"
+          },
+          "memoryHighEvents": {"description": "Times the step reached its memory limit.", "type": "integer"},
+          "log": {
+            "type": "object",
+            "properties": {
+              "path": {"description": "Relative to the result's directory.", "type": "string"},
+              "bytes": {"type": "integer"},
+              "lines": {"type": "integer"},
+              "sha256": {"type": "string"},
+              "truncated": {"description": "The log was too long, and the file holds its head and tail. The whole log stays on the runner, at fullLog.", "type": "boolean"},
+              "fullLog": {"type": "string"}
+            }
+          },
+          "signalCounts": {"description": "How often each kind of verdict line appeared, as tool:kind.", "type": "object", "additionalProperties": {"type": "integer"}},
+          "signals": {
+            "description": "The verdict lines themselves (JBMC, TLC, jvmcontract, build.py, cargo test, out of memory), with their line numbers in the log; at most 100.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tool": {"type": "string"},
+                "kind": {"type": "string"},
+                "line": {"type": "integer"},
+                "text": {"type": "string"},
+                "groups": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          },
+          "tail": {"description": "The last 40 lines of the log.", "type": "array", "items": {"type": "string"}},
+          "phase": {"description": "What the step's time is counted as.", "enum": ["resolve", "fetch", "prepare", "build", "test", "proof", "other"]},
+          "network": {
+            "description": "The network the step had. none is enforced: the step ran in a network namespace with a loopback interface alone, and probe is what a process saw there just before (its interfaces, a connection to a public address by number, a name lookup). A step that was to have none where that cannot be enforced is not run.",
+            "type": "object",
+            "required": ["mode", "enforced"],
+            "properties": {
+              "mode": {"enum": ["host", "none", "fetch"]},
+              "enforced": {"type": "boolean"},
+              "how": {"type": "string"},
+              "probe": {"type": "object"},
+              "why": {"type": "string"}
+            }
+          },
+          "evidence": {
+            "description": "What the step did besides exiting, by kind. tests: which tests executed, read from JUnit XML reports or from the log's summary lines (jobs/evidence.py); source none says nothing shows any ran, which is not a count of zero from a report.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "source"],
+              "properties": {
+                "type": {"enum": ["tests"]},
+                "source": {"type": "string"},
+                "executed": {"type": "integer"},
+                "failed": {"type": "integer"},
+                "errors": {"type": "integer"},
+                "skipped": {"type": "integer"},
+                "failing": {"type": "array", "items": {"type": "string"}},
+                "promised": {"type": "object"},
+                "unmet": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          },
+          "unmet": {
+            "description": "What the step promised and did not show. Its status is failed then, though its process exited as expected (exitCode, expectExit).",
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      }
+    },
+    "outputs": {
+      "description": "Declared outputs that differ from the job's commit.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "change"],
+        "properties": {
+          "path": {"type": "string"},
+          "change": {"enum": ["added", "modified", "deleted"]},
+          "bytes": {"type": "integer"},
+          "sha256": {"type": ["string", "null"]},
+          "sourceSha256": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "changesDiff": {
+      "description": "The file that holds the outputs' changes against the job's commit: changes.diff, a unified diff; or, once collected, changes.diff.gz (that diff gzipped) or changes.stat (a summary of the files it changes) when the diff was over the 1 MiB a commit takes (collected.changesDiff).",
+      "type": "string"
+    },
+    "workdir": {
+      "description": "The work directory, kept on the runner (for a job that did not pass, by default): the attempt's own, which stays until `prune` releases it.",
+      "type": "string"
+    },
+    "attempt": {
+      "description": "Which execution of the job this result is of (jobs/attempts.py): every run of a job is an attempt with a record and folders of its own on the machine that ran it, made before it writes anything. Results of before 2026-11-27 have none: `originals.attempt` is then all that numbers them.",
+      "type": "object",
+      "properties": {
+        "id": {"description": "The job's id, the attempt's number and a token: unique where two checkouts of one machine number apart.", "type": "string"},
+        "number": {"description": "From 1 for each job on a machine; the archive's number for the attempt when the archive could be asked.", "type": "integer"},
+        "folder": {"description": "The attempt's folder on the runner: attempt.json, result.json, run/ (the whole logs, the outputs, the diff) and work/.", "type": "string"},
+        "previous": {"description": "The ids of the job's earlier attempts on that machine, oldest first.", "type": "array", "items": {"type": "string"}}
+      },
+      "required": ["id", "number"]
+    },
+    "originals": {
+      "description": "Set when the run's original outputs were sealed into the private archive before the logs were cut and the work directory removed (verification/capture.py; llm-dlc/specification.md, Original outputs): the number of this attempt of the job, and the occurrence id of each part that was sealed. `python3 llm-dlc/tools/artifacts.py show ID` says whether an occurrence is pending or verified, and `fetch ID --to DIR` restores it.",
+      "type": "object",
+      "properties": {
+        "attempt": {"type": "integer"},
+        "occurrences": {
+          "type": "object",
+          "properties": {"logs": {"type": "string"}, "outputs": {"type": "string"}, "diff": {"type": "string"}, "workdir": {"type": "string"}},
+          "additionalProperties": {"type": "string"}
+        }
+      },
+      "required": ["attempt", "occurrences"]
+    },
+    "collected": {
+      "description": "Set when the result was collected into the repo. applied: outputs written to the working copy. conflicts: outputs that changed in the working copy since the job's commit, not applied, kept under outputs/. kept: outputs not applied because the job did not pass.",
+      "type": ["object", "null"],
+      "properties": {
+        "at": {"type": "string"},
+        "applied": {"type": "array", "items": {"type": "string"}},
+        "conflicts": {"type": "array", "items": {"type": "string"}},
+        "kept": {"type": "array", "items": {"type": "string"}},
+        "why": {"type": ["string", "null"]},
+        "staged": {
+          "description": "The SHA-256 of the staged result this was collected from. A collect that finds it in the tree for the staged result it holds was stopped before it released that one, and writes nothing again.",
+          "type": "string"
+        },
+        "changesDiff": {
+          "description": "Set when changes.diff was over the 1 MiB a commit takes (jj's snapshot.max-new-file-size): its size, the file kept in its place, and how.",
+          "type": "object",
+          "properties": {"bytes": {"type": "integer"}, "kept": {"enum": ["changes.diff.gz", "changes.stat"]}, "how": {"enum": ["gzipped", "summarized"]}},
+          "required": ["bytes", "kept", "how"]
+        }
+      }
+    },
+    "preparationSeconds": {
+      "description": "From the attempt's start to its first requested step: the export of the commit, the links, and what the workload built for the job.",
+      "type": "number"
+    },
+    "declared": {
+      "description": "What became of each output the job declared. state: added, modified or deleted against the job's commit (changed when several of these), unchanged (there, as the commit has it), missing (the job ran every step to its exit and it is not there), never-reached (the job was stopped, or skipped a step, before it could have been written). A required output that is missing or never reached leaves the job unfulfilled, whatever its steps exited with. The digests of the files are under outputs.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "required", "state"],
+        "properties": {
+          "path": {"type": "string"},
+          "required": {"type": "boolean"},
+          "consumer": {"description": "Who reads it, as the job said: a job id, a case, a tool.", "type": "string"},
+          "state": {"enum": ["added", "modified", "deleted", "changed", "unchanged", "missing", "never-reached"]},
+          "files": {"description": "How many files of it were added, modified, deleted and unchanged.", "type": "object", "additionalProperties": {"type": "integer"}},
+          "producer": {"description": "The attempt that produced it (attempt.id).", "type": ["string", "null"]}
+        }
+      }
+    },
+    "execution": {
+      "description": "What the processes did, apart from what the job delivered (jobs/lifecycle.py). status is the result's own, except that a job which failed only for what it did not deliver has passed here: every step ran, and every process ended as expected. stopped: the first step that did not go as expected and why (exit, signal, timeout, stalled, ceiling, memory-limit, machine-memory, cancelled, preparation, unmet-promise), or not-run with the reason when no step says. derived: computed by a reader from a result that did not keep the block.",
+      "type": "object",
+      "required": ["status", "steps", "stopped"],
+      "properties": {
+        "status": {"enum": ["passed", "failed", "timeout", "out-of-memory", "error", "cancelled"]},
+        "steps": {
+          "type": "object",
+          "properties": {
+            "planned": {"type": "integer"},
+            "preparation": {"type": "integer"},
+            "ran": {"type": "integer"},
+            "asExpected": {"type": "integer"},
+            "skipped": {"type": "integer"}
+          }
+        },
+        "skipped": {"type": "array", "items": {"type": "object", "properties": {"step": {"type": "integer"}, "why": {"type": ["string", "null"]}}}},
+        "stopped": {
+          "type": ["object", "null"],
+          "properties": {
+            "step": {"type": ["integer", "null"]},
+            "name": {"type": ["string", "null"]},
+            "reason": {"enum": ["exit", "signal", "timeout", "stalled", "ceiling", "memory-limit", "machine-memory", "cancelled", "preparation", "unmet-promise", "not-run"]},
+            "exitCode": {"type": "integer"},
+            "signal": {"type": "string"},
+            "why": {"type": "string"}
+          }
+        },
+        "derived": {"type": "boolean"}
+      }
+    },
+    "fulfillment": {
+      "description": "Whether the job delivered what it declared: fulfilled; unfulfilled, with every reason (a step that did not go as expected, a promise not kept, a required output not there, steps skipped, a preparation that failed, or not-run); undetermined for a job stopped before it ended, which runs again. A fulfilled job says nothing of the claim it was about: that is conclusion.",
+      "type": "object",
+      "required": ["state", "unmet"],
+      "properties": {
+        "state": {"enum": ["fulfilled", "unfulfilled", "undetermined"]},
+        "unmet": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kind", "why"],
+            "properties": {
+              "kind": {"enum": ["step", "promise", "output", "skipped", "preparation", "not-run"]},
+              "step": {"type": ["integer", "null"]},
+              "steps": {"type": "array", "items": {"type": "integer"}},
+              "path": {"type": "string"},
+              "state": {"type": "string"},
+              "why": {"type": ["string", "null"]}
+            }
+          }
+        },
+        "why": {"type": "string"},
+        "derived": {"type": "boolean"}
+      }
+    },
+    "timing": {
+      "description": "What the attempt cost, by scope, each with its state. A job that failed in preparation has an elapsed time and requested steps that were not run: both are true, each of its own scope.",
+      "type": "object",
+      "required": ["queueWait", "elapsed", "preparation", "requestedSteps"],
+      "properties": {
+        "queueWait": {
+          "description": "From submission to this attempt's start: the wait for a commit, a runner, room, a prerequisite, and any earlier attempt, together.",
+          "type": "object",
+          "required": ["seconds", "state"],
+          "properties": {
+            "seconds": {"type": ["number", "null"]},
+            "state": {
+              "description": "measured: read off a clock, and a measured zero is one. derived: computed from other measures of this result, by a reader or for a result that did not measure it. partial: some of its steps ran. not-run: none did. unknown: nothing says.",
+              "enum": ["measured", "derived", "partial", "not-run", "unknown"]
+            }
+          }
+        },
+        "elapsed": {
+          "description": "This attempt, from its start to its end, by the runner's clock (wallSeconds).",
+          "type": "object",
+          "required": ["seconds", "state"],
+          "properties": {
+            "seconds": {"type": ["number", "null"]},
+            "state": {
+              "description": "measured: read off a clock, and a measured zero is one. derived: computed from other measures of this result, by a reader or for a result that did not measure it. partial: some of its steps ran. not-run: none did. unknown: nothing says.",
+              "enum": ["measured", "derived", "partial", "not-run", "unknown"]
+            }
+          }
+        },
+        "preparation": {
+          "description": "Before the first requested step. Derived, for a result that did not measure it, as elapsed less the requested steps: preparation and the runner's own work around the steps together.",
+          "type": "object",
+          "required": ["seconds", "state"],
+          "properties": {
+            "seconds": {"type": ["number", "null"]},
+            "state": {
+              "description": "measured: read off a clock, and a measured zero is one. derived: computed from other measures of this result, by a reader or for a result that did not measure it. partial: some of its steps ran. not-run: none did. unknown: nothing says.",
+              "enum": ["measured", "derived", "partial", "not-run", "unknown"]
+            }
+          }
+        },
+        "requestedSteps": {
+          "description": "The steps the job asked for, added up (usage.wallSeconds), with how many of them ran.",
+          "type": "object",
+          "required": ["seconds", "state"],
+          "properties": {
+            "seconds": {"type": ["number", "null"]},
+            "state": {
+              "description": "measured: read off a clock, and a measured zero is one. derived: computed from other measures of this result, by a reader or for a result that did not measure it. partial: some of its steps ran. not-run: none did. unknown: nothing says.",
+              "enum": ["measured", "derived", "partial", "not-run", "unknown"]
+            },
+            "ran": {"type": "integer"},
+            "planned": {"type": "integer"}
+          }
+        },
+        "cpuSeconds": {"type": ["number", "null"]},
+        "byPhase": {"description": "The requested steps' seconds by the phase each step names.", "type": "object", "additionalProperties": {"type": "number"}},
+        "source": {"description": "What measured it.", "type": "string"},
+        "derived": {"type": "boolean"}
+      }
+    },
+    "conclusion": {
+      "description": "What the result means for the question the job was asked, by its workload, at the scope it was asked. Apart from status: a verification job that ran exactly as expected may have refuted its claim. Absent where the workload concludes nothing (generic).",
+      "type": "object",
+      "properties": {
+        "verdict": {
+          "description": "The verification workload's: established, refuted, open (a checker gave no verdict), mixed (steps disagree), none (no checker's line, or the job was stopped at a limit).",
+          "type": "string"
+        },
+        "scope": {"type": "string"}
+      }
+    }
+  }
+}

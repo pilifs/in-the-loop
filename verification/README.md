@@ -156,7 +156,12 @@ python3 llm-dlc/tools/sync.py commit -m "Add example 146: a follower that trunca
 
 Then carry on with the next thing. Don't wait for the result, and don't run the job yourself to see.
 
-A job records the session that submitted it (the one Claude Code runs `submit` in, unless `--session` names another).
+A job that is not a proof or a model check (a build, a test run, a dependency resolution) is written in the second
+format, by giving `submit` a `--purpose`: [`jobs/README.md`](../jobs/README.md#a-job-of-the-second-format) says what
+it can declare (required outputs, tests a step promises, a step with no network) and what its result then keeps apart.
+
+A job records the session that submitted it (the one Claude Code runs `submit` in, unless `--session` names another),
+and the run that session works in (`submitted.run`, read from the loop's systemd scope; absent outside a run).
 The loop statistics (`llm-dlc/traces/loops.md`) use that, or failing it the job's name in the commit message, to tie a
 job and its result to the loop cycle that submitted it.
 

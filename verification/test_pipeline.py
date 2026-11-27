@@ -34,6 +34,8 @@ os.environ.setdefault("ITL_ORIGINALS_OFF", "1")  # nor is this machine's private
 class Repo:
     """A git repository with the pipeline in it, committed with plumbing."""
 
+    ENTRY = "verification/pipeline.py"   # the entry point every command here goes through (jobs/test_formats.py: the other)
+
     def __init__(self, **runner):
         self.dir = Path(tempfile.mkdtemp(prefix="pipeline-test-"))
         (self.dir / "verification").mkdir()
@@ -68,7 +70,7 @@ class Repo:
         return commit
 
     def pipeline(self, *args, check=True, env=None):
-        proc = subprocess.run([sys.executable, "verification/pipeline.py", *args], cwd=self.dir, text=True,
+        proc = subprocess.run([sys.executable, self.ENTRY, *args], cwd=self.dir, text=True,
                               capture_output=True, env=dict(os.environ, VERIFY_REPO=str(self.dir), **(env or {})), timeout=300)
         if check and proc.returncode != 0:
             raise AssertionError(f"pipeline {args} exited {proc.returncode}:\n{proc.stdout}\n{proc.stderr}")

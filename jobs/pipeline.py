@@ -89,11 +89,19 @@ records = importlib.util.module_from_spec(_records)
 _records.loader.exec_module(records)
 # Every execution of a job is an attempt with folders of its own (jobs/attempts.py): nothing is cleared for a rerun.
 attempts = records.load("jobs_attempts", Path(__file__).resolve().parent / "attempts.py")
+# What a step did besides exiting (which tests executed), and a command run where the network is shown to be off.
+evidence = records.load("jobs_evidence", Path(__file__).resolve().parent / "evidence.py")
+sandbox = records.load("jobs_sandbox", Path(__file__).resolve().parent / "sandbox.py")
+# What became of a job, each question apart: what its processes did, what it delivered, what it cost.
+lifecycle = records.load("jobs_lifecycle", Path(__file__).resolve().parent / "lifecycle.py")
 PRIORITIES = f"{HERE}/priorities.json"
 SCHEMAS = ROOT / HERE / "schema"
 JOB_SCHEMA = "verification-job/v1"
 JOB_SCHEMA_V2 = "itl-job/v2"
 RESULT_SCHEMA = "verification-result/v1"
+RESULT_SCHEMA_V2 = "itl-job-result/v2"   # the first format's result, with what the second format's jobs add
+PURPOSES = ("resolve", "build", "test", "verify", "maintenance")
+NETWORKS = ("host", "none", "fetch")
 ID_PATTERN = re.compile(r"^\d{8}-\d{6}-[a-z0-9][a-z0-9-]{0,60}$")
 
 DEFAULTS = {
@@ -131,6 +139,58 @@ DEFAULTS = {
 STATUS_ORDER = ["error", "out-of-memory", "timeout", "failed", "cancelled", "passed"]
 
 MAX_SIGNALS = 100   # the verdict lines a step's record carries; every one is counted
+
+
+# The two job formats, read through these: verification-job/v1, which every job until 2026-11-27 is and which is
+# run exactly as it was, and itl-job/v2 (jobs/schema/job.schema.json).
+
+
+def is_v2(job) -> bool:
+    return job.get("schema") == JOB_SCHEMA_V2
+
+
+def job_revision(job):
+    """The commit a job names to run at, or None: it then runs at the last commit that touched its file."""
+    return ((job.get("source") or {}).get("revision") if is_v2(job) else job.get("revision")) or None
+
+
+def job_env(job) -> dict:
+    return ((job.get("environment") or {}).get("variables") if is_v2(job) else job.get("env")) or {}
+
+
+def job_outputs(job) -> list[dict]:
+    """A job's declared outputs, each with its path and whether the job is unfulfilled without it. One of the
+    first format is never required: a missing one was a line of attention there, and stays one."""
+    declared = []
+    for spec in job.get("outputs") or []:
+        if isinstance(spec, dict):
+            declared.append({"path": spec["path"], "required": spec.get("required", True), **({"consumer": spec["consumer"]} if spec.get("consumer") else {})})
+        else:
+            declared.append({"path": spec, "required": is_v2(job)})
+    return declared
+
+
+def job_capabilities(job) -> list:
+    """What the job exercises, for grouping and calibration: `capabilities`, or the second format's label of that name."""
+    return list(((job.get("labels") or {}).get("capability") if is_v2(job) else job.get("capabilities")) or [])
+
+
+def step_network(job, step) -> str:
+    """`host`, `none` or `fetch` for one step: its own, else the job's, else the host's as every job had it."""
+    if not is_v2(job):
+        return "host"
+    return step.get("network") or (job.get("environment") or {}).get("network") or "host"
+
+
+def submitting_run(cgroup: str = "/proc/self/cgroup") -> str | None:
+    """The run the calling session works in, as `single-NAME`: a loop runs its agent in the systemd scope
+    `feature-loop-single-NAME`, and everything the agent starts inherits it. A loop's agent is given nothing of its
+    run by design (no variable to read, set or lose), and this needs none. None outside a run."""
+    try:
+        m = re.search(r"/feature-loop-([^/\s]+)\.scope(?:/|$)", Path(cgroup).read_text(), re.M)
+    except OSError:
+        return None
+    return m[1] if m else None
 
 
 # Workloads: what a kind of work means (jobs/workloads/NAME.py). The pipeline owns the rest.
@@ -243,10 +303,10 @@ def run_quiet(cmd, **kw):
     return subprocess.run(cmd, text=True, capture_output=True, **kw)
 
 
-def schema_ref(path, name):
+def schema_ref(path, name, v2=False):
     """What a job or a result at `path` gives as its "$schema": the schema file, relative to the file's own folder,
-    which is three levels deeper in a day's shard than in the flat layout."""
-    return os.path.relpath(ROOT / HERE / "schema" / name, Path(path).parent)
+    which is three levels deeper in a day's shard than in the flat layout. The second format's are in jobs/schema."""
+    return os.path.relpath(ROOT / ("jobs" if v2 else HERE) / "schema" / name, Path(path).parent)
 
 
 def write_json(path, document):
@@ -447,7 +507,7 @@ def committed_jobs(rev, needs_source=None):
         # uncommitted work, even when some other workspace polls the queue during that split.
         if jj_workspace and message.partition("\n")[0] == "wip: another session's files":
             continue
-        jobs.append((job, path, resolve(job.get("revision") or commit)))
+        jobs.append((job, path, resolve(job_revision(job) or commit)))
     return jobs
 
 
@@ -494,9 +554,10 @@ def queue_order(priorities):
 def validate(document, schema_name):
     """Problems with the document, as strings. Uses jsonschema when it is installed; the checks below always run."""
     problems = []
+    second = document.get("schema") in (JOB_SCHEMA_V2, RESULT_SCHEMA_V2)
     try:
         import jsonschema
-        schema = json.loads((SCHEMAS / schema_name).read_text())
+        schema = json.loads(((CODE / "jobs" / "schema" if second else SCHEMAS) / schema_name).read_text())
         for error in jsonschema.Draft202012Validator(schema).iter_errors(document):
             where = "/".join(str(p) for p in error.absolute_path) or "(top)"
             problems.append(f"{where}: {error.message}")
@@ -509,9 +570,20 @@ def validate(document, schema_name):
 
 def job_problems(job):
     problems = []
-    for key in ["id", "title", "description", "capabilities", "resources", "steps"]:
+    for key in ["id", "title", "description", "purpose" if is_v2(job) else "capabilities", "resources", "steps"]:
         if key not in job:
             problems.append(f"missing {key}")
+    if is_v2(job):
+        if job.get("purpose") not in PURPOSES:
+            problems.append(f"purpose {job.get('purpose')!r} is not one of {', '.join(PURPOSES)}")
+        if not re.fullmatch(r"[a-z][a-z0-9_]*", job.get("workload") or "generic"):
+            problems.append(f"workload {job.get('workload')!r} is not a name")
+        for i, step in enumerate(job.get("steps") or []):
+            if step_network(job, step) not in NETWORKS:
+                problems.append(f"steps/{i}: network {step_network(job, step)!r} is not one of {', '.join(NETWORKS)}")
+            if step_network(job, step) == "fetch" and job.get("purpose") != "resolve":
+                problems.append(f"steps/{i}: only a resolve job has a fetch step: a {job.get('purpose')} job's "
+                                "prerequisites are resolved by a job of their own")
     if "id" in job and not ID_PATTERN.match(str(job["id"])):
         problems.append(f"id {job['id']!r} is not YYYYMMDD-HHMMSS-slug")
     resources = job.get("resources") or {}
@@ -538,6 +610,16 @@ def job_problems(job):
 # Resources
 
 
+_OFFLINE = []
+
+
+def offline():
+    """What this machine can enforce for a step that is to have no network (jobs/sandbox.py), asked once."""
+    if not _OFFLINE:
+        _OFFLINE.append(sandbox.probe())
+    return _OFFLINE[0]
+
+
 def plan(job, config):
     """What the runner reserves for the job, and why it can never run here if it cannot."""
     runner, defaults = config["runner"], config["defaults"]
@@ -556,6 +638,12 @@ def plan(job, config):
         reasons.append(f"needs {fmt_bytes(limit)}, more than the runner's whole budget of {fmt_bytes(runner['memory'])}")
     if cpus > runner["cpus"]:
         reasons.append(f"needs {cpus:g} CPUs, and the runner has {runner['cpus']:g}")
+    if job.get("needs"):
+        reasons.append("it names prerequisites (needs), and this checkout's runner does not schedule by them yet")
+    if workload_of(job) is None:
+        reasons.append(f"its workload {workload_name(job)!r} has no adapter in this checkout (jobs/workloads/{workload_name(job)}.py)")
+    if any(step_network(job, s) == "none" for s in job.get("steps") or []) and not offline()["enforced"]:
+        reasons.append(f"a step of it is to run with no network, and this machine cannot take the network away ({offline().get('why')})")
     return {"cpus": cpus, "memoryEstimate": estimate, "memoryLimit": limit, "durationEstimate": duration,
             "timeout": timeout, "cannotRun": reasons}
 
@@ -752,9 +840,11 @@ class Step:
     the stall window), and at the hard ceiling whatever it is doing. The timeout is where a hang starts to be looked
     for, not a deadline: a long run that is still working is information, about the change and about the machine."""
 
-    def __init__(self, unit, isolation, cpus, memory_limit, stall_window=600, ceiling=float("inf"), oom_score_adj=None):
+    def __init__(self, unit, isolation, cpus, memory_limit, stall_window=600, ceiling=float("inf"), oom_score_adj=None,
+                 prefix=None):
         self.unit, self.isolation, self.cpus, self.memory_limit = unit, isolation, cpus, memory_limit
         self.stall_window, self.ceiling, self.oom_score_adj = stall_window, ceiling, oom_score_adj
+        self.prefix = list(prefix or [])   # what the step's command is run under: a sandbox with no network, say
         self.pid = None
         self.cancelled = False
         self.urgent = False      # cancelled for the machine's memory: killed at once, with no 15 s to wind down
@@ -763,8 +853,8 @@ class Step:
         if self.isolation == "systemd":
             return ["systemd-run", "--user", "--scope", "--quiet", "--collect", f"--unit={self.unit}",
                     "-p", f"MemoryMax={self.memory_limit}", "-p", "MemorySwapMax=0", "-p", "OOMPolicy=continue",
-                    "-p", f"CPUQuota={int(round(self.cpus * 100))}%", "--", "bash", str(wrapper)]
-        return ["bash", str(wrapper)]
+                    "-p", f"CPUQuota={int(round(self.cpus * 100))}%", "--", *self.prefix, "bash", str(wrapper)]
+        return [*self.prefix, "bash", str(wrapper)]
 
     def stop(self, sig=signal.SIGTERM):
         if self.isolation == "systemd":
@@ -1049,9 +1139,10 @@ class Runner:
         attempt.save(spec=job, path=path)
         entry["attempt"] = attempt
         run_dir, work = attempt.run_dir, attempt.work_dir
+        clock = time.monotonic()
         result = {
             "$schema": "../../schema/result.schema.json",
-            "schema": RESULT_SCHEMA,
+            "schema": RESULT_SCHEMA_V2 if is_v2(job) else RESULT_SCHEMA,
             "id": job_id,
             "title": job.get("title"),
             "status": None,
@@ -1081,6 +1172,8 @@ class Runner:
         }
         try:
             self.prepare(job, source, work, result, entry)
+            # The export, the links, and what the workload built for the job: a scope of its own (lifecycle.timing).
+            result["preparationSeconds"] = round(time.monotonic() - clock, 1)
             if result["status"] is None:
                 self.run_steps(job, work, run_dir, result, entry)
                 self.collect_outputs(job, work, source, run_dir, result)
@@ -1183,7 +1276,7 @@ class Runner:
         # and skips every file, exiting 0, so an example's patch went unapplied in every job of build.py at a commit
         # before its own guard.
         env["GIT_CEILING_DIRECTORIES"] = str(Path(work).resolve().parent)
-        env.update({k: str(v) for k, v in (job.get("env") or {}).items()})
+        env.update({k: str(v) for k, v in job_env(job).items()})
         return env
 
     def run_steps(self, job, work, run_dir, result, entry):
@@ -1200,9 +1293,18 @@ class Runner:
                 continue
             timeout = min(parse_seconds(spec["timeout"]) if spec.get("timeout") else result["limits"]["timeoutSeconds"],
                           result["limits"]["timeoutSeconds"])
+            network, offline = step_network(job, spec), None
+            if network == "none":
+                # Shown, not assumed: the probe runs in the sandbox the step gets, and the result keeps what it saw.
+                offline = sandbox.probe()
+                if not offline["enforced"]:
+                    # The runner's inability, not the job's failure, so an error. A runner that knows it cannot
+                    # enforce this does not start such a job at all (plan): this is the sandbox failing since.
+                    raise RuntimeError(f"step {i} ({name}) is to run with no network, and that cannot be enforced "
+                                       f"here ({offline.get('why')}): it was not run")
             step = Step(f"vjob-{scope_id(job['id'])}-{i}", self.isolation, result["limits"]["cpus"],
                         result["limits"]["memoryLimitBytes"], self.runner["stall_window"], self.runner["max_timeout"],
-                        self.runner["job_oom_score_adj"])
+                        self.runner["job_oom_score_adj"], prefix=sandbox.prefix() if network == "none" else None)
             entry["steps"].append(step)
             if entry.get("memoryStop"):  # stopped between the check above and now
                 step.urgent = step.cancelled = True
@@ -1222,6 +1324,18 @@ class Runner:
                 record["status"] = "out-of-memory"
             else:
                 record["status"] = "failed"
+            if is_v2(job):
+                record["phase"] = spec.get("phase") or "other"
+                record["network"] = offline or {"mode": network, "enforced": False,
+                                                **({"why": "the host's network, as the runner's machine gives it"} if network == "host" else {})}
+            promise = (spec.get("promises") or {}).get("tests")
+            if promise is not None and record["status"] == "passed":
+                # The exit code went as expected; what the step promised besides is read from its reports or its log.
+                tests = evidence.tests(promise, work, log)
+                record["evidence"] = [tests]
+                if tests["unmet"]:
+                    record["status"] = "failed"
+                    record["unmet"] = tests["unmet"]
             result["steps"].append(record)
             failed = failed or record["status"] != "passed"
 
@@ -1233,17 +1347,26 @@ class Runner:
                 "tail": tail(log)}
 
     def collect_outputs(self, job, work, source, run_dir, result):
-        """The files the job produced or changed among its declared outputs, kept with a diff against the commit."""
-        diffs = []
-        for spec in job.get("outputs") or []:
+        """The files the job produced or changed among its declared outputs, kept with a diff against the commit,
+        and what became of each declared output: `declared` says for every one whether it is there and changed
+        (added, modified), there as the commit has it (unchanged), deleted, or missing, and for a missing one
+        whether the steps got as far as could have made it."""
+        diffs, declared = [], []
+        # A job that ran every step to its exit and has no such file is missing it; one that was stopped, or
+        # skipped a step, never got to where it would have been written.
+        reached = not any(s["status"] in ("skipped", "cancelled", "timeout", "out-of-memory") for s in result["steps"])
+        for output in job_outputs(job):
+            spec = output["path"]
             base = work / spec
             files = [base] if base.is_file() else sorted(p for p in base.rglob("*") if p.is_file()) if base.is_dir() else []
             committed = set(git("ls-tree", "-r", "--name-only", source, "--", spec).stdout.split())
+            changes = {"added": 0, "modified": 0, "deleted": 0, "unchanged": 0}
             for f in files:
                 rel = f.relative_to(work).as_posix()
                 committed.discard(rel)
                 new, old = f.read_bytes(), show(source, rel)
                 if new == old:
+                    changes["unchanged"] += 1
                     continue
                 dest = run_dir / "outputs" / rel
                 dest.parent.mkdir(parents=True, exist_ok=True)
@@ -1251,13 +1374,24 @@ class Runner:
                 result["outputs"].append({"path": rel, "change": "added" if old is None else "modified",
                                           "bytes": len(new), "sha256": sha256(new),
                                           "sourceSha256": sha256(old) if old is not None else None})
+                changes["added" if old is None else "modified"] += 1
                 diffs.append(text_diff(rel, old, new))
             for rel in sorted(committed):
                 if not (work / rel).exists():
                     result["outputs"].append({"path": rel, "change": "deleted", "bytes": 0, "sha256": None,
                                               "sourceSha256": sha256(show(source, rel) or b"")})
+                    changes["deleted"] += 1
             if not files and not base.exists():
+                state = "missing" if reached else "never-reached"
                 result["attention"].append(f"declared output {spec} was not produced")
+            else:
+                state = next((k for k in ("added", "modified", "deleted") if changes[k]), "unchanged")
+                if sum(1 for k in ("added", "modified", "deleted") if changes[k]) > 1:
+                    state = "changed"
+            declared.append({**output, "state": state, "files": {k: n for k, n in changes.items() if n},
+                             "producer": (result.get("attempt") or {}).get("id")})
+        if declared:
+            result["declared"] = declared
         if diffs:
             (run_dir / "changes.diff").write_text("".join(diffs))
             result["changesDiff"] = "changes.diff"
@@ -1268,6 +1402,13 @@ class Runner:
         if result["status"] is None:
             statuses = [s["status"] for s in steps if s["status"] != "skipped"]
             result["status"] = min(statuses or ["error"], key=STATUS_ORDER.index)
+        if "declared" not in result and job_outputs(job):   # it never got to its steps: nor to any output
+            result["declared"] = [{**o, "state": "never-reached", "files": {}, "producer": None} for o in job_outputs(job)]
+        # What it delivered is a question of its own. A job whose every process went as expected and which did
+        # not deliver what it declared is not a passed job: `execution` keeps saying what the processes did.
+        delivered = lifecycle.fulfillment(job, result)
+        if result["status"] == "passed" and delivered["state"] == "unfulfilled":
+            result["status"] = "failed"
         measured = [s for s in steps if s.get("wallSeconds") is not None]
         peak = max((s["peakMemoryBytes"] or 0 for s in measured), default=None) if measured else None
         wall = sum(s["wallSeconds"] for s in measured)
@@ -1278,7 +1419,9 @@ class Runner:
         attention = result["attention"]
         for s in steps:
             where = f"step {s['index']} ({s['name']})"
-            if s["status"] == "failed":
+            if s["status"] == "failed" and s.get("unmet"):
+                attention.append(f"{where} exited as expected and did not keep what it promised: {'; '.join(s['unmet'])}")
+            elif s["status"] == "failed":
                 attention.append(f"{where} exited {s['exitCode'] if s['exitCode'] is not None else s['signal']}, expected {', '.join(map(str, s['expectExit']))}")
             elif s["status"] == "timeout" and s.get("stoppedFor") == "ceiling":
                 attention.append(f"{where} was still working at the runner's {fmt_seconds(result['runner'].get('maxTimeoutSeconds') or s['wallSeconds'])} "
@@ -1312,7 +1455,14 @@ class Runner:
             attention.append(f"peak memory {fmt_bytes(peak)} is {usage['memoryOfEstimate']}× the estimate")
         if usage["durationOfEstimate"] and usage["durationOfEstimate"] > 2:
             attention.append(f"took {fmt_seconds(wall)}, {usage['durationOfEstimate']}× the estimate")
+        for unmet in delivered["unmet"]:
+            if unmet["kind"] == "output":
+                attention.append(unmet["why"] + ": the job is not fulfilled without it")
         result["attention"] = list(dict.fromkeys(attention))
+        result.update(lifecycle.facets(job, result))
+        concluded = adapter.conclusion(job, result)
+        if concluded is not None:
+            result["conclusion"] = concluded
         verdicts = adapter.verdicts(steps)
         counts = {}
         for s in steps:
@@ -1321,6 +1471,8 @@ class Runner:
                              (f" step(s) in {fmt_seconds(wall)}, peak {fmt_bytes(peak)} (estimated {fmt_seconds(job_plan['durationEstimate'])}, "
                               f"{fmt_bytes(job_plan['memoryEstimate'])})" if measured else "") +
                              (f"; {len(result['outputs'])} output file(s) changed" if result["outputs"] else "") +
+                             (f"; not fulfilled: {delivered['unmet'][0]['why']}" + (f" (and {len(delivered['unmet']) - 1} more)" if len(delivered["unmet"]) > 1 else "")
+                              if is_v2(job) and delivered["state"] == "unfulfilled" else "") +
                              (f"; signals: {'; '.join(dict.fromkeys(verdicts))}" if verdicts else ""))[:600]
 
     def stop_all(self):
@@ -2096,7 +2248,7 @@ def cmd_collect(args):
             result["attention"].append(f"{len(conflicts)} output(s) changed in the working copy since the job's commit and were "
                                        f"not applied (kept under outputs/): rerun the job on the newer commit")
         if "$schema" in result:
-            result["$schema"] = schema_ref(dest / "result.json", "result.schema.json")
+            result["$schema"] = schema_ref(dest / "result.json", "result.schema.json", result.get("schema") == RESULT_SCHEMA_V2)
         write_json(dest / "result.json", result)
         if capture:
             capture.after_collect(ROOT, config["runner"]["state_dir"], job_id, dest, result)
@@ -2208,7 +2360,7 @@ def load_results(args):
             continue
         if args.since and (r["finishedAt"] or "") < args.since:
             continue
-        if args.capability and not set(args.capability) & set(r["job"]["spec"].get("capabilities", [])):
+        if args.capability and not set(args.capability) & set(job_capabilities(r["job"]["spec"])):
             continue
         results.append(r)
     results.sort(key=lambda r: (STATUS_ORDER.index(r["status"]) if r["status"] in STATUS_ORDER else 0, r["finishedAt"] or ""))
@@ -2237,7 +2389,7 @@ def calibration(results):
     groups = {}
     for r in results:
         u = r.get("usage") or {}
-        for cap in r["job"]["spec"].get("capabilities", []) or ["(none)"]:
+        for cap in job_capabilities(r["job"]["spec"]) or ["(none)"]:
             g = groups.setdefault(cap, {"jobs": 0, "duration": [], "memory": []})
             g["jobs"] += 1
             if u.get("durationOfEstimate"):
@@ -2254,7 +2406,7 @@ def cmd_report(args):
     if args.format == "json":
         print(json.dumps({"schema": "verification-report/v1", "results": [{
             "id": r["id"], "title": r.get("title"), "status": r["status"], "summary": r["summary"],
-            "machine": machine_label(r), "attention": r["attention"], "capabilities": r["job"]["spec"].get("capabilities", []),
+            "machine": machine_label(r), "attention": r["attention"], "capabilities": job_capabilities(r["job"]["spec"]),
             "links": r["job"]["spec"].get("links", {}), "description": r["job"]["spec"].get("description"),
             "expected": r["job"]["spec"].get("expected"), "sourceCommit": r["sourceCommit"],
             "finishedAt": r["finishedAt"], "usage": r.get("usage"), "estimate": r.get("estimate"),
@@ -2277,7 +2429,7 @@ def cmd_report(args):
         for r in needs:
             spec = r["job"]["spec"]
             print(f"### {r['id']}: {r.get('title')}\n")
-            print(f"- **{r['status']}** at `{r['sourceCommit'][:12]}`, capabilities {', '.join(spec.get('capabilities', []))}, on {machine_label(r)}")
+            print(f"- **{r['status']}** at `{r['sourceCommit'][:12]}`, capabilities {', '.join(job_capabilities(spec))}, on {machine_label(r)}")
             print(f"- {r['summary']}")
             for a in r["attention"]:
                 print(f"- attention: {a}")
@@ -2305,40 +2457,83 @@ def new_id(title, at=None):
     return f"{at.astimezone(dt.timezone.utc):%Y%m%d-%H%M%S}-{slug(title)}"
 
 
+# The order a job file's keys are written in, by format: what a reader wants first comes first.
+KEY_ORDER = {
+    False: ["$schema", "schema", "id", "title", "description", "kind", "capabilities", "links", "expected", "submitted",
+            "revision", "priority", "requires", "resources", "env", "steps", "stopOnFailure", "outputs", "supersedes"],
+    True: ["$schema", "schema", "id", "title", "description", "purpose", "workload", "labels", "links", "expected", "case",
+           "batch", "submitted", "source", "needs", "priority", "requires", "resources", "environment", "steps",
+           "stopOnFailure", "outputs", "supersedes"],
+}
+# What only a job of the second format can say (submit's flags, by argparse's names for them).
+SECOND_FORMAT_FLAGS = ("workload", "label", "case", "needs", "network", "optional_output", "phase", "tests", "test_reports",
+                       "expect_failing")
+
+
+def ordered(job):
+    order = KEY_ORDER[is_v2(job)]
+    return {k: job[k] for k in order if k in job} | {k: v for k, v in job.items() if k not in order}
+
+
+def submitted_by(args, at, before=None):
+    """Who submits, and from where: the time, the session, and the run the session works in (its loop's scope).
+    The run is not the source revision, and not who collects the result: a job carries it from the start, so
+    that nobody has to infer it later from times (VF-077)."""
+    submitted = {**(before or {}), "at": iso(at)}
+    # The session that submits: Codex marks its commands with its thread, and one started from a Claude Code session
+    # may still carry that session's id beside it, so its own comes first. The loop statistics
+    # (llm-dlc/tools/loop_stats.py) tie a job to the loop cycle that submitted it by this id.
+    if session := getattr(args, "session", None) or os.environ.get("CODEX_THREAD_ID") or os.environ.get("CLAUDE_CODE_SESSION_ID"):
+        submitted["session"] = session
+    if getattr(args, "by", None):
+        submitted["by"] = args.by
+    submitted.pop("run", None)   # of the job this one was made from: this submission's is read now
+    submitted.pop("phase", None)
+    if run := getattr(args, "run_name", None) or submitting_run(os.environ.get("VERIFY_CGROUP_FILE") or "/proc/self/cgroup"):
+        submitted["run"] = run
+    if getattr(args, "run_phase", None):
+        submitted["phase"] = args.run_phase
+    return submitted
+
+
 def cmd_submit(args):
     if args.from_file:
         job = json.loads(Path(args.from_file).read_text())
     else:
         job = {}
+    # The second format is asked for by naming a purpose, which only it has, or by starting from a job of it.
+    v2 = bool(args.purpose) or job.get("schema") == JOB_SCHEMA_V2
+    if not v2:
+        asked = ["--" + flag.replace("_", "-") for flag in SECOND_FORMAT_FLAGS if getattr(args, flag) not in (None, [], False)]
+        if asked:
+            sys.exit(f"{', '.join(asked)}: only a job of the second format says that; give it a --purpose "
+                     f"({', '.join(PURPOSES)})")
     title = args.title or job.get("title")
     if not title:
         sys.exit("a job needs --title")
     at = now()
-    job.setdefault("$schema", "../schema/job.schema.json")
-    job["schema"] = JOB_SCHEMA
+    capabilities = job_capabilities(job) + (args.capability or [])
+    outputs = list(job.get("outputs") or [])
+    job["schema"] = JOB_SCHEMA_V2 if v2 else JOB_SCHEMA
     job["id"] = job.get("id") or new_id(title, at)
     job["title"] = title
     if args.description:
         job["description"] = args.description
-    if args.kind:
+    labels = job.setdefault("labels", {}) if v2 else {}
+    if args.kind and v2:
+        labels.setdefault("kind", []).append(args.kind)
+    elif args.kind:
         job["kind"] = args.kind
-    job["capabilities"] = list(dict.fromkeys(job.get("capabilities", []) + (args.capability or [])))
     links = job.setdefault("links", {})
     for link in args.link or []:
         key, _, value = link.partition(":")
         if not value:
             sys.exit(f"--link {link!r}: use KIND:VALUE, such as example:104 or path:lib/src/tla.rs")
         links.setdefault(key + "s" if not key.endswith("s") else key, []).append(value)
-    job["submitted"] = {**job.get("submitted", {}), "at": iso(at)}
-    # Without --session, the session Claude Code says is running this command: the loop statistics
-    # (llm-dlc/tools/loop_stats.py) tie a job to the loop cycle that submitted it by this id.
-    # The session that submits: Codex marks its commands with its thread, and one started from a Claude Code session
-    # may still carry that session's id beside it, so its own comes first.
-    if session := args.session or os.environ.get("CODEX_THREAD_ID") or os.environ.get("CLAUDE_CODE_SESSION_ID"):
-        job["submitted"]["session"] = session
-    if args.by:
-        job["submitted"]["by"] = args.by
-    if args.revision:
+    job["submitted"] = submitted_by(args, at, job.get("submitted"))
+    if args.revision and v2:
+        job["source"] = {"revision": args.revision}
+    elif args.revision:
         job["revision"] = args.revision
     if args.priority is not None:
         job["priority"] = args.priority
@@ -2349,49 +2544,93 @@ def cmd_submit(args):
         if value is not None:
             resources[key] = float(value) if key == "cpus" else value
     steps = job.setdefault("steps", [])
-    outputs = job.setdefault("outputs", [])
     requires = job.setdefault("requires", [])
     expected = [job["expected"]] if job.get("expected") else []
     if args.task and len(args.example or []) != 1:
         sys.exit("--task goes with exactly one --example")
+    added = []   # the steps this command line adds: its --cwd, --phase and promises are theirs
     for example_id in args.example or []:
         parts = example_job_parts(example_id, args.task)
         steps.append(parts["step"])
         outputs.append(parts["output"])
         requires.extend(parts["requires"])
-        job["capabilities"].append(parts["capability"])
+        capabilities.append(parts["capability"])
         links.setdefault("examples", []).append(example_id)
         expected.append(parts["expected"])
-        job.setdefault("kind", "example")
+        if v2:
+            job.setdefault("workload", FIRST_FORMAT_WORKLOAD)   # a numbered example is that workload's
+        else:
+            job.setdefault("kind", "example")
     for name, run in args.step or []:
-        steps.append({"name": name, "run": run, "cwd": args.cwd or "."})
+        added.append({"name": name, "run": run, "cwd": args.cwd or "."})
     for run in args.run or []:
-        steps.append({"name": " ".join(run.split())[:60], "run": run, "cwd": args.cwd or "."})
+        added.append({"name": " ".join(run.split())[:60], "run": run, "cwd": args.cwd or "."})
+    steps.extend(added)
     if args.expect_exit is not None:
         for s in steps:
             s["expectExit"] = args.expect_exit
     outputs.extend(args.output or [])
     requires.extend(args.requires or [])
-    job["outputs"] = list(dict.fromkeys(outputs))
     job["requires"] = list(dict.fromkeys(requires))
-    job["capabilities"] = list(dict.fromkeys(job["capabilities"]))
-    for key in ("links",):
-        job[key] = {k: list(dict.fromkeys(v)) for k, v in job[key].items()}
+    if v2:
+        job["purpose"] = args.purpose or job.get("purpose")
+        if args.workload:
+            job["workload"] = args.workload
+        for label in args.label or []:
+            key, _, value = label.partition(":")
+            if not key or not value:
+                sys.exit(f"--label {label!r}: use KEY:VALUE, such as project:spring-boot or tool:gradle")
+            labels.setdefault(key, []).append(value)
+        if capabilities:
+            labels["capability"] = capabilities
+        job["labels"] = {k: list(dict.fromkeys(v)) for k, v in labels.items() if v}
+        if args.case:
+            job["case"] = args.case
+        if args.needs:
+            needs = (job.get("needs") or []) + [{"job": n} for n in args.needs]
+            job["needs"] = [n for i, n in enumerate(needs) if n not in needs[:i]]
+        if args.network:
+            job.setdefault("environment", {})["network"] = args.network
+        outputs += [{"path": path, "required": False} for path in args.optional_output or []]
+        seen = {}
+        for output in outputs:   # each path once: what was said of it last holds
+            seen[output["path"] if isinstance(output, dict) else output] = output
+        job["outputs"] = list(seen.values())
+        promise = None
+        if args.tests is not None or args.test_reports or args.expect_failing:
+            promise = {"min": args.tests if args.tests is not None else 1,
+                       **({"reports": args.test_reports} if args.test_reports else {}),
+                       **({"failing": args.expect_failing} if args.expect_failing else {})}
+        if (promise or args.phase) and not added:
+            sys.exit("--phase, --tests, --test-reports and --expect-failing describe the steps given with --step or "
+                     "--run on the same command line, and there are none")
+        for s in added:
+            if args.phase:
+                s["phase"] = args.phase
+            if promise:
+                s["promises"] = {"tests": promise}
+        for key in ("labels", "needs", "requires", "outputs"):
+            if not job.get(key):
+                job.pop(key, None)
+    else:
+        job["outputs"] = list(dict.fromkeys(outputs))
+        job["capabilities"] = list(dict.fromkeys(capabilities))
+        job.setdefault("kind", "other")
+    job["links"] = {k: list(dict.fromkeys(v)) for k, v in job["links"].items()}
+    if v2 and not job["links"]:
+        del job["links"]
     if args.expected:
         expected = [args.expected]
     if expected:
         job["expected"] = "; ".join(expected)
     if args.stop_on_failure is not None:
         job["stopOnFailure"] = args.stop_on_failure == "yes"
-    job.setdefault("kind", "other")
-    order = ["$schema", "schema", "id", "title", "description", "kind", "capabilities", "links", "expected", "submitted",
-             "revision", "priority", "requires", "resources", "env", "steps", "stopOnFailure", "outputs", "supersedes"]
-    job = {k: job[k] for k in order if k in job} | {k: v for k, v in job.items() if k not in order}
+    job.pop("$schema", None)
     problems = validate(job, "job.schema.json")
     if problems:
         sys.exit("not a valid job:\n  " + "\n  ".join(problems))
     path = layout.new_job(ROOT, job["id"])
-    job["$schema"] = schema_ref(path, "job.schema.json")
+    job = ordered({"$schema": schema_ref(path, "job.schema.json", v2), **job})
     if path.exists() and not args.force:
         sys.exit(f"{path.relative_to(ROOT)} exists")
     if args.dry_run:
@@ -2409,7 +2648,8 @@ def cmd_submit(args):
                  "(Judged by the committed defaults alone, which suit a laptop: no machine file "
                  f"({machine_config() or 'none'}) and no verification/pipeline.local.toml was found, so the runner here "
                  "may well allow more.)"))
-    print("Commit it with the change, marked verification pending (verification/README.md).")
+    print("Commit it with the change, marked verification pending (verification/README.md)." if not v2 else
+          "Commit it with the change, with (verification pending) at the end of the summary line (jobs/README.md).")
     return 0
 
 
@@ -2421,9 +2661,11 @@ def cmd_resubmit(args):
     at = now()
     job["id"] = new_id(job["title"], at)
     job["supersedes"] = args.id
-    job["submitted"] = {**job.get("submitted", {}), "at": iso(at)}
-    job.pop("revision", None)
-    if args.revision:
+    job["submitted"] = submitted_by(args, at, job.get("submitted"))
+    job.pop("source" if is_v2(job) else "revision", None)
+    if args.revision and is_v2(job):
+        job["source"] = {"revision": args.revision}
+    elif args.revision:
         job["revision"] = args.revision
     resources = job.setdefault("resources", {})
     for flag, key in [("cpus", "cpus"), ("memory", "memory"), ("duration", "duration"), ("memory_limit", "memoryLimit"),
@@ -2436,7 +2678,7 @@ def cmd_resubmit(args):
         sys.exit("not a valid job:\n  " + "\n  ".join(problems))
     path = layout.new_job(ROOT, job["id"])
     if "$schema" in job:
-        job["$schema"] = schema_ref(path, "job.schema.json")
+        job["$schema"] = schema_ref(path, "job.schema.json", is_v2(job))
     write_json(path, job)
     print(f"wrote {path.relative_to(ROOT)}, superseding {args.id}. Commit it to queue it.")
     return 0
@@ -2579,6 +2821,20 @@ def main(argv=None):
     p.add_argument("--by", help="who submitted it: an agent or a person")
     p.add_argument("--stop-on-failure", choices=["yes", "no"], help="skip later steps after a failure (default yes)")
     p.add_argument("--from-file", help="start from this JSON file")
+    second = p.add_argument_group("a job of the second format (itl-job/v2, jobs/schema/job.schema.json)",
+                                  "Asked for by --purpose. Anything a job can say that has no flag here is said in a file (--from-file).")
+    second.add_argument("--purpose", choices=PURPOSES, help="what kind of work it is; says how its result is read")
+    second.add_argument("--workload", help="the adapter that knows what the steps mean (jobs/workloads/NAME.py; default generic)")
+    second.add_argument("--label", action="append", metavar="KEY:VALUE", help="what it is about, for grouping: project:NAME, tool:NAME, ...; repeatable")
+    second.add_argument("--case", help="the case it belongs to, as its batch or brief names it")
+    second.add_argument("--needs", action="append", metavar="JOB", help="a job that must have a fulfilled result first; repeatable")
+    second.add_argument("--network", choices=NETWORKS, help="every step's network: host (default), none (enforced, with a probe as evidence), fetch")
+    second.add_argument("--optional-output", action="append", metavar="PATH", help="an output that may be absent (one given with --output is required); repeatable")
+    second.add_argument("--phase", choices=lifecycle.PHASES, help="what the time of this command line's steps is counted as")
+    second.add_argument("--tests", type=int, metavar="MIN", help="this command line's steps promise tests: at least MIN must have executed")
+    second.add_argument("--test-reports", action="append", metavar="GLOB", help="where those steps' JUnit XML reports are; repeatable (default: the step's log is read)")
+    second.add_argument("--expect-failing", action="append", metavar="TEST", help="a test expected to fail by assertion; repeatable (give --expect-exit and --test-reports with it)")
+    second.add_argument("--run-phase", choices=["generation", "setup", "domain", "watcher"], help="the phase of the submitting run, when the submitter knows it")
     p.add_argument("--dry-run", action="store_true", help="print the job instead of writing it")
     p.add_argument("--force", action="store_true")
     resources(p)

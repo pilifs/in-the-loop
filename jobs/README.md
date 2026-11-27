@@ -13,7 +13,10 @@ is read in. What is intended and not built is in [`ARCHITECTURE.md`](../ARCHITEC
 |---|---|
 | [`pipeline.py`](pipeline.py) | the one implementation of admission, claiming, execution, collection and reporting, and every command. It was `verification/pipeline.py` until 2026-11-27, and that path is still an entry point that runs this file, so every command a job, a hook or a note names keeps working |
 | [`workloads/`](workloads) | what a kind of work means: [`generic.py`](workloads/generic.py) (nothing: commands, exit codes, outputs) and [`verification.py`](workloads/verification.py) (the checkers, the build of `jvmcontract`, the verdict lines, numbered examples) |
-| [`schema/job.schema.json`](schema/job.schema.json) | the second job format, `itl-job/v2`: a purpose, a workload, labels, prerequisites, a permitted environment, required outputs |
+| [`schema/job.schema.json`](schema/job.schema.json), [`schema/result.schema.json`](schema/result.schema.json) | the second job format, `itl-job/v2` (a purpose, a workload, labels, prerequisites, a permitted environment, required outputs, what a step promises), and its result, `itl-job-result/v2` |
+| [`lifecycle.py`](lifecycle.py) | what became of a job, each question apart: what its processes did (`execution`), what it delivered (`fulfillment`), what it cost by scope (`timing`). One function each, for the runner that writes a result and for a reader of a result written before the blocks were kept; [`test_lifecycle.py`](test_lifecycle.py) |
+| [`evidence.py`](evidence.py) | what a step did besides exiting: which tests executed, read from JUnit XML reports or the log's summary lines; [`test_evidence.py`](test_evidence.py) |
+| [`test_formats.py`](test_formats.py) | the second format end to end, through `jobs/pipeline.py`, in throwaway repositories: a non-Java job on a PATH with no checker, real tests counted, a missing required output, a refuted claim, a step with no network |
 | [`sandbox.py`](sandbox.py) | runs a command where the network is demonstrably off, and records how that was shown |
 | [`records.py`](records.py) | reads the committed records by id, from a git revision or from a working copy; computes the result indexes from the receipts, for `collect` to write and for the audit to compare |
 | [`audit.py`](audit.py) | the reconciliation: a read-only join of specifications, receipts, indexes and the runner's state |
@@ -41,6 +44,63 @@ result does not list checkers and a machine with none installed is not asked for
 checkers' verdict lines apart from the job's status: `established`, `refuted`, `open`, `mixed`, or `none` when no
 checker's line was found, which is never read as established. A job whose every step exits as its specification
 expects has passed, and may have refuted its claim.
+
+## A job of the second format
+
+A job that names a **purpose** is written in the second format. Everything else about submitting, committing,
+running, collecting and resubmitting it is as for any job ([`verification/README.md`](../verification/README.md)).
+
+```sh
+python3 jobs/pipeline.py submit --purpose test --title "Run the parser's tests" \
+    --description "What it checks, why, and what a reader of the result should know." \
+    --label project:parser --case P07 --requires cargo \
+    --phase test --tests 40 --run "cargo test -p parser" \
+    --output target/parser-report.json --optional-output target/coverage.txt \
+    --cpus 2 --memory 2G --duration 5m
+```
+
+| It says | With | What the pipeline does with it |
+|---|---|---|
+| what kind of work it is | `--purpose resolve\|build\|test\|verify\|maintenance` | Says how to read the result. Kept apart from `--label KEY:VALUE` (`project`, `tool`, `capability`, any other), which only group. `--capability X` is the label `capability:X` |
+| which adapter knows what its steps mean | `--workload NAME` | `generic` when it names none: commands, exit codes, outputs, and requirements looked for on PATH. A job whose adapter this checkout does not have is not started, and `status` says why |
+| the case it belongs to, and what must come first | `--case`, `--needs JOB` | Recorded. A job that names a prerequisite is not started yet: scheduling by `needs` is the next step of this work, and until then `status` says so |
+| what its steps may reach | `--network host\|none\|fetch` | `host` is the machine's network, as every job of the first format has it. `none` is enforced: the step runs in a network namespace with a loopback interface alone ([`sandbox.py`](sandbox.py)), and its record keeps what a probe saw there. A machine that cannot enforce it does not start the job. `fetch` is for a step of a `resolve` job alone |
+| that a step runs tests | `--tests MIN`, `--test-reports GLOB`, `--expect-failing TEST` | The step is held to evidence: at least MIN tests executed, read from the reports or else from the log's summary lines (cargo, unittest, pytest, Maven, Gradle). A step that exited as expected and shows none has not kept its promise (VF-070). With `--expect-failing` and `--expect-exit`, a regression test that fails by assertion on the revision before its fix is a fulfilled job, and a build that broke before any test ran is not. A step with no promise (a compile) is asked for nothing |
+| which outputs it must leave | `--output PATH` (required), `--optional-output PATH` | A required output that is not there leaves the job unfulfilled, whatever its steps exited with |
+| what its steps' time counts as | `--phase resolve\|fetch\|prepare\|build\|test\|proof\|other` | `timing.byPhase` in the result |
+
+`--phase`, `--tests`, `--test-reports` and `--expect-failing` describe the steps given on the same command line.
+A job with steps that differ is written as a file ([`schema/job.schema.json`](schema/job.schema.json)) and
+submitted with `--from-file`.
+
+A job records the run its submitter works in (`submitted.run`, as `single-NAME`), read from the systemd scope the
+loop runs its agent in, so that nobody has to infer it later from times (VF-077). It is not the source revision,
+and not who collects. A job of the first format records it too. `submitted.phase` is there when the submitter
+says it (`--run-phase`): a loop's agent cannot read its run's phase from where it runs.
+
+### What its result says
+
+One status word used to answer several questions. A result now keeps them apart, in a job of either format
+([`schema/result.schema.json`](schema/result.schema.json)):
+
+| Block | The question | Its values |
+|---|---|---|
+| `execution` | What did the processes do? | The steps planned, run, as expected and skipped; `stopped` names the first step that did not go as expected and why: `exit`, `signal`, `timeout`, `stalled`, `ceiling`, `memory-limit`, `machine-memory`, `cancelled`, `preparation`, `unmet-promise`, or `not-run` |
+| `fulfillment` | Did the job deliver what it declared? | `fulfilled`; `unfulfilled`, with every reason (`step`, `promise`, `output`, `skipped`, `preparation`, `not-run`); `undetermined` for a job stopped before it ended, which runs again |
+| `declared` | What became of each declared output? | `added`, `modified`, `deleted`, `changed`, `unchanged`, `missing` (every step ran to its exit and it is not there), `never-reached` (the job was stopped, or skipped a step, before it); with `required`, the consumer the job named and the attempt that produced it. The files' digests are under `outputs` |
+| a step's `evidence`, `network`, `phase` | What did the step do besides exiting, and with what network? | The tests executed, failed and skipped, the names of the ones that failed, and the source read (`junit-xml`, `log: cargo test`, ..., or `none`: nothing shows any ran); the probe of a step that had no network |
+| `conclusion` | What does it mean for the question asked? | The workload's: `established`, `refuted`, `open`, `mixed`, `none` for the verification workload. Absent where the workload concludes nothing |
+| `timing` | What did it cost, and of what is each number a measure? | `queueWait`, `elapsed`, `preparation`, `requestedSteps`, each with seconds and a state: `measured` (a measured zero is one), `derived`, `partial`, `not-run`, `unknown` |
+
+`status` stays the one word the indexes and the reports use. For a job of the second format it is `passed` only
+when the job is fulfilled: a job whose every process exited as expected and which did not deliver what it
+declared is `failed`, and `execution.status` goes on saying `passed`. For a job of the first format nothing
+changes: its outputs were never required and its steps promise nothing.
+
+A result written before the blocks were kept (every one collected until 2026-11-27) has none of them. `lifecycle.facets(job, result, derived=True)` computes
+them from what it does hold and marks them `derived`: the receipt of `20261127-054106` then says 41 seconds
+elapsed, measured, 41 seconds of preparation, derived, and requested steps that were `not-run`, where its index
+entry said 0 seconds and its receipt 41.
 
 ## Attempts
 

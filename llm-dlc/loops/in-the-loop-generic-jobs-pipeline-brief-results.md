@@ -11,7 +11,7 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 |---|---|---|
 | 1. Protect and measure: the census | done | `jobs/audit.py`, `jobs/records.py`, the frozen census and manifest of `b52a084f5d11` |
 | 1. Protect and measure: retention on retry and prune | done | `jobs/attempts.py`; `prune`, `recover` and a collect that can be run again, in `verification/pipeline.py`; the brief queue's cleanup is that `prune` |
-| 2. Switch one queue | in progress | Done: the pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification workload and a generic one (`jobs/workloads/`); the second job format's schema; a network-off sandbox. Open: see *What is left*, below |
+| 2. Switch one queue | in progress | Done: the pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification workload and a generic one (`jobs/workloads/`); the second job format's schema; a network-off sandbox. The second format is written by `submit --purpose`, run and collected, and a result of either format keeps execution, fulfillment, each declared output's state, a step's test evidence and network, the workload's conclusion and scoped timing apart (`jobs/lifecycle.py`, `jobs/evidence.py`, `jobs/schema/result.schema.json`). Open: see *What is left*, below |
 | 3. Qualify delayed setup (S48) | open | |
 | 4. Tune from measurements | open | |
 | 5. Adopt and verify | open | |
@@ -61,11 +61,7 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 
 For whoever continues (this run's later cycles): each item is one commit, with its test.
 
-1. **The second format in `submit`, `validate` and the runner** (`jobs/schema/job.schema.json` is written):
-   `--purpose`, `--workload`, `--label`, `--case`, `--needs`, `--network`, required outputs, `promises.tests`
-   (`jobs/evidence.py` and its test are written, not yet called). In the result: `execution`, `fulfillment`,
-   `evidence`, `conclusion` (the workload's), `timing` with its scopes, each declared output's state. An
-   unfulfilled job of the second format is `failed`, never `passed`.
+1. *Done (see Gate 2, below).* The second format in `submit`, `validate` and the runner, and the result's blocks.
 2. **Scheduling states**: `needs` (waiting, blocked), unschedulable (no adapter, a missing tool, a network that
    cannot be enforced), deferred; a dependent starts as soon as its prerequisite finishes.
 3. **The lifecycle view** (`itl-job-lifecycle/v1`): one function, from which `status`, `status --json` (the old
@@ -86,6 +82,57 @@ For whoever continues (this run's later cycles): each item is one commit, with i
 7. **Fetch admission and its measurements** (gate 4): a ceiling of ten fetch slots, taken while a fetch step runs.
 8. **Adoption** (gate 5): `ARCHITECTURE.md`, `CLAUDE.md`, the skills, the script inventory under `verification/`,
    the findings named by the brief.
+
+## Gate 2: the second format, and a result that keeps its questions apart
+
+**What is built.** `submit --purpose` writes a job of `itl-job/v2`; the runner runs it beside jobs of the first
+format in one queue; `collect`, `report`, `validate` and `resubmit` take it as any other. A result of either
+format now has `execution`, `fulfillment`, `declared`, `timing` and, where the workload concludes something,
+`conclusion`; a step of a second-format job has `phase`, `network` and, when it promised tests, `evidence`.
+
+**The three jobs the brief's second gate names**, each a test in `jobs/test_formats.py`, in a throwaway
+repository through `jobs/pipeline.py`:
+
+| The brief asks for | What the test shows |
+|---|---|
+| A non-Java job that produces an artifact, on a host with no checker | On a PATH of a shell, git and coreutils alone (no `java`, `jbmc`, `cargo`, `bwrap`), the job is submitted, runs beside a first-format job, passes, and its artifact comes back with its digest, `declared` as `added` by the attempt that made it. Its record of the machine lists `coreutils`, `git`, `systemd` and no checker. It is collected, reported by its label, validated against the second result schema, and resubmitted as a job that supersedes it |
+| A real build and test job | A step that runs two real unit tests has `evidence` of 2 executed, read from its log. A step that promised tests and compiled only exited 0 and is `failed`, with `execution.stopped.reason` `unmet-promise` and no line saying "exited 0, expected 0". A compile that promised nothing passes and is asked for nothing. A regression test expected to fail by assertion (exit 1, a JUnit report naming it) is a fulfilled, passed job; the same job where the build broke before any test is not |
+| A verification job whose checker refutes its claim | With a stand-in for JBMC's refutation (its last line and its exit code 10, which the job expects): `status` `passed`, `fulfillment` `fulfilled`, `conclusion.verdict` `refuted`, as a job of the second format and of the first |
+
+Beside them: a required output that is missing fails a job whose only step exited 0 (`execution.status` stays
+`passed`), an optional one does not, and an output behind a failed step is `never-reached`; a step with no
+network sees `lo` alone and its record keeps the probe; where bubblewrap is absent the job is not started and
+`status` gives the reason; a job naming an adapter this checkout lacks is not started either; `--tests` on a job
+with no `--purpose` is refused; a job submitted inside a loop's scope carries `submitted.run`, and a resubmission
+by hand does not inherit it.
+
+**The timing fixture of the brief** (`jobs/test_lifecycle.py`): the committed receipt of
+`20261127-054106-trace-individually-approved-ordinary-ups` gives `elapsed` 41.0 s `measured`, `preparation`
+41.0 s `derived`, `requestedSteps` 0 s `not-run` (0 of its planned steps), and `execution.stopped` at step 0,
+`preparation`.
+
+**Decisions.**
+
+12. **`status` means fulfilled, for the second format only.** A second-format job whose processes all exited as
+    expected and which did not deliver what it declared is `failed`; `execution.status` keeps `passed`. A
+    first-format job's outputs were never required and its steps promise nothing, so no first-format result
+    changes its status. This is the brief's "a missing required output precludes fulfillment even if the process
+    exited zero" without rereading 1,906 receipts by a rule they were not written under.
+13. **The blocks are in results of both formats, and derived for the ones before.** One function computes each
+    (`jobs/lifecycle.py`), for the runner and for a reader of an old receipt, which marks them `derived`. The
+    first result schema names the blocks and stays open, so a reader of before ignores them; the second schema
+    describes them, and a test holds the two schemas to the same definition of everything they share.
+14. **A machine that cannot do what a job declares does not start it.** A missing adapter and a network that
+    cannot be taken away are reasons in the job's plan, beside the ones for memory and CPUs. Nothing of the job
+    runs, no attempt is consumed, and `status` gives the reason. (The runner's word for all of them is still
+    `deferred`; telling `unschedulable` from `deferred` is the lifecycle view's, below.)
+15. **The run's phase is said, not inferred.** `submitted.run` is read from the scope. The phase is not there to
+    read (one loop name serves every phase of a run), so `submitted.phase` is set by `--run-phase` when the
+    submitter knows it, and is otherwise absent. Unknown is reported as unknown.
+16. **Subprocess tests that go through the shared helper are listed as the estimator lists them.** The 11 tests
+    of `jobs/test_formats.py` spawn the pipeline through `test_pipeline.Repo`, which the cost estimator's scan of
+    a file's own calls does not see, so the inventory has them as `unit`, as it has `verification/test_pipeline.py`'s.
+    They take about 1.3 s each. Changing the estimator is outside this brief.
 
 ## Gate 1: the census
 

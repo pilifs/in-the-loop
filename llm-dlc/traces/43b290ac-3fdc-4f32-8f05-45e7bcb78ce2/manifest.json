@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T22:58:00.781Z",
-  "duration_seconds": 27859,
+  "ended": "2026-11-27T23:19:57.886Z",
+  "duration_seconds": 29177,
   "stats": {
-    "turns": 31,
-    "api_calls": 593,
-    "tool_calls": 649,
+    "turns": 32,
+    "api_calls": 651,
+    "tool_calls": 712,
     "tool_errors": 10,
-    "compactions": 4,
+    "compactions": 5,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1212,
-      "output_tokens": 970106,
-      "cache_read_input_tokens": 189182111,
-      "cache_creation_input_tokens": 2273105
+      "input_tokens": 1328,
+      "output_tokens": 1074094,
+      "cache_read_input_tokens": 200253086,
+      "cache_creation_input_tokens": 2512319
     }
   },
   "tools": {
-    "Bash": 512,
-    "Read": 76,
-    "Write": 28,
+    "Bash": 567,
+    "Read": 82,
+    "Write": 30,
     "Edit": 19,
     "AskUserQuestion": 3,
     "mcp__chrome-devtools__take_screenshot": 3,
@@ -52,8 +52,10 @@
     "jobs/audit.py",
     "jobs/batch.py",
     "jobs/evidence.py",
+    "jobs/lifecycle.py",
     "jobs/records.py",
     "jobs/sandbox.py",
+    "jobs/scheduling.py",
     "jobs/schema/job.schema.json",
     "jobs/test_attempts.py",
     "jobs/test_audit.py",
@@ -136,24 +138,38 @@
     {
       "index": 4,
       "started": "2026-11-27T21:27:46.543Z",
-      "ended": "2026-11-27T22:58:00.781Z",
+      "ended": "2026-11-27T22:59:24.475Z",
       "turns": 4,
-      "api_calls": 133,
+      "api_calls": 135,
       "usage": {
-        "input_tokens": 266,
-        "output_tokens": 261607,
-        "cache_read_input_tokens": 49421402,
-        "cache_creation_input_tokens": 542268
+        "input_tokens": 270,
+        "output_tokens": 269277,
+        "cache_read_input_tokens": 50531255,
+        "cache_creation_input_tokens": 548755
       },
-      "peak_context_tokens": 554107
+      "peak_context_tokens": 560594
+    },
+    {
+      "index": 5,
+      "started": "2026-11-27T23:01:49.090Z",
+      "ended": "2026-11-27T23:19:57.886Z",
+      "turns": 1,
+      "api_calls": 56,
+      "usage": {
+        "input_tokens": 112,
+        "output_tokens": 96318,
+        "cache_read_input_tokens": 9961122,
+        "cache_creation_input_tokens": 232727
+      },
+      "peak_context_tokens": 247894
     }
   ],
   "log": {
-    "sha256": "3d8f2fe83a520c64703935c98e2b214597e66b2e91c071e18b44b7868977e4dd",
-    "bytes": 17428079,
-    "lines": 5728,
-    "gzip_bytes": 3510106,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/3d8f2fe83a520c64703935c98e2b214597e66b2e91c071e18b44b7868977e4dd.jsonl.gz"
+    "sha256": "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55",
+    "bytes": 19538264,
+    "lines": 6408,
+    "gzip_bytes": 3893717,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -374,20 +390,28 @@
       "log_sha256": "085632357f1b4a287fe236b3482e4a13b2194987ae32dd966e774b2b3f5fcc97"
     },
     {
-      "change_id": "zsutxyzstuwlstsoousuuluqwzzzrspv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "3d8f2fe83a520c64703935c98e2b214597e66b2e91c071e18b44b7868977e4dd"
-    },
-    {
       "change_id": "pzllyuumyrklvlopvkmkvnynyxnkuwsp",
       "commit_id": null,
       "immutable": false,
       "summary": "Move the pipeline to jobs/pipeline.py, with verification as one workload of it",
       "body": "Third slice of the brief for one jobs pipeline, the start of its gate 'switch one queue'. The one implementation of admission, claiming, execution, collection and reporting is now jobs/pipeline.py. verification/pipeline.py stays as the entry point every job, hook and note names: run as a command it is that file's command line, and imported it is that module; it implements nothing. The records, the first format's schemas, the layout resolver and the runner's state stay under verification/, and no record moved (the manifest of the pinned corpus still verifies).\n\nWhat is particular to proving moved behind a workload adapter, jobs/workloads/verification.py: which checkers a machine has, the build of jvmcontract at a job's commit and the memory it takes, the checkers' environment in a step, the verdict lines read out of a log, and the parts of a job that runs a numbered example. jobs/workloads/generic.py answers the same questions with nothing, for a job that is only commands and outputs: it looks for a requirement on PATH and probes for no checker. A job of the first format is the verification workload's and runs as before; one of the second format names its workload. The verification workload also gives a conclusion apart from the job's status (established, refuted, open, mixed, or none when no checker's line was found), since a job that passed may have refuted its claim. A result's record of its machine lists the pipeline's own tools and its workload's. Also added, not yet used by the runner: the schema of the second job format (itl-job/v2) and jobs/sandbox.py, which runs a command in a network namespace with a loopback interface alone and records the probe that shows it. ARCHITECTURE.md, jobs/README.md and verification/README.md say who owns what now, and the results page has the decisions and what is left.\n\nVerified: verification/test_pipeline.py, 52 tests, and verification/test_capture.py, 12, both through the old entry point; jobs/test_workloads.py, 9; jobs/test_sandbox.py, 3 (on this machine bubblewrap enforces it; unshare -rn is refused and a systemd user scope's IPAddressDeny does nothing); the tests of what changed, 31 of 31 files; the cost lint agrees for the committed files.",
       "log_sha256": "3d8f2fe83a520c64703935c98e2b214597e66b2e91c071e18b44b7868977e4dd"
+    },
+    {
+      "change_id": "mwpkusnutrlqmzwzupvktmnmtvkupyyp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55"
+    },
+    {
+      "change_id": "lqkqyulqxulklrwlqmpkkltznrskxzkm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Write, run and collect jobs of the second format, and keep a result's questions apart",
+      "body": "A job that names a purpose (submit --purpose resolve|build|test|verify|maintenance) is written in the second format, itl-job/v2: a workload, labels, a case, required and optional outputs, a network for its steps, and what a step promises besides its exit code. It runs in the same queue as jobs of the first format, and collect, report, validate and resubmit take it as any other. Every job of the first format runs as it did, and its status means what it meant.\n\nA result of either format now keeps apart what one status word answered at once (jobs/lifecycle.py, one function each, for the runner and for a reader of an old receipt, which marks them derived): execution (what the processes did, and where and why it stopped), fulfillment (fulfilled, unfulfilled with every reason, undetermined), declared (each declared output: added, modified, deleted, unchanged, missing, never-reached, with its producer attempt), timing by scope (queue wait, elapsed, preparation, requested steps, by phase, each measured, derived, partial, not-run or unknown), and the workload's conclusion. A second-format job whose processes all exited as expected and which did not deliver what it declared is failed: a required output that is not there, or a step that promised tests and shows none executed (jobs/evidence.py reads JUnit XML reports or the log's summary lines; VF-070). A regression test expected to fail by assertion is a fulfilled job, and a build that broke before any test is not.\n\nA step declared network none runs in a network namespace with loopback alone, and its record keeps what a probe saw there. A machine that cannot enforce that, or a checkout without the adapter a job names, does not start the job, and status says why. A job that names prerequisites is not started until scheduling by them is built (the next commit). A job records the run its submitter works in (submitted.run), read from the loop's systemd scope (VF-077).\n\nVerified: jobs/test_formats.py (11 tests, each in a throwaway repository through jobs/pipeline.py) shows the three jobs the brief's second gate names: a non-Java artifact job on a PATH with no checker, submitted, run beside a first-format job, collected, reported, validated and resubmitted; real unit tests counted from the log, and a step that compiled only failing its promise with exit 0; a stand-in for JBMC's refutation giving status passed, fulfillment fulfilled, conclusion refuted, in both formats. jobs/test_lifecycle.py (6) reads the brief's timing fixture from its committed receipt: 41.0 s elapsed measured, 41.0 s preparation derived, requested steps not-run. jobs/test_evidence.py (5). The tests of what changed: 37 of 37 Python test files passed (verification/test_pipeline.py 52 tests, test_capture.py, the keepers' tests among them); the cost lint and the retirement check are clean.",
+      "log_sha256": "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55"
     }
   ],
   "logs": {
@@ -437,6 +461,12 @@
       "bytes": 11459456,
       "lines": 3734,
       "gzip_bytes": 2164630,
+      "url": null
+    },
+    "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55": {
+      "bytes": 19538264,
+      "lines": 6408,
+      "gzip_bytes": 3893717,
       "url": null
     },
     "5d29b8b2cac9dcb4ab2cfa4fcecd1140511c7b15bd1ccc01a824e5f119194d05": {
