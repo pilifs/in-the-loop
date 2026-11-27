@@ -1,0 +1,170 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-044138-rank-original-parquet-new-reversed-overl",
+  "title": "Rank original Parquet new reversed overlay test histories under frozen policy",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m51s, peak 722.1 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-044138-rank-original-parquet-new-reversed-overl.json",
+    "sha256": "ee1d349bcc957b6aec61872af017924eb8a650128465979f943ad6a43f395af2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-044138-rank-original-parquet-new-reversed-overl",
+      "title": "Rank original Parquet new reversed overlay test histories under frozen policy",
+      "description": "Select the pinned landed upstream tests using the preregistered source and bytecode policy. Run each selected original test suite both plainly and with the local JVMTI coverage agent. Preserve chronological events in every JVM, exact loaded bytes, initial and later calls and parity in the original ordered 113-entry deployment.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-history-trace",
+        "java:original-classpath"
+      ],
+      "links": {},
+      "expected": "The selected tests run to completion, with original per-test outcomes, raw events, physical class evidence and explicit coverage gaps available for independent ranking.",
+      "submitted": {
+        "at": "2026-11-27T04:41:38+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "g++"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/parquet_trace.py new --rev",
+          "run": "python3 verification/blind-caller/parquet_trace.py new --reverse",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/parquet-new-reversed.zip"
+      ]
+    }
+  },
+  "sourceCommit": "d9d0d549a57be03ba94891ca48f8bdf3d1e55f59",
+  "startedAt": "2026-11-27T04:49:46+00:00",
+  "finishedAt": "2026-11-27T04:54:49+00:00",
+  "wallSeconds": 303.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3956946,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 757215232,
+    "wallSeconds": 291.7,
+    "cpuSeconds": 300.1,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.81
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/parquet_trace.py new --rev",
+      "run": "python3 verification/blind-caller/parquet_trace.py new --reverse",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 291.7,
+      "cpuSeconds": 300.127,
+      "cpuThrottledSeconds": 2.05,
+      "peakMemoryBytes": 757215232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 1,
+        "bytes": 84,
+        "sha256": "534149c0e7e0a7fb780af4e88dc12b3f8e94fc7204633bc27ed5ce2898bbd262",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "new reversed [('parquet-column', 24, True, 145), ('parquet-hadoop', 191, True, 23)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/parquet-new-reversed.zip",
+      "change": "added",
+      "bytes": 5566584,
+      "sha256": "0e8f7dd7d86e41d918b50b3322e9f8416fa09759547f2ca57437f5c29e676f52",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T04:55:34+00:00",
+    "applied": [
+      "verification/blind-caller/parquet-new-reversed.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T045449Z-76695586a22579e7",
+      "outputs": "20261127T045449Z-793808552a275e61",
+      "diff": "20261127T045449Z-810988041663a62b"
+    }
+  }
+}
