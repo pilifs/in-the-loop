@@ -5,8 +5,9 @@ frozen in its Phase 0 (step 5), before any stream forked, with the claims they a
 case must reach. Their semantics are fixed now, not after seeing which proof succeeds: a stream doesn't change what
 a case must reach, and a change to one is a note for the main brief's reconcile. The families are the
 [acceptance contract](../../../../llm-dlc/loops/application-core-acceptance.md#small-fixture-families)'s Q, H and L.
-[`lib/tests/application_core.rs`](../../application_core.rs) checks each row against them, and
-`llm-dlc/tools/application-core-integration.sh` runs it on the merge of the streams while they work.
+[`lib/tests/application_core.rs`](../../application_core.rs) checks each row against them. While the streams
+worked, `application-core-integration.sh` ran it on their merge; that script went with the streams workflow
+([`llm-dlc/retired.md`](../../../../llm-dlc/retired.md#multi-agent-brief)).
 
 Each family has `before/` and `after/`, each a complete source tree, and `defects/NAME/`, each overlaid on `after/`:
 its files replace theirs. A defect's changed lines are marked `// DEFECT:`.

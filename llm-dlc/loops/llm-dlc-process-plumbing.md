@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, changes `kkkqupww` and `sylnnqzv`):** this page names `brief_run.py`, `multi-agent-brief` and `single-agent-run`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) and [`llm-dlc/retired.md#single-agent-run`](../retired.md#single-agent-run) for what replaced them and the last commit that has them.
+
 # Engineering brief · Publish code promptly and preserve the original evidence
 
 **21 November 2026** · `pilifs/in-the-loop` · Public `main` at [`cfe2dc91`][head].

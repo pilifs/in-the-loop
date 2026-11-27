@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `vwytpwxy`):** this page names `runtime.md`, which is no longer in the repository. See [`llm-dlc/retired.md#plugin-and-runtime-mode`](../retired.md#plugin-and-runtime-mode) for what replaced it and the last commit that has it.
+
 # Public Java entries on the shipped classpath
 
 Log4j #1173’s two frozen scheduling questions reached `org.apache.logging.log4j.core.appender.rolling.PatternProcessor#getNextTime(JIZ)J` in the second JAR on each revision. Both kept the shipped order of API, then core. All eight registered inputs agreed with the original scheduling histories. Discovery with the questions withheld ranked the method **second of 22**. The first candidate was a constructor. The ranking preserves both choices for claim design. [First failure and repaired scaffold](../../verification/classpath-entry-discovery/log4j-scaffold.json) · [First binary-only ranking](../../verification/classpath-entry-discovery/log4j-first-ranking.json)

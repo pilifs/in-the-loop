@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, changes `kkkqupww` and `ykqmkpuo`):** this page names `inbox.py`, `multi-agent-brief`, `run-streams.sh` and `verification-loop.sh`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) and [`llm-dlc/retired.md#verification-loop`](../retired.md#verification-loop) for what replaced them and the last commit that has them.
+
 # Brief template
 
 The skeleton of a brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh), and the standing rules every brief

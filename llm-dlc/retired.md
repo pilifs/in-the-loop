@@ -20,15 +20,20 @@ outdated.
 - **Status.** An entry is `planned` while its files are still in the repository, and `retired` once they are gone.
 - **Names.** Each entry lists the names that should no longer turn up in live files: skills, commands, scripts.
 - **The check.** `python3 llm-dlc/tools/retired.py check` lists every live file that names something `retired`
-  in a paragraph that does not point at this page. `llm-dlc/tools/test_retired.py` runs it in the default test
-  run, so a new page or docstring that sends a reader to a retired command fails there.
+  in a paragraph that does not point at this page, every retired file that is still here, and every historical
+  page or finding that names something retired without its line. `llm-dlc/tools/test_retired.py` runs it in the
+  default test run, so a new page or docstring that sends a reader to a retired command fails there.
 - **Three kinds of file:**
   - *Live* files are instructions and code an agent acts on: `CLAUDE.md`, the READMEs, the operating notes, the
     skills, the tools. They are rewritten, and where they described a retired workflow they point here.
-  - *Historical* pages are briefs, results pages and findings that agents still open. Their text is left as it
-    was written. A page that names something retired gets one dated line at its top that points here.
+  - *Historical* pages are briefs, results pages and findings that agents still open: the pages of
+    `llm-dlc/loops/` that are neither live nor records, and each entry of `verification/findings.md`. Their text
+    is left as it was written. One that names something retired gets one dated line that points here, at a
+    page's top or as the first line of a finding's entry. `python3 llm-dlc/tools/retired.py banners --write`
+    writes the lines that are missing, from this page's entries.
   - *Records* are never edited: `llm-dlc/traces/`, `llm-dlc/index.json`, the decision records, verification
-    jobs and results, the queue's copies of the user's briefs, and the provenance an example carries. Studies that
+    jobs and results, the queue's copies of the user's briefs and the briefs written for it (the pages
+    `llm-dlc/loops/queue.jsonl` names), and the provenance an example carries. Studies that
     pinned the tools of the revision they ran on are records too, and still name retired files
     (`lib/benchmark/external-upgrades/`, `lib/benchmark/startup-facts/freeze.py`, `verification/blind-caller/`):
     they read those files from that revision, never from the working copy.

@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `brief_run.py` and `run-brief`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced them and the last commit that has them.
+
 # Brief: a rehearsal of /run-brief
 
 **Status of the brief**: written 2026-11-17 for a first run of `/run-brief` with real sessions; approved by the user

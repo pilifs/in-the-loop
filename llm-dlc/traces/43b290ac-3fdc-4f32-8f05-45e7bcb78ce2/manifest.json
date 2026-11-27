@@ -12,25 +12,25 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T18:38:07.475Z",
-  "duration_seconds": 12266,
+  "ended": "2026-11-27T18:45:51.790Z",
+  "duration_seconds": 12730,
   "stats": {
     "turns": 14,
-    "api_calls": 279,
-    "tool_calls": 329,
-    "tool_errors": 3,
+    "api_calls": 297,
+    "tool_calls": 347,
+    "tool_errors": 4,
     "compactions": 2,
     "peak_context_tokens": 564675,
     "usage": {
-      "input_tokens": 564,
-      "output_tokens": 475564,
-      "cache_read_input_tokens": 83671020,
-      "cache_creation_input_tokens": 1263749
+      "input_tokens": 600,
+      "output_tokens": 504953,
+      "cache_read_input_tokens": 92723503,
+      "cache_creation_input_tokens": 1314681
     }
   },
   "tools": {
-    "Bash": 248,
-    "Read": 53,
+    "Bash": 265,
+    "Read": 54,
     "Write": 13,
     "Edit": 12,
     "AskUserQuestion": 3
@@ -86,24 +86,24 @@
     {
       "index": 2,
       "started": "2026-11-27T17:39:27.601Z",
-      "ended": "2026-11-27T18:38:07.475Z",
+      "ended": "2026-11-27T18:45:51.790Z",
       "turns": 2,
-      "api_calls": 94,
+      "api_calls": 112,
       "usage": {
-        "input_tokens": 190,
-        "output_tokens": 166243,
-        "cache_read_input_tokens": 31857182,
-        "cache_creation_input_tokens": 468997
+        "input_tokens": 226,
+        "output_tokens": 195632,
+        "cache_read_input_tokens": 40909665,
+        "cache_creation_input_tokens": 519929
       },
-      "peak_context_tokens": 480904
+      "peak_context_tokens": 531836
     }
   ],
   "log": {
-    "sha256": "16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd",
-    "bytes": 9101338,
-    "lines": 2756,
-    "gzip_bytes": 1728388,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd.jsonl.gz"
+    "sha256": "a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1",
+    "bytes": 9427015,
+    "lines": 2888,
+    "gzip_bytes": 1771608,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -202,6 +202,14 @@
       "summary": "Restructure the front page around results, with a way in for a reader",
       "body": "The front page was an interim one since the plugin was retired. The user chose its structure on 2026-11-27: results first, one status line for the retired plugin, a round figure for the examples with a link to the generated router, a way to reproduce one result, and a short section on how the repository is built with a placeholder for an architecture diagram.\n\nREADME.md now runs: what this is; the three answers and example 285; what is here; how to explore it with an agent or reproduce a result, and what that takes; how it is built; status; for agents; background; licence. The section on exploring says how the artifacts link (an example to its result, a job to the session that submitted it and the commit it ran on, a commit to its session and log, a session to its summary, metrics and transcript), since everything is public and a coding agent can follow the links from a checkout. The hardware note gives the minimums and comfortable figures doctor.py holds, and says that running the workflow itself needs a large machine and is for people who want to work on the verifier. The count of examples was stale (183; there are 515, 305 of them real-world): the page now says more than 500 and links the router, whose tables are generated.\n\nVerified: python3 examples/tools/build.py 002 was run once under a memory and time cap and ended with the line the page quotes, in 16 seconds; the files it rewrote were put back. The other claims were checked against the files they describe (a job's submitted.session, a result's sourceCommit, a summary's link to its log, the pipeline's max_timeout). The changed-tests run passed 38 of 38 test files, and retired.py check finds nothing.",
       "log_sha256": "16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd"
+    },
+    {
+      "change_id": "trwkwtqwrqytoqxsomqtrnlqrzrwmouo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Point the historical pages and findings that name something retired at the register",
+      "body": "The user's decision of 2026-11-27 for the convergence on /orchestrate-run: live files are rewritten, records are never edited, and a historical page that names something retired keeps its text and gets one dated line that points at llm-dlc/retired.md. This adds that line to the 38 pages of llm-dlc/loops that name a retired skill, command or script (the briefs of earlier loops and their streams, results pages, the brief template of that time) and to the 11 entries of verification/findings.md that do. Each line says what the page names, the change that removed it, and the register entry that says what replaced it. The 6 pages there that the queue's log names, its copies of the user's briefs, are records and are untouched.\n\nretired.py writes the lines from the register's entries (banners --write) and its check now fails on a historical page or a finding that lacks one, so the next retirement is one command and a page added later is caught by the default test run. The fixtures' pages under lib/tests are held to the live rule, and the two that sent a reader to an integration script now say it went with the streams workflow.\n\nVF-045 and VF-072 each gain a dated note of what the convergence changed for them: one run skill is left and is the user's alone to start in Codex, the refusal of a run started inside a loop moved to run_common.py, and CLAUDE.md names the skill without its page, which a test now holds. Neither is closed: what the agents wanted (fan-out, sealed producers, a worker request) is untouched.\n\nVerified: test_retired.py passes (9 tests, 4 of them new: the line a page and a finding lack, that it is written once and a record is left alone, a line that names two changes, and this repository's own pages); retired.py check finds nothing; the changed-tests run passed 22 of 22 test files; the cost lint agrees.",
+      "log_sha256": "a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1"
     }
   ],
   "logs": {
@@ -251,6 +259,12 @@
       "bytes": 1641815,
       "lines": 500,
       "gzip_bytes": 303020,
+      "url": null
+    },
+    "a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1": {
+      "bytes": 9427015,
+      "lines": 2888,
+      "gzip_bytes": 1771608,
       "url": null
     },
     "be9027345ccd6a31df540bd4265dd83d8a3bb4849634f45821823f82723e6a51": {

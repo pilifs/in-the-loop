@@ -2,8 +2,9 @@
 
 The fixture of [`llm-dlc/loops/foundations.md`](../../../../llm-dlc/loops/foundations.md)'s Phase 5, fixed in its
 Phase 0 so that the four streams build towards the same target. [`lib/tests/foundations.rs`](../../foundations.rs)
-checks each stream's part against it, and `llm-dlc/tools/foundations-integration.sh` runs that test on a merge of the
-streams while they work. [`lib/tests/compare.rs`](../../compare.rs) runs the four parts together, as `jvmcontract compare`
+checks each stream's part against it. While the streams worked, `foundations-integration.sh` ran that test on a
+merge of them; that script went with the streams workflow
+([`llm-dlc/retired.md`](../../../../llm-dlc/retired.md#multi-agent-brief)). [`lib/tests/compare.rs`](../../compare.rs) runs the four parts together, as `jvmcontract compare`
 does, and holds the result to each row of Phase 5's table, with the proof cache over every run: the rerun of `after`
 is an exact hit at the entry point and in the kernel, each defect the route reaches is proved again under another key,
 and `alias-to-copy`, which changes only a method the route doesn't reach, reuses the route's proof. The stale-cache

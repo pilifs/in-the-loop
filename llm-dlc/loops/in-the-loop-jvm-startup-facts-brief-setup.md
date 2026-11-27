@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `vwytpwxy`):** this page names `runtime.md`, which is no longer in the repository. See [`llm-dlc/retired.md#plugin-and-runtime-mode`](../retired.md#plugin-and-runtime-mode) for what replaced it and the last commit that has it.
+
 # Setup for the JVM startup facts brief
 
 Mechanical setup for [`in-the-loop-jvm-startup-facts-brief.md`](in-the-loop-jvm-startup-facts-brief.md).

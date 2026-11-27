@@ -100,6 +100,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-074: the README's table of sessions shows finished sessions as open, and long-running sessions under their first topic
 
+- **Retired (2026-11-27, change `kkkqupww`):** this entry names `run-brief`, which is no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../llm-dlc/retired.md#multi-agent-brief) for what replaced it and the last commit that has it.
 - **Status**: settled 2026-11-27 by `qlssntwx`, merged at the user's request: a rendering sync ends idle sessions, and standing sessions have their own table (both shown after the merge). Earlier: open (the user, 2026-11-27).
   - **The scope:** both problems, plus cleaning up the rows already affected.
   - **Numbering:** VF-073 stays reserved for the user's reopening of VF-058.
@@ -150,6 +151,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-072: run agents lack the direction and the tools for fan-out, sealed producers and model-driven workers, so they reach for the run skills
 
+- **Retired (2026-11-27, change `kkkqupww`):** this entry names `multi-agent-brief` and `run-brief`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../llm-dlc/retired.md#multi-agent-brief) for what replaced them and the last commit that has them.
 - **Status**: open, a refactor (the user, 2026-11-27). VF-045's enforcement is done (see there); this is the cause it treated.
 - **Raised**: 2026-11-27 by the advisor session at the user's request, after two queued runs reached for the run skills in one day.
 - **Found**:
@@ -170,6 +172,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     - the S01-S50 setup's dry runs did not cover the test tasks, and 41 of 49 setup jobs failed offline;
     - a setup job passed without running tests (VF-070 item 11);
     - the URL producer's model calls stopped on the client's cybersecurity filter (VF-061).
+- **Update, 2026-11-27, the convergence on one run skill** ([`llm-dlc/retired.md`](../llm-dlc/retired.md)): the streams' skill and the proof run's skill are removed, so the queue's domain prompt no longer matches a second skill's description, and the one run skill, `orchestrate-run`, is the user's alone to start in Codex. That removes what the agents reached for. It gives them none of what they wanted: the needs below are untouched.
 - **Needs** (product work, in order; the advisor's write-up `~/.cache/in-the-loop/advisor/agent-started-runs-writeup.md` has the evidence and acceptance tests for each):
   1. **Fan-out from a manifest.** `pipeline.py submit --cases FILE` writes one job per case from a step template. The documented wait is that a run agent ends its turn naming the job ids, and the watcher's `single_run.py jobs` waits. Acceptance: a 49-case setup submits its builds with one command and builds nothing inline.
   2. **Sealed producer jobs.** A job option that exports the commit with an allow list and a deny list of readable paths, runs a frozen producer, and records a digest of what was visible. Acceptance: a read of an evaluator-only marker fails inside the job.
@@ -490,6 +493,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
 
 ### VF-064: a watcher stopped a run that was extending the lead over JBMC because it had not done the named fixes first
 
+- **Retired (2026-11-27, change `sylnnqzv`):** this entry names `single-agent-run`, which is no longer in the repository. See [`llm-dlc/retired.md#single-agent-run`](../llm-dlc/retired.md#single-agent-run) for what replaced it and the last commit that has it.
 - **Status**: open. The user decided the policy on 2026-11-24, and it applies from the next verdict. Whether it works is measured on the next runs, starting with `beyond-jbmc-scaffold-first`.
 - **Raised**: 2026-11-24 by the watcher, at the user's request (relayed by the advisor), after the queued run `beyond-jbmc-java-change-verification-cam` (Astra 6.2 at max effort, session `c3caedf3`).
 - **Found**:
@@ -508,6 +512,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
 
 ### VF-063: the product's main gap is investigation and claim scaffolding, not solving
 
+- **Retired (2026-11-27, change `vwytpwxy`):** this entry names `prove-java-change`, which is no longer in the repository. See [`llm-dlc/retired.md#plugin-and-runtime-mode`](../llm-dlc/retired.md#plugin-and-runtime-mode) for what replaced it and the last commit that has it.
 - **Registered predictions, 2026-11-26.** Stage 3 generated old-API callers for all eight development cases. Its frozen first transfer recovered two of five disclosed cases. After additional recipe work all 31 questions on 13 cases had complete original-JVM observations. Three fixed-side predictions were refuted and two incorrect parent baselines stayed open. Cold discovery of customer intent remains open. [Campaign report](../llm-dlc/loops/in-the-loop-generated-observers-and-callers-brief-results.md) · [Per-question evidence](generated-observers/scorecard.json)
 - **Follow-up on reviewed inputs.** The previously blocked Spring decimal formatter now runs on both pinned releases. Five callers produced the right outputs with different arguments and all five lost qualification. Two corrections to historical parent predictions could be scored from the original receipts. The next scoped caller needs to read `DecimalFormat.isParseBigDecimal()` on the same formatter after the public parser returns. [Supplementary measurements](../llm-dlc/loops/in-the-loop-generated-observers-and-callers-brief-results.md#supplementary-measurements-on-the-original-deployments)
 - **Status**: open. This is an important product gap. The user asked on 2026-11-24 for it to be tracked, for future runs to be directed to scaffold before solving (`prompt=scaffold-first`), and for the beyond-JBMC brief to be queued again on that prompt.
@@ -579,6 +584,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
 
 ### VF-059: nothing picks a brief up from the queue while no run is going
 
+- **Retired (2026-11-27, change `sylnnqzv`):** this entry names `single-agent-run`, which is no longer in the repository. See [`llm-dlc/retired.md#single-agent-run`](../llm-dlc/retired.md#single-agent-run) for what replaced it and the last commit that has it.
 - **Status**: open. The user decided on 2026-11-24 to record the intent and build it later.
 - **Raised**: 2026-11-24 by the advisor session, with the user, before the brief queue (`llm-dlc/tools/brief_queue.py`)
  was first used for real. The first queued brief is `trusted-kernel-and-receiver-recovery`, taken from the inbox
@@ -666,6 +672,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
 
 ### VF-053: the DLC lets unpushed commits, bulky records and deferred reviews pile up across runs
 
+- **Retired (2026-11-27, changes `kkkqupww` and `sylnnqzv`):** this entry names `multi-agent-brief` and `single-agent-run`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../llm-dlc/retired.md#multi-agent-brief) and [`llm-dlc/retired.md#single-agent-run`](../llm-dlc/retired.md#single-agent-run) for what replaced them and the last commit that has them.
 - **Status**: open.
 - **Raised**: 2026-11-21 by the user, while runs 5–7 (next-proof-campaign, external-upgrade-evaluation, organic-java-pr-campaign) waited to be pushed. The watcher pushed them at the user's word at about 14:50 UTC (`main` 4f87fd1f → cfe2dc91, `--skip-tests`), records included: the push first failed on three run-5 commits that had held a conflict in `lib/src/classpath.rs` since 18:58 on 2026-11-20, unnoticed until push time, which had to be rewritten out of the history. That is one more cost of a long unpushed stretch.
 - **Found**: three problems that build on each other.
@@ -808,6 +815,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
 
 ### VF-047: a single-agent run that a client's 5xx error stopped waits for the user, though the user lets the watcher restart it
 
+- **Retired (2026-11-27, change `sylnnqzv`):** this entry names `single-agent-run`, which is no longer in the repository. See [`llm-dlc/retired.md#single-agent-run`](../llm-dlc/retired.md#single-agent-run) for what replaced it and the last commit that has it.
 - **Status**: open (the user chose on 2026-11-20 to keep the rule in the Claude Code watcher's memory for now and
   settle the skill later).
 - **Raised**: 2026-11-20 by the watcher of the single-agent run `next-proof-campaign` (Codex, `gpt-6.2-astra` at max
@@ -881,6 +889,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
 
 ### VF-045: a Codex worker can pick up the run-brief skill by itself, since nothing marks it as one only a person starts
 
+- **Retired (2026-11-27, changes `kkkqupww`, `sylnnqzv` and `vwytpwxy`):** this entry names `brief_run.py`, `multi-agent-brief`, `prove-java-change`, `run-brief` and 1 more, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../llm-dlc/retired.md#multi-agent-brief), [`llm-dlc/retired.md#plugin-and-runtime-mode`](../llm-dlc/retired.md#plugin-and-runtime-mode) and [`llm-dlc/retired.md#single-agent-run`](../llm-dlc/retired.md#single-agent-run) for what replaced them and the last commit that has them.
 - **Status**: open, minor (the user's decision on 2026-11-19: note it and address it later, by a skill change or by
   rewording how a run is invoked).
 - **Raised**: 2026-11-19 by the watcher of the single-agent run `foundation-domain-streams` (Codex, `gpt-6.2-astra`
@@ -930,6 +939,10 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
     - **The run skills are the user's alone in Codex.** `multi-agent-brief`, `single-agent-run` and `prove-java-change` carry `agents/openai.yaml` with `allow_implicit_invocation: false` and a `# person-only-for-codex:` line. Claude Code keeps model invocation, since a watcher reloads the skill it was started with. `agent_client.py instructions --client codex` accepts the declared difference (`codexUserOnly`), and Codex no longer lists these skills. `run-verification` is left as it is for now (the user).
     - **A run cannot start from inside a running loop.** `watch.nested_run_refusal` refuses `single_run.py start`, `setup` and `generate`, and `brief_run.py start`, `foundation` and `rerun`. `feature-loop.sh`, which every loop passes through, refuses inside another loop's scope too. Tests opt out in `lib/tools/cost_tier.py`.
     - The cause these treat, agents without the tools they reached for, is VF-072.
+  - Done 2026-11-27, by the convergence on one run skill ([`llm-dlc/retired.md`](../llm-dlc/retired.md)):
+    - **There is one run skill.** `multi-agent-brief` and `prove-java-change` are removed, and `single-agent-run` is renamed `orchestrate-run`, which carries the same `agents/openai.yaml` policy. A work turn has no second run skill to reach for.
+    - **The refusal moved with the code.** A run started from inside a running loop is refused by `run_common.nested_run_refusal` (for `single_run.py start`, `setup` and `generate`) and by `feature-loop.sh`.
+    - **`CLAUDE.md` names the skill, not its page.** Codex is given `CLAUDE.md` whole, and a skill's page named there counts as the skill offered to a work turn: `test_agent_client.py` fails when it names the page of a skill only a person starts.
 - **Tracked in**: this entry; the run's loop output above.
 - **Closes when**: a Codex work turn given a prompt like this one does not open or run the run-brief skill, and the
   skills' invocation policy agrees between the two clients.
@@ -1158,6 +1171,7 @@ that did not execute can also cause refusal.
 
 ### VF-037: a stream's `test_costs.py run --changed` filled its loop's 12G cap, and the OOM killer killed the session instead of the tests
 
+- **Retired (2026-11-27, change `kkkqupww`):** this entry names `brief_run.py`, `run-brief` and `run-streams.sh`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../llm-dlc/retired.md#multi-agent-brief) for what replaced them and the last commit that has them.
 - **Status**: open, minor (raised by the watcher of the domain-advances run; how loops and test runs share the cap is
   for the user to decide).
 - **Raised**: 2026-11-17 17:11 UTC on `vm-1`, by the watcher of the domain-advances run, when the challenge stream's
@@ -1267,6 +1281,7 @@ that did not execute can also cause refusal.
 
 ### VF-033: example 290's preservation claim compares only the count of matchers by type, and its fixed-security verdict rests on initializers observed on a JVM
 
+- **Retired (2026-11-27, change `vwytpwxy`):** this entry names `prove-java-change`, which is no longer in the repository. See [`llm-dlc/retired.md#plugin-and-runtime-mode`](../llm-dlc/retired.md#plugin-and-runtime-mode) for what replaced it and the last commit that has it.
 - **Status**: open, for a later run (the user's decision on 2026-11-17, reviewing the watcher's answer D005).
 - **Raised**: 2026-11-17 on `vm-1`, by the watcher of the `/prove-java-change` run over 288-290, after job
   `20261117-002240-example-290-the-four-proof-tasks-through` decided all four of 290's tasks beside the route and an
@@ -1805,6 +1820,7 @@ that did not execute can also cause refusal.
 
 ### VF-034: the default test run at `xunroyyopkuq` (the prove-setup merge) failed three Rust tests, twice
 
+- **Retired (2026-11-27, change `kkkqupww`):** this entry names `run-brief`, which is no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../llm-dlc/retired.md#multi-agent-brief) for what replaced it and the last commit that has it.
 - **Status**: closed, by the user's decision on 2026-11-17: the likely cause is known and fixed for this case, and
   the pipeline's handling of jobs will be refactored as a whole later, so this is not worth investigating further.
   The default run at the merge of prove-setup's finished line, job

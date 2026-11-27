@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, changes `kkkqupww`, `vwytpwxy` and `ykqmkpuo`):** this page names `brief_run.py`, `inbox.py`, `integration.py`, `multi-agent-brief` and 6 more, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief), [`llm-dlc/retired.md#plugin-and-runtime-mode`](../retired.md#plugin-and-runtime-mode) and [`llm-dlc/retired.md#proof-loop`](../retired.md#proof-loop) for what replaced them and the last commit that has them.
+
 # Brief: a conductor for parallel streams
 
 **Drafted 2026-11-14; its [decisions](#decisions) settled by the user the same day. Steps 1–3 of [the plan](#the-plan)

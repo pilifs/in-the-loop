@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `cleanup-integration.sh` and `run-streams.sh`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced them and the last commit that has them.
+
 # Stream brief: cleanup, examples and tools
 
 One of three streams of [`cleanup.md`](cleanup.md) that run in parallel, each in its own jj workspace on its own

@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `foundations-integration.sh` and `run-streams.sh`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced them and the last commit that has them.
+
 # Brief: foundations for verifying application changes
 
 **Drafted 2026-11-06, revised after an [outside review](#review-of-the-draft); its [decisions](#decisions) settled

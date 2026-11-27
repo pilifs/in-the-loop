@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `run-streams.sh`, which is no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced it and the last commit that has it.
+
 # Stream brief: foundations, entry-point observations
 
 One of four streams of [`foundations.md`](foundations.md) that run in parallel, each in its own jj workspace on its

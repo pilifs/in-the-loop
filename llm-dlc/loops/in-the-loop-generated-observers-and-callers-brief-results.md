@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, changes `vwytpwxy` and `ykqmkpuo`):** this page names `runtime.md` and `watch.py`, which are no longer in the repository. See [`llm-dlc/retired.md#plugin-and-runtime-mode`](../retired.md#plugin-and-runtime-mode) and [`llm-dlc/retired.md#proof-loop`](../retired.md#proof-loop) for what replaced them and the last commit that has them.
+
 # Generating public Java callers from registered predictions
 
 The product produced a repeatable public observation on both original deployments for all 31 registered questions across 13 cases. The finite evaluator established 26, refuted three and left two open because the original parent contradicted its registered baseline. Those two have complete JVM observations. The campaign covered 45 registered input histories, each executed on both releases in fresh JVMs. [Per-question scorecard](../../verification/generated-observers/scorecard.json)

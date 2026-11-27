@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, changes `kkkqupww` and `ykqmkpuo`):** this page names `run-streams.sh` and `verification-loop.sh`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) and [`llm-dlc/retired.md#verification-loop`](../retired.md#verification-loop) for what replaced them and the last commit that has them.
+
 # Brief: stock JBMC asked better questions, honest measurements, and wider native coverage
 
 **Approved by the user on 2026-11-06**, with the decisions recorded [below](#decisions). It replaces the "downstream JBMC patch queue" draft, since the evidence below moved the work away from a fork.

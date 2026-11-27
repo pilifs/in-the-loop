@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `run-streams.sh`, which is no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced it and the last commit that has it.
+
 # Brief: test cost: cheap by default, expensive once
 
 **Status of the brief**: drafted 2026-11-15 from the user's request and a measurement of the loops' time; the

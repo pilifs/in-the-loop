@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `vwytpwxy`):** this page names `prove-java-change`, which is no longer in the repository. See [`llm-dlc/retired.md#plugin-and-runtime-mode`](../retired.md#plugin-and-runtime-mode) for what replaced it and the last commit that has it.
+
 # Brief: a verdict stays inside the Java the engines implement, and says what it assumed
 
 **Approved by the user on 2026-11-05**, with the open questions settled as recorded [below](#open-questions). It runs

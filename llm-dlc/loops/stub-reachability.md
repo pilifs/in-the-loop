@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `run-streams.sh`, which is no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced it and the last commit that has it.
+
 # Brief: decide by the solver whether a proof enters a JBMC stub
 
 **Drafted 2026-11-07, and chosen by the user that day** over a `String.format` model ([Decisions](#decisions)). It

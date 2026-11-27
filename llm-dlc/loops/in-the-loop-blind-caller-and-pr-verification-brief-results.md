@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `vwytpwxy`):** this page names `runtime.md`, which is no longer in the repository. See [`llm-dlc/retired.md#plugin-and-runtime-mode`](../retired.md#plugin-and-runtime-mode) for what replaced it and the last commit that has it.
+
 # From a Java PR link to a checked public observation
 
 The frozen producer qualified **0/20 cold primaries**, including **0/10** across distinct R projects. The release targets were 8/20 and 3/10. The test-assisted and reviewed runs also scored 0/20. On the disclosed Parquet case, original upstream tests brought both historical public operations into the top five. The fresh five-link producer stopped before committing measurements. These three results answer different release questions. [Per-PR adjudication](../../verification/blind-caller/evaluator/RESULTS.md) · [Campaign scorecard](../../verification/blind-caller/campaign-scorecard.json)

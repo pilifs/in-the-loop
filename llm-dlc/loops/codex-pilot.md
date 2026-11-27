@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `brief_run.py`, which is no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced it and the last commit that has it.
+
 # Brief: a pilot of Codex and Claude Code on one brief
 
 **Status of the brief**: written 2026-11-18 for the first runs of a brief whose streams are carried by Codex, by

@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, changes `kkkqupww` and `ykqmkpuo`):** this page names `cleanup-integration.sh`, `run-streams.sh` and `verification-loop.sh`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) and [`llm-dlc/retired.md#verification-loop`](../retired.md#verification-loop) for what replaced them and the last commit that has them.
+
 # Brief: clean up the open findings
 
 **Drafted and its [decisions](#decisions) settled with the user on 2026-11-07.** It starts after the

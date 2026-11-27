@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, changes `kkkqupww` and `ykqmkpuo`):** this page names `application-core-integration.sh`, `run-streams.sh` and `verification-loop.sh`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) and [`llm-dlc/retired.md#verification-loop`](../retired.md#verification-loop) for what replaced them and the last commit that has them.
+
 # Brief: application core, making native change verification useful for ordinary service code
 
 **Drafted 2026-11-07, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08.** It

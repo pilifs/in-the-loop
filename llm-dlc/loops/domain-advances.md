@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `inbox.py` and `run-brief`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced them and the last commit that has them.
+
 # Brief: domain-owned advances in Java change verification
 
 **Status of the brief**: written 2026-11-17 from the user's plan for Phase 2

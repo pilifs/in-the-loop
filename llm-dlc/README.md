@@ -108,7 +108,8 @@ llm-dlc/
                                     records; test_decisions.py tests it (loops/stream-conductor.md, Design 3 and 4)
   loops/                            briefs: markdown instructions a run works through, the queue's copies of them, and
                                     the pages of earlier loops
-  loops/brief-template.md           the skeleton of a brief and the standing rules every brief starts with, the timebox included
+  loops/brief-template.md           the skeleton of a brief as the loops ran one until 2026-11-27, with the standing rules
+                                    every brief started with; a historical page (see its first line)
   tools/feature-loop.sh             the loop under a run: a text, the agent's turn, the watcher's verdict, a compact,
                                     repeated, then a summary; single_run.py starts it, and test_feature_loop.py and
                                     test_single_run.py run it against a stand-in client

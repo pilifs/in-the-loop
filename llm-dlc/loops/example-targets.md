@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `example-targets-integration.sh` and `run-streams.sh`, which are no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced them and the last commit that has them.
+
 # Brief: example targets, real-world changes as reproducible work packets
 
 **Drafted 2026-11-08, from an outside plan; its [decisions](#decisions) were settled by the user on 2026-11-08; [Phase 0](#phase-0-interfaces-hooks-and-fixtures) was done on 2026-11-09; the four streams finished and were merged on

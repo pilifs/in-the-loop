@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Tests for retired.py: the register of what the repository retired (llm-dlc/retired.md), and the rule that a live
-file naming something retired points at it. Run: python3 llm-dlc/tools/test_retired.py"""
+"""Tests for retired.py: the register of what the repository retired (llm-dlc/retired.md), the rule that a live
+file naming something retired points at it, and the one dated line a historical page or a finding gets.
+Run: python3 llm-dlc/tools/test_retired.py"""
 from __future__ import annotations
 
 import contextlib
@@ -36,7 +37,9 @@ REGISTER = """# Retired
 """
 
 
-class TheRegister(unittest.TestCase):
+class Fixture(unittest.TestCase):
+    """A made-up repository: the register above, and whatever a test puts beside it."""
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
@@ -50,6 +53,8 @@ class TheRegister(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
 
+
+class TheRegister(Fixture):
     def test_an_entry_is_read_with_its_names_and_files_and_a_malformed_one_is_reported(self):
         found = retired.entries(REGISTER)
         self.assertEqual([e["name"] for e in found], ["old-run", "later-run"])
@@ -105,6 +110,63 @@ class TheRegister(unittest.TestCase):
         self.assertIn("llm-dlc/tools/old_run.py: still here", said.getvalue())
 
 
+class HistoricalPages(Fixture):
+    def setUp(self):
+        super().setUp()
+        self.put("llm-dlc/loops/old-brief.md", "# Brief: an old one\n\nRun it with old_run.py.\n")
+        self.put("llm-dlc/loops/quiet.md", "# Brief: one that names nothing retired\n")
+        self.put("llm-dlc/loops/brief-generation-template.md", "As old_run.py did (llm-dlc/retired.md).\n")  # live: the other rule
+        self.put("llm-dlc/loops/the-users-brief.md", "# The user's\n\nThey wrote old_run.py here.\n")
+        self.put("llm-dlc/loops/queue.jsonl", '{"copy": "llm-dlc/loops/the-users-brief.md"}\n')  # the queue's copy: a record
+        self.put("verification/findings.md",
+                 "# Findings\n\n## Open\n\n### VF-002: about the old run\n\n- **Status**: open.\n- It ran `old-run` with old_run.py.\n\n"
+                 "### VF-001: about something else\n\n- **Status**: open.\n\n## Notes\n\nold_run.py, named outside every entry.\n")
+        self.found = retired.register(self.root)
+
+    def test_a_historical_page_and_a_finding_that_name_something_retired_lack_one_dated_line(self):
+        rows = retired.scan_historical(self.root, self.found)
+        self.assertEqual([(r["file"], r.get("entry"), r["names"]) for r in rows],
+                         [("llm-dlc/loops/old-brief.md", None, ["old_run.py"]),
+                          ("verification/findings.md", "VF-002", ["old-run", "old_run.py"])])
+        self.assertEqual(rows[0]["line"],
+                         "> **Retired (2026-11-27, change `kkkkllll`):** this page names `old_run.py`, which is no longer in the "
+                         "repository. See [`llm-dlc/retired.md#old-run`](../retired.md#old-run) for what replaced it and the last "
+                         "commit that has it.")
+        self.assertIn("this entry names `old-run` and `old_run.py`, which are no longer in the repository. See "
+                      "[`llm-dlc/retired.md#old-run`](../llm-dlc/retired.md#old-run) for what replaced them", rows[1]["line"])
+        said = io.StringIO()
+        with contextlib.redirect_stdout(said):
+            self.assertEqual(retired.main(["check"], root=self.root), 1)
+            self.assertEqual(retired.main(["banners"], root=self.root), 1)  # it only lists them
+        self.assertIn("llm-dlc/loops/old-brief.md: names old_run.py without the line", said.getvalue())
+        self.assertIn("verification/findings.md VF-002: names old-run, old_run.py without the line", said.getvalue())
+
+    def test_the_lines_are_written_once_at_a_pages_top_and_under_a_findings_heading_and_a_record_is_left_alone(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(retired.main(["banners", "--write"], root=self.root), 0)
+            self.assertEqual(retired.main(["check"], root=self.root), 0)
+            self.assertEqual(retired.main(["banners", "--write"], root=self.root), 0)  # nothing is left to write
+        page = (self.root / "llm-dlc/loops/old-brief.md").read_text()
+        self.assertTrue(page.startswith("> **Retired (2026-11-27, change `kkkkllll`):** this page names"), page)
+        self.assertTrue(page.endswith("\n\n# Brief: an old one\n\nRun it with old_run.py.\n"), page)  # its text is as it was
+        self.assertEqual(page.count("**Retired"), 1)
+        findings = (self.root / "verification/findings.md").read_text()
+        self.assertIn("### VF-002: about the old run\n\n- **Retired (2026-11-27, change `kkkkllll`):** this entry names", findings)
+        self.assertEqual(findings.count("**Retired"), 1)  # VF-001 names nothing, and the notes are no entry
+        for name, text in (("the-users-brief.md", "# The user's\n\nThey wrote old_run.py here.\n"),
+                           ("quiet.md", "# Brief: one that names nothing retired\n"),
+                           ("brief-generation-template.md", "As old_run.py did (llm-dlc/retired.md).\n")):
+            self.assertEqual((self.root / "llm-dlc/loops" / name).read_text(), text)
+
+    def test_a_line_names_every_change_that_removed_what_the_page_names(self):
+        more = self.found + [{"name": "other", "status": "retired", "names": ["other.sh"], "files": [],
+                              "fields": {"Removed in": "change `mmmmnnnnoooo` (2026-12-01)"}}]
+        owner, _ = retired.retired_names(more)
+        line = retired.line_for(["old_run.py", "other.sh"], owner, "../retired.md", "page")
+        self.assertIn("(2026-11-27, 2026-12-01, changes `kkkkllll` and `mmmmnnnn`)", line)
+        self.assertIn("[`llm-dlc/retired.md#old-run`](../retired.md#old-run) and [`llm-dlc/retired.md#other`](../retired.md#other)", line)
+
+
 class TheRepository(unittest.TestCase):
     def test_no_live_file_sends_a_reader_to_something_retired(self):
         found = retired.register(retired.REPO)
@@ -112,6 +174,11 @@ class TheRepository(unittest.TestCase):
         self.assertEqual(retired.still_here(retired.REPO, found), [])
         rows = retired.scan(retired.REPO, found)
         self.assertEqual(rows, [], "\n" + "\n".join(f"{r['file']}:{r['line']}: {', '.join(r['names'])}" for r in rows[:40]))
+
+    def test_every_historical_page_and_finding_that_names_something_retired_has_its_line(self):
+        rows = retired.scan_historical(retired.REPO, retired.register(retired.REPO))
+        self.assertEqual(rows, [], "\n" + "\n".join(f"{r['file']} {r.get('entry') or ''}: {', '.join(r['names'])}" for r in rows[:40])
+                         + "\npython3 llm-dlc/tools/retired.py banners --write adds them")
 
 
 if __name__ == "__main__":

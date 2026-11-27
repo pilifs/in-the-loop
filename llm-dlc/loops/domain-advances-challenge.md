@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, change `kkkqupww`):** this page names `inbox.py`, which is no longer in the repository. See [`llm-dlc/retired.md#multi-agent-brief`](../retired.md#multi-agent-brief) for what replaced it and the last commit that has it.
+
 # Brief: domain advances, the challenge stream
 
 A stream of [domain-advances.md](domain-advances.md), which is the instruction: read it in full first, its

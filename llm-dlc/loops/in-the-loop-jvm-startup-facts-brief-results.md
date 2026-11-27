@@ -1,3 +1,5 @@
+> **Retired (2026-11-27, changes `vwytpwxy` and `ykqmkpuo`):** this page names `runtime.md` and `watch.py`, which are no longer in the repository. See [`llm-dlc/retired.md#plugin-and-runtime-mode`](../retired.md#plugin-and-runtime-mode) and [`llm-dlc/retired.md#proof-loop`](../retired.md#proof-loop) for what replaced them and the last commit that has them.
+
 # JVM startup facts on the original deployments
 
 The native checker now records which startup assumption it used. A public operation can use the process default, use an explicit value, or encounter a class that merely contains a reference to the default. Those three histories produced different evidence on Commons IO. On ThreeTenBP and POI the recorder qualified the original operation that had stopped the earlier campaign. Each native retry also exposed its next unsupported operation. [Per-question scorecard](../../verification/startup-facts/scorecard.json)
