@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T01:28:32.316Z",
-  "duration_seconds": 242262,
+  "ended": "2026-11-27T01:38:36.778Z",
+  "duration_seconds": 242866,
   "stats": {
     "turns": 39,
-    "api_calls": 6346,
-    "tool_calls": 15627,
+    "api_calls": 6375,
+    "tool_calls": 15681,
     "tool_errors": 344,
     "compactions": 26,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 8088636,
-      "output_tokens": 3659527,
-      "cache_read_input_tokens": 1714872576,
+      "input_tokens": 8095948,
+      "output_tokens": 3679082,
+      "cache_read_input_tokens": 1727488768,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8561,
-    "exec": 6082,
-    "apply_patch": 783,
+    "Bash": 8581,
+    "exec": 6111,
+    "apply_patch": 788,
     "wait": 113,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -313,7 +313,9 @@
     "lib/benchmark/startup-facts/controls.py",
     "lib/benchmark/startup-facts/freeze.py",
     "lib/benchmark/startup-facts/members.py",
+    "lib/benchmark/startup-facts/reuse_profiles.py",
     "lib/benchmark/startup-facts/tables.py",
+    "lib/benchmark/startup-facts/transfers.py",
     "lib/benchmark/test_run.py",
     "lib/src/bmc/byte_views.rs",
     "lib/src/bmc/bytes.rs",
@@ -412,6 +414,7 @@
     "verification/product-behaviour/qualify.py",
     "verification/product-behaviour/register.py",
     "verification/product-behaviour/transfer_controls.py",
+    "verification/startup-facts/startup_scorecard.py",
     "verification/test_merged_pr_qualification.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/UpgradeProbe.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/campaign-audit.py",
@@ -949,24 +952,24 @@
     {
       "index": 26,
       "started": "2026-11-26T23:39:02.233Z",
-      "ended": "2026-11-27T01:28:32.316Z",
+      "ended": "2026-11-27T01:38:36.778Z",
       "turns": 2,
-      "api_calls": 329,
+      "api_calls": 358,
       "usage": {
-        "input_tokens": 237317,
-        "output_tokens": 195672,
-        "cache_read_input_tokens": 89727872,
+        "input_tokens": 244629,
+        "output_tokens": 215227,
+        "cache_read_input_tokens": 102344064,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 422792
+      "peak_context_tokens": 447116
     }
   ],
   "log": {
-    "sha256": "3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c",
-    "bytes": 100661044,
-    "lines": 49864,
-    "gzip_bytes": 18385835,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c.jsonl.gz"
+    "sha256": "5833b6c91596e7b85f8e2cd8ab90a1025b7d20b17d3213198ba31d02a9bf742c",
+    "bytes": 100984234,
+    "lines": 50087,
+    "gzip_bytes": 18430211,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/5833b6c91596e7b85f8e2cd8ab90a1025b7d20b17d3213198ba31d02a9bf742c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2955,20 +2958,28 @@
       "log_sha256": "3a2b01cb4f655c8c985c5b9fdbbe7e453dc8f6ba4d948145559e792e9ff64113"
     },
     {
-      "change_id": "wvqokyzoomrksspqsnyrspqmumwxnupp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c"
-    },
-    {
       "change_id": "xpkstyysrwosylvtxwszuvupoqkxwlqm",
       "commit_id": null,
       "immutable": false,
       "summary": "Bind startup receipts to revisions and loaders (verification pending)",
       "body": "Record and check the actual application loader and its platform parent in the subject. Bind both the requested and resolved ordered provider paths, plus the prepared revision when supplied. Document ordinary recovery, resume, ordered roots and frozen consumed premises. The symbolic control now discovers the parameter name from its compiled class.\n\nA JDK 21 subject reported the application loader, platform parent and ASCII singleton at the original initializer. The release build passed. All 56 selected suites passed; a JBMC deadline test passed on its isolated rerun. Jobs 20261127-012007-reject-crossed-startup-evidence-by-revis and 20261127-012105-verify-startup-scope-controls-using-the qualify crossed physical and logical revisions and repeat the full scope and interruption controls.",
       "log_sha256": "3d2233e2ac0a2f4f8db97ccb1270fa5a24e6d4afe2e1b84bd53f1f8bcf4b581c"
+    },
+    {
+      "change_id": "yyqorvppkvwunslzwystysknwxxkyrlo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "5833b6c91596e7b85f8e2cd8ab90a1025b7d20b17d3213198ba31d02a9bf742c"
+    },
+    {
+      "change_id": "vrsknvsnrmwoypuwzyvrtplzoqovotpr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze startup recording for four public transfers (verification pending)",
+      "body": "Seal the shared implementation, input policy and transfer set after the seven development exercises. Preserve the eight independently verified development archives. The three motivating incidents passed their named blockers and both original Batik releases qualified the resource actually read. The cache controls include replacement and restoration at a single path while retaining an untouched side.\n\nVerified all eight collected archive digests and their ZIP contents, both crossed-revision refusals, all six historical setting countermodels, the two symbolic profile checks and both joint root orders. Interrupting after the first root left zero successful recordings. All 56 selected suites passed. Jobs 20261127-013122-score-frozen-startup-transfer-for-common, 20261127-013122-score-frozen-setting-reads-at-first-use, 20261127-013123-score-frozen-spring-transfer-with-a-cach, 20261127-013123-score-frozen-avro-startup-on-the-two-124 and 20261127-013346-check-warm-and-clean-startup-proofs-acro archive the transfer and cache measurements.",
+      "log_sha256": "5833b6c91596e7b85f8e2cd8ab90a1025b7d20b17d3213198ba31d02a9bf742c"
     }
   ],
   "logs": {
@@ -3276,6 +3287,12 @@
       "bytes": 98869269,
       "lines": 48864,
       "gzip_bytes": 18121410,
+      "url": null
+    },
+    "5833b6c91596e7b85f8e2cd8ab90a1025b7d20b17d3213198ba31d02a9bf742c": {
+      "bytes": 100984234,
+      "lines": 50087,
+      "gzip_bytes": 18430211,
       "url": null
     },
     "5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0": {

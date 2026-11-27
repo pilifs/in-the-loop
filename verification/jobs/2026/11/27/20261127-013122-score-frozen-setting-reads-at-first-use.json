@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-013122-score-frozen-setting-reads-at-first-use",
+  "title": "Score frozen setting reads at first use and after initialization",
+  "description": "On both JavaParser originals measure LF, CRLF and the missing-property failure sequence. Compare the nine original before/after setting pairs on each paper implementation with independent observations of initialization and the second public call.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T01:31:22+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "First frozen transfer",
+      "run": "python3 lib/benchmark/startup-facts/transfers.py timing --output verification/startup-facts/transfer-timing.zip",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/startup-facts/transfer-timing.zip"
+  ]
+}
