@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "613",
+  "title": "Retrieve asynchronous values from a Boot-configured Caffeine cache",
+  "summary": "Checks synchronous and asynchronous reads from Boot-managed named and on-demand Caffeine caches.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "CaffeineCacheManager.getCache and Cache.retrieve"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The landed option is `spring.cache.caffeine.cache-mode=async`. It selects asynchronous backing for configured cache names and caches created on demand. The enum default is `native`."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51844"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [
+    "The named-cache prediction asks whether the future itself delivers the stored string. The caller also reads Cache.ValueWrapper.get() when Spring returns that documented wrapper. These two readbacks keep the Java result type and logical cache value distinct."
+  ],
+  "verdictLabel": "2/3 merged predictions matched"
+}

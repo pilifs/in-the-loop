@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52310",
+  "revisions": {
+    "parent": "25adba2b4e3e69a49e2128fd5c0185ee1ea437a9",
+    "fix": "53328b76db4ffb107ee38ad82bf090ac1be59a9c"
+  },
+  "entry": "SpringApplication.run",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52310.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Override `afterRefresh` to synchronously close the context before returning.",
+      "prediction": "The PR reports that the parent enters the started/runner path after close. The merged run should return an inactive context with no started event, runner call, or ready event.",
+      "basis": "The close completes before control returns to startup. The merged test asserts all three absences and the inactive context.",
+      "refutation": "Any of the three callbacks fires on the merge, or the returned context is active.",
+      "expected": {
+        "fix": {
+          "return": "inactive:[]:0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52310.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Leave the context open through `run()` with one counting runner.",
+      "prediction": "On both revisions expect an active context and one started event, one runner invocation, then one ready event in that order.",
+      "basis": "The existing ordering test and the added normal-refresh counter exercise successful startup.",
+      "refutation": "A missing or repeated callback, or ready observed before the runner.",
+      "expected": {
+        "parent": {
+          "return": "active:[started, runner, ready]:0"
+        },
+        "fix": {
+          "return": "active:[started, runner, ready]:0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52310.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Close synchronously inside the started listener, after recording `started`. Make the runner depend on a disposable bean whose creations and destructions are recorded outside the context.",
+      "prediction": "On the merge expect `started` once, no runner or ready notification, and no new dependency created after the close has completed.",
+      "basis": "The started event is already in progress. A second running-state check must protect subsequent bean lookup, which the PR’s reproduction identified as recreating dependencies.",
+      "refutation": "The runner counter stays zero but a runner dependency is constructed after close, or ready is emitted.",
+      "expected": {
+        "fix": {
+          "return": "inactive:[started]:0"
+        }
+      }
+    }
+  ]
+}

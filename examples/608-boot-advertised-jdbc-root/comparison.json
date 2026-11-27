@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51410",
+  "revisions": {
+    "parent": "4ee67a3f6b817bc8727069e083f0506bb8aefa33",
+    "fix": "cbaaa0fe45652d32ac5cc532cbfb5737e086769f"
+  },
+  "entry": "DataSourceUnwrapper.unwrapRoot and DataSourceBuilder.derivedFrom",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51410.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Put the self-returning proxy on the delegate branch and the distinct pool on the JDBC unwrap branch.",
+      "prediction": "The downstream report identifies the proxy on the parent. On the merge `unwrapRoot` should return the configured pool instance.",
+      "basis": "The wrapper declares the pool as its root. Identity distinguishes the pool from an intermediate object implementing the same interface.",
+      "refutation": "The merged call completes but returns the proxy, outer wrapper, or an unrelated pool.",
+      "expected": {
+        "parent": {
+          "return": "delegate"
+        },
+        "fix": {
+          "return": "root"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51410.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Pass the self-returning leaf directly, with no delegate or AOP target.",
+      "prediction": "Both revisions should terminate and return that same instance.",
+      "basis": "A leaf returning itself exposes no further root. The landed test makes the identity assertion explicitly.",
+      "refutation": "The call recurses, throws, or returns a different instance.",
+      "expected": {
+        "parent": {
+          "return": "same"
+        },
+        "fix": {
+          "return": "same"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51410.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the advertised pool fixed and replace only the intermediate delegate with a second self-returning leaf. Derive a Hikari pool for each fixture.",
+      "prediction": "On the merge both derived pools should expose the original JDBC URL and username through their public getters. Object identity of a newly built pool may differ.",
+      "basis": "The independently assigned URL and username belong to the advertised root. Derivation consumes that root at a second public API.",
+      "refutation": "Root lookup succeeds but a derived pool loses either property, depends on the intermediate leaf, or fails to build.",
+      "expected": {
+        "fix": {
+          "return": "jdbc:h2:mem:root/probe;jdbc:h2:mem:root/probe"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52904",
+  "revisions": {
+    "parent": "906029c2a9b33ef5052141a91eac5de8177ede9d",
+    "fix": "cc44b73aca16f06ebac4f1d8692751a80b2b6615"
+  },
+  "entry": "ApplicationContext.getMessage",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52904.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Set `spring.messages.basename[0]=test/messages` and `[1]=test/messages2` under that same property.",
+      "prediction": "The PR reports that the parent backs off and returns the fallbacks. The merge should return `bar` and `bar-bar` in call order.",
+      "basis": "These values exist only in the two selected files. The landed regression reads both through the application context.",
+      "refutation": "Either merged lookup returns its fallback or the other file’s value.",
+      "expected": {
+        "parent": {
+          "return": "MISS/MISS"
+        },
+        "fix": {
+          "return": "bar/bar-bar"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52904.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Supply the same two names in the scalar `spring.messages.basename=test/messages,test/messages2`.",
+      "prediction": "Both revisions should return `bar` and `bar-bar`.",
+      "basis": "Comma-separated scalar basenames were already supported and the resource contents are identical.",
+      "refutation": "Either code becomes unresolved or changes value on either revision.",
+      "expected": {
+        "parent": {
+          "return": "bar/bar-bar"
+        },
+        "fix": {
+          "return": "bar/bar-bar"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52904.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use one indexed entry `test/a,b`. Give the class loader only `test/a,b.properties`, containing `punct=literal`, and query `punct` with fallback `MISS`.",
+      "prediction": "If an indexed string denotes one literal basename, the merge should return `literal`. The landed join-and-split condition predicts `MISS` when neither split fragment names a bundle.",
+      "basis": "The PR specifically describes a comma inside one indexed entry as literal. The only actual file has that exact comma in its name.",
+      "refutation": "`MISS` on the merge refutes literal-element support even if ordinary indexed basenames pass.",
+      "expected": {
+        "fix": {
+          "return": "literal"
+        }
+      }
+    }
+  ]
+}

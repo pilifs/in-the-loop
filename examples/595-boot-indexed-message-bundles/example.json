@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "595",
+  "title": "Resolving message codes from indexed bundle basenames",
+  "summary": "Reads codes from two indexed bundles, a scalar list and a single literal comma-bearing resource in an isolated loader.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "ApplicationContext.getMessage"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The bundle condition now uses Boot’s binder to read indexed basenames before testing whether a properties bundle exists. The landed condition joins the bound names with commas and splits that string for resource lookup."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52904"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "2/3 merged predictions matched"
+}

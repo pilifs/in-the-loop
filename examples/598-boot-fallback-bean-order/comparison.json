@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51867",
+  "revisions": {
+    "parent": "ab8d5266fbf617b1462d60f5bba5ade2d0f6302d",
+    "fix": "b00a873c002d3e5f6edf4cc58313030855ec86cd"
+  },
+  "entry": "ApplicationContextRunner → getBeansOfType",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51867.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Request both providers, with the fallback listed first.",
+      "prediction": "Both revisions should expose exactly one `Choice` with marker `preferred`.",
+      "basis": "The explicit ordering puts the preferred bean definition first, so the fallback condition should see it.",
+      "refutation": "Either revision fails startup, exposes both beans, or yields the fallback marker.",
+      "expected": {
+        "parent": {
+          "return": "1:preferred"
+        },
+        "fix": {
+          "return": "1:preferred"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51867.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Request only the fallback provider.",
+      "prediction": "Both revisions should expose one `Choice` with marker `fallback`.",
+      "basis": "There is no competing definition and the missing-bean condition should match.",
+      "refutation": "The fallback is absent, duplicated, or replaced.",
+      "expected": {
+        "parent": {
+          "return": "1:fallback"
+        },
+        "fix": {
+          "return": "1:fallback"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51867.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Insert a third auto-configuration `Bridge` with its own unrelated marker. Replace the direct edge with `Preferred` before `Bridge` and `Bridge` before `Fallback`. Request all three in forward and reverse order.",
+      "prediction": "Both revisions should expose the bridge marker and the same single preferred `Choice` in both permutations.",
+      "basis": "The two edges force the same relative order transitively. The extra marker demonstrates that the intermediate configuration actually participated.",
+      "refutation": "The bridge marker is absent, or either permutation changes the chosen bean or its count.",
+      "expected": {
+        "parent": {
+          "return": "1:preferred:bridge/1:preferred:bridge"
+        },
+        "fix": {
+          "return": "1:preferred:bridge/1:preferred:bridge"
+        }
+      }
+    }
+  ]
+}

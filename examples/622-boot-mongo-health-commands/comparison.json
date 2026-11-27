@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/50734",
+  "revisions": {
+    "parent": "790f66c37a6fe69ea6e40c0c09212fab007d345f",
+    "fix": "33bf9d3777eac3f6bc13909571b612d0d2702233"
+  },
+  "entry": "MongoHealthIndicator.health and MongoReactiveHealthIndicator.health",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#50734.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Two visible names `test, admin`, with either client.",
+      "prediction": "The parent should send a hello to each visible database. The merge should send exactly one to `admin`. On both, health should be UP, list both names and report version 10.",
+      "basis": "The list comes from the enumeration. The wire version is a server property. Landed tests assert the details and the unused `test` database.",
+      "refutation": "More than one explicit hello, a wrong target on the merge, missing database names, or a changed wire version.",
+      "expected": {
+        "parent": {
+          "return": "UP:complete:10:test,admin/UP:complete:10:test,admin"
+        },
+        "fix": {
+          "return": "UP:complete:10:admin/UP:complete:10:admin"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50734.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Expose only `test` and return the same successful hello document.",
+      "prediction": "Both revisions should call `test` once and report UP with just `test` and version 10.",
+      "basis": "A single visible non-admin database supplies the only applicable target in this case. The merge includes a dedicated fallback test.",
+      "refutation": "An `admin` call, an extra command, or a missing health detail.",
+      "expected": {
+        "parent": {
+          "return": "UP:complete:10:test/UP:complete:10:test"
+        },
+        "fix": {
+          "return": "UP:complete:10:test/UP:complete:10:test"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50734.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep `admin` visible and add eight other names with the same server properties. Permute enumeration so `admin` is last and then first.",
+      "prediction": "On the merge the returned name set should expand and remain complete. The explicit hello count should remain one, addressed to `admin`, for synchronous and reactive callers.",
+      "basis": "Enumeration cardinality and server version are independent. Moving `admin` should leave the preferred target unchanged.",
+      "refutation": "The reported database set is truncated, a client contacts a non-admin database, or command count grows with the list.",
+      "expected": {
+        "fix": {
+          "return": "UP:complete:10:admin/UP:complete:10:admin;UP:complete:10:admin/UP:complete:10:admin"
+        }
+      }
+    }
+  ]
+}

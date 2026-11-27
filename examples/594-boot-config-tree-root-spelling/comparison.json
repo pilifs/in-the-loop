@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52666",
+  "revisions": {
+    "parent": "5b88a2ad273ea810ae0aa56cf8819bac33521e95",
+    "fix": "aff28f4f77acc49c3f7d1bf4725d841a21ddf6e1"
+  },
+  "entry": "ConfigTreePropertySource.getProperty",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52666.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Use `cfg/../cfg` as the root with only `a` present.",
+      "prediction": "The PR reports an empty source before the merge. The merge should enumerate exactly `a` and its value should read as the byte `0x41`.",
+      "basis": "Both spellings reach the same existing file. The test fixes its name, and the fixture fixes its bytes.",
+      "refutation": "The merge drops the name, returns null, or yields another byte sequence.",
+      "expected": {
+        "parent": {
+          "return": "[]:absent"
+        },
+        "fix": {
+          "return": "[a]:65"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52666.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use the direct `cfg` path with the same file.",
+      "prediction": "Both revisions should enumerate `a` and deliver the same bytes.",
+      "basis": "The absolute control path has no component beginning with two dots.",
+      "refutation": "The direct path fails to resolve `a` or its contents differ.",
+      "expected": {
+        "parent": {
+          "return": "[a]:65"
+        },
+        "fix": {
+          "return": "[a]:65"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52666.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Add `cfg/..data/a` with byte `B`, leaving visible `cfg/a` unchanged. Compare both spellings on the merge.",
+      "prediction": "Both sources should still enumerate only `a` and deliver `A`. The internal two-dot subtree contributes no name or value.",
+      "basis": "The PR preserves hiding of Kubernetes-style entries below the root. The second file has a distinct payload, making mistaken selection observable.",
+      "refutation": "An extra property appears, or reading public `a` returns `B` through either spelling.",
+      "expected": {
+        "fix": {
+          "return": "[a]:65/[a]:65"
+        }
+      }
+    }
+  ]
+}

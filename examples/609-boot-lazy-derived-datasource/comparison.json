@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/50271",
+  "revisions": {
+    "parent": "96a36cfc8c8d6f76df41c6ca17a38fa46c3d9689",
+    "fix": "607e4bbe65e00bc401b3c33e9c1a615a9f1888aa"
+  },
+  "entry": "DataSourceBuilder.derivedFrom and DataSource.getConnection",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#50271.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Use distinct original and replacement user names with the same URL; no new URL is passed to the builder.",
+      "prediction": "The PR reports failure to find a URL accessor through the lazy proxy during Liquibase startup. The merged builder should return a Hikari pool with the root URL and replacement credentials.",
+      "basis": "The wrapping proxy delegates to the original pool. The pinned builder regression asserts type, URL and overrides.",
+      "refutation": "The merged build throws, returns the wrapper type, loses the URL, or gives the derived pool the original credentials.",
+      "expected": {
+        "fix": {
+          "return": "true:migration:fixture:true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50271.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Derive directly from the same Hikari root and pass the same overrides.",
+      "prediction": "Both revisions should yield the root URL and replacement user. The source pool should retain its own user.",
+      "basis": "Derivation builds another data source. Values explicitly supplied on that builder belong to the new instance.",
+      "refutation": "The source pool’s user changes or the plain-root build loses a setting.",
+      "expected": {
+        "parent": {
+          "return": "true:migration:fixture:true"
+        },
+        "fix": {
+          "return": "true:migration:fixture:true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50271.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Seed a table with a distinctive row using the root H2 pool. Keep the database alive, derive through the lazy proxy using valid credentials, then query the table through `derived.getConnection()`.",
+      "prediction": "On the merge the independent connection should read the seeded row. Repeating with an additional `DelegatingDataSource` around the lazy proxy should reach the same database.",
+      "basis": "A SQL read identifies the actual database even when a getter prints the expected URL. An extra transparent wrapper leaves the target unchanged.",
+      "refutation": "The derived connection reaches an empty database, fails with valid credentials, or changes the row when the transparent layer is added.",
+      "expected": {
+        "fix": {
+          "return": "73/73"
+        }
+      }
+    }
+  ]
+}

@@ -54,8 +54,15 @@ def inventory():
                 builds[side] = dict(re.findall(r"`([^`]+\.jar)` `([0-9a-f]{64})`", row[1]))
         if label != "S16":
             require(all(builds.get(side) for side in SIDES), label + " missing original artifacts")
+            tests = re.search(rf"^\| {label} \| `(\d{{8}}-[^`]+)` \| ([^|]+) \| ([^|]+) \| ([^|]+) \| (.+) \|$", setup, re.M)
+            require(tests, label + " missing setup test comparison")
+            job, status, fix_tests, parent_tests, transplant = tests.groups()
+            upstream = dict(job=job, jobStatus=status, parent=parent_tests, fix=fix_tests, landedTestsOnParent=transplant)
+        else:
+            upstream = dict(parent="15 tests passed on the exact changed-source slice over Boot 2.0.0.M2",
+                            fix="Exact fix unavailable. Boot 2.0.0.M3 ran 21 tests with one failure.")
         cases[label] = dict(pr=int(number), title=title, revisions=dict(zip(SIDES, pins.groups())),
-                            questions=questions, builds=builds)
+                            questions=questions, builds=builds, upstream=upstream)
     require(len(cases) == 50 and len({c["pr"] for c in cases.values()}) == 50, "incomplete Spring Boot cohort")
     return cases
 
@@ -113,7 +120,8 @@ def audit(replay=False):
         folders = list((ROOT / "examples").glob(f"{number}-*/comparison.json"))
         require(len(folders) <= 1, f"duplicate example {number}")
         qids = list(case["questions"])
-        row = dict(case=case_id, pr=case["pr"], revisions=case["revisions"], questions=qids)
+        row = dict(case=case_id, pr=case["pr"], revisions=case["revisions"], questions=qids,
+                   upstreamTests=case["upstream"])
         measured = {}
         if folders:
             folder = folders[0].parent

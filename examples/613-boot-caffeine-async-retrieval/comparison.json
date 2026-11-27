@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51844",
+  "revisions": {
+    "parent": "0eed305ce08b030f45a9dbcd5b1969926b36b7d8",
+    "fix": "ed4d85df8032b6574c0912d80ffb8e7663aaa79e"
+  },
+  "entry": "CaffeineCacheManager.getCache and Cache.retrieve",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51844.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Supply `spring.cache.caffeine.cache-mode=async` with a named cache.",
+      "prediction": "The parent has no binding for this option and should retain native mode. On the merge the named cache should expose `getAsyncCache()` and `retrieve(\"k\")` should complete with `value`.",
+      "basis": "The merged reference guide identifies asynchronous Caffeine backing as the requirement for `retrieve`. The landed test checks the backing accessor.",
+      "refutation": "A merged named cache throws on `getAsyncCache()` or cannot retrieve the value just stored.",
+      "expected": {
+        "parent": {
+          "return": "value:false:unavailable"
+        },
+        "fix": {
+          "return": "value:true:direct:value"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51844.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Omit the cache-mode setting with the same cache name.",
+      "prediction": "Both revisions should return `value` from `cache.get(\"k\", String.class)` and reject `CaffeineCache.getAsyncCache()` with `IllegalStateException`.",
+      "basis": "Native caching is the established default. The landed test asserts the missing async backing explicitly.",
+      "refutation": "Default mode stops serving synchronous reads or unexpectedly exposes an async cache.",
+      "expected": {
+        "parent": {
+          "return": "value:false"
+        },
+        "fix": {
+          "return": "value:false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51844.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep async mode and the logical entry fixed. Drop the named-cache list, request a fresh name on demand, and call `retrieve(\"k\", supplier)` where the supplier returns a completed future of `value`. After it completes, read `get(\"k\", String.class)`.",
+      "prediction": "On the merge the retrieval should produce `value` and the subsequent synchronous read should see the same entry.",
+      "basis": "The documentation extends async mode to caches created on demand. The second API verifies a stored mapping in addition to future completion.",
+      "refutation": "On-demand creation produces a native-only cache or the future and synchronous view disagree.",
+      "expected": {
+        "fix": {
+          "return": "value/value"
+        }
+      }
+    }
+  ]
+}
