@@ -226,7 +226,7 @@ def checkpoint(root: Path) -> dict:
 def pruned(root: Path) -> dict | None:
     """What the pipeline's own prune removed and what it kept, with the reason for each (`pipeline.py prune --json`),
     or None when it could not be asked."""
-    r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "prune", "--json"],
+    r = subprocess.run([sys.executable, str(root / "jobs/pipeline.py"), "prune", "--json"],
                        cwd=root, capture_output=True, text=True)
     try:
         return json.loads(r.stdout) if r.returncode == 0 else None

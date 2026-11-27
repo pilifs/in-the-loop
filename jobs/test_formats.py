@@ -196,6 +196,63 @@ class AVerificationJobOfTheSecondFormat(SecondFormat):
         self.assertIn("its workload 'no_such_adapter' has no adapter in this checkout", status)
 
 
+class Prerequisites(SecondFormat):
+    def state_file(self):
+        return self.repo.dir / "verification/.state/scheduling.json"
+
+    def test_a_dependent_starts_once_its_prerequisite_passed_and_what_a_failed_one_blocks_consumes_no_attempt(self):
+        first = self.repo.submit2("Runs first, and looks at what the runner says of the rest", "build", "--output", "seen.json",
+                                  "--run", "sleep 2; cat \"$VERIFY_RUNNER_ROOT/verification/.state/scheduling.json\" > seen.json")
+        after = self.repo.submit2("Runs once the first passed", "build", "--needs", first, "--run", "true")
+        fails = self.repo.submit2("Fails until the file is there", "build", "--run", "test -f there.txt")
+        blocked = self.repo.submit2("Needs the one that fails", "build", "--needs", fails, "--run", "true")
+        out = self.run_all()
+        self.assertIn(f"{after}: waiting: {first} has not finished", out)
+        self.assertIn(f"{blocked}: blocked: {fails} ended failed: resubmit it", out)
+        done, later = self.repo.result(first, collected=False), self.repo.result(after, collected=False)
+        self.assertEqual((done["status"], later["status"]), ("passed", "passed"))
+        self.assertGreaterEqual(later["startedAt"], done["finishedAt"])
+        # Nothing of the blocked job ran: no result, and no attempt of it on this machine.
+        state = self.repo.dir / "verification/.state"
+        self.assertFalse((state / "results" / blocked).exists())
+        self.assertFalse((state / "attempts" / blocked).exists())
+        # What the runner published while it was at work, as the first job's step read it; gone when the runner ended.
+        seen = json.loads((state / "results" / first / "outputs/seen.json").read_text())
+        self.assertEqual(seen["schema"], "itl-job-scheduling/v1")
+        self.assertEqual(seen["jobs"][after], {"state": "waiting", "why": f"{first} has not finished"})
+        self.assertFalse(self.state_file().exists())
+        status = self.repo.pipeline("status", "--rev", "HEAD").stdout
+        self.assertIn(f"blocked: {fails} ended failed", status)
+        # The failed prerequisite is resubmitted at a commit where it passes: the job it blocked runs, its own file unchanged.
+        (self.repo.dir / "there.txt").write_text("now\n")
+        again = self.repo.pipeline("resubmit", fails).stdout.split("verification/jobs/")[1].split(".json")[0].rsplit("/", 1)[-1]
+        out = self.run_all()
+        self.assertIn(f"{again}: passed", out)
+        self.assertIn(f"{blocked}: waiting: {again} (which supersedes {fails}) has not finished", out)
+        self.assertEqual(self.repo.result(blocked, collected=False)["status"], "passed")
+
+    def test_a_job_whose_prerequisite_nobody_can_finish_here_is_left_waiting_and_the_runner_ends(self):
+        big = self.repo.submit2("Asks for more than the runner allows a job", "build", "--memory", "64G", "--run", "true")
+        waits = self.repo.submit2("Needs the big one", "build", "--needs", big, "--run", "true")
+        nobody = self.repo.submit2("Needs a job nobody submitted", "build", "--needs", "20200101-000000-never-submitted", "--run", "true")
+        beside = self.repo.submit2("Needs nothing", "build", "--run", "true")
+        out = self.run_all()
+        self.assertIn(f"{big}: unschedulable: needs 64.0 GiB", out)
+        self.assertIn(f"{waits}: left waiting: {big} has not finished", out)
+        self.assertIn(f"{nobody}: blocked: 20200101-000000-never-submitted is not a job in the queue, and no result of it is recorded", out)
+        self.assertIn(f"{beside}: passed", out)
+        self.assertFalse((self.repo.dir / "verification/.state/results" / waits).exists())
+
+    def test_a_readiness_prerequisite_blocks_until_receipts_are_read(self):
+        (self.repo.dir / "job.json").write_text(json.dumps({
+            "schema": "itl-job/v2", "purpose": "test", "title": "Needs a prepared bundle", "description": DESCRIPTION,
+            "resources": {}, "steps": [{"run": "true"}], "needs": [{"readiness": "ab" * 32}]}))
+        job_id = self.repo.submit2("Needs a prepared bundle", "test", "--from-file", "job.json")
+        (self.repo.dir / "job.json").unlink()
+        out = self.run_all()
+        self.assertIn(f"{job_id}: blocked: readiness abababababab is asked for", out)
+
+
 class TheNetworkAStepHas(SecondFormat):
     @unittest.skipUnless(sandbox.probe()["enforced"], "this host cannot take a step's network away (bubblewrap)")
     def test_a_step_with_no_network_runs_in_a_namespace_with_loopback_alone_and_the_result_keeps_what_was_seen(self):

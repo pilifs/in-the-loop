@@ -62,13 +62,9 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 For whoever continues (this run's later cycles): each item is one commit, with its test.
 
 1. *Done (see Gate 2, below).* The second format in `submit`, `validate` and the runner, and the result's blocks.
-2. **Scheduling states**: `needs` (waiting, blocked), unschedulable (no adapter, a missing tool, a network that
-   cannot be enforced), deferred; a dependent starts as soon as its prerequisite finishes.
-3. **The lifecycle view** (`itl-job-lifecycle/v1`): one function, from which `status`, `status --json` (the old
-   shape, as a projection), `wait --json`, `collect --json` and the batch views are rendered; a corrupt
-   specification as a diagnostic with path and revision; an unreadable queue as unknown, never idle. Then the
-   keepers (`queue_keeping.py`, `run_common.py`, `single_run.py`, the `/run-verification` skill) on it, with no
-   regular expression over prose, and on `jobs/pipeline.py`.
+2. *Done (see Gate 2: states and the view, below).* Scheduling by prerequisites, and the states with their reasons.
+3. *Done (same section).* The lifecycle view, `status` rendered from it, the typed `wait` and `collect`, and the
+   keepers on it and on `jobs/pipeline.py`. Left of it: the batch views, with fan-out (next).
 4. **Manifest fan-out** (`jobs/batch.py`): `submit --manifest`, deterministic ids from batch, row and work
    identity, the published map under `verification/batches/`, convergence of a concurrent or interrupted
    submission, `resubmit` following the map, `wait --batch`, the 49-row fixture.
@@ -133,6 +129,38 @@ by hand does not inherit it.
     of `jobs/test_formats.py` spawn the pipeline through `test_pipeline.Repo`, which the cost estimator's scan of
     a file's own calls does not see, so the inventory has them as `unit`, as it has `verification/test_pipeline.py`'s.
     They take about 1.3 s each. Changing the estimator is outside this brief.
+
+## Gate 2: states and the view
+
+**What is built.** One decision says whether a committed job may start and why not (`jobs/scheduling.py`), and the
+runner and the view both ask it. One view (`jobs/pipeline.py view`, `itl-job-lifecycle/v1`) has every job with one
+state and its reason; `status` is that view as lines, `status --json` its lines by heading as before, and the
+keepers read the view as data.
+
+| The brief asks | What a test shows (`jobs/test_formats.py` `Prerequisites`, `jobs/test_view.py`, `jobs/test_scheduling.py`) |
+|---|---|
+| Prerequisite ids; blocked, unschedulable and deferred reasons | A dependent waits for its prerequisite and starts after it finished. One whose prerequisite failed is blocked, with no result and no attempt folder, and runs once the prerequisite is resubmitted at a commit where it passes, its own file unchanged. One whose prerequisite cannot run here is left waiting by the runner, which ends, and is `blocked` in the view with the first cause. With one worker, the second job is `deferred`, "all workers busy", as a job's own step read it from the view during the run |
+| Uncommitted versus committed work; a corrupt spec with path and revision | A job file not committed is `uncommitted`. A committed file that is not JSON is `invalid`, with its path and the commit it was read at |
+| An unknown queue read cannot mean idle | With a repository git cannot read, `view` exits 4 with `idle` null and no jobs, `status` begins with NOT READ, and the keepers return unknown, not zero (`llm-dlc/tools/test_queue_keeping.py`, `test_run_common.py`) |
+| Aggregates with a denominator and a drill-down | `totals` has its unit, what it is out of and the states adding up to it; `view --state` lists the rows and says how many of how many |
+| Keepers need no regex over English | `queue_keeping.py` and `run_common.py` read the view, `collect --json` and the runner's flag in the view; the three regular expressions over the pipeline's lines and the `"; cannot run here:"` test are gone. The `/run-verification` skill names `jobs/pipeline.py` and the states |
+| A successful process with a failed hook still needs attention | A collect whose hook exits 3 collects and applies the result, reports the hook with its output, and `status` and `view` go on naming it; the watcher's keeper puts it in `attention` |
+| Results derived for a receipt of before | A receipt with the blocks removed comes back from `view ID` with them, `derived` |
+
+**Decisions.**
+
+17. **The runner's word for a job it will never start is `unschedulable`.** It was `deferred`, which now means
+    what it says: held back for now, by a runner at work. Nothing read the runner's log for that word.
+18. **`status --json` keeps its shape.** It is the view projected onto the headings of before. A row of a job that
+    is invalid, unschedulable or blocked carries "; cannot run here:", as an unrunnable job's always did, so a
+    reader of before does not take it for runnable. New readers use `view`.
+19. **The view gives a collected job from the result index, and opens the receipt when the job is asked for.**
+    1,906 receipts are otherwise 1,906 files to open on every look of a keeper.
+20. **A waiting job whose prerequisite cannot start is blocked, in the view.** The runner leaves it waiting and
+    ends (it cannot tell that another machine will not run the prerequisite); the view, which sees every job's
+    state, names the first cause. `idle` does not wait for it.
+21. **A readiness prerequisite blocks until receipts are read** (gate 3): a job that asks for one is not run
+    unprepared in the meantime.
 
 ## Gate 1: the census
 

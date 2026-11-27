@@ -193,25 +193,52 @@ def codex_ready(root: Path) -> list[str]:
 
 
 def nudge(root: Path) -> str:
-    """Say to the pipeline that its queue changed (verification/pipeline.py nudge). What it answers, or why not."""
-    r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "nudge"], capture_output=True, text=True, cwd=root)
+    """Say to the pipeline that its queue changed (jobs/pipeline.py nudge). What it answers, or why not."""
+    r = subprocess.run([sys.executable, str(pipeline_path(root)), "nudge"], capture_output=True, text=True, cwd=root)
     return r.stdout.strip() if r.returncode == 0 else f"the pipeline took no nudge: {(r.stderr or r.stdout).strip()[-200:]}"
 
 
-def jobs(root: Path) -> dict:
-    r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "status", "--json"],
-                       capture_output=True, text=True, cwd=root)
+VIEW = "itl-job-lifecycle/v1"
+# A job in one of these states is work the queue still has to do here: it can start, it is running, or its
+# result waits to be collected. One that is blocked, unschedulable or invalid is nobody's to wait for.
+CAN_START = ("queued", "deferred", "waiting")
+OUTSTANDING = (*CAN_START, "running", "finished")
+
+
+def pipeline_path(root: Path) -> Path:
+    """The jobs pipeline's entry point in a checkout (jobs/README.md)."""
+    return root / "jobs" / "pipeline.py"
+
+
+def view(root: Path) -> dict | None:
+    """The pipeline's view of every job (`jobs/pipeline.py view`): each with its state and the reason, as data.
+    None when the queue could not be read, by the pipeline or by us: a queue nobody could read is unknown, and is
+    never an empty one."""
+    r = subprocess.run([sys.executable, str(pipeline_path(root)), "view"], capture_output=True, text=True, cwd=root,
+                       stdin=subprocess.DEVNULL)
     try:
-        status = json.loads(r.stdout)
+        document = json.loads(r.stdout)
     except ValueError:
-        return {"pending": [], "running": [], "finished": [], "collected": {}}
-    ids = lambda rows: [m[0] for row in rows if (m := conductor.JOB_ID.search(row))]
-    collected = {}
-    for row in status.get("collected", []):
-        if m := conductor.JOB_ID.search(row):
-            collected[m[0]] = (re.findall(r"\[([a-z -]+)\]\s*$", row) or ["?"])[0]
-    return {"pending": ids(status.get("pending", [])), "running": ids(status.get("running", [])),
-            "finished": ids(status.get("finished, not collected", [])), "collected": collected}
+        return None
+    if not isinstance(document, dict) or document.get("schema") != VIEW or document.get("idle") is None:
+        return None
+    return document
+
+
+def in_state(document: dict, *states: str) -> list[str]:
+    return [job["id"] for job in document["jobs"] if job["state"] in states]
+
+
+def jobs(root: Path) -> dict | None:
+    """The queue by job: the ids that can start, are running, or are back and not collected, and each collected
+    job's status. None when the queue could not be read."""
+    document = view(root)
+    if document is None:
+        return None
+    return {"pending": in_state(document, *CAN_START), "running": in_state(document, "running"),
+            "finished": in_state(document, "finished"),
+            "collected": {job["id"]: (job.get("result") or {}).get("status") or "?" for job in document["jobs"]
+                          if job["state"] == "collected"}}
 
 
 NESTED_RUN_OK = "IN_THE_LOOP_NESTED_RUN"  # "allow": the tests' made-up loops, which start stand-in clients only

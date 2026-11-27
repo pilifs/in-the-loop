@@ -16,6 +16,8 @@ is read in. What is intended and not built is in [`ARCHITECTURE.md`](../ARCHITEC
 | [`schema/job.schema.json`](schema/job.schema.json), [`schema/result.schema.json`](schema/result.schema.json) | the second job format, `itl-job/v2` (a purpose, a workload, labels, prerequisites, a permitted environment, required outputs, what a step promises), and its result, `itl-job-result/v2` |
 | [`lifecycle.py`](lifecycle.py) | what became of a job, each question apart: what its processes did (`execution`), what it delivered (`fulfillment`), what it cost by scope (`timing`). One function each, for the runner that writes a result and for a reader of a result written before the blocks were kept; [`test_lifecycle.py`](test_lifecycle.py) |
 | [`evidence.py`](evidence.py) | what a step did besides exiting: which tests executed, read from JUnit XML reports or the log's summary lines; [`test_evidence.py`](test_evidence.py) |
+| [`scheduling.py`](scheduling.py) | whether a committed job may start, and why not: its prerequisites and its state, one decision for the runner and for every view; [`test_scheduling.py`](test_scheduling.py) |
+| [`test_view.py`](test_view.py) | the lifecycle view, the typed `wait` and `collect`, and a queue that could not be read, in throwaway repositories |
 | [`test_formats.py`](test_formats.py) | the second format end to end, through `jobs/pipeline.py`, in throwaway repositories: a non-Java job on a PATH with no checker, real tests counted, a missing required output, a refuted claim, a step with no network |
 | [`sandbox.py`](sandbox.py) | runs a command where the network is demonstrably off, and records how that was shown |
 | [`records.py`](records.py) | reads the committed records by id, from a git revision or from a working copy; computes the result indexes from the receipts, for `collect` to write and for the audit to compare |
@@ -63,7 +65,7 @@ python3 jobs/pipeline.py submit --purpose test --title "Run the parser's tests" 
 |---|---|---|
 | what kind of work it is | `--purpose resolve\|build\|test\|verify\|maintenance` | Says how to read the result. Kept apart from `--label KEY:VALUE` (`project`, `tool`, `capability`, any other), which only group. `--capability X` is the label `capability:X` |
 | which adapter knows what its steps mean | `--workload NAME` | `generic` when it names none: commands, exit codes, outputs, and requirements looked for on PATH. A job whose adapter this checkout does not have is not started, and `status` says why |
-| the case it belongs to, and what must come first | `--case`, `--needs JOB` | Recorded. A job that names a prerequisite is not started yet: scheduling by `needs` is the next step of this work, and until then `status` says so |
+| the case it belongs to, and what must come first | `--case`, `--needs JOB` | The job starts once that job, or one that supersedes it, has passed. Until then it waits. If the prerequisite ended without passing, the job is blocked: nothing of it runs, no attempt is consumed, and resubmitting the prerequisite releases it with its own file unchanged |
 | what its steps may reach | `--network host\|none\|fetch` | `host` is the machine's network, as every job of the first format has it. `none` is enforced: the step runs in a network namespace with a loopback interface alone ([`sandbox.py`](sandbox.py)), and its record keeps what a probe saw there. A machine that cannot enforce it does not start the job. `fetch` is for a step of a `resolve` job alone |
 | that a step runs tests | `--tests MIN`, `--test-reports GLOB`, `--expect-failing TEST` | The step is held to evidence: at least MIN tests executed, read from the reports or else from the log's summary lines (cargo, unittest, pytest, Maven, Gradle). A step that exited as expected and shows none has not kept its promise (VF-070). With `--expect-failing` and `--expect-exit`, a regression test that fails by assertion on the revision before its fix is a fulfilled job, and a build that broke before any test ran is not. A step with no promise (a compile) is asked for nothing |
 | which outputs it must leave | `--output PATH` (required), `--optional-output PATH` | A required output that is not there leaves the job unfulfilled, whatever its steps exited with |
@@ -101,6 +103,50 @@ A result written before the blocks were kept (every one collected until 2026-11-
 them from what it does hold and marks them `derived`: the receipt of `20261127-054106` then says 41 seconds
 elapsed, measured, 41 seconds of preparation, derived, and requested steps that were `not-run`, where its index
 entry said 0 seconds and its receipt 41.
+
+## The state of every job, and its reason
+
+`python3 jobs/pipeline.py view` prints one document, `itl-job-lifecycle/v1`, with every job the queue's commits
+hold, every job file not yet committed, and every result this machine has: each with **one state and the reason
+for it**, its prerequisites, its claim, its attempts and its result. `status` is that view as lines, the keepers
+([`queue_keeping.py`](../llm-dlc/tools/queue_keeping.py), [`run_common.py`](../llm-dlc/tools/run_common.py)) read it
+as data, and nothing else decides what state a job is in.
+
+| State | What it means | What changes it |
+|---|---|---|
+| `uncommitted` | Its file is in the working copy and in no commit of the queue | Commit it |
+| `invalid` | Its file is not a job: not JSON, or not as its schema says. The reason carries the path and the revision it was read at | Fix the file |
+| `unschedulable` | This machine cannot run it as written: more memory or CPUs than the runner allows a job, an adapter this checkout lacks, a step with no network where none can be enforced | Resubmit it, or run it elsewhere. Waiting does not help |
+| `blocked` | A prerequisite ended without passing, is a job nobody submitted, or cannot itself start here. No attempt is consumed | Resubmit the prerequisite: the job that supersedes it releases this one |
+| `waiting` | A prerequisite has not finished | The prerequisite passing |
+| `deferred` | It could run, and a runner at work is holding it back: no room, a job ahead of it waiting for room, a priority under the runner's minimum. Only a runner at work says this (`.state/scheduling.json`) | Room, or a runner started without that limit |
+| `queued` | Nothing stands in its way | A runner |
+| `running` | A runner holds its claim | |
+| `finished` | Its result is on this machine and not collected | `collect` |
+| `collected` | Its result is in `verification/results/` | |
+| `recorded-elsewhere` | Its result is in a commit this working copy is not on. It is not run again | Merge that commit |
+
+A job stopped before it ended (cancelled) is none of the last four: it runs again, so it is `queued` or whatever
+stands in its way, and the stopped attempt is in its `attempts`, with a `cancelled` block.
+
+The view says what it could read and what it could not: the snapshot's revision, the queue's commits, and for the
+queue, this machine's state, the collected results, the other heads and the private archive whether each was
+`available`. **A queue that could not be read is not an empty queue**: `idle` is then `null`, `view` exits 4,
+`status` begins with what was NOT READ, and the keepers take it as unknown and start or stop nothing on it.
+`idle` is `true` only when nothing is queued, deferred, waiting, running or waiting to be collected; a job that
+is blocked, unschedulable or invalid is nobody's to wait for. Every count in `totals` has its unit and what it is
+out of, and `view --state STATE`, `--case` and `--batch` list the rows behind one (the totals stay the whole queue's).
+
+`view ID...` opens those jobs' collected receipts and gives each result with its questions apart (`execution`,
+`fulfillment`, `timing`, `conclusion`, `declared`, the attempt, the ids of the occurrences sealed in the private
+archive and what was collected), derived for a receipt that did not keep them. Without ids a collected job is
+given from the result index, since a queue of 1,900 receipts is otherwise 1,900 files to open.
+
+`wait --json` (`itl-job-wait/v1`: `finished`, `no-runner` or `timeout`) and `collect --json` (`itl-job-collect/v1`:
+each result collected with what was applied, each hook's exit code, and the commit message) say as data what
+their lines say. A hook after a collect has an outcome of its own: the results are collected whatever it exits
+with, and a hook that failed is kept (`.state/last-collect.json`) and named by `status` and `view` until a later
+collect runs it again.
 
 ## Attempts
 

@@ -22,6 +22,11 @@ from __future__ import annotations
 
 import datetime as dt
 
+SCHEMA = "itl-job-lifecycle/v1"   # the one view of every job (pipeline.lifecycle_view), which every report renders
+# The state a job is in, in a view. Not started: uncommitted, or one of jobs/scheduling.py's. Started: running,
+# finished (a result on this machine, not collected), collected, or recorded on a head this working copy is not on.
+STATES = ("uncommitted", "invalid", "unschedulable", "blocked", "waiting", "deferred", "queued", "running", "finished",
+          "collected", "recorded-elsewhere")
 PHASES = ("resolve", "fetch", "prepare", "build", "test", "proof", "other")
 
 

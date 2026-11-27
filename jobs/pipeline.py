@@ -94,6 +94,8 @@ evidence = records.load("jobs_evidence", Path(__file__).resolve().parent / "evid
 sandbox = records.load("jobs_sandbox", Path(__file__).resolve().parent / "sandbox.py")
 # What became of a job, each question apart: what its processes did, what it delivered, what it cost.
 lifecycle = records.load("jobs_lifecycle", Path(__file__).resolve().parent / "lifecycle.py")
+# Whether a committed job may start, and why not: one decision, for the runner and for every view.
+scheduling = records.load("jobs_scheduling", Path(__file__).resolve().parent / "scheduling.py")
 PRIORITIES = f"{HERE}/priorities.json"
 SCHEMAS = ROOT / HERE / "schema"
 JOB_SCHEMA = "verification-job/v1"
@@ -450,6 +452,38 @@ def recorded_on_heads():
     return found
 
 
+class Statuses:
+    """The status of any job's result, looked up when asked and once: staged on this machine, collected into this
+    working copy, or recorded on another head. None for a job with no result anywhere."""
+
+    def __init__(self, state_dir):
+        self.state, self.found, self.heads = Path(state_dir), {}, None
+
+    def get(self, job_id, default=None):
+        if job_id not in self.found:
+            self.found[job_id] = self.read(job_id)
+        return self.found[job_id] or default
+
+    def read(self, job_id):
+        folder = layout.find_result(ROOT, job_id)
+        for path in (self.state / "results" / job_id / "result.json", folder / "result.json" if folder else None):
+            try:
+                return json.loads(path.read_text()).get("status") if path else None
+            except (OSError, ValueError):
+                continue
+        if self.heads is None:
+            self.heads = recorded_on_heads()
+        if job_id in self.heads:
+            for rel in (layout.result_rel(job_id), layout.result_rel(job_id, "shards")):
+                data = show(self.heads[job_id], f"{rel}/result.json")
+                if data:
+                    try:
+                        return json.loads(data).get("status")
+                    except ValueError:
+                        return None
+        return None
+
+
 def resolve(rev):
     return git("rev-parse", "--verify", f"{rev}^{{commit}}").stdout.strip()
 
@@ -482,7 +516,7 @@ def show_many(commit, paths):
     return found
 
 
-def committed_jobs(rev, needs_source=None):
+def committed_jobs(rev, needs_source=None, diagnostics=None):
     """Every job file in the commit's tree, as (job, path, source commit). The source commit is the job's own
     revision if it names one, else the last commit that touched the file: the code the job was written for. It
     takes a git process for each job, so `needs_source(job id)` may say which jobs it is wanted for (a job that
@@ -496,7 +530,10 @@ def committed_jobs(rev, needs_source=None):
         try:
             job = json.loads(blobs[path])
         except (TypeError, ValueError) as e:
-            print(f"warn  {path}: not JSON at {rev[:12]}: {e}", file=sys.stderr)
+            if diagnostics is None:
+                print(f"warn  {path}: not JSON at {rev[:12]}: {e}", file=sys.stderr)
+            else:  # for a view: the file is in the queue and is not a job, and a reader is told which and where
+                diagnostics.append({"path": path, "revision": rev, "id": layout.job_id_of(path), "problem": f"not JSON: {e}"})
             continue
         if needs_source is not None and not needs_source(job.get("id") or Path(path).stem):
             jobs.append((job, path, None))
@@ -511,11 +548,11 @@ def committed_jobs(rev, needs_source=None):
     return jobs
 
 
-def queued_jobs(revs, needs_source=None):
+def queued_jobs(revs, needs_source=None, diagnostics=None):
     """committed_jobs over several commits, each job once, as the first commit that has it holds it."""
     seen, jobs = set(), []
     for rev in revs:
-        for job, path, source in committed_jobs(rev, needs_source):
+        for job, path, source in committed_jobs(rev, needs_source, diagnostics):
             job_id = job.get("id") or Path(path).stem
             if job_id not in seen:
                 seen.add(job_id)
@@ -638,8 +675,6 @@ def plan(job, config):
         reasons.append(f"needs {fmt_bytes(limit)}, more than the runner's whole budget of {fmt_bytes(runner['memory'])}")
     if cpus > runner["cpus"]:
         reasons.append(f"needs {cpus:g} CPUs, and the runner has {runner['cpus']:g}")
-    if job.get("needs"):
-        reasons.append("it names prerequisites (needs), and this checkout's runner does not schedule by them yet")
     if workload_of(job) is None:
         reasons.append(f"its workload {workload_name(job)!r} has no adapter in this checkout (jobs/workloads/{workload_name(job)}.py)")
     if any(step_network(job, s) == "none" for s in job.get("steps") or []) and not offline()["enforced"]:
@@ -1041,13 +1076,17 @@ class Runner:
         priorities = load_priorities(revs[0])
         out = []
         settled = lambda job_id: job_id in done or job_id in claimed or job_id in self.running
+        self.specs, self.held = {}, {}   # every job's file as this scan read it, and the ones this runner leaves
         for job, path, source in queued_jobs(revs, lambda job_id: not settled(job_id)):
             job_id = job.get("id") or Path(path).stem
+            self.specs[job_id] = job
             if job_id in done or job_id in claimed or job_id in self.running:
                 continue
             if wanted and job_id not in wanted:
+                self.held[job_id] = "this runner was started for other jobs by name"
                 continue
             if min_priority is not None and priority_of(job, priorities) < min_priority:
+                self.held[job_id] = f"its priority {priority_of(job, priorities)} is under this runner's minimum of {min_priority}"
                 continue
             out.append((job, path, source))
         out.sort(key=queue_order(priorities))
@@ -1055,6 +1094,20 @@ class Runner:
 
     def reservation(self, job, job_plan, source):
         return workload_of(job).reservation(self, job, job_plan, source)
+
+    def known(self):
+        """What is known of every job right now, for the prerequisites of the ones that wait."""
+        return scheduling.Known(getattr(self, "specs", {}), Statuses(self.state), self.running)
+
+    def say(self, decisions):
+        """Publish what this runner decided about each job it has not started (STATE/scheduling.json), for the
+        views: a state and a reason, as only a runner at work knows them (no room, a priority it was told to
+        leave). Written when it changes; gone when the runner ends."""
+        document = {"pid": os.getpid(), "jobs": {**{i: {"state": "deferred", "why": why} for i, why in getattr(self, "held", {}).items()},
+                                                 **decisions}}
+        if document != getattr(self, "said", None):
+            self.said = document
+            write_json(self.state / "scheduling.json", {"schema": "itl-job-scheduling/v1", "at": iso(now()), **document})
 
     def fits(self, cpus, memory):
         used_cpus = sum(r["cpus"] for r in self.running.values())
@@ -1464,6 +1517,8 @@ class Runner:
         if concluded is not None:
             result["conclusion"] = concluded
         verdicts = adapter.verdicts(steps)
+        # What a step's exit does not already say: a promise not kept, a required output that is not there.
+        undelivered = [u for u in delivered["unmet"] if u["kind"] in ("promise", "output")]
         counts = {}
         for s in steps:
             counts[s["status"]] = counts.get(s["status"], 0) + 1
@@ -1471,8 +1526,8 @@ class Runner:
                              (f" step(s) in {fmt_seconds(wall)}, peak {fmt_bytes(peak)} (estimated {fmt_seconds(job_plan['durationEstimate'])}, "
                               f"{fmt_bytes(job_plan['memoryEstimate'])})" if measured else "") +
                              (f"; {len(result['outputs'])} output file(s) changed" if result["outputs"] else "") +
-                             (f"; not fulfilled: {delivered['unmet'][0]['why']}" + (f" (and {len(delivered['unmet']) - 1} more)" if len(delivered["unmet"]) > 1 else "")
-                              if is_v2(job) and delivered["state"] == "unfulfilled" else "") +
+                             (f"; not fulfilled: {undelivered[0]['why']}" + (f" (and {len(undelivered) - 1} more)" if len(undelivered) > 1 else "")
+                              if undelivered else "") +
                              (f"; signals: {'; '.join(dict.fromkeys(verdicts))}" if verdicts else ""))[:600]
 
     def stop_all(self):
@@ -1604,15 +1659,18 @@ def cmd_wait(args):
         ready, pid = uncollected(state), runner_pid(state)
         claims = len(list((state / "claims").iterdir())) if (state / "claims").exists() else 0
         at_work = f"the runner (pid {pid}) is at work, {claims} job(s) running" if pid else "no runner is at work"
+        # As data for whoever waits by program: the outcome is one word, and the exit code goes with it.
+        said = lambda outcome: print(json.dumps({"schema": "itl-job-wait/v1", "outcome": outcome, "finished": ready,
+                                                 "runner": {"pid": pid, "atWork": bool(pid)}, "running": claims}))
         if ready:
-            print(f"finished, not collected: {' '.join(ready)}\n{at_work}")
+            said("finished") if args.json else print(f"finished, not collected: {' '.join(ready)}\n{at_work}")
             return 0
         # A runner started a moment ago may not have written its pid yet.
         if not pid and time.monotonic() - start >= min(5, args.timeout):
-            print(f"{at_work}, and nothing waits to be collected")
+            said("no-runner") if args.json else print(f"{at_work}, and nothing waits to be collected")
             return 0
         if time.monotonic() - start >= args.timeout:
-            print(f"nothing has finished yet: {at_work}; wait again")
+            said("timeout") if args.json else print(f"nothing has finished yet: {at_work}; wait again")
             return 3
         time.sleep(1)
 
@@ -1652,6 +1710,12 @@ def take_repo_lock(state: Path):
     lock.write(f"pid {os.getpid()}, {ROOT}\n")
     lock.flush()
     return lock
+
+
+def readiness_of(key):
+    """What a readiness receipt with this key says to a job that needs it. Receipts are not read here yet
+    (jobs/README.md): the job is blocked, and says so, where it would otherwise have run unprepared."""
+    return {"state": "unknown", "why": f"readiness {key[:12]} is asked for, and this checkout's pipeline does not read readiness receipts yet"}
 
 
 def cmd_run(args):
@@ -1701,41 +1765,67 @@ def cmd_run(args):
             with runner.lock:
                 queue = runner.pending(revs, wanted, args.min_priority)
             last_scan = time.monotonic()
+        decisions, known, stuck = {}, None, []
         for job, path, source in list(queue):
-            job_plan = plan(job, config)
-            if job_plan["cannotRun"]:
-                if job["id"] not in told:
-                    print(f"{job['id']}: deferred: {'; '.join(job_plan['cannotRun'])}", flush=True)
-                    told.add(job["id"])
-                queue.remove((job, path, source))
-                continue
+            job_id = job["id"]
             problems = validate(job, "job.schema.json")
-            if problems:
-                if job["id"] not in told:
-                    print(f"{job['id']}: invalid, not run: {'; '.join(problems[:5])}", flush=True)
-                    told.add(job["id"])
+            job_plan = None if problems else plan(job, config)
+            if job.get("needs") and known is None:
+                known = runner.known()
+            needs = scheduling.prerequisites(job, known, readiness_of) if job.get("needs") and not problems else []
+            state, why = scheduling.decide(job, problems, job_plan["cannotRun"] if job_plan else [], needs)
+            if state in ("invalid", "unschedulable", "blocked"):
+                # Not started, with nothing of it run and no attempt consumed. Said once, and asked again at the
+                # next scan: a prerequisite that is resubmitted releases what it blocked.
+                if (job_id, state) not in told:
+                    word = "invalid, not run" if state == "invalid" else state
+                    print(f"{job_id}: {word}: {why}", flush=True)
+                    told.add((job_id, state))
+                decisions[job_id] = {"state": state, "why": why}
                 queue.remove((job, path, source))
                 continue
+            if state == "waiting":
+                if (job_id, why) not in told:
+                    print(f"{job_id}: waiting: {why}", flush=True)
+                    told.add((job_id, why))
+                decisions[job_id] = {"state": state, "why": why}
+                stuck.append(job_id)
+                continue   # it holds nobody up: the jobs after it are looked at
             with runner.lock:
                 memory = runner.reservation(job, job_plan, source)
                 why = runner.fits(job_plan["cpus"], memory)
                 if why and not runner.running and not args.watch:
                     # Nothing of ours holds the room it waits for: only the rest of the machine does.
-                    if job["id"] not in told:
-                        print(f"{job['id']}: not started: {why}; rerun when there is room, or use --watch to wait", flush=True)
-                        told.add(job["id"])
+                    if job_id not in told:
+                        print(f"{job_id}: not started: {why}; rerun when there is room, or use --watch to wait", flush=True)
+                        told.add(job_id)
                     queue.clear()
                     break
                 if why and why != blocked and not runner.running:
-                    print(f"{job['id']}: waiting: {why}", flush=True)
+                    print(f"{job_id}: waiting: {why}", flush=True)
                 blocked = why
                 if why is None and runner.start(job, path, source, job_plan, memory):
                     last_look = False
-                    print(f"{job['id']}: started at {source[:12]} ({job_plan['cpus']:g} CPU, limit {fmt_bytes(job_plan['memoryLimit'])}, "
+                    print(f"{job_id}: started at {source[:12]} ({job_plan['cpus']:g} CPU, limit {fmt_bytes(job_plan['memoryLimit'])}, "
                           f"timeout {fmt_seconds(job_plan['timeout'])})", flush=True)
                     queue.remove((job, path, source))
                 elif why:
-                    break  # in priority order: a later job does not overtake one that is waiting for room
+                    # In priority order: a later job does not overtake one that is waiting for room.
+                    at = [j["id"] for j, _, _ in queue].index(job_id)
+                    decisions[job_id] = {"state": "deferred", "why": why}
+                    for later, _, _ in queue[at + 1:]:
+                        decisions.setdefault(later["id"], {"state": "deferred", "why": f"behind {job_id} in the queue's order, which waits for room"})
+                    break
+        runner.say(decisions)
+        if queue and not runner.running and not args.watch and len(stuck) == len(queue):
+            # Every job left waits for a prerequisite, and nothing here is running that could be one: this runner
+            # has no more to do for them. (With --watch it stays, for a prerequisite that is collected or resolved.)
+            if last_look:
+                for job_id in stuck:
+                    print(f"{job_id}: left waiting: {decisions[job_id]['why']}", flush=True)
+                break
+            last_scan, last_look = None, True
+            continue
         if not runner.running and not queue and not args.watch:
             if last_look:
                 break
@@ -1744,6 +1834,7 @@ def cmd_run(args):
         time.sleep(1)
     for entry in list(runner.running.values()):
         entry["thread"].join()
+    (runner.state / "scheduling.json").unlink(missing_ok=True)   # nobody is deciding any more
     lock.truncate(0)
     finished = runner.finished
     print(f"finished {len(finished)} job(s)" + (f": {', '.join(finished)}" if finished else "") +
@@ -1751,51 +1842,272 @@ def cmd_run(args):
     return 0
 
 
-def cmd_status(args):
-    config = load_config(args)
+def collected_index():
+    """The index entry of every collected result in the working copy, by job id (verification/results/index.json
+    and each day's): what a view of many jobs needs without opening 1,900 receipts."""
+    base, entries = ROOT / RESULTS, {}
+    try:
+        root = json.loads((base / "index.json").read_text())
+    except (OSError, ValueError):
+        return entries
+    for document in [root] + [base / day / "index.json" for day in root.get("shards", [])]:
+        try:
+            for entry in (document if isinstance(document, dict) else json.loads(document.read_text())).get("results", []):
+                entries[entry["id"]] = entry
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return entries
+
+
+def result_view(result, where, path=None):
+    """What a view says of one result: where it is, and its questions apart, computed here for a result that did
+    not keep them."""
+    job = (result.get("job") or {}).get("spec") or {}
+    blocks = {k: result[k] for k in ("execution", "fulfillment", "timing") if k in result}
+    if len(blocks) < 3:
+        blocks = lifecycle.facets(job, result, derived=True)
+    originals_of = result.get("originals") or {}
+    return {"where": where, **({"path": path} if path else {}), "status": result.get("status"), "summary": result.get("summary"),
+            "attention": result.get("attention") or [], "sourceCommit": result.get("sourceCommit"),
+            "startedAt": result.get("startedAt"), "finishedAt": result.get("finishedAt"), "host": (result.get("runner") or {}).get("host"),
+            **blocks, "conclusion": result.get("conclusion"), "declared": result.get("declared"),
+            "attempt": {k: (result.get("attempt") or {}).get(k) for k in ("id", "number", "previous")} if result.get("attempt") else None,
+            # The occurrences sealed in the private archive, by id: where the originals are, and nothing of them.
+            "capture": {"state": "sealed", "attempt": originals_of.get("attempt"), "occurrences": originals_of.get("occurrences")}
+            if originals_of else {"state": "none recorded"},
+            "collection": result.get("collected")}
+
+
+def lifecycle_view(config, revs, full=()):
+    """The one view of every job: its admission, its scheduling state with the reason, its claim, its attempts,
+    its result and what was collected of it (`itl-job-lifecycle/v1`). `status`, `wait` and the keepers render or
+    read this; nothing else decides what state a job is in. `full`: job ids whose collected receipt is opened
+    (every other collected job is given from the index)."""
     state = config["runner"]["state_dir"]
-    revs = [resolve(args.rev)] if args.rev else queue_revs()
     rev = revs[0]
-    claims = {p.name: json.loads(p.read_text() or "{}") for p in (state / "claims").iterdir()} if (state / "claims").exists() else {}
-    finished = sorted(p.name for p in (state / "results").iterdir() if (p / "result.json").exists()
-                      and json.loads((p / "result.json").read_text()).get("status") != "cancelled") if (state / "results").exists() else []
-    collected = sorted(layout.results(ROOT))
-    elsewhere = {i: head for i, head in recorded_on_heads().items() if i not in collected and i not in finished}
-    rows = {"pending": [], "running": [], "finished, not collected": [], "recorded on another head": [], "collected": []}
-    seen = set()
-    priorities = load_priorities(rev)
+    diagnostics, available = [], {"queue": "available", "live": "available", "collected": "available", "otherHeads": "available"}
+    claims, staged, has_attempts = {}, {}, set()
+    try:
+        if (state / "claims").exists():
+            for path in (state / "claims").iterdir():
+                try:
+                    claims[path.name] = json.loads(path.read_text() or "{}")
+                except ValueError:
+                    claims[path.name] = {}
+        if (state / "results").exists():
+            for path in sorted((state / "results").iterdir()):
+                try:
+                    staged[path.name] = json.loads((path / "result.json").read_text())
+                except (OSError, ValueError):
+                    continue  # not written yet
+        if (state / "attempts").exists():
+            has_attempts = {path.name for path in (state / "attempts").iterdir()}
+    except OSError as e:
+        available["live"] = f"unavailable: {e}"
+    finished = {i for i, r in staged.items() if r.get("status") != "cancelled"}
+    collected = set(layout.results(ROOT))
+    index = collected_index()
+    try:
+        heads = recorded_on_heads()
+    except Exception as e:
+        heads, available["otherHeads"] = {}, f"unavailable: {e}"
+    elsewhere = {i: head for i, head in heads.items() if i not in collected and i not in finished}
     waiting = lambda job_id: job_id not in collected and job_id not in finished and job_id not in claims and job_id not in elsewhere
-    for job, path, source in sorted(queued_jobs(revs, waiting), key=queue_order(priorities)):
-        job_id = job.get("id")
+    try:
+        queue = queued_jobs(revs, waiting, diagnostics)
+    except (RuntimeError, OSError) as e:
+        # The queue could not be read. That is not an empty queue: whoever asks is told it is unknown.
+        queue, available["queue"] = [], f"unavailable: {e}"
+    pid = runner_pid(state)
+    decided = {}
+    if pid:
+        try:
+            said = json.loads((state / "scheduling.json").read_text())
+            decided = said.get("jobs", {}) if said.get("pid") == pid else {}
+        except (OSError, ValueError):
+            pass
+    priorities = load_priorities(rev) if available["queue"] == "available" else {}
+    specs = {job.get("id") or Path(path).stem: job for job, path, _ in queue}
+    known = scheduling.Known(specs, Statuses(state), set(claims))
+    capture = originals()
+    rows, seen = [], set()
+    for job, path, source in sorted(queue, key=queue_order(priorities)):
+        job_id = job.get("id") or Path(path).stem
         seen.add(job_id)
-        p = plan(job, config)
-        line = f"{job_id}  {job.get('title', '')}"
+        row = {"id": job_id, "title": job.get("title"), "format": job.get("schema"), "path": path,
+               "purpose": job.get("purpose"), "workload": workload_name(job), "case": job.get("case"), "batch": job.get("batch"),
+               "labels": job.get("labels") if is_v2(job) else {"capability": job_capabilities(job)},
+               "submitted": job.get("submitted") or {}, "supersedes": job.get("supersedes"),
+               "supersededBy": sorted(known.superseders.get(job_id, [])), "source": source, "state": None, "why": None,
+               "priority": priority_of(job, priorities), "priorityReason": (priorities.get(job_id) or {}).get("reason"),
+               "needs": [], "plan": None, "claim": None, "attempts": [], "result": None}
+        if job_id in has_attempts:
+            row["attempts"] = [{"id": a.id, "number": a.number, "state": a.state(), "status": a.record.get("status"),
+                                "startedAt": a.record.get("startedAt"), "finishedAt": a.record.get("finishedAt"),
+                                "host": a.record.get("host"), "capture": (a.record.get("capture") or {}).get("state"),
+                                "occurrences": (a.record.get("capture") or {}).get("occurrences")}
+                               for a in attempts.of(state, job_id)]
         if job_id in elsewhere:
-            rows["recorded on another head"].append(f"{line}  (in commit {elsewhere[job_id][:12]}, which this working copy "
-                                                    f"is not on: merge it; the job is not run again)")
+            row.update(state="recorded-elsewhere", why=f"its result is in commit {elsewhere[job_id][:12]}, which this working copy is not on: "
+                                                       f"merge it; the job is not run again",
+                       result={"where": "other-head", "commit": elsewhere[job_id]})
         elif job_id in collected:
-            res = json.loads((layout.find_result(ROOT, job_id) / "result.json").read_text())
-            rows["collected"].append(f"{line}  [{res['status']}]")
+            entry = index.get(job_id)
+            folder = layout.find_result(ROOT, job_id)
+            if job_id in full or entry is None:
+                try:
+                    row["result"] = result_view(json.loads((folder / "result.json").read_text()), "collected",
+                                                folder.relative_to(ROOT).as_posix())
+                except (OSError, ValueError) as e:
+                    row["result"] = {"where": "collected", "status": None, "problem": f"its receipt cannot be read: {e}"}
+            else:
+                row["result"] = {"where": "collected", "path": f"{RESULTS}/{Path(entry['result']).parent.as_posix()}", "status": entry.get("status"),
+                                 "summary": entry.get("summary"), "attention": entry.get("attention") or [],
+                                 "sourceCommit": entry.get("sourceCommit"), "finishedAt": entry.get("finishedAt"), "host": entry.get("host")}
+            row["state"] = "collected"
         elif job_id in finished:
-            res = json.loads((state / "results" / job_id / "result.json").read_text())
-            rows["finished, not collected"].append(f"{line}  [{res['status']}]")
+            row.update(state="finished", result=result_view(staged[job_id], "staged"))
         elif job_id in claims:
-            rows["running"].append(f"{line}  (since {claims[job_id].get('at')}, pid {claims[job_id].get('pid')})")
+            claim = claims[job_id]
+            row.update(state="running", claim={"at": claim.get("at"), "pid": claim.get("pid"), "host": claim.get("host"),
+                                               "alive": bool(claim.get("pid")) and Path(f"/proc/{claim.get('pid')}").exists()})
         else:
-            fit = "; cannot run here: " + "; ".join(p["cannotRun"]) if p["cannotRun"] else ""
-            level = priority_of(job, priorities)
-            why = (priorities.get(job_id) or {}).get("reason")
+            problems = validate({k: v for k, v in job.items()}, "job.schema.json")
+            try:
+                p = None if problems else plan(job, config)
+            except ValueError as e:
+                p, problems = None, [str(e)]
+            needs = scheduling.prerequisites(job, known, readiness_of) if job.get("needs") and not problems else []
+            verdict, why = scheduling.decide(job, problems, p["cannotRun"] if p else [], needs)
+            if verdict == "queued" and job_id in decided:   # what only a runner at work knows: no room, a priority it leaves
+                verdict, why = decided[job_id].get("state", verdict), decided[job_id].get("why")
+            row.update(state=verdict, why=why, needs=needs,
+                       plan={k: p[k] for k in ("cpus", "memoryEstimate", "memoryLimit", "durationEstimate", "timeout")} if p else None)
+            if job_id in staged:   # stopped before it ended: it runs again, and the attempt is in its history
+                row["cancelled"] = result_view(staged[job_id], "staged")
+        rows.append(row)
+    for job_id in sorted(finished - seen):
+        rows.append({"id": job_id, "title": staged[job_id].get("title"), "path": None, "state": "finished",
+                     "why": f"its job file is no longer in {rev[:12]}", "result": result_view(staged[job_id], "staged"), "attempts": []})
+    for item in diagnostics:
+        rows.append({"id": item["id"], "title": None, "path": item["path"], "revision": item["revision"], "state": "invalid",
+                     "why": f"{item['path']} at {item['revision'][:12]}: {item['problem']}", "attempts": [], "result": None})
+    in_queue = seen | {item["id"] for item in diagnostics}
+    uncommitted = [i for i in sorted(layout.jobs(ROOT)) if i not in in_queue] if available["queue"] == "available" else []
+    for job_id in uncommitted:
+        path = layout.find_job(ROOT, job_id)
+        try:
+            title = json.loads(path.read_text()).get("title")
+        except (OSError, ValueError, AttributeError):
+            title = None
+        rows.append({"id": job_id, "title": title, "path": path.relative_to(ROOT).as_posix() if path else None, "state": "uncommitted",
+                     "why": "its file is in the working copy and in no commit of the queue: commit it to queue it", "attempts": [], "result": None})
+    # A job that waits for one that cannot start here is not going to start either: it is blocked, and its reason
+    # goes back to the first cause. Until nothing changes, for a chain of them.
+    by_id, changed = {row["id"]: row for row in rows}, True
+    while changed:
+        changed = False
+        for row in rows:
+            if row["state"] != "waiting":
+                continue
+            for need in row.get("needs") or []:
+                other = by_id.get(need.get("by"))
+                if need["state"] == "waiting" and other and other["state"] in ("unschedulable", "blocked", "invalid", "uncommitted"):
+                    row.update(state="blocked", why=f"{other['id']} cannot run here ({other['state']}: {other['why']})")
+                    changed = True
+                    break
+    counts = {}
+    for row in rows:
+        counts[row["state"]] = counts.get(row["state"], 0) + 1
+    try:
+        last_collect = json.loads((state / "last-collect.json").read_text())
+    except (OSError, ValueError):
+        last_collect = None
+    idle = None
+    if all(v == "available" for k, v in available.items() if k in ("queue", "live")):
+        # Nothing running, nothing that could start, nothing to collect. Unknown when the queue or the state could not be read.
+        idle = not any(counts.get(s) for s in ("queued", "deferred", "waiting", "running", "finished"))
+    return {
+        "schema": lifecycle.SCHEMA, "generatedAt": iso(now()),
+        "snapshot": {"revision": rev, "queueHeads": revs, "host": config["runner"]["machine_name"], "stateDir": str(state),
+                     "views": {**available, "archive": "available" if capture and capture.available(ROOT) else "off"},
+                     # What this view cannot see, said: another machine's runner, another checkout's state directory.
+                     "notSeen": ["jobs running on another machine", "another checkout's staged results and attempts"]},
+        "runner": {"pid": pid, "atWork": bool(pid)},
+        "idle": idle,
+        "totals": {"unit": "jobs", "of": len(rows), "byState": {s: counts[s] for s in lifecycle.STATES if s in counts},
+                   "drillDown": "jobs[].state; `view --state STATE` lists the rows"},
+        "priorities": {"uncommittedChanges": available["queue"] == "available" and load_priorities() != priorities},
+        # The last collect on this machine: what it collected, and how each hook after it ended. A hook that
+        # failed stays here until the next collect, whatever became of the jobs.
+        "lastCollect": last_collect and {k: last_collect.get(k) for k in ("at", "collected", "hooks")},
+        "jobs": rows,
+    }
+
+
+def view_of(args):
+    config = load_config(args)
+    try:
+        revs = [resolve(args.rev)] if getattr(args, "rev", None) else queue_revs()
+        if not revs or not all(revs):
+            raise RuntimeError("no commit to read the queue from")
+        resolve(revs[0])
+    except (RuntimeError, OSError) as e:
+        # Not even the queue's commit could be named. What is said is that, and nothing that could pass for a queue.
+        return {"schema": lifecycle.SCHEMA, "generatedAt": iso(now()),
+                "snapshot": {"revision": None, "queueHeads": [], "host": config["runner"]["machine_name"],
+                             "stateDir": str(config["runner"]["state_dir"]),
+                             "views": {"queue": f"unavailable: {e}", "live": "not read", "collected": "not read", "otherHeads": "not read",
+                                       "archive": "not read"}},
+                "runner": {"pid": runner_pid(config["runner"]["state_dir"]), "atWork": bool(runner_pid(config["runner"]["state_dir"]))},
+                "idle": None, "totals": {"unit": "jobs", "of": 0, "byState": {}}, "priorities": {"uncommittedChanges": False},
+                "lastCollect": None, "jobs": []}
+    return lifecycle_view(config, revs, full=set(getattr(args, "ids", None) or []))
+
+
+def legacy_rows(view):
+    """`status --json` as it was before the view: lines of text by heading. Kept for whoever still reads it; a row
+    of a job that will not start as things are carries "; cannot run here:", as an unrunnable one always did."""
+    rows = {"pending": [], "running": [], "finished, not collected": [], "recorded on another head": [], "collected": []}
+    rev = view["snapshot"]["revision"] or "?"
+    for job in view["jobs"]:
+        line = f"{job['id']}  {job.get('title') or ''}"
+        state = job["state"]
+        if state == "uncommitted" or (state == "invalid" and "revision" in job):
+            continue
+        if state == "recorded-elsewhere":
+            rows["recorded on another head"].append(f"{line}  (in commit {job['result']['commit'][:12]}, which this working copy "
+                                                    f"is not on: merge it; the job is not run again)")
+        elif state == "collected":
+            rows["collected"].append(f"{line}  [{job['result'].get('status')}]")
+        elif state == "finished" and job.get("path") is None:
+            rows["finished, not collected"].append(f"{job['id']}  (job file no longer in {rev[:12]})")
+        elif state == "finished":
+            rows["finished, not collected"].append(f"{line}  [{job['result']['status']}]")
+        elif state == "running":
+            rows["running"].append(f"{line}  (since {job['claim'].get('at')}, pid {job['claim'].get('pid')})")
+        else:
+            p = job.get("plan")
+            fit = {"unschedulable": "; cannot run here: ", "invalid": "; cannot run here: not a valid job: ",
+                   "blocked": "; cannot run here: blocked: ", "waiting": "; waiting: ", "deferred": "; deferred: "}.get(state)
+            level, why = job.get("priority"), job.get("priorityReason")
             mark = f"[priority {level}{': ' + why if why else ''}]  " if level else ""
-            rows["pending"].append(f"{mark}{line}  ({p['cpus']:g} CPU, {fmt_bytes(p['memoryEstimate'])}, ~{fmt_seconds(p['durationEstimate'])}"
-                                   f" at {source[:12]}){fit}")
-    for job_id in finished:
-        if job_id not in seen:
-            rows["finished, not collected"].append(f"{job_id}  (job file no longer in {rev[:12]})")
-    uncommitted = sorted(layout.jobs(ROOT))
-    not_committed = [j for j in uncommitted if j not in seen]
+            asked = (f"  ({p['cpus']:g} CPU, {fmt_bytes(p['memoryEstimate'])}, ~{fmt_seconds(p['durationEstimate'])}"
+                     f" at {(job.get('source') or '?')[:12]})") if p else ""
+            rows["pending"].append(f"{mark}{line}{asked}{fit + job['why'] if fit else ''}")
+    return {**rows, "not committed": [job["id"] for job in view["jobs"] if job["state"] == "uncommitted"]}
+
+
+def cmd_status(args):
+    view = view_of(args)
+    rows = legacy_rows(view)
+    not_committed = rows.pop("not committed")
+    unknown = [f"{name}: {said}" for name, said in view["snapshot"]["views"].items() if said.startswith("unavailable")]
     if args.json:
-        print(json.dumps({**rows, "not committed": not_committed}, indent=2))
+        print(json.dumps({**rows, "not committed": not_committed, **({"unknown": unknown} if unknown else {})}, indent=2))
         return 0
+    if unknown:
+        print("NOT READ, so what follows is not the whole queue: " + "; ".join(unknown))
     for name, lines in rows.items():
         if name == "collected" and not args.all:
             print(f"{name}: {len(lines)}" + ("  (--all lists them)" if lines else ""))
@@ -1803,11 +2115,34 @@ def cmd_status(args):
         print(f"{name}: {len(lines)}")
         for l in lines:
             print("  " + l)
+    for job in view["jobs"]:
+        if job["state"] == "invalid" and "revision" in job:
+            print(f"not a job: {job['why']}")
     if not_committed:
         print(f"not committed, so not runnable yet: {', '.join(not_committed)}")
-    if load_priorities() != priorities:
-        print(f"{PRIORITIES} has uncommitted changes: the runner reads it from {rev[:12]}, so commit them first")
+    if view["priorities"]["uncommittedChanges"]:
+        print(f"{PRIORITIES} has uncommitted changes: the runner reads it from {view['snapshot']['revision'][:12]}, so commit them first")
+    hooks = [h for h in (view.get("lastCollect") or {}).get("hooks") or [] if h.get("exitCode")]
+    for hook in hooks:
+        print(f"the last collect's hook failed, and nothing has run it since: {hook['command']}: exit {hook['exitCode']}")
     return 0
+
+
+def cmd_view(args):
+    """The lifecycle view as JSON (`itl-job-lifecycle/v1`): every job with its state and the reason, its attempts
+    and its result. Ids open their collected receipts in full; --state, --case and --batch keep the rows asked for
+    (the totals stay the whole queue's). Exit 4 when the queue or this machine's state could not be read: what is
+    printed then is not the queue, and says so."""
+    view = view_of(args)
+    keep = lambda job: ((not args.ids or job["id"] in args.ids) and (not args.state or job["state"] in args.state)
+                        and (not args.case or job.get("case") in args.case)
+                        and (not args.batch or (job.get("batch") or {}).get("id") in args.batch))
+    shown = [job for job in view["jobs"] if keep(job)]
+    if args.ids or args.state or args.case or args.batch:
+        view["shown"] = {"of": len(view["jobs"]), "rows": len(shown)}
+    view["jobs"] = shown
+    print(json.dumps(view, indent=2, ensure_ascii=False))
+    return 0 if view["idle"] is not None else 4
 
 
 def cmd_prioritize(args):
@@ -2181,8 +2516,10 @@ def cmd_collect(args):
         ids = [i for i in ids if i in set(args.ids)]
     else:  # a cancelled job runs again; collect it only by name
         ids = [i for i in ids if json.loads((state / i / "result.json").read_text()).get("status") != "cancelled"]
+    say = (lambda *a, **k: None) if args.json else print   # with --json the report is the one thing printed
+    report = {"schema": "itl-job-collect/v1", "at": iso(now()), "collected": [], "already": [], "hooks": [], "commit": None}
     if not ids:
-        print("nothing to collect")
+        print(json.dumps(report, indent=2)) if args.json else print("nothing to collect")
         return 0
     applied_any, lines, fresh = False, [], []
     tally = {"applied": 0, "none": 0, "kept": 0, "conflicts": 0}
@@ -2199,10 +2536,12 @@ def cmd_collect(args):
             kept_result = json.loads((dest / "result.json").read_text())
             if capture and not (src / COLLECTED_MARK).exists():  # stopped between writing the result and sealing it
                 capture.after_collect(ROOT, config["runner"]["state_dir"], job_id, dest, kept_result)
-            if release_staged(capture, config, job_id, src, dest, kept_result, result):
-                print(f"{job_id}: {kept_result['status']}: was collected before; its staged result is released now")
+            released = release_staged(capture, config, job_id, src, dest, kept_result, result)
+            report["already"].append({"id": job_id, "status": kept_result["status"], "released": bool(released)})
+            if released:
+                say(f"{job_id}: {kept_result['status']}: was collected before; its staged result is released now")
             else:
-                print(f"{job_id}: {kept_result['status']}: was collected before; its staged result is set aside, not sealed")
+                say(f"{job_id}: {kept_result['status']}: was collected before; its staged result is set aside, not sealed")
             continue
         run_dir = Path(result["attempt"]["folder"]) / "run" if (result.get("attempt") or {}).get("folder") else None
         sealed = capture.before_collect(ROOT, config["runner"]["state_dir"], job_id, src, dest, result, run_dir) if capture else True
@@ -2262,29 +2601,45 @@ def cmd_collect(args):
         tally["conflicts"] += bool(conflicts)
         lines.append(f"{job_id}: {result['summary']}" + (f" Applied {len(applied)} output(s)." if applied else "") +
                      (f" {len(conflicts)} output(s) not applied: changed since the job's commit." if conflicts else ""))
-        print(f"{job_id}: {result['status']}: applied {len(applied)}, conflicts {len(conflicts)}, kept {len(kept)}")
+        report["collected"].append({"id": job_id, "status": result["status"], "applied": applied, "conflicts": conflicts, "kept": kept,
+                                    "fulfillment": (result.get("fulfillment") or {}).get("state"),
+                                    "conclusion": (result.get("conclusion") or {}).get("verdict"), "attention": result["attention"]})
+        say(f"{job_id}: {result['status']}: applied {len(applied)}, conflicts {len(conflicts)}, kept {len(kept)}")
     write_index()
     if applied_any:
+        # What regenerates from the outputs applied. Its outcome is its own: the results are collected whatever it
+        # exits with, and a hook that failed is said, kept (STATE/last-collect.json) and shown by `status` and
+        # `view` until a later collect runs it again.
         for command in config["runner"]["after_collect"]:
             proc = subprocess.run(command, shell=True, cwd=ROOT, text=True, capture_output=True)
-            print(f"after collect: {command}: exit {proc.returncode}")
+            report["hooks"].append({"command": command, "exitCode": proc.returncode,
+                                    **({"output": (proc.stdout + proc.stderr)[-2000:]} if proc.returncode else {})})
+            say(f"after collect: {command}: exit {proc.returncode}")
             if proc.returncode:
-                print((proc.stdout + proc.stderr)[-2000:])
+                say((proc.stdout + proc.stderr)[-2000:])
     if fresh:
-        print("\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
-        print(f"  Record verification results for {len(fresh)} job(s)")
-        print("  " + collect_totals(tally, len(fresh)) + " " + " ".join(lines))
+        report["commit"] = {"summary": f"Record verification results for {len(fresh)} job(s)",
+                            "body": collect_totals(tally, len(fresh)) + " " + " ".join(lines)}
+        say("\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
+        say(f"  {report['commit']['summary']}")
+        say("  " + report["commit"]["body"])
     else:
-        print("\nNo result is new: every one here was collected before, by a collect that was stopped before it "
-              "released them. What it wrote is in the working copy as it left it.")
+        say("\nNo result is new: every one here was collected before, by a collect that was stopped before it "
+            "released them. What it wrote is in the working copy as it left it.")
+    if fresh or report["hooks"]:
+        write_json(config["runner"]["state_dir"] / "last-collect.json",
+                   {"at": report["at"], "collected": [row["id"] for row in report["collected"]], "hooks": report["hooks"]})
     try:  # earlier failures' kept work directories whose originals have since been read back from the store
         pruned = prune_workdirs(config["runner"]["state_dir"])
     except Exception as e:  # never fails a collect
         pruned = []
         print(f"(kept work directories not pruned: {e})", file=sys.stderr)
     if pruned:
-        print(f"\nremoved {len(pruned)} kept work director{'y' if len(pruned) == 1 else 'ies'} of failed jobs, "
-              f"{sum(n for _, n in pruned) / 2**30:.1f} GiB: collected, and their originals remote_verified")
+        say(f"\nremoved {len(pruned)} kept work director{'y' if len(pruned) == 1 else 'ies'} of failed jobs, "
+            f"{sum(n for _, n in pruned) / 2**30:.1f} GiB: collected, and their originals remote_verified")
+    if args.json:
+        report["pruned"] = {"workDirectories": len(pruned), "bytes": sum(n for _, n in pruned)}
+        print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0
 
 
@@ -2744,6 +3099,7 @@ def main(argv=None):
     p = sub.add_parser("wait", help="block until a job has finished and waits to be collected, or no runner is at work")
     p.add_argument("--state-dir")
     p.add_argument("--timeout", type=float, default=540, help="seconds (default 540); exit 3 when nothing happened")
+    p.add_argument("--json", action="store_true", help="say it as data (itl-job-wait/v1): outcome finished, no-runner or timeout")
     p.set_defaults(func=cmd_wait)
 
     p = sub.add_parser("status", help="the queue")
@@ -2753,9 +3109,20 @@ def main(argv=None):
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_status)
 
+    p = sub.add_parser("view", help="every job with its state, the reason, its attempts and its result, as JSON (itl-job-lifecycle/v1)")
+    budget(p)
+    p.add_argument("--rev")
+    p.add_argument("--state", action="append", choices=lifecycle.STATES, help="only the jobs in this state; repeatable")
+    p.add_argument("--case", action="append", help="only this case's jobs; repeatable")
+    p.add_argument("--batch", action="append", help="only this batch's jobs; repeatable")
+    p.add_argument("ids", nargs="*", help="only these jobs, with their collected receipts opened in full")
+    p.set_defaults(func=cmd_view)
+
     p = sub.add_parser("collect", help="move finished results into verification/results and apply their outputs")
     p.add_argument("--state-dir")
     p.add_argument("--apply-failed", action="store_true", help="apply the outputs of jobs that did not pass too")
+    p.add_argument("--json", action="store_true", help="say it as data (itl-job-collect/v1): each result collected, each hook's exit, "
+                   "and the commit message, in place of the lines")
     p.add_argument("ids", nargs="*")
     p.set_defaults(func=cmd_collect)
 

@@ -163,8 +163,11 @@ def index_entry(result: dict, rel: str) -> dict:
     receipt's own `wallSeconds`."""
     spec = (result.get("job") or {}).get("spec") or {}
     usage = result.get("usage") or {}
+    second = spec.get("schema") == "itl-job/v2"   # its capabilities are a label, and it has a purpose and may have a case
     return {"id": result["id"], "title": result.get("title"), "status": result["status"], "summary": result["summary"],
-            "attention": result["attention"], "capabilities": spec.get("capabilities", []),
+            "attention": result["attention"],
+            "capabilities": (spec.get("labels") or {}).get("capability", []) if second else spec.get("capabilities", []),
+            **({k: spec[k] for k in ("purpose", "case") if k in spec} if second else {}),
             "links": spec.get("links", {}), "sourceCommit": result["sourceCommit"], "finishedAt": result["finishedAt"],
             "wallSeconds": usage.get("wallSeconds"), "peakMemoryBytes": usage.get("peakMemoryBytes"),
             "estimate": result.get("estimate"), "host": (result.get("runner") or {}).get("host"),

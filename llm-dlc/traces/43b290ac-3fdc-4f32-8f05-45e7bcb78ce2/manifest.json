@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T23:19:57.886Z",
-  "duration_seconds": 29177,
+  "ended": "2026-11-27T23:37:23.796Z",
+  "duration_seconds": 30222,
   "stats": {
     "turns": 32,
-    "api_calls": 651,
-    "tool_calls": 712,
-    "tool_errors": 10,
+    "api_calls": 690,
+    "tool_calls": 751,
+    "tool_errors": 11,
     "compactions": 5,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1328,
-      "output_tokens": 1074094,
-      "cache_read_input_tokens": 200253086,
-      "cache_creation_input_tokens": 2512319
+      "input_tokens": 1406,
+      "output_tokens": 1166183,
+      "cache_read_input_tokens": 212417160,
+      "cache_creation_input_tokens": 2633052
     }
   },
   "tools": {
-    "Bash": 567,
+    "Bash": 605,
     "Read": 82,
-    "Write": 30,
+    "Write": 31,
     "Edit": 19,
     "AskUserQuestion": 3,
     "mcp__chrome-devtools__take_screenshot": 3,
@@ -152,24 +152,24 @@
     {
       "index": 5,
       "started": "2026-11-27T23:01:49.090Z",
-      "ended": "2026-11-27T23:19:57.886Z",
+      "ended": "2026-11-27T23:37:23.796Z",
       "turns": 1,
-      "api_calls": 56,
+      "api_calls": 95,
       "usage": {
-        "input_tokens": 112,
-        "output_tokens": 96318,
-        "cache_read_input_tokens": 9961122,
-        "cache_creation_input_tokens": 232727
+        "input_tokens": 190,
+        "output_tokens": 188407,
+        "cache_read_input_tokens": 22125196,
+        "cache_creation_input_tokens": 353460
       },
-      "peak_context_tokens": 247894
+      "peak_context_tokens": 368627
     }
   ],
   "log": {
-    "sha256": "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55",
-    "bytes": 19538264,
-    "lines": 6408,
-    "gzip_bytes": 3893717,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55.jsonl.gz"
+    "sha256": "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a",
+    "bytes": 20564279,
+    "lines": 6839,
+    "gzip_bytes": 4018844,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -398,20 +398,28 @@
       "log_sha256": "3d8f2fe83a520c64703935c98e2b214597e66b2e91c071e18b44b7868977e4dd"
     },
     {
-      "change_id": "mwpkusnutrlqmzwzupvktmnmtvkupyyp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55"
-    },
-    {
       "change_id": "lqkqyulqxulklrwlqmpkkltznrskxzkm",
       "commit_id": null,
       "immutable": false,
       "summary": "Write, run and collect jobs of the second format, and keep a result's questions apart",
       "body": "A job that names a purpose (submit --purpose resolve|build|test|verify|maintenance) is written in the second format, itl-job/v2: a workload, labels, a case, required and optional outputs, a network for its steps, and what a step promises besides its exit code. It runs in the same queue as jobs of the first format, and collect, report, validate and resubmit take it as any other. Every job of the first format runs as it did, and its status means what it meant.\n\nA result of either format now keeps apart what one status word answered at once (jobs/lifecycle.py, one function each, for the runner and for a reader of an old receipt, which marks them derived): execution (what the processes did, and where and why it stopped), fulfillment (fulfilled, unfulfilled with every reason, undetermined), declared (each declared output: added, modified, deleted, unchanged, missing, never-reached, with its producer attempt), timing by scope (queue wait, elapsed, preparation, requested steps, by phase, each measured, derived, partial, not-run or unknown), and the workload's conclusion. A second-format job whose processes all exited as expected and which did not deliver what it declared is failed: a required output that is not there, or a step that promised tests and shows none executed (jobs/evidence.py reads JUnit XML reports or the log's summary lines; VF-070). A regression test expected to fail by assertion is a fulfilled job, and a build that broke before any test is not.\n\nA step declared network none runs in a network namespace with loopback alone, and its record keeps what a probe saw there. A machine that cannot enforce that, or a checkout without the adapter a job names, does not start the job, and status says why. A job that names prerequisites is not started until scheduling by them is built (the next commit). A job records the run its submitter works in (submitted.run), read from the loop's systemd scope (VF-077).\n\nVerified: jobs/test_formats.py (11 tests, each in a throwaway repository through jobs/pipeline.py) shows the three jobs the brief's second gate names: a non-Java artifact job on a PATH with no checker, submitted, run beside a first-format job, collected, reported, validated and resubmitted; real unit tests counted from the log, and a step that compiled only failing its promise with exit 0; a stand-in for JBMC's refutation giving status passed, fulfillment fulfilled, conclusion refuted, in both formats. jobs/test_lifecycle.py (6) reads the brief's timing fixture from its committed receipt: 41.0 s elapsed measured, 41.0 s preparation derived, requested steps not-run. jobs/test_evidence.py (5). The tests of what changed: 37 of 37 Python test files passed (verification/test_pipeline.py 52 tests, test_capture.py, the keepers' tests among them); the cost lint and the retirement check are clean.",
       "log_sha256": "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55"
+    },
+    {
+      "change_id": "wvyytnyuorxksyluqktyvxmowxkvvzvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a"
+    },
+    {
+      "change_id": "vywknlrlrttrxmtkxtpmqqooznwlrynx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Give every job one state with its reason, in one view the keepers read as data",
+      "body": "A committed job that has not started is now in exactly one state, decided in one place (jobs/scheduling.py) for the runner and for every report: invalid (its file is not a job; the reason carries the path and the revision), unschedulable (this machine cannot run it as written), blocked (a prerequisite ended without passing, or nobody submitted it), waiting (a prerequisite has not finished), deferred (a runner at work holds it back: no room, a priority it leaves) or queued. The runner schedules by prerequisites: a job with needs starts once that job, or one that supersedes it, has passed; one whose prerequisite failed is blocked with nothing run and no attempt consumed, and resubmitting the prerequisite releases it with its own file unchanged. A runner whose remaining jobs all wait for something it is not running says so and ends.\n\npython3 jobs/pipeline.py view prints the one view of every job (itl-job-lifecycle/v1): the snapshot's revision and what could and could not be read, every job's state and reason, its prerequisites, claim, attempts and result (its questions apart, derived for a receipt that did not keep them), totals with their unit and denominator, and the last collect's hooks. status is that view as lines, and status --json keeps its shape of before. wait --json and collect --json say as data what their lines say; a hook that failed after a collect is kept and named until a later collect runs it.\n\nA queue that could not be read is unknown and never empty: view exits 4 with idle null, status begins with what was NOT READ, and the keepers return unknown instead of zero jobs (run_common.jobs returned an empty queue for any answer it could not parse). The keepers (queue_keeping.py, run_common.py, single_run.py, sync.py's nudge, the brief queue's prune) call jobs/pipeline.py and read the view and collect --json: the regular expressions over the pipeline's lines and the test for '; cannot run here:' are gone. The /run-verification skill names the same entry point and the states. The runner's word for a job it will never start is unschedulable, where it said deferred.\n\nVerified: jobs/test_scheduling.py (8 unit tests of the decision), jobs/test_formats.py Prerequisites (3, in throwaway repositories: a dependent after its prerequisite, a blocked one with no attempt folder that runs after the prerequisite is resubmitted, a runner that ends with a job left waiting), jobs/test_view.py (5: every state from uncommitted to collected with totals that add up, a corrupt spec with path and revision, deferred as a job's own step read it during a run with one worker, a derived receipt, a repository git cannot read giving exit 4 and idle null, the typed wait and collect with a hook that exits 3). The tests of what changed: 41 Python test files, 40 passed and llm-dlc/tools/test_single_run.py failed one assertion on the summary's old wording, which is updated with a case for the unknown queue and passes.",
+      "log_sha256": "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a"
     }
   ],
   "logs": {
@@ -425,6 +433,12 @@
       "bytes": 16894341,
       "lines": 5492,
       "gzip_bytes": 3445212,
+      "url": null
+    },
+    "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a": {
+      "bytes": 20564279,
+      "lines": 6839,
+      "gzip_bytes": 4018844,
       "url": null
     },
     "16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd": {

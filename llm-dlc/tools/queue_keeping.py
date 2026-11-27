@@ -3,7 +3,7 @@
 Agents queue proofs and model checks as jobs and go on (verification/README.md). While a run is under way its
 watcher keeps the queue itself, at each look of `wait` (single_run.py wait, collect and jobs):
 
-  - `collect` collects the results that are back (verification/pipeline.py collect) and commits them with the paths
+  - `collect` collects the results that are back (jobs/pipeline.py collect) and commits them with the paths
     a commit of results holds and nothing else, so that the watcher is the one session that commits in the default
     working copy;
   - `start_runner` starts the runner (pipeline.py run, no model) when jobs this machine can run wait and none is at
@@ -19,14 +19,14 @@ Nothing in this file is a command. Standard library only.
 from __future__ import annotations
 
 import json
-import re
 import subprocess
 import sys
 from pathlib import Path
 
 import conductor
 from landing import writer
-from run_common import Problem, Run, alive, detached, head_change, nudge
+from run_common import CAN_START, OUTSTANDING, Problem, Run, alive, detached, head_change, in_state, nudge, pipeline_path
+import run_common
 
 
 QUEUE_LOOK = 30  # seconds between two looks of `wait` at the verification queue
@@ -45,20 +45,22 @@ layout = _verification_layout()
 
 
 def pipeline(root: Path, *args: str) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(root / "verification" / "pipeline.py"), *args], cwd=root,
+    return subprocess.run([sys.executable, str(pipeline_path(root)), *args], cwd=root,
                           capture_output=True, text=True, stdin=subprocess.DEVNULL)
 
 
 def queue(root: Path) -> dict | None:
-    r = pipeline(root, "status", "--json")
-    try:
-        return json.loads(r.stdout) if r.returncode == 0 else None
-    except ValueError:
-        return None
+    """The pipeline's view of every job, or None when the queue could not be read (run_common.view)."""
+    return run_common.view(root)
+
+
+def left(view: dict | None) -> int | None:
+    """How many jobs the queue still has work on here: None when it could not be read, which is not zero."""
+    return None if view is None else len(in_state(view, *OUTSTANDING))
 
 
 def collect(run: Run) -> dict | None:
-    """Collect the results that are back (verification/pipeline.py collect) and commit them with the paths a commit
+    """Collect the results that are back (jobs/pipeline.py collect --json) and commit them with the paths a commit
     of results holds and nothing else (`sync.py commit --only $(pipeline.py commit-paths)`), as the verification
     loop's sessions did: the watcher is then the one session that commits in the default working copy while a
     run is under way, its merges and its collections one after the other. None when nothing waited. What is in
@@ -67,18 +69,20 @@ def collect(run: Run) -> dict | None:
     root = run.root
     with writer(root):
         status = queue(root)
-        if not status or not status.get("finished, not collected"):
+        if not status or not in_state(status, "finished"):
             return None
-        r = pipeline(root, "collect")
-        if r.returncode != 0:
+        r = pipeline(root, "collect", "--json")
+        try:
+            said = json.loads(r.stdout) if r.returncode == 0 else None
+        except ValueError:
+            said = None
+        if said is None:
             raise Problem(f"pipeline.py collect failed: {(r.stderr or r.stdout).strip()[-600:]}")
-        ids = re.findall(r"^(\S+): \w+: applied \d+", r.stdout, re.M)
-        if "For the commit message" not in r.stdout:
+        ids = [row["id"] for row in said["collected"]]
+        if not ids:
             return None  # every result here was collected before (a collect that was stopped): nothing new to commit
-        said = r.stdout.split("For the commit message", 1)[-1].splitlines()[1:]
-        said = [line.strip() for line in said if line.strip()]
-        title = said[0] if said else f"Record verification results for {len(ids)} job(s)"
-        body = " ".join(said[1:]) or "Collected by the watcher."
+        title, body = said["commit"]["summary"], said["commit"]["body"]
+        hooks = [h for h in said.get("hooks") or [] if h.get("exitCode")]
         paths = pipeline(root, "commit-paths").stdout.split()
         c = subprocess.run([sys.executable, str(root / "llm-dlc" / "tools" / "sync.py"), "commit", "--only", *paths,
                             "-m", title, "-m", f"{body} Collected by the watcher of the {run.name} run, which keeps the "
@@ -96,6 +100,9 @@ def collect(run: Run) -> dict | None:
         if row["status"] != "passed" or flags:
             attention.append({**row, "attention": flags})
         results.append(row)
+    for hook in hooks:  # the results are in; what regenerates from them did not run through, and that needs someone
+        attention.append({"id": None, "status": "hook failed", "summary": f"after collect: {hook['command']}: exit {hook['exitCode']}",
+                          "attention": [hook.get("output") or ""]})
     out = {"collected": results, "attention": attention, "commit": head_change(root)}
     if c.returncode != 0:
         out["commitReported"] = (c.stderr or c.stdout).strip()[-600:]
@@ -103,27 +110,26 @@ def collect(run: Run) -> dict | None:
 
 
 def start_runner(run: Run, status: dict) -> dict | None:
-    """Start the runner (verification/pipeline.py run, no model) when jobs this machine can run wait and no runner
+    """Start the runner (jobs/pipeline.py run, no model) when jobs this machine can run wait and no runner
     is at work. It takes the budget the runner's settings give (`budget --apply`), runs until the queue
     is empty and ends; the next look starts it again when more jobs come. A job committed while it runs is
     announced to it (nudge), once."""
     root = run.root
-    waiting = [m[0] for row in status.get("pending", []) if "; cannot run here:" not in row
-               and (m := conductor.JOB_ID.search(row))]
+    waiting = in_state(status, *CAN_START)   # not the ones that are blocked, invalid, or more than this machine runs
     data = run.read()
     if not waiting:
         if data.get("nudged"):
             run.update(nudged=[])
         return None
     ours = (data.get("runner") or {}).get("pid")
-    at_work = (alive(ours) or "no runner is at work" not in pipeline(root, "wait", "--timeout", "0").stdout)
+    at_work = alive(ours) or status["runner"]["atWork"]
     if at_work:
         if [j for j in waiting if j not in (data.get("nudged") or [])]:
             nudge(root)
             run.update(nudged=waiting)
         return None
     run.dir.mkdir(parents=True, exist_ok=True)
-    pid = detached([sys.executable, str(root / "verification" / "pipeline.py"), "run"], root, run.dir / "runner.log")
+    pid = detached([sys.executable, str(pipeline_path(root)), "run"], root, run.dir / "runner.log")
     run.update(runner={"pid": pid, "started": conductor.now(), "jobs": waiting}, nudged=waiting)
     return {"kind": "verification", "pid": pid, "jobs": waiting,
             "note": f"{len(waiting)} job(s) waited and no runner was at work: started the runner (pipeline.py run, its "

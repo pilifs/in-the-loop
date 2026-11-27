@@ -20,12 +20,13 @@ same command under the name it always had, and the commands below work with eith
 ```bash
 python3 verification/pipeline.py submit ...      # write verification/jobs/ID.json
 python3 verification/pipeline.py status          # the queue
+python3 verification/pipeline.py view            # every job's state and its reason, as data (itl-job-lifecycle/v1)
 python3 verification/pipeline.py run             # run what is pending and what is committed meanwhile, then stop
 python3 verification/pipeline.py nudge           # say that the queue changed: whoever waits looks at once
-python3 verification/pipeline.py wait            # block until a job has finished, or no runner is at work
+python3 verification/pipeline.py wait            # block until a job has finished, or no runner is at work (--json: as data)
 python3 verification/pipeline.py prioritize ID --priority 10 --reason "..."   # move jobs up the queue
 python3 verification/pipeline.py run --min-priority 10   # run only the jobs at that priority or above
-python3 verification/pipeline.py collect         # bring finished results into the repo
+python3 verification/pipeline.py collect         # bring finished results into the repo (--json: as data)
 python3 verification/pipeline.py report          # Markdown digest; --format json for agents
 python3 verification/pipeline.py resubmit ID --memory 8G
 python3 verification/pipeline.py validate        # check job and result files against their schemas
@@ -56,11 +57,13 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | [`findings.md`](findings.md) | what the runs found that needs a person, and the decisions taken, open first, each with what closes it | the managing agent, by hand |
 | `priorities.json` | the queue's priorities by job id, each with its reason, over the jobs' own | `prioritize`, committed |
 | [`pipeline.toml`](pipeline.toml) | the runner's defaults; `~/.config/in-the-loop/pipeline.local.toml` overrides them for the machine, and `pipeline.local.toml` (not committed) for one checkout | |
-| `.state/` (not committed) | the runner's claims, each attempt's record and folders (`attempts/ID/NNN-TOKEN/`: the whole logs, the outputs, the work directory), results not yet collected, the jvmcontract cache | `run` |
+| `.state/` (not committed) | the runner's claims, each attempt's record and folders (`attempts/ID/NNN-TOKEN/`: the whole logs, the outputs, the work directory), results not yet collected, the jvmcontract cache, what a runner at work decided about each job it has not started (`scheduling.json`), and what the last collect did (`last-collect.json`) | `run`, `collect` |
 | [`../jobs/`](../jobs/README.md) | the pipeline's shared code: the attempt records ([`attempts.py`](../jobs/attempts.py)), the record readers and the reconciliation ([`audit.py`](../jobs/audit.py)) | |
 
 A job is *pending* while it is committed and has no result, *running* while a runner holds its claim, *finished* when
-its result is in `.state/results/`, and *collected* once its result is in `results/`. A job file that is not
+its result is in `.state/results/`, and *collected* once its result is in `results/`. A pending job that will not
+start as things are says why, in `status` and in `view`: [`jobs/README.md`](../jobs/README.md#the-state-of-every-job-and-its-reason)
+has the states. A job file that is not
 committed yet is not run: the runner reads jobs from the latest commit (jj's `@-`), never from the working copy. It
 also reads them from `@-` in every other jj workspace of the repository, so a job committed on a branch that another
 workspace works on (a stream of a feature loop run in parallel) runs at its own commit without being merged first. Its

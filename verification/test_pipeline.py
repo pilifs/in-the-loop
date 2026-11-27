@@ -424,11 +424,11 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(r["runner"]["maxTimeoutSeconds"], 4)
         self.assertTrue(any("ceiling" in a for a in r["attention"]), r["attention"])
 
-    def test_a_job_bigger_than_the_runner_is_deferred_and_stays_pending(self):
+    def test_a_job_bigger_than_the_runner_is_not_started_and_stays_pending(self):
         job_id = self.repo.submit("Needs a big machine", "--run", "true", "--memory", "1G", "--memory-limit", "1600M")
         self.repo.commit("job")
         out = self.repo.pipeline("run", "--rev", "HEAD").stdout
-        self.assertIn(f"{job_id}: deferred", out)
+        self.assertIn(f"{job_id}: unschedulable: needs", out)   # waiting does not change it: resubmit, or run it elsewhere
         self.assertFalse((self.repo.dir / "verification/.state/results" / job_id).exists())
         self.assertIn("cannot run here", self.repo.pipeline("status", "--rev", "HEAD").stdout)
         bigger = self.repo.pipeline("run", "--rev", "HEAD", "--memory", "3G", "--job-memory-max", "2G")

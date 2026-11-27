@@ -495,7 +495,11 @@ def uncommitted(folder: Path) -> list[str]:
 
 
 def queue_counts(root: Path) -> dict:
+    """How many jobs can start, are running, and are back and not collected; `unknown` when the queue could not be
+    read, which a reader must not take for an empty one."""
     jobs = run_common.jobs(root)
+    if jobs is None:
+        return {"pending": None, "running": None, "finished": None, "unknown": True}
     return {k: len(jobs.get(k) or []) for k in ("pending", "running", "finished")}
 
 
@@ -594,8 +598,10 @@ def summary(s: dict) -> str:
     if s["cycleCosts"]:
         lines.append(f"- spend: ${s['spent']:.2f} over {len(s['cycleCosts'])} cycle(s) that have ended")
     jobs = s["jobs"]
-    if any(jobs.values()):
-        lines.append(f"- verification queue: {jobs['pending']} pending, {jobs['running']} running, {jobs['finished']} back and not collected")
+    if jobs.get("unknown"):
+        lines.append("- the job queue could not be read (`python3 jobs/pipeline.py view` says why): unknown, not empty")
+    elif any(jobs.values()):
+        lines.append(f"- job queue: {jobs['pending']} can start, {jobs['running']} running, {jobs['finished']} back and not collected")
     if s["messagesSet"] > 1:
         lines.append(f"- the continue message was last set {s['messageSet']}: {' '.join((s['continueMessage'] or '').split())[:160]}")
     return "\n".join(lines)
@@ -883,9 +889,7 @@ def cmd_jobs(run: Run, timeout: float) -> int:
         thing = queue_keeping.tend(run) if keeps_queue(run) else None
         if thing is not None and thing["kind"] in ("results", "attention"):
             came.append({k: v for k, v in thing.items() if k != "note"})
-        status = queue_keeping.queue(run.root)
-        left = None if status is None else sum(
-            "; cannot run here:" not in row for key in ("pending", "running", "finished, not collected") for row in status.get(key, []))
+        left = queue_keeping.left(queue_keeping.queue(run.root))
         flagged = [c for c in came if c.get("attention") or c["kind"] == "attention"]
         if left == 0 or flagged:
             print(json.dumps({"kind": "jobs", "left": left, "came": came,
