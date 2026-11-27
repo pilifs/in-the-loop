@@ -1,0 +1,338 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-091102-setup-build-spring-boot-52831-s14-at-bot",
+  "title": "Setup: build Spring Boot #52831 (S14) at both pins and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 3 failed, 1 passed step(s) in 5m38s, peak 3.3 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S14 fix: build and landed tests) exited 1, expected 0",
+    "step 2 (S14 parent: build and the parent's tests) exited 1, expected 0",
+    "step 3 (S14 transplant: the fix's tests on the parent) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-091102-setup-build-spring-boot-52831-s14-at-bot.json",
+    "sha256": "5ce35de5c0f8c090ed6e9c721e4b8b3daba61de6bf4a191da553c481a8054715",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-091102-setup-build-spring-boot-52831-s14-at-bot",
+      "title": "Setup: build Spring Boot #52831 (S14) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S14 (spring-projects/spring-boot#52831: Isolate message-bundle discovery across context class loaders). In the worktrees $P/worktrees/S14-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of core:spring-boot-autoconfigure with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (MessageSourceAutoConfigurationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of core:spring-boot-autoconfigure in $P/artifacts/S14-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S14",
+      "submitted": {
+        "at": "2026-11-27T09:11:02+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "steps": [
+        {
+          "name": "S14 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S14 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S14 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S14 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S14 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S14 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S14 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S14 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+  "startedAt": "2026-11-27T09:33:38+00:00",
+  "finishedAt": "2026-11-27T09:39:28+00:00",
+  "wallSeconds": 350.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2137390,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "usage": {
+    "peakMemoryBytes": 3526578176,
+    "wallSeconds": 338.1,
+    "cpuSeconds": 864.0,
+    "memoryOfEstimate": 0.55,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S14 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S14 fix",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 148.023,
+      "cpuSeconds": 390.368,
+      "cpuThrottledSeconds": 42.695,
+      "peakMemoryBytes": 3389661184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s14-fix-build-and-landed-tests.log",
+        "lines": 15,
+        "bytes": 1474,
+        "sha256": "fb255bf69da9215932354f9e5255e095344fae3f0f0081b88d51d8a0d810d1a2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S14-fix gradle=9.9.2 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=88 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/sc",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S14-fix/core_spring-boot-autoconfigure.runtimeClasspath.txt 18 entries",
+        "classpath core:spring-boot-autoconfigure testRuntimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S14 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S14 parent",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 114.322,
+      "cpuSeconds": 290.241,
+      "cpuThrottledSeconds": 13.04,
+      "peakMemoryBytes": 2733559808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s14-parent-build-and-the-paren.log",
+        "lines": 15,
+        "bytes": 1480,
+        "sha256": "6d8f35fbd051de7784386c6b98fc0d2dd004ba2be1c3d66a1c04e8475b635c12",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S14-parent gradle=9.9.2 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=57 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S14-parent/core_spring-boot-autoconfigure.runtimeClasspath.txt 18 entries",
+        "classpath core:spring-boot-autoconfigure testRuntimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S14 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S14 transplant",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 69.737,
+      "cpuSeconds": 180.388,
+      "cpuThrottledSeconds": 19.411,
+      "peakMemoryBytes": 3526578176,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s14-transplant-the-fix-s-tests.log",
+        "lines": 15,
+        "bytes": 1321,
+        "sha256": "7148b792cba06f9d50fd5d4cf6c53861bfadc9ea38876740d523487589ca082a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted core/spring-boot-autoconfigure/src/test/java/org/springframework/boot/autoconfigure/context/MessageSourceAutoConfigurationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S14-parent-landed gradle=9.9.2 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=69 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests no-result",
+        "TRANSPLANT DID NOT FAIL (gradle-exit=1)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S14 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S14 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 6.01,
+      "cpuSeconds": 3.02,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 182800384,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s14-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "d2ab09fc05f8e6aba3042e1d883f3d308a3d09da6f7840bfece7775dd07dc205",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S14"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T09:40:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T093928Z-070674706cb58a80",
+      "workdir": "20261127T093948Z-7886524355993861"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-091102-setup-build-spring-boot-52831-s14-at-bot"
+}
