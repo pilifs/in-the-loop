@@ -1,0 +1,218 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-143502-run-both-original-maven-war-builds-with",
+  "title": "Run both original Maven WAR builds with the verified cached BOMs",
+  "status": "failed",
+  "summary": "failed: 1 failed, 1 skipped step(s) in 1m24s, peak 4.1 GiB (estimated 8m00s, 5.0 GiB)",
+  "attention": [
+    "declared output verification/merged-pr-links/s01-s50/maven-war/fix.json was not produced",
+    "declared output verification/merged-pr-links/s01-s50/maven-war/parent.json was not produced",
+    "step 1 (Execute the original fixed Maven provider) exited 1, expected 0",
+    "step 1 (Execute the original fixed Maven provider) was held back 1m32s by its 3-CPU quota in 1m24s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-143502-run-both-original-maven-war-builds-with.json",
+    "sha256": "95bb194b7435f6f279601ca77c95ec32e6a26338b1ebee386032f7b4f1e734cb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-143502-run-both-original-maven-war-builds-with",
+      "title": "Run both original Maven WAR builds with the verified cached BOMs",
+      "description": "Both machine caches contain the original POMs. Gradle names some SHA-1 directories without their leading zero. The full offline mirror preflight now validates them using their 40-digit digest. Build and run the paired original Maven plugins and retain the two physical WAR readbacks per side.",
+      "kind": "real-world",
+      "capabilities": [
+        "spring-boot-packaging"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T14:35:02+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "git"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "8m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Execute the original fixed Maven provider",
+          "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+          "cwd": "."
+        },
+        {
+          "name": "Execute the original parent Maven provider",
+          "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output verification/merged-pr-links/s01-s50/maven-war/parent.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/maven-war/fix.json",
+        "verification/merged-pr-links/s01-s50/maven-war/parent.json"
+      ]
+    }
+  },
+  "sourceCommit": "8e256b6e56a5ecb3786f311397d1888257ce002d",
+  "startedAt": "2026-11-27T14:35:47+00:00",
+  "finishedAt": "2026-11-27T14:37:19+00:00",
+  "wallSeconds": 92.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 889283,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 4349833216,
+    "wallSeconds": 84.0,
+    "cpuSeconds": 204.4,
+    "memoryOfEstimate": 0.81,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Execute the original fixed Maven provider",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 84.032,
+      "cpuSeconds": 204.373,
+      "cpuThrottledSeconds": 92.594,
+      "peakMemoryBytes": 4349833216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-execute-the-original-fixed-mav.log",
+        "lines": 81,
+        "bytes": 4995,
+        "sha256": "59cf3ef0fbf187249642e777de733f329f271c2634d212013dc19d4937f4eb77",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :build-plugin:spring-boot-maven-plugin:generateMetadataFileForMavenPublication SKIPPED",
+        "> Task :build-plugin:spring-boot-maven-plugin:generatePomFileForMavenPublication",
+        "> Task :build-plugin:spring-boot-maven-plugin:publishMavenPublicationToProjectRepository",
+        "> Task :build-plugin:spring-boot-maven-plugin:prepareMavenBinaries FAILED",
+        "> Task :loader:spring-boot-loader:compileJava",
+        "> Task :core:spring-boot:compileKotlin",
+        "",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/tmp/boot-maven-war-lo9aofyi/tree/build/reports/problems/problems-report.html",
+        "",
+        "FAILURE: Build failed with an exception.",
+        "",
+        "* What went wrong:",
+        "Execution failed for task ':build-plugin:spring-boot-maven-plugin:prepareMavenBinaries' (registered by plugin 'org.springframework.boot.maven-plugin').",
+        "> Could not resolve all files for configuration ':build-plugin:spring-boot-maven-plugin:detachedConfiguration1'.",
+        "   > Could not resolve org.apache.maven:apache-maven:3.9.13.",
+        "     Required by:",
+        "         project ':build-plugin:spring-boot-maven-plugin'",
+        "      > No cached version of org.apache.maven:apache-maven:3.9.13 available for offline mode.",
+        "",
+        "* Try:",
+        "> Run with --stacktrace option to get the stack trace.",
+        "> Run with --info or --debug option to get more log output.",
+        "> Get more help at https://help.gradle.org.",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD FAILED in 1m 19s",
+        "113 actionable tasks: 113 executed",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-143502-run-both-original-maven-war-builds-with/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 149, in <module>",
+        "    result = run(args.side,args.check_inputs)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-143502-run-both-original-maven-war-builds-with/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 130, in run",
+        "    raise RuntimeError(\"original Maven integration build failed\")",
+        "RuntimeError: original Maven integration build failed"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Execute the original parent Maven provider",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output verification/merged-pr-links/s01-s50/maven-war/parent.json",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T14:37:34+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T143719Z-782345bf5752c733",
+      "outputs": "20261127T143719Z-798277c7e219047a",
+      "workdir": "20261127T143723Z-23925035b64d6f5d"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-143502-run-both-original-maven-war-builds-with"
+}
