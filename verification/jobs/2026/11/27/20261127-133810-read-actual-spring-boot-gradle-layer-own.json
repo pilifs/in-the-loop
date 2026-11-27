@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-133810-read-actual-spring-boot-gradle-layer-own",
+  "title": "Read actual Spring Boot Gradle layer ownership",
+  "description": "Run the paired original bootJar plugins for exclude, include-only and overlapping selectors. Expand the generated layer index and compare packaged classes with the compiled class files. Use the offline plugin graphs and exact Gradle launcher identified in the campaign.",
+  "kind": "real-world",
+  "capabilities": [
+    "public-api-comparison",
+    "spring-boot-packaging"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T13:38:10+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "gradle",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Build the pinned Gradle fixtures and inspect consumer output",
+      "run": "python3 verification/merged-pr-links/s01-s50/gradle/replay.py S47 --output verification/merged-pr-links/s01-s50/gradle/S47.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/gradle/S47.json"
+  ]
+}
