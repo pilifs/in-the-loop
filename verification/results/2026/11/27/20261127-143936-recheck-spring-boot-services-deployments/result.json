@@ -1,0 +1,375 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-143936-recheck-spring-boot-services-deployments",
+  "title": "Recheck Spring Boot services, deployments and original 2017 source",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 4m38s, peak 320.7 MiB (estimated 7m00s, 2.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-143936-recheck-spring-boot-services-deployments.json",
+    "sha256": "7a924b10f1aaeaaaf875784c00223d1ae61db7d0e566f542795480fb7a2acc8e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-143936-recheck-spring-boot-services-deployments",
+      "title": "Recheck Spring Boot services, deployments and original 2017 source",
+      "description": "Repeat the 14 newly added or extended public callers including live local Mongo, Redis, Postgres, RabbitMQ and Kafka, real endpoint status and decoded telemetry, generated layer extraction and an extracted WAR application. Rebuild both unchanged 2017 Boot source slices with the locked historical Framework codec sources and rerun the separate release comparison. Verify all archived integration evidence and the two repaired bytecode guards.",
+      "kind": "real-world",
+      "capabilities": [
+        "public-api-comparison",
+        "original-jvm"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T14:39:36+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "git",
+        "docker"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "7m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Recompile and replay only the added and extended case histories",
+          "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay-case S24 --replay-case S25 --replay-case S27 --replay-case S28 --replay-case S29 --replay-case S30 --replay-case S31 --replay-case S32 --replay-case S33 --replay-case S34 --replay-case S36 --replay-case S46 --replay-case S48 --replay-case S49",
+          "cwd": "."
+        },
+        {
+          "name": "Rebuild the original Boot and July Framework source slices",
+          "run": "python3 verification/merged-pr-links/s01-s50/webflux-2017/reconstruct.py --fetch",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat the separately labeled WebFlux release comparison",
+          "run": "python3 verification/merged-pr-links/s01-s50/webflux-2017/replay.py",
+          "cwd": "."
+        },
+        {
+          "name": "Check the fixed structural protections",
+          "run": "python3 verification/merged-pr-links/s01-s50/repaired_guards.py",
+          "cwd": "."
+        },
+        {
+          "name": "Verify the restored result digests",
+          "run": "python3 verification/merged-pr-links/s01-s50/collect.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "ac3239d19d9c77e30049f444d2aba5e93fd17e57",
+  "startedAt": "2026-11-27T14:53:17+00:00",
+  "finishedAt": "2026-11-27T14:58:08+00:00",
+  "wallSeconds": 291.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1155002,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 336285696,
+    "wallSeconds": 278.8,
+    "cpuSeconds": 279.5,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.66
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recompile and replay only the added and extended case histories",
+      "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay-case S24 --replay-case S25 --replay-case S27 --replay-case S28 --replay-case S29 --replay-case S30 --replay-case S31 --replay-case S32 --replay-case S33 --replay-case S34 --replay-case S36 --replay-case S46 --replay-case S48 --replay-case S49",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 254.333,
+      "cpuSeconds": 239.774,
+      "cpuThrottledSeconds": 29.147,
+      "peakMemoryBytes": 336285696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recompile-and-replay-only-the.log",
+        "lines": 90,
+        "bytes": 8495,
+        "sha256": "b76a90094660526c4e7710679758fb047775441c3eb1620822af3581cc9e789f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins parent spring-projects/spring-boot#51470.3 {'throws': 'org.springframework.beans.factory.BeanCreationException'}",
+        "pins fix spring-projects/spring-boot#51470.1 {'return': '200:UP:diskSpace'}",
+        "pins fix spring-projects/spring-boot#51470.2 {'return': '200:UP:diskSpace'}",
+        "pins fix spring-projects/spring-boot#51470.3 {'return': '200:UP:near/200:UP:far/404;200:UP:near/200:UP:far/404'}",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261127-143936-recheck-spring-boot-services-deployments/examples/621-boot-jersey-management-json/caller/PublicCaller.java:27: warning: [removal] Jackson2AutoConfiguration in org.springframework.boot.jackson2.autoconfigure has been deprecated and",
+        "    @ImportAutoConfiguration({Jackson2AutoConfiguration.class, JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,",
+        "                              ^",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261127-143936-recheck-spring-boot-services-deployments/examples/621-boot-jersey-management-json/caller/PublicCaller.java:35: warning: [removal] EndpointJackson2ObjectMapper in org.springframework.boot.actuate.endpoint.jackson has been deprecate",
+        "        @Bean EndpointJackson2ObjectMapper endpointMapper() {",
+        "              ^",
+        "2 warnings",
+        "pins parent spring-projects/spring-boot#51937.1 {'return': '200:singleton'}",
+        "pins parent spring-projects/spring-boot#51937.2 {'return': '200:notelgnis'}",
+        "pins parent spring-projects/spring-boot#51937.3 {'return': '200:singleton:prototype'}",
+        "pins fix spring-projects/spring-boot#51937.1 {'return': '200:notelgnis'}",
+        "pins fix spring-projects/spring-boot#51937.2 {'return': '200:notelgnis'}",
+        "pins fix spring-projects/spring-boot#51937.3 {'return': '200:notelgnis:epytotorp'}",
+        "pins parent spring-projects/spring-boot#50461.2 {'return': '/explicit:[]:plain:Hello'}",
+        "pins fix spring-projects/spring-boot#50461.1 {'return': '/v1/logs:[common]:gzip:Hello//v1/traces:[common]:gzip:fixture-span//v1/metrics:[common]:gzip:springfixture=7'}",
+        "pins fix spring-projects/spring-boot#50461.2 {'return': '/explicit:[]:plain:Hello'}",
+        "pins fix spring-projects/spring-boot#50461.3 {'return': '/v1/logs:[logs]:plain:Hello//v1/traces:[common]:gzip:fixture-span//v1/metrics:[common]:gzip:springfixture=7'}",
+        "pins parent spring-projects/spring-boot#51653.1 {'return': 'app:marker/dep:library'}",
+        "pins parent spring-projects/spring-boot#51653.2 {'return': 'app:marker/dep:library;app:marker/dep:library/app:sibling'}",
+        "pins parent spring-projects/spring-boot#51653.3 {'return': 'first'}",
+        "pins fix spring-projects/spring-boot#51653.1 {'return': 'app:marker/dep:library'}",
+        "pins fix spring-projects/spring-boot#51653.2 {'return': 'app:marker/dep:library;app:marker/dep:library/app:sibling'}",
+        "pins fix spring-projects/spring-boot#51653.3 {'return': 'second'}",
+        "pins parent spring-projects/spring-boot#51551.1 {'return': 'absent/absent:present'}",
+        "pins parent spring-projects/spring-boot#51551.2 {'return': 'CycloneDX/META-INF/sbom/application.cdx.json'}",
+        "pins parent spring-projects/spring-boot#51551.3 {'return': 'absent/absent:present'}",
+        "pins fix spring-projects/spring-boot#51551.1 {'return': 'CycloneDX/WEB-INF/classes/META-INF/sbom/application.cdx.json:selected'}",
+        "pins fix spring-projects/spring-boot#51551.2 {'return': 'CycloneDX/META-INF/sbom/application.cdx.json'}",
+        "pins fix spring-projects/spring-boot#51551.3 {'return': 'CycloneDX/WEB-INF/classes/META-INF/sbom/application.cdx.json:selected'}",
+        "pins parent spring-projects/spring-boot#51372.1 {'return': 'invalid-library-location'}",
+        "pins parent spring-projects/spring-boot#51372.2 {'return': 'both:ordered:REG/PROV'}",
+        "pins parent spring-projects/spring-boot#51372.3 {'return': 'invalid-library-location/invalid-library-location'}",
+        "pins fix spring-projects/spring-boot#51372.1 {'return': 'both:ordered:html+jsp:REG/PROV'}",
+        "pins fix spring-projects/spring-boot#51372.2 {'return': 'both:ordered:REG/PROV'}",
+        "pins fix spring-projects/spring-boot#51372.3 {'return': 'both:ordered:html+jsp:REG/PROV/collision:both-paths'}",
+        "{\"casesWithOriginalMeasurements\": 50, \"casesWithPublicCallers\": 46, \"externalBuildSideResults\": 23, \"fix matched\": 142, \"fix refuted\": 4, \"jvmObservations\": 265, \"parent matched\": 87, \"parent observed only\": 55, \"registeredClaims\": 150, \"twoSidedPublicClaims\": 142, \"unmeasuredClaims\": 4}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Rebuild the original Boot and July Framework source slices",
+      "run": "python3 verification/merged-pr-links/s01-s50/webflux-2017/reconstruct.py --fetch",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 13.225,
+      "cpuSeconds": 21.643,
+      "cpuThrottledSeconds": 3.383,
+      "peakMemoryBytes": 210259968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-rebuild-the-original-boot-and.log",
+        "lines": 8,
+        "bytes": 278,
+        "sha256": "e960b478548971bc336e56924c405b02047f53b5db4deadf21d49818b17af788",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: unknown enum constant When.MAYBE",
+        "  reason: class file for javax.annotation.meta.When not found",
+        "1 warning",
+        "parent intent 200:firstName=Ada/200:null",
+        "parent control 200:firstName=Ada",
+        "fix intent 200:first_name=Ada/200:Lin",
+        "fix control 200:firstName=Ada",
+        "fix challenge Mia/Mia"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Repeat the separately labeled WebFlux release comparison",
+      "run": "python3 verification/merged-pr-links/s01-s50/webflux-2017/replay.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 10.44,
+      "cpuSeconds": 17.011,
+      "cpuThrottledSeconds": 2.85,
+      "peakMemoryBytes": 212979712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-repeat-the-separately-labeled.log",
+        "lines": 5,
+        "bytes": 211,
+        "sha256": "3e67f5ada64019c79d80be37c4d56538e311c6217c016afa02f24e014b91acdc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent-source-slice intent 200:firstName=Ada/200:null",
+        "parent-source-slice control 200:firstName=Ada",
+        "M3-release intent 200:first_name=Ada/200:Lin",
+        "M3-release control 200:firstName=Ada",
+        "M3-release challenge Mia/Mia"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Check the fixed structural protections",
+      "run": "python3 verification/merged-pr-links/s01-s50/repaired_guards.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 0.601,
+      "cpuSeconds": 1.01,
+      "cpuThrottledSeconds": 0.017,
+      "peakMemoryBytes": 58351616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-check-the-fixed-structural-pro.log",
+        "lines": 1,
+        "bytes": 74,
+        "sha256": "8e2fba201f42285a195b2b0e6f90d06eb6e0b385868bdc6f33dc7617ddb6e162",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Verified the repaired missing-child return and both buffer cleanup paths."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Verify the restored result digests",
+      "run": "python3 verification/merged-pr-links/s01-s50/collect.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.044,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 10399744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-verify-the-restored-result-dig.log",
+        "lines": 1,
+        "bytes": 49,
+        "sha256": "f1bf941e663871e75c73abc7e988b5863aca7d7a469687b60fbe5dbfbf1c161f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Verified 11 independent jobs and 4 output files."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T14:58:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T145808Z-243178fe6dfaaba1"
+    }
+  }
+}

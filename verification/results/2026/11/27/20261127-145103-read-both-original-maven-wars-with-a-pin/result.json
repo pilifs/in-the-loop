@@ -1,0 +1,227 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-145103-read-both-original-maven-wars-with-a-pin",
+  "title": "Read both original Maven WARs with a pinned Maven distribution",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 4m55s, peak 5.1 GiB (estimated 8m00s, 5.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (Repackage the merged WAR) was held back 4m18s by its 3-CPU quota in 2m27s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Repackage the parent WAR) was held back 4m41s by its 3-CPU quota in 2m27s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-145103-read-both-original-maven-wars-with-a-pin.json",
+    "sha256": "2d645a179bfbd5e55e78f2653a03bbfc1cfe073692c60554082cae4e002a47ec",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-145103-read-both-original-maven-wars-with-a-pin",
+      "title": "Read both original Maven WARs with a pinned Maven distribution",
+      "description": "Run both Boot Maven plugins using their upstream Maven integration harness and Apache Maven 3.9.13. Inspect the manifest, selected payload and physical ordering of two Maven-generated WAR inputs, including a decoy with the same filename. The dependency mirror, fixture-only input ordering and original WAR goal were validated separately.",
+      "kind": "real-world",
+      "capabilities": [
+        "public-api-comparison"
+      ],
+      "links": {
+        "examples": [
+          "635"
+        ]
+      },
+      "expected": "Both upstream plugins return the two physical WAR observations.",
+      "submitted": {
+        "at": "2026-11-27T14:51:03+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "8m"
+      },
+      "steps": [
+        {
+          "name": "Repackage the merged WAR",
+          "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --fetch --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+          "cwd": "."
+        },
+        {
+          "name": "Repackage the parent WAR",
+          "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --fetch --output verification/merged-pr-links/s01-s50/maven-war/parent.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/maven-war/fix.json",
+        "verification/merged-pr-links/s01-s50/maven-war/parent.json"
+      ]
+    }
+  },
+  "sourceCommit": "ac3239d19d9c77e30049f444d2aba5e93fd17e57",
+  "startedAt": "2026-11-27T14:53:17+00:00",
+  "finishedAt": "2026-11-27T14:58:24+00:00",
+  "wallSeconds": 307.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1155002,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 5518520320,
+    "wallSeconds": 295.1,
+    "cpuSeconds": 757.8,
+    "memoryOfEstimate": 1.03,
+    "durationOfEstimate": 0.61
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repackage the merged WAR",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --fetch --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 147.794,
+      "cpuSeconds": 378.479,
+      "cpuThrottledSeconds": 258.421,
+      "peakMemoryBytes": 5518520320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repackage-the-merged-war.log",
+        "lines": 1,
+        "bytes": 514,
+        "sha256": "e14554ec2924ce214ea986048e6eb6d3bc48ec448cd8af3d030037008a511244",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"mavenBuilds\": 2, \"observations\": {\"challenge\": {\"format\": \"CycloneDX\", \"inputDecoyBeforeSbom\": \"true\", \"location\": \"WEB-INF/classes/META-INF/sbom/application.cdx.json\", \"outputDecoyBeforeSbom\": \"true\", \"payload\": \"{\\\"fixture\\\":\\\"original\\\"}\"}, \"intent\": {\"format\": \"CycloneDX\", \"inputDecoyBeforeSbo"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Repackage the parent WAR",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --fetch --output verification/merged-pr-links/s01-s50/maven-war/parent.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 147.258,
+      "cpuSeconds": 379.296,
+      "cpuThrottledSeconds": 281.076,
+      "peakMemoryBytes": 5288325120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-repackage-the-parent-war.log",
+        "lines": 1,
+        "bytes": 372,
+        "sha256": "b3c3f6f07683b1f59de3601aa4322a8ff09425ab905e94ae70a4b757af45bb94",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"mavenBuilds\": 2, \"observations\": {\"challenge\": {\"format\": \"null\", \"inputDecoyBeforeSbom\": \"true\", \"location\": \"null\", \"outputDecoyBeforeSbom\": \"true\", \"payload\": \"absent\"}, \"intent\": {\"format\": \"null\", \"inputDecoyBeforeSbom\": \"single\", \"location\": \"null\", \"outputDecoyBeforeSbom\": \"single\", \"payloa"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "change": "added",
+      "bytes": 606,
+      "sha256": "baeeb394b37ceead6a3bec823ef81a516f66dd0fc93136b88c5ba2bb176dd934",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/s01-s50/maven-war/parent.json",
+      "change": "added",
+      "bytes": 464,
+      "sha256": "9277cc663ebc5d6c0c11dcfc795ef0ccb7230b2df784b01f483f4fa68ab0cd6d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T14:58:32+00:00",
+    "applied": [
+      "verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "verification/merged-pr-links/s01-s50/maven-war/parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T145824Z-538077c71ee1d55f",
+      "outputs": "20261127T145824Z-554861badde1085c",
+      "diff": "20261127T145824Z-5693263fd62c41c2"
+    }
+  }
+}
