@@ -32,11 +32,11 @@
 | spring-projects/spring-boot#52625 | written | The pinned driver-parser regression checks the database, timeout and application name together. The literal `%2B` versus `+` pair remains unexecuted. |
 | spring-projects/spring-boot#51940 | written | Checked virtual-host precedence and three protocol-specific integration fixtures. Combined ordinary AMQP and stream sessions against one vhost remain unobserved here. |
 | spring-projects/spring-boot#51774 | written | Read the factory regression with the opt-in enabled; it asserts the template flag. Propagation to a real container and the order of future completion and the stop callback remain open. |
-| spring-projects/spring-boot#50296 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52321 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51470 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51937 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#50734 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#50296 | written | Read livenessState membership and additional-path assertions on the configured group. Paired HTTP probes with a failing then healthy unrelated indicator remain open. |
+| spring-projects/spring-boot#52321 | written | The pinned test registers a composite `test/spring` and expects no result for `missing/spring`. HTTP readback for two suffixes below a missing child of the real composite remains open. |
+| spring-projects/spring-boot#51470 | written | Read the old validation, landed longest-prefix loop and shared HTTP fixture. Overlapping aliases with distinguishable markers and reversed group order remain open. |
+| spring-projects/spring-boot#51937 | written | Read the reverse-string mapper and parameterized port fixture. It checks one substring. A typed lookup of separate singleton and prototype entries remains open. |
+| spring-projects/spring-boot#50734 | written | Read both indicator implementations and the tests for visible and absent admin. Single-hello parity with a larger permuted list remains open. |
 | spring-projects/spring-boot#50461 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#51959 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#51156 | not yet | Awaiting source review and claims. |
