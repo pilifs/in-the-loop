@@ -1,0 +1,188 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-052308-replay-the-three-historical-finite-adver",
+  "title": "Replay the three historical finite adverse controls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.0s, peak 99.9 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (python3 verification/blind-caller/historical_adverse.py) was held back 4.8s by its 1-CPU quota in 6.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-052308-replay-the-three-historical-finite-adver.json",
+    "sha256": "9cf480ef9ab610f7a711082a46d96287f0eff86d956195d8d1fdf28bb51c4473",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-052308-replay-the-three-historical-finite-adver",
+      "title": "Replay the three historical finite adverse controls",
+      "description": "Run the three disclosed ordinary product comparisons against both original releases using their authored historical paths. Preserve the side-scoped negative claims for ZIP preamble offset, entry hash consistency, and polygon bounds after the output is reused.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay"
+      ],
+      "links": {},
+      "expected": "All three fixed-side adverse requirements and the separately registered polygon parent prediction remain refuted. Every fresh public observation matches its archived typed receipt.",
+      "submitted": {
+        "at": "2026-11-27T05:23:08+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/historical_adverse.py",
+          "run": "python3 verification/blind-caller/historical_adverse.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/historical-adverse.zip"
+      ]
+    }
+  },
+  "sourceCommit": "dd3b78151ab3c89f83a9c25fc38d55eac19896e7",
+  "startedAt": "2026-11-27T05:42:44+00:00",
+  "finishedAt": "2026-11-27T05:43:00+00:00",
+  "wallSeconds": 16.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 390765,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 104747008,
+    "wallSeconds": 6.0,
+    "cpuSeconds": 5.9,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/historical_adverse.py",
+      "run": "python3 verification/blind-caller/historical_adverse.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 6.012,
+      "cpuSeconds": 5.893,
+      "cpuThrottledSeconds": 4.786,
+      "peakMemoryBytes": 104747008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 19,
+        "bytes": 3712,
+        "sha256": "b2d7f95305d37c50d3d57239d9fbb5a3288c0753dc6ea9b7bb5bb92356881b50",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins parent apache/commons-compress#334.1 {'return': 'names=[] entry=missing prefix=<unavailable>'}",
+        "pins parent apache/commons-compress#334.2 {'return': 'names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=<unavailable>'}",
+        "pins parent apache/commons-compress#334.3 {'return': 'prepended physical=15 names=[] entry=missing prefix=<unavailable> | writer physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=<unavailable>'}",
+        "pins fix apache/commons-compress#334.1 {'return': 'names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file'}",
+        "pins fix apache/commons-compress#334.2 {'return': 'names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=0/<null>'}",
+        "pins fix apache/commons-compress#334.3 {'return': 'prepended physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file | writer physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=0/<",
+        "pins parent aeron-io/agrona#202.1 {'return': 'int-int=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false pairs=[1=10, 1=10, 1=10]/[1=10, 1=10, 1=10] int-object=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false pairs=[3=30, 3=30, 3=30]/[3=30, 3=30, 3=30] object-int=[Ljava.lan",
+        "pins parent aeron-io/agrona#202.2 {'return': '[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]'}",
+        "pins parent aeron-io/agrona#202.3 {'return': 'entry/actual/reference/equal=[1=10/11/11/true/true, 1=10/11/11/true/true, 1=10/11/11/true/true] hits=[true, false, false]'}",
+        "pins fix aeron-io/agrona#202.1 {'return': 'int-int=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] int-object=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] object-int=[Ljava.lang.Objec",
+        "pins fix aeron-io/agrona#202.2 {'return': '[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]'}",
+        "pins fix aeron-io/agrona#202.3 {'return': 'entry/actual/reference/equal=[1=10/11/11/true/true, 2=20/11/22/true/true, 3=30/11/29/true/true] hits=[true, false, false]'}",
+        "pins parent libgdx/libgdx#7278.1 {'return': 'fresh=java.lang.IllegalArgumentException vertices=0 null=true'}",
+        "pins parent libgdx/libgdx#7278.2 {'return': 'true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0'}",
+        "pins parent libgdx/libgdx#7278.3 {'return': 'fresh=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0 before=-4.0,-4.0,2.0,2.0 reused=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/-4.0,-4.0,2.0,2.0'}",
+        "pins fix libgdx/libgdx#7278.1 {'return': 'fresh=false vertices=0 null=false'}",
+        "pins fix libgdx/libgdx#7278.2 {'return': 'true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0'}",
+        "pins fix libgdx/libgdx#7278.3 {'return': 'fresh=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0 before=-4.0,-4.0,2.0,2.0 reused=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/-4.0,-4.0,2.0,2.0'}",
+        "All three fixed-side predictions refuted. The polygon prediction was also refuted on the parent."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/historical-adverse.zip",
+      "change": "added",
+      "bytes": 3520,
+      "sha256": "c41f8922a336f08dfb070f4b55add4b6b018a925deede59aff488a1a8a734a38",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T05:43:28+00:00",
+    "applied": [
+      "verification/blind-caller/historical-adverse.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T054300Z-748306889f504432",
+      "outputs": "20261127T054300Z-766285feeb2f64ed",
+      "diff": "20261127T054300Z-7811486dc09bf16f"
+    }
+  }
+}
