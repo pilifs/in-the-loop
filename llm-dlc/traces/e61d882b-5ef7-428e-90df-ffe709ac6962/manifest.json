@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-27T15:14:42.520Z",
-  "duration_seconds": 873419,
+  "ended": "2026-11-27T15:43:09.841Z",
+  "duration_seconds": 875126,
   "stats": {
-    "turns": 331,
-    "api_calls": 3123,
-    "tool_calls": 2771,
+    "turns": 335,
+    "api_calls": 3145,
+    "tool_calls": 2788,
     "tool_errors": 29,
     "compactions": 11,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 106837,
-      "output_tokens": 2001971,
-      "cache_read_input_tokens": 1020508320,
-      "cache_creation_input_tokens": 7187204
+      "input_tokens": 106897,
+      "output_tokens": 2014765,
+      "cache_read_input_tokens": 1027652304,
+      "cache_creation_input_tokens": 7213332
     }
   },
   "tools": {
-    "Bash": 2433,
-    "SendMessage": 96,
+    "Bash": 2449,
+    "SendMessage": 97,
     "Edit": 83,
     "Read": 58,
     "Write": 41,
@@ -271,24 +271,24 @@
     {
       "index": 11,
       "started": "2026-11-27T14:06:55.934Z",
-      "ended": "2026-11-27T15:14:42.520Z",
-      "turns": 15,
-      "api_calls": 123,
+      "ended": "2026-11-27T15:43:09.841Z",
+      "turns": 19,
+      "api_calls": 145,
       "usage": {
-        "input_tokens": 288,
-        "output_tokens": 83303,
-        "cache_read_input_tokens": 28290186,
-        "cache_creation_input_tokens": 282460
+        "input_tokens": 348,
+        "output_tokens": 96097,
+        "cache_read_input_tokens": 35434170,
+        "cache_creation_input_tokens": 308588
       },
-      "peak_context_tokens": 312005
+      "peak_context_tokens": 338512
     }
   ],
   "log": {
-    "sha256": "445544beaec3d95856e5011cb747b60ac2a17461a07e8a3bb4b81d8eec0c424d",
-    "bytes": 54048143,
-    "lines": 25678,
-    "gzip_bytes": 9163441,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/445544beaec3d95856e5011cb747b60ac2a17461a07e8a3bb4b81d8eec0c424d.jsonl.gz"
+    "sha256": "1960a755365398a4f4accd907d14eb379dddf7e7783d4dbcf62723fe10b75d27",
+    "bytes": 54386842,
+    "lines": 25875,
+    "gzip_bytes": 9212173,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/1960a755365398a4f4accd907d14eb379dddf7e7783d4dbcf62723fe10b75d27.jsonl.gz"
   },
   "subagents": [
     {
@@ -15532,51 +15532,59 @@
     },
     {
       "change_id": "nolxoorxozlozrznpspyqwrpsqkyvmlq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b803f6a3319d2c96e526ad22de3c7189d1362e90",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "63c467b508efbbb9942c74a53d8aade688a229710c0cce31e384a8ac2dbc6806"
     },
     {
       "change_id": "xsswuvntlxpzwvzkxttlmvoytzynxszn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c7abaa8ae8402652e9b1fb47f3902d6babd8f3ba",
+      "immutable": true,
       "summary": "Record VF-074: the sessions table shows finished sessions as open",
       "body": "At the user's request (2026-11-27). The generated table of sessions in llm-dlc/README.md marks 15 sessions open, of which 2 still run: a session that ran in another jj workspace is last synced while live by its own final commit, and the default workspace syncs only its own project folder's transcripts, so nothing marks the 13 others ended (listed with their folders and last writes). The two that do run, the advisor and the queue's watcher, are standing sessions titled by the topics they started with. Needs: a status that stays true across workspaces, the 13 rows cleaned up by sync.py itself, the standing sessions listed apart under their roles (the user's direction), and tests. VF-073 stays reserved for the user's reopening of VF-058.",
       "log_sha256": "445544beaec3d95856e5011cb747b60ac2a17461a07e8a3bb4b81d8eec0c424d"
     },
     {
       "change_id": "muryuuutrnmpqpnyxumryqqqpmoktzyz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "29cca116c246b90624a9f099e5a64ff164dbf070",
+      "immutable": true,
       "summary": "Record VF-073: a placeholder for reopening VF-058's remainder",
       "body": "At the user's request (2026-11-27), to keep the number they had reserved for it since 2026-11-24 from being taken by anything else. It names VF-058's four open frontiers (the Configuration properties startup question, JavaParser's strict-native claims, the 34 unrestricted receiver overloads, native scheduling in VF-056) and waits for the user's scope.",
       "log_sha256": "445544beaec3d95856e5011cb747b60ac2a17461a07e8a3bb4b81d8eec0c424d"
     },
     {
       "change_id": "qlssntwxrsswmqqymwstpkqlkzrmpzwn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8cc915aa5b653eb30ce37876a689cea3dc998117",
+      "immutable": true,
       "summary": "Show idle sessions from other workspaces as ended, and standing sessions under their roles (VF-074)",
       "body": "The table of sessions in llm-dlc/README.md marked 15 sessions open though 13 had ended: a session that ran in another jj workspace was last synced by its own final commit while it still ran, and a sync here reads only this checkout's project folder, so nothing marked it ended. A rendering sync (sync.py sync or render) now runs end_idle_elsewhere: a manifest that says open, of a session whose transcript is not in this checkout's folder, is marked ended once nothing has been written for LIVE_SECONDS, its transcript looked for in every workspace's Claude Code folder and among Codex's rollouts, or else by the manifest's own last activity. Only the status changes; the log the trailers name is untouched. The long-running sessions the user keeps open, the advisor and the brief queue's watcher, are now recorded with sync.py standing SESSION ROLE (llm-dlc/standing-sessions.json, untested by the default run like the other generated records) and listed above the table under their roles, apart from the ordinary rows; standing --end returns one. Cleanup, done by this code: the two were recorded, and a render ended exactly the 13 stale sessions; only their manifests, the table and index.json are kept here, the rest of what the render refreshed is left for the next promotion as usual. Verified: two unit tests (an idle session in another workspace's folder and one with no transcript here are ended, a live one and this checkout's own are not; a standing session is listed under its role, not as an ordinary row, and returns when ended); test_costs run --changed, 28 of 28 files pass; lint agrees.",
       "log_sha256": "445544beaec3d95856e5011cb747b60ac2a17461a07e8a3bb4b81d8eec0c424d"
     },
     {
       "change_id": "zursrmsllrysnnkrwnyoroqpnqzwksup",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "dcc86d8deb2f781267e409eaf11b513247cde01f",
+      "immutable": true,
       "summary": "Merge session-status: idle sessions end, standing sessions get their own table (VF-073, VF-074)",
       "body": "Merges the workspace session-status (xsswuvnt, muryuuut, qlssntwx) into the line at the user's request. A rendering sync now marks a session's manifest ended once its transcript, looked for in every workspace and in Codex's folder, has been idle for LIVE_SECONDS; sync.py standing SESSION ROLE records a session meant to stay open in a role, and the README's sessions table lists those above the ordinary rows. The watcher (6c5c7798) and the advisor (e61d882b) are recorded as standing sessions, and 13 stale sessions were ended. VF-073 holds the number for reopening VF-058's remainder, and VF-074 records the table's fault. llm-dlc/README.md and index.json conflicted as expected and were regenerated; the table shows both standing sessions, and the two ordinary rows still open were written to within the last minutes. The workspace's changed tests passed 28 of 28 files.",
       "log_sha256": "445544beaec3d95856e5011cb747b60ac2a17461a07e8a3bb4b81d8eec0c424d"
     },
     {
       "change_id": "prooolxnyoykxtwssnnnuurnnowomopz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "2e98ac0d85dc8e92b0c252cf62cc9630697c1a4c",
+      "immutable": true,
       "summary": "VF-074: settled by the session-status fix",
       "body": "After the merge of session-status, the README's sessions table lists the watcher and the advisor as standing sessions under their roles, and the 13 stale rows are ended. Only sessions written to in the last minutes show as open. VF-074's status records it as settled by qlssntwx.",
       "log_sha256": "445544beaec3d95856e5011cb747b60ac2a17461a07e8a3bb4b81d8eec0c424d"
+    },
+    {
+      "change_id": "xkxzktumvqzxylxlsovwyrzvvnqwrnpy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on brief-generation-quality",
+      "body": "The watcher's verdicts on the single-agent run brief-generation-quality (llm-dlc/decisions/single-brief-generation-quality.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "1960a755365398a4f4accd907d14eb379dddf7e7783d4dbcf62723fe10b75d27"
     }
   ],
   "logs": {
@@ -15759,6 +15767,12 @@
       "lines": 9506,
       "gzip_bytes": 4491744,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/18f1ef0f191c7ec0c1d459683668b8a85d6aab9ca4bfff845831f208e32061e5.jsonl.gz"
+    },
+    "1960a755365398a4f4accd907d14eb379dddf7e7783d4dbcf62723fe10b75d27": {
+      "bytes": 54386842,
+      "lines": 25875,
+      "gzip_bytes": 9212173,
+      "url": null
     },
     "1a0faa1d7f4e12f7019f830e1cfe8e3028498e6ab621af577a104b6390119cfb": {
       "bytes": 41434711,
