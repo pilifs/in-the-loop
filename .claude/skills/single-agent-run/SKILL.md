@@ -302,7 +302,9 @@ watcher's place reads `brief_queue.py status` and carries on.
   code by hand, say), run `brief_queue.py hold --reason "..."`. The handover goes on as usual: `next --finished`
   still lands the run, checkpoints develop and clears what is safe to clear, but it starts no run (no generation,
   setup or domain run) and says so. `status` shows the hold. Only the user ends it: when they say to resume, run
-  `brief_queue.py resume` and then `next`, which starts what is due from develop as it is then.
+  `brief_queue.py resume` and then `next`, which starts what is due from develop as it is then. To pause after a
+  later brief instead, set it `brief_queue.py set NAME holdAfter=yes`: the briefs before it run on, and the queue
+  holds itself once that brief is done.
 - **"Finished" is your judgment, as `stop` is.** A setup run that stopped to wait on its jobs is not finished:
   `single_run.py jobs`, then `start`, as "A setup phase" says. The setup run is watched by that section's rules,
   and the domain run by the rest of this skill.
