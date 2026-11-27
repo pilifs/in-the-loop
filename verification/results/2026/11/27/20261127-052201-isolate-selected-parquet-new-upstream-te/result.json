@@ -1,0 +1,170 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-052201-isolate-selected-parquet-new-upstream-te",
+  "title": "Isolate selected Parquet new upstream test classes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m21s, peak 764.8 MiB (estimated 8m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-052201-isolate-selected-parquet-new-upstream-te.json",
+    "sha256": "3c761088be65a2f836d3517b915911ac409558929227a76882fc0ef75f54f84b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-052201-isolate-selected-parquet-new-upstream-te",
+      "title": "Isolate selected Parquet new upstream test classes",
+      "description": "Retain the first frozen test selection and ranking. Re-run the exact five selected classes in their own fresh JVMs, each plain and traced in a privately hydrated original module, so upstream target files cannot collide and an unrelated overflowing test class cannot erase another class’s coverage. Preserve all parity failures and limits.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-history-trace"
+      ],
+      "links": {},
+      "expected": "Every selected original class is accounted for with per-class parity and raw loaded method evidence in the original deployment order.",
+      "submitted": {
+        "at": "2026-11-27T05:22:01+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "g++"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "8m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/parquet_trace.py new --sep",
+          "run": "python3 verification/blind-caller/parquet_trace.py new --separate",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/parquet-new-separate.zip"
+      ]
+    }
+  },
+  "sourceCommit": "656584a8bb1ff82b2aacce9935d61d58ac928f3c",
+  "startedAt": "2026-11-27T05:32:47+00:00",
+  "finishedAt": "2026-11-27T05:38:30+00:00",
+  "wallSeconds": 343.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 338257,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 801951744,
+    "wallSeconds": 321.5,
+    "cpuSeconds": 336.1,
+    "memoryOfEstimate": 0.25,
+    "durationOfEstimate": 0.67
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/parquet_trace.py new --sep",
+      "run": "python3 verification/blind-caller/parquet_trace.py new --separate",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 321.495,
+      "cpuSeconds": 336.14,
+      "cpuThrottledSeconds": 3.586,
+      "peakMemoryBytes": 801951744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 1,
+        "bytes": 182,
+        "sha256": "1893aaebabb0f69f02fec9e05e24571eb7b25c77769ac22c4141d079d2669a0d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "new original [('parquet-column', 24, True, 145), ('parquet-hadoop', 68, True, 4), ('parquet-hadoop', 64, True, 7), ('parquet-hadoop', 28, True, 0), ('parquet-hadoop', 31, True, 12)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/parquet-new-separate.zip",
+      "change": "added",
+      "bytes": 9792191,
+      "sha256": "b986802a7d324fed4c880e24b506321fe838fb70eb3410759fbea404f789d6b3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T05:38:53+00:00",
+    "applied": [
+      "verification/blind-caller/parquet-new-separate.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T053830Z-739786f2584744c1",
+      "outputs": "20261127T053830Z-776101591f1cf37e",
+      "diff": "20261127T053830Z-7906627b8310fc1c"
+    }
+  }
+}
