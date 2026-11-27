@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import tempfile
+import shutil
 import unittest
 from pathlib import Path
 
@@ -53,6 +54,35 @@ def rollout(cwd: str = "/repo") -> list[dict]:
          "payload": {"response_id": "resp_2", "usage": usage2}},
         {"timestamp": "2026-11-15T21:00:05.100Z", "type": "event_msg", "payload": {"type": "task_complete", "turn_id": TURN}},
     ]
+
+
+class TurnCost(unittest.TestCase):
+    """agent_client prices a Codex turn from the thread's log, call by call, as the session metrics do."""
+
+    def setUp(self):
+        import agent_client
+        self.client = agent_client
+        self.dir = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.dir, True)
+        raw = rollout()
+        for e in raw:
+            if e["type"] == "turn_context":
+                e["payload"]["model"] = "made-up-model"
+        self.log = self.dir / "rollout.jsonl"
+        self.log.write_text("".join(json.dumps(e) + "\n" for e in raw))
+        # A made-up price: a dollar per million uncached input tokens, nothing for the rest.
+        self.prices = self.dir / "pricing.json"
+        self.prices.write_text(json.dumps({"models": {"made-up-model": {
+            "input": 1, "output": 0, "cache_read": 0, "cache_write_5m": 0, "cache_write_1h": 0}}}))
+
+    def test_a_turn_is_priced_from_its_own_calls_and_unknown_stays_unknown(self):
+        # Two calls of 1000 and 1200 input tokens, of which 800 and 1000 were cached: 200 uncached each.
+        self.assertEqual(self.client.priced_turn(self.log, "2026-11-15T21:00:00", self.prices), 0.0004)
+        self.assertEqual(self.client.priced_turn(self.log, "2026-11-15T21:00:04", self.prices), 0.0002)  # the second
+        self.assertIsNone(self.client.priced_turn(self.log, "2026-11-15T22:00:00", self.prices))  # no call in the turn
+        self.prices.write_text(json.dumps({"models": {}}))
+        self.assertIsNone(self.client.priced_turn(self.log, "2026-11-15T21:00:00", self.prices))  # no price: unknown
+        self.assertIsNone(self.client.priced_turn(None, "2026-11-15T21:00:00", self.prices))
 
 
 class View(unittest.TestCase):

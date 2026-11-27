@@ -246,11 +246,13 @@ class Turn:
         self.items = 0
         self.ended = False  # a terminal event came
         self.started = time.monotonic()
+        self.started_at = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())  # the log's timestamps carry fractions
 
     def result(self, subtype: str, text: str, model: str | None = None) -> dict:
         return {"type": "result", "subtype": subtype, "is_error": subtype != "success", "result": text,
                 "session_id": self.session, "num_turns": self.items, "duration_ms": int((time.monotonic() - self.started) * 1000),
-                "total_cost_usd": None,  # Codex reports tokens, not dollars: unknown stays unknown
+                # Codex reports tokens, not dollars: priced here from the thread's log, call by call; unknown stays None
+                "total_cost_usd": priced_turn(rollout_of(self.thread), self.started_at) if self.thread else None,
                 "usage": self.usage, "client": "codex", "thread_id": self.thread, "attempt": str(self.attempt),
                 **({"model": model} if model else {})}
 
@@ -327,6 +329,45 @@ def rollout_of(thread: str) -> Path | None:
     home = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
     found = sorted((home / "sessions").glob(f"*/*/*/rollout-*{thread}.jsonl"))
     return found[-1] if found else None
+
+
+def priced_turn(path: Path | None, since: str, pricing_file: Path | None = None) -> float | None:
+    """What a Codex turn's API calls cost at list price, from the thread's log: each call at or after SINCE (the turn's
+    start, ISO UTC), priced per call as the session metrics price it (metrics.costs, with OpenAI's long-context rates
+    for a request over 272K tokens). None when the log, a price or a call cannot be read: unknown stays unknown, and
+    never a partial figure. The loop's turn line said "cost unknown" for every Codex turn before 2026-11-27, though the
+    session metrics had the same calls priced."""
+    if path is None:
+        return None
+    try:
+        here = Path(__file__).resolve().parent
+        if str(here) not in sys.path:
+            sys.path.insert(0, str(here))
+        import codex_rollout
+        import metrics
+        pricing = json.loads((pricing_file or here.parent / "pricing.json").read_text())
+        entries = []
+        with open(path, errors="replace") as f:
+            for line in f:
+                if '"timestamp"' not in line:
+                    continue
+                try:
+                    entry = json.loads(line)
+                except ValueError:
+                    continue
+                # The session's metadata and model context hold for the calls after them: kept whenever written.
+                if str(entry.get("timestamp") or "") >= since or entry.get("type") in ("session_meta", "turn_context"):
+                    entries.append(entry)
+        calls = metrics.read_transcript(codex_rollout.claude_view(entries), None, lambda text: text)["calls"]
+        total = 0.0
+        for call in calls:
+            usd, _ = metrics.costs(call, pricing)
+            if usd is None:
+                return None
+            total += usd
+        return round(total, 6) if calls else None
+    except Exception:
+        return None
 
 
 class Compactions:
