@@ -1,0 +1,345 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110823-setup-build-spring-boot-52280-s43-at-bot",
+  "title": "Setup: build Spring Boot #52280 (S43) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 5m10s, peak 2.9 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110823-setup-build-spring-boot-52280-s43-at-bot.json",
+    "sha256": "85c98e1be2e5f27c7d384f0b780f092ea0e5cc50b9d536f8fcd0de12f056d79c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110823-setup-build-spring-boot-52280-s43-at-bot",
+      "title": "Setup: build Spring Boot #52280 (S43) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S43 (spring-projects/spring-boot#52280: A URL for a nested resource with escaped ASCII opens the original entry). In the worktrees $P/worktrees/S43-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of loader:spring-boot-loader with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (JarUrlClassLoaderTests (test) UrlEncoderTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of loader:spring-boot-loader in $P/artifacts/S43-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S43",
+      "submitted": {
+        "at": "2026-11-27T11:08:23+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S43 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S43 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S43 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S43 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S43 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S43 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S43 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S43 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091105-setup-build-spring-boot-52280-s43-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:51:55+00:00",
+  "finishedAt": "2026-11-27T11:57:17+00:00",
+  "wallSeconds": 322.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 3163602944,
+    "wallSeconds": 310.7,
+    "cpuSeconds": 794.9,
+    "memoryOfEstimate": 0.49,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S43 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S43 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 145.19,
+      "cpuSeconds": 369.451,
+      "cpuThrottledSeconds": 33.958,
+      "peakMemoryBytes": 3163602944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s43-fix-build-and-landed-tests.log",
+        "lines": 19,
+        "bytes": 2153,
+        "sha256": "a7edd116f30adc1d4ca0b99c516e89ea84c64aa2f007c2008e9b274a43c365e6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S43-fix gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=79 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/sc",
+        "junit tests=20 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.loader.net.protocol.jar.JarUrlClassLoaderTests junit tests=14 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.loader.net.util.UrlEncoderTests junit tests=6 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S43-fix/loader_spring-boot-loader.runtimeClasspath.txt 0 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S43-fix/loader_spring-boot-loader.testRuntimeClasspath.txt 66 entries",
+        "ed366c3ab7a8faa55c83846ef4572ca01ac8783ea72c3c5ddafd21dad73f92da  jars/spring-boot-loader-4.2.0-SNAPSHOT.jar",
+        "ee4fa717cfb174db018d6341594548d00fa300e92f4377c87e0f2865c0ad7265  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "8fe851da482d438b828c2f1dc4da4df595a293b786d27f98ab2e5d8011ca8d1c  spring-boot-loader-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/net/util/UrlEncoder.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S43 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S43 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 103.765,
+      "cpuSeconds": 269.891,
+      "cpuThrottledSeconds": 11.191,
+      "peakMemoryBytes": 2376069120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s43-parent-build-and-the-paren.log",
+        "lines": 19,
+        "bytes": 2162,
+        "sha256": "238b65e1e72e7a29dcc696de7565a9810dcfa3aec9b3053ad0045a9d1d5731af",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S43-parent gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=41 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=17 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.loader.net.protocol.jar.JarUrlClassLoaderTests junit tests=13 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.loader.net.util.UrlEncoderTests junit tests=4 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S43-parent/loader_spring-boot-loader.runtimeClasspath.txt 0 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S43-parent/loader_spring-boot-loader.testRuntimeClasspath.txt 66 entries",
+        "4d6403ff434ea34f9bb770d5d07884e8906610ef8d377d0378fc32582c64fdc8  jars/spring-boot-loader-4.2.0-SNAPSHOT.jar",
+        "ee4fa717cfb174db018d6341594548d00fa300e92f4377c87e0f2865c0ad7265  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "6ddfabf0b536aff92910940d4dacf10a965843052b68f3c7ad05bf441a028b24  spring-boot-loader-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/net/util/UrlEncoder.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S43 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S43 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 59.348,
+      "cpuSeconds": 153.787,
+      "cpuThrottledSeconds": 15.362,
+      "peakMemoryBytes": 2783379456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s43-transplant-the-fix-s-tests.log",
+        "lines": 19,
+        "bytes": 1890,
+        "sha256": "a335515545961bf8226bfe8f3c192018fe11c5de3812002a9bf5c9904ba7f1ff",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted loader/spring-boot-loader/src/test/java/org/springframework/boot/loader/net/protocol/jar/JarUrlClassLoaderTests.java",
+        "transplanted loader/spring-boot-loader/src/test/java/org/springframework/boot/loader/net/util/UrlEncoderTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S43-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=58 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=20 failures=2 errors=0 skipped=0",
+        "junit failed JarUrlClassLoaderTests#resolveFromNestedWhenNameNeedsEncoding()",
+        "junit failed UrlEncoderTests#encodeWhenHasSingleByteEncodedCharacters()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.loader.net.protocol.jar.JarUrlClassLoaderTests junit tests=14 failures=1 errors=0 skipped=0 junit failed JarUrlClassLoaderTests#resolveFromNestedWhenNameNeedsEncoding() ",
+        "class org.springframework.boot.loader.net.util.UrlEncoderTests junit tests=6 failures=1 errors=0 skipped=0 junit failed UrlEncoderTests#encodeWhenHasSingleByteEncodedCharacters() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S43 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S43 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 2.43,
+      "cpuSeconds": 1.731,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 43012096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s43-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "49150d3e2661188c64b5ac456a142035d1872fe36d85a54dae6d5fe4adde3629",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S43"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:57:37+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T115717Z-548694793f1badaa"
+    }
+  }
+}
