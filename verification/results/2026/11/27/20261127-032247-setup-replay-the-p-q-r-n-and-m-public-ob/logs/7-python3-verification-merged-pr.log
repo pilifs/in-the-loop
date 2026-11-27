@@ -1,0 +1,35 @@
+pins parent apache/commons-cli#450.1 {'return': 'first=first stored1=[first] second=first retained=first stored2=[first]'}
+pins parent apache/commons-cli#450.2 {'return': 'value=preset stored=[preset]'}
+pins parent apache/commons-cli#450.3 {'return': 'first=MissingOptionException[r] retry=discarded/true/[] fresh=retry/true/[]'}
+pins fix apache/commons-cli#450.1 {'return': 'first=first stored1=null second=second retained=first stored2=null'}
+pins fix apache/commons-cli#450.2 {'return': 'value=preset stored=[preset]'}
+pins fix apache/commons-cli#450.3 {'return': 'first=MissingOptionException[r] retry=retry/true/[] fresh=retry/true/[]'}
+pins parent HdrHistogram/HdrHistogram#145.1 {'return': 'totals=1/1 atX=1/1 equals=ArrayIndexOutOfBoundsException/true'}
+pins parent HdrHistogram/HdrHistogram#145.2 {'return': 'ordered=true/true extra=false/false totals=3/4 at20=1/2'}
+pins parent HdrHistogram/HdrHistogram#145.3 {'return': 'totals=4/4 extrema=10:40/10:40 at20=2/0 at30=0/2 equals=false/false'}
+pins fix HdrHistogram/HdrHistogram#145.1 {'return': 'totals=1/1 atX=1/1 equals=true/true'}
+pins fix HdrHistogram/HdrHistogram#145.2 {'return': 'ordered=true/true extra=false/false totals=3/4 at20=1/2'}
+pins fix HdrHistogram/HdrHistogram#145.3 {'return': 'totals=4/4 extrema=10:40/10:40 at20=2/0 at30=0/2 equals=false/false'}
+pins parent ThreeTen/threeten-extra#463.1 {'return': 'month=1752-09-23 year=1752-09-23'}
+pins parent ThreeTen/threeten-extra#463.2 {'return': 'forward=1752-09-14 delta=1 back=1752-09-02 select12=1752-09-23'}
+pins parent ThreeTen/threeten-extra#463.3 {'return': 'period=0,-6,-17 back=1752-08-21 epoch=-79379 end=-79368 iso=-79368'}
+pins parent ThreeTen/threeten-extra#463.4 {'return': 'at30=2011-02-28 at32=DateTimeException'}
+pins parent ThreeTen/threeten-extra#463.5 {'return': 'julian=-2147483647/-2147483646 british=-2147483647/-2147483646'}
+pins fix ThreeTen/threeten-extra#463.1 {'return': 'month=1752-09-02 year=1752-09-02'}
+pins fix ThreeTen/threeten-extra#463.2 {'return': 'forward=1752-09-14 delta=1 back=1752-09-02 select12=1752-09-23'}
+pins fix ThreeTen/threeten-extra#463.3 {'return': 'period=0,-6,-6 back=1752-09-01 epoch=-79368 end=-79368 iso=-79368'}
+pins fix ThreeTen/threeten-extra#463.4 {'return': 'at30=2011-03-02 at32=DateTimeException'}
+pins fix ThreeTen/threeten-extra#463.5 {'return': 'julian=DateTimeException/-2147483646 british=DateTimeException/-2147483646'}
+pins parent Esri/geometry-api-java#329.1 {'return': 'forward=throws:com.esri.core.geometry.GeometryException | reverse=throws:com.esri.core.geometry.GeometryException'}
+pins parent Esri/geometry-api-java#329.2 {'return': 'first=[1, 1, 1, 1, 1, 0] remote=[0, 0, 0, 0, 0] extra=0 lengthOK=true length=7794.600029974981 expected=7794.600029974981'}
+pins parent Esri/geometry-api-java#329.3 {'return': 'first=[0, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true length=13326.118751140732 expected=13326.118751140732'}
+pins fix Esri/geometry-api-java#329.1 {'return': 'forward=first=[1, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true length=15261.368605810665 expected=15261.368605810665 | reverse=first=[1, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true length=15261.368605810665 expected=15261.368605810665'}
+pins fix Esri/geometry-api-java#329.2 {'return': 'first=[1, 1, 1, 1, 1, 0] remote=[0, 0, 0, 0, 0] extra=0 lengthOK=true length=7794.600029974981 expected=7794.600029974981'}
+pins fix Esri/geometry-api-java#329.3 {'return': 'first=[0, 1, 1, 1, 1, 1] remote=[1, 1, 1, 1, 1] extra=0 lengthOK=true length=13326.118751140732 expected=13326.118751140732'}
+pins parent spring-projects/spring-framework#37322.1 {'return': 'initial=98/[] first=DataAccessResourceFailureException afterFirst=98/[] steps=[100:inserted:98/[100], 99:inserted:100/[99, 100], 100:duplicate(1062,23000):100/[99, 100]] reservations=[100, 100] fault=rollback'}
+pins parent spring-projects/spring-framework#37322.2 {'return': 'initial=98/[] first=none afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 102] fault=none'}
+pins parent spring-projects/spring-framework#37322.3 {'return': 'initial=98/[] first=DataAccessResourceFailureException afterFirst=100/[] steps=[100:inserted:100/[100], 101:inserted:102/[100, 101], 102:inserted:102/[100, 101, 102]] reservations=[100, 102] fault=restore'}
+pins fix spring-projects/spring-framework#37322.1 {'return': 'initial=98/[] first=DataAccessResourceFailureException afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 100, 102] fault=rollback'}
+pins fix spring-projects/spring-framework#37322.2 {'return': 'initial=98/[] first=none afterFirst=98/[] steps=[99:inserted:100/[99], 100:inserted:100/[99, 100], 101:inserted:102/[99, 100, 101]] reservations=[100, 102] fault=none'}
+pins fix spring-projects/spring-framework#37322.3 {'return': 'initial=98/[] first=DataAccessResourceFailureException afterFirst=100/[] steps=[101:inserted:102/[101], 102:inserted:102/[101, 102], 103:inserted:104/[101, 102, 103]] reservations=[100, 102, 104] fault=restore'}
+{"cases": 5, "controlsMatchedOnBoth": 5, "deploymentPairs": 5, "fixedIntentsMatched": 7, "fixedPredictionsMatched": 17, "fixedRefutations": 0, "freshJvms": 34, "omittedParentHistories": 0, "pairedIntentChanges": 7, "parentHistoriesWithoutPrediction": 1, "parentRefutations": 0, "questions": 17, "unchangedControls": 5}
