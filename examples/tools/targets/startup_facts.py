@@ -41,9 +41,26 @@ def run_step(command, extra, work, env):
 def first_root(outcome):
     gaps = (outcome.get("search") or {}).get("gaps", [])
     if len(gaps) == 1 and gaps[0].get("treatment") == "refused":
-        match = re.fullmatch(r"class-initializer:([\w.$]+)\.<clinit>\(\)V", gaps[0].get("id", ""))
+        gap = gaps[0]
+        id_ = gap.get("id", "")
+        match = re.fullmatch(r"class-initializer:([\w.$]+)\.<clinit>\(\)V", id_)
         if match:
             return match[1]
+        # Some initializers run in strict mode up to the actual unsupported JDK call.
+        # Attribute it to startup only when every reported site is the same initializer.
+        operation = id_.partition("@jdk-")[0].partition(":")[2]
+        if operation in {
+            "java.lang.System.getProperties()Ljava/util/Properties;",
+            "java.nio.charset.Charset.defaultCharset()Ljava/nio/charset/Charset;",
+            "java.lang.String.getBytes()[B",
+            "java.lang.Class.getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
+            "java.lang.Class.getDeclaredMethods()[Ljava/lang/reflect/Method;",
+        }:
+            sites = [re.fullmatch(r"([\w.$]+)\.<clinit>(?::\d+)?", s) for s in gap.get("sites", [])]
+            if sites and all(sites):
+                owners = {site[1] for site in sites}
+                if len(owners) == 1:
+                    return owners.pop()
     return None
 
 

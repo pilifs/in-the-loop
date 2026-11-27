@@ -253,6 +253,14 @@ class RecipesTest(unittest.TestCase):
         self.assertIsNone(checker_output.solver_candidate({**outcome, "pair": {**pair, "target": "Other#check"}}))
 
     def test_observed_states_bind_each_revision_and_the_executed_model(self):
+        from targets import startup_facts
+        def requested(sites):
+            gap = {"id":"jdk-static-method:java.lang.System.getProperties()Ljava/util/Properties;@jdk-21",
+                   "sites":sites,"treatment":"refused"}
+            return startup_facts.first_root({"search":{"gaps":[gap]}})
+        self.assertEqual(requested(["p.Facts.<clinit>:17","p.Facts.<clinit>:42"]), "p.Facts")
+        self.assertIsNone(requested(["p.Facts.read:17"]))
+        self.assertIsNone(requested(["p.Facts.<clinit>:17","p.Other.<clinit>:42"]))
         plan = self.plan("310", "same-day-observed")
         original = self.plan("310", "same-day")
         self.assertNotEqual(original.claim["key"], plan.claim["key"])

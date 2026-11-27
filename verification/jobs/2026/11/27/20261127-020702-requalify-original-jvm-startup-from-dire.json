@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-020702-requalify-original-jvm-startup-from-dire",
+  "title": "Requalify original JVM startup from direct initializer read diagnostics",
+  "description": "Where strict native execution enters an initializer and refuses its actual JDK setting read, derive the unique original root from all reported sites. Verify the failed startup's partial facts, original checker boundary, independent normal and resumed charset results, all motivating releases, and both resource-reading qualification matrices.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T02:07:02+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "7m"
+  },
+  "steps": [
+    {
+      "name": "Direct startup failures and original release matrices",
+      "run": "python3 lib/benchmark/startup-facts/postfreeze_originals.py --output verification/startup-facts/postfreeze-originals.zip",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/startup-facts/postfreeze-originals.zip"
+  ]
+}
