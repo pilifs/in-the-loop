@@ -98,6 +98,8 @@ lifecycle = records.load("jobs_lifecycle", Path(__file__).resolve().parent / "li
 scheduling = records.load("jobs_scheduling", Path(__file__).resolve().parent / "scheduling.py")
 # A manifest's rows as ordinary jobs, and the map from rows to jobs.
 batch = records.load("jobs_batch", Path(__file__).resolve().parent / "batch.py")
+# What a task needs prepared before it can run offline: operations, bundles, receipts.
+readiness = records.load("jobs_readiness", Path(__file__).resolve().parent / "readiness.py")
 PRIORITIES = f"{HERE}/priorities.json"
 SCHEMAS = ROOT / HERE / "schema"
 JOB_SCHEMA = "verification-job/v1"
@@ -135,6 +137,12 @@ DEFAULTS = {
         "log_max_bytes": "2M",        # longer logs are kept in full locally and as head and tail in the result
         "poll_seconds": 30,
         "link": [],                   # paths outside git linked into every export (none by default)
+        # Fetching. A job whose step is declared `network: fetch` (a resolution job) runs only where the runner
+        # names the sources it may fetch from, and at most fetch_slots downloads' worth of such jobs run at once
+        # (a job counts its resources.fetch, 1 by default): fetch-bound work is admitted apart from CPU and memory.
+        "fetch_allow": [],            # URL prefixes; empty: this runner fetches nothing
+        "fetch_slots": 10,
+        "readiness_dir": "~/.cache/in-the-loop/readiness",   # bundles and receipts (jobs/readiness.py), for every checkout
         "after_collect": [],          # commands run at the repo root after outputs are applied
     },
     "defaults": {"cpus": 1, "memory": "2G", "duration": "10m"},
@@ -367,6 +375,9 @@ def load_config(args=None):
     runner["cpus"] = float(runner["cpus"])
     runner["workers"] = int(runner["workers"])
     runner["machine_name"] = str(runner.get("machine_name") or "").strip() or socket.gethostname()
+    runner["fetch_slots"] = int(runner["fetch_slots"])
+    runner["fetch_allow"] = [str(prefix) for prefix in runner["fetch_allow"]]
+    runner["readiness_dir"] = Path(os.environ.get("VERIFY_READINESS_DIR") or runner["readiness_dir"]).expanduser()
     state = Path(runner["state_dir"])
     runner["state_dir"] = state if state.is_absolute() else ROOT / state
     if runner["backend"] != "local":
@@ -659,6 +670,14 @@ def offline():
     return _OFFLINE[0]
 
 
+def fetch_slots_of(job) -> int:
+    """How many fetch slots a job holds while it runs: its resources.fetch (1 by default) when a step of it
+    fetches, else none."""
+    if not any(step_network(job, s) == "fetch" for s in job.get("steps") or []):
+        return 0
+    return int((job.get("resources") or {}).get("fetch") or 1)
+
+
 def plan(job, config):
     """What the runner reserves for the job, and why it can never run here if it cannot."""
     runner, defaults = config["runner"], config["defaults"]
@@ -677,12 +696,17 @@ def plan(job, config):
         reasons.append(f"needs {fmt_bytes(limit)}, more than the runner's whole budget of {fmt_bytes(runner['memory'])}")
     if cpus > runner["cpus"]:
         reasons.append(f"needs {cpus:g} CPUs, and the runner has {runner['cpus']:g}")
+    fetch = fetch_slots_of(job)
+    if fetch and not runner["fetch_allow"]:
+        reasons.append("a step of it fetches, and this runner is authorised to fetch from nowhere (its fetch_allow is empty)")
+    if fetch > runner["fetch_slots"]:
+        reasons.append(f"it fetches {fetch} at once, and this runner has {runner['fetch_slots']} fetch slot(s)")
     if workload_of(job) is None:
         reasons.append(f"its workload {workload_name(job)!r} has no adapter in this checkout (jobs/workloads/{workload_name(job)}.py)")
     if any(step_network(job, s) == "none" for s in job.get("steps") or []) and not offline()["enforced"]:
         reasons.append(f"a step of it is to run with no network, and this machine cannot take the network away ({offline().get('why')})")
     return {"cpus": cpus, "memoryEstimate": estimate, "memoryLimit": limit, "durationEstimate": duration,
-            "timeout": timeout, "cannotRun": reasons}
+            "timeout": timeout, "fetch": fetch, "cannotRun": reasons}
 
 
 def mem_available():
@@ -1111,11 +1135,14 @@ class Runner:
             self.said = document
             write_json(self.state / "scheduling.json", {"schema": "itl-job-scheduling/v1", "at": iso(now()), **document})
 
-    def fits(self, cpus, memory):
+    def fits(self, cpus, memory, fetch=0):
         used_cpus = sum(r["cpus"] for r in self.running.values())
         used_memory = sum(r["memory"] for r in self.running.values())
         if len(self.running) >= self.runner["workers"]:
             return "all workers busy"
+        used_fetch = sum(r["plan"].get("fetch", 0) for r in self.running.values())
+        if fetch and used_fetch + fetch > self.runner["fetch_slots"]:
+            return f"{used_fetch} of {self.runner['fetch_slots']} fetch slot(s) in use"
         if used_cpus + cpus > self.runner["cpus"] + 1e-9:
             return f"{used_cpus:g} of {self.runner['cpus']:g} CPUs in use"
         if used_memory + memory > self.runner["memory"]:
@@ -1314,7 +1341,39 @@ class Runner:
             result["status"] = "error"
             result["attention"].append("missing on this machine: " + ", ".join(missing))
             return
+        if not self.lay_readiness(job, result, entry):
+            return
         adapter.prepare(self, job, source, work, result, entry)
+
+    def lay_readiness(self, job, result, entry) -> bool:
+        """For each readiness prerequisite: the bundle is read in full against its receipt (one that changed since
+        is handed to nobody), and laid over the operation's base as a view of this attempt's own, which the steps
+        find by the variable the operation names. Whether every one could be laid."""
+        store = readiness.Store(self.runner["readiness_dir"])
+        result["readinessStore"] = str(store.root)
+        laid = []
+        for need in job.get("needs") or []:
+            if "readiness" not in need:
+                continue
+            key = need["readiness"]
+            wrong = store.verify(key)
+            if wrong:
+                result["status"] = "error"
+                result["attention"].append(f"readiness {key[:12]} could not be handed over: {wrong[0]}")
+                return False
+            receipt = store.receipt(key)
+            operation, bundle = receipt["operation"], store.bundle(key)
+            view = entry["attempt"].folder / "readiness" / key[:16]
+            readiness.overlay(Path(operation["base"]["path"]).expanduser(), operation["base"].get("without") or [],
+                              {f["path"]: bundle / f["path"] for f in receipt["bundle"]["files"]}, view)
+            laid.append({"key": key, "view": str(view), "env": (operation.get("view") or {}).get("env", "ITL_READINESS_VIEW"),
+                         "bundleDigest": receipt["bundle"]["digest"], "receiptAt": receipt.get("at"), "level": receipt.get("level"),
+                         "resolvedBy": receipt.get("resolvedBy")})
+            # What a step with no network may read and not write: the prepared inputs and the bundle laid over them.
+            entry.setdefault("readonly", []).extend([str(Path(operation["base"]["path"]).expanduser()), str(bundle)])
+        if laid:
+            result["readiness"] = laid
+        return True
 
     def step_env(self, job, result, work):
         limit_mb = result["limits"]["memoryLimitBytes"] // (1024 * 1024)
@@ -1331,6 +1390,9 @@ class Runner:
         # and skips every file, exiting 0, so an example's patch went unapplied in every job of build.py at a commit
         # before its own guard.
         env["GIT_CEILING_DIRECTORIES"] = str(Path(work).resolve().parent)
+        for laid in result.get("readiness") or []:   # where each prepared bundle is, as its operation names it
+            env[laid["env"]] = laid["view"]
+            env["ITL_READINESS_VIEW"] = laid["view"]
         env.update({k: str(v) for k, v in job_env(job).items()})
         return env
 
@@ -1359,7 +1421,8 @@ class Runner:
                                        f"here ({offline.get('why')}): it was not run")
             step = Step(f"vjob-{scope_id(job['id'])}-{i}", self.isolation, result["limits"]["cpus"],
                         result["limits"]["memoryLimitBytes"], self.runner["stall_window"], self.runner["max_timeout"],
-                        self.runner["job_oom_score_adj"], prefix=sandbox.prefix() if network == "none" else None)
+                        self.runner["job_oom_score_adj"],
+                        prefix=sandbox.prefix(binds=[("ro", path, path) for path in entry.get("readonly", [])]) if network == "none" else None)
             entry["steps"].append(step)
             if entry.get("memoryStop"):  # stopped between the check above and now
                 step.urgent = step.cancelled = True
@@ -1716,10 +1779,80 @@ def take_repo_lock(state: Path):
     return lock
 
 
-def readiness_of(key):
-    """What a readiness receipt with this key says to a job that needs it. Receipts are not read here yet
-    (jobs/README.md): the job is blocked, and says so, where it would otherwise have run unprepared."""
-    return {"state": "unknown", "why": f"readiness {key[:12]} is asked for, and this checkout's pipeline does not read readiness receipts yet"}
+def readiness_answer(config, known):
+    """What a readiness prerequisite's key says to a job that needs it, for the scheduler and the view: the
+    receipt in this runner's store, unless a resolution job for the key is on its way."""
+    store = readiness.Store(config["runner"]["readiness_dir"])
+
+    def answer(key):
+        resolvers = [job_id for job_id, job in known.specs.items() if key in ((job.get("labels") or {}).get("readiness") or [])]
+        on_the_way = [r for r in resolvers if r in known.running or known.statuses.get(r) not in scheduling.TERMINAL]
+        if on_the_way:
+            return {"state": "waiting", "why": f"resolution job {on_the_way[-1]} for readiness {key[:12]} has not finished", "resolvers": resolvers}
+        said = store.check(key)
+        if said["state"] == "waiting" and resolvers:
+            said = {"state": "failed", "why": f"resolution job {resolvers[-1]} ended {known.statuses.get(resolvers[-1])} and left no receipt for readiness {key[:12]}"}
+        elif said["state"] == "waiting":
+            said["why"] += f", and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)"
+        return {**said, "resolvers": resolvers}
+    return answer
+
+
+def cmd_resolve(args):
+    """Admit a resolution job for each readiness request that nothing answers: no ready receipt, no failed one, no
+    job on its way. One job a key, however many jobs ask for it. With keys (or their first characters) and
+    --again, resolve those once more, a failed one after its cause was put right. The jobs are written, not
+    committed: whoever keeps the queue commits them (the watcher), and that is the admission."""
+    view = view_of(args)
+    wanted = lambda r: (not args.keys or any(r["key"].startswith(k) for k in args.keys)) and (r["unanswered"] or (args.again and args.keys))
+    written, skipped = [], []
+    at = now()
+    for request in view["readiness"]:
+        if not wanted(request):
+            continue
+        key = request["key"]
+        path = ROOT / readiness.FOLDER / f"{key}.json"
+        try:
+            operation = json.loads(path.read_text())
+        except (OSError, ValueError) as e:
+            skipped.append({"key": key, "why": f"{path.relative_to(ROOT)} cannot be read here ({e}): the request's operation is committed with the job that asks"})
+            continue
+        title = f"Resolve readiness {key[:12]}: {operation.get('title') or 'an operation'}"[:200]
+        job = ordered({
+            "schema": JOB_SCHEMA_V2, "id": new_id(f"resolve {key[:12]} {operation.get('title') or ''}", at), "title": title,
+            "description": f"Makes the operation in {readiness.FOLDER}/{key}.json ready on this runner (jobs/readiness.py): it runs the "
+                           f"operation's own task offline, fetches what that run asks for from the sources the runner authorises, and publishes "
+                           f"a bundle and a receipt once the task has run through with no network. Asked for by: {', '.join(request['wantedBy'])}.",
+            "purpose": "resolve", "workload": "resolution", "labels": {"readiness": [key]},
+            **({"case": str(operation["consumer"])} if operation.get("consumer") else {}),
+            "links": {"jobs": request["wantedBy"], "paths": [f"{readiness.FOLDER}/{key}.json"]},
+            "expected": "readiness is established: the task ran through offline and its outputs are as the operation declares",
+            "submitted": submitted_by(args, at), "priority": 10, "requires": list(operation.get("requires") or []),
+            "resources": operation.get("resources") or {"cpus": 2, "memory": "2G", "duration": "20m"},
+            "environment": {"network": "fetch"},
+            "steps": [{"name": "resolve", "phase": "resolve",
+                       "run": f"python3 jobs/readiness.py resolve {readiness.FOLDER}/{key}.json --receipt {readiness.FOLDER}/receipts/{key}.json"}],
+            "outputs": [{"path": f"{readiness.FOLDER}/receipts/{key}.json", "required": False, "consumer": "the record of the resolution"}]})
+        wrong = validate(job, "job.schema.json")
+        if wrong:
+            skipped.append({"key": key, "why": "the resolution job would not be valid: " + "; ".join(wrong[:3])})
+            continue
+        target = layout.new_job(ROOT, job["id"])
+        if not args.dry_run:
+            write_json(target, ordered({"$schema": schema_ref(target, "job.schema.json", True), **job}))
+        written.append({"key": key, "job": job["id"], "path": target.relative_to(ROOT).as_posix(), "wantedBy": request["wantedBy"]})
+    if args.json:
+        print(json.dumps({"schema": "itl-job-resolve/v1", "written": written, "skipped": skipped}, indent=2))
+        return 0
+    for row in written:
+        print(f"wrote {row['path']}: resolves readiness {row['key'][:12]} for {', '.join(row['wantedBy'])}")
+    for row in skipped:
+        print(f"readiness {row['key'][:12]}: no job written: {row['why']}")
+    if not written and not skipped:
+        print("no readiness request is unanswered")
+    elif written:
+        print(f"Commit {JOBS} to admit " + ("it" if len(written) == 1 else "them") + ".")
+    return 0
 
 
 def cmd_run(args):
@@ -1776,7 +1909,7 @@ def cmd_run(args):
             job_plan = None if problems else plan(job, config)
             if job.get("needs") and known is None:
                 known = runner.known()
-            needs = scheduling.prerequisites(job, known, readiness_of) if job.get("needs") and not problems else []
+            needs = scheduling.prerequisites(job, known, readiness_answer(config, known)) if job.get("needs") and not problems else []
             state, why = scheduling.decide(job, problems, job_plan["cannotRun"] if job_plan else [], needs)
             if state in ("invalid", "unschedulable", "blocked"):
                 # Not started, with nothing of it run and no attempt consumed. Said once, and asked again at the
@@ -1797,7 +1930,7 @@ def cmd_run(args):
                 continue   # it holds nobody up: the jobs after it are looked at
             with runner.lock:
                 memory = runner.reservation(job, job_plan, source)
-                why = runner.fits(job_plan["cpus"], memory)
+                why = runner.fits(job_plan["cpus"], memory, job_plan["fetch"])
                 if why and not runner.running and not args.watch:
                     # Nothing of ours holds the room it waits for: only the rest of the machine does.
                     if job_id not in told:
@@ -1981,7 +2114,7 @@ def lifecycle_view(config, revs, full=()):
                 p = None if problems else plan(job, config)
             except ValueError as e:
                 p, problems = None, [str(e)]
-            needs = scheduling.prerequisites(job, known, readiness_of) if job.get("needs") and not problems else []
+            needs = scheduling.prerequisites(job, known, readiness_answer(config, known)) if job.get("needs") and not problems else []
             verdict, why = scheduling.decide(job, problems, p["cannotRun"] if p else [], needs)
             if verdict == "queued" and job_id in decided:   # what only a runner at work knows: no room, a priority it leaves
                 verdict, why = decided[job_id].get("state", verdict), decided[job_id].get("why")
@@ -2006,6 +2139,18 @@ def lifecycle_view(config, revs, full=()):
             title = None
         rows.append({"id": job_id, "title": title, "path": path.relative_to(ROOT).as_posix() if path else None, "state": "uncommitted",
                      "why": "its file is in the working copy and in no commit of the queue: commit it to queue it", "attempts": [], "result": None})
+    # The readiness requests: each key some job that has not started asks for, with who asks and who resolves it.
+    requests = {}
+    for row in rows:
+        for need in row.get("needs") or []:
+            if "readiness" in need:
+                entry = requests.setdefault(need["readiness"], {"key": need["readiness"], "state": need["state"], "why": need["why"],
+                                                                "operation": f"{readiness.FOLDER}/{need['readiness']}.json",
+                                                                "wantedBy": [], "resolvers": need.get("resolvers") or []})
+                entry["wantedBy"].append(row["id"])
+    for entry in requests.values():
+        # Unanswered: nothing is ready, nothing is on its way, and nothing has failed. Someone has to admit a resolution.
+        entry["unanswered"] = entry["state"] == "waiting" and not entry["resolvers"]
     # A job that waits for one that cannot start here is not going to start either: it is blocked, and its reason
     # goes back to the first cause. Until nothing changes, for a chain of them.
     by_id, changed = {row["id"]: row for row in rows}, True
@@ -2015,7 +2160,8 @@ def lifecycle_view(config, revs, full=()):
             if row["state"] != "waiting":
                 continue
             for need in row.get("needs") or []:
-                other = by_id.get(need.get("by"))
+                # The job it waits for, or the last job that resolves the readiness it waits for.
+                other = by_id.get(need.get("by") or next(iter(reversed(need.get("resolvers") or [])), None))
                 if need["state"] == "waiting" and other and other["state"] in ("unschedulable", "blocked", "invalid", "uncommitted"):
                     row.update(state="blocked", why=f"{other['id']} cannot run here ({other['state']}: {other['why']})")
                     changed = True
@@ -2045,6 +2191,7 @@ def lifecycle_view(config, revs, full=()):
         # The last collect on this machine: what it collected, and how each hook after it ended. A hook that
         # failed stays here until the next collect, whatever became of the jobs.
         "lastCollect": last_collect and {k: last_collect.get(k) for k in ("at", "collected", "hooks")},
+        "readiness": sorted(requests.values(), key=lambda e: e["key"]),
         "jobs": rows,
     }
 
@@ -2065,7 +2212,7 @@ def view_of(args):
                                        "archive": "not read"}},
                 "runner": {"pid": runner_pid(config["runner"]["state_dir"]), "atWork": bool(runner_pid(config["runner"]["state_dir"]))},
                 "idle": None, "totals": {"unit": "jobs", "of": 0, "byState": {}}, "priorities": {"uncommittedChanges": False},
-                "lastCollect": None, "jobs": []}
+                "lastCollect": None, "readiness": [], "jobs": []}
     return lifecycle_view(config, revs, full=set(getattr(args, "ids", None) or []))
 
 
@@ -2877,8 +3024,8 @@ KEY_ORDER = {
            "stopOnFailure", "outputs", "supersedes"],
 }
 # What only a job of the second format can say (submit's flags, by argparse's names for them).
-SECOND_FORMAT_FLAGS = ("workload", "label", "case", "needs", "network", "optional_output", "phase", "tests", "test_reports",
-                       "expect_failing")
+SECOND_FORMAT_FLAGS = ("workload", "label", "case", "needs", "needs_readiness", "network", "optional_output", "phase", "tests",
+                       "test_reports", "expect_failing")
 
 
 def ordered(job):
@@ -3029,8 +3176,22 @@ def cmd_submit(args):
         job["labels"] = {k: list(dict.fromkeys(v)) for k, v in labels.items() if v}
         if args.case:
             job["case"] = args.case
-        if args.needs:
-            needs = (job.get("needs") or []) + [{"job": n} for n in args.needs]
+        needs = (job.get("needs") or []) + [{"job": n} for n in args.needs or []]
+        for name in args.needs_readiness or []:
+            # The request: the operation goes into the repository under its key, beside the job that asks for it.
+            try:
+                operation = json.loads(Path(name).read_text())
+            except (OSError, ValueError) as e:
+                sys.exit(f"--needs-readiness {name}: not an operation: {e}")
+            wrong = readiness.problems(operation)
+            if wrong:
+                sys.exit(f"--needs-readiness {name}: not an operation:\n  " + "\n  ".join(wrong))
+            key = readiness.key(operation)
+            there = ROOT / readiness.FOLDER / f"{key}.json"
+            if not there.exists() and not args.dry_run:   # the same key is the same request: the first file stays
+                write_json(there, operation)
+            needs.append({"readiness": key})
+        if needs:
             job["needs"] = [n for i, n in enumerate(needs) if n not in needs[:i]]
         if args.network:
             job.setdefault("environment", {})["network"] = args.network
@@ -3197,6 +3358,18 @@ def main(argv=None):
     p.add_argument("--rev", help="with --batch: the commit whose queue to read")
     p.set_defaults(func=cmd_wait)
 
+    p = sub.add_parser("resolve", help="write a resolution job for each readiness request nothing answers (the watcher admits it by committing)")
+    p.add_argument("keys", nargs="*", help="only these keys (or their first characters)")
+    p.add_argument("--again", action="store_true", help="with keys: resolve them once more, whatever their receipt says")
+    p.add_argument("--state-dir")
+    p.add_argument("--rev")
+    p.add_argument("--by")
+    p.add_argument("--session")
+    p.add_argument("--run-phase", choices=["generation", "setup", "domain", "watcher"])
+    p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_resolve)
+
     p = sub.add_parser("batch", help="a batch row by row: each row's job, state, reason and result; no name lists the batches")
     p.add_argument("name", nargs="?")
     p.add_argument("--state-dir")
@@ -3300,6 +3473,9 @@ def main(argv=None):
     second.add_argument("--label", action="append", metavar="KEY:VALUE", help="what it is about, for grouping: project:NAME, tool:NAME, ...; repeatable")
     second.add_argument("--case", help="the case it belongs to, as its batch or brief names it")
     second.add_argument("--needs", action="append", metavar="JOB", help="a job that must have a fulfilled result first; repeatable")
+    second.add_argument("--needs-readiness", action="append", metavar="OPERATION.json", help="a readiness operation (jobs/readiness.py) that must "
+                        "have a ready receipt on the runner first: the job waits, a resolution job prepares it once for every job "
+                        "that asks for the same operation, and the steps find the prepared inputs by the variable the operation names; repeatable")
     second.add_argument("--network", choices=NETWORKS, help="every step's network: host (default), none (enforced, with a probe as evidence), fetch")
     second.add_argument("--optional-output", action="append", metavar="PATH", help="an output that may be absent (one given with --output is required); repeatable")
     second.add_argument("--phase", choices=lifecycle.PHASES, help="what the time of this command line's steps is counted as")

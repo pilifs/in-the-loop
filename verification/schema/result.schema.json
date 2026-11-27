@@ -185,6 +185,8 @@
     "execution": {"description": "What the processes did, apart from what the job delivered (jobs/lifecycle.py). Described in full in jobs/schema/result.schema.json; the same in a result of either format.", "type": "object"},
     "fulfillment": {"description": "Whether the job delivered what it declared: fulfilled; unfulfilled, with every reason (a step that did not go as expected, a promise not kept, a required output not there, steps skipped, a preparation that failed, or not-run); undetermined for a job stopped before it ended, which runs again. Described in full in jobs/schema/result.schema.json; the same in a result of either format.", "type": "object"},
     "timing": {"description": "What the attempt cost, by scope, each with its state. Described in full in jobs/schema/result.schema.json; the same in a result of either format.", "type": "object"},
+    "readiness": {"description": "For a job with a readiness prerequisite (jobs/readiness.py). Described in full in jobs/schema/result.schema.json.", "type": "array"},
+    "readinessStore": {"description": "The runner's store of readiness bundles and receipts when the job ran.", "type": "string"},
     "conclusion": {"description": "What the result means for the question the job was asked, by its workload, at the scope it was asked. Described in full in jobs/schema/result.schema.json; the same in a result of either format.", "type": "object"},
     "attempt": {
       "description": "Which execution of the job this result is of (jobs/attempts.py): every run of a job is an attempt with a record and folders of its own on the machine that ran it, made before it writes anything. Results of before 2026-11-27 have none: `originals.attempt` is then all that numbers them.",

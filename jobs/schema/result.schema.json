@@ -417,7 +417,9 @@
         "derived": {"type": "boolean"}
       }
     },
-    "conclusion": {
+    "readiness": {"description": "For a job with a readiness prerequisite (jobs/readiness.py): each prepared bundle as it was handed over, read in full against its receipt first: the key, the view laid for this attempt and the variable its steps find it by, the bundle's digest, when and by which job it was resolved, and the level established.", "type": "array", "items": {"type": "object", "required": ["key", "view", "bundleDigest"], "properties": {"key": {"type": "string"}, "view": {"type": "string"}, "env": {"type": "string"}, "bundleDigest": {"type": "string"}, "receiptAt": {"type": ["string", "null"]}, "level": {"type": ["string", "null"]}, "resolvedBy": {"type": ["object", "null"]}}}},
+  "readinessStore": {"description": "The runner's store of readiness bundles and receipts when the job ran.", "type": "string"},
+  "conclusion": {
       "description": "What the result means for the question the job was asked, by its workload, at the scope it was asked. Apart from status: a verification job that ran exactly as expected may have refuted its claim. Absent where the workload concludes nothing (generic).",
       "type": "object",
       "properties": {

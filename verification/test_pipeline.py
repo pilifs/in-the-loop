@@ -47,7 +47,9 @@ class Repo:
         shutil.copytree(HERE.parent / "jobs", self.dir / "jobs", ignore=lambda folder, names: [
             n for n in names if n.startswith("test_") or n in ("fixtures", "__pycache__", "README.md")])
         settings = {"isolation": "none", "workers": 2, "cpus": 4, "memory": "2G", "job_memory_max": "1G", "link": [],
-                    "after_collect": [], "keep_workdirs": "never", **runner}
+                    "after_collect": [], "keep_workdirs": "never",
+                    # The machine's store of prepared bundles is not a test's: one of its own (jobs/readiness.py).
+                    "readiness_dir": str(self.dir / "verification/.state/readiness"), **runner}
         (self.dir / "verification/pipeline.toml").write_text(
             "[runner]\n" + "".join(f"{k} = {json.dumps(v)}\n" for k, v in settings.items()) +
             '[defaults]\nmemory = "256M"\nduration = "1m"\n')

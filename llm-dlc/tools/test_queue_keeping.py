@@ -34,7 +34,22 @@ FAKE_PIPELINE = textwrap.dedent('''\
     if cmd == "view":
         pending = [line.split(None, 1) for line in (state / "pending").read_text().splitlines()] if (state / "pending").exists() else []
         jobs = [{"id": i, "state": s, "why": None} for i, s in pending] + [{"id": d, "state": "finished", "why": None} for d in done]
-        print(json.dumps({"schema": "itl-job-lifecycle/v1", "idle": not jobs, "runner": {"pid": None, "atWork": False}, "jobs": jobs}))
+        asked = json.loads((state / "requests").read_text()) if (state / "requests").exists() else []
+        print(json.dumps({"schema": "itl-job-lifecycle/v1", "idle": not jobs, "runner": {"pid": None, "atWork": False}, "jobs": jobs,
+                          "readiness": asked}))
+    elif cmd == "resolve":
+        asked = json.loads((state / "requests").read_text())
+        written = []
+        for request in asked:
+            if request["unanswered"]:
+                job = "20260101-000100-resolve-" + request["key"][:12]
+                Path("verification/jobs").mkdir(parents=True, exist_ok=True)
+                Path(f"verification/jobs/{job}.json").write_text("{}\\n")
+                written.append({"key": request["key"], "job": job, "wantedBy": request["wantedBy"]})
+                request["unanswered"], request["resolvers"] = False, [job]
+        (state / "requests").write_text(json.dumps(asked))
+        (state / "pending").write_text("".join(f"{row['job']} queued\\n" for row in written))
+        print(json.dumps({"schema": "itl-job-resolve/v1", "written": written, "skipped": []}))
     elif cmd == "collect":
         if os.environ.get("STANDIN_COLLECT_FAILS"):
             sys.exit("the collector could not read a result")
@@ -149,6 +164,20 @@ class KeepingTheQueue(test_landing.Fixture):
             (self.root / "jobs/pipeline.py").write_text(answer)
             self.assertIsNone(queue_keeping.queue(self.root))
             self.assertIsNone(queue_keeping.left(queue_keeping.queue(self.root)))   # unknown: never zero
+
+    @cost("tool")
+    def test_a_readiness_request_nothing_answers_is_admitted_once_by_a_commit_and_then_run(self):
+        key = "ab" * 32
+        (self.state / "requests").write_text(json.dumps([{"key": key, "unanswered": True, "resolvers": [], "wantedBy": [self.JOB]}]))
+        self.waiting(f"{self.JOB} waiting")
+        thing = queue_keeping.tend(self.run)
+        job = "20260101-000100-resolve-" + key[:12]
+        self.assertEqual((thing["kind"], thing["jobs"]), ("resolution", [job]))
+        self.assertIn("Queue the resolution of 1 readiness request(s) (verification pending)", self.head("description"))
+        self.assertEqual(self.jj(self.root, "diff", "-r", "@-", "--name-only").split(), [f"verification/jobs/{job}.json"])
+        # It is on its way now: the next look admits nothing more, and starts the runner for it.
+        thing = queue_keeping.tend(self.run)
+        self.assertEqual((thing["kind"], thing["jobs"]), ("verification", [job]))
 
     def test_a_hook_that_failed_after_the_results_were_collected_is_for_someone_to_look_at(self):
         self.back(self.JOB, "passed")

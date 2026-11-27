@@ -136,6 +136,41 @@ def start_runner(run: Run, status: dict) -> dict | None:
                     f"output in {run.dir / 'runner.log'}). Say so in a line; its results are collected as they come."}
 
 
+def admit(run: Run, status: dict) -> dict | None:
+    """Admit a resolution job for each readiness request nothing answers (jobs/README.md): a job waits for inputs
+    to be prepared, no receipt says they are or cannot be, and no job is on its way. The pipeline writes the jobs
+    (`resolve --json`) and the commit here is the admission: fetching is a runner's to do, in a job, when the
+    one that keeps the queue says so. None when no request is unanswered."""
+    if not [r for r in status.get("readiness") or [] if r.get("unanswered")]:
+        return None
+    root = run.root
+    with writer(root):
+        r = pipeline(root, "resolve", "--json", "--by", f"the watcher of the {run.name} run", "--run-phase", "watcher")
+        try:
+            said = json.loads(r.stdout) if r.returncode == 0 else None
+        except ValueError:
+            said = None
+        if said is None:
+            raise Problem(f"pipeline.py resolve failed: {(r.stderr or r.stdout).strip()[-600:]}")
+        if not said["written"]:
+            return {"kind": "attention", "what": "a readiness request is unanswered and no resolution job could be written: " +
+                    "; ".join(row["why"] for row in said["skipped"]), "note": "read why; the job that asks stays waiting until this is put right"} \
+                if said["skipped"] else None
+        jobs = [row["job"] for row in said["written"]]
+        c = subprocess.run([sys.executable, str(root / "llm-dlc" / "tools" / "sync.py"), "commit", "--only", "verification/jobs",
+                            "-m", f"Queue the resolution of {len(jobs)} readiness request(s) (verification pending)",
+                            "-m", "Jobs: " + ", ".join(jobs) + ". Each makes ready, once, what the jobs that wait for it asked for: " +
+                                  "; ".join(f"{row['key'][:12]} for {', '.join(row['wantedBy'])}" for row in said["written"]) +
+                                  f". Admitted by the watcher of the {run.name} run, which keeps the queue while the run is under way."],
+                           cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+    out = {"kind": "resolution", "jobs": jobs, "commit": head_change(root),
+           "note": f"{len(jobs)} resolution job(s) admitted for readiness a waiting job asked for: say so in a line. They run like any job; "
+                   f"the jobs that wait start when a receipt is there, and are blocked with a named outcome when it is withheld"}
+    if c.returncode != 0:
+        out["commitReported"] = (c.stderr or c.stdout).strip()[-600:]
+    return out
+
+
 def tend(run: Run) -> dict | None:
     """The watcher's part in the queue, at each look of `wait`. A verification loop running here keeps it as it
     did (it runs, collects and commits, in sessions of its own), and the watcher only announces jobs to it
@@ -159,4 +194,10 @@ def tend(run: Run) -> dict | None:
                         "--only $(python3 verification/pipeline.py commit-paths)`"
                         if got["attention"] else "say what came back in a line: every job passed"}
     status = queue(run.root)
-    return start_runner(run, status) if status else None
+    if not status:
+        return None
+    try:
+        admitted = admit(run, status)
+    except Problem as e:
+        return {"kind": "attention", "what": f"a readiness request could not be admitted: {e}", "note": "read why and tell the user"}
+    return admitted or start_runner(run, status)

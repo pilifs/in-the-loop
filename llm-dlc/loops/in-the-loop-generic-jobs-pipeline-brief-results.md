@@ -12,7 +12,7 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 | 1. Protect and measure: the census | done | `jobs/audit.py`, `jobs/records.py`, the frozen census and manifest of `b52a084f5d11` |
 | 1. Protect and measure: retention on retry and prune | done | `jobs/attempts.py`; `prune`, `recover` and a collect that can be run again, in `verification/pipeline.py`; the brief queue's cleanup is that `prune` |
 | 2. Switch one queue | in progress | Done: the pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification workload and a generic one (`jobs/workloads/`); the second job format's schema; a network-off sandbox. The second format is written by `submit --purpose`, run and collected, and a result of either format keeps execution, fulfillment, each declared output's state, a step's test evidence and network, the workload's conclusion and scoped timing apart (`jobs/lifecycle.py`, `jobs/evidence.py`, `jobs/schema/result.schema.json`). Open: see *What is left*, below |
-| 3. Qualify delayed setup (S48) | open | |
+| 3. Qualify delayed setup (S48) | in progress | Done: readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. Open: S48 itself, on the real cache, as a job |
 | 4. Tune from measurements | open | |
 | 5. Adopt and verify | open | |
 
@@ -67,12 +67,16 @@ For whoever continues (this run's later cycles): each item is one commit, with i
    keepers on it and on `jobs/pipeline.py`. Left of it: the batch views, with fan-out (next).
 4. *Done (see Gate 2: fan-out, below).* Manifest fan-out, the map, the batch's wait and view, the 49-row fixture.
 5. *Done (see Gate 2: the pipeline of before beside this one, below).*
-6. **Delayed setup** (gate 3): `jobs/readiness.py` (the operation's description and key, receipts, bundles
-   published atomically and verified), `jobs/workloads/resolution.py` (online resolution in an isolated home, an
-   offline proof in the sandbox, bounded rounds), `needs: readiness`, the nested Gradle and Maven fixture, then
-   S48 as one job that runs the new scheduler in a throwaway repository inside it (the default checkout's runner
-   is the old code until this line lands).
-7. **Fetch admission and its measurements** (gate 4): a ceiling of ten fetch slots, taken while a fetch step runs.
+6. **Delayed setup** (gate 3). *The mechanism and the synthetic fixture are done (see Gate 3, below).* Left:
+   **S48 for real**: an operation for `verification/merged-pr-links/s01-s50/maven-war/replay.py` on both pins
+   (base: the S cache, `without` the ActiveMQ BOM 6.1.8 and the Maven 3.9.13 distribution; pinned: that
+   distribution with its SHA-512; repositories: Maven Central; outputs equal to `parent.json` and `fix.json`),
+   its three controls, and an unrelated job, run as **one first-format job** whose step runs this scheduler in a
+   throwaway repository (the default checkout's runner is the old code until this line lands). The passed job
+   of 2026-11-27 took 295 s, 5.5 GB and 3 CPUs for the two sides; a resolution runs the task once a round.
+7. **Fetch admission and its measurements** (gate 4). *Admission is built* (`fetch_allow`, `fetch_slots`, a
+   receipt's fetched bytes and seconds, `timing.byPhase`). Left: measurements from a real batch, which none has
+   run on yet.
 8. **Adoption** (gate 5): `ARCHITECTURE.md`, `CLAUDE.md`, the skills, the script inventory under `verification/`,
    the findings named by the brief.
 
@@ -207,6 +211,42 @@ in a throwaway repository, about 7 s; `jobs/test_batch.py` tests the map's rules
 What is not shown by a test: the compatibility path through the *watcher's* own cycle on the real pipeline (its
 keeper is tested against a stand-in for the pipeline, and the pipeline against throwaway repositories, not the
 two together), and the default checkout's runner, which is the old code until this line lands.
+
+## Gate 3: delayed setup, on the synthetic fixture
+
+**The fixture.** A stand-in for a nested build (`jobs/test_readiness.py`, `BUILD`): its first stage needs a tool
+distribution and a BOM, and its second stage, a nested tool, asks for its own module only once the first is
+satisfied. It refuses to pass if it can reach the repository or write into the prepared inputs. The repository is
+an HTTP server on 127.0.0.1, which a process in the offline sandbox cannot reach.
+
+| The brief asks | What a test shows |
+|---|---|
+| One logical request; a second stage that discovers a previously unknown prerequisite | One resolution, three rounds: the declared tool is fetched and the BOM found missing; the nested tool's module, which nobody named, is found missing; the third runs through. Four files, each verified, each with its source |
+| Only the affected consumer waits; an unrelated runnable job finishes during the wait | With a runner at work (`--watch`): the unrelated job finishes while both consumers are `waiting`, the view lists the request `unanswered` with who asks, and nothing has been fetched by anyone |
+| The watcher admits the resolution job through the same scheduler | `resolve` writes one job for the one request, the commit admits it, and a second `resolve` writes none while it is on its way. The watcher's keeper does the same at a look (`test_queue_keeping.py`) |
+| Only an authorised fetch phase gets network access | A runner whose `fetch_allow` is empty does not start a job that fetches. A source outside it is not asked. Only a resolution job's steps are given the list |
+| Prove the handoff offline, with no inherited mutable cache | The resolver's last round and each consumer run with a probe that saw `lo` alone; the consumer itself fails if it can connect to the repository, or if it can append to a file of the base (bound read-only) |
+| Wake the consumer on a matching receipt; account once | Both consumers start after the resolution finished, each ran once (no earlier attempt), and each result names the bundle digest the resolution's conclusion names |
+| Share only identical verified requests | A second case with another title and consumer has the same key: one request file, one resolution, each file asked of the repository once. Another toolchain, or another task, is another key |
+| Reject stale bundles | A bundle file changed after its receipt: `blocked`, "its bundle is not what the receipt names", and a resolution run again replaces it and keeps the earlier attempt on record |
+| Withheld BOM, wrong digest, unavailable repository: each reports the failing stage and withholds readiness | `absent`, `digest-mismatch` and `repository-unavailable`, each at the `fetch` stage, with nothing published. Through the pipeline, the withheld BOM blocks the consumer by that name, it runs nothing and fails nothing, and after the BOM is back `resolve KEY --again` makes it ready and the consumer runs |
+| A failing consumer must not poison the shared cache | A failed resolution's staging goes to `failed/`, never to `bundles/`; the published bundle is read-only and bound read-only where it is used |
+| Partial discovery is a legitimate outcome; cycles and no-progress are detected | `undiagnosed` when the task fails and names nothing; `no-progress` when it asks again for what it was given; `round-limit` |
+
+**Decisions.**
+
+25. **Resolution is discovery by running the task offline.** The task itself, in the sandbox, is the oracle for
+    what is missing and for when it is enough. The resolver adds verified inputs and nothing else. It does not
+    resolve a dependency graph of its own, so it cannot disagree with the build tool about what the task needs.
+26. **Admission is a commit.** The pipeline writes the resolution job; the watcher commits it. Fetching is then
+    a job like any other, in the queue, with a result, on a runner that says where it may fetch from.
+27. **The estimate and who asks are not the operation's identity.** A second case reuses the first one's
+    receipt; a corrected estimate does not make a new request.
+28. **The runner's readiness store is the machine's**, beside the caches it prepares over
+    (`~/.cache/in-the-loop/readiness`), so every checkout and workspace shares a resolution. Tests use a store
+    of their own.
+29. **Fetch slots are held for a job's whole run**, not only while its fetch step runs: simpler, and never more
+    than the ceiling. Finer accounting waits for a measurement that shows it matters.
 
 ## Gate 1: the census
 

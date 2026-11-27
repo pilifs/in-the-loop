@@ -86,7 +86,7 @@ class TheTwoResultSchemas(unittest.TestCase):
     def test_everything_a_result_of_the_first_format_may_say_a_result_of_the_second_may_say_the_same_way(self):
         first = json.loads((ROOT / "verification/schema/result.schema.json").read_text())
         second = json.loads((HERE / "schema/result.schema.json").read_text())
-        blocks = {"preparationSeconds", "declared", "execution", "fulfillment", "timing", "conclusion"}   # named in the first, described in the second
+        blocks = {"preparationSeconds", "declared", "execution", "fulfillment", "timing", "conclusion", "readiness"}   # named in the first, described in the second
         differ = {k for k, d in first["properties"].items() if second["properties"].get(k) != d}
         self.assertEqual(differ, {"schema", "status", "steps"} | blocks)
         steps = lambda schema: schema["properties"]["steps"]["items"]["properties"]

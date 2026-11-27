@@ -243,14 +243,15 @@ class Prerequisites(SecondFormat):
         self.assertIn(f"{beside}: passed", out)
         self.assertFalse((self.repo.dir / "verification/.state/results" / waits).exists())
 
-    def test_a_readiness_prerequisite_blocks_until_receipts_are_read(self):
+    def test_a_readiness_prerequisite_nothing_answers_is_waited_for_and_the_runner_ends(self):
         (self.repo.dir / "job.json").write_text(json.dumps({
             "schema": "itl-job/v2", "purpose": "test", "title": "Needs a prepared bundle", "description": DESCRIPTION,
             "resources": {}, "steps": [{"run": "true"}], "needs": [{"readiness": "ab" * 32}]}))
         job_id = self.repo.submit2("Needs a prepared bundle", "test", "--from-file", "job.json")
         (self.repo.dir / "job.json").unlink()
         out = self.run_all()
-        self.assertIn(f"{job_id}: blocked: readiness abababababab is asked for", out)
+        self.assertIn(f"{job_id}: left waiting: readiness abababababab has no receipt here yet, and no job in the queue resolves it", out)
+        self.assertFalse((self.repo.dir / "verification/.state/results" / job_id).exists())    # it did not run unprepared
 
 
 class TheNetworkAStepHas(SecondFormat):

@@ -17,6 +17,7 @@ is read in. What is intended and not built is in [`ARCHITECTURE.md`](../ARCHITEC
 | [`lifecycle.py`](lifecycle.py) | what became of a job, each question apart: what its processes did (`execution`), what it delivered (`fulfillment`), what it cost by scope (`timing`). One function each, for the runner that writes a result and for a reader of a result written before the blocks were kept; [`test_lifecycle.py`](test_lifecycle.py) |
 | [`evidence.py`](evidence.py) | what a step did besides exiting: which tests executed, read from JUnit XML reports or the log's summary lines; [`test_evidence.py`](test_evidence.py) |
 | [`scheduling.py`](scheduling.py) | whether a committed job may start, and why not: its prerequisites and its state, one decision for the runner and for every view; [`test_scheduling.py`](test_scheduling.py) |
+| [`readiness.py`](readiness.py) | setup a running case asks for: an operation, its resolution in rounds by running the task offline, the bundle and the receipt; [`workloads/resolution.py`](workloads/resolution.py) is the resolution job's adapter. [`test_readiness.py`](test_readiness.py) resolves a made-up nested build against a repository served on this machine, and [`test_delayed_setup.py`](test_delayed_setup.py) takes it through the pipeline with a runner at work |
 | [`batch.py`](batch.py) | a batch of jobs from one manifest: one ordinary job a row, ids the manifest alone decides, and the map from rows to jobs; [`test_batch.py`](test_batch.py) tests the map's rules in process, and [`test_fanout.py`](test_fanout.py) runs the 49 rows of [`fixtures/batch-49.json`](fixtures/batch-49.json) end to end |
 | [`test_coexistence.py`](test_coexistence.py) | the pipeline of the pinned revision (read from git) and this one on one repository: a runner of before does not run a second-format job and says so, the two share the runner's locks and see each other at work, and a job in flight when the runners are swapped is run again by the other with the first attempt kept |
 | [`test_view.py`](test_view.py) | the lifecycle view, the typed `wait` and `collect`, and a queue that could not be read, in throwaway repositories |
@@ -105,6 +106,77 @@ A result written before the blocks were kept (every one collected until 2026-11-
 them from what it does hold and marks them `derived`: the receipt of `20261127-054106` then says 41 seconds
 elapsed, measured, 41 seconds of preparation, derived, and requested steps that were `not-run`, where its index
 entry said 0 seconds and its receipt 41.
+
+## Setup a running case asks for
+
+A case reaches a task its setup never exercised. It does not rerun setup, guess the first missing coordinate, or
+fail once for every missing artifact (VF-076). It says what it needs done, once, and waits:
+
+```sh
+python3 jobs/pipeline.py submit --purpose test --case S48 --title "..." --description "..." \
+    --needs-readiness operation.json --network none --output out/readback.json --run "tools/read_wars.sh"
+```
+
+`operation.json` is a **readiness operation** (`itl-readiness-operation/v1`, [`readiness.py`](readiness.py)): what
+"ready" means for this task.
+
+| It binds | With |
+|---|---|
+| which task this is | `describes`: the project, revisions, module, task or goal, profiles, wrapper, toolchain, platform, configuration. Anything that would make it another operation |
+| how far "ready" goes | `level`: `configures`, `resolves`, `builds`, `tests-run` or `readable`. A task graph that configures is not dependencies that resolve, and neither is a packaged result that was read |
+| the prepared inputs it starts from | `base.path`, on the runner; `base.without` leaves paths out, to reconstruct an earlier state of it, and the receipt then says `reconstructed` |
+| the task itself | `task.steps`: the commands the consumer will run, run here the same way |
+| what it must leave | `outputs`: files under `$ITL_READINESS_OUT`, optionally equal to a committed JSON file or a digest |
+| where a discovered input may come from | `repositories` (Maven layout) and `pinned` inputs with their digests (a tool distribution) |
+| how the consumer finds the result | `view.env`: the variable that names the prepared view |
+
+Its **key** is the digest of all of that but the title, who asks and the estimate. Two cases that need the same
+operation share one request (`verification/readiness/KEY.json`, committed with the first job that asks) and one
+resolution; another toolchain or profile is another key.
+
+**What happens.** The job that asks is `waiting`, alone: every other job goes on. The view lists the request
+under `readiness`, `unanswered` while no receipt is ready or withheld and no job is on its way. The watcher
+admits a **resolution job** for it by committing what `python3 jobs/pipeline.py resolve` writes
+([`queue_keeping.py`](../llm-dlc/tools/queue_keeping.py) does it at each look), and that job runs through the same
+scheduler as any other, on a runner whose settings name the sources it may fetch from (`fetch_allow`; with none,
+a job that fetches is unschedulable), within the runner's fetch slots. Only a resolution job's steps are told
+those sources.
+
+The resolution is **rounds**: lay the base and what is staged so far into a view; run the task with no network
+(a network namespace with loopback alone, the base bound read-only) and read its log for what it could not find;
+fetch exactly that, verified (a repository's own checksum for a coordinate, the operation's digest for a pinned
+input), into staging; go again. A second stage that asks for a prerequisite nobody knew of is one more round.
+It ends `ready` when the task ran through offline and left its outputs, and then the staged files are published
+as a read-only **bundle** by one rename, with a **receipt**: the operation, every round with what it lacked and
+what was fetched from where, the probe of the offline run, the outputs' digests, the bundle's digest. Otherwise
+readiness is withheld, with the stage and a named outcome, and nothing is published:
+
+| Outcome | Stage | What it means |
+|---|---|---|
+| `absent` | fetch | every authorised source answered, and none has it |
+| `repository-unavailable` | fetch | a source could not be asked. Not the same as absent |
+| `digest-mismatch` | fetch | what came is not what the repository's checksum or the operation's digest says |
+| `unauthorized-source` | fetch | the source is not one this runner may fetch from. Nothing was asked of it |
+| `undiagnosed` | consumer | the task failed offline and named nothing it lacks |
+| `no-progress` | consumer | it asks again for what it was given |
+| `round-limit` | rounds | the operation's rounds were not enough |
+| `output-mismatch` | outputs | the task ran, and an output is missing or is not what was declared |
+| `offline-unenforceable` | consumer | this runner cannot take the network away, so nothing was proved |
+
+**The handover.** A ready receipt wakes the job that asked. Before its steps, the runner reads the bundle in
+full against the receipt (one that changed since is handed to nobody, and the job is `blocked` until it is
+resolved again), lays it over the base as a view of that attempt's own, and gives the steps the variable the
+operation names. A step with `--network none` runs with the base and the bundle bound read-only: no cache the
+task can change is inherited. The job's result records the bundle it ran on (`readiness`), and the resolution
+job's result carries the receipt as its `conclusion`, `ready` or `withheld`, apart from the count of anything
+the case itself was asked. A withheld readiness blocks its consumer with the outcome's name; once the cause is
+put right, `python3 jobs/pipeline.py resolve KEY --again` resolves the same request again, and the receipt keeps
+the earlier attempts.
+
+What it does not do: it restricts fetching to the operation's repositories under the runner's `fetch_allow` by
+its own fetcher, not by a firewall around the resolution job, whose step has the host's network. It discovers
+Maven coordinates from Gradle's and Maven's "could not find" lines and nothing else: a task that fails offline
+for another kind of missing input ends `undiagnosed`, which is a legitimate outcome and names the log to read.
 
 ## A batch from a manifest
 

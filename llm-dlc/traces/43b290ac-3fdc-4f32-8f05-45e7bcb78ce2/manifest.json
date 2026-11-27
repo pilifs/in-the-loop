@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T23:48:20.459Z",
-  "duration_seconds": 30879,
+  "ended": "2026-11-28T00:07:58.705Z",
+  "duration_seconds": 32057,
   "stats": {
     "turns": 32,
-    "api_calls": 710,
-    "tool_calls": 772,
+    "api_calls": 739,
+    "tool_calls": 802,
     "tool_errors": 11,
     "compactions": 5,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1446,
-      "output_tokens": 1200356,
-      "cache_read_input_tokens": 220201984,
-      "cache_creation_input_tokens": 2685223
+      "input_tokens": 1504,
+      "output_tokens": 1297238,
+      "cache_read_input_tokens": 234123350,
+      "cache_creation_input_tokens": 2793452
     }
   },
   "tools": {
-    "Bash": 626,
+    "Bash": 653,
     "Read": 82,
-    "Write": 31,
+    "Write": 34,
     "Edit": 19,
     "AskUserQuestion": 3,
     "mcp__chrome-devtools__take_screenshot": 3,
@@ -53,6 +53,7 @@
     "jobs/batch.py",
     "jobs/evidence.py",
     "jobs/lifecycle.py",
+    "jobs/readiness.py",
     "jobs/records.py",
     "jobs/sandbox.py",
     "jobs/scheduling.py",
@@ -71,11 +72,13 @@
     "llm-dlc/tools/test_retired.py",
     "llm-dlc/tools/test_single_run.py",
     "verification/findings.md",
+    "verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py",
     "~/.cache/in-the-loop/tmp/orch/advisor-note.md",
     "~/.cache/in-the-loop/tmp/orch/advisor-verify.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/MEMORY.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/architecture-md-update-after-orchestrate-run.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/architecture-md-update-after-run-workflow.md",
+    "~/.claude/projects/-home-user-code-in-the-loop/memory/generic-jobs-pipeline-run.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/orchestrate-run-refactor-decisions.md"
   ],
   "context_windows": [
@@ -152,24 +155,24 @@
     {
       "index": 5,
       "started": "2026-11-27T23:01:49.090Z",
-      "ended": "2026-11-27T23:48:20.459Z",
+      "ended": "2026-11-28T00:07:58.705Z",
       "turns": 1,
-      "api_calls": 115,
+      "api_calls": 144,
       "usage": {
-        "input_tokens": 230,
-        "output_tokens": 222580,
-        "cache_read_input_tokens": 29910020,
-        "cache_creation_input_tokens": 405631
+        "input_tokens": 288,
+        "output_tokens": 319462,
+        "cache_read_input_tokens": 43831386,
+        "cache_creation_input_tokens": 513860
       },
-      "peak_context_tokens": 420798
+      "peak_context_tokens": 529027
     }
   ],
   "log": {
-    "sha256": "78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9",
-    "bytes": 20973431,
-    "lines": 7051,
-    "gzip_bytes": 4068781,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9.jsonl.gz"
+    "sha256": "5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4",
+    "bytes": 21799971,
+    "lines": 7370,
+    "gzip_bytes": 4168470,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -428,6 +431,22 @@
       "summary": "Test the pipeline of the pinned revision beside this one: one exclusion, a refused second-format job, a rollback with a job in flight",
       "body": "jobs/test_coexistence.py reads verification/pipeline.py, layout.py and capture.py at b52a084f5d11 out of git and runs them beside this checkout's code on one throwaway repository, since a runner of before is at work when this line lands and a rollback puts it back. A state directory has one runner whichever code it is, and each sees the other at work (the old runner's pid in this code's wait --json and view; this runner in the old wait). VF-051's lock across workspaces turns a second runner away both ways. The old runner says 'invalid, not run' for a job of the second format and runs nothing of it, runs a first-format job this code's submit wrote, and the old collect takes a result this runner wrote. A runner of this code killed with its process group while a job runs: the old runner runs the job again and the old collect applies its output; the killed attempt's log is byte for byte where it was, this code's view shows the job collected with one interrupted attempt, and the audit reports no discrepancy.\n\nVerified: the 4 tests pass (7 s); the cost lint is clean. Not shown by a test, and said in the results page: the watcher's own cycle on the real pipeline end to end, and the default checkout's runner, which is the old code until this line lands.",
       "log_sha256": "78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9"
+    },
+    {
+      "change_id": "ktvqtpkzpolxypokunnksmumpsnlnpqv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4"
+    },
+    {
+      "change_id": "ytnxopmtrrvzqwzqxrxqxnuxqnymursy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Let a running case ask for more setup: one request, a resolution job, a receipt that wakes it",
+      "body": "A job can now need a readiness operation (submit --needs-readiness OPERATION.json; jobs/readiness.py): what 'ready' means for one task (the revision, module, task, toolchain and platform it describes, the level asked for, the prepared base it starts from, the task's own steps, the outputs they must leave, the repositories and the pinned inputs with their digests). The operation's key is the digest of all of that but the title, who asks and the estimate, so two cases that need the same thing share one request and one resolution. The job that asks waits, alone; the view lists the request, unanswered until a receipt is ready or withheld or a job is on its way. The watcher admits a resolution job by committing what 'pipeline.py resolve' writes (queue_keeping.admit, at each look), and it runs through the same scheduler, on a runner whose settings name the sources it may fetch from (fetch_allow; with none a job that fetches is unschedulable) and within its fetch slots (fetch_slots, 10). Only a resolution job's steps are told those sources.\n\nThe resolution is rounds: lay the base and what is staged so far into a view, run the task with no network and the base bound read-only, read its log for the module it could not find, fetch exactly that (verified by the repository's checksum, or by the operation's digest for a pinned input), and go again; a second stage that asks for a prerequisite nobody knew of is one more round. It ends ready when the task ran through offline and left its outputs, and only then publishes the staged files as a read-only bundle by one rename, with a receipt: every round, what was fetched from where, the probe of the offline run, the bundle's digest. Otherwise readiness is withheld with the stage and a named outcome (absent, repository-unavailable, digest-mismatch, unauthorized-source, undiagnosed, no-progress, round-limit, output-mismatch) and nothing is published. A ready receipt wakes the job that asked: the runner reads the bundle in full against the receipt (one that changed since blocks the job until it is resolved again), lays it over the base as a view of that attempt's own, and binds the base and the bundle read-only for a step with no network. A withheld readiness blocks its consumer by the outcome's name; 'resolve KEY --again' resolves the same request once the cause is put right.\n\nVerified on a made-up nested build served from 127.0.0.1 (its first stage needs a tool distribution and a BOM, its second asks for a module nobody named; it refuses to pass if it can reach the repository or write into the prepared inputs). jobs/test_readiness.py (11): ready after three rounds with four verified files; an identical request reuses the receipt and another toolchain or task is another key; a changed bundle is refused and resolved again; absent, digest-mismatch, repository-unavailable, unauthorized-source, undiagnosed, no-progress and output-mismatch each withhold with nothing published. jobs/test_delayed_setup.py (3, with a runner at work): the unrelated job finishes while both consumers wait and nothing has been fetched; one resolution job is admitted for the one request; both consumers start after it, run once, offline, on the bundle its conclusion names, and the repository was asked once for each file; a withheld BOM blocks its consumer by name until it is resolved again; a runner that may fetch from nowhere does not start the resolution. llm-dlc/tools/test_queue_keeping.py: the watcher admits once by a commit, then starts the runner. The tests of what changed: 44 of 44 Python test files passed. S48 itself, on the real cache, is the next commit's job.",
+      "log_sha256": "5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4"
     }
   ],
   "logs": {
@@ -501,6 +520,12 @@
       "bytes": 12655582,
       "lines": 4002,
       "gzip_bytes": 2696965,
+      "url": null
+    },
+    "5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4": {
+      "bytes": 21799971,
+      "lines": 7370,
+      "gzip_bytes": 4168470,
       "url": null
     },
     "689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406": {
