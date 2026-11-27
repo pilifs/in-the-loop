@@ -1,0 +1,175 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-051405-check-the-original-outer-and-cause-on-bo",
+  "title": "Check the original outer and cause on both Spring releases",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m43s, peak 191.6 MiB (estimated 3m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-051405-check-the-original-outer-and-cause-on-bo.json",
+    "sha256": "ef5aa793c55baa3c68d312ebcc6e13c2fa93b968694144d4fa4b237b9785fe98",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-051405-check-the-original-outer-and-cause-on-bo",
+      "title": "Check the original outer and cause on both Spring releases",
+      "description": "Repeat all three registered public histories including the refuted parent baseline. The fixed invalid retry completes, so additionally supply the same labelled ordinary terminal publisher error to both original libraries. Require the correct subscriber, wrapped error and cause and reject the inner-only and unsubscribed callers.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay",
+        "java:retained-history"
+      ],
+      "links": {},
+      "expected": "All original public observations match, and the labelled error actually exercises the planted readback on both sides.",
+      "submitted": {
+        "at": "2026-11-27T05:14:05+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/development.py 466",
+          "run": "python3 verification/blind-caller/development.py 466",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/466-development.zip"
+      ]
+    }
+  },
+  "sourceCommit": "656584a8bb1ff82b2aacce9935d61d58ac928f3c",
+  "startedAt": "2026-11-27T05:32:47+00:00",
+  "finishedAt": "2026-11-27T05:40:26+00:00",
+  "wallSeconds": 459.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 338257,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 200871936,
+    "wallSeconds": 223.1,
+    "cpuSeconds": 253.6,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 1.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/development.py 466",
+      "run": "python3 verification/blind-caller/development.py 466",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 223.109,
+      "cpuSeconds": 253.613,
+      "cpuThrottledSeconds": 4.441,
+      "peakMemoryBytes": 200871936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 1,
+        "bytes": 200,
+        "sha256": "82928e7fc7bfe7a139ececc50d10669d1dd8229872fb2b99ad7eae5c1d497a31",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "466 {'spring-projects/spring-framework#37193.1': 'open', 'spring-projects/spring-framework#37193.2': 'established', 'spring-projects/spring-framework#37193.3': 'refuted'} four planted callers refused"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/466-development.zip",
+      "change": "added",
+      "bytes": 78718,
+      "sha256": "3860858cca9e40bfa79aeabf5694e2b82f23adfe017874ba8df74ae4e96bd823",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T05:40:39+00:00",
+    "applied": [
+      "verification/blind-caller/466-development.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f520b39325d3f84d9896a83393b15fe9507812f4",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f520b39325d3f84d9896a83393b15fe9507812f4/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T054026Z-386307f88aba7079",
+      "outputs": "20261127T054026Z-40907659307dbd1b",
+      "diff": "20261127T054026Z-4280531fb61a9436"
+    }
+  }
+}
