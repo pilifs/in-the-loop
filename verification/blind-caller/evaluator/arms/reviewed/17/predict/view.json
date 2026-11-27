@@ -1,0 +1,136 @@
+{
+  "counts": {
+    "changedFiles": 7,
+    "productionSources": 5,
+    "testFilesVisible": 0,
+    "productionListingsWithheld": 0,
+    "testFilesWithheld": 0,
+    "testSourcesOutsideSelection": 0,
+    "publicDocumentationFiles": 8,
+    "prDescriptionOriginalBytes": 2032
+  },
+  "publicTitle": "fix: notify observers from the typed literal setters",
+  "visiblePRDescription": "No issue filed (CONTRIBUTING: \"If you know how to fix a problem, please fix it and open a pull request instead of opening an issue\").\n\nThe typed setters of the literal expressions assigned the `value` field directly instead of going through `setValue`, so they never sent a property change:\n\n- `StringLiteralExpr.setString` and `setEscapedValue`\n- `CharLiteralExpr.setChar`\n- `DoubleLiteralExpr.setDouble`\n- `IntegerLiteralExpr.setInt` and `LongLiteralExpr.setLong` (both deprecated)\n\nAs a result `LexicalPreservingPrinter` kept printing the old literal, while the pretty printer printed the new one:\n\nEach setter now calls `setValue(...)` and returns `this`, so the observers are notified and the same-value short-circuit from #4791 applies. One side effect: a `null` argument is now rejected by `setValue`'s `assertNotNull`. Before, `setString(null)` stored a `null` value (which then failed later, for example when printing) and `setEscapedValue(null)` already threw.\n\nChecks run (JDK 17, Maven wrapper 3.10.0):\n- `./mvnw -pl javaparser-core,javaparser-core-testing,javaparser-core-testing-bdd install`: 2910 tests (8 skipped) and 625 BDD tests, no failures.\n- `./mvnw -pl javaparser-symbol-solver-core,javaparser-symbol-solver-testing install`: 2165 tests (27 skipped), no failures.\n- `./run_core_metamodel_generator.sh && ./run_core_generators.sh`: no diff afterwards.\n\nNot run: the AppVeyor/CI matrix on other JDKs and operating systems.",
+  "testScope": null,
+  "reviewed": {
+    "entry": "com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter#print(Lcom/github/javaparser/ast/Node;)Ljava/lang/String;",
+    "history": "Change a to b with setString.",
+    "actions": [
+      "Change a to b with setString."
+    ],
+    "bindings": [
+      {
+        "publicEntry": "com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter#print(Lcom/github/javaparser/ast/Node;)Ljava/lang/String;",
+        "registeredEntry": "LexicalPreservingPrinter.print",
+        "sourceCandidateMembers": [
+          "com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter#print(Lcom/github/javaparser/ast/Node;)Ljava/lang/String;"
+        ],
+        "physicalProviders": [
+          "com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "name": "registered public input and prestate",
+        "type": "public history constraint",
+        "constraint": "Change a to b with setString."
+      }
+    ],
+    "inputTypes": [
+      {
+        "name": "registered public input and prestate",
+        "type": "public history constraint",
+        "constraint": "Change a to b with setString."
+      }
+    ],
+    "fields": [
+      "public.outcome",
+      "public.readback"
+    ],
+    "fieldTypes": [
+      {
+        "name": "public.outcome",
+        "type": "JVM outcome kind",
+        "readback": "Normal return or escaping exception from the full registered history"
+      },
+      {
+        "name": "public.readback",
+        "type": "registered Java return or exception",
+        "readback": "Change a to b with setString."
+      }
+    ],
+    "orderedPublicActions": [
+      {
+        "member": "com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter#setup(Lcom/github/javaparser/ast/Node;)Lcom/github/javaparser/ast/Node;",
+        "argumentHandles": {
+          "0": "object-1"
+        }
+      },
+      {
+        "member": "com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter#print(Lcom/github/javaparser/ast/Node;)Ljava/lang/String;",
+        "argumentHandles": {
+          "0": "object-1"
+        }
+      }
+    ],
+    "distinctHandles": [],
+    "requiredSides": [
+      "old",
+      "new"
+    ]
+  },
+  "jdkReleaseSha256": "9568390645661374febde48f3c7a019f21cb116d6e4c627de29c119aa7bd0efc",
+  "functionalReview": {
+    "classification": "ordinary product behavior",
+    "decisionSha256": "16ab91c0fa8e77fd1e1c2b91979f5e203727a99d6dd9abc3ed3363c8fe97cabe"
+  },
+  "approvedTestLaunches": [],
+  "testTraceAvailability": null,
+  "testTrace": null,
+  "deployments": [
+    {
+      "name": "pins",
+      "old": {
+        "classpath": [
+          {
+            "file": "artifacts/000-8418dbc58bc19938.jar",
+            "sha256": "8418dbc58bc19938b6ea07dce99389cc2f9f3255fd344a7748044e4475b1d726"
+          }
+        ],
+        "revision": "a322c502cfac7d97495fc3f41c6b74a06924267f"
+      },
+      "new": {
+        "classpath": [
+          {
+            "file": "artifacts/001-2e89b5a194e58944.jar",
+            "sha256": "2e89b5a194e58944554311eea01e74227768de721aa30c957b9db774b46e7adf"
+          }
+        ],
+        "revision": "c9c78dd4c965646dd97bbf3108ff1faefa1ae198"
+      }
+    }
+  ],
+  "files": {
+    "api-docs/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java.txt": "ba44c9a048eb879ec3a989d396a70d9a750998df309ff6042f63a1e0c7d591fd",
+    "api-docs/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/IntegerLiteralExpr.java.txt": "09f107dfc8a9b570319e514ce86f5f6ee1cfc66cd7bc462965f997c1c8034472",
+    "api-docs/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/LongLiteralExpr.java.txt": "2fa8ba7bc269154a2b7f677ff451e3bee0b6c225435f1c175b0e6eb592a0b0e2",
+    "api-docs/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java.txt": "83eb04dc0f74a27090b2e957747418f80ee87aa14cf347746712cdfe7e83f875",
+    "api-docs/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java.txt": "ba44c9a048eb879ec3a989d396a70d9a750998df309ff6042f63a1e0c7d591fd",
+    "api-docs/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/IntegerLiteralExpr.java.txt": "09f107dfc8a9b570319e514ce86f5f6ee1cfc66cd7bc462965f997c1c8034472",
+    "api-docs/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/LongLiteralExpr.java.txt": "2fa8ba7bc269154a2b7f677ff451e3bee0b6c225435f1c175b0e6eb592a0b0e2",
+    "api-docs/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java.txt": "83eb04dc0f74a27090b2e957747418f80ee87aa14cf347746712cdfe7e83f875",
+    "packet.json": "c26a1069ea0940b5c694e8738862f2e615320be289f1c13aad2bc05fbf742150",
+    "production.diff": "8f58bc266fd2fd5e93230799c225c22379250f56b70096c4f9200815695915ae",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java": "41a0ddc1cd73ce6936a3784e7db98dc042d09bc6a5e72e38c4de734b1e9d0052",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/DoubleLiteralExpr.java": "17e7629256af18605f61316d5376f687c279685119c193e76b12cfedec89c124",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/IntegerLiteralExpr.java": "f76b8f85e4296d056668d59d9c24d88688c2f77891528308685823ec825d226e",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/LongLiteralExpr.java": "7d545ea5cc74c29b926a414c3a2876fd0acc50ecb605b9c26427d36f940aeaa0",
+    "source/new/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java": "b47b190edd47ed07c745b2135f7cace8525d009aad7d5c581cfa0df6496d8e2f",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/CharLiteralExpr.java": "6a8258e5844d17edd5e7b843305dd1853148755af738ff3e012be1dd6e3499ec",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/DoubleLiteralExpr.java": "6b8876f1d3a3a0c219a8f6692d9e5aa0cbedd0aa1356f29a2659a3a246d4972a",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/IntegerLiteralExpr.java": "6e407d5fc0ae2dc270b73bf46ef3cfc3d400f1842ab79d1196a43fb8c058f49e",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/LongLiteralExpr.java": "6df4210daf6b29f93b95014a32ca007490b47d7698f388bcf68ef0217712c786",
+    "source/old/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java": "670421f1a331ca1928be0a326faad0030f6cda32b0167defcc93b94c8f50f4f8"
+  }
+}
