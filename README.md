@@ -94,9 +94,17 @@ starts from a prompt, from a brief, or from a list of pull requests that a first
 queued as jobs and run beside it, under memory and CPU caps. Every session is public: each commit names the
 session that made it and carries the SHA-256 of its log.
 
-> **Architecture.** A diagram of how these parts fit together, and a link to the architecture page, will go here.
+```mermaid
+flowchart LR
+    P(["A person"]) -->|"steers"| W["Watcher"]
+    W -->|"cycles"| A["Run's agent"]
+    A -->|"queues proofs"| Q["Job queue"]
+    Q -->|"runs capped"| V["Checker"]
+    V -->|"answers"| E["Published record"]
+```
 
-<!-- architecture: the diagram and the link to the architecture page go here; the page is the next piece of work (2026-11-27) -->
+[`ARCHITECTURE.md`](ARCHITECTURE.md) is the map: which file owns each decision, who may do what, which record
+answers which question, and what is not built yet.
 
 ## Status
 

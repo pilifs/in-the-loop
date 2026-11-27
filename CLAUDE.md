@@ -55,6 +55,11 @@ Every test, Rust and Python, has a cost tier, listed in `lib/tests/costs.json` (
 - Work that takes hours is a run: one agent toward one outcome, with a watcher session outside it, started by a person with `/orchestrate-run`. It is the repository's one run skill, and its pages are for the watcher a person starts, not for an agent at work: an agent never starts a run as a step of its own work, and a run's agent starts none. [`llm-dlc/README.md`](llm-dlc/README.md#a-single-agents-run) describes how a run goes.
 - [`llm-dlc/retired.md`](llm-dlc/retired.md) lists the workflows and commands the repository had before it (a brief's streams, the proof loop over examples, loops started by hand, the verification loop, the published plugin and its runtime mode), what replaced each, and where to read it as it was. A page, a note or a memory that sends you to one of them is out of date: don't look for its commands. `python3 llm-dlc/tools/retired.py check` lists any live file that still does.
 
+## Architecture
+
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) says which file owns each decision, who may do what, which record answers which question, and what is not built yet. Read it before adding a tool, moving a responsibility between files, or changing a public command.
+- Keep it true: a change that moves a responsibility, changes who may do something, adds or removes a public command, or changes what a record means updates that page in the same commit. Its section *What is not built yet* is the one place for what is intended and does not run.
+
 ## Operating notes
 
 - [`llm-dlc/operating-notes.md`](llm-dlc/operating-notes.md) holds the rules of practice learned in earlier runs, each with its reason. Read it before a merge, a default test run, a build made apart from the checkout, a fetch from outside, or work in a fresh jj workspace.

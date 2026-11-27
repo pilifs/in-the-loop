@@ -41,7 +41,7 @@ FIELDS = ("Status", "What it was", "Replaced by", "Names", "Files", "Removed in"
 
 # The files an agent acts on, as patterns from the repository's root. Everything else is history or a record.
 LIVE = (
-    "CLAUDE.md", "README.md", ".gitignore",
+    "CLAUDE.md", "README.md", "ARCHITECTURE.md", ".gitignore",
     ".claude/settings.json", ".claude/skills/**/*", ".agents/skills/*", ".codex/**/*", ".claude-plugin/**/*", "plugins/**/*",
     "llm-dlc/*.md", "llm-dlc/*.schema.json", "llm-dlc/tools/*",
     "llm-dlc/loops/brief-generation-template.md", "llm-dlc/loops/setup-agent-template.md", "llm-dlc/loops/domain-prompt-*.md",

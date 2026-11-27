@@ -12,33 +12,38 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T19:27:42.527Z",
-  "duration_seconds": 15241,
+  "ended": "2026-11-27T19:47:33.502Z",
+  "duration_seconds": 16432,
   "stats": {
-    "turns": 20,
-    "api_calls": 393,
-    "tool_calls": 440,
-    "tool_errors": 5,
+    "turns": 21,
+    "api_calls": 423,
+    "tool_calls": 472,
+    "tool_errors": 7,
     "compactions": 3,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 802,
-      "output_tokens": 612009,
-      "cache_read_input_tokens": 117193424,
-      "cache_creation_input_tokens": 1592154
+      "input_tokens": 864,
+      "output_tokens": 667033,
+      "cache_read_input_tokens": 126178164,
+      "cache_creation_input_tokens": 1675967
     }
   },
   "tools": {
-    "Bash": 351,
-    "Read": 55,
-    "Edit": 15,
-    "Write": 13,
+    "Bash": 371,
+    "Read": 56,
+    "Edit": 16,
+    "Write": 15,
     "AskUserQuestion": 3,
+    "mcp__chrome-devtools__take_screenshot": 3,
+    "ToolSearch": 2,
+    "mcp__chrome-devtools__evaluate_script": 2,
     "ListAgents": 1,
     "SendMessage": 1,
-    "ToolSearch": 1
+    "mcp__chrome-devtools__navigate_page": 1,
+    "mcp__chrome-devtools__new_page": 1
   },
   "files_touched": [
+    "ARCHITECTURE.md",
     "README.md",
     "examples/tools/observe.py",
     "examples/tools/preflight.py",
@@ -52,6 +57,7 @@
     "llm-dlc/tools/test_retired.py",
     "llm-dlc/tools/test_single_run.py",
     "verification/findings.md",
+    "~/.cache/in-the-loop/tmp/orch/advisor-note.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/MEMORY.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/architecture-md-update-after-orchestrate-run.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/architecture-md-update-after-run-workflow.md",
@@ -103,24 +109,24 @@
     {
       "index": 3,
       "started": "2026-11-27T18:53:05.659Z",
-      "ended": "2026-11-27T19:27:42.527Z",
-      "turns": 4,
-      "api_calls": 79,
+      "ended": "2026-11-27T19:47:33.502Z",
+      "turns": 5,
+      "api_calls": 109,
       "usage": {
-        "input_tokens": 164,
-        "output_tokens": 81653,
-        "cache_read_input_tokens": 15117126,
-        "cache_creation_input_tokens": 241986
+        "input_tokens": 226,
+        "output_tokens": 136677,
+        "cache_read_input_tokens": 24101866,
+        "cache_creation_input_tokens": 325799
       },
-      "peak_context_tokens": 257332
+      "peak_context_tokens": 341145
     }
   ],
   "log": {
-    "sha256": "50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388",
-    "bytes": 11459456,
-    "lines": 3734,
-    "gzip_bytes": 2164630,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388.jsonl.gz"
+    "sha256": "5d2af750c69bbcea45f7eafa7f89fe38966aabad1a71c6516ac8914937713a44",
+    "bytes": 12655582,
+    "lines": 4002,
+    "gzip_bytes": 2696965,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/5d2af750c69bbcea45f7eafa7f89fe38966aabad1a71c6516ac8914937713a44.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -134,80 +140,80 @@
     },
     {
       "change_id": "kpvkzxtvlmznmowyqylryuloyprpvykt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "31e3d24b18530090256c23d431b57b49caf79ea0",
+      "immutable": true,
       "summary": "Propose six checked false positives for the allow list",
       "body": "Each checked with masked output before the push the user asked for: an apt lists file name (22b99f51), two Codex rollout identifiers (6beceb38, 82593d9e), an upgrade example's base64 fixture output (56b88bc7), a source path in a Gradle compile warning (97093444) and an upstream test's expected encoding of 'hello world' (57e1c50a). They stay open until a person approves them.",
       "log_sha256": "40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3"
     },
     {
       "change_id": "roktuvruyvusnrymmxzuyzrvsxkwsxyv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "1478629981f0bbdb0675d75ffdd445a16af56fd8",
+      "immutable": true,
       "summary": "Propose the remaining 142 open findings for the allow list, at the user's word",
       "body": "The user ran an external review on 2026-11-27 that checked each open finding against its real value and found no credential or secret; at their word every remaining open warning is proposed, grouped by what it is: build-cache and branch names, apt package-list filenames, Codex rollout filenames, test and class names and temp paths, version and RFC section numbers that match the IP pattern, test fixtures (Base58 alphabet, threetenbp trace JSON, UTF-16 timestamps, javaparser paths), and fragments of two encrypted Codex reasoning blobs wrapped in a captured pane. 56b88bc7 is re-proposed with its true description: base64 of a file: URL under the home directory, already public, exposing only the account name, which the user accepts. They stay open until a person approves them.",
       "log_sha256": "40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3"
     },
     {
       "change_id": "ulxlynunxlllzmyoozmmvuutvtvqxvmp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "29706b5cc6ed84a50f9f9c65ab4d789ced434b2e",
+      "immutable": true,
       "summary": "Allow list: Filip Stankovic approved 00a1fcff, 011f48de, 02f3f00a, 040588b6, 04d87c8d, 04e03901, 04fe9502, 0762ddd2 and 206 more",
       "body": "Filip Stankovic approved 214 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n00a1fcff  long-token  rol…8f (40 chars): Codex rollout log filenames (rollout-2026-…); checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n011f48de  long-token  L14…10 (48 chars): File name of a jar built by the L01-L20 setup (L14-iceberg-{fix,parent}-MODULE-SHORTREV[-tests].jar), listed in the setup record's artifacts table; hyphenated module names and a 7-character git revision, not a secret\n02f3f00a  long-token  nJ1…ns (48 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n040588b6  long-token  M19…ns (46 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n04d87c8d  long-token  end…er (52 chars): test and class names, temp-directory paths, decision IDs and job names; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n04e03901  long-token  nL1…c7 (46 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n04fe9502  long-token  tes…ge (43 chars): test and class names, temp-directory paths, decision IDs and job names; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n0762ddd2  long-token  J09…bc (46 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n07bb42d4  long-token  TMP…ex (74 chars): test and class names, temp-directory paths, decision IDs and job names; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n09dcaa34  long-token  nL1…10 (43 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n0a56ed2a  long-token  L05…ns (46 chars): File name of a setup artifact jar, $O/artifacts/L05-junit-framework-{fix,parent}-MODULE.jar (JUnit platform/Jupiter module names), in the L01-L20 setup session's log and setup record; not a credential\n0ab4fc9b  long-token  nL0…ne (49 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n0afdfa75  long-token  spr…ed (42 chars): test and class names, temp-directory paths, decision IDs and job names; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n0c00607e  long-token  com…en (50 chars): apt package-list cache filenames (archive.ubuntu.com_ubuntu_dists_…); checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n0e4c8edc  long-token  nL1…c7 (40 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n0e773846  public-ip  1.…2: version numbers or RFC and JVM-spec section numbers, and the reserved documentation address 192.0.2.1; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n0f0c274c  long-token  L14…ts (44 chars): File name of a jar built by the L01-L20 setup (L14-iceberg-{fix,parent}-MODULE-SHORTREV[-tests].jar), listed in the setup record's artifacts table; hyphenated module names and a 7-character git revision, not a secret\n121bec16  long-token  J17…ns (50 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n1331b4a5  long-token  Pos…ts (72 chars): Spring Boot test source file name (a Postgres-related *Tests.java in module/spring-boot-r2dbc's listing) printed in build and landed-file listings of the S01-S50 setup; an upstream class name, not a credential\n152ce1db  long-token  C1_…w9 (118 chars): fragments of two encrypted Codex reasoning blobs (ciphertext only the provider can decrypt), split by line-wrapping in a tmux pane the watcher captured on 2026-11-23; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n16408af3  long-token  nL1…10 (42 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n17b82164  long-token  0-M…es (52 chars): test and class names, temp-directory paths, decision IDs and job names; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n1921dd08  long-token  L05…ne (48 chars): File name of a setup artifact jar, $O/artifacts/L05-junit-framework-{fix,parent}-MODULE.jar (JUnit platform/Jupiter module names), in the L01-L20 setup session's log and setup record; not a credential\n1a4e70cf  long-token  com…es (60 chars): apt package-list cache filenames (archive.ubuntu.com_ubuntu_dists_…); checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n1c966e88  long-token  M19…ne (44 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n1d61888d  public-ip  2.…8: Not an IP address: a four-part Maven version of com.fasterxml.jackson.core:jackson-databind (pom <version>, 'Bump jackson-databind from ... to ...' commit subjects) that spatial4j #212's generation and setup sessions read.\n1ed07dd0  long-token  4+d…64 (57 chars): a Debian source path (…-1.4+ds/src/…); checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n1f25f7b9  long-token  P01…4d (51 chars): Setup pin label CASE-ROLE-SHA (e.g. P01-fix- plus a public spring-framework commit id) from the P01-P30 setup's git refs and signature log; public commit id, not a secret\n2212e224  long-token  P17…62 (48 chars): Setup pin label CASE-ROLE-SHA (e.g. P01-fix- plus a public spring-framework commit id) from the P01-P30 setup's git refs and signature log; public commit id, not a secret\n22b99f51  long-token  com…en (54 chars): an apt lists file name under /var/lib/apt/lists (archive.ubuntu.com_..._Translation-en), printed by an rg over the lists; checked masked\n22d807cb  long-token  M19…ne (45 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n259bdee8  long-token  T6c…gU (118 chars): fragments of two encrypted Codex reasoning blobs (ciphertext only the provider can decrypt), split by line-wrapping in a tmux pane the watcher captured on 2026-11-23; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n26c3e032  long-token  P01…e2 (48 chars): Setup pin label CASE-ROLE-SHA (e.g. P01-fix- plus a public spring-framework commit id) from the P01-P30 setup's git refs and signature log; public commit id, not a secret\n2780bea6  long-token  cac…s/ (105 chars): Folder part of the OpenJDK ClassPath.java test-fixture cache path under ~/.cache/in-the-loop, the same path as 3c91fa1a; a filesystem path, not a secret\n2834074d  long-token  rol…ce (64 chars): Codex rollout log filenames (rollout-2026-…); checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n28fa0370  long-token  nM1…ns (50 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n29a3222d  long-token  Moc…ts (59 chars): Public Spring Framework test class name (upstream spring-test sources) printed in setup job results; not a secret\n2a63803f  long-token  rol…cd (64 chars): Codex rollout log filenames (rollout-2026-…); checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n2cacf59e  long-token  P02…ba (48 chars): Setup pin label CASE-ROLE-SHA (e.g. P01-fix- plus a public spring-framework commit id) from the P01-P30 setup's git refs and signature log; public commit id, not a secret\n2e919789  long-token  Neo…ry (42 chars): Spring Boot main source class name (module/spring-boot-opentelemetry) in landed-file listings of the S01-S50 setup; an upstream class name, not a credential\n2f6ee60f  long-token  P08…ba (48 chars): Setup pin label CASE-ROLE-SHA (e.g. P01-fix- plus a public spring-framework commit id) from the P01-P30 setup's git refs and signature log; public commit id, not a secret\n30e4def2  long-token  nL0…er (51 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n320a161d  long-token  P29…1f (48 chars): Setup pin label CASE-ROLE-SHA (e.g. P01-fix- plus a public spring-framework commit id) from the P01-P30 setup's git refs and signature log; public commit id, not a secret\n333a0de1  long-token  nJ1…ns (51 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n33519384  long-token  L05…pi (44 chars): File name of a setup artifact jar, $O/artifacts/L05-junit-framework-{fix,parent}-MODULE.jar (JUnit platform/Jupiter module names), in the L01-L20 setup session's log and setup record; not a credential\n33a34019  public-ip  2.…2: version numbers or RFC and JVM-spec section numbers, and the reserved documentation address 192.0.2.1; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n3a90688b  long-token  P08…22 (51 chars): Setup pin label CASE-ROLE-SHA (e.g. P01-fix- plus a public spring-framework commit id) from the P01-P30 setup's git refs and signature log; public commit id, not a secret\n3c3063c1  long-token  nL0…ns (47 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n3c81e730  long-token  sin…00 (51 chars): test and class names, temp-directory paths, decision IDs and job names; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n3c83be79  long-token  nL0…pi (45 chars): build-cache and branch names (L05-…, M19-…, J17-…, P01-fix-<sha>, gradle-full-L15-<sha>), some with an n left over from an escaped newline; checked against its real value in an external review the user ran on 2026-11-27, and proposed at the user's word\n... and 164 more, each in allowlist.json",
       "log_sha256": "40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3"
     },
     {
       "change_id": "kkntyzzzpovrmvyklylrvnlwtuuoltrn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3e2d51c67c988a67a1cd1a45dbcddc167d50d34b",
+      "immutable": true,
       "summary": "Add the register of what is retired, and a check that live files point at it",
       "body": "The user decided on 2026-11-27 that the project converges on one run skill, to be called orchestrate-run, and that every other proof workflow is outdated: multi-agent-brief, the proof loop behind prove-java-change, the loops started by hand, the Sonnet verification loop, and the published plugin with its runtime mode. Nothing is to leave the history of work, and whatever names a retired thing is to say where to find it.\n\nllm-dlc/retired.md is that place: one entry for each thing, with what it was, what replaced it, the names that should no longer turn up in live files, the files that go, and the change that removed it. Every entry is still planned: this change removes nothing. llm-dlc/tools/retired.py reads the entries and lists each paragraph of a live file (instructions, skills, tools and their tests) that names something retired without pointing at the register, and each retired file that is still here. test_retired.py runs it on the repository, so it starts to hold as entries turn retired. With --planned it shows the work ahead: 367 paragraphs in 72 live files and 39 files.\n\nVerified by test_retired.py (5 tests: an entry's form, a failing page and its control once it points at the register, names as whole words, a retired file still present, the generated table of sessions left unread) and by test_costs.py lint. The inventory also gains the rows of nine tests other sessions added without them.",
       "log_sha256": "40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3"
     },
     {
       "change_id": "uzwlnmyysovnzpvsmuynwzupwpmkwyrq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "88b0e1015750d8404581a76d329f1f43fae7a235",
+      "immutable": true,
       "summary": "Move what the run tools share out of the two controllers that are being retired",
       "body": "single_run.py and brief_queue.py took landing, trial merges, queue keeping, the nested-run refusal and the clock from brief_run.py (the streams' controller) and watch.py (the proof run's), which are to be retired (llm-dlc/retired.md). Their text is moved, unchanged, into three modules: run_common.py (a run's state, the clock, what a turn cost, jj, the workspaces and loops of a folder, the commits a run made, the refusal to start a run from inside one), landing.py (land, onto_line, trial_merge and the locks they hold) and queue_keeping.py (collect, start_runner, tend). The two old controllers import them, so both still work as before; single_run.py and brief_queue.py no longer import either controller. One wording differs: a merge landed with no message of its own now names the workspace, and the foundation stage passes its own words.\n\nwatch.py had also become the home of checks on examples. They move to examples/tools: preflight.py (what each example named lacks before a run takes it; validate_example.py and the numbered handoff call it) and observe.py (the startup-facts and public-observation reports). watch.py's commands of those names call them. preflight.py no longer says which claims a person has reviewed: that record belongs to the proof run, and watch.py adds it for as long as it exists.\n\nVerified by the changed-tests run: 66 of 66 test files passed, among them the two old controllers' own (test_brief_run 54, test_watch 42, test_prove_loop 32), test_single_run (29) and test_brief_queue (12). The moved code has tests of its own that do not go through a retiring controller: test_landing.py (14, on real jj repositories: forward, merge, conflict taken back, another session's files, trace output, a person's decisions, onto_line, a trial merge), test_queue_keeping.py (6), test_run_common.py (9) and test_preflight.py (9). The cost lint agrees.",
       "log_sha256": "1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209"
     },
     {
       "change_id": "sylnnqzvumoooqosuvusqpommwlvvtlw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "715b7befe26bd619ddebee5f14e5b86cb1e03cbe",
+      "immutable": true,
       "summary": "Rename the run skill to orchestrate-run, with a page for each kind of run",
       "body": "The user decided on 2026-11-27 that the project converges on one run skill and named it orchestrate-run. It is single-agent-run under a new name: its commands (single_run.py, brief_queue.py) and a run's folder (single-NAME) are unchanged, so no record changes.\n\nThe one page of 388 lines is now a core page and four beside it. SKILL.md holds what every run needs: the watcher's rules, the request, a run under way, start, watch and report, and a table of the four kinds of run. setup.md, generation.md, queue.md and redaction.md hold the sections of those names, moved as they were, and the core page tells the watcher to read a kind's page in full before acting on it and again after a compaction. The opening no longer describes the watcher by two skills that are being retired; it says this is the repository's one run skill and points at llm-dlc/retired.md for the others.\n\nThe by-hand resolution of a landing that conflicts was written only on the proof run's page, which is to be retired: it is now in the operating notes (\"A landing that conflicts\"), and the skill and landing.py's message point there. The register's entry for single-agent-run is retired, and the check holds for it: no live file names the old skill without pointing at the register.\n\nVerified by the changed-tests run (60 of 60 test files, among them test_agent_client, whose list of the run skills that are the user's alone in Codex now names orchestrate-run), and by agent_client.py instructions --client codex, which finds every skill linked and reports no problem.",
       "log_sha256": "be9027345ccd6a31df540bd4265dd83d8a3bb4849634f45821823f82723e6a51"
     },
     {
       "change_id": "kkkqupwwxuppwmvnlqyzkuxpprmmromr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c7e41db4b54a4eab4617aabae35f16298d7c1434",
+      "immutable": true,
       "summary": "Retire the streams workflow: /multi-agent-brief, brief_run.py and run-streams.sh",
       "body": "The user decided on 2026-11-27 that the project converges on one run skill, /orchestrate-run, and that every other proof workflow is outdated. This removes the workflow that ran a brief as parallel streams: the skill multi-agent-brief, its controller brief_run.py, run-streams.sh with its status bar (streams_status.py), the streams' inboxes (inbox.py), the rolling integration line (integration.py and the four briefs' integration scripts), transfer-session.sh, and the four test files of those tools. Nothing is removed from the history: llm-dlc/retired.md names the change that removed them, and its parent is the last commit that has them. The entry also says where the foundation session's prompt, the user's text, is to be read.\n\nWhat the surviving tools shared with that workflow was moved out two commits ago (run_common.py, landing.py, queue_keeping.py) and is unchanged here. The rest is wording: the conductor no longer describes the two questions only streams asked (their three answers are still read, so an old run directory's verdicts are), feature-loop.sh no longer ends a brief's instruction with the sentence that pointed at an inbox no tool writes, and llm-dlc/README.md's section on a brief's run is replaced by a short one that points at the register and keeps the three things it said that hold for every run. The operating notes keep the user's rule about sessions beside a run.\n\nOne thing the removal makes visible, and does not fix: only the default workspace publishes run records, and run-streams.sh was the one caller of run_records.py, which copies a workspace's records there. No command of a single run does that, so no single run's record is published and the loop statistics count none (llm-dlc/traces/loops.md names no single-NAME run). The pages now say so. Copying them at a landing would publish some dozens of records at once and is for the user to decide.\n\nVerified by the changed-tests run (32 of 32 test files, among them test_single_run 29, test_brief_queue 12, test_prove_loop 32, test_watch 42, test_conductor 23, test_agent_client 27, test_landing 14, test_queue_keeping 6) and by retired.py check, which finds no retired file still here and no live paragraph that names the streams' tools without pointing at the register. The cost inventory drops the 77 rows of the removed tests, and its lint agrees.",
       "log_sha256": "7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e"
     },
     {
       "change_id": "ykqmkpuomlqwxvwlywkqmspuzynnoxux",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a49fc855465b7ff8abc9b40b4935bd05a01b0fe4",
+      "immutable": true,
       "summary": "Retire the proof loop, the loops by hand and the verification loop",
       "body": "The second removal of the convergence on /orchestrate-run (the user's decision of 2026-11-27; llm-dlc/retired.md). It removes the proof run of a development checkout (watch.py, prove-loop.sh, the watcher's summary template, the plan template, the links that offered /prove-java-change here) and the verification loop (verification-loop.sh), with their three test files. Nothing is removed from the history: the register names this change, and its parent is the last commit with those files.\n\nfeature-loop.sh is now the loop under a run and nothing else: 755 lines where it had 1,450. It ran four kinds of loop, and three are retired with this change (moonshots by name, templated moonshots over examples with their judge, items and waiting, and briefs by name or file with their settings, status line and decision turn). The single-agent kind is unchanged line for line, and the script refuses the other names with a pointer to the register. The conductor loses the two questions only the proof loop asked and its matching of jobs to examples; its answers are still read, so an old run directory's verdicts are. The watcher of a run no longer defers to a verification loop or to another kind of run for the queue: it keeps it whenever its run says so.\n\nThe compaction watch, the handling of a scope left by an ended loop, the refusal of a loop inside a loop and the private copy of the script were tested only through the proof loop. test_feature_loop.py now tests them on the single-agent loop (9 tests, the script run for real against a stand-in client), with one for the refusal of a retired kind.\n\nKept, though the proof run used them: prove-plan.schema.json (the scaffold and one study write and read the format), changes.py and doctor.py (the surviving tools call them). The published plugin's skill and llm-dlc/runtime.md still describe the proof run: they belong to the release the plugin pins, are exempt from the register's check by name, and go with the plugin in the next change. Three studies that pinned the tools of the revision they ran on still name retired files and are left as records; they read those files from that revision.\n\nVerified: the changed-tests run passed 29 of 32 test files, and the three that failed were fixed and pass alone (test_single_run 29 and test_brief_queue 12, which need the line single_run.py looks for in the script, now kept; test_claude_setup 21, an assertion on a message this change reworded). retired.py check finds nothing, and the cost lint agrees.",
       "log_sha256": "86c2329ef2f407f1709389ded32e0fa0f819c66b4fc7ef33eee814c388760dc5"
     },
     {
       "change_id": "vwytpwxyvmrrvqpulyprwqnolosnuzom",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "02f2e0d12804eca54a5cb5a2bc7c7afed34f8d74",
+      "immutable": true,
       "summary": "Retire the published plugin and runtime mode",
       "body": "The last removal of the convergence on /orchestrate-run, which the user decided on 2026-11-27 and asked to be done last (llm-dlc/retired.md). It removes the plugin in-the-loop with its skill /prove-java-change, its bootstrap and the pin of release 0.10.0, the marketplace entry, the page of runtime mode (llm-dlc/runtime.md), and the tools that existed for a released copy on a user's machine: release.py, mode.py, claude_setup.py and contribute.py, with their four test files. Nothing is removed from the history: the register names this change, and its parent is the last commit with those files. Nothing replaces the product yet; the register says so.\n\nThe repository now has one mode. sync.py no longer asks which mode a checkout is in and loses its plain-commit branch; it still reads the In-The-Loop-Runtime trailer, because commits contributed from a released copy are in the history and must never be stamped with a session. The loop no longer starts sessions with the flags of a clean launch, which only a runtime checkout used, and the conductor no longer keeps a decision record under a local name. changes.py and doctor.py are kept and described without the plugin.\n\nCLAUDE.md describes one mode, gains a short section on runs that names /orchestrate-run and points at the register, and no longer speaks of a release as a point where the default run is owed, or of streams. The front page (README.md) is an interim one, to be restructured with the user: it says what the repository is, how work is run, and that the plugin is retired, and keeps the sections on the three answers, the layout and the background.\n\nLeft as records: the benchmark of external upgrades measured the plugin at pinned revisions, and its operator harness names the plugin's files; it needs a new product entry before it can measure a later revision. The register says so.\n\nVerified by the changed-tests run (51 of 51 test files, among them test_single_run 29, test_feature_loop 9, test_conductor 20, test_performance 114, test_review 37 and test_changes 22), by sync.py check, which the commit itself runs on the new sync.py, by agent_client.py instructions --client codex (no problem, every skill linked), and by retired.py check: no retired file is still here and no live paragraph names one without pointing at the register. The check's three exemptions for the plugin's pages are removed with them.",
       "log_sha256": "5d29b8b2cac9dcb4ab2cfa4fcecd1140511c7b15bd1ccc01a824e5f119194d05"
     },
     {
       "change_id": "xksklxrkzokomsvvpmmsykzolkxxrlup",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "1826a7e9dcd3d18aa6c934a7ea8219c60e218405",
+      "immutable": true,
       "summary": "Stop CLAUDE.md naming the run skill's page, which refused every Codex run",
       "body": "A correction of the change before this one (vwytpwxy, the retirement of the plugin and runtime mode). Its new section on runs in CLAUDE.md linked the page of the run skill. Codex is given CLAUDE.md whole, and agent_client.py's check of what Codex would be given reads a skill's page named there as that skill offered to a work turn, which the skill forbids: it reported a problem, and single_run.py refuses to start a Codex run while it does. That commit's message says the check reported no problem. It did report this one: the command printed it and exited 0, and the commit was made in the same line without the output being read.\n\nCLAUDE.md now names the skill without its page and says its pages are for the watcher a person starts, and points at llm-dlc/README.md for how a run goes. The queue was held throughout, so no run met the refusal.\n\ntest_agent_client.py gains a unit test that fails when CLAUDE.md names the page of a skill only a person starts, so the next such link is found before a commit. Verified: agent_client.py instructions --client codex reports no problem and lists only run-verification to a work turn; test_agent_client passes (28 tests); the cost lint and retired.py check agree.",
       "log_sha256": "06bb5fae0a513dac56d22465e905fac504c25dafcb6212cf8ee2f23fdab5eed8"
@@ -253,20 +259,52 @@
       "log_sha256": "747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4"
     },
     {
-      "change_id": "oxqtlxmxywtpqxmrvzuxrskysnsrwwvr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "17b988d0c4de462a8ba5feb26bf5c5fa7cb271f4c708e20ab6bae5f251062cdb"
-    },
-    {
       "change_id": "zyqvwuqmntrulyswplppkplkwllvpqpk",
       "commit_id": null,
       "immutable": false,
       "summary": "VF-079: a session's trace line lands on commits it did not make",
       "body": "Recorded for the user's decision. sync.py takes a session to have made every mutable ancestor of @ dated while it ran, and @ itself while it is live, so a line can land on a commit another session or a person made. It was seen twice during the convergence on /orchestrate-run and came with neither.\n\nFirst, the convergence's first commit put its session's line on three unpublished commits under it, two allow-list proposals and the user's own approval; each now names three sessions. Second, a sync of this session run in another workspace, merge-fixes, by a session with an uncommitted change that renders a session from another workspace's transcript, gave that workspace's working-copy change this session's line and stored the log it names there alone. That failed the check of the commit before this one in this workspace (log 614ccbcc12c9 neither stored locally nor uploaded); sync.py adopt-logs brought the log over and the check is back at 0 errors.\n\nThe entry puts two readings of a trace line to the user and asks that, under either, a session rendered from another workspace's transcript is not given the rendering checkout's working copy. No trace line was edited.\n\nVerified: retired.py check finds nothing in the entry, and the changed-tests run passed 6 of 6 test files. The findings page is one no test of the default run reads, so the passed whole run recorded for the tree at qvsumqom still covers this commit.",
       "log_sha256": "50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388"
+    },
+    {
+      "change_id": "oxqtlxmxywtpqxmrvzuxrskysnsrwwvr",
+      "commit_id": "77c09789c37318015e4537c47b87d11625387a65",
+      "immutable": true,
+      "summary": "Let sync SESSION re-render a session whose transcript is in another workspace's folder",
+      "body": "On 2026-11-27 the merge of the promotion's record with the line conflicted in the Fable session's manifest: the promotion marked an earlier log uploaded, and the line added a later log. The way to settle such a conflict is to re-render the manifest with sync.py sync SESSION, but transcript_of looked only in this checkout's project folder and its own Codex rollouts, and the Fable transcript is in the queue workspace's folder, so the watcher could not settle it. transcript_of now falls back to the transcript wherever it is on this machine (transcript_anywhere, which VF-074's fix added), never a Codex thread that was only asked a question. A session rendered from another workspace's transcript keeps the workspace its manifest names, whose paths its log has, instead of taking this checkout's; its summary is rendered by that workspace as well. The size total in traces/README.md now counts a log this workspace does not store yet as 0 instead of failing, which a re-render of such a session met. The way to settle the conflict: restore the side whose manifest records the upload (jj restore --from that side the manifest), then sync.py adopt-logs and sync.py sync SESSION, which adds the later log and keeps the URL. Verified: a unit test (a transcript in another workspace's folder is found and is not this checkout's own; with none anywhere the old name is kept); a real sync of the Fable session from a fresh workspace found its transcript, kept its workspace and added its later log after adopt-logs; test_costs run --changed, 23 of 23 files pass; lint agrees.",
+      "log_sha256": "e41e251cf74bdd726b9e2526eae17026ce816ea3cb03596612ad6945fe78ab66"
+    },
+    {
+      "change_id": "ortxulpkluywmvukpltzpmzluyrrpkrv",
+      "commit_id": "15109cdd627b136c8108b3b06868175116dcb640",
+      "immutable": true,
+      "summary": "Record VF-077: gaps in the redaction review, from an outside review of the open findings",
+      "body": "At the user's request (2026-11-27), from a review by an agent outside this checkout of all 214 open findings against their real values and the 418 published logs. No credential or secret is among them: the 66 proposals and the rest are test, build and run output. One real miss, 56b88bc7, a base64 file: URL under the home folder from a threetenbp run in Codex session 01a20c2d-af08, is already in 58 published logs and exposes only the public account name; the reviewer recommends accepting it. The entry records the process gaps that matter more: a person's pane captured into a published log while sync.py allow printed values unmasked (2026-11-23), no review of findings that exist only in published logs, a line-by-line redactor that misses wrapped values, no match for encoded personal values, and ambiguous eight-character session ids in review. It names the decisions that are the user's and a fix for each gap.",
+      "log_sha256": "e41e251cf74bdd726b9e2526eae17026ce816ea3cb03596612ad6945fe78ab66"
+    },
+    {
+      "change_id": "krmzyktuuluwuxmmowszxyykknlpvtwm",
+      "commit_id": "8a151a843d367aab4d5c16409b0fd7079d6b266b",
+      "immutable": true,
+      "summary": "VF-077: add the watcher's account of the gaps",
+      "body": "The queue's watcher (6c5c7798) added its own account. All 214 open findings are now proposed. It captured the user's pane during allow approve on 2026-11-23, which produced 14 long-token findings in its log, each appearing 586 times. A masking step of its own printed a 29-character fragment again on 2026-11-27, under the 40-character threshold. review show is too slow, and shows too little context for some families to classify them, which made an outside pass necessary before a promotion. Agents have no read-only way to see allow's usage, since sync.py push ignores --help. The entry adds those as gaps 6 and 7, with fixes.",
+      "log_sha256": "e41e251cf74bdd726b9e2526eae17026ce816ea3cb03596612ad6945fe78ab66"
+    },
+    {
+      "change_id": "nuwzwxqxrwounvvmvstlwzuymlrymmus",
+      "commit_id": "c9e90eea17a76942c56f258545639ea212771187",
+      "immutable": true,
+      "summary": "VF-077: the user's direction for sensitive commands",
+      "body": "The user, 2026-11-27: sensitive commands go in a separate tmux session that agents never read, and everything else stays in the user's usual session, so agents can help and watch work finish. A command that can be made less sensitive without losing its function should be: for example, masked values by default in allow and allow approve, with an explicit flag to unmask. Commands whose output may hold real values are designated sensitive (in their usage, and with a notice when run outside a terminal of their own), so it's clear where each one runs.",
+      "log_sha256": "e41e251cf74bdd726b9e2526eae17026ce816ea3cb03596612ad6945fe78ab66"
+    },
+    {
+      "change_id": "nzvqnwtwxzzqvtuqsqypnxtolopxpznq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "ARCHITECTURE.md: the map of who owns what, who may do what and what is not built",
+      "body": "The user asked for the architecture page to become a first-class file of the project once the run skills had converged, written from their draft and updated to the implementation and the direction as they now are. This is its first version, at the repository's root, for their review.\n\nThe page has one path (a person, a watcher, a run, its jobs, a checker, the line, develop, main) with a diagram, the four kinds of run, where the judgment is and where it is not, a table of owners with each one's contract, a table of who may do what and what holds each rule, the record that answers each question, and one section for what is intended and not built: a product entry, the job pipeline the user wants to grow out of /run-verification, fan-out from a manifest, a sealed producer, a worker request, the filter-stop wording, machine-wide run visibility, a run's record and cost (VF-078), the meaning of a trace line (VF-079), network capacity. It also says how a finding becomes the next plan, how something is retired, and how the page is kept. Against the draft: the released product and its mode, the streams' controller and the proof run's watcher are gone from the owners, links are relative so that they resolve at the commit being read, and measurements are left with their owners.\n\nHeld by two checks in the default run: test_architecture.py fails when a link of ARCHITECTURE.md or README.md leads to a file or a heading that is not in the repository (with a made-up page as its control), and the register's check now reads the page as a live file. The front page's placeholder becomes a small diagram and a link to the page, and CLAUDE.md gains a section that sends an agent to it before it adds a tool or moves a responsibility, and has it updated in the same commit.\n\nVerified: test_architecture.py passes (4 tests) and so does the changed-tests run, 40 of 40 test files; retired.py check finds nothing; agent_client.py instructions --client codex reports no problem with the longer CLAUDE.md (read, not chained); both diagrams were rendered once with Mermaid 10.9.1 in the headless browser and came out with the nodes and edges written (8 and 11, 6 and 5).",
+      "log_sha256": "5d2af750c69bbcea45f7eafa7f89fe38966aabad1a71c6516ac8914937713a44"
     }
   ],
   "logs": {
@@ -280,12 +318,6 @@
       "bytes": 9101338,
       "lines": 2756,
       "gzip_bytes": 1728388,
-      "url": null
-    },
-    "17b988d0c4de462a8ba5feb26bf5c5fa7cb271f4c708e20ab6bae5f251062cdb": {
-      "bytes": null,
-      "lines": null,
-      "gzip_bytes": null,
       "url": null
     },
     "1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209": {
@@ -310,6 +342,12 @@
       "bytes": 8751465,
       "lines": 2585,
       "gzip_bytes": 1682024,
+      "url": null
+    },
+    "5d2af750c69bbcea45f7eafa7f89fe38966aabad1a71c6516ac8914937713a44": {
+      "bytes": 12655582,
+      "lines": 4002,
+      "gzip_bytes": 2696965,
       "url": null
     },
     "689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406": {
@@ -358,6 +396,12 @@
       "bytes": 5804633,
       "lines": 1874,
       "gzip_bytes": 1078690,
+      "url": null
+    },
+    "e41e251cf74bdd726b9e2526eae17026ce816ea3cb03596612ad6945fe78ab66": {
+      "bytes": null,
+      "lines": null,
+      "gzip_bytes": null,
       "url": null
     }
   },
