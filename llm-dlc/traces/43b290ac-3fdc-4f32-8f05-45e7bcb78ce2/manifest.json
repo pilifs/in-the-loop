@@ -12,30 +12,31 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T18:22:29.587Z",
-  "duration_seconds": 11328,
+  "ended": "2026-11-27T18:38:07.475Z",
+  "duration_seconds": 12266,
   "stats": {
-    "turns": 13,
-    "api_calls": 262,
-    "tool_calls": 313,
+    "turns": 14,
+    "api_calls": 279,
+    "tool_calls": 329,
     "tool_errors": 3,
     "compactions": 2,
     "peak_context_tokens": 564675,
     "usage": {
-      "input_tokens": 528,
-      "output_tokens": 449994,
-      "cache_read_input_tokens": 75871109,
-      "cache_creation_input_tokens": 1224188
+      "input_tokens": 564,
+      "output_tokens": 475564,
+      "cache_read_input_tokens": 83671020,
+      "cache_creation_input_tokens": 1263749
     }
   },
   "tools": {
-    "Bash": 237,
-    "Read": 51,
-    "Write": 12,
-    "Edit": 11,
-    "AskUserQuestion": 2
+    "Bash": 248,
+    "Read": 53,
+    "Write": 13,
+    "Edit": 12,
+    "AskUserQuestion": 3
   },
   "files_touched": [
+    "README.md",
     "examples/tools/observe.py",
     "examples/tools/preflight.py",
     "llm-dlc/loops/brief-generation-template.md",
@@ -85,24 +86,24 @@
     {
       "index": 2,
       "started": "2026-11-27T17:39:27.601Z",
-      "ended": "2026-11-27T18:22:29.587Z",
-      "turns": 1,
-      "api_calls": 77,
+      "ended": "2026-11-27T18:38:07.475Z",
+      "turns": 2,
+      "api_calls": 94,
       "usage": {
-        "input_tokens": 154,
-        "output_tokens": 140673,
-        "cache_read_input_tokens": 24057271,
-        "cache_creation_input_tokens": 429436
+        "input_tokens": 190,
+        "output_tokens": 166243,
+        "cache_read_input_tokens": 31857182,
+        "cache_creation_input_tokens": 468997
       },
-      "peak_context_tokens": 441343
+      "peak_context_tokens": 480904
     }
   ],
   "log": {
-    "sha256": "06bb5fae0a513dac56d22465e905fac504c25dafcb6212cf8ee2f23fdab5eed8",
-    "bytes": 8801727,
-    "lines": 2615,
-    "gzip_bytes": 1688305,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/06bb5fae0a513dac56d22465e905fac504c25dafcb6212cf8ee2f23fdab5eed8.jsonl.gz"
+    "sha256": "16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd",
+    "bytes": 9101338,
+    "lines": 2756,
+    "gzip_bytes": 1728388,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -193,6 +194,14 @@
       "summary": "Stop CLAUDE.md naming the run skill's page, which refused every Codex run",
       "body": "A correction of the change before this one (vwytpwxy, the retirement of the plugin and runtime mode). Its new section on runs in CLAUDE.md linked the page of the run skill. Codex is given CLAUDE.md whole, and agent_client.py's check of what Codex would be given reads a skill's page named there as that skill offered to a work turn, which the skill forbids: it reported a problem, and single_run.py refuses to start a Codex run while it does. That commit's message says the check reported no problem. It did report this one: the command printed it and exited 0, and the commit was made in the same line without the output being read.\n\nCLAUDE.md now names the skill without its page and says its pages are for the watcher a person starts, and points at llm-dlc/README.md for how a run goes. The queue was held throughout, so no run met the refusal.\n\ntest_agent_client.py gains a unit test that fails when CLAUDE.md names the page of a skill only a person starts, so the next such link is found before a commit. Verified: agent_client.py instructions --client codex reports no problem and lists only run-verification to a work turn; test_agent_client passes (28 tests); the cost lint and retired.py check agree.",
       "log_sha256": "06bb5fae0a513dac56d22465e905fac504c25dafcb6212cf8ee2f23fdab5eed8"
+    },
+    {
+      "change_id": "rqrlwptqvoqmokslvqrmkslrwmrzkmpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Restructure the front page around results, with a way in for a reader",
+      "body": "The front page was an interim one since the plugin was retired. The user chose its structure on 2026-11-27: results first, one status line for the retired plugin, a round figure for the examples with a link to the generated router, a way to reproduce one result, and a short section on how the repository is built with a placeholder for an architecture diagram.\n\nREADME.md now runs: what this is; the three answers and example 285; what is here; how to explore it with an agent or reproduce a result, and what that takes; how it is built; status; for agents; background; licence. The section on exploring says how the artifacts link (an example to its result, a job to the session that submitted it and the commit it ran on, a commit to its session and log, a session to its summary, metrics and transcript), since everything is public and a coding agent can follow the links from a checkout. The hardware note gives the minimums and comfortable figures doctor.py holds, and says that running the workflow itself needs a large machine and is for people who want to work on the verifier. The count of examples was stale (183; there are 515, 305 of them real-world): the page now says more than 500 and links the router, whose tables are generated.\n\nVerified: python3 examples/tools/build.py 002 was run once under a memory and time cap and ended with the line the page quotes, in 16 seconds; the files it rewrote were put back. The other claims were checked against the files they describe (a job's submitted.session, a result's sourceCommit, a summary's link to its log, the pipeline's max_timeout). The changed-tests run passed 38 of 38 test files, and retired.py check finds nothing.",
+      "log_sha256": "16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd"
     }
   ],
   "logs": {
@@ -200,6 +209,12 @@
       "bytes": 8801727,
       "lines": 2615,
       "gzip_bytes": 1688305,
+      "url": null
+    },
+    "16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd": {
+      "bytes": 9101338,
+      "lines": 2756,
+      "gzip_bytes": 1728388,
       "url": null
     },
     "1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209": {
