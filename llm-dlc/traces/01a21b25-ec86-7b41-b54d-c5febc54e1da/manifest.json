@@ -12,55 +12,59 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-27T03:56:39.964Z",
-  "ended": "2026-11-27T04:06:42.705Z",
-  "duration_seconds": 603,
+  "ended": "2026-11-27T04:15:28.769Z",
+  "duration_seconds": 1129,
   "stats": {
     "turns": 0,
-    "api_calls": 35,
-    "tool_calls": 118,
-    "tool_errors": 6,
+    "api_calls": 55,
+    "tool_calls": 159,
+    "tool_errors": 9,
     "compactions": 0,
-    "peak_context_tokens": 110362,
+    "peak_context_tokens": 135617,
     "usage": {
-      "input_tokens": 112603,
-      "output_tokens": 20947,
-      "cache_read_input_tokens": 2946816,
+      "input_tokens": 139229,
+      "output_tokens": 41394,
+      "cache_read_input_tokens": 5316352,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 81,
-    "exec": 30,
-    "send_message": 4,
-    "apply_patch": 3
+    "Bash": 97,
+    "exec": 46,
+    "apply_patch": 10,
+    "send_message": 6
   },
   "files_touched": [
     "verification/blind-caller/evaluator/draw.py",
     "verification/blind-caller/evaluator/inventory.py",
-    "verification/blind-caller/evaluator/protocol.json"
+    "verification/blind-caller/evaluator/isolation_probe.py",
+    "verification/blind-caller/evaluator/packet_view.py",
+    "verification/blind-caller/evaluator/protocol.json",
+    "verification/blind-caller/evaluator/reference_rows.py",
+    "verification/blind-caller/evaluator/sandbox_runner.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-27T03:56:39.964Z",
-      "ended": "2026-11-27T04:06:42.705Z",
+      "ended": "2026-11-27T04:15:28.769Z",
       "turns": 0,
-      "api_calls": 35,
+      "api_calls": 55,
       "usage": {
-        "input_tokens": 112603,
-        "output_tokens": 20947,
-        "cache_read_input_tokens": 2946816,
+        "input_tokens": 139229,
+        "output_tokens": 41394,
+        "cache_read_input_tokens": 5316352,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 110362
+      "peak_context_tokens": 135617
     }
   ],
   "log": {
-    "sha256": "2310b5f9ae091801cbf551c7b80303eaba64357a0a83d747793432a3b8a07459",
-    "bytes": 1072073,
-    "lines": 313,
-    "gzip_bytes": 246316,
-    "path": "llm-dlc/traces/01a21b25-ec86-7b41-b54d-c5febc54e1da/logs/2310b5f9ae091801cbf551c7b80303eaba64357a0a83d747793432a3b8a07459.jsonl.gz"
+    "sha256": "73d7e74a20677f13658d21396ad200ef9679ad0c9f447abbf91c9120aac67bf1",
+    "bytes": 1298936,
+    "lines": 464,
+    "gzip_bytes": 283092,
+    "path": "llm-dlc/traces/01a21b25-ec86-7b41-b54d-c5febc54e1da/logs/73d7e74a20677f13658d21396ad200ef9679ad0c9f447abbf91c9120aac67bf1.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -79,6 +83,22 @@
       "summary": "Qualify a retained argument after public return (verification pending)",
       "body": "Numbered review and the old-API caller can retain a configured DecimalFormat and read its public flag after a normal numeric return. JDI binds the argument, its calling thread, the return and the actual getter. A separately constructed formatter or an earlier read loses qualification even if its value agrees. Existing return-only registrations keep their shape.\n\nAll 55 change-selected suites passed. The original Spring parent returned BigDecimal 1.5 and the pinned formatter false. The real JDK 17 tracer independently identified argument 2 and the subsequent getter on that object. Job 20261127-040057-qualify-retained-formatter-arguments-on exercises numbered scaffold and resume, two flag settings, both releases and eight planted histories.",
       "log_sha256": "2310b5f9ae091801cbf551c7b80303eaba64357a0a83d747793432a3b8a07459"
+    },
+    {
+      "change_id": "vluwrznxxvuwlyvsmuqwvtpuqsxmnmmp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "73d7e74a20677f13658d21396ad200ef9679ad0c9f447abbf91c9120aac67bf1"
+    },
+    {
+      "change_id": "qumutvxoyzxymqxyllwlysyvvqnnouxn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Isolate caller predictions and measurements from evaluator data",
+      "body": "Build allow-listed views from original ordered JARs, pinned source and sanitized PR prose. Fresh Landlock and seccomp processes deny evaluator files and sockets in both phases. Prediction additionally denies subprocesses and new executable mappings. Test-assisted views identify the original test sources admitted by the selection. Capture historical predicates by question, deployment and side with baseline contradictions and unpredicted sides preserved.\n\nVerified both sentinel and socket denials with an original JDK 17 compiler and JVM measuring a synthetic public result. Checked removed test listings, a denied executable mapping, source export on a disclosed development example, and historical reference shape on every eligible row. No case from the evaluation population was drawn.",
+      "log_sha256": "73d7e74a20677f13658d21396ad200ef9679ad0c9f447abbf91c9120aac67bf1"
     }
   ],
   "logs": {
@@ -92,6 +112,12 @@
       "bytes": 971902,
       "lines": 272,
       "gzip_bytes": 233923,
+      "url": null
+    },
+    "73d7e74a20677f13658d21396ad200ef9679ad0c9f447abbf91c9120aac67bf1": {
+      "bytes": 1298936,
+      "lines": 464,
+      "gzip_bytes": 283092,
       "url": null
     }
   },

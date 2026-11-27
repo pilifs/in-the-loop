@@ -12,30 +12,30 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T04:06:36.436Z",
-  "duration_seconds": 251746,
+  "ended": "2026-11-27T04:15:12.213Z",
+  "duration_seconds": 252261,
   "stats": {
     "turns": 41,
-    "api_calls": 6607,
-    "tool_calls": 16288,
-    "tool_errors": 352,
+    "api_calls": 6627,
+    "tool_calls": 16336,
+    "tool_errors": 353,
     "compactions": 28,
     "peak_context_tokens": 550925,
     "usage": {
-      "input_tokens": 8349865,
-      "output_tokens": 3834017,
-      "cache_read_input_tokens": 1795593984,
+      "input_tokens": 8364851,
+      "output_tokens": 3851428,
+      "cache_read_input_tokens": 1799029504,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8924,
-    "exec": 6319,
-    "apply_patch": 825,
+    "Bash": 8947,
+    "exec": 6335,
+    "apply_patch": 832,
     "wait": 113,
     "sleep": 97,
     "send_message_to_user_async": 6,
-    "send_message": 2,
+    "send_message": 4,
     "request_user_input_async": 1,
     "spawn_agent": 1
   },
@@ -176,6 +176,7 @@
     "examples/tools/targets/java/ResourceObserver.java.template",
     "examples/tools/targets/java/UpgradeClassLookup.java",
     "examples/tools/targets/java/UpgradeTrace.java",
+    "examples/tools/targets/observer_actions.py",
     "examples/tools/targets/observer_fields.py",
     "examples/tools/targets/observer_generation.py",
     "examples/tools/targets/observer_histories.py",
@@ -382,6 +383,7 @@
     "verification/beyond-jbmc/resource-postconditions/RESULTS.md",
     "verification/beyond-jbmc/scaffold-first/RESULTS.md",
     "verification/beyond-jbmc/successor/RESULTS.md",
+    "verification/blind-caller/development.py",
     "verification/blind-caller/formatter.py",
     "verification/findings.md",
     "verification/generated-observers/campaign.py",
@@ -991,24 +993,24 @@
     {
       "index": 28,
       "started": "2026-11-27T03:04:15.564Z",
-      "ended": "2026-11-27T04:06:36.436Z",
+      "ended": "2026-11-27T04:15:12.213Z",
       "turns": 2,
-      "api_calls": 35,
+      "api_calls": 55,
       "usage": {
-        "input_tokens": 127604,
-        "output_tokens": 31114,
-        "cache_read_input_tokens": 3916544,
+        "input_tokens": 142590,
+        "output_tokens": 48525,
+        "cache_read_input_tokens": 7352064,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 165849
+      "peak_context_tokens": 195737
     }
   ],
   "log": {
-    "sha256": "632b7580c6ce508105cbfd27a55a8dd29d2850e801aeff5c3d7e05c58a6d043e",
-    "bytes": 105595484,
-    "lines": 52090,
-    "gzip_bytes": 19307179,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/632b7580c6ce508105cbfd27a55a8dd29d2850e801aeff5c3d7e05c58a6d043e.jsonl.gz"
+    "sha256": "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b",
+    "bytes": 105994472,
+    "lines": 52254,
+    "gzip_bytes": 19370545,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3171,6 +3173,22 @@
       "summary": "Qualify a retained argument after public return (verification pending)",
       "body": "Numbered review and the old-API caller can retain a configured DecimalFormat and read its public flag after a normal numeric return. JDI binds the argument, its calling thread, the return and the actual getter. A separately constructed formatter or an earlier read loses qualification even if its value agrees. Existing return-only registrations keep their shape.\n\nAll 55 change-selected suites passed. The original Spring parent returned BigDecimal 1.5 and the pinned formatter false. The real JDK 17 tracer independently identified argument 2 and the subsequent getter on that object. Job 20261127-040057-qualify-retained-formatter-arguments-on exercises numbered scaffold and resume, two flag settings, both releases and eight planted histories.",
       "log_sha256": "632b7580c6ce508105cbfd27a55a8dd29d2850e801aeff5c3d7e05c58a6d043e"
+    },
+    {
+      "change_id": "vluwrznxxvuwlyvsmuqwvtpuqsxmnmmp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b"
+    },
+    {
+      "change_id": "qumutvxoyzxymqxyllwlysyvvqnnouxn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Isolate caller predictions and measurements from evaluator data",
+      "body": "Build allow-listed views from original ordered JARs, pinned source and sanitized PR prose. Fresh Landlock and seccomp processes deny evaluator files and sockets in both phases. Prediction additionally denies subprocesses and new executable mappings. Test-assisted views identify the original test sources admitted by the selection. Capture historical predicates by question, deployment and side with baseline contradictions and unpredicted sides preserved.\n\nVerified both sentinel and socket denials with an original JDK 17 compiler and JVM measuring a synthetic public result. Checked removed test listings, a denied executable mapping, source export on a disclosed development example, and historical reference shape on every eligible row. No case from the evaluation population was drawn.",
+      "log_sha256": "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b"
     }
   ],
   "logs": {
@@ -3575,6 +3593,12 @@
       "lines": 5208,
       "gzip_bytes": 1787988,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/726ace1167c232f2be46f62e73daf6a44c8c05ef03205d861c67c022c5642cd4.jsonl.gz"
+    },
+    "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b": {
+      "bytes": 105994472,
+      "lines": 52254,
+      "gzip_bytes": 19370545,
+      "url": null
     },
     "7a7a5cc8b3b1adcca15aa956c69bc6ad091e47a3c082f0291ba195ca8b22ea18": {
       "bytes": 12754012,
