@@ -66,6 +66,14 @@ def comparison_plan(folder):
     if services - {"postgres", "mysql"}:
         raise ValueError("unknown public comparison service")
     required = ["javac", "java"] + (["docker"] if services else [])
+    fixture_tools = runtime.get("fixtureTools", [])
+    if not isinstance(fixture_tools, list):
+        raise ValueError("public fixture tools must be a list")
+    for tool in fixture_tools:
+        if not isinstance(tool, str) or not re.fullmatch(r"[a-zA-Z][a-zA-Z0-9._-]*", tool):
+            raise ValueError("a public fixture tool must be an executable name")
+        if tool not in required:
+            required.append(tool)
     if any("sourceSlice" in d or "upstreamTestInputs" in d for d in runtime["deployments"].values()):
         required.append("git")
     if any("callOwner" in d for d in runtime["deployments"].values()):

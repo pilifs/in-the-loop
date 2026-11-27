@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/50886",
+  "revisions": {
+    "parent": "39c87d595e24091a4966be36404c87d0dffab9a7",
+    "fix": "e1a1e1be824c1720aad9817388394fe55e89e189"
+  },
+  "entry": "GenericApplicationContext.registerBean and Metrics.globalRegistry",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#50886.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Close the owner after the late registry joins the global composite.",
+      "prediction": "The parent’s earlier bean snapshot predicts a stale global member. On the merge the instance should be absent and closed.",
+      "basis": "The late definition did not exist when the closer was constructed. The landed tests track removal and closing separately.",
+      "refutation": "On the merge, membership remains or `isClosed()` is false after owner close.",
+      "expected": {
+        "fix": {
+          "return": "true/false:true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50886.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Set `management.metrics.use-global-registry=false` in a fresh context and repeat late registration.",
+      "prediction": "On both revisions the local bean should work before shutdown and should never join the global composite.",
+      "basis": "An opt-out separates local instrumentation from process-wide publication.",
+      "refutation": "The fixture cannot use the local counter before closure, or the registry appears globally.",
+      "expected": {
+        "parent": {
+          "return": "false:1.0:false"
+        },
+        "fix": {
+          "return": "false:1.0:false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50886.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Create independent contexts A and B with distinct late registries and global registration enabled. Close A, increment a counter through B, then close B.",
+      "prediction": "On the merge A disappears and closes, while B remains globally registered and its counter advances by one. After B closes it too disappears.",
+      "basis": "Each registration has an owner. The live registry and an actual increment detect an overbroad cleanup.",
+      "refutation": "Closing A removes or closes B, the increment is lost, or B remains after its own closure.",
+      "expected": {
+        "fix": {
+          "return": "false:true/true:false:1.0/false:true"
+        }
+      }
+    }
+  ]
+}

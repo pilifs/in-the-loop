@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52190",
+  "revisions": {
+    "parent": "425bad9c72f10bdd03964c5ed0c0290a4678a663",
+    "fix": "ac1b357395ee443a87c6d20a4faf815f40550b88"
+  },
+  "entry": "LettuceConnectionFactory.getClientConfiguration",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52190.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Supply nodes through each bean form, with no `spring.data.redis.cluster.*` property.",
+      "prediction": "The PR reports plain `ClientOptions` on the parent. The merge should expose `ClusterClientOptions` with a 30-second topology refresh period in both cases.",
+      "basis": "Two pinned regressions assert the option type and duration. The cluster identity and requested interval are identical in the two fixtures.",
+      "refutation": "The connection factory uses cluster mode but returns plain options, or exposes a different period for either bean.",
+      "expected": {
+        "parent": {
+          "return": "plain/plain"
+        },
+        "fix": {
+          "return": "cluster:30/cluster:30"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52190.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Move the same nodes into `spring.data.redis.cluster.nodes` and keep the period unchanged.",
+      "prediction": "Both revisions should expose cluster options and the requested 30-second period.",
+      "basis": "The property-driven case already satisfied the parent’s test for cluster-specific configuration.",
+      "refutation": "A property-configured cluster loses the duration or returns standalone options.",
+      "expected": {
+        "parent": {
+          "return": "cluster:30"
+        },
+        "fix": {
+          "return": "cluster:30"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52190.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "With a live three-node cluster supplied through connection details, shorten the period to one second. Open and initialize the client, record a quiet node’s topology-command counter after startup, then observe during an idle interval spanning several periods with adaptive triggers disabled.",
+      "prediction": "On the merge periodic refresh should be enabled and the cluster should see additional topology requests while idle. Allow timing and command counts to vary with the client version.",
+      "basis": "A node-side observation exercises the consumer of the settings. The PR author reports the counter stayed flat on the parent and rose from 7 to 13 over six seconds after the change on Redis 8.6.2.",
+      "refutation": "The factory exposes the requested option but the initialized client has periodic refresh off or issues no later topology request under the controlled conditions.",
+      "expected": {
+        "fix": {
+          "return": "true:1:increased"
+        }
+      }
+    }
+  ]
+}

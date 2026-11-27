@@ -1,0 +1,3338 @@
+{
+  "schema": "spring-boot-public-audit/v1",
+  "cases": [
+    {
+      "case": "S01",
+      "pr": 52125,
+      "revisions": {
+        "parent": "e664baa4001e2a12cfd292771f63d747d86b831f",
+        "fix": "d3c0359e0196e9d604a65e6ff677d114cc270a0f"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52125.1",
+        "spring-projects/spring-boot#52125.2",
+        "spring-projects/spring-boot#52125.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110819-setup-build-spring-boot-52125-s01-at-bot",
+        "jobStatus": "passed",
+        "parent": "20 tests, 0 failed, 0 errors",
+        "fix": "21 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `TestPropertyValuesTests#applyToSystemPropertiesShouldRestoreEmptySystemProperty()`"
+      },
+      "example": "588-boot-empty-system-property",
+      "observations": {
+        "spring-projects/spring-boot#52125.1": {
+          "parent": {
+            "outcome": {
+              "return": "temporary/default"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "temporary/empty"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52125.2": {
+          "parent": {
+            "outcome": {
+              "return": "temporary/default;temporary/original"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "temporary/default;temporary/original"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52125.3": {
+          "parent": {
+            "outcome": {
+              "return": "inner/true/temporary/default"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "inner/true/temporary/empty"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S02",
+      "pr": 51661,
+      "revisions": {
+        "parent": "042c69a4f9c7e7bfb7be14dff6a5dd5af5ff3e72",
+        "fix": "26b0e813b0b82e5683524d1ad817ca9b66228b4d"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51661.1",
+        "spring-projects/spring-boot#51661.2",
+        "spring-projects/spring-boot#51661.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110819-setup-build-spring-boot-51661-s02-at-bot",
+        "jobStatus": "passed",
+        "parent": "157 tests, 0 failed, 0 errors",
+        "fix": "163 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `ConfigurationPropertiesTests#loadWhenDefaultValuesContainPlaceholdersShouldResolveAndConvert()`, `ConfigurationPropertiesTests#loadWhenDefaultValuesContainPlaceholdersShouldUsePlaceholderDefaults()`, `ValueObjectBinderTests#createWithDefaultValuePlaceholderResolvingToNonStringShouldConvert()`"
+      },
+      "example": "589-boot-constructor-default-duration",
+      "observations": {
+        "spring-projects/spring-boot#51661.1": {
+          "parent": {
+            "outcome": {
+              "return": "conversion-failed"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "PT72H"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51661.2": {
+          "parent": {
+            "outcome": {
+              "return": "PT120H"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "PT120H"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51661.3": {
+          "parent": {
+            "outcome": {
+              "return": "PT120H/conversion-failed"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "PT120H/conversion-failed"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S03",
+      "pr": 50773,
+      "revisions": {
+        "parent": "f71e7977614682ced49221321a38bb5cb18bc938",
+        "fix": "fe554ff822bf48ee9b04fbc511f54332aa2ca10b"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50773.1",
+        "spring-projects/spring-boot#50773.2",
+        "spring-projects/spring-boot#50773.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110819-setup-build-spring-boot-50773-s03-at-bot",
+        "jobStatus": "passed",
+        "parent": "45 tests, 0 failed, 0 errors",
+        "fix": "47 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `MapBinderTests#bindToMapWhenEmptyStringShouldReturnEmptyMap()`, `MapBinderTests#nestedMapsWhenEmptyStringShouldReturnEmptyMap()`"
+      },
+      "example": "590-boot-empty-map-binding",
+      "observations": {
+        "spring-projects/spring-boot#50773.1": {
+          "parent": {
+            "outcome": {
+              "return": "conversion-failed"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "bound:{}"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50773.2": {
+          "parent": {
+            "outcome": {
+              "return": "bound:{a=one, b=two}"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "bound:{a=one, b=two}"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50773.3": {
+          "parent": {
+            "outcome": {
+              "return": "conversion-failed/conversion-failed"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "{}/{}"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S04",
+      "pr": 50798,
+      "revisions": {
+        "parent": "3d280c4354a127e9f08bb1ea782b02165bbbfa7e",
+        "fix": "0836e3673a74e47a2e5eed3a8e8ad45cfa4a0ccf"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50798.1",
+        "spring-projects/spring-boot#50798.2",
+        "spring-projects/spring-boot#50798.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110819-setup-build-spring-boot-50798-s04-at-bot",
+        "jobStatus": "passed",
+        "parent": "16 tests, 0 failed, 0 errors",
+        "fix": "17 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `ValidationBindHandlerTests#bindShouldValidateMapWithWildcardValue()`"
+      },
+      "example": "591-boot-wildcard-map-validation",
+      "observations": {
+        "spring-projects/spring-boot#50798.1": {
+          "parent": {
+            "outcome": {
+              "return": "unresolved-type"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "titi"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50798.2": {
+          "parent": {
+            "outcome": {
+              "return": "validation:age"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "validation:age"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50798.3": {
+          "parent": {
+            "outcome": {
+              "return": "unresolved-type/unresolved-type"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "validation:age/titi:10"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S05",
+      "pr": 52207,
+      "revisions": {
+        "parent": "6c0b7df312e0fb1eaeecab9967e676726ce29057",
+        "fix": "42b182259cc6d4f9ed67bb2f387fed7e6b2c4979"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52207.1",
+        "spring-projects/spring-boot#52207.2",
+        "spring-projects/spring-boot#52207.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110820-setup-build-spring-boot-52207-s05-at-bot",
+        "jobStatus": "passed",
+        "parent": "39 tests, 0 failed, 0 errors",
+        "fix": "40 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `OriginTrackedPropertiesLoaderTests#compareToJavaProperties()`, `OriginTrackedPropertiesLoaderTests#getPropertyWithEscapedCommentPrefixCharacter()`"
+      },
+      "example": "592-boot-properties-literal-keys",
+      "observations": {
+        "spring-projects/spring-boot#52207.1": {
+          "parent": {
+            "outcome": {
+              "return": "null,null,ok / hash,bang,ok"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "hash,bang,ok / hash,bang,ok"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52207.2": {
+          "parent": {
+            "outcome": {
+              "return": "null,null,ok / null,null,ok"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "null,null,ok / null,null,ok"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52207.3": {
+          "parent": {
+            "outcome": {
+              "return": "null,null,ok / hash,bang,ok"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "hash,bang,ok / hash,bang,ok"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S06",
+      "pr": 52277,
+      "revisions": {
+        "parent": "5b40ad76e7cc2c05d8e9a816fdaf080a354667f9",
+        "fix": "c89f27ace1483333681b074c4f3d4924ba77f1ea"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52277.1",
+        "spring-projects/spring-boot#52277.2",
+        "spring-projects/spring-boot#52277.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110820-setup-build-spring-boot-52277-s06-at-bot",
+        "jobStatus": "passed",
+        "parent": "32 tests, 0 failed, 0 errors",
+        "fix": "53 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `FileHintTests#[1] value = \"foo[a]/bar.yaml\"`, `FileHintTests#[2] value = \"foo[1].yaml\"`, `FileHintTests#[2] value = \"foo[a]/bar[.yaml]\", expected = \"foo[a]/bar\"`, `FileHintTests#[3] value = \"file:/tmp/team[a]/app[1].yaml\"`, `FileHintTests#[4] value = \"a[b]c[.yaml]d\"`, `FileHintTests#[4] value = \"foo[a]bar[b]\", expected = \"foo[a]bar\"`, `FileHintTests#[5] value = \"foo[.yaml]/\"`, `FileHintTests#[7] value = \"foo[a]]\"`, `FileHintTests#[9] value = \"foo[[x]\", expected = \"foo[\"`, `FileHintTests#shouldParseTrailingHintWhenValueContainsOtherBrackets()`, `StandardConfigDataLocationResolverTests#resolveWhenLocationContainsBracketsResolves()`"
+      },
+      "example": "593-boot-bracketed-config-file",
+      "observations": {
+        "spring-projects/spring-boot#52277.1": {
+          "parent": {
+            "outcome": {
+              "return": "missing"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "selected"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52277.2": {
+          "parent": {
+            "outcome": {
+              "return": "hinted"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "hinted"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52277.3": {
+          "parent": {
+            "outcome": {
+              "return": "missing/decoy"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "selected/selected"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S07",
+      "pr": 52666,
+      "revisions": {
+        "parent": "5b88a2ad273ea810ae0aa56cf8819bac33521e95",
+        "fix": "aff28f4f77acc49c3f7d1bf4725d841a21ddf6e1"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52666.1",
+        "spring-projects/spring-boot#52666.2",
+        "spring-projects/spring-boot#52666.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110820-setup-build-spring-boot-52666-s07-at-bot",
+        "jobStatus": "passed",
+        "parent": "25 tests, 0 failed, 0 errors",
+        "fix": "26 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `ConfigTreePropertySourceTests#getPropertyNamesWhenSourceDirectoryIsReferencedViaDotDotReturnsPropertyNames()`"
+      },
+      "example": "594-boot-config-tree-root-spelling",
+      "observations": {
+        "spring-projects/spring-boot#52666.1": {
+          "parent": {
+            "outcome": {
+              "return": "[]:absent"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "[a]:65"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52666.2": {
+          "parent": {
+            "outcome": {
+              "return": "[a]:65"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "[a]:65"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52666.3": {
+          "parent": {
+            "outcome": {
+              "return": "[a]:65/[]:absent"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "[a]:65/[a]:65"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S08",
+      "pr": 52904,
+      "revisions": {
+        "parent": "906029c2a9b33ef5052141a91eac5de8177ede9d",
+        "fix": "cc44b73aca16f06ebac4f1d8692751a80b2b6615"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52904.1",
+        "spring-projects/spring-boot#52904.2",
+        "spring-projects/spring-boot#52904.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110820-setup-build-spring-boot-52904-s08-at-bot",
+        "jobStatus": "passed",
+        "parent": "22 tests, 0 failed, 0 errors, 1 skipped",
+        "fix": "23 tests, 0 failed, 0 errors, 1 skipped",
+        "landedTestsOnParent": "fails: `MessageSourceAutoConfigurationTests#testMultipleMessageSourceCreatedWithIndexedBasename()`"
+      },
+      "example": "595-boot-indexed-message-bundles",
+      "observations": {
+        "spring-projects/spring-boot#52904.1": {
+          "parent": {
+            "outcome": {
+              "return": "MISS/MISS"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "bar/bar-bar"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52904.2": {
+          "parent": {
+            "outcome": {
+              "return": "bar/bar-bar"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "bar/bar-bar"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52904.3": {
+          "parent": {
+            "outcome": {
+              "return": "MISS"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "MISS"
+            },
+            "verdict": "refuted"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S09",
+      "pr": 51855,
+      "revisions": {
+        "parent": "789e06631baace79ffe874d54de269342f6b76c5",
+        "fix": "ef67de058ed35c0f6246d47abdb09fbdd4ce5c1a"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51855.1",
+        "spring-projects/spring-boot#51855.2",
+        "spring-projects/spring-boot#51855.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110819-setup-build-spring-boot-51855-s09-at-bot",
+        "jobStatus": "passed",
+        "parent": "1 tests, 0 failed, 0 errors",
+        "fix": "7 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `PropertiesMigrationListenerTests#failOnErrorWithUnsupportedKeyFails()`, `PropertiesMigrationListenerTests#failOnWarningWithRenamedKeyFails()`, `PropertiesMigrationListenerTests#failOnWarningWithUnsupportedKeyFails()`"
+      },
+      "example": "596-boot-migrator-startup-threshold",
+      "observations": {
+        "spring-projects/spring-boot#51855.1": {
+          "parent": {
+            "outcome": {
+              "return": "active:banner"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "migration-failed:banner"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51855.2": {
+          "parent": {
+            "outcome": {
+              "return": "active:logging/active:logging/active:logging"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "active:logging/active:logging/migration-failed:logging"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51855.3": {
+          "parent": {
+            "outcome": {
+              "return": "active:banner+logging/active:banner+logging"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "migration-failed:banner+logging/migration-failed:banner+logging"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S10",
+      "pr": 50489,
+      "revisions": {
+        "parent": "01afdc8dc738d1c016bcbc572b2376d270dc3335",
+        "fix": "47d4b222827148e780ea7e5118b88676659a753d"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50489.1",
+        "spring-projects/spring-boot#50489.2",
+        "spring-projects/spring-boot#50489.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110802-setup-build-spring-boot-50489-s10-at-bot",
+        "jobStatus": "passed",
+        "parent": "87 tests, 0 failed, 0 errors",
+        "fix": "98 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `JavaPluginActionIntegrationTests#Gradle 9.0.0` ×2, `JavaPluginActionIntegrationTests#Gradle 9.7.0` ×2, `JavaPluginActionIntegrationTests#Gradle 9.7.0 --configuration-cache` ×2; does not compile (`:configuration-metadata:spring-boot-configuration-processor:compileTestJava`; first error: `DescriptionCacheTests.java`: cannot find symbol)"
+      },
+      "example": "597-boot-gradle-incremental-descriptions",
+      "evidenceKind": "Gradle consumer build",
+      "evidence": [
+        "gradle/S10.json"
+      ],
+      "observations": {
+        "spring-projects/spring-boot#50489.1": {
+          "parent": {
+            "outcome": [
+              null,
+              "Edited description."
+            ],
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": [
+              "Original description.",
+              "Edited description."
+            ],
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50489.2": {
+          "parent": {
+            "outcome": [
+              "Original description.",
+              "Edited description."
+            ],
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": [
+              "Original description.",
+              "Edited description."
+            ],
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50489.3": {
+          "parent": {
+            "outcome": [
+              [
+                null,
+                null
+              ],
+              [
+                "Original description.",
+                null
+              ]
+            ],
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": [
+              [
+                "Original description.",
+                null
+              ],
+              [
+                "Original description.",
+                null
+              ]
+            ],
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S11",
+      "pr": 51867,
+      "revisions": {
+        "parent": "ab8d5266fbf617b1462d60f5bba5ade2d0f6302d",
+        "fix": "b00a873c002d3e5f6edf4cc58313030855ec86cd"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51867.1",
+        "spring-projects/spring-boot#51867.2",
+        "spring-projects/spring-boot#51867.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110820-setup-build-spring-boot-51867-s11-at-bot",
+        "jobStatus": "failed",
+        "parent": "18 tests, 0 failed, 0 errors",
+        "fix": "23 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "**does not fail** (23 tests, 0 failed, 0 errors, gradle-exit=0)"
+      },
+      "example": "598-boot-fallback-bean-order",
+      "observations": {
+        "spring-projects/spring-boot#51867.1": {
+          "parent": {
+            "outcome": {
+              "return": "1:preferred"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1:preferred"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51867.2": {
+          "parent": {
+            "outcome": {
+              "return": "1:fallback"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1:fallback"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51867.3": {
+          "parent": {
+            "outcome": {
+              "return": "1:preferred:bridge/1:preferred:bridge"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1:preferred:bridge/1:preferred:bridge"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S12",
+      "pr": 52310,
+      "revisions": {
+        "parent": "25adba2b4e3e69a49e2128fd5c0185ee1ea437a9",
+        "fix": "53328b76db4ffb107ee38ad82bf090ac1be59a9c"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52310.1",
+        "spring-projects/spring-boot#52310.2",
+        "spring-projects/spring-boot#52310.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110821-setup-build-spring-boot-52310-s12-at-bot",
+        "jobStatus": "failed",
+        "parent": "104 tests, 0 failed, 0 errors, 2 skipped",
+        "fix": "107 tests, 0 failed, 0 errors, 2 skipped",
+        "landedTestsOnParent": "**does not fail** (107 tests, 0 failed, 0 errors, 2 skipped, gradle-exit=0)"
+      },
+      "example": "599-boot-startup-after-close",
+      "observations": {
+        "spring-projects/spring-boot#52310.1": {
+          "parent": {
+            "outcome": {
+              "return": "inactive:[runner]:1"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "inactive:[]:0"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52310.2": {
+          "parent": {
+            "outcome": {
+              "return": "active:[started, runner, ready]:0"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "active:[started, runner, ready]:0"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52310.3": {
+          "parent": {
+            "outcome": {
+              "return": "inactive:[started, runner]:1"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "inactive:[started]:0"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S13",
+      "pr": 52309,
+      "revisions": {
+        "parent": "aaca41eb4262b0570d610d97e30857fb3cb17089",
+        "fix": "76246db920dbafc1e45441ef736f14d4548dc8d0"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52309.1",
+        "spring-projects/spring-boot#52309.2",
+        "spring-projects/spring-boot#52309.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110821-setup-build-spring-boot-52309-s13-at-bot",
+        "jobStatus": "passed",
+        "parent": "103 tests, 0 failed, 0 errors, 2 skipped",
+        "fix": "104 tests, 0 failed, 0 errors, 2 skipped",
+        "landedTestsOnParent": "fails: `SpringApplicationTests#shouldNotStopKeepAliveThreadIfChildContextIsClosed()`"
+      },
+      "example": "600-boot-keepalive-child-close",
+      "observations": {
+        "spring-projects/spring-boot#52309.1": {
+          "parent": {
+            "outcome": {
+              "return": "active:exited:0"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "active:reply:parent:0"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52309.2": {
+          "parent": {
+            "outcome": {
+              "return": "inactive:exited:0"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "inactive:exited:0"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52309.3": {
+          "parent": {
+            "outcome": {
+              "return": "active:exited:0"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "active:reply:sibling:0"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S14",
+      "pr": 52831,
+      "revisions": {
+        "parent": "68f823ceabc77d1786ec0ff416bb128dc13ce93b",
+        "fix": "3a7a19b7c5b16d4cc6dd8f0c22ea88d206e90a9a"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52831.1",
+        "spring-projects/spring-boot#52831.2",
+        "spring-projects/spring-boot#52831.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110821-setup-build-spring-boot-52831-s14-at-bot",
+        "jobStatus": "passed",
+        "parent": "20 tests, 0 failed, 0 errors, 1 skipped",
+        "fix": "21 tests, 0 failed, 0 errors, 1 skipped",
+        "landedTestsOnParent": "fails: `MessageSourceAutoConfigurationTests#propertiesBundleIsDetectedAfterPreviousContextCouldNotLoadIt()`"
+      },
+      "example": "601-boot-isolated-message-loaders",
+      "observations": {
+        "spring-projects/spring-boot#52831.1": {
+          "parent": {
+            "outcome": {
+              "return": "false:missing/false:missing"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false:missing/true:bar"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52831.2": {
+          "parent": {
+            "outcome": {
+              "return": "true:bar/true:bar"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:bar/true:bar"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52831.3": {
+          "parent": {
+            "outcome": {
+              "return": "true:bar/true:missing"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:bar/false:missing"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S15",
+      "pr": 50886,
+      "revisions": {
+        "parent": "39c87d595e24091a4966be36404c87d0dffab9a7",
+        "fix": "e1a1e1be824c1720aad9817388394fe55e89e189"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50886.1",
+        "spring-projects/spring-boot#50886.2",
+        "spring-projects/spring-boot#50886.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110820-setup-build-spring-boot-50886-s15-at-bot",
+        "jobStatus": "passed",
+        "parent": "26 tests, 0 failed, 0 errors",
+        "fix": "33 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "does not compile (`:module:spring-boot-micrometer-metrics:compileTestJava`; first error: `MeterRegistryPostProcessorTests.java`: cannot find symbol)"
+      },
+      "example": "602-boot-late-meter-ownership",
+      "observations": {
+        "spring-projects/spring-boot#50886.1": {
+          "parent": {
+            "outcome": {
+              "return": "true/true:false"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true/false:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50886.2": {
+          "parent": {
+            "outcome": {
+              "return": "false:1.0:false"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false:1.0:false"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50886.3": {
+          "parent": {
+            "outcome": {
+              "return": "true:false/true:false:1.0/true:false"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false:true/true:false:1.0/false:true"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S16",
+      "pr": 9558,
+      "revisions": {
+        "parent": "89af4a65cf1fa99df62a9fbcbe3c10ab9ab7c738",
+        "fix": "f2e77e46cd12a9eb5a7d701cb4612bdd41c613b0"
+      },
+      "questions": [
+        "spring-projects/spring-boot#9558.1",
+        "spring-projects/spring-boot#9558.2",
+        "spring-projects/spring-boot#9558.3"
+      ],
+      "upstreamTests": {
+        "parent": "15 tests passed on the exact changed-source slice over Boot 2.0.0.M2",
+        "fix": "The setup did not run the exact fix. Boot 2.0.0.M3 ran 21 tests with one failure."
+      },
+      "example": "603-boot-webflux-milestone-codecs",
+      "evidenceKind": "Original Boot source slices on the reconstructed July Framework codec profile",
+      "evidence": [
+        "webflux-2017/reconstructed-observations.json"
+      ],
+      "observations": {
+        "spring-projects/spring-boot#9558.1": {
+          "parent": {
+            "outcome": "200:firstName=Ada/200:null",
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": "200:first_name=Ada/200:Lin",
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#9558.2": {
+          "parent": {
+            "outcome": "200:firstName=Ada",
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": "200:firstName=Ada",
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#9558.3": {
+          "fix": {
+            "outcome": "Mia/Mia",
+            "verdict": "matched"
+          }
+        }
+      },
+      "separateProfiles": {
+        "parent-source-slice": {
+          "intent": "200:firstName=Ada/200:null",
+          "control": "200:firstName=Ada"
+        },
+        "M3-release": {
+          "intent": "200:first_name=Ada/200:Lin",
+          "control": "200:firstName=Ada",
+          "challenge": "Mia/Mia"
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S17",
+      "pr": 52251,
+      "revisions": {
+        "parent": "54aa8e789e001ea43307d9ceb09eeb6f2031f2c4",
+        "fix": "2998c84ca55100f867b090706fe0426052e1491e"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52251.1",
+        "spring-projects/spring-boot#52251.2",
+        "spring-projects/spring-boot#52251.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110821-setup-build-spring-boot-52251-s17-at-bot",
+        "jobStatus": "passed",
+        "parent": "38 tests, 0 failed, 0 errors",
+        "fix": "40 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `HttpMessageConvertersAutoConfigurationTests#stringConvertersCustomizerHasOrderZero()`, `HttpMessageConvertersAutoConfigurationTests#stringCustomConverterWithCustomizer()`"
+      },
+      "example": "604-boot-http-string-wire-encoding",
+      "observations": {
+        "spring-projects/spring-boot#52251.1": {
+          "parent": {
+            "outcome": {
+              "return": "200:c3a9"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:e9"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52251.2": {
+          "parent": {
+            "outcome": {
+              "return": "200:c3a9"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:c3a9"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52251.3": {
+          "parent": {
+            "outcome": {
+              "return": "200:c3a9/200:c3a9"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:e9/200:e9"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S18",
+      "pr": 52304,
+      "revisions": {
+        "parent": "a9bfca2346c74c2bb46e70aa4f61b162d36dee33",
+        "fix": "f2ffba784085ae4c1f8fcd6ac7f9c850e722cecc"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52304.1",
+        "spring-projects/spring-boot#52304.2",
+        "spring-projects/spring-boot#52304.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110821-setup-build-spring-boot-52304-s18-at-bot",
+        "jobStatus": "passed",
+        "parent": "40 tests, 0 failed, 0 errors",
+        "fix": "43 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `HttpMessageConvertersAutoConfigurationTests#kotlinSerializationUsesLimitedPredicateWhenOnlyJsonbApiIsAvailable()`, `HttpMessageConvertersAutoConfigurationTests#kotlinSerializationUsesLimitedPredicateWhenOnlyJsonbIsAvailable()`"
+      },
+      "example": "605-boot-jsonb-map-converter",
+      "observations": {
+        "spring-projects/spring-boot#52304.1": {
+          "parent": {
+            "outcome": {
+              "return": "true:true"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52304.2": {
+          "parent": {
+            "outcome": {
+              "return": "true:false"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:false"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52304.3": {
+          "parent": {
+            "outcome": {
+              "throws": "org.springframework.http.converter.HttpMessageNotWritableException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "jsonb:7/jsonb:7"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S19",
+      "pr": 51173,
+      "revisions": {
+        "parent": "a07c43466b7231a6bd8c84b638ce89fe6b78fcff",
+        "fix": "d265e67685580d0b417b5bb192af1069eb12c5cf"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51173.1",
+        "spring-projects/spring-boot#51173.2",
+        "spring-projects/spring-boot#51173.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-121807-setup-build-spring-boot-51173-s19-at-bot",
+        "jobStatus": "passed",
+        "parent": "34 tests, 0 failed, 0 errors",
+        "fix": "36 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `SampleOAuth2ClientApplicationTests#everythingShouldRedirectToLogin()`, `TomcatServerPropertiesTests#tomcatUseRelativeRedirectsDefaultsToTrue()`, `TomcatServerPropertiesTests#tomcatUseRelativeRedirectsMatchesDefault()`, `TomcatServletWebServerFactoryCustomizerTests#useRelativeRedirectsDefaultsToTrue()`"
+      },
+      "example": "606-boot-tomcat-relative-location",
+      "observations": {
+        "spring-projects/spring-boot#51173.1": {
+          "parent": {
+            "outcome": {
+              "return": "302:absolute:same"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "302:/login:same"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51173.2": {
+          "parent": {
+            "outcome": {
+              "return": "302:absolute:same"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "302:absolute:same"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51173.3": {
+          "parent": {
+            "outcome": {
+              "return": "false/302:absolute:same"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false/302:/login:same"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S20",
+      "pr": 52162,
+      "revisions": {
+        "parent": "2ed46d765577c63e733fc8cc8a7de2c6f2102333",
+        "fix": "70b92fc5085090348ccf822d90178208d93be9d6"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52162.1",
+        "spring-projects/spring-boot#52162.2",
+        "spring-projects/spring-boot#52162.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110821-setup-build-spring-boot-52162-s20-at-bot",
+        "jobStatus": "passed",
+        "parent": "0 tests, 0 failed, 0 errors",
+        "fix": "4 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `JettyReactiveWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()`, `JettyServletWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()`, `TomcatReactiveWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()`, `TomcatServletWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()`"
+      },
+      "example": "607-boot-webserver-restart-drain",
+      "observations": {
+        "spring-projects/spring-boot#52162.1": {
+          "parent": {
+            "outcome": {
+              "return": "REQUESTS_ACTIVE@0:[200:finished]/REQUESTS_ACTIVE@0:[200:finished]"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "IDLE@1:[200:finished]/IDLE@1:[200:finished]"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52162.2": {
+          "parent": {
+            "outcome": {
+              "return": "IDLE@1:[200:finished]/IDLE@1:[200:finished]"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "IDLE@1:[200:finished]/IDLE@1:[200:finished]"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52162.3": {
+          "parent": {
+            "outcome": {
+              "return": "REQUESTS_ACTIVE@0:[200:finished, 200:finished]/REQUESTS_ACTIVE@0:[200:finished, 200:finished]"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "IDLE@2:[200:finished, 200:finished]/IDLE@2:[200:finished, 200:finished]"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S21",
+      "pr": 51410,
+      "revisions": {
+        "parent": "4ee67a3f6b817bc8727069e083f0506bb8aefa33",
+        "fix": "cbaaa0fe45652d32ac5cc532cbfb5737e086769f"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51410.1",
+        "spring-projects/spring-boot#51410.2",
+        "spring-projects/spring-boot#51410.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110821-setup-build-spring-boot-51410-s21-at-bot",
+        "jobStatus": "passed",
+        "parent": "15 tests, 0 failed, 0 errors",
+        "fix": "17 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `DataSourceUnwrapperTests#unwrapRootWithDelegateWrappingSelfReturningWrapper()`"
+      },
+      "example": "608-boot-advertised-jdbc-root",
+      "observations": {
+        "spring-projects/spring-boot#51410.1": {
+          "parent": {
+            "outcome": {
+              "return": "delegate"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "root"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51410.2": {
+          "parent": {
+            "outcome": {
+              "return": "same"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "same"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51410.3": {
+          "parent": {
+            "outcome": {
+              "throws": "org.springframework.boot.jdbc.UnsupportedDataSourcePropertyException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "jdbc:h2:mem:root/probe;jdbc:h2:mem:root/probe"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S22",
+      "pr": 50271,
+      "revisions": {
+        "parent": "96a36cfc8c8d6f76df41c6ca17a38fa46c3d9689",
+        "fix": "607e4bbe65e00bc401b3c33e9c1a615a9f1888aa"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50271.1",
+        "spring-projects/spring-boot#50271.2",
+        "spring-projects/spring-boot#50271.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110821-setup-build-spring-boot-50271-s22-at-bot",
+        "jobStatus": "passed",
+        "parent": "91 tests, 0 failed, 0 errors",
+        "fix": "98 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `LiquibaseAutoConfigurationTests#lazyConnectionDataSource()`; does not compile (`:module:spring-boot-jdbc:compileTestJava`; first error: `DataSourceUnwrapperTests.java`: cannot find symbol)"
+      },
+      "example": "609-boot-lazy-derived-datasource",
+      "observations": {
+        "spring-projects/spring-boot#50271.1": {
+          "parent": {
+            "outcome": {
+              "throws": "org.springframework.boot.jdbc.UnsupportedDataSourcePropertyException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:migration:fixture:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50271.2": {
+          "parent": {
+            "outcome": {
+              "return": "true:migration:fixture:true"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:migration:fixture:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50271.3": {
+          "parent": {
+            "outcome": {
+              "throws": "org.springframework.boot.jdbc.UnsupportedDataSourcePropertyException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "73/73"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S23",
+      "pr": 52824,
+      "revisions": {
+        "parent": "60bed32467b7391003fcf81c414d66c5835e66b0",
+        "fix": "79d3cc26509620e47d9f3db445795b4984b6f567"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52824.1",
+        "spring-projects/spring-boot#52824.2",
+        "spring-projects/spring-boot#52824.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110822-setup-build-spring-boot-52824-s23-at-bot",
+        "jobStatus": "passed",
+        "parent": "67 tests, 0 failed, 0 errors, 3 skipped",
+        "fix": "69 tests, 0 failed, 0 errors, 3 skipped",
+        "landedTestsOnParent": "fails: `HibernateJpaAutoConfigurationTests#providerDisablesAutoCommitIsConfiguredWhenBuilderDataSourceHasAutoCommitDisabled()`, `HibernateJpaAutoConfigurationTests#providerDisablesAutoCommitIsNotConfiguredWhenBuilderDataSourceHasAutoCommitEnabled()`"
+      },
+      "example": "610-boot-secondary-jpa-rollback",
+      "observations": {
+        "spring-projects/spring-boot#52824.1": {
+          "parent": {
+            "outcome": {
+              "return": "1:0:present"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "0:0:absent"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52824.2": {
+          "parent": {
+            "outcome": {
+              "return": "1:0:present"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1:0:absent"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52824.3": {
+          "parent": {
+            "outcome": {
+              "return": "1:0:present/0:0:absent"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "0:0:absent/0:0:absent"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S24",
+      "pr": 51725,
+      "revisions": {
+        "parent": "683d41b3232b98bb10d7b60705abe300af1c5e20",
+        "fix": "32b09e479b78afd151577df37e800f47711db749"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51725.1",
+        "spring-projects/spring-boot#51725.2",
+        "spring-projects/spring-boot#51725.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-121807-setup-build-spring-boot-51725-s24-at-bot",
+        "jobStatus": "passed",
+        "parent": "13 tests, 0 failed, 0 errors",
+        "fix": "13 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `BatchDataMongoAutoConfigurationTests#autConfigurationFavorsBatchTransactionManager()`, `BatchDataMongoAutoConfigurationTests#autConfigurationUsesMainTransactionManager()`"
+      },
+      "example": "611-boot-mongo-batch-writer",
+      "observations": {
+        "spring-projects/spring-boot#51725.1": {
+          "parent": {
+            "outcome": {
+              "return": "false:false:true"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:true:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51725.2": {
+          "parent": {
+            "outcome": {
+              "return": "true"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51725.3": {
+          "parent": {
+            "outcome": {
+              "return": "false:false:true:true"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:true:false:true"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S25",
+      "pr": 52190,
+      "revisions": {
+        "parent": "425bad9c72f10bdd03964c5ed0c0290a4678a663",
+        "fix": "ac1b357395ee443a87c6d20a4faf815f40550b88"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52190.1",
+        "spring-projects/spring-boot#52190.2",
+        "spring-projects/spring-boot#52190.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110822-setup-build-spring-boot-52190-s25-at-bot",
+        "jobStatus": "passed",
+        "parent": "56 tests, 0 failed, 0 errors",
+        "fix": "58 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `DataRedisAutoConfigurationTests#testRedisConfigurationWithClusterRefreshPeriodAndClusterConfigurationBean()`, `DataRedisAutoConfigurationTests#testRedisConfigurationWithClusterRefreshPeriodAndCustomConnectionDetails()`"
+      },
+      "example": "612-boot-redis-cluster-options",
+      "observations": {
+        "spring-projects/spring-boot#52190.1": {
+          "parent": {
+            "outcome": {
+              "return": "plain/plain"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "cluster:30/cluster:30"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52190.2": {
+          "parent": {
+            "outcome": {
+              "return": "cluster:30"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "cluster:30"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52190.3": {
+          "parent": {
+            "outcome": {
+              "return": "false:0:flat"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:1:increased"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S26",
+      "pr": 51844,
+      "revisions": {
+        "parent": "0eed305ce08b030f45a9dbcd5b1969926b36b7d8",
+        "fix": "ed4d85df8032b6574c0912d80ffb8e7663aaa79e"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51844.1",
+        "spring-projects/spring-boot#51844.2",
+        "spring-projects/spring-boot#51844.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110822-setup-build-spring-boot-51844-s26-at-bot",
+        "jobStatus": "passed",
+        "parent": "59 tests, 0 failed, 0 errors",
+        "fix": "61 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `CacheAutoConfigurationTests#caffeineCacheWithAsyncCacheMode()`"
+      },
+      "example": "613-boot-caffeine-async-retrieval",
+      "observations": {
+        "spring-projects/spring-boot#51844.1": {
+          "parent": {
+            "outcome": {
+              "return": "value:false:unavailable"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "value:true:wrapped:value"
+            },
+            "verdict": "refuted"
+          }
+        },
+        "spring-projects/spring-boot#51844.2": {
+          "parent": {
+            "outcome": {
+              "return": "value:false"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "value:false"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51844.3": {
+          "parent": {
+            "outcome": {
+              "throws": "java.lang.IllegalStateException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "value/value"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S27",
+      "pr": 52832,
+      "revisions": {
+        "parent": "3a7a19b7c5b16d4cc6dd8f0c22ea88d206e90a9a",
+        "fix": "05356df632d8bec937e55cc486377871a201f084"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52832.1",
+        "spring-projects/spring-boot#52832.2",
+        "spring-projects/spring-boot#52832.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110822-setup-build-spring-boot-52832-s27-at-bot",
+        "jobStatus": "passed",
+        "parent": "15 tests, 0 failed, 0 errors",
+        "fix": "21 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "does not compile (`:core:spring-boot-docker-compose:compileTestJava`; first error: `DefaultRunningServiceTests.java`: cannot find symbol)"
+      },
+      "example": "614-boot-compose-redis-tcp",
+      "observations": {
+        "spring-projects/spring-boot#52832.1": {
+          "parent": {
+            "outcome": {
+              "return": "udp:no-tcp-listener"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "tcp:PONG"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52832.2": {
+          "parent": {
+            "outcome": {
+              "return": "tcp:PONG"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "tcp:PONG"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52832.3": {
+          "parent": {
+            "outcome": {
+              "return": "udp:no-tcp-listener/udp:no-tcp-listener"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "tcp:PONG/tcp:PONG"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S28",
+      "pr": 52625,
+      "revisions": {
+        "parent": "cb47b14cfdabdfae7f4372aa7b21661f57444bca",
+        "fix": "a938beab5f1d370f63d62ce78f3ab029f868bd03"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52625.1",
+        "spring-projects/spring-boot#52625.2",
+        "spring-projects/spring-boot#52625.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110822-setup-build-spring-boot-52625-s28-at-bot",
+        "jobStatus": "passed",
+        "parent": "6 tests, 0 failed, 0 errors",
+        "fix": "13 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[1] database = \"my+db\"`, `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[2] database = \"my?db\"`, `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[3] database = \"my/db\"`, `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[4] database = \"my%db\"`, `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[5] database = \"my%db\"`"
+      },
+      "example": "615-boot-compose-postgres-database",
+      "observations": {
+        "spring-projects/spring-boot#52625.1": {
+          "parent": {
+            "outcome": {
+              "return": "my db/30/my-app"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "my+db/30/my-app"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52625.2": {
+          "parent": {
+            "outcome": {
+              "return": "database/30/my-app"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "database/30/my-app"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52625.3": {
+          "parent": {
+            "outcome": {
+              "return": "my db/30/my-app;my+db/30/my-app"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "my+db/30/my-app;my%2Bdb/30/my-app"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S29",
+      "pr": 51940,
+      "revisions": {
+        "parent": "305b97344b2b7abb9173b0e63a8d2c01a96c9e06",
+        "fix": "f2cc019fe5bd51ce405995f3c89c48e2003cd9e7"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51940.1",
+        "spring-projects/spring-boot#51940.2",
+        "spring-projects/spring-boot#51940.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-121807-setup-build-spring-boot-51940-s29-at-bot",
+        "jobStatus": "passed",
+        "parent": "24 tests, 0 failed, 0 errors",
+        "fix": "35 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "does not compile (`:module:spring-boot-amqp-rabbitmq:compileTestJava`, `:module:spring-boot-rabbitmq:compileTestJava`; first error: `RabbitEnvironmentTests.java`: cannot find symbol)"
+      },
+      "example": "616-boot-compose-rabbit-vhost",
+      "observations": {
+        "spring-projects/spring-boot#51940.1": {
+          "parent": {
+            "outcome": {
+              "return": "/:refused"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "app:open"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51940.2": {
+          "parent": {
+            "outcome": {
+              "return": "/:open"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "/:open"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51940.3": {
+          "parent": {
+            "outcome": {
+              "return": "/:refused//:refused"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "app:open/app:false"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S30",
+      "pr": 51774,
+      "revisions": {
+        "parent": "d28fc5b5ffe3bb26d83960bb4b0fbd03a0b894f0",
+        "fix": "3c1f0c4e543b3c20db34e224a0670e59f82dc767"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51774.1",
+        "spring-projects/spring-boot#51774.2",
+        "spring-projects/spring-boot#51774.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-121808-setup-build-spring-boot-51774-s30-at-bot",
+        "jobStatus": "passed",
+        "parent": "58 tests, 0 failed, 0 errors",
+        "fix": "58 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `KafkaAutoConfigurationTests#listenerProperties()`"
+      },
+      "example": "617-boot-kafka-async-stop-policy",
+      "observations": {
+        "spring-projects/spring-boot#51774.1": {
+          "parent": {
+            "outcome": {
+              "return": "false:false"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51774.2": {
+          "parent": {
+            "outcome": {
+              "return": "false:false/false:false"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false:false/false:false"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51774.3": {
+          "parent": {
+            "outcome": {
+              "return": "stopping:true/future:normal/callback:after"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "stopping:true/future:normal/callback:after"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S31",
+      "pr": 50296,
+      "revisions": {
+        "parent": "4b51d350ee77b98e038c14e8ba831c5c47e5bb80",
+        "fix": "c398259cb871da425bdbdf792a276c058a253213"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50296.1",
+        "spring-projects/spring-boot#50296.2",
+        "spring-projects/spring-boot#50296.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-121808-setup-build-spring-boot-50296-s31-at-bot",
+        "jobStatus": "passed",
+        "parent": "20 tests, 0 failed, 0 errors",
+        "fix": "26 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "does not compile (`:module:spring-boot-health:compileTestJava`; first error: `AvailabilityProbesHealthEndpointGroupsPostProcessorTests.java`: constructor AvailabilityProbesHealthEndpointGroupsPostProcessor in class AvailabilityProbesHealthEndpointGroupsPostProcessor cannot be applied to given types;)"
+      },
+      "example": "618-boot-liveness-group-status",
+      "observations": {
+        "spring-projects/spring-boot#50296.1": {
+          "parent": {
+            "outcome": {
+              "return": "503:DOWN/503:DOWN/503:DOWN"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:UP/200:UP/503:DOWN"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50296.2": {
+          "parent": {
+            "outcome": {
+              "return": "503:DOWN/503:DOWN/503:DOWN"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "503:DOWN/503:DOWN/503:DOWN"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50296.3": {
+          "parent": {
+            "outcome": {
+              "return": "503:DOWN/503:DOWN/503:DOWN;200:UP/200:UP/200:UP"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:UP/200:UP/503:DOWN;200:UP/200:UP/200:UP"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S32",
+      "pr": 52321,
+      "revisions": {
+        "parent": "53328b76db4ffb107ee38ad82bf090ac1be59a9c",
+        "fix": "b50d0244ea95127b783868b24f8ad9d5b9ce5a4b"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52321.1",
+        "spring-projects/spring-boot#52321.2",
+        "spring-projects/spring-boot#52321.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-121808-setup-build-spring-boot-52321-s32-at-bot",
+        "jobStatus": "passed",
+        "parent": "79 tests, 0 failed, 0 errors",
+        "fix": "82 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `HealthEndpointTests#getResultWhenNestedPathDoesNotExistReturnsNull()`, `HealthEndpointWebExtensionTests#getResultWhenNestedPathDoesNotExistReturnsNull()`, `ReactiveHealthEndpointWebExtensionTests#getResultWhenNestedPathDoesNotExistReturnsNull()`"
+      },
+      "example": "619-boot-health-existing-and-absent-leaves",
+      "observations": {
+        "spring-projects/spring-boot#52321.2": {
+          "parent": {
+            "outcome": {
+              "return": "200:UP/404"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:UP/404"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "separateMergedBytecodeReview": "repaired-guards.json",
+      "unmeasured": [
+        "spring-projects/spring-boot#52321.1",
+        "spring-projects/spring-boot#52321.3"
+      ]
+    },
+    {
+      "case": "S33",
+      "pr": 51470,
+      "revisions": {
+        "parent": "1f3209130d661a96626f3b545ae219762a8201f0",
+        "fix": "333d336ca95b6fcf9b404152bad2323d762b467b"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51470.1",
+        "spring-projects/spring-boot#51470.2",
+        "spring-projects/spring-boot#51470.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-121808-setup-build-spring-boot-51470-s33-at-bot",
+        "jobStatus": "passed",
+        "parent": "118 tests, 0 failed, 0 errors",
+        "fix": "127 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `AdditionalHealthEndpointPathTests#fromPathWithMultipleSegmentsNotStartingWithSlashShouldCreatePath()`, `AdditionalHealthEndpointPathTests#fromPathWithMultipleSegmentsShouldCreatePath()`, `AdditionalHealthEndpointPathTests#ofWithMultipleSegmentValueShouldCreatePath()`, `HealthEndpointTests#getResultWhenGroupHasMultiSegmentAdditionalPath()`, `HealthEndpointWebExtensionTests#getResultWhenGroupHasMultiSegmentAdditionalPath()`, `JerseyHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()`, `JerseyHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()`, `ReactiveHealthEndpointWebExtensionTests#getResultWhenGroupHasMultiSegmentAdditionalPath()`, `WebFluxHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()`, `WebFluxHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()`, `WebMvcHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()`, `WebMvcHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()`"
+      },
+      "example": "620-boot-health-group-longest-alias",
+      "observations": {
+        "spring-projects/spring-boot#51470.1": {
+          "parent": {
+            "outcome": {
+              "throws": "org.springframework.beans.factory.BeanCreationException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:UP:diskSpace"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51470.2": {
+          "parent": {
+            "outcome": {
+              "return": "200:UP:diskSpace"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:UP:diskSpace"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51470.3": {
+          "parent": {
+            "outcome": {
+              "throws": "org.springframework.beans.factory.BeanCreationException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:UP:near/200:UP:far/404;200:UP:near/200:UP:far/404"
+            },
+            "verdict": "refuted"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S34",
+      "pr": 51937,
+      "revisions": {
+        "parent": "fcc6d421578939b5a960deaa77f7ea1eef45cabe",
+        "fix": "3d7e61639c18d6858013257fd338c12ff8dd79f8"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51937.1",
+        "spring-projects/spring-boot#51937.2",
+        "spring-projects/spring-boot#51937.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110823-setup-build-spring-boot-51937-s34-at-bot",
+        "jobStatus": "passed",
+        "parent": "4 tests, 0 failed, 0 errors",
+        "fix": "5 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `JerseyEndpointIntegrationTests#[2] separateManagementPort = true`"
+      },
+      "example": "621-boot-jersey-management-json",
+      "observations": {
+        "spring-projects/spring-boot#51937.1": {
+          "parent": {
+            "outcome": {
+              "return": "200:singleton"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:notelgnis"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51937.2": {
+          "parent": {
+            "outcome": {
+              "return": "200:notelgnis"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:notelgnis"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51937.3": {
+          "parent": {
+            "outcome": {
+              "return": "200:singleton:prototype"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:notelgnis:epytotorp"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S35",
+      "pr": 50734,
+      "revisions": {
+        "parent": "790f66c37a6fe69ea6e40c0c09212fab007d345f",
+        "fix": "33bf9d3777eac3f6bc13909571b612d0d2702233"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50734.1",
+        "spring-projects/spring-boot#50734.2",
+        "spring-projects/spring-boot#50734.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-091104-setup-build-spring-boot-50734-s35-at-bot",
+        "jobStatus": "passed",
+        "parent": "4 tests, 0 failed, 0 errors",
+        "fix": "6 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `MongoHealthIndicatorTests#mongoIsUp()`, `MongoReactiveHealthIndicatorTests#mongoIsUp()`"
+      },
+      "example": "622-boot-mongo-health-commands",
+      "observations": {
+        "spring-projects/spring-boot#50734.1": {
+          "parent": {
+            "outcome": {
+              "return": "UP:complete:10:test,admin/UP:complete:10:test,admin"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "UP:complete:10:admin/UP:complete:10:admin"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50734.2": {
+          "parent": {
+            "outcome": {
+              "return": "UP:complete:10:test/UP:complete:10:test"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "UP:complete:10:test/UP:complete:10:test"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50734.3": {
+          "parent": {
+            "outcome": {
+              "return": "UP:complete:10:fixture0,fixture1,fixture2,fixture3,fixture4,fixture5,fixture6,fixture7,admin/UP:complete:10:fixture0,fixture1,fixture2,fixture3,fixture4,fixture5,fixture6,fixture7,admin;UP:complete:10:admin,fixture0,fixture1,fixture2,fixture3,fixture4,fixture5,fixture6,fixture7/UP:complete:10:admin,fixture0,fixture1,fixture2,fixture3,fixture4,fixture5,fixture6,fixture7"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "UP:complete:10:admin/UP:complete:10:admin;UP:complete:10:admin/UP:complete:10:admin"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S36",
+      "pr": 50461,
+      "revisions": {
+        "parent": "2051b60a1ad79b941fb97b0f886e0e59b0356bf1",
+        "fix": "d6940b260bba2c22133f2856c224e80fcf0b4d60"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50461.1",
+        "spring-projects/spring-boot#50461.2",
+        "spring-projects/spring-boot#50461.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-121808-setup-build-spring-boot-50461-s36-at-bot",
+        "jobStatus": "passed",
+        "parent": "126 tests, 0 failed, 0 errors",
+        "fix": "148 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `OpenTelemetryTracingAutoConfigurationTests#shouldAppendTracesPathToCommonEndpoint()`, `OpenTelemetryTracingAutoConfigurationTests#shouldMergeCommonAndSignalSpecificHeadersForTracing()`, `OtlpTracingAutoConfigurationIntegrationTests#httpSpanExporterFallsBackToCommonCompressionWhenSignalSpecificCompressionIsNotSet()`; does not compile (`:module:spring-boot-micrometer-metrics:compileTestJava`, `:module:spring-boot-opentelemetry:compileTestJava`; first error: `OtlpLoggingAutoConfigurationTests.java`: cannot find symbol)"
+      },
+      "example": "623-boot-otlp-signal-defaults",
+      "observations": {
+        "spring-projects/spring-boot#50461.1": {
+          "fix": {
+            "outcome": {
+              "return": "/v1/logs:[common]:gzip:Hello//v1/traces:[common]:gzip:fixture-span//v1/metrics:[common]:gzip:springfixture=7"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50461.2": {
+          "parent": {
+            "outcome": {
+              "return": "/explicit:[]:plain:Hello"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "/explicit:[]:plain:Hello"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50461.3": {
+          "fix": {
+            "outcome": {
+              "return": "/v1/logs:[logs]:plain:Hello//v1/traces:[common]:gzip:fixture-span//v1/metrics:[common]:gzip:springfixture=7"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S37",
+      "pr": 51959,
+      "revisions": {
+        "parent": "6a8b2d04940b9be002d9ab0314eb8c7024aeecfb",
+        "fix": "8a76a2dfef003fe0d02a9b7f451907a84cb8baba"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51959.1",
+        "spring-projects/spring-boot#51959.2",
+        "spring-projects/spring-boot#51959.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-091104-setup-build-spring-boot-51959-s37-at-bot",
+        "jobStatus": "passed",
+        "parent": "0 tests, 0 failed, 0 errors",
+        "fix": "3 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `LoggingApplicationListenerWithContextPausingTests$ReuseContextOne#test(CapturedOutput)`"
+      },
+      "example": "624-boot-jul-paused-context",
+      "observations": {
+        "spring-projects/spring-boot#51959.1": {
+          "parent": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,0/1"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,1/1"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51959.2": {
+          "parent": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,1/1"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,1/1"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51959.3": {
+          "parent": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,0/1,0/1"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,1/1,1/1"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S38",
+      "pr": 51156,
+      "revisions": {
+        "parent": "175702174462775baa8a66f8b0e21542ed6807a8",
+        "fix": "af69828ce6cbdc159c8847067ec9c85f22bcdb30"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51156.1",
+        "spring-projects/spring-boot#51156.2",
+        "spring-projects/spring-boot#51156.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110823-setup-build-spring-boot-51156-s38-at-bot",
+        "jobStatus": "passed",
+        "parent": "4 tests, 0 failed, 0 errors",
+        "fix": "5 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "does not compile (`:core:spring-boot:compileTestJava`; first error: `AppendableByteArrayTests.java`: method toByteArray in class AppendableByteArray cannot be applied to given types;)"
+      },
+      "example": "625-boot-json-successive-events",
+      "observations": {
+        "spring-projects/spring-boot#51156.2": {
+          "parent": {
+            "outcome": {
+              "return": "{\"ok\":\"a\"}/{\"ok\":\"b\"}"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "{\"ok\":\"a\"}/{\"ok\":\"b\"}"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "separateMergedBytecodeReview": "repaired-guards.json",
+      "unmeasured": [
+        "spring-projects/spring-boot#51156.1",
+        "spring-projects/spring-boot#51156.3"
+      ]
+    },
+    {
+      "case": "S39",
+      "pr": 52477,
+      "revisions": {
+        "parent": "7814f5327a8ee30be2012969b579c64eb18d6355",
+        "fix": "873231a509e28f42b6b1f45ad6a43fe17bcf8692"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52477.1",
+        "spring-projects/spring-boot#52477.2",
+        "spring-projects/spring-boot#52477.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-091105-setup-build-spring-boot-52477-s39-at-bot",
+        "jobStatus": "passed",
+        "parent": "33 tests, 0 failed, 0 errors, 1 skipped",
+        "fix": "36 tests, 0 failed, 0 errors, 1 skipped",
+        "landedTestsOnParent": "fails: `JsonValueWriterTests#writeWhenNegativeInfinity()`, `JsonValueWriterTests#writeWhenNotANumber()`, `JsonValueWriterTests#writeWhenPositiveInfinity()`"
+      },
+      "example": "626-boot-ecs-nonfinite-values",
+      "observations": {
+        "spring-projects/spring-boot#52477.1": {
+          "parent": {
+            "outcome": {
+              "return": "invalid-json,invalid-json,invalid-json,invalid-json,invalid-json,invalid-json"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "string:NaN,string:Infinity,string:-Infinity,string:NaN,string:Infinity,string:-Infinity"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52477.2": {
+          "parent": {
+            "outcome": {
+              "return": "number:1.25,number:-2.5"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "number:1.25,number:-2.5"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52477.3": {
+          "parent": {
+            "outcome": {
+              "return": "invalid-json"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "string:NaN/[number:1.0,string:NaN]"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S40",
+      "pr": 52522,
+      "revisions": {
+        "parent": "0b8c2a7ef227e008fdc3dc397f8987bf4c90f5f7",
+        "fix": "430fa2b6891a6bbb82a92fed1f2e1c01fe709571"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52522.1",
+        "spring-projects/spring-boot#52522.2",
+        "spring-projects/spring-boot#52522.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-091105-setup-build-spring-boot-52522-s40-at-bot",
+        "jobStatus": "passed",
+        "parent": "86 tests, 0 failed, 0 errors",
+        "fix": "87 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `JsonWriterTests$MembersTest#usingPairsWithName()`"
+      },
+      "example": "627-boot-json-named-pairs",
+      "observations": {
+        "spring-projects/spring-boot#52522.1": {
+          "parent": {
+            "outcome": {
+              "return": "invalid-json"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "{\"version\":1,\"pairs\":{\"a\":\"A\",\"b\":\"B\"}}"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52522.2": {
+          "parent": {
+            "outcome": {
+              "return": "{\"version\":1,\"a\":\"A\",\"b\":\"B\"}"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "{\"version\":1,\"a\":\"A\",\"b\":\"B\"}"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52522.3": {
+          "parent": {
+            "outcome": {
+              "throws": "java.lang.IllegalStateException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "{\"version\":1,\"pairs\":{\"version\":2}} / {\"version\":1,\"pairs\":{}}"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S41",
+      "pr": 52593,
+      "revisions": {
+        "parent": "a938beab5f1d370f63d62ce78f3ab029f868bd03",
+        "fix": "979ccd4e9ff5d5a34f2552ff5973a2254dcebc4f"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52593.1",
+        "spring-projects/spring-boot#52593.2",
+        "spring-projects/spring-boot#52593.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110824-setup-build-spring-boot-52593-s41-at-bot",
+        "jobStatus": "passed",
+        "parent": "8 tests, 0 failed, 0 errors",
+        "fix": "10 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `InspectedContentTests#ofWritingRangeShouldWork()`, `InspectedContentTests#ofWritingRangesThatExceedMemoryLimitShouldWork()`"
+      },
+      "example": "628-boot-inspected-content-slice",
+      "observations": {
+        "spring-projects/spring-boot#52593.1": {
+          "parent": {
+            "outcome": {
+              "return": "-1:test"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "4:test"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52593.2": {
+          "parent": {
+            "outcome": {
+              "return": "4:test"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "4:test"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52593.3": {
+          "fix": {
+            "outcome": {
+              "return": "4102:true:marker:true:eof"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S42",
+      "pr": 52285,
+      "revisions": {
+        "parent": "1434d2112bb979f6464e283d7a17ab728bf40ce4",
+        "fix": "57a1ca37c36f3cf355211aa8dea8c500b2dd3a09"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52285.1",
+        "spring-projects/spring-boot#52285.2",
+        "spring-projects/spring-boot#52285.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110823-setup-build-spring-boot-52285-s42-at-bot",
+        "jobStatus": "passed",
+        "parent": "34 tests, 0 failed, 0 errors",
+        "fix": "36 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `NestedJarFileTests#readAllBytesAfterReadingStoredContentReturnsRemainingContent()`"
+      },
+      "example": "629-boot-nested-jar-stream-cursor",
+      "observations": {
+        "spring-projects/spring-boot#52285.1": {
+          "parent": {
+            "outcome": {
+              "return": "EOFException"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52285.2": {
+          "parent": {
+            "outcome": {
+              "return": "true:true/true:true"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:true/true:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52285.3": {
+          "parent": {
+            "outcome": {
+              "return": "EOFException/true:true"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:true/true:true"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S43",
+      "pr": 52280,
+      "revisions": {
+        "parent": "a2338765ea747b695f6cd95a471da85d52bc54bb",
+        "fix": "1b2d2fc80900d849fef7b937385594d63ac3bef3"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52280.1",
+        "spring-projects/spring-boot#52280.2",
+        "spring-projects/spring-boot#52280.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110823-setup-build-spring-boot-52280-s43-at-bot",
+        "jobStatus": "passed",
+        "parent": "17 tests, 0 failed, 0 errors",
+        "fix": "20 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `JarUrlClassLoaderTests#resolveFromNestedWhenNameNeedsEncoding()`, `UrlEncoderTests#encodeWhenHasSingleByteEncodedCharacters()`"
+      },
+      "example": "630-boot-nested-resource-urls",
+      "observations": {
+        "spring-projects/spring-boot#52280.1": {
+          "parent": {
+            "outcome": {
+              "return": "FileNotFoundException/42"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "42/42"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52280.2": {
+          "parent": {
+            "outcome": {
+              "return": "17/17"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "17/17"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52280.3": {
+          "parent": {
+            "outcome": {
+              "return": "FileNotFoundException/42,FileNotFoundException/99"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "42/42,99/99"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S44",
+      "pr": 52244,
+      "revisions": {
+        "parent": "d5b807d26efd1fc658e76b966e4a947ff829d439",
+        "fix": "bba5f11efc7f28ced96961d9e16dbc8862b06010"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52244.1",
+        "spring-projects/spring-boot#52244.2",
+        "spring-projects/spring-boot#52244.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-091105-setup-build-spring-boot-52244-s44-at-bot",
+        "jobStatus": "passed",
+        "parent": "7 tests, 0 failed, 0 errors",
+        "fix": "8 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `JarUrlClassLoaderTests#loadClassFromNestedWhenJarHasNoDirectoryEntriesDefinesPackageFromManifest()`"
+      },
+      "example": "631-boot-nested-package-version",
+      "observations": {
+        "spring-projects/spring-boot#52244.1": {
+          "parent": {
+            "outcome": {
+              "return": "null"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1.2.3"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52244.2": {
+          "parent": {
+            "outcome": {
+              "return": "1.2.3"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1.2.3"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52244.3": {
+          "parent": {
+            "outcome": {
+              "return": "null/null"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1.2.3/null"
+            },
+            "verdict": "refuted"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S45",
+      "pr": 52402,
+      "revisions": {
+        "parent": "70b0b134a7472dc634f43cc143a9d37416ad6bbb",
+        "fix": "9c0bef7f8e9ac00dce1b45d70ad172e76de91bb3"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52402.1",
+        "spring-projects/spring-boot#52402.2",
+        "spring-projects/spring-boot#52402.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110823-setup-build-spring-boot-52402-s45-at-bot",
+        "jobStatus": "passed",
+        "parent": "14 tests, 0 failed, 0 errors",
+        "fix": "16 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `JarUrlClassLoaderTests#resolveRootPathFromNested()`, `JarUrlClassLoaderTests#resolveRootResourcesFromNested()`"
+      },
+      "example": "632-boot-nested-classpath-roots",
+      "observations": {
+        "spring-projects/spring-boot#52402.1": {
+          "parent": {
+            "outcome": {
+              "return": "missing-root"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:app"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52402.2": {
+          "parent": {
+            "outcome": {
+              "return": "xml"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "xml"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52402.3": {
+          "parent": {
+            "outcome": {
+              "return": ""
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "first:A,second:B"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S46",
+      "pr": 51653,
+      "revisions": {
+        "parent": "59379ae449f15a6d17a333f5505941f4165ab3b2",
+        "fix": "c966eca3e7467c2524df980aa52bac517b59a40b"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51653.1",
+        "spring-projects/spring-boot#51653.2",
+        "spring-projects/spring-boot#51653.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-091105-setup-build-spring-boot-51653-s46-at-bot",
+        "jobStatus": "failed",
+        "parent": "8 tests, 0 failed, 0 errors",
+        "fix": "9 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "**does not fail** (9 tests, 0 failed, 0 errors, gradle-exit=0)"
+      },
+      "example": "633-boot-layer-index-precedence",
+      "observations": {
+        "spring-projects/spring-boot#51653.1": {
+          "parent": {
+            "outcome": {
+              "return": "app:marker/dep:library"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "app:marker/dep:library"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51653.2": {
+          "parent": {
+            "outcome": {
+              "return": "app:marker/dep:library;app:marker/dep:library/app:sibling"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "app:marker/dep:library;app:marker/dep:library/app:sibling"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51653.3": {
+          "parent": {
+            "outcome": {
+              "return": "first"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "second"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S47",
+      "pr": 52530,
+      "revisions": {
+        "parent": "6529cc7f81a938953a6dfdf5d9ca3f1ce984bfed",
+        "fix": "4f67ceb843a890b56bf37cdcd0144729c1f553de"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52530.1",
+        "spring-projects/spring-boot#52530.2",
+        "spring-projects/spring-boot#52530.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110824-setup-build-spring-boot-52530-s47-at-bot",
+        "jobStatus": "passed",
+        "parent": "0 tests, 0 failed, 0 errors",
+        "fix": "4 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `LayeredSpecTests#excludeExcludesApplicationContent()`, `LayeredSpecTests#excludeExcludesDependencies()`, `LayeredSpecTests#includeAndExcludeSelectApplicationContent()`, `LayeredSpecTests#includeAndExcludeSelectDependencies()`"
+      },
+      "example": "634-boot-gradle-layer-owners",
+      "evidenceKind": "Gradle bootJar",
+      "evidence": [
+        "gradle/S47-isolated.json"
+      ],
+      "observations": {
+        "spring-projects/spring-boot#52530.1": {
+          "parent": {
+            "outcome": [
+              "rest",
+              "public"
+            ],
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": [
+              "public",
+              "rest"
+            ],
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52530.2": {
+          "parent": {
+            "outcome": [
+              "rest",
+              "public"
+            ],
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": [
+              "rest",
+              "public"
+            ],
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52530.3": {
+          "parent": {
+            "outcome": [
+              "public",
+              "public",
+              "rest"
+            ],
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": [
+              "public",
+              "rest",
+              "rest"
+            ],
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S48",
+      "pr": 51551,
+      "revisions": {
+        "parent": "d34a479879d348a1758196b7d1c696ea4f8ea8f0",
+        "fix": "69ad59c413ec8dfbd884ba0e712e8ada89513d29"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51551.1",
+        "spring-projects/spring-boot#51551.2",
+        "spring-projects/spring-boot#51551.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-091106-setup-build-spring-boot-51551-s48-at-bot",
+        "jobStatus": "passed",
+        "parent": "78 tests, 0 failed, 0 errors",
+        "fix": "81 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `RepackagerTests#sbomManifestEntriesAreWrittenForWar()`, `WarIntegrationTests#apache-maven-3.6.3`, `WarIntegrationTests#apache-maven-3.9.13`"
+      },
+      "example": "635-boot-war-sbom-location",
+      "observations": {
+        "spring-projects/spring-boot#51551.1": {
+          "parent": {
+            "outcome": {
+              "return": "absent/absent:present"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "CycloneDX/WEB-INF/classes/META-INF/sbom/application.cdx.json:selected"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51551.2": {
+          "parent": {
+            "outcome": {
+              "return": "CycloneDX/META-INF/sbom/application.cdx.json"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "CycloneDX/META-INF/sbom/application.cdx.json"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51551.3": {
+          "parent": {
+            "outcome": {
+              "return": "absent/absent:present"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "CycloneDX/WEB-INF/classes/META-INF/sbom/application.cdx.json:selected"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "separateMavenBuilds": {
+        "parent": "maven-war/parent.json",
+        "fix": "maven-war/fix.json"
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S49",
+      "pr": 51372,
+      "revisions": {
+        "parent": "b1966933c60d136fed1c860445180f13f3d39db7",
+        "fix": "535d133bdaa0ed46bbfb7ce578c14261806f39ac"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51372.1",
+        "spring-projects/spring-boot#51372.2",
+        "spring-projects/spring-boot#51372.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-110824-setup-build-spring-boot-51372-s49-at-bot",
+        "jobStatus": "passed",
+        "parent": "114 tests, 0 failed, 0 errors",
+        "fix": "127 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `BootWarTests#basicArchiveCreation()`; does not compile (`:loader:spring-boot-jarmode-tools:compileTestJava`; first error: `IndexedJarStructureTests.java`: cannot find symbol)"
+      },
+      "example": "636-boot-war-extracted-classpath",
+      "observations": {
+        "spring-projects/spring-boot#51372.1": {
+          "parent": {
+            "outcome": {
+              "return": "invalid-library-location"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "both:ordered:html+jsp:REG/PROV"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51372.2": {
+          "parent": {
+            "outcome": {
+              "return": "both:ordered:REG/PROV"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "both:ordered:REG/PROV"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51372.3": {
+          "parent": {
+            "outcome": {
+              "return": "invalid-library-location/invalid-library-location"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "both:ordered:html+jsp:REG/PROV/collision:both-paths"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S50",
+      "pr": 50433,
+      "revisions": {
+        "parent": "f83576eb2954c007464c696d1dabc7a871a7becc",
+        "fix": "21cb821f9553c048566b9a1779729c78167439a0"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50433.1",
+        "spring-projects/spring-boot#50433.2",
+        "spring-projects/spring-boot#50433.3"
+      ],
+      "upstreamTests": {
+        "job": "20261127-091106-setup-build-spring-boot-50433-s50-at-bot",
+        "jobStatus": "passed",
+        "parent": "0 tests, 0 failed, 0 errors",
+        "fix": "1 tests, 0 failed, 0 errors",
+        "landedTestsOnParent": "fails: `NativeImageResourceProviderTests#nativeImageResourceProviderShouldReadNestedMigrations()`"
+      },
+      "example": "637-boot-native-flyway-migration",
+      "evidenceKind": "GraalVM native executable and JDBC",
+      "evidence": [
+        "native-flyway/parent.json",
+        "native-flyway/fix.json"
+      ],
+      "observations": {
+        "spring-projects/spring-boot#50433.1": {
+          "parent": {
+            "outcome": "failed opening flattened path",
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "runtime": "native",
+              "version": "2",
+              "checksum": -391086276,
+              "row": 73,
+              "applied": 1
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50433.2": {
+          "parent": {
+            "outcome": {
+              "runtime": "native",
+              "version": "2",
+              "checksum": -391086276,
+              "row": 73,
+              "applied": 1
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "runtime": "native",
+              "version": "2",
+              "checksum": -391086276,
+              "row": 73,
+              "applied": 1
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50433.3": {
+          "parent": {
+            "outcome": [
+              "failed opening flattened path",
+              "failed opening flattened path"
+            ],
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": [
+              {
+                "runtime": "native",
+                "version": "2",
+                "checksum": -391086276,
+                "row": 73,
+                "applied": 1
+              },
+              {
+                "runtime": "native",
+                "version": "2",
+                "checksum": -391086276,
+                "row": 73,
+                "applied": 1
+              }
+            ],
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    }
+  ],
+  "totals": {
+    "registeredClaims": 150,
+    "casesWithPublicCallers": 46,
+    "casesWithOriginalMeasurements": 50,
+    "twoSidedPublicClaims": 142,
+    "unmeasuredClaims": 4,
+    "jvmObservations": 265,
+    "parent matched": 87,
+    "fix matched": 142,
+    "parent observed only": 55,
+    "fix refuted": 4,
+    "externalBuildSideResults": 23
+  },
+  "mergedByRole": {
+    "Intent": {
+      "matched": 47,
+      "differentOnBoth": 45,
+      "identicalOnBoth": 2,
+      "refuted": 1,
+      "unmeasured": 2,
+      "mergeOnly": 1
+    },
+    "Control": {
+      "matched": 50,
+      "identicalOnBoth": 48,
+      "differentOnBoth": 2
+    },
+    "Challenge": {
+      "matched": 45,
+      "differentOnBoth": 41,
+      "identicalOnBoth": 4,
+      "refuted": 3,
+      "mergeOnly": 3,
+      "unmeasured": 2
+    }
+  }
+}

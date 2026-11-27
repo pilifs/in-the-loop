@@ -1,0 +1,71 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "755c79eb9178b1c49f407293a3939acf101458eb939905dc4f8498fd9e37caa8",
+  "runtimeSha256": "9b81ae648a029b6814b473b92be632810ff5e0045a43f397326f70204893fa5d",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/BootArchive.java": "6c9c0cc8630a69530d5aca8e745a6959c6e81f24eb14204726efaf71aa13855b",
+    "caller/NestedApp.java": "2c63eccb52279cf115c22aad00246c657d8579f4a70e27bba4cf811c15f856fd",
+    "caller/PublicCaller.java": "6daec3e102efefe3c11e5e4c5cd004d961e1a552c94f8b79938fc206b3138df3"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "BootArchive.class": "96edb422cd912b95de9d9f76557e66773288f309755ff9c6380e6f094718d58e",
+        "NestedApp.class": "c1784b03e0d67733be4636afe96ad93c04a1aaefc725180fac50e71e91b4eb22",
+        "PublicCaller.class": "fa1d2bfd835edb09c0f933fbe7bf8f6ead867c608cc01d93d4386b14287315fd",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52280.1",
+          "outcome": {
+            "return": "FileNotFoundException/42"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52280.2",
+          "outcome": {
+            "return": "17/17"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52280.3",
+          "outcome": {
+            "return": "FileNotFoundException/42,FileNotFoundException/99"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52280.1",
+          "outcome": {
+            "return": "42/42"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52280.2",
+          "outcome": {
+            "return": "17/17"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52280.3",
+          "outcome": {
+            "return": "42/42,99/99"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

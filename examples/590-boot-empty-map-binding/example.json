@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "590",
+  "title": "An explicitly empty map binds as a present value",
+  "summary": "Distinguishes an empty bound map from an absent value and checks the same property through YAML application startup.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "special-values",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Binder.bind and application configuration-properties lookup"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "An empty direct property now creates an empty target map after placeholder resolution. Other direct values still go through conversion."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/50773"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

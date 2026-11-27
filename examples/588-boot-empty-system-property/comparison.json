@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52125",
+  "revisions": {
+    "parent": "e664baa4001e2a12cfd292771f63d747d86b831f",
+    "fix": "d3c0359e0196e9d604a65e6ff677d114cc270a0f"
+  },
+  "entry": "TestPropertyValues.applyToSystemProperties",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52125.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Start present and empty, override with `temporary`, then return normally.",
+      "prediction": "Both callbacks see `temporary`. The PR reports `default` afterward on the parent. The merge should return `\"\"` afterward.",
+      "basis": "The default argument distinguishes absence from an intentionally empty value. The landed test checks an empty value after scope exit.",
+      "refutation": "The merge returns `default`, retains `temporary`, or never exposes the override.",
+      "expected": {
+        "parent": {
+          "return": "temporary/default"
+        },
+        "fix": {
+          "return": "temporary/empty"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52125.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Repeat with an initially absent property and with the initial value `original`.",
+      "prediction": "On both revisions the final reads should be `default` and `original`, respectively.",
+      "basis": "The two distinct initial states are recorded before entering the same scope.",
+      "refutation": "The formerly absent key remains present or the original nonempty value changes.",
+      "expected": {
+        "parent": {
+          "return": "temporary/default;temporary/original"
+        },
+        "fix": {
+          "return": "temporary/default;temporary/original"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52125.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the initially empty key and nest a second override with value `inner`. Throw a sentinel `RuntimeException` from the inner Runnable and catch it inside the outer callback.",
+      "prediction": "On the merge the reader should see `inner`, then `temporary` after the catch, then `\"\"` outside both scopes. The caught exception should be the sentinel.",
+      "basis": "Each nested scope has its own entry state. Exception unwinding exercises the same restoration obligation before the outer callback continues.",
+      "refutation": "Either scope leaks its override or the caller receives a different exception.",
+      "expected": {
+        "fix": {
+          "return": "inner/true/temporary/empty"
+        }
+      }
+    }
+  ]
+}

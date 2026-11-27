@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52593",
+  "revisions": {
+    "parent": "a938beab5f1d370f63d62ce78f3ab029f868bd03",
+    "fix": "979ccd4e9ff5d5a34f2552ff5973a2254dcebc4f"
+  },
+  "entry": "InspectedContent.of and TarArchive.writeTo",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52593.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Inspect the slice at offset 5 with length 4.",
+      "prediction": "The PR reports size −1 before the change. The merge should report 4 and emit exactly `test`.",
+      "basis": "The four selected positions are 5, 6, 7 and 8. Reading the bytes and measuring them is independent of Boot’s size calculation.",
+      "refutation": "The size and emitted byte count disagree, or any of the four bytes differ.",
+      "expected": {
+        "parent": {
+          "return": "-1:test"
+        },
+        "fix": {
+          "return": "4:test"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52593.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Give the writer a buffer containing only `test` and call `write(buffer, 0, 4)`.",
+      "prediction": "Both revisions should report 4 and produce the same four bytes.",
+      "basis": "Offset zero already made the old calculation equal the requested length.",
+      "refutation": "The zero-offset case changes its size or bytes.",
+      "expected": {
+        "parent": {
+          "return": "4:test"
+        },
+        "fix": {
+          "return": "4:test"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52593.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "For 4,102 known bytes, write the first 6 with offset zero and the remaining 4,096 with offset 6. Add the resulting `Content` to `TarArchive.of` using `Layout.file`, followed by a second entry with a distinct one-byte marker. Read the produced archive with an independent TAR reader.",
+      "prediction": "On the merge the first entry should declare 4,102 bytes and contain the entire input, followed by the intact marker entry. The PR reports a parent size of 4,099 for this split.",
+      "basis": "The lengths sum to 4,102, whereas the old arithmetic for this split gives 4,096, exactly eight 512-byte TAR blocks. The extra six bytes require a ninth data block, so framing affects the next entry as well as the size field.",
+      "refutation": "Writing the merge’s archive fails, the reader sees the wrong size or contents, or the following entry cannot be read at its boundary.",
+      "expected": {
+        "fix": {
+          "return": "4102:true:marker:true:eof"
+        }
+      },
+      "omit": {
+        "parent": "Archive framing is checked on the merged writer. Both revisions independently measure the two legal slice writes in the intent and control."
+      }
+    }
+  ]
+}

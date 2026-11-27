@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "620",
+  "title": "Reach a named health group through a multi-segment path",
+  "summary": "Parses the health status and component names at exact aliases and a nested component URL on an original MVC server.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Actuator HTTP health group alias and component"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Health groups can claim an additional path with more than one segment on the application or management server. The resolver consumes the matching prefix before looking up a component."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51470"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "2/3 merged predictions matched"
+}

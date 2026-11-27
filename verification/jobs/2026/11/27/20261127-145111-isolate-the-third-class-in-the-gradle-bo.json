@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-145111-isolate-the-third-class-in-the-gradle-bo",
+  "title": "Isolate the third class in the Gradle bootJar challenge",
+  "description": "Repeat all layer observations on the two original Gradle plugins. Assert that each baseline archive contains only the two fixture classes, then introduce Third only in the challenge and reopen each packaged entry to check its bytes and its layer.",
+  "kind": "real-world",
+  "capabilities": [
+    "public-api-comparison"
+  ],
+  "links": {
+    "examples": [
+      "634"
+    ]
+  },
+  "expected": "The two controls and the independent third-class challenge cover distinct inputs on both plugins.",
+  "submitted": {
+    "at": "2026-11-27T14:51:11+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "Read all six original bootJar builds",
+      "run": "python3 verification/merged-pr-links/s01-s50/gradle/replay.py S47 --output verification/merged-pr-links/s01-s50/gradle/S47-isolated.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/gradle/S47-isolated.json"
+  ]
+}

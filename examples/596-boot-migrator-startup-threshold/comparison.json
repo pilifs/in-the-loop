@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51855",
+  "revisions": {
+    "parent": "789e06631baace79ffe874d54de269342f6b76c5",
+    "fix": "ef67de058ed35c0f6246d47abdb09fbdd4ce5c1a"
+  },
+  "entry": "SpringApplication.run with the properties migrator",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51855.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Use the removed banner key with `--spring.properties.migrator.fail=on-error`.",
+      "prediction": "The parent should report the migration and start. The merge should fail startup with `IllegalStateException` identifying keys needing migration.",
+      "basis": "The issue describes the old log-only behavior. The landed integration test expects an exception for this exact pair.",
+      "refutation": "The merge returns a running context, or fails for an unrelated reason before processing the key.",
+      "expected": {
+        "parent": {
+          "return": "active:banner"
+        },
+        "fix": {
+          "return": "migration-failed:banner"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51855.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use the renamed logging key with `on-error`, then repeat with the switch omitted.",
+      "prediction": "Both should start on both revisions. On the merge `on-warning` for the same renamed key should instead fail.",
+      "basis": "The documented thresholds distinguish an unsupported key from one with a replacement. The default is `never`.",
+      "refutation": "A rename alone stops the `on-error` run, or the stricter merged run returns a live context.",
+      "expected": {
+        "parent": {
+          "return": "active:logging/active:logging/active:logging"
+        },
+        "fix": {
+          "return": "active:logging/active:logging/migration-failed:logging"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51855.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge hold `on-error` fixed. Pass both keys, then reverse just their argument order. Capture output through startup failure.",
+      "prediction": "Both orders should fail and the migration diagnostics should still identify the unsupported banner key. Allow log order and unrelated startup messages to vary.",
+      "basis": "The threshold tests membership in the report, and the upgrade guide promises diagnostics even on failure.",
+      "refutation": "One ordering starts, or the only observation in one run is a generic failure with no diagnostic identifying the unsupported key.",
+      "expected": {
+        "fix": {
+          "return": "migration-failed:banner+logging/migration-failed:banner+logging"
+        }
+      }
+    }
+  ]
+}

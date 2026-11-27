@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52309",
+  "revisions": {
+    "parent": "aaca41eb4262b0570d610d97e30857fb3cb17089",
+    "fix": "76246db920dbafc1e45441ef736f14d4548dc8d0"
+  },
+  "entry": "SpringApplication.setKeepAlive and child context close",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52309.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Close one child and allow main to return with no other non-daemon application thread.",
+      "prediction": "The PR reports the parent JVM exiting with status 0 despite an active parent context. On the merge the application should remain available for a subsequent signal.",
+      "basis": "The property exists to keep the owner JVM alive. The landed regression waits for the captured thread after closing a child and checks its liveness.",
+      "refutation": "The merged process exits after child close before it receives the signal.",
+      "expected": {
+        "parent": {
+          "return": "active:exited:0"
+        },
+        "fix": {
+          "return": "active:reply:parent:0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52309.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Close the parent deliberately with no child present, then let main return.",
+      "prediction": "On both revisions the isolated JVM should terminate normally after parent closure.",
+      "basis": "The owner’s close event tells the keep-alive thread its work is complete.",
+      "refutation": "The process remains alive solely because Boot’s keep-alive thread survives owner closure.",
+      "expected": {
+        "parent": {
+          "return": "inactive:exited:0"
+        },
+        "fix": {
+          "return": "inactive:exited:0"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52309.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge use two refreshed siblings. Close the first, then have the daemon control thread retrieve a marker bean from the second on request. Finally explicitly close the remaining contexts.",
+      "prediction": "The application should return the second child’s marker after main returns, then exit normally after owner closure. Allow scheduling latency.",
+      "basis": "An unrelated child’s close should affect neither its sibling’s services nor the lifetime of their common parent.",
+      "refutation": "The process disappears before delivering the marker, the sibling becomes unusable, or owner closure leaves the process alive.",
+      "expected": {
+        "fix": {
+          "return": "active:reply:sibling:0"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "81f054b794f7fae714b8b0d57f1cb5da55b72b55d311b497ae76fff87384f161",
+  "runtimeSha256": "4e53720532b01d9ff7140cb92231da0e56df1e55b315e6d31d1127d89afdb9be",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "13a3d317b0d423308bb25a279fe6785a372778af215d3e4598f3ca2cde072d6a"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Config.class": "4749544e74b8f237ed625ca820b6adae3673ba2642a56e3d9d8286b394ec1f08",
+        "PublicCaller.class": "9f722b0cf86095260f4fc013dd247e5ef6a5cee6b194d4aacab95cbe3ea56c5f",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52477.1",
+          "outcome": {
+            "return": "invalid-json,invalid-json,invalid-json,invalid-json,invalid-json,invalid-json"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52477.2",
+          "outcome": {
+            "return": "number:1.25,number:-2.5"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52477.3",
+          "outcome": {
+            "return": "invalid-json"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52477.1",
+          "outcome": {
+            "return": "string:NaN,string:Infinity,string:-Infinity,string:NaN,string:Infinity,string:-Infinity"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52477.2",
+          "outcome": {
+            "return": "number:1.25,number:-2.5"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52477.3",
+          "outcome": {
+            "return": "string:NaN/[number:1.0,string:NaN]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

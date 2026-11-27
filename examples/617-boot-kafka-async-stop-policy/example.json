@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "617",
+  "title": "Apply the configured Kafka shutdown policy to asynchronous listener results",
+  "summary": "Reads the shutdown policy independently from the factory template and an actual container created from it.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "ConcurrentKafkaListenerContainerFactory.createContainer"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Boot maps `spring.kafka.listener.await-async-results-on-stop` onto Spring Kafka container properties. When enabled, the listener container should allow unfinished asynchronous results to complete within its shutdown timeout."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51774"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [
+    "Both Boot revisions use the setup’s Spring Kafka 4.2.0-M2 substitution. The challenge runs its test kit’s genuine Kafka 4.3.1 KRaft broker on loopback and records a completed listener future and the container stop callback."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

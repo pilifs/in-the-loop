@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52402",
+  "revisions": {
+    "parent": "70b0b134a7472dc634f43cc143a9d37416ad6bbb",
+    "fix": "9c0bef7f8e9ac00dce1b45d70ad172e76de91bb3"
+  },
+  "entry": "LaunchedClassLoader.getResources and PathMatchingResourcePatternResolver",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52402.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Use a nested-only classpath. Read the distinct application marker through the unqualified single-root pattern.",
+      "prediction": "The PR reports a null first root, empty enumeration and failure resolving `classpath:*.properties` before the fix. On the merge the first root should be usable and the pattern should return the application marker with its expected contents.",
+      "basis": "The application entry exists in `BOOT-INF/classes`. Spring needs the root before it can match the wildcard. The regression checks the nested-root URL directly.",
+      "refutation": "The loader returns null, Spring cannot resolve the root, or no returned resource contains the application marker.",
+      "expected": {
+        "fix": {
+          "return": "true:app"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52402.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Put `fixed.xml` under `mapper/` with a directory entry and request `classpath:mapper/*.xml` from the same executable.",
+      "prediction": "Both revisions should read the known XML marker.",
+      "basis": "The PR identifies patterns with a concrete directory root as unaffected. The archive directory and file supply independent expectations.",
+      "refutation": "The directory-root pattern fails or reads different bytes.",
+      "expected": {
+        "parent": {
+          "return": "xml"
+        },
+        "fix": {
+          "return": "xml"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52402.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge give two nested libraries the same marker filename with different contents. Enumerate their empty-name roots in classpath order and resolve the marker relative to each library’s own URL.",
+      "prediction": "Each library root should yield its own embedded bytes, in declared library order. Ignore the application or parent roots when comparing those two library entries.",
+      "basis": "The landed two-URL test asserts both roots in order. Library-specific bytes distinguish usable roots from duplicate or misdirected URLs.",
+      "refutation": "Enumeration contains two URLs but both read the first library’s marker, one is unreadable, or the two library roots are exchanged relative to classpath order.",
+      "expected": {
+        "fix": {
+          "return": "first:A,second:B"
+        }
+      }
+    }
+  ]
+}

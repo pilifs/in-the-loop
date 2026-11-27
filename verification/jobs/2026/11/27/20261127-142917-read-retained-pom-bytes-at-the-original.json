@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-142917-read-retained-pom-bytes-at-the-original",
+  "title": "Read retained POM bytes at the original Maven build boundary",
+  "description": "The detached Gradle configuration continued to select the original repository after a local release repository was added. Give only the build-time BOM reader the exact retained release POM by group, artifact and version, checking cached POMs against their content address. Build the unmodified fixed Spring Boot Maven goal and read both physical WARs.",
+  "kind": "real-world",
+  "capabilities": [
+    "spring-boot-packaging"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T14:29:17+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "git"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "5G",
+    "duration": "5m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Build the original fixed plugin and check its two Maven WARs",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/maven-war/fix.json"
+  ]
+}

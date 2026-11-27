@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51725",
+  "revisions": {
+    "parent": "683d41b3232b98bb10d7b60705abe300af1c5e20",
+    "fix": "32b09e479b78afd151577df37e800f47711db749"
+  },
+  "entry": "JobRepository.createJobInstance, createJobExecution and getJobExecution",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51725.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Register the recording manager as the sole transaction manager. Give the execution fresh job parameters so that it can be created.",
+      "prediction": "The parent’s Mongo-specific lookup should bypass this recorder. On the merge the repository should use it, and a successful transaction should leave the new execution readable by its ID.",
+      "basis": "The bean’s declared and runtime types exclude `MongoTransactionManager` but satisfy the public transaction interface. Only that recorder can produce its marker.",
+      "refutation": "The merged operation writes metadata without entering the recorder, fails to commit via it, or loses the recorded execution.",
+      "expected": {
+        "parent": {
+          "return": "false:false:true"
+        },
+        "fix": {
+          "return": "true:true:true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51725.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use one ordinary `MongoTransactionManager`, no batch qualifier, and repeat with fresh parameters.",
+      "prediction": "Both revisions should create a job execution and allow its ID and job name to be read back.",
+      "basis": "The concrete Mongo manager satisfies both selection rules and the repository uses the same Mongo database.",
+      "refutation": "A revision fails to create or recover the execution with the existing manager type.",
+      "expected": {
+        "parent": {
+          "return": "true"
+        },
+        "fix": {
+          "return": "true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51725.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Supply two instrumented managers, a primary ordinary Mongo manager and a batch-qualified non-Mongo subtype of `PlatformTransactionManager` delegating to the database. Reset both recorders after startup and issue the same repository operation.",
+      "prediction": "On the merge the batch-qualified manager should handle the repository transaction. The ordinary primary should record no acquisition for it. The returned execution should still be readable.",
+      "basis": "The qualifier expresses an explicit choice for Batch. A distinct recorder per candidate observes that choice even when either could produce identical Mongo records.",
+      "refutation": "A primary-only call, both candidates independently acquiring the write transaction, or a missing execution.",
+      "expected": {
+        "fix": {
+          "return": "true:true:false:true"
+        }
+      }
+    }
+  ]
+}

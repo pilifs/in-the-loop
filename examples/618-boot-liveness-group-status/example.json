@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "618",
+  "title": "A custom liveness URL retains liveness-only membership",
+  "summary": "Reads the canonical liveness group, its alias and overall HTTP health while a separately registered indicator changes state.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Actuator liveness group, alias and overall HTTP health"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Customizing a probe group’s path while leaving include and exclude unset now retains the probe’s default members. Explicit membership remains effective."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/50296"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [
+    "Both sides use the same recorded MVC transport and dependencies from S33. The S31 and S33-fix MVC main source trees agree. The health implementation and its owning dependencies come first from each original S31 deployment."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

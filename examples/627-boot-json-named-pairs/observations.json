@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "587ff2bed0aafd5e9ce3bf96778f3d7cfb541082830358f9bc996587e244aa1e",
+  "runtimeSha256": "fedf942f1a84c0905086265ef1585f7806acf29fe20f5c6fa581b09cea8931cd",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "b57519e06811d370fed176eb9f6066cc9f7f03e0bb99248b6ae9de2ba67f0f9a"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "e0c20c5c997f90798f63b299d8b83b4d6ddbf78678829a822aaec924008eef24",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52522.1",
+          "outcome": {
+            "return": "invalid-json"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52522.2",
+          "outcome": {
+            "return": "{\"version\":1,\"a\":\"A\",\"b\":\"B\"}"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52522.3",
+          "outcome": {
+            "throws": "java.lang.IllegalStateException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52522.1",
+          "outcome": {
+            "return": "{\"version\":1,\"pairs\":{\"a\":\"A\",\"b\":\"B\"}}"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52522.2",
+          "outcome": {
+            "return": "{\"version\":1,\"a\":\"A\",\"b\":\"B\"}"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52522.3",
+          "outcome": {
+            "return": "{\"version\":1,\"pairs\":{\"version\":2}} / {\"version\":1,\"pairs\":{}}"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

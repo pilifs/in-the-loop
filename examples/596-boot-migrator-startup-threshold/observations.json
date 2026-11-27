@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "b0c869cf562925f23c610355f252beefe5b8c8f01ce85207cd2b573da2a479c2",
+  "runtimeSha256": "45d00413b1305ccd4b60bd3f38ce2c1e87829aade50708e5d511d9498f4af454",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "c385c8436e8fb8d4e9dfc3a071e2265bd83a3d2a97c261e2bf3905b43a87ee30"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Config.class": "b759847b1f8ec5d16fc56ae2da7a62646d7b7759fa2dd4babf6a687721c8e0b4",
+        "PublicCaller.class": "326f5ce75413e4592ed30537b415bef13bee4480faefe54a7435ee2bf2ebe14f",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#51855.1",
+          "outcome": {
+            "return": "active:banner"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#51855.2",
+          "outcome": {
+            "return": "active:logging/active:logging/active:logging"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#51855.3",
+          "outcome": {
+            "return": "active:banner+logging/active:banner+logging"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#51855.1",
+          "outcome": {
+            "return": "migration-failed:banner"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#51855.2",
+          "outcome": {
+            "return": "active:logging/active:logging/migration-failed:logging"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#51855.3",
+          "outcome": {
+            "return": "migration-failed:banner+logging/migration-failed:banner+logging"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

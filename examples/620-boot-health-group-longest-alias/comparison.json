@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51470",
+  "revisions": {
+    "parent": "1f3209130d661a96626f3b545ae219762a8201f0",
+    "fix": "333d336ca95b6fcf9b404152bad2323d762b467b"
+  },
+  "entry": "Actuator HTTP health group alias and component",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51470.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Request `/myBasePath/health` on the configured server.",
+      "prediction": "Issue #48374 reports a startup error requiring a single segment on the parent. The merged application should start and return HTTP 200 with `status=UP` and `components.diskSpace`.",
+      "basis": "The integration fixture exposes exactly that contributor in the group. A JSON membership check distinguishes the group from another healthy endpoint.",
+      "refutation": "Startup still rejects the path, or the URL returns 404 or a different group’s body.",
+      "expected": {
+        "fix": {
+          "return": "200:UP:diskSpace"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51470.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use `server:/healthz` with the same group, contributor, and component visibility.",
+      "prediction": "Both revisions should serve the same healthy group and its `diskSpace` member at `/healthz`.",
+      "basis": "The single-segment form was supported before the change and appears in the reference guide.",
+      "refutation": "A previously usable alias fails or returns a different component selection.",
+      "expected": {
+        "parent": {
+          "return": "200:UP:diskSpace"
+        },
+        "fix": {
+          "return": "200:UP:diskSpace"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51470.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Configure two groups with distinct healthy marker contributors. Give them aliases `server:/probe` and `server:/probe/deep`, using group names unrelated to `probe`. Request both exact aliases and `/probe/deep/<deep-marker>` on the merge.",
+      "prediction": "Each exact alias should expose its own marker. The longer path’s marker request should return that component’s `UP` result. Reversing group declaration order should preserve those observations.",
+      "basis": "The PR specifies longest-prefix selection. Different marker names detect the shorter group winning and exercise the number of consumed segments.",
+      "refutation": "The shorter group shadows the longer one, a covered component path returns 404, or declaration order changes the selected group.",
+      "expected": {
+        "fix": {
+          "return": "200:UP:near/200:UP:far/200:UP;200:UP:near/200:UP:far/200:UP"
+        }
+      }
+    }
+  ]
+}

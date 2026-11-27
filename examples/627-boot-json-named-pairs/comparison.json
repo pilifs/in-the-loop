@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52522",
+  "revisions": {
+    "parent": "0b8c2a7ef227e008fdc3dc397f8987bf4c90f5f7",
+    "fix": "430fa2b6891a6bbb82a92fed1f2e1c01fe709571"
+  },
+  "entry": "JsonWriter.writeToString",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52522.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Serialize the two-entry map using the named member and query the parsed root and `pairs` child.",
+      "prediction": "The PR shows malformed JSON on the parent. On the merge the root should have exactly `version: 1` and `pairs: {a: \"A\", b: \"B\"}`.",
+      "basis": "The public `usingPairs` Javadoc promises an object for a named member. The landed test checks the complete two-entry string.",
+      "refutation": "A parse failure, flattened pair, extra root member or wrong nested value.",
+      "expected": {
+        "parent": {
+          "return": "invalid-json"
+        },
+        "fix": {
+          "return": "{\"version\":1,\"pairs\":{\"a\":\"A\",\"b\":\"B\"}}"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52522.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use the same map with `members.add().usingPairs(Map::forEach)` after the version member.",
+      "prediction": "Both revisions should produce a valid root object with `version`, `a` and `b` as siblings and their original values.",
+      "basis": "The unnamed pair API contributes to its enclosing object. Existing structured loggers use this form according to the PR.",
+      "refutation": "An unexpected object wrapper, a missing sibling or invalid JSON on either revision.",
+      "expected": {
+        "parent": {
+          "return": "{\"version\":1,\"a\":\"A\",\"b\":\"B\"}"
+        },
+        "fix": {
+          "return": "{\"version\":1,\"a\":\"A\",\"b\":\"B\"}"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52522.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep root `version=1` and serialize a named `pairs` map whose only entry is `version=2`; repeat with an empty map.",
+      "prediction": "On the merge the parsed values must be independently addressable at `/version` and `/pairs/version` as 1 and 2. For empty input `/version` stays 1 and `/pairs` is an empty object.",
+      "basis": "Distinct object scopes permit identical property names. An empty map still denotes a value for the declared named object.",
+      "refutation": "A collapsed or overwritten value, duplicate root keys, or an absent/null `pairs` member for the empty map.",
+      "expected": {
+        "fix": {
+          "return": "{\"version\":1,\"pairs\":{\"version\":2}} / {\"version\":1,\"pairs\":{}}"
+        }
+      }
+    }
+  ]
+}

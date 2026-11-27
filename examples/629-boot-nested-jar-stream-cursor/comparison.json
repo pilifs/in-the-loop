@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52285",
+  "revisions": {
+    "parent": "1434d2112bb979f6464e283d7a17ab728bf40ce4",
+    "fix": "57a1ca37c36f3cf355211aa8dea8c500b2dd3a09"
+  },
+  "entry": "NestedJarFile.getInputStream",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52285.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Read the first byte of a nonempty STORED entry, then call `readAllBytes()`.",
+      "prediction": "The PR identifies an erroneous `EOFException` before. On the merge return exactly bytes 1 through the end, then return an empty array on another `readAllBytes()` call.",
+      "basis": "The JDK stream and the source payload both specify the unread suffix. The landed tests compare it against `Arrays.copyOfRange`.",
+      "refutation": "An exception for a well-formed entry, repeated prefix bytes, lost suffix bytes, or extra data on the next call.",
+      "expected": {
+        "parent": {
+          "return": "EOFException"
+        },
+        "fix": {
+          "return": "true:true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52285.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Open each compression kind afresh and call `readAllBytes()` immediately.",
+      "prediction": "Both revisions should return the complete uncompressed payload in both cases.",
+      "basis": "ZIP storage method changes representation on disk without changing the entry’s logical content.",
+      "refutation": "Either fresh read differs from the known source bytes.",
+      "expected": {
+        "parent": {
+          "return": "true:true/true:true"
+        },
+        "fix": {
+          "return": "true:true/true:true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52285.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge, consume three bytes of a longer entry using `skipNBytes(3)` instead of individual reads. Repeat for both compression methods, concatenating the known skipped prefix with the returned bytes.",
+      "prediction": "The two reconstructions should equal the original payload byte for byte. Both streams should subsequently return `-1` from `read()`.",
+      "basis": "`skipNBytes(3)` succeeds only after advancing exactly three bytes. This challenges two independent cursor-accounting paths and observes EOF separately.",
+      "refutation": "One compression kind repeats or omits a byte, or reports additional data after the suffix.",
+      "expected": {
+        "fix": {
+          "return": "true:true/true:true"
+        }
+      }
+    }
+  ]
+}

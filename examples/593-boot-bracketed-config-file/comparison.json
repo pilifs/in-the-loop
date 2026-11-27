@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52277",
+  "revisions": {
+    "parent": "5b40ad76e7cc2c05d8e9a816fdaf080a354667f9",
+    "fix": "c89f27ace1483333681b074c4f3d4924ba77f1ea"
+  },
+  "entry": "SpringApplication.run → Environment.getProperty",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52277.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Import `team[a]/app.properties` as required with no `team/app.properties` present.",
+      "prediction": "The PR reports a missing resource at the stripped path before. On the merge startup should succeed and `marker` should equal `selected`.",
+      "basis": "The only named file contains those bytes. The landed classpath resolver test loads a property from a bracketed directory.",
+      "refutation": "Startup fails on the merge, or the resulting environment lacks the marker.",
+      "expected": {
+        "parent": {
+          "return": "missing"
+        },
+        "fix": {
+          "return": "selected"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52277.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use `team/app[.properties]`, where the extensionless file `team/app` contains `marker=hinted`.",
+      "prediction": "Both revisions should yield `hinted`.",
+      "basis": "The documented suffix supplies the extension used to parse the extensionless file.",
+      "refutation": "Either revision cannot import it or returns a different marker.",
+      "expected": {
+        "parent": {
+          "return": "hinted"
+        },
+        "fix": {
+          "return": "hinted"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52277.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Hold the required bracketed import and its contents fixed. Add `team/app.properties` with `marker=decoy` next door.",
+      "prediction": "The PR reports the decoy could win before. The merged context should still expose `selected` with and without the decoy.",
+      "basis": "The configuration names one physical file. Adding a differently named file must not change its contents.",
+      "refutation": "A healthy merged context returns `decoy` or changes the marker when the neighboring file is added.",
+      "expected": {
+        "fix": {
+          "return": "selected/selected"
+        }
+      }
+    }
+  ]
+}

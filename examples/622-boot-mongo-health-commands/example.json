@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "622",
+  "title": "Mongo health reports all visible databases with one explicit hello",
+  "summary": "Counts commands issued by each health indicator using recording clients, while independently checking the complete returned set of database names.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "agreement",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "MongoHealthIndicator.health and MongoReactiveHealthIndicator.health"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Both Mongo health indicators now list database names and send one `hello` to a selected database. The implementation prefers `admin` when visible, otherwise the first visible database, with `admin` also used for an empty list."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/50734"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

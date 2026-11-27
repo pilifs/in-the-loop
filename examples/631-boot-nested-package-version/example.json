@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "631",
+  "title": "Package versions from nested JARs without directory entries",
+  "summary": "Reads package metadata from the first real class load in a fresh executable, with and without a directory entry or a preceding failed optional lookup.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "stale-messages",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "LaunchedClassLoader.loadClass → Package.getImplementationVersion"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The Boot loader now finds a package’s manifest from the nested JAR containing the requested class, even when that JAR omits the ZIP directory entry for the package."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52244"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "2/3 merged predictions matched"
+}

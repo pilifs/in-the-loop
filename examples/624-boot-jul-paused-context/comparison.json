@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51959",
+  "revisions": {
+    "parent": "6a8b2d04940b9be002d9ab0314eb8c7024aeecfb",
+    "fix": "8a76a2dfef003fe0d02a9b7f451907a84cb8baba"
+  },
+  "entry": "Spring TestContext cache → JUL and Logback appender",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51959.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "With cache pausing active, emit the third marker from the resumed first context.",
+      "prediction": "Issue #51958 reports lost JUL output after this sequence on Boot 4.1.1 with Framework 7.0.9. On the merge the appender should receive the third marker.",
+      "basis": "The first and third tests share their cached context. The landed ordered nested tests check captured JUL output in all three.",
+      "refutation": "The first marker reaches Logback but the third does not, despite a successfully resumed context.",
+      "expected": {
+        "fix": {
+          "return": "reused:true;1/1,1/1,1/1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51959.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "On both revisions repeat with the Framework cache pause policy set to `-Dspring.test.context.cache.pause=never` at JVM startup.",
+      "prediction": "The logging backend should receive all three markers. The issue author reports that this policy makes the sequence pass.",
+      "basis": "The sequence reuses both contexts without the lifecycle transition implicated in the issue.",
+      "refutation": "The third bridged record disappears even with pausing disabled.",
+      "expected": {
+        "parent": {
+          "return": "reused:true;1/1,1/1,1/1"
+        },
+        "fix": {
+          "return": "reused:true;1/1,1/1,1/1"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51959.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge repeat the default-policy sequence, followed by a second switch to `context=two`. Emit distinct JUL and direct SLF4J markers after each reuse. Count each marker at a single dedicated Logback appender.",
+      "prediction": "Both paths should deliver each marker once after either resume. Ignore unrelated framework messages and preserve their source labels.",
+      "basis": "A direct backend record controls for capture itself. Counting JUL markers detects both lost bridge delivery and duplicate handlers.",
+      "refutation": "Direct logging succeeds but a JUL marker is absent or doubled after a switch.",
+      "expected": {
+        "fix": {
+          "return": "reused:true;1/1,1/1,1/1,1/1"
+        }
+      }
+    }
+  ]
+}

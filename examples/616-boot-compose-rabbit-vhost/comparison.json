@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51940",
+  "revisions": {
+    "parent": "305b97344b2b7abb9173b0e63a8d2c01a96c9e06",
+    "fix": "f2cc019fe5bd51ce405995f3c89c48e2003cd9e7"
+  },
+  "entry": "RabbitConnectionDetails and RabbitStreamConnectionDetails",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51940.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Declare `RABBITMQ_DEFAULT_VHOST=app` and give the fixture account access only to `app`.",
+      "prediction": "The PR reports `/` and a refused AMQP connection on the parent. The merge should supply `app` and permit a connection to it.",
+      "basis": "The broker’s own virtual-host configuration and permissions independently identify the only usable destination. The landed Compose integration opens a connection.",
+      "refutation": "Details say `/`, or the details say `app` yet the client tries another vhost or cannot open the connection because of vhost selection.",
+      "expected": {
+        "fix": {
+          "return": "app:open"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51940.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Omit both virtual-host variables and provision the ordinary `/` virtual host.",
+      "prediction": "On both revisions the details should report `/` and the authorized client should connect.",
+      "basis": "The broker default and the existing default-host fixture agree.",
+      "refutation": "The omitted setting becomes an empty or unrelated name, or prevents connecting to `/`.",
+      "expected": {
+        "parent": {
+          "return": "/:open"
+        },
+        "fix": {
+          "return": "/:open"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51940.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep virtual host `app` and ordinary AMQP access fixed. With the stream plugin and its mapped port enabled, also use the generated `RabbitStreamConnectionDetails` to build a stream `Environment`. Resolve advertised addresses to the mapped endpoint as in the fixture, then call streamExists(\"absent-probe-stream\") for a known absent name.",
+      "prediction": "On the merge both protocols should establish sessions for `app`. Allow host and port to differ by protocol. The stream command should return false without a vhost authorization error.",
+      "basis": "The stream factory consumes a separate connection-details object. Broker acceptance checks the property after it leaves Boot.",
+      "refutation": "AMQP can connect but stream details omit the virtual host or the stream session is rejected for selecting the wrong vhost.",
+      "expected": {
+        "fix": {
+          "return": "app:open/app:false"
+        }
+      }
+    }
+  ]
+}

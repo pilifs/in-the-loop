@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "623",
+  "title": "Common OTLP settings reach the signal-specific exporters",
+  "summary": "Decodes three independently emitted protobuf signals after HTTP delivery and compares request paths, compression and all suite header values.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Original OTLP logging, tracing and metrics exporters → HTTP collector"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Boot introduces `management.opentelemetry.otlp` defaults for the collector endpoint, compression and headers across logs, traces and metrics. A signal-specific setting can override the corresponding common value."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/50461"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

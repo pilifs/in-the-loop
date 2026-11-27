@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/50461",
+  "revisions": {
+    "parent": "2051b60a1ad79b941fb97b0f886e0e59b0356bf1",
+    "fix": "d6940b260bba2c22133f2856c224e80fcf0b4d60"
+  },
+  "entry": "Original OTLP logging, tracing and metrics exporters → HTTP collector",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#50461.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Set only common endpoint, `management.opentelemetry.otlp.compression=gzip` and common header `suite=common`.",
+      "prediction": "The parent lacks these common settings. On the merge expect HTTP requests to `/v1/logs`, `/v1/traces` and `/v1/metrics` at that collector, with `suite=common` and gzip bodies containing the corresponding signal.",
+      "basis": "The issue asks for one shared base. Pinned tests check the signal suffixes, exporter header configuration and HTTP compression. Decoding the request verifies that its declared encoding matches its body.",
+      "refutation": "Any signal misses the selected collector, uses the wrong path, loses the header, or advertises gzip for an undecodable body.",
+      "expected": {
+        "fix": {
+          "return": "/v1/logs:[common]:gzip:Hello//v1/traces:[common]:gzip:fixture-span//v1/metrics:[common]:gzip:springfixture=7"
+        }
+      },
+      "omit": {
+        "parent": "The original exporter does not recognize the common collector endpoint. Both pins run the explicit-endpoint control against the private recorder."
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50461.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Give logs an explicit `management.opentelemetry.logging.export.otlp.endpoint` ending in `/explicit`, omit common settings and leave compression at its HTTP default.",
+      "prediction": "Both revisions should send `Hello` to `/explicit` as uncompressed protobuf.",
+      "basis": "The existing HTTP integration test checks the exporter’s content type, absent content encoding and payload.",
+      "refutation": "A suffix is appended to the explicit endpoint, or the collector cannot read the logged body there.",
+      "expected": {
+        "parent": {
+          "return": "/explicit:[]:plain:Hello"
+        },
+        "fix": {
+          "return": "/explicit:[]:plain:Hello"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50461.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Retain the common endpoint, gzip and `suite=common`. Override only log compression to `none` and log header `suite` to `logs`, then emit the same log, span and metric.",
+      "prediction": "On the merge the log request should carry `suite=logs` once and have an uncompressed body. The trace and metric requests should retain common gzip and `suite=common`.",
+      "basis": "A per-signal override must leave the other exporters’ effective settings intact. Three independently captured requests expose accidental mutation of shared headers or defaults.",
+      "refutation": "A sibling request inherits a logs-only override, log headers contain both values, or the logged payload requires gzip to read.",
+      "expected": {
+        "fix": {
+          "return": "/v1/logs:[logs]:plain:Hello//v1/traces:[common]:gzip:fixture-span//v1/metrics:[common]:gzip:springfixture=7"
+        }
+      },
+      "omit": {
+        "parent": "This prediction concerns overrides of the merged common endpoint."
+      }
+    }
+  ]
+}

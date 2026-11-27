@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "615",
+  "title": "The PostgreSQL driver recovers a Compose database name exactly",
+  "summary": "Parses the JDBC URL supplied by a real Compose service. The driver returns the database name, timeout and application name independently.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "JdbcConnectionDetails.getJdbcUrl → PostgreSQL Driver.parseURL"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Boot encodes the database-name component when constructing a Compose PostgreSQL JDBC URL. Connection parameters and the application name have their own positions in the URL."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52625"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

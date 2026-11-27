@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51173",
+  "revisions": {
+    "parent": "a07c43466b7231a6bd8c84b638ce89fe6b78fcff",
+    "fix": "d265e67685580d0b417b5bb192af1069eb12c5cf"
+  },
+  "entry": "ServletResponse.sendRedirect on Boot-managed Tomcat",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51173.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Leave `server.tomcat.use-relative-redirects` unset and use ordinary non-strict Tomcat defaults.",
+      "prediction": "The smoke assertions change from an absolute URI on the test host to `/login`. Both should resolve to the same login URI on that host.",
+      "basis": "A path beginning with `/` retains the original authority on resolution. Raw and resolved forms measure different parts of the contract.",
+      "refutation": "The merge returns an absolute header, the parent returns a relative one, or either points elsewhere.",
+      "expected": {
+        "parent": {
+          "return": "302:absolute:same"
+        },
+        "fix": {
+          "return": "302:/login:same"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51173.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Set the Boot property to `false` explicitly on both revisions.",
+      "prediction": "Both should return an absolute URI with the request’s scheme, host, port and `/login` path.",
+      "basis": "An explicit false selects the absolute form. The landed customizer test checks the corresponding Tomcat context flag.",
+      "refutation": "A relative header or a changed target under an explicit false.",
+      "expected": {
+        "parent": {
+          "return": "302:absolute:same"
+        },
+        "fix": {
+          "return": "302:absolute:same"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51173.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use a fresh JVM with `org.apache.catalina.STRICT_SERVLET_COMPLIANCE=true`, leave the Boot setting unset, and measure both a bare `StandardContext` flag and the embedded server’s header.",
+      "prediction": "The PR body describes strict-mode absolute redirects from a proposed nullable default. The landed literal instead predicts Boot’s flag remains true and the HTTP/1.1 header stays `/login` on the merge even if the bare context defaults to false. This wire result is open.",
+      "basis": "The PR’s Tomcat 11.0.24 probe gives the bare-container comparison. Separate JVM startup avoids reuse of cached global flags.",
+      "refutation": "With strict mode confirmed and the bare context false, an absolute merged header refutes the wire prediction. A relative header refutes the PR body’s strict-mode account for the landing.",
+      "expected": {
+        "fix": {
+          "return": "false/302:/login:same"
+        }
+      }
+    }
+  ]
+}

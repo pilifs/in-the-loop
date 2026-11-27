@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52477",
+  "revisions": {
+    "parent": "7814f5327a8ee30be2012969b579c64eb18d6355",
+    "fix": "873231a509e28f42b6b1f45ad6a43fe17bcf8692"
+  },
+  "entry": "SLF4J fluent logger → Boot ECS console formatter",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52477.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Use double and float NaN, positive infinity, and negative infinity.",
+      "prediction": "The PR reports invalid bare `NaN` before the merge and attributes the same bare-token path to infinities. On the merge each event should parse, yielding strings `NaN`, `Infinity`, or `-Infinity` respectively.",
+      "basis": "JSON numbers have no NaN or infinity literals. Quoting the Java spellings preserves each distinct value as legal JSON.",
+      "refutation": "A merged event fails strict parsing, loses a field, or maps a value to null, a number, or a different string.",
+      "expected": {
+        "fix": {
+          "return": "string:NaN,string:Infinity,string:-Infinity,string:NaN,string:Infinity,string:-Infinity"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52477.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Emit finite `Double.valueOf(1.25)` and `Float.valueOf(-2.5f)` through the same logger.",
+      "prediction": "Both revisions should produce JSON numbers with the corresponding values.",
+      "basis": "Both inputs are exactly representable and valid JSON numbers. Only non-finite float/double values need a different representation.",
+      "refutation": "A parsed value is a string, or its numeric value differs.",
+      "expected": {
+        "parent": {
+          "return": "number:1.25,number:-2.5"
+        },
+        "fix": {
+          "return": "number:1.25,number:-2.5"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52477.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep `ratio=Double.NaN` and add a second key `samples` containing the primitive array `[1.0, Double.NaN]` to that event.",
+      "prediction": "On the merge the whole event should parse once. `ratio` should be the string `NaN`, and the array should contain a number equal to one followed by the string `NaN`.",
+      "basis": "The landed helper test exercises a primitive array. Parsing the emitted envelope checks that preserving one invalid-number spelling does not change a neighboring element’s type.",
+      "refutation": "The scalar parses but the array is missing, rejects the event, changes order, or quotes the finite neighbor.",
+      "expected": {
+        "fix": {
+          "return": "string:NaN/[number:1.0,string:NaN]"
+        }
+      }
+    }
+  ]
+}

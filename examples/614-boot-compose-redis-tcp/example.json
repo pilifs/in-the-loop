@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "614",
+  "title": "Redis connection details select the TCP port when UDP is also published",
+  "summary": "Reads the Redis endpoint chosen from actual loopback TCP and UDP publications and sends a PING to the advertised TCP listener.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "DataRedisConnectionDetails.getStandalone and Redis PING"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Protocol-specific lookups now distinguish two published host ports for the same numeric container port. The Redis service connection uses the TCP lookup. On the merge, the deprecated number-only lookup rejects ambiguous mappings."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52832"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

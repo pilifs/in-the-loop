@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/50296",
+  "revisions": {
+    "parent": "4b51d350ee77b98e038c14e8ba831c5c47e5bb80",
+    "fix": "c398259cb871da425bdbdf792a276c058a253213"
+  },
+  "entry": "Actuator liveness group, alias and overall HTTP health",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#50296.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Set the unrelated sentinel to DOWN with all other indicators UP and probe membership implicit.",
+      "prediction": "The report predicts that the old customized liveness group admits the unrelated failure. Both merged liveness routes should return HTTP 200 with `status=UP`, while the overall health endpoint reports DOWN.",
+      "basis": "The requested path changes routing. Default liveness depends on `livenessState`; the overall endpoint confirms that the failing indicator was active.",
+      "refutation": "Either merged probe route reports DOWN or 503, or `/alive` fails to resolve while the canonical probe works.",
+      "expected": {
+        "fix": {
+          "return": "200:UP/200:UP/503:DOWN"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50296.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Add explicit `management.endpoint.health.group.liveness.include=livenessState,sentinel` and leave sentinel DOWN.",
+      "prediction": "Both revisions should report DOWN at the probe and use HTTP 503 with the default status mapping.",
+      "basis": "An explicit member with DOWN participates in the aggregate.",
+      "refutation": "Either revision masks the explicitly included failure or the two liveness routes disagree.",
+      "expected": {
+        "parent": {
+          "return": "503:DOWN/503:DOWN/503:DOWN"
+        },
+        "fix": {
+          "return": "503:DOWN/503:DOWN/503:DOWN"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50296.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Return to implicit membership. Toggle only the sentinel from DOWN to UP and repeat all three requests after each change.",
+      "prediction": "On the merge the overall status should change from DOWN to UP, while both liveness routes stay UP.",
+      "basis": "The independent public summary proves the sentinel actually changed, while the liveness inputs stayed fixed.",
+      "refutation": "A sentinel transition changes either liveness response, or the alias disagrees with its canonical endpoint.",
+      "expected": {
+        "fix": {
+          "return": "200:UP/200:UP/503:DOWN;200:UP/200:UP/200:UP"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52280",
+  "revisions": {
+    "parent": "a2338765ea747b695f6cd95a471da85d52bc54bb",
+    "fix": "1b2d2fc80900d849fef7b937385594d63ac3bef3"
+  },
+  "entry": "LaunchedClassLoader.getResource → URL.openStream",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52280.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Request `dir with space/a#b.txt` on a nested-only class path.",
+      "prediction": "The PR reports that the parent returns a URL whose stream open throws `FileNotFoundException`. The merged stream should deliver exactly `[42]`.",
+      "basis": "The entry contains one known byte. Space and `#` encode as `%20` and `%23` in a URL path.",
+      "refutation": "The merged loader yields null, cannot open its own URL, or returns different bytes.",
+      "expected": {
+        "parent": {
+          "return": "FileNotFoundException/42"
+        },
+        "fix": {
+          "return": "42/42"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52280.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Place logical name `dir/a-b.txt` with byte 17 in the same jar and request it.",
+      "prediction": "Both revisions should find the resource and read exactly `[17]`.",
+      "basis": "The control name uses plain ASCII characters which need no escaping.",
+      "refutation": "Either loader drops the ordinary resource or returns another payload.",
+      "expected": {
+        "parent": {
+          "return": "17/17"
+        },
+        "fix": {
+          "return": "17/17"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52280.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Add a second entry literally named `dir with space/a%23b.txt`, containing 99. On the merge request both the original hash name and the literal percent name.",
+      "prediction": "Both names should resolve independently. Reading the two URLs should give `[42]` and `[99]`, respectively.",
+      "basis": "The ZIP directory contains two distinct names. A literal percent must itself be escaped, so decoding once should preserve the distinction.",
+      "refutation": "Opening either URL aliases the other entry, produces no data, or fails despite successful discovery.",
+      "expected": {
+        "fix": {
+          "return": "42/42,99/99"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52304",
+  "revisions": {
+    "parent": "a9bfca2346c74c2bb46e70aa4f61b162d36dee33",
+    "fix": "f2ffba784085ae4c1f8fcd6ac7f9c850e722cecc"
+  },
+  "entry": "HttpMessageConverters.forServer and forClient",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52304.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Configure JSON-B as the only alternative JSON converter.",
+      "prediction": "Issue #50953 reports that Kotlin claims `Map` before. On the merge its answer should be false and the JSON-B converter should be registered.",
+      "basis": "The caller is offering an ordinary map, with JSON-B available as its serializer. The regression asserts Kotlin’s answer and JSON-B registration separately.",
+      "refutation": "Kotlin claims the map on the merge or JSON-B is missing despite its configured bean.",
+      "expected": {
+        "parent": {
+          "return": "true:true"
+        },
+        "fix": {
+          "return": "false:true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52304.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Remove the JSON-B API and implementation as well as Jackson and Gson, keeping Kotlin `Json.Default`.",
+      "prediction": "The Kotlin converter should report `true` for the same query on both revisions.",
+      "basis": "The all-Kotlin configuration retains the unrestricted predicate. The restored regression checks the exact call.",
+      "refutation": "The Kotlin-only converter declines the map.",
+      "expected": {
+        "parent": {
+          "return": "true:false"
+        },
+        "fix": {
+          "return": "true:false"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52304.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the JSON-B configuration and the map type fixed. Build the client list using the ordered Boot client customizers as well. In each list locate the first converter willing to write a `Map` as JSON and use it to write `{\"answer\":7}`.",
+      "prediction": "On the merge JSON-B should win on both sides. Parsing each body independently should recover one member `answer` with numeric value 7.",
+      "basis": "Both public customization paths serve the same serialization policy. A parsed value checks what the chosen converter actually delivered.",
+      "refutation": "Kotlin wins on one side, writing fails, or a body parses to a different value.",
+      "expected": {
+        "fix": {
+          "return": "jsonb:7/jsonb:7"
+        }
+      }
+    }
+  ]
+}

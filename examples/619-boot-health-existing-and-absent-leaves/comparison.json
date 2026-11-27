@@ -1,0 +1,30 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52321",
+  "revisions": {
+    "parent": "53328b76db4ffb107ee38ad82bf090ac1be59a9c",
+    "fix": "b50d0244ea95127b783868b24f8ad9d5b9ce5a4b"
+  },
+  "entry": "Actuator health contributor HTTP lookup",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52321.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "GET `/actuator/health/test/spring` and then `/actuator/health/test/missing`.",
+      "prediction": "Both revisions should serve the UP indicator for the first path with 200 and return 404 for the absent terminal child.",
+      "basis": "The registered names and fixed UP value determine the existing leaf. The PR reports correct absence behavior for a terminal miss.",
+      "refutation": "The existing contributor disappears or the absent terminal child returns a health descriptor or a server error.",
+      "expected": {
+        "parent": {
+          "return": "200:UP/404"
+        },
+        "fix": {
+          "return": "200:UP/404"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "610",
+  "title": "A secondary entity manager rolls back flushed inserts in its own pool",
+  "summary": "Reads committed H2 state through separate connections after flushing and rolling back or committing a secondary persistence unit.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "lost-committed-data",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "EntityManagerFactoryBuilder.dataSource → EntityTransaction and JDBC"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Hibernate auto-commit metadata now comes from the `DataSource` passed to the entity-manager factory builder. Using the primary pool’s policy can leave a rolled-back insert committed in a different database."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52824"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

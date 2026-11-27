@@ -1,0 +1,70 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51661",
+  "revisions": {
+    "parent": "042c69a4f9c7e7bfb7be14dff6a5dd5af5ff3e72",
+    "fix": "26b0e813b0b82e5683524d1ad817ca9b66228b4d"
+  },
+  "entry": "EnableConfigurationProperties → Options.duration",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51661.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Omit `test.duration` and supply `defaults.duration=3d`.",
+      "prediction": "The PR reports pre-change failures in typed default cases. On the merge the context should start and the component should equal `Duration.ofDays(3)`.",
+      "basis": "The environment supplies the text `3d` and Boot duration syntax assigns it three days. The context test asserts that value.",
+      "refutation": "A bind exception or any duration other than 72 hours on the merge.",
+      "expected": {
+        "parent": {
+          "return": "conversion-failed"
+        },
+        "fix": {
+          "return": "PT72H"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51661.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Explicitly set `test.duration=5d` as well.",
+      "prediction": "Both revisions should return five days.",
+      "basis": "The annotation supplies a value only for a missing property. The upstream explicit-override control passed before the fix.",
+      "refutation": "The constructor receives three days or startup fails.",
+      "expected": {
+        "parent": {
+          "return": "PT120H"
+        },
+        "fix": {
+          "return": "PT120H"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51661.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep `test.duration=5d`, but change the unused `defaults.duration` to `not-a-duration`. Then remove `test.duration` in a fresh context on the merge.",
+      "prediction": "With the override, both contexts across revisions should still expose five days. Without the override the merged bind should fail conversion.",
+      "basis": "An invalid fallback distinguishes evaluating an unused default from binding the explicit value. The same invalid text is observable when selected.",
+      "refutation": "The unused invalid value breaks the override, or the selected invalid value silently produces five days.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "PT120H/"
+          ]
+        },
+        "fix": {
+          "return": "PT120H/conversion-failed"
+        }
+      }
+    }
+  ]
+}

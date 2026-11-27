@@ -1,0 +1,52 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "d861bf7bff70b7e8d533ee4a7fcfab753879380c227484ed9e3b4b0801f0feb5",
+  "runtimeSha256": "1a5e3e897a1a7cd5c416a2f9b698eebbc78738a7e6bd1d252fa96ef69a879747",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "f151b45e484732d044d85030adb55f1b6d89b1fdab965e2e989d33bb7a4156c7"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Request.class": "b42b053aa253d12ed0e6fdeb971084d6bc2d8f2353a427aaf0d4628c57937d3b",
+        "PublicCaller.class": "5b7c58cc6c622b69f90d178b87962f3a910b6532f0c3c3e9691dcc644eda24e2",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#50461.2",
+          "outcome": {
+            "return": "/explicit:[]:plain:Hello"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#50461.1",
+          "outcome": {
+            "return": "/v1/logs:[common]:gzip:Hello//v1/traces:[common]:gzip:fixture-span//v1/metrics:[common]:gzip:springfixture=7"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#50461.2",
+          "outcome": {
+            "return": "/explicit:[]:plain:Hello"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#50461.3",
+          "outcome": {
+            "return": "/v1/logs:[logs]:plain:Hello//v1/traces:[common]:gzip:fixture-span//v1/metrics:[common]:gzip:springfixture=7"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

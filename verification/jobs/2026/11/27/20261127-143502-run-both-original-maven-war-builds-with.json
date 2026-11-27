@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-143502-run-both-original-maven-war-builds-with",
+  "title": "Run both original Maven WAR builds with the verified cached BOMs",
+  "description": "Both machine caches contain the original POMs. Gradle names some SHA-1 directories without their leading zero. The full offline mirror preflight now validates them using their 40-digit digest. Build and run the paired original Maven plugins and retain the two physical WAR readbacks per side.",
+  "kind": "real-world",
+  "capabilities": [
+    "spring-boot-packaging"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T14:35:02+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "git"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "5G",
+    "duration": "8m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Execute the original fixed Maven provider",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": "."
+    },
+    {
+      "name": "Execute the original parent Maven provider",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output verification/merged-pr-links/s01-s50/maven-war/parent.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/maven-war/fix.json",
+    "verification/merged-pr-links/s01-s50/maven-war/parent.json"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51937",
+  "revisions": {
+    "parent": "fcc6d421578939b5a960deaa77f7ea1eef45cabe",
+    "fix": "3d7e61639c18d6858013257fd338c12ff8dd79f8"
+  },
+  "entry": "Jersey management and shared HTTP beans endpoint",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51937.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Request the beans endpoint on the management server.",
+      "prediction": "The PR reports that the separate server ignored the endpoint mapper. On the merge the response should be 200 and the bean’s scope should be `notelgnis`.",
+      "basis": "Reversing `singleton` gives that exact marker. The landed test checks a transformed scope in the HTTP response.",
+      "refutation": "The management endpoint fails, omits the known singleton, or reports its scope as `singleton` with the custom mapper installed.",
+      "expected": {
+        "parent": {
+          "return": "200:singleton"
+        },
+        "fix": {
+          "return": "200:notelgnis"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51937.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Omit `management.server.port`, keeping the same customizer, bean and application port discovery.",
+      "prediction": "The shared server should expose the reversed singleton scope on both revisions.",
+      "basis": "The earlier integration fixture already read a transformed scope on the shared port.",
+      "refutation": "The common-port response has an untransformed scope or no such bean.",
+      "expected": {
+        "parent": {
+          "return": "200:notelgnis"
+        },
+        "fix": {
+          "return": "200:notelgnis"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51937.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge keep a named singleton bean and separate ports fixed. Register a second identifiable prototype bean in the configuration and inspect its entry in the same response.",
+      "prediction": "Both scope values should reflect the same mapping: `notelgnis` for the singleton and `epytotorp` for the prototype.",
+      "basis": "The custom serializer reverses every scope string. A parsed entry keyed by bean name associates the transformation with the correct bean.",
+      "refutation": "One transformed scope is present somewhere in the body but the named prototype reports `prototype`, is misidentified, or the JSON cannot be parsed.",
+      "expected": {
+        "fix": {
+          "return": "200:notelgnis:epytotorp"
+        }
+      }
+    }
+  ]
+}

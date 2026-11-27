@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52831",
+  "revisions": {
+    "parent": "68f823ceabc77d1786ec0ff416bb128dc13ce93b",
+    "fix": "3a7a19b7c5b16d4cc6dd8f0c22ea88d206e90a9a"
+  },
+  "entry": "ApplicationContext.getMessage and ResourceBundleMessageSource lookup",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52831.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Run the hiding loader first and close it, then run the visible loader.",
+      "prediction": "The PR reports the first miss prevents resolution in the second context before. The merged contexts should return `missing` then `bar`, respectively, with a resource-bundle bean only in the second.",
+      "basis": "Class-loader resource visibility and the bytes `foo=bar` give independent predictions. The regression tests this order.",
+      "refutation": "The visible context uses the fallback or lacks its bundle bean after the earlier miss.",
+      "expected": {
+        "parent": {
+          "return": "false:missing/false:missing"
+        },
+        "fix": {
+          "return": "false:missing/true:bar"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52831.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use a fresh basename and the same visible loader for two successive contexts.",
+      "prediction": "Both should return `bar` on both revisions.",
+      "basis": "Nothing changes the resource or its defining loader between lookups.",
+      "refutation": "The repeated context loses the message or the bean.",
+      "expected": {
+        "parent": {
+          "return": "true:bar/true:bar"
+        },
+        "fix": {
+          "return": "true:bar/true:bar"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52831.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Use a fresh basename, reverse the loader order, and ask both the bean-presence and message questions.",
+      "prediction": "On the merge the first context should supply its bean and `bar`; the second should have no resource-bundle bean and return `missing`.",
+      "basis": "A prior positive result cannot make a file visible to a loader that hides it. Checking bean type also detects a spurious positive result even if lookup falls back.",
+      "refutation": "The hidden context installs a resource-bundle bean or returns `bar` after the visible context closes.",
+      "expected": {
+        "fix": {
+          "return": "true:bar/false:missing"
+        }
+      }
+    }
+  ]
+}

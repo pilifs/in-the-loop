@@ -1,0 +1,34 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-132243-reproduce-the-first-22-spring-boot-publi",
+  "title": "Reproduce the first 22 Spring Boot public callers on both pins",
+  "description": "Recompile the same caller on the parent, check original JVM class origins and reproduce the 131 observations covering configuration, lifecycle, JDBC, cache, structured JSON and archive reads. Reconcile the matched and refuted predicates and all 150 brief questions with the saved audit.",
+  "kind": "real-world",
+  "capabilities": [
+    "public-api-comparison"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T13:22:43+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "900M",
+    "duration": "3m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Recompile original callers and compare the complete recorded audit",
+      "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

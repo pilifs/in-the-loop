@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51653",
+  "revisions": {
+    "parent": "59379ae449f15a6d17a333f5505941f4165ab3b2",
+    "fix": "c966eca3e7467c2524df980aa52bac517b59a40b"
+  },
+  "entry": "tools jarmode extract --layers --launcher",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51653.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Extract a normal generated index with disjoint exact and directory candidates, including `BOOT-INF/classes/sample/marker.txt` with known bytes.",
+      "prediction": "Both revisions should place the dependency and marker exclusively in their indicated layers, with unchanged content. No timing threshold is part of this claim.",
+      "basis": "The embedded index and uncompressed source entries independently specify the destination layer and payload.",
+      "refutation": "An entry is absent, duplicated, assigned to a different layer, or has different bytes after extraction.",
+      "expected": {
+        "parent": {
+          "return": "app:marker/dep:library"
+        },
+        "fix": {
+          "return": "app:marker/dep:library"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51653.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Keep the directory entry and marker fixed; add another resource beneath the same directory in a freshly generated archive.",
+      "prediction": "Both resources should extract into the application layer on each revision, with the original marker bytes preserved.",
+      "basis": "The directory rule covers descendants regardless of their depth or encounter order.",
+      "refutation": "Adding a sibling moves the original marker or leaves either resource outside that layer.",
+      "expected": {
+        "parent": {
+          "return": "app:marker/dep:library;app:marker/dep:library/app:sibling"
+        },
+        "fix": {
+          "return": "app:marker/dep:library;app:marker/dep:library/app:sibling"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51653.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Explore the boundary separately using a hand-authored index with layer `first` claiming `BOOT-INF/classes/sample/` and a later layer `second` claiming its exact `marker.txt`. Keep every other entry covered.",
+      "prediction": "If the tools mode accepts this index, source order predicts `first` on the parent and `second` on the merge. This predicts the implementation’s response for that fixture; the PR only promises equivalence for generator output.",
+      "basis": "The parent scans both candidate kinds in order. The merge tries an exact match before scanning any directory prefix. The regression covers duplicates of the same kind only.",
+      "refutation": "Successful extraction assigns the marker differently from this pair. A rejection at the public boundary would limit the helper-level prediction.",
+      "expected": {
+        "parent": {
+          "return": "first"
+        },
+        "fix": {
+          "return": "second"
+        }
+      }
+    }
+  ]
+}

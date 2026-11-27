@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/50773",
+  "revisions": {
+    "parent": "f71e7977614682ced49221321a38bb5cb18bc938",
+    "fix": "fe554ff822bf48ee9b04fbc511f54332aa2ca10b"
+  },
+  "entry": "Binder.bind and application configuration-properties lookup",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#50773.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Direct `foo=\"\"` with no children or custom converters.",
+      "prediction": "The parent is expected to fail conversion. On the merge the result is bound, non-null and has zero entries.",
+      "basis": "The landed regression calls `get()` and checks emptiness. A supplied empty aggregate is distinct from a missing property.",
+      "refutation": "The merge throws, returns an unbound result, or introduces an entry.",
+      "expected": {
+        "parent": {
+          "return": "conversion-failed"
+        },
+        "fix": {
+          "return": "bound:{}"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50773.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Replace `foo=\"\"` with `foo.a=one` and `foo.b=two`.",
+      "prediction": "On both revisions `get()` returns exactly `a→one` and `b→two`, in either iteration order.",
+      "basis": "Each descendant contributes a named entry. There is no direct scalar to convert.",
+      "refutation": "Either name is missing, an extra entry appears, or either value changes.",
+      "expected": {
+        "parent": {
+          "return": "bound:{a=one, b=two}"
+        },
+        "fix": {
+          "return": "bound:{a=one, b=two}"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50773.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Start the issue’s application with YAML `test: {testmap: {}}`. In a second launch add unrelated `test.label: kept`, leaving the map empty and the bean’s default unknown-field handling in place.",
+      "prediction": "The issue reports startup failure for the original YAML. Both merged launches should complete and the bound bean’s getter should yield an empty map.",
+      "basis": "The YAML object contains zero pairs. A sibling of `testmap` contributes no map entry. Bean lookup exercises the YAML and configuration-properties layers together.",
+      "refutation": "Either merged launch fails, or adding the sibling changes the map read through the bean.",
+      "expected": {
+        "fix": {
+          "return": "{}/{}"
+        }
+      }
+    }
+  ]
+}

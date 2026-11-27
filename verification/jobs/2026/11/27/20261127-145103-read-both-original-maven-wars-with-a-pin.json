@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-145103-read-both-original-maven-wars-with-a-pin",
+  "title": "Read both original Maven WARs with a pinned Maven distribution",
+  "description": "Run both Boot Maven plugins using their upstream Maven integration harness and Apache Maven 3.9.13. Inspect the manifest, selected payload and physical ordering of two Maven-generated WAR inputs, including a decoy with the same filename. The dependency mirror, fixture-only input ordering and original WAR goal were validated separately.",
+  "kind": "real-world",
+  "capabilities": [
+    "public-api-comparison"
+  ],
+  "links": {
+    "examples": [
+      "635"
+    ]
+  },
+  "expected": "Both upstream plugins return the two physical WAR observations.",
+  "submitted": {
+    "at": "2026-11-27T14:51:03+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "5G",
+    "duration": "8m"
+  },
+  "steps": [
+    {
+      "name": "Repackage the merged WAR",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --fetch --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": "."
+    },
+    {
+      "name": "Repackage the parent WAR",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --fetch --output verification/merged-pr-links/s01-s50/maven-war/parent.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/maven-war/fix.json",
+    "verification/merged-pr-links/s01-s50/maven-war/parent.json"
+  ]
+}
