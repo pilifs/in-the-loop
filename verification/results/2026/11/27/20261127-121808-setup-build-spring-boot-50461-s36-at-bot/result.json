@@ -1,0 +1,403 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-121808-setup-build-spring-boot-50461-s36-at-bot",
+  "title": "Setup: build Spring Boot #50461 (S36) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 13m10s, peak 5.1 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [
+    "step 2 (S36 parent: build and the parent's tests) was held back 2m41s by its 4-CPU quota in 5m08s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S36 transplant: the fix's tests on the parent) was held back 1m52s by its 4-CPU quota in 1m52s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-121808-setup-build-spring-boot-50461-s36-at-bot.json",
+    "sha256": "b3a881aea4d3bcdc0e203b2d316762cddfcbd713ad9b2ba71371f35936ce0c99",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-121808-setup-build-spring-boot-50461-s36-at-bot",
+      "title": "Setup: build Spring Boot #50461 (S36) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S36 (spring-projects/spring-boot#50461: Common OTLP settings reach the signal-specific exporters). In the worktrees $P/worktrees/S36-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-micrometer-metrics module:spring-boot-micrometer-tracing-opentelemetry module:spring-boot-opentelemetry with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (OtlpMetricsExportAutoConfigurationTests (test) OtlpMetricsPropertiesConfigAdapterTests (test) OtlpMetricsPropertiesTests (test) OpenTelemetryTracingAutoConfigurationTests (test) OtlpTracingAutoConfigurationIntegrationTests (test) OpenTelemetryLoggingAutoConfigurationTests (test) OtlpLoggingAutoConfigurationIntegrationTests (test) OtlpLoggingAutoConfigurationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-micrometer-metrics module:spring-boot-micrometer-tracing-opentelemetry module:spring-boot-opentelemetry in $P/artifacts/S36-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S36",
+      "submitted": {
+        "at": "2026-11-27T12:18:08+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "the reruns of 2026-11-27 took 5-7 minutes with a peak of 3.8-4.6 GiB"
+      },
+      "steps": [
+        {
+          "name": "S36 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S36 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S36 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S36 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S36 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S36 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S36 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S36 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-110822-setup-build-spring-boot-50461-s36-at-bot"
+    }
+  },
+  "sourceCommit": "f71b269ca68832ef710001ba03a350d05e3b374e",
+  "startedAt": "2026-11-27T12:21:25+00:00",
+  "finishedAt": "2026-11-27T12:34:57+00:00",
+  "wallSeconds": 812.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3132296,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "the reruns of 2026-11-27 took 5-7 minutes with a peak of 3.8-4.6 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 5520809984,
+    "wallSeconds": 790.9,
+    "cpuSeconds": 2038.2,
+    "memoryOfEstimate": 0.86,
+    "durationOfEstimate": 0.88
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S36 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S36 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 366.317,
+      "cpuSeconds": 959.355,
+      "cpuThrottledSeconds": 118.059,
+      "peakMemoryBytes": 5520809984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s36-fix-build-and-landed-tests.log",
+        "lines": 78,
+        "bytes": 15371,
+        "sha256": "4eaaacf4e5422ea22e146bd4dfb8847094c2972cc3c197e57e17b9aff8c945ba",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "c2ea7f57146d8670dd61f5bac490d5be4c731bfae0b70533c18b42d6295641f5  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "2b51fe7130010be004f58f76b982a3221566bb1f6ce35ab58390f3824139aada  tree/module/spring-boot-micrometer-tracing-brave/build/libs/spring-boot-micrometer-tracing-brave-4.2.0-SNAPSHOT.jar",
+        "19ea5f3b4f2d7863a509ae6893c1db88a838d2dc3c2b34d21804d170064c5444  tree/module/spring-boot-micrometer-tracing/build/libs/spring-boot-micrometer-tracing-4.2.0-SNAPSHOT.jar",
+        "125a9c4bd60defe13ef6bd4575415306367f59b63cc15bc61d2eda1c9aab9784  tree/module/spring-boot-opentelemetry/build/libs/spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "5399833cb5072c7ae27926bd64f20ef1d36ab2d0c11b9a12a52fb2892b3a38a8  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsExportAutoConfiguration$PropertiesOtlpMetricsConnectionDetails.class",
+        "dab2a49fbe2e7dab467136b2006628e46de265afe2459b9a76188e6a904d9ee1  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsExportAutoConfiguration.class",
+        "209a605c3a1ed618953903252aebc5e08a8152a40d974956a2aee1a09ca43d51  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsPropertiesConfigAdapter$1.class",
+        "d035dcf62af2b29077a0c3377fd9f1e609a30d712aeefe0361850a2f67e1941f  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsPropertiesConfigAdapter.class",
+        "5a223a82ad92c5bb4cec14dd93c2276c587febf14af106ffde804e31bc4181d8  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsProperties$Meter.class",
+        "84e0800a12ecc8a99594fb07fc557f1ee11aeb512f98b8fd0290ca539fb6a37c  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsProperties$Ssl.class",
+        "b21007bdc9639880d3313a2579a1b21a3ed47a1aae85a986f570bb15fab92180  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsProperties.class",
+        "2305dc5728c6bf47ec730d8dc054e347feda6b24d4d1f02c4b8aad5097b4ff91  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingAutoConfiguration.class",
+        "35344db3203a98458045d56fc77f1a7a2acaee87125c19bffbd74643da154b44  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$1.class",
+        "1fdce26597f17cd785310c8e81c60558ab900844d339f9e13317a4cbf312d522  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$ConnectionDetails$OtlpEndpointCondition$CommonEndpoint.class",
+        "1ff4b1a63e325575c59c309393fe7f7db6f9cb2e669d49bab9f3d94738fdbd58  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$ConnectionDetails$OtlpEndpointCondition$TracingEndpoint.class",
+        "65a279661feac59b8642dfc18818b5eeb5a712a261d96af360bc028f321083c1  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$ConnectionDetails$OtlpEndpointCondition.class",
+        "3892c5a9e6e32edf73b6eccbe4e5ccf5aca50621a08e1b30a70019e8a8b915fc  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$ConnectionDetails$PropertiesOtlpTracingConnectionDetails.class",
+        "b89063a2ea3511acd7064e20c6224e47184a20f873d686e41f069a2869492dd3  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$ConnectionDetails.class",
+        "e4d2cffdb4f26194eaed8b4a3200e98dac3c20f9c75cc122d8fd912c9ed4a347  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$Exporters$SslContextConfigurer.class",
+        "f5cbf32cdf383c32d64d2adfaf26988505c4247df25c7e345b92637fdfa7dbe8  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$Exporters.class",
+        "2c558a8559448c2147b381be7e4901d36b95f819155751b7e53bcc4514fe92dd  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations.class",
+        "0921db374b9788882c779153449514349274253cd3368831f16d2c9948604892  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingProperties$Compression.class",
+        "88a4d5d582c97425087bea0b20a23cf4db1406a092543951cd68eaba775182d3  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingProperties$Ssl.class",
+        "e82fd69177dc658bae2d4b12b0e2869df21f438bb494344e4d061bf77cf47809  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingProperties.class",
+        "e764c0db2c9a3db606a200184e5318ddbc596c1e9e6da8b97446c54f24906062  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingAutoConfiguration.class",
+        "47abefcd8fedb45afdc76a8030dff57d1c636aeff0ca2733b9a2f2c91a2b2884  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$1.class",
+        "5fb7a489e7e191354dfac2433ceac0fe25433be7bc9f74539d8cddc6a612d8a6  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$ConnectionDetails$OtlpEndpointCondition$CommonEndpoint.class",
+        "57bb63d18f8177f264dce0cc583d7b3460dd7ca530dd6513cdf8f9ff11f51907  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$ConnectionDetails$OtlpEndpointCondition$LoggingEndpoint.class",
+        "9b30498f8ad951b4cc1ce1d0139afdd20c26ec42f148ec07b7f5f7836bff97c2  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$ConnectionDetails$OtlpEndpointCondition.class",
+        "3277eec85dc23165a36a2189813e47b1fa4c39e4d1eb58636e908f9e3b876599  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$ConnectionDetails$PropertiesOtlpLoggingConnectionDetails.class",
+        "ca6ab85ece9331b37bafc6cb5d0ee5176be172d6563f7dcca257809506148559  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$ConnectionDetails.class",
+        "0b1627103ecdfb79511b65cabcd91a6819841ea193174b99f4905ce3194aca09  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$Exporters$SslContextConfigurer.class",
+        "6529be9ae7476bbeec962553dfbe0f3ef8cd495ab661562096e1dd95c73fabec  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$Exporters.class",
+        "6c849883d8b279d5b1b15be7db353e5526a19e898342bec9c56520dedc38a3b9  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations.class",
+        "0da5ecd6d204ff49bced6f9080e842a53b5957ffc94df770318a9c5dad2e33da  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingProperties$Compression.class",
+        "63637328af0cffbd56d929a927df25570f0b2eb0022e9ff4efafc62fb4e2c8f7  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingProperties$Ssl.class",
+        "b5780fec71b25032c2962da328a981d1125b21ced4d9a6a9c41ebdf5b430f286  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingProperties.class",
+        "38184c94179766702ec8bdfdc77e6bc522779d69df835492f01a6ab9693b0ed6  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/OtlpProperties$Compression.class",
+        "f948b8d9bdc252171ff6708300c5833aad07f44868f2b323c01e7918ccfe0840  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/OtlpProperties.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S36 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S36 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 308.204,
+      "cpuSeconds": 810.167,
+      "cpuThrottledSeconds": 161.687,
+      "peakMemoryBytes": 4627832832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s36-parent-build-and-the-paren.log",
+        "lines": 67,
+        "bytes": 12672,
+        "sha256": "6dd167b40d04271e2155f12359c232559cd4b88cee065a0ccfe3cdd62c59c15e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "1334eceee4d622cde5a27f22472d347242eeb899c288227400f8b7c39c18c2f0  jars/spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar",
+        "60880efb7ffe130bc82755a785beb2b9415bb131b085ba6bd944b052e5966c4c  jars/spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar",
+        "a8582fb99a552b30ff9bd4199829ad9fc688fe26085e37df64515262f73b5827  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "bb29472ee223f6d4523203c13a677e076aa4ef124c9464a1abcb893a837dfd98  tree/core/spring-boot/build/libs/spring-boot-4.2.0-SNAPSHOT.jar",
+        "a1fa326e23d60ae5f21f074515c673067c1874afd8bd19f7b36e85ac26f6bb8b  tree/core/spring-boot-docker-compose/build/libs/spring-boot-docker-compose-4.2.0-SNAPSHOT.jar",
+        "132ad90860295828e4d2105115383c67883bd82edc7a37b307005820d956d1b3  tree/core/spring-boot-test/build/libs/spring-boot-test-4.2.0-SNAPSHOT.jar",
+        "12e2e687d0c8847f7f2675eae6f840e81303d60f29d256dd1f8ac71e135e0d3a  tree/core/spring-boot-testcontainers/build/libs/spring-boot-testcontainers-4.2.0-SNAPSHOT.jar",
+        "3628818075fd84fd6daac4d89918a0521331560896edae340ed01b7a98f6521f  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.2.0-SNAPSHOT.jar",
+        "55112d1465930d4d07e3a7c62181575a4308e180b95d3b388b92348dc549d3fa  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT.jar",
+        "f82494b4d6191d0bccb26c3f4e492aa896d4ec09cc9d4ac445376f1f3c3138f6  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "70fdb1beb60d3f0f158df7f58dac533b8441644f316b7ca0f515acd82d239639  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "c2ea7f57146d8670dd61f5bac490d5be4c731bfae0b70533c18b42d6295641f5  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "2b51fe7130010be004f58f76b982a3221566bb1f6ce35ab58390f3824139aada  tree/module/spring-boot-micrometer-tracing-brave/build/libs/spring-boot-micrometer-tracing-brave-4.2.0-SNAPSHOT.jar",
+        "19ea5f3b4f2d7863a509ae6893c1db88a838d2dc3c2b34d21804d170064c5444  tree/module/spring-boot-micrometer-tracing/build/libs/spring-boot-micrometer-tracing-4.2.0-SNAPSHOT.jar",
+        "60880efb7ffe130bc82755a785beb2b9415bb131b085ba6bd944b052e5966c4c  tree/module/spring-boot-opentelemetry/build/libs/spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "11c1f60e648a2cb2b0b3685f99cdaa22588c2169744c8b53ee7a73c0daf8e153  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsExportAutoConfiguration$PropertiesOtlpMetricsConnectionDetails.class",
+        "fd16184908231387ba44e6e41c3cfc31e37bfa264cf2ec617d3d2ad67fe4f22e  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsExportAutoConfiguration.class",
+        "77d6eee276a274db2885f06769d8b95aae2287afff800bb37789ca96f099b383  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsPropertiesConfigAdapter.class",
+        "5a223a82ad92c5bb4cec14dd93c2276c587febf14af106ffde804e31bc4181d8  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsProperties$Meter.class",
+        "84e0800a12ecc8a99594fb07fc557f1ee11aeb512f98b8fd0290ca539fb6a37c  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsProperties$Ssl.class",
+        "ee55ef22b56c139be33a62978907b82571ceb77c08ae6210d7e1f0bb9b60c570  spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsProperties.class",
+        "b4b8cca0a936160b346dd01ed038d5da79de205d3a39f5050d5454d9b0473c1d  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingAutoConfiguration.class",
+        "002761dc9987598cbdb309a4655c58b07a44f629ae64c107d485dd3cb4709f7f  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$ConnectionDetails$PropertiesOtlpTracingConnectionDetails.class",
+        "9ba6a08f099dc7e031069b567db040877e1c75f39cd3994275d57cdb3523ffee  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$ConnectionDetails.class",
+        "e4d2cffdb4f26194eaed8b4a3200e98dac3c20f9c75cc122d8fd912c9ed4a347  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$Exporters$SslContextConfigurer.class",
+        "32f7df207b23c4f46820a42289136a5d69f9e59ef32859b8eeede7cb7d1794b4  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations$Exporters.class",
+        "e520e43b09aab45ec04224523d31c5b80e5d843c13bbaad07afb8f308586dad6  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingConfigurations.class",
+        "0921db374b9788882c779153449514349274253cd3368831f16d2c9948604892  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingProperties$Compression.class",
+        "88a4d5d582c97425087bea0b20a23cf4db1406a092543951cd68eaba775182d3  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingProperties$Ssl.class",
+        "b2b7dcb7fc459d9f9337f5df8b9a9a35729553db34fdd7510b4b0fabdf4495e6  spring-boot-micrometer-tracing-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingProperties.class",
+        "24bfdd6372d83d0b82f64bf19caac20d5d616261978ed01a2a8ed2655e5fc6f5  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingAutoConfiguration.class",
+        "829ed87e3a9638fd3b256448fb781e511c5159c24abc0a4216ec3aae3178cf5c  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$ConnectionDetails$PropertiesOtlpLoggingConnectionDetails.class",
+        "51e9a43422e7063e1ea2ed41bb2baeb5ac2126e3a18d3171da432707245bc2c7  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$ConnectionDetails.class",
+        "0b1627103ecdfb79511b65cabcd91a6819841ea193174b99f4905ce3194aca09  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$Exporters$SslContextConfigurer.class",
+        "21581761cf82a8c39c418ea7ab41fd61591aac3879d874e944c37980b178cbe5  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations$Exporters.class",
+        "83f838928dbb3a45081343bf681138f7d3abb17b7f935d5ee4a85f167f51ffb2  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingConfigurations.class",
+        "0da5ecd6d204ff49bced6f9080e842a53b5957ffc94df770318a9c5dad2e33da  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingProperties$Compression.class",
+        "63637328af0cffbd56d929a927df25570f0b2eb0022e9ff4efafc62fb4e2c8f7  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingProperties$Ssl.class",
+        "41f4808893ad940ac913d23ef04decb50d8a70747cd1851d4bec267580b70da0  spring-boot-opentelemetry-4.2.0-SNAPSHOT.jar!/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingProperties.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S36 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S36 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 112.817,
+      "cpuSeconds": 266.759,
+      "cpuThrottledSeconds": 112.596,
+      "peakMemoryBytes": 4523114496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s36-transplant-the-fix-s-tests.log",
+        "lines": 32,
+        "bytes": 5227,
+        "sha256": "f403b7617f8e0ff951e1a517bd4feffbcb70ea2a48d8451ae9299ab58310e52a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsExportAutoConfigurationTests.java",
+        "transplanted module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsPropertiesConfigAdapterTests.java",
+        "transplanted module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/export/otlp/OtlpMetricsPropertiesTests.java",
+        "transplanted module/spring-boot-micrometer-tracing-opentelemetry/src/test/java/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/OpenTelemetryTracingAutoConfigurationTests.java",
+        "transplanted module/spring-boot-micrometer-tracing-opentelemetry/src/test/java/org/springframework/boot/micrometer/tracing/opentelemetry/autoconfigure/otlp/OtlpTracingAutoConfigurationIntegrationTests.java",
+        "transplanted module/spring-boot-opentelemetry/src/test/java/org/springframework/boot/opentelemetry/autoconfigure/logging/OpenTelemetryLoggingAutoConfigurationTests.java",
+        "transplanted module/spring-boot-opentelemetry/src/test/java/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingAutoConfigurationIntegrationTests.java",
+        "transplanted module/spring-boot-opentelemetry/src/test/java/org/springframework/boot/opentelemetry/autoconfigure/logging/otlp/OtlpLoggingAutoConfigurationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S36-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=112 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01",
+        "junit tests=44 failures=3 errors=0 skipped=0",
+        "junit failed OpenTelemetryTracingAutoConfigurationTests#shouldMergeCommonAndSignalSpecificHeadersForTracing()",
+        "junit failed OpenTelemetryTracingAutoConfigurationTests#shouldAppendTracesPathToCommonEndpoint()",
+        "junit failed OtlpTracingAutoConfigurationIntegrationTests#httpSpanExporterFallsBackToCommonCompressionWhenSignalSpecificCompressionIsNotSet()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsExportAutoConfigurationTests no-result ",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsPropertiesConfigAdapterTests no-result ",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsPropertiesTests no-result ",
+        "class org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryTracingAutoConfigurationTests junit tests=39 failures=2 errors=0 skipped=0 junit failed OpenTelemetryTracingAutoConfigurationTests#shouldMergeCommonAndSignalSpecificHeadersForTracing() junit failed OpenTelemet",
+        "class org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingAutoConfigurationIntegrationTests junit tests=5 failures=1 errors=0 skipped=0 junit failed OtlpTracingAutoConfigurationIntegrationTests#httpSpanExporterFallsBackToCommonCompressionWhenSignalSpecificCompress",
+        "class org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingAutoConfigurationTests no-result ",
+        "class org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingAutoConfigurationIntegrationTests no-result ",
+        "class org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingAutoConfigurationTests no-result ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S36 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S36 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 3.607,
+      "cpuSeconds": 1.944,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 92069888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s36-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "d7fb873b9609b8c2da763c2b493d114f15cd5ac0542d5029b4a336f190bff980",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S36"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T12:35:15+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T123457Z-4738980db21a06af"
+    }
+  }
+}
