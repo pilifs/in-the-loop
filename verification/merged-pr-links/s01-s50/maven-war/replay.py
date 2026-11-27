@@ -1,5 +1,6 @@
 """Run the two original Maven plugins through their upstream Maven integration harness."""
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -26,6 +27,8 @@ def local_mirror(cache, destination):
         group,artifact,version,_,filename = src.relative_to(modules).parts
         if "SNAPSHOT" in version:
             continue
+        if src.suffix == ".pom" and hashlib.sha1(src.read_bytes()).hexdigest() != src.parent.name:
+            raise ValueError("retained POM differs from its Gradle content address: " + filename)
         out = destination.joinpath(*group.split("."),artifact,version,filename)
         if not out.exists():
             out.parent.mkdir(parents=True, exist_ok=True)
@@ -45,7 +48,10 @@ def run(side, preflight):
         raise ValueError("missing original Maven plugin harness")
     if preflight:
         return {"revision":ref,"gradle":gradle.parent.parent.name}
-    with tempfile.TemporaryDirectory(prefix="boot-maven-war-") as tmp:
+    temp_root = Path(os.environ.get("TMPDIR") or cache / "tmp")
+    if not temp_root.resolve().is_relative_to(Path.home()/".cache/in-the-loop"):
+        temp_root = cache / "tmp"
+    with tempfile.TemporaryDirectory(prefix="boot-maven-war-",dir=temp_root) as tmp:
         work = Path(tmp)
         tree = work / "tree"
         tree.mkdir()
@@ -60,6 +66,23 @@ def run(side, preflight):
         shutil.copyfile(HERE/"pom.xml",fixture/"pom.xml")
         local = work/"public-mirror"
         local_mirror(cache,local)
+        resolver = tree/"buildSrc/src/main/java/org/springframework/boot/build/bom/BomResolver.java"
+        original_resolver = resolver.read_text()
+        hook = "private File resolveBom(String coordinates) {"
+        if original_resolver.count(hook) != 1:
+            raise ValueError("unexpected upstream BOM resolver")
+        # The detached @pom resolution is sticky to its earlier repository, even with
+        # a second local repository. Use the exact retained GAV at that read boundary.
+        resolver.write_text(original_resolver.replace(hook, hook + """
+        String[] gav = coordinates.split(":");
+        if (gav.length == 3 && !gav[2].contains("SNAPSHOT")) {
+            File retained = new File(System.getenv("BOOT_S48_MIRROR_PATH"),
+                gav[0].replace('.', '/') + "/" + gav[1] + "/" + gav[2] + "/" + gav[1] + "-" + gav[2] + ".pom");
+            if (retained.isFile()) {
+                return retained;
+            }
+        }
+"""))
         # Gradle's offline metadata is keyed by the repository that first supplied a file.
         # The original BOM POMs are already cached, and a file repository can resolve them
         # even when the earlier integration build fetched them from another repository.
@@ -90,7 +113,7 @@ beforeProject { p ->
         names = ("8.0.512.0+9-tem","11.0.33.0+10-tem","17.0.21.0+9-tem","21.0.13.0+9-tem","25.0.5.0+8-tem")
         env = {**os.environ,"JAVA_HOME":str(jdks/names[-1]),"GRADLE_USER_HOME":str(work/"gradle"),
                "GRADLE_RO_DEP_CACHE":str(cache/"gradle-home/caches"),"BOOT_S48_RECEIPTS":str(receipts),
-               "BOOT_S48_MIRROR":local.as_uri()}
+               "BOOT_S48_MIRROR":local.as_uri(),"BOOT_S48_MIRROR_PATH":str(local)}
         cmd = [gradle,"--offline","-I",gradle_init,"--console=plain","--no-daemon","--no-build-cache","--no-scan","--max-workers=3",
                "-Dorg.gradle.jvmargs=-Xmx2g -XX:ActiveProcessorCount=3","-Pkotlin.compiler.execution.strategy=in-process",
                "-Porg.gradle.java.installations.auto-detect=false","-Porg.gradle.java.installations.auto-download=false",

@@ -12,18 +12,18 @@
     "codex-auto-review"
   ],
   "started": "2026-11-27T12:53:24.019Z",
-  "ended": "2026-11-27T14:21:57.454Z",
-  "duration_seconds": 5313,
+  "ended": "2026-11-27T14:29:58.358Z",
+  "duration_seconds": 5794,
   "stats": {
-    "turns": 6,
-    "api_calls": 10,
+    "turns": 7,
+    "api_calls": 11,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 125704,
+    "peak_context_tokens": 137404,
     "usage": {
-      "input_tokens": 442483,
-      "output_tokens": 1010,
+      "input_tokens": 579887,
+      "output_tokens": 1106,
       "cache_read_input_tokens": 389504,
       "cache_creation_input_tokens": 0
     }
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-27T12:53:24.019Z",
-      "ended": "2026-11-27T14:21:57.454Z",
-      "turns": 6,
-      "api_calls": 10,
+      "ended": "2026-11-27T14:29:58.358Z",
+      "turns": 7,
+      "api_calls": 11,
       "usage": {
-        "input_tokens": 442483,
-        "output_tokens": 1010,
+        "input_tokens": 579887,
+        "output_tokens": 1106,
         "cache_read_input_tokens": 389504,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 125704
+      "peak_context_tokens": 137404
     }
   ],
   "log": {
-    "sha256": "efa747b866bc3c257cbb0911f98a0ac48c176cb2f4b2c1f173898657d5d68e8b",
-    "bytes": 934074,
-    "lines": 126,
-    "gzip_bytes": 204318,
-    "path": "llm-dlc/traces/01a21d11-51ab-7b92-bffe-e414652574f7/logs/efa747b866bc3c257cbb0911f98a0ac48c176cb2f4b2c1f173898657d5d68e8b.jsonl.gz"
+    "sha256": "606bb7791d67e8ea597460f9371db2f4c47b7b379b3b2ad0be9367395443b018",
+    "bytes": 1041373,
+    "lines": 138,
+    "gzip_bytes": 230375,
+    "path": "llm-dlc/traces/01a21d11-51ab-7b92-bffe-e414652574f7/logs/606bb7791d67e8ea597460f9371db2f4c47b7b379b3b2ad0be9367395443b018.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -104,20 +104,28 @@
       "log_sha256": "d5205e5575782bdd42102c0628ee737d3fe7b8e8599a381c6a4b20e7f65441ef"
     },
     {
-      "change_id": "mlsytotxrqxnmtykupwnvmmqvznlunyt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "efa747b866bc3c257cbb0911f98a0ac48c176cb2f4b2c1f173898657d5d68e8b"
-    },
-    {
       "change_id": "klmwlzulmpsylkmxqyzlrspquslkynqz",
       "commit_id": null,
       "immutable": false,
       "summary": "Resolve the original Maven BOMs offline (verification pending)",
       "body": "The two Maven jobs stopped before building the consumer because the Gradle metadata did not recognize the cached ActiveMQ 6.1.8 POM. The exact POM is present in both prepared caches. The build now exposes its local Maven-layout copy to Gradle for release BOMs as well as to Maven, preserving each original source pin and the offline boundary.\n\nValidated the pinned checkout and launcher. Job 20261127-142145-resolve-the-pinned-maven-boms-from-the-r repeats the fixed build before the parent.",
       "log_sha256": "efa747b866bc3c257cbb0911f98a0ac48c176cb2f4b2c1f173898657d5d68e8b"
+    },
+    {
+      "change_id": "yxxtolkpywsurzksprtwnvznuwmutrzo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "606bb7791d67e8ea597460f9371db2f4c47b7b379b3b2ad0be9367395443b018"
+    },
+    {
+      "change_id": "vvzmtuplxymknksossmromvvotkmwxvq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Use retained POMs for detached Gradle resolution (verification pending)",
+      "body": "The detached @pom lookup stayed tied to its original remote repository. In the temporary build tooling only, resolve immutable release BOMs by their original coordinates in the local Maven-layout mirror. Check each Gradle POM against its SHA-1 directory and keep large integration build work off tmpfs. The two Spring Boot production trees and Maven goals are unchanged.\n\nThe cached ActiveMQ BOM is present in both original caches, the fixed input preflight passed, and job 20261127-142917-read-retained-pom-bytes-at-the-original exercises the full scoped build.",
+      "log_sha256": "606bb7791d67e8ea597460f9371db2f4c47b7b379b3b2ad0be9367395443b018"
     }
   ],
   "logs": {
@@ -149,6 +157,12 @@
       "bytes": 213989,
       "lines": 20,
       "gzip_bytes": 50042,
+      "url": null
+    },
+    "606bb7791d67e8ea597460f9371db2f4c47b7b379b3b2ad0be9367395443b018": {
+      "bytes": 1041373,
+      "lines": 138,
+      "gzip_bytes": 230375,
       "url": null
     },
     "d5205e5575782bdd42102c0628ee737d3fe7b8e8599a381c6a4b20e7f65441ef": {
