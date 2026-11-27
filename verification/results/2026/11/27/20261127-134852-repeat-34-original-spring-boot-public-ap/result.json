@@ -1,0 +1,192 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-134852-repeat-34-original-spring-boot-public-ap",
+  "title": "Repeat 34 original Spring Boot public API comparisons",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m01s, peak 500.0 MiB (estimated 6m00s, 1.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-134852-repeat-34-original-spring-boot-public-ap.json",
+    "sha256": "0162252f55b40a077f0a61efd3d190c59dbbd00ab64a054b21d6594f88b094ab",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-134852-repeat-34-original-spring-boot-public-ap",
+      "title": "Repeat 34 original Spring Boot public API comparisons",
+      "description": "Recompile the 34 registered callers and reproduce 195 fresh-JVM observations. The added cases exercise both HTTP directions, two real servlet containers and shutdown ordering, durable H2 rows, original JUnit context reuse and nested executable JARs. Check both preserved controls and the merged package-version contradiction after an unsuccessful optional lookup.",
+      "kind": "real-world",
+      "capabilities": [
+        "public-api-comparison"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T13:48:52+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "6m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Rebuild the original callers and check predictions and receipts",
+          "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "b0c927d2946d34c6f2821fe9eaf2a2096fccda9f",
+  "startedAt": "2026-11-27T13:50:31+00:00",
+  "finishedAt": "2026-11-27T13:53:42+00:00",
+  "wallSeconds": 191.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 430545,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 524296192,
+    "wallSeconds": 181.9,
+    "cpuSeconds": 318.4,
+    "memoryOfEstimate": 0.49,
+    "durationOfEstimate": 0.51
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Rebuild the original callers and check predictions and receipts",
+      "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 181.871,
+      "cpuSeconds": 318.427,
+      "cpuThrottledSeconds": 19.524,
+      "peakMemoryBytes": 524296192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-rebuild-the-original-callers-a.log",
+        "lines": 289,
+        "bytes": 21307,
+        "sha256": "5d08dbc807ae090a76729d1cf83729e6fbd1730b75785fe10bec04d00baea309",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins fix spring-projects/spring-boot#52477.2 {'return': 'number:1.25,number:-2.5'}",
+        "pins fix spring-projects/spring-boot#52477.3 {'return': 'string:NaN/[number:1.0,string:NaN]'}",
+        "pins parent spring-projects/spring-boot#52522.1 {'return': 'invalid-json'}",
+        "pins parent spring-projects/spring-boot#52522.2 {'return': '{\"version\":1,\"a\":\"A\",\"b\":\"B\"}'}",
+        "pins parent spring-projects/spring-boot#52522.3 {'throws': 'java.lang.IllegalStateException'}",
+        "pins fix spring-projects/spring-boot#52522.1 {'return': '{\"version\":1,\"pairs\":{\"a\":\"A\",\"b\":\"B\"}}'}",
+        "pins fix spring-projects/spring-boot#52522.2 {'return': '{\"version\":1,\"a\":\"A\",\"b\":\"B\"}'}",
+        "pins fix spring-projects/spring-boot#52522.3 {'return': '{\"version\":1,\"pairs\":{\"version\":2}} / {\"version\":1,\"pairs\":{}}'}",
+        "pins parent spring-projects/spring-boot#52593.1 {'return': '-1:test'}",
+        "pins parent spring-projects/spring-boot#52593.2 {'return': '4:test'}",
+        "pins fix spring-projects/spring-boot#52593.1 {'return': '4:test'}",
+        "pins fix spring-projects/spring-boot#52593.2 {'return': '4:test'}",
+        "pins fix spring-projects/spring-boot#52593.3 {'return': '4102:true:marker:true:eof'}",
+        "pins parent spring-projects/spring-boot#52285.1 {'return': 'EOFException'}",
+        "pins parent spring-projects/spring-boot#52285.2 {'return': 'true:true/true:true'}",
+        "pins parent spring-projects/spring-boot#52285.3 {'return': 'EOFException/true:true'}",
+        "pins fix spring-projects/spring-boot#52285.1 {'return': 'true:true'}",
+        "pins fix spring-projects/spring-boot#52285.2 {'return': 'true:true/true:true'}",
+        "pins fix spring-projects/spring-boot#52285.3 {'return': 'true:true/true:true'}",
+        "pins parent spring-projects/spring-boot#52280.1 {'return': 'FileNotFoundException/42'}",
+        "pins parent spring-projects/spring-boot#52280.2 {'return': '17/17'}",
+        "pins parent spring-projects/spring-boot#52280.3 {'return': 'FileNotFoundException/42,FileNotFoundException/99'}",
+        "pins fix spring-projects/spring-boot#52280.1 {'return': '42/42'}",
+        "pins fix spring-projects/spring-boot#52280.2 {'return': '17/17'}",
+        "pins fix spring-projects/spring-boot#52280.3 {'return': '42/42,99/99'}",
+        "pins parent spring-projects/spring-boot#52244.1 {'return': 'null'}",
+        "pins parent spring-projects/spring-boot#52244.2 {'return': '1.2.3'}",
+        "pins parent spring-projects/spring-boot#52244.3 {'return': 'null/null'}",
+        "pins fix spring-projects/spring-boot#52244.1 {'return': '1.2.3'}",
+        "pins fix spring-projects/spring-boot#52244.2 {'return': '1.2.3'}",
+        "pins fix spring-projects/spring-boot#52244.3 {'return': '1.2.3/null'}",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-134852-repeat-34-original-spring-boot-public-ap/examples/632-boot-nested-classpath-roots/caller/NestedApp.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "pins parent spring-projects/spring-boot#52402.1 {'return': 'missing-root'}",
+        "pins parent spring-projects/spring-boot#52402.2 {'return': 'xml'}",
+        "pins parent spring-projects/spring-boot#52402.3 {'return': ''}",
+        "pins fix spring-projects/spring-boot#52402.1 {'return': 'true:app'}",
+        "pins fix spring-projects/spring-boot#52402.2 {'return': 'xml'}",
+        "pins fix spring-projects/spring-boot#52402.3 {'return': 'first:A,second:B'}",
+        "{\"casesWithPublicCallers\": 34, \"fix matched\": 95, \"fix refuted\": 3, \"jvmObservations\": 195, \"parent matched\": 62, \"parent observed only\": 35, \"registeredClaims\": 150, \"twoSidedPublicClaims\": 97, \"unmeasuredClaims\": 52}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T13:54:34+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T135342Z-293070862965969b"
+    }
+  }
+}

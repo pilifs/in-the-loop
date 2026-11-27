@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-27T13:53:15.793Z",
-  "duration_seconds": 1023949,
+  "ended": "2026-11-27T13:54:56.310Z",
+  "duration_seconds": 1024050,
   "stats": {
-    "turns": 1824,
-    "api_calls": 7566,
-    "tool_calls": 6625,
+    "turns": 1825,
+    "api_calls": 7572,
+    "tool_calls": 6633,
     "tool_errors": 73,
     "compactions": 18,
     "peak_context_tokens": 666881,
     "usage": {
-      "input_tokens": 18874,
-      "output_tokens": 3057445,
-      "cache_read_input_tokens": 2406524400,
-      "cache_creation_input_tokens": 9999854
+      "input_tokens": 18888,
+      "output_tokens": 3060138,
+      "cache_read_input_tokens": 2408193465,
+      "cache_creation_input_tokens": 10004948
     }
   },
   "tools": {
-    "Bash": 6362,
-    "SendMessage": 112,
+    "Bash": 6369,
+    "SendMessage": 113,
     "Edit": 41,
     "ToolSearch": 27,
     "Write": 21,
@@ -336,24 +336,24 @@
     {
       "index": 18,
       "started": "2026-11-27T10:10:55.850Z",
-      "ended": "2026-11-27T13:53:15.793Z",
-      "turns": 49,
-      "api_calls": 178,
+      "ended": "2026-11-27T13:54:56.310Z",
+      "turns": 50,
+      "api_calls": 184,
       "usage": {
-        "input_tokens": 466,
-        "output_tokens": 55018,
-        "cache_read_input_tokens": 38530376,
-        "cache_creation_input_tokens": 246872
+        "input_tokens": 480,
+        "output_tokens": 57711,
+        "cache_read_input_tokens": 40199441,
+        "cache_creation_input_tokens": 251966
       },
-      "peak_context_tokens": 275660
+      "peak_context_tokens": 280754
     }
   ],
   "log": {
-    "sha256": "cd2e4fff9b94cc651310365a0bc8b7b2dc7613d40088b7ce9687b99165e1f327",
-    "bytes": 114062670,
-    "lines": 66678,
-    "gzip_bytes": 17508239,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/cd2e4fff9b94cc651310365a0bc8b7b2dc7613d40088b7ce9687b99165e1f327.jsonl.gz"
+    "sha256": "2f6a6608c2f1cce5a655f026110b640bd48de9751bf3f0ca15b64fb3a4c48410",
+    "bytes": 114142131,
+    "lines": 66744,
+    "gzip_bytes": 17517584,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/2f6a6608c2f1cce5a655f026110b640bd48de9751bf3f0ca15b64fb3a4c48410.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -17423,75 +17423,83 @@
     },
     {
       "change_id": "trrzqvrspkkpqlozuypzpxmtvouvpzor",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "37cb61615b3443ef1bb741f73286c278b5b8b22f",
+      "immutable": true,
       "summary": "VF-072: record the user's direction on worker requests and the producer's client",
       "body": "At the user's request (2026-11-27, relayed by the advisor), VF-072's third need, the worker request, now carries the user's direction, to revisit after the PR-URL review: worker requests may run unattended; a request outside the allow list of worker kinds and limits warns at once (next report and the run's record) and doesn't block; and the watcher gets delegated authority over named items (start approved worker kinds, stop or restart within limits), the list still to be written. It also records the producer's client: the user leans to Claude, pending review. Astra keeps the intent and registration judgment, the mechanics run as tools and jobs, Claude is the fallback where the filter stops a case, and the request records the client used. No other change.",
       "log_sha256": "ccd6c43dd7b3a8d4270a8d6ef53229078dd7fbf95628d816a33a27a672229059"
     },
     {
       "change_id": "mryqvmplxlonvrkunokztwwnnnxzuwys",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "231c4f1f84f2c1acb9cf6f2bca5868203895e8d1",
+      "immutable": true,
       "summary": "VF-072: no fallback to another model on a filter stop; Astra keeps the judgment",
       "body": "The user's correction (2026-11-27, relayed by the advisor) to the producer's-client note under VF-072's worker request. The client question is decided: Astra keeps the judgment. There is no fallback to another model or client when the filter stops a case, because that goes around the filter and risks triggering it again. On a filter stop the run records a finding (the case, the step, the stop text; VF-061), leaves that case unfinished with no retry of the same material, carries on with the rest, and the harness is fixed afterwards.",
       "log_sha256": "e76b1efe4b8b3cf5b24bb90546e3c9239aa1323b11ed36a3a5c4b6a0808d33f4"
     },
     {
       "change_id": "nnnloxvuotsmqslnlvulpryzporyzprx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6bd62005523fef6ff909bdb80330880dde03478b",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-132243-reproduce-the-first-22-spring-boot-publi: passed: 1 passed step(s) in 3m22s, peak 249.5 MiB (estimated 3m00s, 900.0 MiB) Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "84192ca9cc459e254c9da48114409534e66188b4f1dfbfc130e2295bf1df2be0"
     },
     {
       "change_id": "mqmkvooqrqksqkkzruouopovvzoxvons",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "430c7a2e1c69cddb98fa5128ec747fbbcee62419",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 2 of the 2 job(s). 20261127-132635-run-three-genuine-flyway-native-sql-layo: passed: 1 passed step(s) in 7m25s, peak 3.5 GiB (estimated 18m00s, 8.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261127-132636-run-three-genuine-flyway-native-sql-layo: passed: 1 passed step(s) in 7m29s, peak 3.5 GiB (estimated 18m00s, 8.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "5bc0fbefd5edd517e3cf2396d677fd1219a710c20193fbd9279a69f9ebd4a797"
     },
     {
       "change_id": "kpvotrpotltkwslxyskwzxsvsutlvyyy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "ef6aa56a639a1d36eb6d433b56d958eac4d9132d",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 2 of the 2 job(s). 20261127-133810-compare-actual-incremental-gradle-proper: passed: 1 passed step(s) in 32.5s, peak 966.1 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261127-133810-read-actual-spring-boot-gradle-layer-own: passed: 1 passed step(s) in 28.1s, peak 1.2 GiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "8341204ecf763616f6766b28fcbd3d0f78650535f37dbbd673a94ec8ba83b070"
     },
     {
       "change_id": "sxvwrlxqtswxywulxstxxyryzmuvntzt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a93df5c4491662938668a23e6c1101834c49321e",
+      "immutable": true,
       "summary": "Keep a passed default run when only files no test reads changed during it",
       "body": "default_run.py threw a passed run away whenever the working copy's tree moved while it ran. On 2026-11-27 a post-merge run passed 89 of 89 files and was not recorded, because the watcher committed a finding meanwhile. Started.passed now records the tree the run began on when the change since is covered (covers(): files in UNTESTED, such as verification/findings.md, job results, traces and decisions, and the generated table), the same rule push and release use to accept a record; any other change still voids it. Verified: a unit test that a run whose tree moved only by an untested file is recorded against the tree it tested, beside the existing test that any other change is not; test_costs run --changed, 34 of 34 files pass.",
       "log_sha256": "cd2e4fff9b94cc651310365a0bc8b7b2dc7613d40088b7ce9687b99165e1f327"
     },
     {
       "change_id": "xwnnzplwkznolqzrpwrknmrxtovuotss",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "64638f7c026c7893caec29c4d70b90470227f517",
+      "immutable": true,
       "summary": "Prune failed jobs' kept work directories once collected and remote_verified",
       "body": "The runner keeps a failed job's work directory (keep_workdirs = failed), about 2 GB each; a failed Spring Boot setup batch kept about 80 GB on 2026-11-27, and the watcher cleared them by hand twice, by this rule: collected, and its job-workdir original remote_verified in the archive, so artifacts.py fetch restores it. pipeline.py prune [--dry-run] does that, and collect runs it after every collect, so each one clears what the archive has verified since. A job not yet collected, or whose original is not read back yet, keeps its folder; with no archive nothing is removed; a prune never fails a collect. Archive.workdir_verified answers for a job's latest attempt. Verified: a unit test over four kept folders (collected and verified, uncollected, unverified, finished but not collected) where only the first goes, and a dry run never does; a dry run on this machine's queue names 24 such folders, 39.5 GiB, all from that batch; test_costs run --changed, 34 of 34 files pass.",
       "log_sha256": "cd2e4fff9b94cc651310365a0bc8b7b2dc7613d40088b7ce9687b99165e1f327"
     },
     {
       "change_id": "otympzrmrvolwkupttpxrvxpputsokkm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3081fc988e9609d790c5aee1dcc115d1258c78e4",
+      "immutable": true,
       "summary": "Price each Codex turn from its session log, as the session metrics do",
       "body": "Every Codex turn's line in a loop's log said 'cost unknown', though the session metrics price the same calls from the thread's log (codex_rollout.claude_view, metrics.costs, with OpenAI's long-context rates for a request over 272K tokens). The run summaries counted those turns as unpriced, so a brief's spend could not be read where the watcher looks. agent_client.py now prices a turn when it ends: the thread's log from the turn's start, keeping the session and model context lines, call by call. If any call has no price, or the log cannot be read, the turn stays unknown, never a partial figure. Checked on the queue's persistent domain session: up to the 11-25 render, 3981 calls priced to the metrics' own 950.62 USD; a 178 MB log prices in 0.6 s. Verified: a unit test over a made-up log and price (both calls; the later one alone; none; no price; no log); test_costs run --changed, 34 of 34 files pass; lint agrees. This commit also carries the cost rows of the new tests of this line.",
       "log_sha256": "cd2e4fff9b94cc651310365a0bc8b7b2dc7613d40088b7ce9687b99165e1f327"
     },
     {
       "change_id": "nrmwkwmolrpomqrtpznvynowknmmowxq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8970c059e350cc3e28ad9cb433f30f2c225054e2",
+      "immutable": true,
       "summary": "Merge run-hygiene: keep a default run across untested changes, prune collected failed workdirs, price Codex turns",
       "body": "Merges the workspace run-hygiene (sxvwrlxq, xwnnzplw, otympzrm) into the line at the user's request. default_run.py now keeps a passed run when the tree changed during it only in files no test reads (findings, job results, traces, decisions); an 89/89 run was lost that way today. pipeline.py prune, also run after every collect, removes a failed job's kept work directory once its result is collected and its job-workdir original is remote_verified in the archive, which automates the watcher's manual cleanup rule. agent_client.py now prices each Codex turn from the thread's log with the session metrics' code, so turn lines and run summaries show dollars. The merge had no conflicts; the generated trace files were regenerated. The workspace's run of the changed tests passed 34 of 34 files, and the default run follows this merge.",
       "log_sha256": "cd2e4fff9b94cc651310365a0bc8b7b2dc7613d40088b7ce9687b99165e1f327"
+    },
+    {
+      "change_id": "xutponrwwuxlprlqzzlrwwxxskplrmtp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-134852-repeat-34-original-spring-boot-public-ap: passed: 1 passed step(s) in 3m01s, peak 500.0 MiB (estimated 6m00s, 1.0 GiB) removed 24 kept work directories of failed jobs, 39.5 GiB: collected, and their originals remote_verified Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
+      "log_sha256": "2f6a6608c2f1cce5a655f026110b640bd48de9751bf3f0ca15b64fb3a4c48410"
     }
   ],
   "logs": {
@@ -18783,6 +18791,12 @@
       "bytes": 108419955,
       "lines": 62591,
       "gzip_bytes": 16712017,
+      "url": null
+    },
+    "2f6a6608c2f1cce5a655f026110b640bd48de9751bf3f0ca15b64fb3a4c48410": {
+      "bytes": 114142131,
+      "lines": 66744,
+      "gzip_bytes": 17517584,
       "url": null
     },
     "2f9f1deb1ccbf43c4e225622569bd91018c9c6e93e0d837324c022e9fd78c63c": {
