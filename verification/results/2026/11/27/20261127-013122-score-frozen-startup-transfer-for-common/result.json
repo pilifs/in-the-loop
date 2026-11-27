@@ -1,0 +1,175 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-013122-score-frozen-startup-transfer-for-common",
+  "title": "Score frozen startup transfer for Commons Configuration",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m04s, peak 163.8 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-013122-score-frozen-startup-transfer-for-common.json",
+    "sha256": "2536e83aca484d4990de26fe4b0cdd50864fde30f3fe33d679c2b8d5e5811cab",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-013122-score-frozen-startup-transfer-for-common",
+      "title": "Score frozen startup transfer for Commons Configuration",
+      "description": "Use all four original Configuration deployments. Replay the registered selectors with an own invalid lookup and an inherited lookup, trace the original holder on each prestate and compare the retained, replaced and subsequently mutated table history. Keep unsupported and failed initializer boundaries in the score.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T01:31:22+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "First frozen transfer",
+          "run": "python3 lib/benchmark/startup-facts/transfers.py configuration --output verification/startup-facts/transfer-configuration.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/transfer-configuration.zip"
+      ]
+    }
+  },
+  "sourceCommit": "2bf87ef627acbca057d74cbc7e3e60e5f34421a8",
+  "startedAt": "2026-11-27T01:39:13+00:00",
+  "finishedAt": "2026-11-27T01:43:36+00:00",
+  "wallSeconds": 263.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1769146,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 171757568,
+    "wallSeconds": 64.6,
+    "cpuSeconds": 106.0,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.36
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "First frozen transfer",
+      "run": "python3 lib/benchmark/startup-facts/transfers.py configuration --output verification/startup-facts/transfer-configuration.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 64.567,
+      "cpuSeconds": 106.032,
+      "cpuThrottledSeconds": 5.898,
+      "peakMemoryBytes": 171757568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-first-frozen-transfer.log",
+        "lines": 3,
+        "bytes": 286,
+        "sha256": "8b05c3b7198e287d7862656c401b7d1c4143fe9d1fd43542a85f608692ca1e53",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-013122-score-frozen-startup-transfer-for-common/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "configuration first transfer archived"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/transfer-configuration.zip",
+      "change": "added",
+      "bytes": 4722,
+      "sha256": "7a478e760495d96b562623139acdacecb7cc0042871290f1619a9884f834e414",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T01:43:56+00:00",
+    "applied": [
+      "verification/startup-facts/transfer-configuration.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "5295d494bc74f61382dc10b0bb7eb9f0492a05cc",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5295d494bc74f61382dc10b0bb7eb9f0492a05cc/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T014336Z-809068f24ef3538d",
+      "outputs": "20261127T014336Z-830079c39ae10679",
+      "diff": "20261127T014336Z-849070979893c6c7"
+    }
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-013122-score-frozen-setting-reads-at-first-use",
+  "title": "Score frozen setting reads at first use and after initialization",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 36.9s, peak 126.1 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-013122-score-frozen-setting-reads-at-first-use.json",
+    "sha256": "4dcccb9abe03f5634b860de0601892d686d28c670f7b4b1fbabb5983d13c935c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-013122-score-frozen-setting-reads-at-first-use",
+      "title": "Score frozen setting reads at first use and after initialization",
+      "description": "On both JavaParser originals measure LF, CRLF and the missing-property failure sequence. Compare the nine original before/after setting pairs on each paper implementation with independent observations of initialization and the second public call.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T01:31:22+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "First frozen transfer",
+          "run": "python3 lib/benchmark/startup-facts/transfers.py timing --output verification/startup-facts/transfer-timing.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/transfer-timing.zip"
+      ]
+    }
+  },
+  "sourceCommit": "2bf87ef627acbca057d74cbc7e3e60e5f34421a8",
+  "startedAt": "2026-11-27T01:39:13+00:00",
+  "finishedAt": "2026-11-27T01:43:09+00:00",
+  "wallSeconds": 236.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1769146,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 132268032,
+    "wallSeconds": 36.9,
+    "cpuSeconds": 38.5,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "First frozen transfer",
+      "run": "python3 lib/benchmark/startup-facts/transfers.py timing --output verification/startup-facts/transfer-timing.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 36.885,
+      "cpuSeconds": 38.531,
+      "cpuThrottledSeconds": 1.224,
+      "peakMemoryBytes": 132268032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-first-frozen-transfer.log",
+        "lines": 3,
+        "bytes": 278,
+        "sha256": "dc9032c737fc11badc67443886ac155ce3f9c5f315237d2ba143e09b4a3626c4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-013122-score-frozen-setting-reads-at-first-use/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "timing first transfer archived"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/transfer-timing.zip",
+      "change": "added",
+      "bytes": 1899,
+      "sha256": "2e937f0d630678bda16f958058830db411d78204b73f4cff8bbea36a146ba8ba",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T01:43:56+00:00",
+    "applied": [
+      "verification/startup-facts/transfer-timing.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "5295d494bc74f61382dc10b0bb7eb9f0492a05cc",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5295d494bc74f61382dc10b0bb7eb9f0492a05cc/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T014309Z-128429677b3001d4",
+      "outputs": "20261127T014309Z-1558007fe9cfea9e",
+      "diff": "20261127T014309Z-1769482cee3e67cd"
+    }
+  }
+}

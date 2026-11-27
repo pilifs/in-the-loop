@@ -1,0 +1,182 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-013123-score-frozen-avro-startup-on-the-two-124",
+  "title": "Score frozen Avro startup on the two 124-entry deployments",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 43.3s, peak 1.2 GiB (estimated 9m00s, 5.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-013123-score-frozen-avro-startup-on-the-two-124.json",
+    "sha256": "596a5e9d5ade28624b683b5e92186c309a69815d611b7367194b8db9b52e9510",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-013123-score-frozen-avro-startup-on-the-two-124",
+      "title": "Score frozen Avro startup on the two 124-entry deployments",
+      "description": "Restore both ordered 124-entry original deployments. Repeat the scoped native factory and direct obligations, measure the actual number of captured classes, objects, JVMs and bytes, and compare repeat, reordered and withheld-root captures with the registered snapshot.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T01:31:23+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "9m"
+      },
+      "steps": [
+        {
+          "name": "First frozen transfer",
+          "run": "python3 lib/benchmark/startup-facts/transfers.py avro --output verification/startup-facts/transfer-avro.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/transfer-avro.zip"
+      ]
+    }
+  },
+  "sourceCommit": "2bf87ef627acbca057d74cbc7e3e60e5f34421a8",
+  "startedAt": "2026-11-27T01:39:13+00:00",
+  "finishedAt": "2026-11-27T01:43:15+00:00",
+  "wallSeconds": 242.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1769146,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 2160.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1315282944,
+    "wallSeconds": 43.3,
+    "cpuSeconds": 60.6,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "First frozen transfer",
+      "run": "python3 lib/benchmark/startup-facts/transfers.py avro --output verification/startup-facts/transfer-avro.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 43.306,
+      "cpuSeconds": 60.562,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1315282944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-first-frozen-transfer.log",
+        "lines": 10,
+        "bytes": 425,
+        "sha256": "68f4dde99fa87d2e8fa779888120922f34088bfb1fff13bf3986be6401cc016e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "bounds-parent-lookup-startup violation None",
+        "rejected-parent-lookup-startup violation None",
+        "prefix-parent-lookup-startup verified None",
+        "full-length-parent-lookup-startup verified None",
+        "bounds-fix-lookup-startup verified None",
+        "rejected-fix-lookup-startup verified None",
+        "prefix-fix-lookup-startup verified None",
+        "full-length-fix-lookup-startup verified None",
+        "direct-limit-fix-writable-startup verified None",
+        "avro first transfer archived"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/transfer-avro.zip",
+      "change": "added",
+      "bytes": 13218,
+      "sha256": "70649938d13095b3aa073866622ecbb3416e9f0d71d87b999df26c957b746436",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T01:43:56+00:00",
+    "applied": [
+      "verification/startup-facts/transfer-avro.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "5295d494bc74f61382dc10b0bb7eb9f0492a05cc",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5295d494bc74f61382dc10b0bb7eb9f0492a05cc/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T014315Z-545780ec2b3e1704",
+      "outputs": "20261127T014315Z-566215e6e07ba0f7",
+      "diff": "20261127T014315Z-583995b9b0def992"
+    }
+  }
+}
