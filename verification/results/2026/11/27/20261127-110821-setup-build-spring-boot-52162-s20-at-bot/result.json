@@ -1,0 +1,393 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110821-setup-build-spring-boot-52162-s20-at-bot",
+  "title": "Setup: build Spring Boot #52162 (S20) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 9m18s, peak 4.6 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S20 fix: build and landed tests) was held back 3m16s by its 4-CPU quota in 4m13s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S20 parent: build and the parent's tests) was held back 2m21s by its 4-CPU quota in 3m24s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S20 transplant: the fix's tests on the parent) was held back 2m26s by its 4-CPU quota in 1m37s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110821-setup-build-spring-boot-52162-s20-at-bot.json",
+    "sha256": "ae6ff62635c7c60ec74d64ab65434e765222d4340934f23d0d14f21c1774296b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110821-setup-build-spring-boot-52162-s20-at-bot",
+      "title": "Setup: build Spring Boot #52162 (S20) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S20 (spring-projects/spring-boot#52162: Graceful shutdown drains requests after a web server restarts). In the worktrees $P/worktrees/S20-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-jetty module:spring-boot-tomcat with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (TomcatServletWebServerFactoryTests.givenARestartedServer* (test) TomcatReactiveWebServerFactoryTests.givenARestartedServer* (test) JettyServletWebServerFactoryTests.givenARestartedServer* (test) JettyReactiveWebServerFactoryTests.givenARestartedServer* (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-jetty module:spring-boot-tomcat in $P/artifacts/S20-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S20",
+      "submitted": {
+        "at": "2026-11-27T11:08:21+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S20 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S20 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S20 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S20 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091102-setup-build-spring-boot-52162-s20-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:29:05+00:00",
+  "finishedAt": "2026-11-27T11:38:35+00:00",
+  "wallSeconds": 570.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 4960018432,
+    "wallSeconds": 558.9,
+    "cpuSeconds": 1584.6,
+    "memoryOfEstimate": 0.77,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S20 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 253.133,
+      "cpuSeconds": 704.492,
+      "cpuThrottledSeconds": 196.833,
+      "peakMemoryBytes": 4960018432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s20-fix-build-and-landed-tests.log",
+        "lines": 39,
+        "bytes": 5634,
+        "sha256": "0baed8d6abd1fb5542e68527612c812b5ff2500279c10884b702433fd3dcc8aa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S20-fix gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=126 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/s",
+        "junit tests=4 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactoryTests.givenARestartedServer* junit tests=1 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactoryTests.givenARestartedServer* junit tests=1 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.jetty.servlet.JettyServletWebServerFactoryTests.givenARestartedServer* junit tests=1 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactoryTests.givenARestartedServer* junit tests=1 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S20-fix/module_spring-boot-jetty.runtimeClasspath.txt 79 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S20-fix/module_spring-boot-jetty.testRuntimeClasspath.txt 169 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S20-fix/module_spring-boot-tomcat.runtimeClasspath.txt 30 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S20-fix/module_spring-boot-tomcat.testRuntimeClasspath.txt 132 entries",
+        "8ab09a2fd46fa0e14c65e52c9250bfbddd3101a536253f0b98ff344196410c71  jars/spring-boot-jetty-4.0.10-SNAPSHOT.jar",
+        "6b3e986499dc331ca74b453feb6177dc9d17c35c0af76d92993013ec2c765fbf  jars/spring-boot-tomcat-4.0.10-SNAPSHOT.jar",
+        "8c9300d868ab0bed70020389cb6d236c94149f20b8babe11468dd00cd00e71c3  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.10-SNAPSHOT.jar",
+        "4d649ec502e1e8b0092697d67eb39c530988a7725cebadf75b85afbde973db9a  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.10-SNAPSHOT-test-fixtures.jar",
+        "2eba7265a56b1b763769db70ccd31e65cf5aa0b7d3217565443445291f0715b2  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT.jar",
+        "686fc27ab6659c721225277a2d51384938ce537bd880e7aa55501237fc0b2304  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT-test-fixtures.jar",
+        "2df98367083e94f46b09b14a4d1f09f6b72df5c91ed9fcb71a8143984d1dea27  tree/core/spring-boot-test/build/libs/spring-boot-test-4.0.10-SNAPSHOT.jar",
+        "c53c9f73cc01c3bab26bbad89acc108c5a828f66ade74f5451704339bc48c940  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.0.10-SNAPSHOT.jar",
+        "2563445847da3399a810302a9fd173ad8abbe93f106f4b7aed1f085b492bb427  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.0.10-SNAPSHOT.jar",
+        "8723ef581d7ec611cc1504c7c5e965837ccd397f6d431f3e44afb72009b84bc6  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.0.10-SNAPSHOT.jar",
+        "1217db3e4703c26ff7431673cbdf67142b53e59c560e1b7a1c1e7f560df00d29  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.0.10-SNAPSHOT.jar",
+        "a2e973c131c57bb4ce7db89a8090a6dce61f278b78eb7fc06d975b75f8ada330  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.0.10-SNAPSHOT.jar",
+        "591621f4b4941fbc31e419bd2b3f67c5eb94a8cadee001b977e306b2861a6519  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.0.10-SNAPSHOT-test-fixtures.jar",
+        "389ba14f806fe174cf99df2d5e28d6c25389dc0b06f3fb750bca80a4b31b89f4  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.10-SNAPSHOT.jar",
+        "2e696c203ca0d556916607c8f2714c1cdf9d0e943a0cd420e53110fa13b78912  spring-boot-jetty-4.0.10-SNAPSHOT.jar!/org/springframework/boot/jetty/GracefulShutdown.class",
+        "ef0677e5898aca5f580ee06039427ea8debf922ddca38ab39bf436e7c61da756  spring-boot-jetty-4.0.10-SNAPSHOT.jar!/org/springframework/boot/jetty/JettyWebServer.class",
+        "bb27587f09aec8fdbf3780523d60ce6c419ee09afbf442ad1689de38d5a7019c  spring-boot-tomcat-4.0.10-SNAPSHOT.jar!/org/springframework/boot/tomcat/GracefulShutdown.class",
+        "4e40b1d9541576b358f08bd401cb4cf6e90d2416781aae4b371f648f65d501da  spring-boot-tomcat-4.0.10-SNAPSHOT.jar!/org/springframework/boot/tomcat/TomcatWebServer$1.class",
+        "95707faf071a7a66ce99380c068e34ad54ccf1a15fa0c261f496e3fbc95fb896  spring-boot-tomcat-4.0.10-SNAPSHOT.jar!/org/springframework/boot/tomcat/TomcatWebServer.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S20 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 204.877,
+      "cpuSeconds": 580.17,
+      "cpuThrottledSeconds": 141.942,
+      "peakMemoryBytes": 3911274496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s20-parent-build-and-the-paren.log",
+        "lines": 39,
+        "bytes": 5508,
+        "sha256": "adc53d2d327457d38b262583154426d4c6953de4a8f0c42e05951a9b84e38d59",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S20-parent gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=79 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.jetty.servlet.JettyServletWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactoryTests.givenARestartedServer* no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S20-parent/module_spring-boot-jetty.runtimeClasspath.txt 79 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S20-parent/module_spring-boot-jetty.testRuntimeClasspath.txt 169 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S20-parent/module_spring-boot-tomcat.runtimeClasspath.txt 30 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S20-parent/module_spring-boot-tomcat.testRuntimeClasspath.txt 132 entries",
+        "3563cdc81b9f9a1ef493d08faafe956aae31f6ffc6a451949118fa788c6fe3a7  jars/spring-boot-jetty-4.0.10-SNAPSHOT.jar",
+        "944dc742324eddfd7fcec1ba91bd09b4680c7856975c7dcfd40ca66dced6c79a  jars/spring-boot-tomcat-4.0.10-SNAPSHOT.jar",
+        "8c9300d868ab0bed70020389cb6d236c94149f20b8babe11468dd00cd00e71c3  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.10-SNAPSHOT.jar",
+        "4d649ec502e1e8b0092697d67eb39c530988a7725cebadf75b85afbde973db9a  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.10-SNAPSHOT-test-fixtures.jar",
+        "2eba7265a56b1b763769db70ccd31e65cf5aa0b7d3217565443445291f0715b2  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT.jar",
+        "686fc27ab6659c721225277a2d51384938ce537bd880e7aa55501237fc0b2304  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT-test-fixtures.jar",
+        "2df98367083e94f46b09b14a4d1f09f6b72df5c91ed9fcb71a8143984d1dea27  tree/core/spring-boot-test/build/libs/spring-boot-test-4.0.10-SNAPSHOT.jar",
+        "c53c9f73cc01c3bab26bbad89acc108c5a828f66ade74f5451704339bc48c940  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.0.10-SNAPSHOT.jar",
+        "2563445847da3399a810302a9fd173ad8abbe93f106f4b7aed1f085b492bb427  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.0.10-SNAPSHOT.jar",
+        "8723ef581d7ec611cc1504c7c5e965837ccd397f6d431f3e44afb72009b84bc6  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.0.10-SNAPSHOT.jar",
+        "1217db3e4703c26ff7431673cbdf67142b53e59c560e1b7a1c1e7f560df00d29  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.0.10-SNAPSHOT.jar",
+        "a2e973c131c57bb4ce7db89a8090a6dce61f278b78eb7fc06d975b75f8ada330  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.0.10-SNAPSHOT.jar",
+        "e2940c7a8472c20b372afb622e7ed971bbe1703e4632ab32d42ad7979bc91ef5  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.0.10-SNAPSHOT-test-fixtures.jar",
+        "389ba14f806fe174cf99df2d5e28d6c25389dc0b06f3fb750bca80a4b31b89f4  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.10-SNAPSHOT.jar",
+        "a4f007b64467ebd4f2d7fdc17760b67e70c1a76d9e6ef63a95cc7efebdcb0b8e  spring-boot-jetty-4.0.10-SNAPSHOT.jar!/org/springframework/boot/jetty/GracefulShutdown.class",
+        "80c23d89f7b4d84d9fe7ed6c81be4d624fd7d363f1003a0d06f040351e7b2f64  spring-boot-jetty-4.0.10-SNAPSHOT.jar!/org/springframework/boot/jetty/JettyWebServer.class",
+        "4d0b62206bf5a099a8fe11a5523d55e6fc2704d9632176749a033a221708e3bf  spring-boot-tomcat-4.0.10-SNAPSHOT.jar!/org/springframework/boot/tomcat/GracefulShutdown.class",
+        "4e40b1d9541576b358f08bd401cb4cf6e90d2416781aae4b371f648f65d501da  spring-boot-tomcat-4.0.10-SNAPSHOT.jar!/org/springframework/boot/tomcat/TomcatWebServer$1.class",
+        "c45a1dbde9c9d6645ec7bcedc0c4f4712b4d3f1013868274e6f98528248f2298  spring-boot-tomcat-4.0.10-SNAPSHOT.jar!/org/springframework/boot/tomcat/TomcatWebServer.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S20 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 97.523,
+      "cpuSeconds": 297.957,
+      "cpuThrottledSeconds": 146.747,
+      "peakMemoryBytes": 4559323136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s20-transplant-the-fix-s-tests.log",
+        "lines": 23,
+        "bytes": 3652,
+        "sha256": "4a844419c883d8b1f3149621cf80fe1fc6df490fcf360402601bd46974a07da2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-web-server/src/testFixtures/java/org/springframework/boot/web/server/reactive/AbstractReactiveWebServerFactoryTests.java",
+        "transplanted module/spring-boot-web-server/src/testFixtures/java/org/springframework/boot/web/server/servlet/AbstractServletWebServerFactoryTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S20-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=97 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=4 failures=4 errors=0 skipped=0",
+        "junit failed JettyReactiveWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()",
+        "junit failed JettyServletWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()",
+        "junit failed TomcatReactiveWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()",
+        "junit failed TomcatServletWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactoryTests.givenARestartedServer* junit tests=1 failures=1 errors=0 skipped=0 junit failed TomcatServletWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheReque",
+        "class org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactoryTests.givenARestartedServer* junit tests=1 failures=1 errors=0 skipped=0 junit failed TomcatReactiveWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRe",
+        "class org.springframework.boot.jetty.servlet.JettyServletWebServerFactoryTests.givenARestartedServer* junit tests=1 failures=1 errors=0 skipped=0 junit failed JettyServletWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestC",
+        "class org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactoryTests.givenARestartedServer* junit tests=1 failures=1 errors=0 skipped=0 junit failed JettyReactiveWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheReque",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S20 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 3.408,
+      "cpuSeconds": 1.971,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 79597568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s20-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "68cd029ddd76c23a34041979e1aa83b27f56ea5a0a2e9d33938d148c2ee6c21b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S20"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:38:38+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T113835Z-95354238a916fc53"
+    }
+  }
+}
