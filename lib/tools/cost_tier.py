@@ -18,7 +18,7 @@ import os
 import unittest
 
 # The tests start made-up loops and runs with stand-in clients, from wherever they run, an agent's own loop included.
-# The guard against an agent starting a run from inside its loop (watch.nested_run_refusal, feature-loop.sh; VF-045)
+# The guard against an agent starting a run from inside its loop (run_common.nested_run_refusal, feature-loop.sh; VF-045)
 # is not for them, and their subprocesses inherit this.
 os.environ.setdefault("IN_THE_LOOP_NESTED_RUN", "allow")
 

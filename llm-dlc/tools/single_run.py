@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The watcher's tools for a single agent's run (.claude/skills/single-agent-run; llm-dlc/README.md, "A single
+"""The watcher's tools for a single agent's run (.claude/skills/orchestrate-run; llm-dlc/README.md, "A single
 agent's run").
 
 One agent works toward one outcome, and one watcher session stands outside it, as the watcher of a proof run or of
@@ -51,7 +51,7 @@ is feature-loop.sh's `single-agent`, with this run's directory as its conductor.
                                         block until no verification job is queued, running or back and not collected,
                                         keeping the queue meanwhile: for a run stopped only to wait on its jobs,
                                         which `start` then continues. Returns early with a result that did not pass.
-    single_run.py land NAME             bring a workspace's commits to this checkout's line (brief_run.py's `land`)
+    single_run.py land NAME             bring a workspace's commits to this checkout's line (landing.py's `land`)
     single_run.py unhang NAME [--min-age MINUTES] [--dry-run]
                                         end the run's hung waits: a wait loop (until/while ... pgrep -f PATTERN ...) in
                                         the run's processes, at least MINUTES old (10), whose PATTERN no process matches

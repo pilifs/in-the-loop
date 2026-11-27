@@ -235,6 +235,32 @@ verdict against the CLI of the same build.
 **Why:** the four conflicts silenced every integration check after the streams' first commits in four runs, and
 in one that hid a real bug until the merge.
 
+## A landing that conflicts
+
+`single_run.py land NAME` (and the brief queue's handover, which calls the same code in `landing.py`) takes back a
+merge that conflicts in real work and says in which files. Two ways on:
+
+- **Have the session that wrote the work rebuild on the line as it is now.** This is the default: it knows what
+  both sides meant. Its run is continued (`single_run.py start NAME`), it brings its own line onto the default
+  line's last commit and settles what meets, and the run is landed again.
+- **Resolve it by hand**, when the conflict is small and you can see how both sides meet. In the default
+  workspace, with nothing uncommitted there:
+  1. make the merge of the line's last commit and the workspace's:
+     `jj rebase -r @ -d @- -d WORKSPACE@-` (the working-copy change becomes the merge; the words for making a new
+     change would set off the commit hook, see below);
+  2. run `python3 llm-dlc/tools/sync.py regenerate`, which settles the generated trace files and lists every other
+     conflict;
+  3. resolve what it lists, and nothing else;
+  4. run the tests of what came in (`python3 lib/tools/test_costs.py run --changed`);
+  5. commit the merge with `sync.py commit`, saying what met and how it was settled;
+  6. run `single_run.py land NAME` again: it finds the line has the work and records the landing.
+
+  A merge that does not come out clean is taken back (`jj abandon` the merge, with the working copy back on the
+  line's last commit) and reported to the user.
+
+**Why:** until 2026-11-27 this procedure was written only on the page of the proof run's watcher, which is retired
+([`retired.md`](retired.md)), and two skills pointed there for it.
+
 ## A test of the trace tools writes nowhere in the checkout
 
 A test that calls `sync.cmd_sync`, `cmd_push` or `cmd_regenerate` either points `sync.TRACES` (and what is

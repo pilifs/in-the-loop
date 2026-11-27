@@ -237,9 +237,9 @@ def _land(run: Run, workspace: str, message: tuple[str, str] | None, at_work: bo
         with sync_lock(root):
             jj(root, "new", ours)
             jj(root, "abandon", merge)
-        raise Problem(f"the merge conflicts in {', '.join(files[:8])}: taken back. Resolve it by hand as llm-dlc/runtime.md's "
-                      f"merge of a queued workspace shows (a merge of @- and {workspace}@-), or have the session that "
-                      f"wrote it rebuild on the line as it is now")
+        raise Problem(f"the merge conflicts in {', '.join(files[:8])}: taken back. Have the session that wrote it rebuild "
+                      f"on the line as it is now, or resolve it by hand as llm-dlc/operating-notes.md shows (\"A landing "
+                      f"that conflicts\": a merge of @- and {workspace}@-)")
     message = message or (f"Merge the workspace {workspace} into the line",
                           f"The work in the workspace {workspace} was committed while this line moved on, so its commits "
                           f"come in by a merge. Nothing but the generated trace files met; they were regenerated from "

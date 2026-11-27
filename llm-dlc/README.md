@@ -100,7 +100,7 @@ llm-dlc/
                                     stream's rerun, helpers; test_brief_run.py tests it and run-streams.sh's part
   tools/brief_queue.py              the queue of briefs a watcher runs one after the other, and the handover between
                                     them; test_brief_queue.py tests it
-  tools/single_run.py               the watcher's tools for a single agent's run (/single-agent-run): start, wait,
+  tools/single_run.py               the watcher's tools for a single agent's run (/orchestrate-run): start, wait,
                                     answer, the continue message, stop, land, a brief's setup phase and its notes;
                                     test_single_run.py tests it and feature-loop.sh's `single-agent` loop
   tools/run_common.py               what the tools of a run share: a run's state, the clock, what a turn cost, jj as they
@@ -438,8 +438,8 @@ commit, not the whole default run ([brief-template.md](loops/brief-template.md),
 ### A single agent's run
 
 For an outcome well within one agent's reach, a brief with streams is more than the work needs.
-`/single-agent-run [OPTION ...] <the starting prompt>`
-([`.claude/skills/single-agent-run`](../.claude/skills/single-agent-run/SKILL.md)) runs one agent toward it with
+`/orchestrate-run [OPTION ...] <the starting prompt>`
+([`.claude/skills/orchestrate-run`](../.claude/skills/orchestrate-run/SKILL.md)) runs one agent toward it with
 one watcher outside, as the first loops here ran one instruction over and over, with two differences: a watcher
 judges after each cycle whether there is another, and a person can change what the later cycles are told while
 the run is under way. The watcher is a Claude Code session on Opus 5.5 in the checkout, or one already open there that is

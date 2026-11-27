@@ -1,7 +1,7 @@
 # Brief generation template
 
 The two texts of a brief's generation phase ([`single_run.py generate`](../tools/single_run.py),
-[`/single-agent-run`](../../.claude/skills/single-agent-run/SKILL.md#a-generation-phase)). A brief author turns a list of
+[`/orchestrate-run`](../../.claude/skills/orchestrate-run/generation.md)). A brief author turns a list of
 pull requests into one verification brief, which then goes through a setup phase and a domain run like any other
 brief ([`brief_queue.py`](../tools/brief_queue.py)). Its instructions and the brief's format are the user's handoff,
 [`brief-generation-handoff.md`](brief-generation-handoff.md), kept as the user wrote it. `generate` fills in:

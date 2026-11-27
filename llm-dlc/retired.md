@@ -35,14 +35,14 @@ outdated.
 
 ### single-agent-run
 
-- **Status:** planned
+- **Status:** retired
 - **What it was:** the skill a watcher ran one agent's run with: a domain run, a setup phase, a generation phase
   and the queue of briefs.
 - **Replaced by:** `/orchestrate-run`, the same skill under a new name, with one page for each kind of run. Its
   commands are unchanged: `single_run.py` and `brief_queue.py`, and a run's folder is still `single-NAME`.
 - **Names:** `single-agent-run`
 - **Files:** `.claude/skills/single-agent-run/`, `.agents/skills/single-agent-run`
-- **Removed in:** not yet
+- **Removed in:** change `sylnnqzvumoo` (2026-11-27), which renamed it
 
 ### multi-agent-brief
 

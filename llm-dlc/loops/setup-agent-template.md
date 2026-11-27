@@ -1,6 +1,6 @@
 # Setup agent template
 
-The two texts of a run's setup phase ([`single_run.py setup`](../tools/single_run.py), [`/single-agent-run`](../../.claude/skills/single-agent-run/SKILL.md#a-setup-phase)).
+The two texts of a run's setup phase ([`single_run.py setup`](../tools/single_run.py), [`/orchestrate-run`](../../.claude/skills/orchestrate-run/setup.md)).
 A setup agent does a brief's mechanical setup before the domain agent starts. It fetches, pins, verifies and builds,
 and writes down what it did, so that the domain agent can start the real work at once. `setup` fills in `{brief}`,
 the brief as the agent is told where it is, and `{record}`, the file the setup is written down in. Nothing else

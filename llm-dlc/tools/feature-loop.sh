@@ -40,7 +40,7 @@
 #                   FEATURE_LOOP_RECORD_AS=NAME files the run under another loop's name (its record,
 #                   its scope and so its statistics), for a run that continues that loop's list.
 # One agent toward one outcome, watched from outside:
-#   single-agent    the loop of /single-agent-run, started by llm-dlc/tools/single_run.py, which names the run
+#   single-agent    the loop of /orchestrate-run, started by llm-dlc/tools/single_run.py, which names the run
 #                   (FEATURE_LOOP_RECORD_AS) and keeps its two texts in files: the first cycle of a run takes
 #                   FEATURE_LOOP_FIRST's, and every later one FEATURE_LOOP_CONTINUE's as it stands when the cycle
 #                   starts, so a person can change it between two cycles (never the watcher). FEATURE_LOOP_BRIEF names a brief

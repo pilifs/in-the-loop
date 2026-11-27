@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The brief queue: the briefs a watcher runs one after the other, each as a single-agent run (single_run.py), with
-a setup phase before it by default (.claude/skills/single-agent-run, "A queue of briefs").
+a setup phase before it by default (.claude/skills/orchestrate-run/queue.md).
 
 Until 2026-11-23 a watcher kept its queue as prose in its own memory, and the user sent the same message with each
 brief: the path, copy it into llm-dlc/loops/, Astra at max effort in the same session, the two prompts, start it

@@ -524,7 +524,7 @@ class TheInstructions(Fixture):
         self.assertEqual(problems, [])
         self.assertEqual(sorted(name for name, s in found.items() if s["userOnly"]), ["publish", "review-findings"])
         # The run skills are the user's alone to start in Codex (VF-045); Claude Code keeps model invocation.
-        self.assertEqual(sorted(name for name, s in found.items() if s.get("codexUserOnly")), ["multi-agent-brief", "prove-java-change", "single-agent-run"])
+        self.assertEqual(sorted(name for name, s in found.items() if s.get("codexUserOnly")), ["multi-agent-brief", "orchestrate-run", "prove-java-change"])
         self.assertTrue(all(s["linked"] for s in found.values()), found)
         self.assertFalse(any((root / name).exists() for name in agent_client.SHADOWS), "an AGENTS.md would shadow CLAUDE.md for Codex")
 
