@@ -2,6 +2,9 @@
 def mapping(fields, recipe, entry):
     family = recipe["family"]
     fields_by_family = {
+        "public scalar method": [
+            ("[0][0]", entry, "normal return or escaping exception"),
+            ("[0][1:]", entry, "runtime class and complete scalar spelling, or the escaping exception type")],
         "typed numeric conversions": [
             ("[call][0]", entry, "return or throws at each public call"),
             ("[call][1]", "Object.getClass().getName()", "runtime class or exception type; null is distinct"),

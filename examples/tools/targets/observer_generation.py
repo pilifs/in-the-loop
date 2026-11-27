@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 def identity():
     files = [Path(__file__), HERE / "observer_recipes.py", HERE / "observer_histories.py", HERE / "observer_state.py",
              HERE / "observer_io.py", HERE / "observer_public_data.py", HERE / "observer_structures.py",
-             HERE / "observer_fields.py", HERE / "observer_actions.py", HERE / "observer_fixtures.py", observer_recipes.TEMPLATE]
+             HERE / "observer_fields.py", HERE / "observer_actions.py", HERE / "observer_scalar.py", HERE / "observer_fixtures.py", observer_recipes.TEMPLATE]
     return {p.name: sha(p) for p in files}
 
 
@@ -182,7 +182,14 @@ def workflows(reg, predictions, work):
     recipe = json.loads((work / "generation.json").read_bytes())["recipe"]
     rows = []
     for index, q in enumerate(reg["questions"]):
-        cases, changes = finite_domain(q, predictions[q["id"]])
+        answer = predictions[q["id"]]
+        paired = answer.get("pairedObservation") if isinstance(answer,dict) else None
+        if paired is not None:
+            if set(answer) != {"pairedObservation"} or paired not in change_evidence.PAIRED or q["sides"] != ["old","new"]:
+                raise ValueError("invalid paired predicate or one-sided public history")
+            cases, changes = [{"args":arguments(item)} for item in q["inputs"]], []
+        else:
+            cases, changes = finite_domain(q, answer)
         name = f"scope-{index + 1}.json"
         spec = {"entry": recipe.get("bindingEntry",reg["entry"]), "probeClass": "UpgradeProbe", "observer": ", ".join(reg["fields"]),
                 "basis": q["history"], "cases": cases, "assertedSides": q["sides"],
@@ -192,9 +199,13 @@ def workflows(reg, predictions, work):
         if "requiredDispatch" in recipe:
             spec["requiredDispatch"] = recipe["requiredDispatch"]
         spec["predictionEncoding"] = "typed-public-fields/v1"
+        if paired is not None:
+            spec["pairedObservation"] = paired
         change_evidence.write_json(work / name, spec)
         rows.append(change_plan.workflow_row(q["id"], name, "UpgradeProbe.java", reg["assumptions"], changes,
                                              cohort=q["cohort"]))
+        if paired is not None:
+            rows[-1]["intent"] = {"pairedObservation":paired}
     change_evidence.write_json(work / "workflows.json", {"schema": "caller-workflows/v1", "change": reg["change"], "workflows": rows})
 
 
@@ -392,6 +403,9 @@ def correspondence(recipe, inputs, marks, observation):
         if len(values) != 2**(inputs["maximumSize"] + 1) - 1 or len(aliases) != 2*len(values) or any(
                 a != b for a,b in zip(aliases[::2], aliases[1::2])):
             raise ValueError("missing paired removal on a retained map")
+    elif family == "public scalar method":
+        from targets import observer_scalar
+        result.update(observer_scalar.qualify(recipe, inputs, marks, values))
     elif observer_actions.selectors(recipe):
         result["publicActions"] = observer_actions.qualify(recipe, inputs, marks, values)
     tuples = []

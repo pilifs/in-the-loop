@@ -66,7 +66,11 @@ def frozen_workflows(path):
         if not spec["cases"] or len({tuple(c["args"]) for c in spec["cases"]}) != len(spec["cases"]):
             raise ValueError(f"{name} must declare a nonempty domain of distinct inputs")
         intent = row["intent"]
-        if intent not in ("preserve", "undecided"):
+        if "pairedObservation" in spec:
+            if (spec["pairedObservation"] not in change_evidence.PAIRED or intent != {"pairedObservation":spec["pairedObservation"]}
+                    or spec.get("assertedSides") != ["old","new"] or any(set(c) != {"args"} for c in spec["cases"])):
+                raise ValueError(f"{name}: paired observations require an explicitly frozen two-sided predicate")
+        elif intent not in ("preserve", "undecided"):
             if not isinstance(intent, dict) or set(intent) != {"allowedChanges"} or not isinstance(intent["allowedChanges"], list):
                 raise ValueError(f"{name}: expected preserve, undecided, or explicit allowedChanges")
             seen = set()
@@ -125,6 +129,9 @@ def compare(args, *, original_binary=True, archive_index=None):
                      "candidates": [{"entry": e, "independentlyDiscovered": False} for e in sorted(declared)]}
     else:
         inventory = entry_discovery.discover(snapshots, declared, getattr(args, "changed_selector", []))
+    if getattr(args,"upstream_history",None):
+        from targets import public_histories
+        public_histories.apply(inventory,args.upstream_history,snapshots,launches,jdks)
     inventory["coverage"] = archive_index.coverage()
     checker = args.checker.resolve()
     if workflows and not getattr(args, "supplied_only", False):
@@ -248,7 +255,7 @@ def compare(args, *, original_binary=True, archive_index=None):
         for side, manifest in manifests.items():
             if manifest:
                 side_inputs[side]["manifestClassPath"] = manifest
-        new_expected = {c["input"]: c["expectedNew"] for c in row["intent"]["allowedChanges"]} if isinstance(row["intent"], dict) else {}
+        new_expected = {c["input"]: c["expectedNew"] for c in row["intent"].get("allowedChanges",[])} if isinstance(row["intent"], dict) else {}
         cache = change_evidence.SideCache(args.cache, basis, side_inputs, defer_writes=True,
                                           new_expected=new_expected) if use_cache else None
         evidence = {}
@@ -274,7 +281,9 @@ def compare(args, *, original_binary=True, archive_index=None):
                 c["id"] = digest([node["claimKey"], node["executionKey"], c["input"]])
             node["dependsOn"] = [{"id": c["id"], "reason": "original entry on both sides of this admitted input"}
                                  for c in node["children"]]
-            if node["status"] == "established" and not closed:
+            needs_closed_domain = node["status"] == "established" or (
+                spec.get("pairedObservation") == "different-on-any-input" and node["status"] == "refuted")
+            if needs_closed_domain and not closed:
                 node.update(status="open", firstOpenDependency="bind all runtime inputs and justify deterministic observations")
         if unresolved or not stable:
             node.update(status="open", firstOpenDependency={"manifestClassPath": unresolved} if unresolved
@@ -468,6 +477,8 @@ def main(argv=None):
     upgrade.add_argument("--supplied-only", action="store_true", help="qualify approved callers without a cold discovery measurement")
     upgrade.add_argument("--entry", action="append", default=[], help="approved public selector to qualify")
     upgrade.add_argument("--changed-selector", action="append", default=[], help="exact changed selector to discover public callers for")
+    upgrade.add_argument("--upstream-history",action="append",type=Path,default=[],
+                         help="rank callers with bound raw events from an original upstream test launch")
     upgrade.add_argument("--probe-limit", type=int, default=8, help="maximum cold candidates to look up, without selecting intent")
     for name in ("before-test", "after-test", "after-jdk", "fixtures", "cache", "previous"):
         upgrade.add_argument("--" + name, type=Path)

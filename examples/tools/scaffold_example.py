@@ -188,6 +188,10 @@ def bind_deployments(before, after, jdk, output, *, workflows=None, entries=(), 
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] == "predict":
+        from targets import blind_prediction
+        blind_prediction.main(argv[1:])
+        return 0
     if argv and argv[0] in {"generate", "emit"}:
         from targets import observer_generation
         parser = argparse.ArgumentParser(description="Materialize a reviewed public observation on its prepared deployments")

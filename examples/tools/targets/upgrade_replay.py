@@ -317,7 +317,13 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
     if (not domain or len({tuple(c["args"]) for c in domain}) != len(domain)
             or any(not isinstance(c["args"],list) or any(x is not None and not isinstance(x,str) for x in c["args"]) for c in domain)):
         raise ValueError("the finite domain needs distinct lists of string or null arguments")
+    paired = spec.get("pairedObservation")
     for case in domain:
+        if paired is not None:
+            from targets.change_evidence import PAIRED
+            if paired not in PAIRED or spec.get("assertedSides") != ["old","new"] or set(case) != {"args"}:
+                raise ValueError("invalid two-sided relational observation")
+            continue
         expected = case["expected"]
         if (not isinstance(expected,dict) or set(expected) not in ({"return"},{"throws"}) or
                 any(value is not None and not isinstance(value,str) for value in expected.values())):
@@ -610,6 +616,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         question = next(q for q in _registration["questions"] if q["id"] == spec["generatedObserver"]["question"])
                         projection = observer_generation.correspondence(frozen["recipe"], question["inputs"][index], marks, observation)
                         if "publicActions" in projection:
+                            trial_record.setdefault("publicActionEvents", []).append(
+                                [line.partition(" ")[2] for line in marks if line.startswith("UPGRADE-ACTION ")])
                             projection["actionBindings"] = observer_actions.bindings(
                                 projection["publicActions"], class_origins(child_output), files, side_record["classpath"],
                                 subject_feature, subject_jdk, output)
@@ -638,7 +646,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             report["stoppedAt"] = first_early
             report["reason"] = (f"{first_early['side']} input {first_early['input']}: the original caller method was never entered. "
                                 + first_early.get("exception", ""))
-            report["beforeEntryComparison"] = compare_before_entry(report["sides"], domain)
+            if paired is None:
+                report["beforeEntryComparison"] = compare_before_entry(report["sides"], domain)
             if jdk == after_jdk:
                 upgrade_linkage.diagnose(report, prepared, old_loaded, int(identity["feature"]), jdk, output,
                                          temp, env, start+timeout)
@@ -649,7 +658,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         report.pop("stoppedAt", None)
         old,new=(report["sides"][k]["trials"] for k in ("old","new"))
         differences=[i for i,(a,b) in enumerate(zip(old,new)) if a["observations"][0]!=b["observations"][0]]
-        disagreements=[i for i,(a,c) in enumerate(zip(old,domain)) if a["observations"][0]!=c["expected"]]
+        disagreements=[i for i,(a,c) in enumerate(zip(old,domain)) if paired is None and a["observations"][0]!=c["expected"]]
         report.update(differences=differences,oldOracleDisagreements=disagreements,
                       status="open" if disagreements else "changed" if differences else "preserved",
                       elapsedSeconds=round(time.monotonic()-start,3))

@@ -1,13 +1,18 @@
 """Qualify identity, order and public values in a generated multi-operation history."""
 import base64
 import hashlib
+import re
 import zipfile
 
 from targets import runtime_jar
 
+HIDDEN_LAMBDA = re.compile(r"\$\$Lambda(?:\$\d+)?/0x[0-9a-fA-F]+(?=#|$)")
+
 
 def selectors(recipe):
     family = recipe["family"]
+    if family == "public scalar method":
+        return {"return": recipe["entry"]}
     if family == "paired mutable-property samples":
         owner = recipe["owner"]
         getter = "#" + recipe["getter"] + "()Ljava/util/Date;"
@@ -53,6 +58,8 @@ def flags(recipe):
     if not selected:
         return []
     result = ["-Dupgrade.observe.actions=" + "|".join(selected.values())]
+    if recipe["family"] == "public scalar method":
+        result.append("-Dupgrade.observe.scalar=true")
     optional = optional_constructor(recipe)
     if optional:
         result.append("-Dupgrade.observe.optional=" + optional)
@@ -87,7 +94,7 @@ def atom(text):
         value = {"total": int(total), "hits": hits}
     else:
         value = None
-    return {"type": kind, "alias": int(identity), "value": value}
+    return {"type": HIDDEN_LAMBDA.sub("$$Lambda/<hidden>",kind), "alias": int(identity), "value": value}
 
 
 def events(members, marks):
@@ -96,13 +103,19 @@ def events(members, marks):
     for mark in marks:
         if not mark.startswith("UPGRADE-ACTION "):
             continue
-        member, caller, pc, thread, loader, receiver, result, *args = decode(mark.split(" ", 1)[1]).decode().split("\n")
+        parts = decode(mark.split(" ", 1)[1]).decode().split("\n")
+        if parts[0] == "v2":
+            _, member, caller, pc, thread, loader, caller_receiver, receiver, result, *args = parts
+        else:
+            member, caller, pc, thread, loader, receiver, result, *args = parts
+            caller_receiver = "null"
         role = by_member.get(member)
         if role is None and "callback" in members and member.startswith("UpgradeProbe#lambda$observe$"):
             role = "callback"
         if role is None:
             raise ValueError("unregistered public action " + member)
-        actions.append({"role": role, "member": member, "caller": caller, "callerBci": int(pc),
+        actions.append({"role": role, "member": member, "caller": HIDDEN_LAMBDA.sub("$$Lambda/<hidden>",caller),
+                        "callerReceiver":atom(caller_receiver), "callerBci": int(pc),
                         "thread": int(thread), "loader": loader, "receiver": atom(receiver),
                         "return": atom(result), "args": [atom(a) for a in args]})
     if len({a["thread"] for a in actions}) != 1:
@@ -212,7 +225,7 @@ def streams(actions, inputs):
         role = step["role"]
         if role == "publisher":
             require(current is None, "a publisher was constructed without a completed subscription")
-            current = {"chain": step["return"]["alias"], "stage": 0, "events": [], "partial": None, "terminal": None}
+            current = {"chain": step["return"]["alias"], "stage": 0, "events": [], "callbacks":{}, "partial": None, "terminal": None}
         elif current is not None:
             if role in {"next", "complete", "error", "recover", "block"}:
                 stages = ["next", "complete", "error", "recover", "block"]
@@ -221,6 +234,7 @@ def streams(actions, inputs):
                 current["stage"] += 1
                 if role != "block":
                     current["chain"] = step["return"]["alias"]
+                    current["callbacks"][role] = step["args"][0]["alias"]
                 else:
                     require(current["terminal"] is not None and current["partial"] is None, "missing public terminal or event read")
                     rows.append([current["events"], *current["terminal"]])
@@ -234,17 +248,21 @@ def streams(actions, inputs):
             elif role == "cause":
                 current["cause"] = [step["receiver"]["alias"], step["return"]]
             elif role == "callback" and step["member"].endswith(")V"):
+                callback = step["callerReceiver"].get("alias")
                 if current["partial"] is not None:
                     event, value, retry = current["partial"]
-                    require(step["args"][-1].get("alias") == event, "payload came from another callback")
+                    require(callback == current["callbacks"].get("next") and step["args"][-1].get("alias") == event,
+                            "payload came from another callback")
                     current["events"].append([value, retry])
                     current["partial"] = None
                 elif step["member"].endswith("Ljava/lang/Throwable;)V"):
                     error = step["args"][-1]
                     cause = current.get("cause")
-                    require(cause and cause[0] == error["alias"], "error and cause lost their public identity")
+                    require(callback == current["callbacks"].get("error") and cause and cause[0] == error["alias"],
+                            "error and cause lost their public callback identity")
                     current["terminal"] = ["error", error["type"], None if cause[1]["type"] == "null" else cause[1]["type"]]
                 elif step["member"].endswith("([Ljava/lang/String;)V"):
+                    require(callback == current["callbacks"].get("complete"), "completion came from another subscription")
                     current["terminal"] = ["complete", None, None]
     require(current is None and len(rows) == len(inputs["streams"]), "missing subscription of the original public publisher")
     return rows

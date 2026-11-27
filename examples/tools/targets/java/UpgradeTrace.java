@@ -359,6 +359,7 @@ public final class UpgradeTrace {
 
         String atom(Value value) {
             if (value == null) return "null";
+            if (value instanceof com.sun.jdi.CharValue) return "char\t" + (int)((com.sun.jdi.CharValue)value).value();
             if (!(value instanceof ObjectReference)) return value.type().name() + "\t" + value;
             ObjectReference ref = (ObjectReference)value;
             String type = ref.referenceType().name();
@@ -412,10 +413,10 @@ public final class UpgradeTrace {
             if (++count > 4096) throw new IllegalStateException("public history exceeds 4096 returned operations");
             StackFrame frame = event.thread().frame(0);
             ClassLoaderReference loader = event.location().declaringType().classLoader();
-            List<String> parts = new ArrayList<>(Arrays.asList(member, CheckedReplay.entry(caller.location()),
+            List<String> parts = new ArrayList<>(Arrays.asList("v2", member, CheckedReplay.entry(caller.location()),
                     Long.toString(caller.location().codeIndex()), Integer.toString(alias(event.thread())),
                     loader == null ? "bootstrap" : loader.referenceType().name() + "@" + alias(loader),
-                    atom(frame.thisObject()), atom(event.returnValue())));
+                    atom(caller.thisObject()), atom(frame.thisObject()), atom(event.returnValue())));
             for (Value argument : frame.getArgumentValues()) parts.add(atom(argument));
             System.err.println("UPGRADE-ACTION " + encoded(String.join("\n",parts)));
         }
@@ -557,6 +558,7 @@ public final class UpgradeTrace {
         String entryInvocation = null;
         boolean history = Boolean.getBoolean("upgrade.observe.history");
         boolean numeric = Boolean.getBoolean("upgrade.observe.numeric");
+        boolean scalar = Boolean.getBoolean("upgrade.observe.scalar");
         NumericInputs numericInputs = new NumericInputs();
         PublicActions publicActions = new PublicActions();
         String candidateHelper = System.getProperty("upgrade.observe.helper");
@@ -576,6 +578,8 @@ public final class UpgradeTrace {
                 exits.addClassFilter(owner);
                 exits.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
                 exits.enable();
+            }
+            if (numeric || scalar) {
                 ExceptionRequest errors = vm.eventRequestManager().createExceptionRequest(null, true, false);
                 errors.putProperty("projection", true);
                 errors.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
@@ -640,7 +644,8 @@ public final class UpgradeTrace {
                                     && catcher.method().name().equals("observe") && invocation(raised, observer, sites) != null) {
                                 for (StackFrame frame : raised.thread().frames()) {
                                     if (CheckedReplay.entry(frame.location()).equals(entry)) {
-                                        System.err.println("UPGRADE-NUMBER throws\t" + raised.exception().referenceType().name());
+                                        String marker = scalar ? "UPGRADE-SCALAR-THROW " : "UPGRADE-NUMBER throws\t";
+                                        System.err.println(marker + raised.exception().referenceType().name());
                                         break;
                                     }
                                 }
@@ -732,6 +737,11 @@ public final class UpgradeTrace {
                                     System.err.println("UPGRADE-OPTIONAL " + optional + "\t" + available);
                                 }
                                 ObjectReference instance = point.thread().frame(0).thisObject();
+                                if (scalar) {
+                                    List<String> actual = new ArrayList<>();
+                                    for (Value value : point.thread().frame(0).getArgumentValues()) actual.add(publicActions.atom(value));
+                                    System.err.println("UPGRADE-SCALAR-ENTRY " + encoded(String.join("\n", actual)));
+                                }
                                 if (numeric) System.err.println("UPGRADE-NUMERIC-INPUT " + numericInputs.atEntry(point.thread().frame(0)));
                                 if (history) {
                                     int alias = instance == null ? -1 : historyReceivers.computeIfAbsent(

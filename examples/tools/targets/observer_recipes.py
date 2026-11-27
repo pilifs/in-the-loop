@@ -112,6 +112,7 @@ def nonempty(value, meaning):
 
 
 def select(entry, fields, inputs, api):
+    from targets import observer_scalar
     owner, method, descriptor = runtime_jar.parse_target(entry)
     if not descriptor:
         raise Unsupported("supply the descriptor of the bound public entry")
@@ -149,6 +150,8 @@ def select(entry, fields, inputs, api):
             if not has_read:
                 raise Unsupported("specify which conversion retains its formatter for the public getter")
             recipe["argumentRead"] = FORMAT_GETTER
+    elif fields == observer_scalar.FIELDS:
+        recipe = observer_scalar.select(entry, inputs, api)
     elif fields == ["result.defined", "fallback.value", "fallback.calls"]:
         _, desc = api.select(owner, [method], r"\(Ljava/util/function/Predicate;\)L[\w/$]+;")
         result = desc.split(")L")[1][:-1].replace("/", ".")
@@ -218,6 +221,9 @@ def source(recipe):
                     format.setParseBigDecimal((Boolean)spec.get("parseBigDecimal"));
                     return format;
                 }'''
+    elif p["family"] == "public scalar method":
+        from targets import observer_scalar
+        body, support = observer_scalar.body(p)
     elif p["family"] == "selection and lazy default":
         body = '''
             for (Map<String,Object> selection : (List<Map<String,Object>>)data.get("selections")) {
