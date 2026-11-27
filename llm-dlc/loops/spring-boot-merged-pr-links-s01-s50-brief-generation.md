@@ -7,11 +7,11 @@
 | spring-projects/spring-boot#50773 | written | Read direct and nested empty-string regressions and the YAML failure in #50756. The landed branch creates an empty map. The paired YAML startup and getter observations remain open. |
 | spring-projects/spring-boot#50798 | written | For `test.params.toto=titi`, the landed binder test asserts the retrieved wildcard value. The old handler asserted a non-null validation type. Validation of a constrained sibling beside that map remains unexecuted. |
 | spring-projects/spring-boot#52207 | written | Compared the escaped and unescaped character branches with the pinned fixture and the PR’s JDK comparison. Whitespace plus a later comment at the public loader remains open. |
-| spring-projects/spring-boot#52277 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52666 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52904 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51855 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#50489 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#52277 | written | Checked the landed classpath fixture `config[a]/application.properties` through its loader assertion. Two competing filesystem files at real application startup remain open. |
+| spring-projects/spring-boot#52666 | written | Read the pinned `cfg/../cfg` equivalent and hidden-name filter. The test asserts names only. Visible payload readback with a competing `..data` file remains open. |
+| spring-projects/spring-boot#52904 | written | Compared the indexed test and the PR’s comma claim. The merge joins the list then tokenizes on commas; a single literal comma-bearing resource remains an open public lookup. |
+| spring-projects/spring-boot#51855 | written | Compared the proposed option spelling with the landed metadata, documentation and six startup assertions. Mixed keys in reversed argument order and failure-path diagnostics remain open. |
+| spring-projects/spring-boot#50489 | written | Compared the cached and uncached javac fixtures and the Gradle task wiring. Whether deleting one comment yields byte-independent, clean-equivalent descriptions in a real incremental build remains open. |
 | spring-projects/spring-boot#51867 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52310 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52309 | not yet | Awaiting source review and claims. |
