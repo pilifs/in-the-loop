@@ -1,0 +1,174 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-062828-trace-the-landed-spring-event-reader-tes",
+  "title": "Trace the landed Spring event-reader test on both original deployments",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15.0s, peak 316.3 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-062828-trace-the-landed-spring-event-reader-tes.json",
+    "sha256": "2aa1430e8b9764f34366a6e7acc6fbea0ba115339286a3bba823e2ac61e60ed0",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-062828-trace-the-landed-spring-event-reader-tes",
+      "title": "Trace the landed Spring event-reader test on both original deployments",
+      "description": "Run the 14 original reader tests on each 202-entry test classpath, with and without the JVMTI tracer. Match the changed reader bytes to the numbered deployment and separate actual upstream body coverage from the earlier synchronous WebClient replay and the labelled detached exercise.",
+      "kind": "real-world",
+      "capabilities": [
+        "B8"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T06:28:28+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "g++"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/spring_upstream.py",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/spring_upstream.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/spring-upstream.zip"
+      ]
+    }
+  },
+  "sourceCommit": "d57844cc8f0c6c924b14a474a68de554ebf7c042",
+  "startedAt": "2026-11-27T06:36:56+00:00",
+  "finishedAt": "2026-11-27T06:37:22+00:00",
+  "wallSeconds": 26.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1049264,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 331702272,
+    "wallSeconds": 15.0,
+    "cpuSeconds": 21.9,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/spring_upstream.py",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/spring_upstream.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 15.033,
+      "cpuSeconds": 21.879,
+      "cpuThrottledSeconds": 1.878,
+      "peakMemoryBytes": 331702272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 7,
+        "bytes": 275,
+        "sha256": "11c4b09d70480067a497d911e897a943e4262fa0c0035de29891d77c837eb79f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: unknown enum constant Status.STABLE",
+        "  reason: class file for org.apiguardian.api.API$Status not found",
+        "1 warning",
+        "warning: unknown enum constant Status.STABLE",
+        "  reason: class file for org.apiguardian.api.API$Status not found",
+        "1 warning",
+        "{'old': (17, 0), 'new': (22, 0)}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/spring-upstream.zip",
+      "change": "added",
+      "bytes": 828849,
+      "sha256": "c37861f9f391a70d7282c437d1b008ddbdf61a9095417d06aed90a5a89eca0a3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T06:38:09+00:00",
+    "applied": [
+      "verification/blind-caller/spring-upstream.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T063722Z-22396761a95fa566",
+      "outputs": "20261127T063722Z-260989664ac08b5c",
+      "diff": "20261127T063722Z-2809454d681f4d74"
+    }
+  }
+}

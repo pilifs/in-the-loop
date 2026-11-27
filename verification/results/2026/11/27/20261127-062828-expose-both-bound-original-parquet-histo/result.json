@@ -1,0 +1,182 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-062828-expose-both-bound-original-parquet-histo",
+  "title": "Expose both bound original Parquet history choices in Stage 2",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 5.6s, peak 1.1 GiB (estimated 3m00s, 5.0 GiB)",
+  "attention": [
+    "declared output verification/blind-caller/stage2-histories-reviewed.zip was not produced",
+    "step 1 (python3 verification/blind-caller/stage2_histories.py --qual) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-062828-expose-both-bound-original-parquet-histo.json",
+    "sha256": "28cf2a010c33ef29094711d780ed1bc85b6985ba3e76210c4c09402fca3db20f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-062828-expose-both-bound-original-parquet-histo",
+      "title": "Expose both bound original Parquet history choices in Stage 2",
+      "description": "Repeat original upstream rank and initial class binding without selecting any entry. Check that both historically distinct public operations appear in the actual owner question, with their independent static and witnessed ranks and relation evidence.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:classes"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T06:28:28+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/stage2_histories.py --qual",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/stage2_histories.py --qualified-choices",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/stage2-histories-reviewed.zip"
+      ]
+    }
+  },
+  "sourceCommit": "d57844cc8f0c6c924b14a474a68de554ebf7c042",
+  "startedAt": "2026-11-27T06:36:56+00:00",
+  "finishedAt": "2026-11-27T06:37:12+00:00",
+  "wallSeconds": 16.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1049264,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1129664512,
+    "wallSeconds": 5.6,
+    "cpuSeconds": 5.3,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/stage2_histories.py --qual",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/stage2_histories.py --qualified-choices",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 5.614,
+      "cpuSeconds": 5.261,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1129664512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 17,
+        "bytes": 1662,
+        "sha256": "3605874ba30101694ffd3c7ca9791a45ed3a02fd437658dd1226d8145db6c7e9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-062828-expose-both-bound-original-parquet-histo/verification/blind-caller/stage2_histories.py\", line 125, in <module>",
+        "    run(Path(scratch), require_choices=args.qualified_choices)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-062828-expose-both-bound-original-parquet-histo/verification/blind-caller/stage2_histories.py\", line 69, in run",
+        "    change_plan.main([*selector, \"--output\", str(path)])",
+        "    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-062828-expose-both-bound-original-parquet-histo/examples/tools/targets/change_plan.py\", line 520, in main",
+        "    plan = example_plan(args.number) if args.command == \"example\" else compare(args)",
+        "                                                                       ~~~~~~~^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-062828-expose-both-bound-original-parquet-histo/examples/tools/targets/change_plan.py\", line 134, in compare",
+        "    public_histories.apply(inventory,args.upstream_history,snapshots,launches,jdks)",
+        "    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-062828-expose-both-bound-original-parquet-histo/examples/tools/targets/public_histories.py\", line 263, in apply",
+        "    rows = rank(sessions)",
+        "           ^^^^",
+        "UnboundLocalError: cannot access local variable 'rank' where it is not associated with a value"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T06:38:09+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "80ff2b5eb5c42e6c1d7f07ad2fdd997589bb1d35",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/80ff2b5eb5c42e6c1d7f07ad2fdd997589bb1d35/jvmcontract",
+    "built": false
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T063712Z-801034e4ad00e9d2",
+      "outputs": "20261127T063712Z-8208393e7f82869f",
+      "workdir": "20261127T063716Z-841564ecf102a1f6"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-062828-expose-both-bound-original-parquet-histo"
+}

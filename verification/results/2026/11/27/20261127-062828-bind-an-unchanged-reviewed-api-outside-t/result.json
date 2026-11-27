@@ -1,0 +1,178 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-062828-bind-an-unchanged-reviewed-api-outside-t",
+  "title": "Bind an unchanged reviewed API outside the public production diff",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 31.4s, peak 168.2 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-062828-bind-an-unchanged-reviewed-api-outside-t.json",
+    "sha256": "82ae41faca1b5cded4723f66ef134663cafad82abde22d4f2f18201de2b1d4e1",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-062828-bind-an-unchanged-reviewed-api-outside-t",
+      "title": "Bind an unchanged reviewed API outside the public production diff",
+      "description": "On an ordinary scalar fixture, predict and bind the exact reviewed declaration in the original artifacts, generate against the old API, and assess its two pinned original returns. An absent reviewed declaration must identify the exact missing member without substituting another primary.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:classes"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T06:28:28+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "python3 verification/blind-caller/reviewed_entry.py",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/reviewed_entry.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/reviewed-entry.zip"
+      ]
+    }
+  },
+  "sourceCommit": "fefa2436fce7eca49a73dc40baa186c3718dcaf6",
+  "startedAt": "2026-11-27T06:36:24+00:00",
+  "finishedAt": "2026-11-27T06:37:07+00:00",
+  "wallSeconds": 43.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1049264,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 176377856,
+    "wallSeconds": 31.4,
+    "cpuSeconds": 37.7,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.52
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 verification/blind-caller/reviewed_entry.py",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/reviewed_entry.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 31.417,
+      "cpuSeconds": 37.708,
+      "cpuThrottledSeconds": 2.344,
+      "peakMemoryBytes": 176377856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-verification-blind-cal.log",
+        "lines": 6,
+        "bytes": 783,
+        "sha256": "6eada6d16bae6a8bb9fe5dc5d84281cea411309e98e632e601bebe5f7a9eb0eb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0 claims in /home/filip/.cache/in-the-loop/reviewed-original-declaration-jri8qun9/verified/measured/deployment-1/bindings.json",
+        "1 claims in /home/filip/.cache/in-the-loop/reviewed-original-declaration-jri8qun9/verified/measured/deployment-1/candidate-1/scaffold.json",
+        "1 claims in /home/filip/.cache/in-the-loop/reviewed-original-declaration-jri8qun9/verified/measured/deployment-1/candidate-1/plan.json",
+        "1 claims in /home/filip/.cache/in-the-loop/reviewed-original-declaration-jri8qun9/verified/measured/deployment-1/candidate-2/scaffold.json",
+        "1 claims in /home/filip/.cache/in-the-loop/reviewed-original-declaration-jri8qun9/verified/measured/deployment-1/candidate-2/plan.json",
+        "Reviewed owner outside the production diff measured on both originals; missing descriptor returned to owner"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/reviewed-entry.zip",
+      "change": "added",
+      "bytes": 27218,
+      "sha256": "8b9a8594a8928e7a5073b387a49884ad0230e3abe62dd67687852d00ac092fd6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T06:38:09+00:00",
+    "applied": [
+      "verification/blind-caller/reviewed-entry.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "80ff2b5eb5c42e6c1d7f07ad2fdd997589bb1d35",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/80ff2b5eb5c42e6c1d7f07ad2fdd997589bb1d35/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T063707Z-985286dd2d42dd89",
+      "outputs": "20261127T063708Z-0011050e77f9a90e",
+      "diff": "20261127T063708Z-0165594e6bc5b2a1"
+    }
+  }
+}
