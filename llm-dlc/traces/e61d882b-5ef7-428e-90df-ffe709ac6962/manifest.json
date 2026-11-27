@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-27T14:24:39.840Z",
-  "duration_seconds": 870416,
+  "ended": "2026-11-27T14:25:01.582Z",
+  "duration_seconds": 870438,
   "stats": {
     "turns": 323,
-    "api_calls": 3033,
-    "tool_calls": 2686,
+    "api_calls": 3034,
+    "tool_calls": 2688,
     "tool_errors": 29,
     "compactions": 11,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 106629,
-      "output_tokens": 1937165,
-      "cache_read_input_tokens": 997790272,
-      "cache_creation_input_tokens": 7074968
+      "input_tokens": 106631,
+      "output_tokens": 1939277,
+      "cache_read_input_tokens": 997988890,
+      "cache_creation_input_tokens": 7075726
     }
   },
   "tools": {
     "Bash": 2354,
-    "SendMessage": 92,
+    "SendMessage": 93,
     "Edit": 83,
     "Read": 58,
     "Write": 40,
@@ -38,8 +38,8 @@
     "ListAgents": 9,
     "Agent": 7,
     "CronCreate": 5,
+    "AskUserQuestion": 4,
     "Monitor": 4,
-    "AskUserQuestion": 3,
     "CronDelete": 3,
     "TaskStop": 3,
     "CronList": 1,
@@ -270,24 +270,24 @@
     {
       "index": 11,
       "started": "2026-11-27T14:06:55.934Z",
-      "ended": "2026-11-27T14:24:39.840Z",
+      "ended": "2026-11-27T14:25:01.582Z",
       "turns": 7,
-      "api_calls": 33,
+      "api_calls": 34,
       "usage": {
-        "input_tokens": 80,
-        "output_tokens": 18497,
-        "cache_read_input_tokens": 5572138,
-        "cache_creation_input_tokens": 170224
+        "input_tokens": 82,
+        "output_tokens": 20609,
+        "cache_read_input_tokens": 5770756,
+        "cache_creation_input_tokens": 170982
       },
-      "peak_context_tokens": 198620
+      "peak_context_tokens": 199378
     }
   ],
   "log": {
-    "sha256": "eb39fd49b7c779fc3c7cab1ffb8aa5761318f92b6a01562448db42b208938c51",
-    "bytes": 52774054,
-    "lines": 24918,
-    "gzip_bytes": 8988097,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/eb39fd49b7c779fc3c7cab1ffb8aa5761318f92b6a01562448db42b208938c51.jsonl.gz"
+    "sha256": "59e8155243346731e603c09e499f0eebfb38fe218a31f19e546582fc4c18900b",
+    "bytes": 52788826,
+    "lines": 24923,
+    "gzip_bytes": 8990246,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/59e8155243346731e603c09e499f0eebfb38fe218a31f19e546582fc4c18900b.jsonl.gz"
   },
   "subagents": [
     {
@@ -15328,6 +15328,22 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-142145-resolve-the-pinned-maven-boms-from-the-r: failed: 1 failed step(s) in 1m11s, peak 3.5 GiB (estimated 5m00s, 5.0 GiB) removed 1 kept work directory of failed jobs, 1.8 GiB: collected, and their originals remote_verified Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "eb39fd49b7c779fc3c7cab1ffb8aa5761318f92b6a01562448db42b208938c51"
+    },
+    {
+      "change_id": "lmykvszpoworqqxlmozoktppxtrswlky",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Hold and resume the brief queue",
+      "body": "brief_queue.py had no way to pause between briefs: next --finished lands a run and starts the next entry in one step, so a watcher asked to pause after a run (the user, 2026-11-27, to change the code by hand before the next brief) had to land it by hand and avoid next altogether. brief_queue.py hold [--reason TEXT] records a hold in the queue; while it is on, next still does every landing, checkpoint, notes and cleanup step that is due, but takes no start step (generation, setup or domain run), reports where it waits and logs it. status shows the hold; resume ends it, and the next next starts what is due from develop as it is then. A second hold keeps the first. The single-agent-run skill tells the watcher to hold at the user's word and to leave resuming to the user. Verified: a unit test over a queue with an ended run and a waiting brief (held: the ended run's landing, checkpoint and cleanup happen, the waiting brief's setup start does not and is not marked done, a second next starts nothing; resumed: next starts it; the log records hold, held and resume); test_costs run --changed passes; lint agrees.",
+      "log_sha256": "59e8155243346731e603c09e499f0eebfb38fe218a31f19e546582fc4c18900b"
+    },
+    {
+      "change_id": "vmoqsyymqmvkzrypmvrlxprkrklmxwqx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge queue-hold: the brief queue can be held and resumed",
+      "body": "Merges the workspace queue-hold (lmykvszp) into the line at the user's request. brief_queue.py hold [--reason TEXT] holds the queue: next still takes every due landing, checkpoint, notes and cleanup step but no start step (generation, setup or domain run), and says where it waits; status shows the hold and brief_queue.py resume ends it. The single-agent-run skill says a watcher holds at the user's word and only the user resumes. The merge had no conflicts; the generated trace files were regenerated. The workspace's changed tests passed.",
+      "log_sha256": "59e8155243346731e603c09e499f0eebfb38fe218a31f19e546582fc4c18900b"
     }
   ],
   "logs": {
@@ -16068,6 +16084,12 @@
       "lines": 11696,
       "gzip_bytes": 5038981,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/59aed5371ec7285de937a521e6fcac5fca777b6cb290801e226ce2d5caa99fe8.jsonl.gz"
+    },
+    "59e8155243346731e603c09e499f0eebfb38fe218a31f19e546582fc4c18900b": {
+      "bytes": 52788826,
+      "lines": 24923,
+      "gzip_bytes": 8990246,
+      "url": null
     },
     "5babe4b5b0217b71c8c131e81f63ef4ccc7d9694ff5e5b72687a30814ff172fb": {
       "bytes": 27413147,

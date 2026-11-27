@@ -152,6 +152,61 @@ class TheQueuesRules(unittest.TestCase):
             self.assertTrue(folders["unsealed"].exists() and folders["elsewhere"].exists())
 
 
+class TheHold(unittest.TestCase):
+    """`hold` lets `next` land what has finished and start nothing; `resume` lets it start again."""
+
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.root, True)
+        (self.root / "llm-dlc/loop-summaries").mkdir(parents=True)
+        (self.root / "llm-dlc/loops").mkdir(parents=True)
+        # One brief whose domain run has ended (its landing, checkpoint and cleanup are due), one still waiting.
+        (self.root / brief_queue.QUEUE).write_text(json.dumps({"defaults": {}, "entries": [
+            {"name": "ended", "state": "domain", "source": "a.md", "done": ["setup-start", "setup-land", "notes",
+                                                                             "domain-start"], "runs": {}},
+            {"name": "waiting", "state": "queued", "source": "b.md", "done": [], "runs": {}}]}))
+        self.steps = []
+
+        def step(root, data, entry, s, name, finished):
+            self.steps.append(f"{entry['name']}: {name}")
+            if name in brief_queue.START_STEPS:
+                entry["state"] = name.split("-")[0]
+                return {"started": entry["name"]}
+            return None
+
+        for p in (mock.patch.object(brief_queue, "step", step), mock.patch.object(brief_queue, "take_inbox", lambda root: []),
+                  mock.patch.object(brief_queue, "commit", lambda *a: None),
+                  mock.patch.dict(os.environ, {"BRIEF_QUEUE_INBOX": str(self.root / "no-inbox")})):
+            p.start()
+            self.addCleanup(p.stop)
+
+    def queue(self, *args):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(brief_queue.main(list(args), root=self.root), 0)
+        return json.loads(out.getvalue()) if out.getvalue().lstrip().startswith("{") else out.getvalue()
+
+    def test_a_held_queue_lands_what_ended_and_starts_nothing_until_resumed(self):
+        self.assertEqual(self.queue("hold", "--reason", "work by hand on the code")["hold"]["reason"], "work by hand on the code")
+        self.assertTrue(self.queue("hold")["already"], "a second hold keeps the first")
+        out = self.queue("next", "--finished")
+        self.assertEqual(self.steps, ["ended: domain-land", "ended: checkpoint", "ended: cleanup"])
+        self.assertEqual(out["done"], ["ended"])
+        self.assertEqual((out["brief"], out["heldAt"]), ("waiting", "setup-start"))
+        self.assertIn("brief_queue.py resume", out["next"])
+        self.assertEqual(brief_queue.read(self.root)["entries"][1]["done"], [], "a held start is not marked done")
+        self.assertIn("HELD since", self.queue("status"))
+        self.queue("next")
+        self.assertEqual(len(self.steps), 3, "while held, `next` starts nothing")
+
+        self.assertTrue(self.queue("resume")["resumed"])
+        self.assertFalse(self.queue("resume")["resumed"])
+        self.assertEqual(self.queue("next")["started"], "waiting")
+        self.assertEqual(self.steps[-1], "waiting: setup-start")
+        actions = [json.loads(l)["action"] for l in (self.root / brief_queue.LOG).read_text().splitlines()]
+        self.assertEqual([a for a in actions if a in ("hold", "held", "resume")], ["hold", "held", "held", "resume"])
+
+
 class TheHandover(unittest.TestCase):
     """Two briefs, from the inbox and from `add`, run one after the other through `next`."""
     setUp_runs = test_single_run.SingleRunTest.setUp
