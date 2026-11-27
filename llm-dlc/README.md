@@ -90,14 +90,12 @@ llm-dlc/
                                     test_tool_time.py tests it
   tools/loop_stats.py               adds up the loops from the metrics tables, the run records and the verification jobs;
                                     test_loop_stats.py tests it
-  tools/streams_status.py           the state and status bar of run-streams.sh; test_streams_status.py tests it
+  tools/run_records.py              copies a workspace's run records into the default workspace, which alone publishes
+                                    them; test_runs.py tests it
   tools/retired.py                  reads retired.md and lists every live file that still names something retired
                                     without pointing at it; test_retired.py runs that in the default test run
   tools/unstale.py                  puts a jj workspace right after another session's operation met its own (stale, or a
                                     second copy of the working-copy change); test_unstale.py tests it
-  tools/brief_run.py                the watcher's tools for a brief's run (/multi-agent-brief): preflight, the foundation
-                                    stage, start, wait, status, merge (in an order, or early), trial merges, a
-                                    stream's rerun, helpers; test_brief_run.py tests it and run-streams.sh's part
   tools/brief_queue.py              the queue of briefs a watcher runs one after the other, and the handover between
                                     them; test_brief_queue.py tests it
   tools/single_run.py               the watcher's tools for a single agent's run (/orchestrate-run): start, wait,
@@ -125,14 +123,6 @@ llm-dlc/
   tools/decisions.py                writes and reads the records: the conductor's `record` and `depend`, the user's `review` and
                                     `answer`, `list`, `show`, `counts`; `sync.py` renders the views and `check` validates the
                                     records; test_decisions.py tests it (loops/stream-conductor.md, Design 3 and 4)
-  tools/inbox.py                    a stream's inbox from the conductor, loop-summaries/NAME-STREAM-inbox.md (gitignored):
-                                    sends only what the stream acts on, records it in the decision's `applied`, and
-                                    collects the stream's acknowledgements from its committed Progress; feature-loop.sh
-                                    points every cycle at it; test_inbox.py tests it (loops/stream-conductor.md, Design 2)
-  tools/integration.py              the rolling integration line run-streams.sh keeps while streams run: merges every stream's
-                                    latest commit in NAME-integration, commits each merge that passes the brief's script, and
-                                    triages one that fails into an open decision and inbox items; test_integration.py tests
-                                    it (loops/stream-conductor.md, Design 1)
   loops/                            briefs for feature-loop.sh: markdown instructions a loop works through
   loops/brief-template.md           the skeleton of a brief and the standing rules every brief starts with, the timebox included
   tools/feature-loop.sh             runs a moonshot or a brief unattended: instruction, commit, compact, repeat, then a summary
@@ -236,7 +226,7 @@ A session's last words cannot be in the log that a push from inside it publishes
 
 [`tools/feature-loop.sh`](tools/feature-loop.sh) resumes one Claude Code session and repeats the instruction you name, compacting the session after each commit. The simplest are moonshots, one-line instructions run by name, the loops of the repo's first days: `features` adds features and examples to jvmcontract, `tla` adds advanced TLA examples, `spring` makes jvmcontract more useful to expert Spring Boot developers (new models, solvers, examples or other features, built into the library itself where it can be), and `relational` makes relational verification more efficient and accurate, adding examples where appropriate. A templated moonshot goes through a list instead, putting one item at a time into its template: `prove-examples` gives each of examples 285 to 300 in turn to "Formally prove example {} as elegantly and efficiently as possible". An item keeps the next cycle, with the same instruction, until a judge outside the session finds it finished: after each commit a separate `claude -p` call (`FEATURE_LOOP_JUDGE_MODEL`, Sonnet 5.5 by default), with no tools and no session of its own, reads the cycle's final report and commit messages and answers `ITEM: finished` (the goal is met, or what is left needs a person), `ITEM: continue` (the session can still make real progress on it) or `ITEM: waiting` (all that is left waits on verification jobs still out: the loop leaves the item, starts the next, and returns to the earliest waiting one whose jobs are in whenever it changes item; `FEATURE_LOOP_CONTINUE_WHILE_PROVING=0` keeps the item instead), and the run's record keeps its reason under the commit. Nothing is added to the moonshot's own session. `FEATURE_LOOP_ITEM_CYCLES` caps the cycles an item may take in a run (no cap by default), and `FEATURE_LOOP_ITEM_JUDGE=0` gives each item exactly one cycle, as before 2026-11-16. Its session is its own, fixed in the script, on Fable 5.2 at high effort: the first run creates it and later runs resume it. An item counts as done once an earlier run's record lists a commit for it, unless the judge's last word on it there was that it continues, so a run starts at the first item not done and ends when the list does; a cycle that makes no commit stops the loop and leaves its item for the next run. `engines` is a name for the brief [`loops/engine-priorities.md`](loops/engine-priorities.md), run with that brief's own settings, and `engines-jbmc` and `engines-native` for its two streams, `loops/engine-priorities-jbmc.md` and `-native.md`. `foundations` is likewise [`loops/foundations.md`](loops/foundations.md), with `foundations-heap`, `-summaries`, `-observations` and `-alignment` for its four streams. `cleanup` is [`loops/cleanup.md`](loops/cleanup.md), which works through the open entries of `verification/findings.md`, with `cleanup-native`, `-jbmc` and `-examples` for its three streams. `application-core` is [`loops/application-core.md`](loops/application-core.md), which widens native change verification to ordinary service code (objects with state, bounded Strings and lists, dependency outcomes, proof reuse), with `application-core-objects`, `-values`, `-environment` and `-reuse` for its four streams and [`loops/application-core-acceptance.md`](loops/application-core-acceptance.md) as their acceptance contract. In place of a name you can give a markdown brief, such as [`loops/sync-performance.md`](loops/sync-performance.md) (make `sync.py` fast): every cycle tells the session to read the brief again in full and take the next piece of work it calls for, so the brief outlives each compact; a brief that changes while the loop runs stops it, and briefs live in `loops/`. A number after the name sets how many cycles to run; without one it runs until stopped. Instead of a number, or after it, you can give instructions for when the work is done, and the session decides when to stop: after each commit, before the compact, it gets one more turn to weigh them against what the run has done and ends its reply with `LOOP: continue` or `LOOP: stop`. A stop ends the loop like running out of cycles, summary included; a reply with neither stops it as needing attention, and the reasons it gave are in the run's record. A number given as well is still an upper limit. It also stops when a cycle makes no commit, because that may mean a person is needed, and it leaves that session uncompacted so its context is there to read. To continue a stopped loop, run the same command again: a brief's Loop settings fix the session, its Progress section says what is done, and each cycle first finishes and commits a change an interrupted cycle left in the working copy. Files another session left uncommitted there (the verification loop's results, say) are kept out of the loop's commits, as `/run-verification` keeps a feature session's out of its own.
 
-Each run keeps a record in `llm-dlc/loop-summaries/`: the instruction, a line for each commit as it lands, so it survives a restart, and how the run ended. The folder is gitignored, because a record holds local paths. `sync.py` publishes each record instead as a copy redacted by the transcripts' rules, at `llm-dlc/traces/<session-id>/runs/<record>.md` beside the session its header names, and lists the runs in that session's `summary.md` (start, end, cycles, how it ended). A record still being written is published as it stands and again as it grows, since a run that is killed never writes its end. `check` scans the copies as it scans an unpublished log. Only the default workspace publishes them: `run-streams.sh` copies a stream's records into it from the stream's workspace, at its start, after each of the stream's runs and before the merge (`llm-dlc/tools/run_records.py`, which replaces a copy only with the record it is a start of). When the cycles run out, the loop asks the session for one more turn that only reports: a summary of the run's commits, the verification jobs still pending or failed, and the `sync.py check` warnings to judge before pushing. That summary goes at the end of the record.
+Each run keeps a record in `llm-dlc/loop-summaries/`: the instruction, a line for each commit as it lands, so it survives a restart, and how the run ended. The folder is gitignored, because a record holds local paths. `sync.py` publishes each record instead as a copy redacted by the transcripts' rules, at `llm-dlc/traces/<session-id>/runs/<record>.md` beside the session its header names, and lists the runs in that session's `summary.md` (start, end, cycles, how it ended). A record still being written is published as it stands and again as it grows, since a run that is killed never writes its end. `check` scans the copies as it scans an unpublished log. Only the default workspace publishes them. A run that worked in a workspace of its own keeps its records there until they are copied into the default one (`python3 llm-dlc/tools/run_records.py collect WORKSPACE_DIR DEFAULT_DIR`, which replaces a copy only with the record it is a start of); no command of a run does that today, so such a run's record is not published and the loop statistics do not count it. When the cycles run out, the loop asks the session for one more turn that only reports: a summary of the run's commits, the verification jobs still pending or failed, and the `sync.py check` warnings to judge before pushing. That summary goes at the end of the record.
 
 **Loop statistics.** [`traces/loops.md`](traces/loops.md) adds up every loop, and [`traces/loops.json`](traces/loops.json) holds the same rows as data: moonshots, briefs with their streams, and the verification loop, each by loop, run and cycle, with time, tokens, cost at list price, commits, and the verification jobs each cycle submitted with what they came to. A templated moonshot also gets a row per item: how many cycles took it, what they cost, its commit, and whether its proof passed. `sync.py` writes both on every commit from files in the repo (the sessions' `metrics.json`, the published run records, `verification/jobs/` and `verification/results/`), with [`tools/loop_stats.py`](tools/loop_stats.py), and `check` fails when either is out of date. A record tells which of its session's prompts were the run's, so a record's times are UTC, like a transcript's. The loops with no published record (every run before 2026-11-06: the first four moonshots, `sync-performance`, `build-orchestration` and `sound-verdicts`) are read from their sessions' prompts instead, and marked so. So is `examples-by-hand`, the loop a person ran by hand on 2026-10-31, the evening before the script existed: three typed instructions, each followed by a commit and a typed `/compact`. It is counted with the moonshots under a kind of its own, `moonshot by hand`, and the page says so where it appears. [`specification.md`](specification.md#metrics) defines the tables.
 
@@ -244,7 +234,7 @@ A brief can carry its own instructions for when to stop under a `## Loop until` 
 
 It runs in a systemd scope capped at 3.5 GB (a brief's `- memory:` or `FEATURE_LOOP_MEMORY_MAX` changes that), so a proof that exhausts memory is killed alone and the session sees it fail. The scope is named after the loop, `feature-loop-NAME.scope` (`feature-loop-engine-priorities-jbmc.scope` for the brief `engine-priorities-jbmc.md`), so different loops can run at once. A loop won't start if less memory than its cap is available, or if its own scope is still active.
 
-Loops can run in parallel on separate branches, each in its own [jj workspace](https://jj-vcs.github.io/jj/latest/working-copy/#workspaces): `jj workspace add --name NAME -r @- ../REPO-NAME` makes a directory with its own working copy, on a branch of its own from the latest commit, sharing the repository. Claude Code files a session under the directory it ran in, so each workspace's sessions and traces stay apart. A brief that sets `- workspace: NAME` runs only from that workspace's copy of the script, `$(jj workspace root --name NAME)/llm-dlc/tools/feature-loop.sh`, so its commits can't land on another branch. A brief that sets `- fork: SESSION` starts its session, the first time, as a fork of that one: the streams of a brief all begin from the conversation that planned them, in a turn with tools and hooks off, so the parent's transcript, copied into the workspace for the fork and removed after, is never published there. [`tools/run-streams.sh`](tools/run-streams.sh) `NAME` runs a brief's whole loop unattended from the default workspace, in one terminal, each line prefixed with its loop (a person starts it through a watcher, [`/multi-agent-brief`](#a-briefs-run), which adds a foundation stage before it and answers what it asks). It compacts the planning session once and adds the workspaces. Run inside tmux, it turns the mouse on so the wheel scrolls back through the output over ssh (or Ctrl-b `[`), moves to a new window with a 200,000-line history if the pane keeps fewer, which stays open with the output after the run, and keeps a status bar at the bottom of the pane: the run's age and spend, the integration check's last result, and per loop its cycle, commits, spend, status and time since its last output (`tools/streams_status.py`, with its state in `llm-dlc/loop-summaries/run-streams-NAME/`). A brief whose Loop settings name `- integration: SCRIPT` also gets a rolling integration line while its streams run ([`tools/integration.py`](tools/integration.py)): in a workspace of its own, `NAME-integration`, it merges every stream's latest commit whenever one moves (at most hourly) and runs the script on it. A merge that passes is committed there, on a line of merges each known to work (`integration.py line BRIEF` names the newest), never pushed and never on the default workspace's line. One that fails is left uncommitted and triaged by the files in conflict or named in the output: a stream whose changes alone are named gets a `failure` item in its inbox; two or more get an open question in the decision record on how their changes meet, and a `queued` item each, and once a merge passes again the question is closed as settled and each side is told it may go on. The report goes to `llm-dlc/loop-summaries/NAME-integration.md`, which the streams read every cycle. Each brief's instruction also ends with one sentence (`tools/inbox.py instruction`) pointing it at its inbox, `llm-dlc/loop-summaries/BRIEF-inbox.md` in the default workspace, where a conductor puts only what that stream has to act on, each item with an id the stream acknowledges in its Progress; the brief comes first, then the user's decisions, then the conductor's messages ([stream-conductor.md](loops/stream-conductor.md), Design 2). The trace files every commit regenerates conflict as soon as two streams have committed; the check settles those with the merged tree's `sync.py regenerate` before it runs the script, so only a conflict in real work stops it; `foundations` is the first, `cleanup` (`tools/cleanup-integration.sh`) the second, and `application-core` (`tools/application-core-integration.sh`) the third. A brief whose Loop settings say `- verification: separate` runs without the pipeline: `run-streams.sh` starts no verification loop and waits for no job, and its loops submit jobs and go on, leaving the results for a person to review after the run; a session may still await a quick job, submitted at a higher priority, within its cycle for a bounded time (`foundations` does this). It starts `verification-loop.sh` for the loops' jobs and runs every stream's loop side by side. Then it runs the brief's own loop, which merges the streams in a fresh session (the brief tells it where the streams' commits, Progress, run records, traces and jobs are), and stops. Each brief ends its Progress with a status line (`- Status: working`, `waiting on jobs ID ...`, `done` or `blocked: ...`): a loop waiting on jobs is run again once their results are collected, and one done or blocked is finished, so a person is needed only at the end. To run a session's loops on another machine, [`tools/transfer-session.sh`](tools/transfer-session.sh) `HOST SESSION`, run here after closing the session, does everything before `run-streams.sh`: it checks this repo is on top of the remote main, publishes, copies the transcript into HOST's project directory for the repo, moves the local transcript aside so the session goes on in one place only (a push republishes every session it finds, and would roll back one that went on elsewhere), and brings HOST's repo to the pushed main, refusing if it has work of its own not on main. The verification runner also runs jobs committed in other workspaces (see `verification/README.md`). Merging the branches is a loop's work of its own: [Streams](loops/engine-priorities.md#streams) in the engine-priorities brief is the first worked example, with the steps that keep the traces whole (recording each stream's last turns, copying its logs, and `sync.py regenerate` after the merge, which rewrites the generated trace files from the session files and lists any conflict left). `check` reads the commits in the history of `@` only: a commit another workspace's line holds is checked there, by its own `commit`, and here once it is merged.
+Runs can go on side by side on separate branches, each in its own [jj workspace](https://jj-vcs.github.io/jj/latest/working-copy/#workspaces): `jj workspace add --name NAME -r @- ../REPO-NAME` makes a directory with its own working copy, on a branch of its own from the latest commit, sharing the repository, and `single_run.py start NAME --workspace WS` makes one that is missing. Claude Code files a session under the directory it ran in, so each workspace's sessions and traces stay apart. The verification runner also runs jobs committed in other workspaces (see `verification/README.md`). A workspace's commits come to the default line by `single_run.py land NAME` ([`tools/landing.py`](tools/landing.py)): moved forward when the line has not moved, else by a merge whose generated trace files are written again (`sync.py regenerate`, which rewrites them from the session files and lists any conflict left); a merge that conflicts in real work is taken back ([operating-notes.md](operating-notes.md#a-landing-that-conflicts)). `check` reads the commits in the history of `@` only: a commit another workspace's line holds is checked there, by its own `commit`, and here once it is merged. Until 2026-11-27 one script also ran a brief as parallel streams, with an inbox for each, a rolling integration line and a transfer to another machine. That workflow is retired: [`retired.md`](retired.md#multi-agent-brief) says what replaced it and where to read it as it was.
 
 `prove-change` is the templated moonshot behind `/prove-java-change`: the same instruction as `prove-examples`, over whichever examples [`tools/prove-loop.sh`](tools/prove-loop.sh) gives it, continuing the session that evaluated them. The skill's session, the watcher, conducts it from outside ([`runtime.md`](runtime.md#the-watcher)): it, not the loop's own judge, says after each cycle whether the example is finished, continues, or waits on its proof, in which case the loop starts the next example and returns when the proof is in; it is asked before the loop changes example, which is where it merges a workspace the user queued or stops; and where another moonshot only logs a compaction with no commit (or stops there, with `FEATURE_LOOP_STOP_ON_COMPACT=1`), this one asks and stops on its word. From 2026-11-16 every moonshot over examples is run this way, `prove-examples`' list included: `/prove-java-change 288 289 ...` in this repository.
 
@@ -279,168 +269,35 @@ llm-dlc/tools/verification-loop.sh
 
 A run that leaves work behind, such as jobs it resubmitted, is followed by another, up to 4 in a row (`VERIFICATION_LOOP_RUNS`). A run that leaves exactly what it found isn't repeated: the loop waits until the queue changes, since what is left needs a person. Jobs too big for this machine, and jobs another runner holds, don't start a run. While it runs it reads `stop` (end after the run under way, or at once while waiting), `now` (check the queue at once) and `?` (show the queue) from its terminal, and prints them when it starts. It runs alongside the feature loop, whose scope the skill leaves memory for. It commits locally and pushes nothing.
 
-### A brief's run
+### A brief's streams (retired)
 
-A brief is run on command by a watcher, as a proof run is: `/multi-agent-brief NAME`
-([`.claude/skills/multi-agent-brief`](../.claude/skills/multi-agent-brief/SKILL.md)) in a Claude Code session on Opus 5.5 in the
-default workspace, or the same asked in words of a session that is already open there, which then becomes the
-watcher. The run's state is all in files, so a watcher that was compacted, or a new session, takes over a run
-under way (`brief_run.py status NAME` first). The watcher does none of the brief's work. It runs
-[`tools/brief_run.py`](tools/brief_run.py), in four stages:
+Until 2026-11-27 a watcher could run a brief as parallel streams (`/multi-agent-brief`, earlier `/run-brief`): a
+foundation session, a loop for each stream in a workspace of its own, each stream merged the moment it was
+finished, an inbox for each stream, a rolling integration line and helper sessions. It is retired.
+[`retired.md`](retired.md#multi-agent-brief) says what replaced each part and where to read the tools and this
+section as they were. Work that should go on side by side is now several runs of the next section, each in a
+workspace of its own and each landed when it is done.
 
-1. **Preflight** (`brief_run.py preflight NAME`): what would start (the brief's streams, each one's workspace,
-   session and status) and what `run-streams.sh` would otherwise stop at once it had started: a stream without a
-   brief or a workspace, two streams naming one workspace, a forgotten workspace's folder in the way, a brief
-   without a status line, another run already under way. It also says what is left for the verification runner
-   beside this many loops, and `brief_run.py budget NAME --apply` lowers the runner's settings file (the machine's,
-   `~/.config/in-the-loop/pipeline.local.toml`, unless the checkout's own sets a budget) to
-   it for the run (`--restore` afterwards): a runner budgeted for one loop beside four would take the machine
-   past its memory.
-2. **The foundation** (`brief_run.py foundation NAME`): one session on Fable 5.2 at high effort, given the brief
-   and its streams' briefs with the instruction to start the work itself, build whatever foundation it sees fit
-   for the most benefit, and update the brief for the agents that take over after it. It runs before any stream exists, so it may edit the briefs, and
-   what it commits is what every stream begins with: the interface two streams would otherwise each invent, the
-   fixture each would build, the tool each would wait for. It works in a workspace of its own,
-   `NAME-foundation`, in a scope with a loop's memory cap, so no other session's uncommitted files meet its
-   commits (on 2026-11-16 the result collector committed a watcher's unfinished merge that shared its working
-   copy). `brief_run.py land NAME` then brings its commits to the default workspace's line: moved forward when
-   that line has not moved, else by a merge whose generated trace files are regenerated. A merge that conflicts
-   in real work is taken back and reported. Landing also puts the session's closing report into each stream's
-   inbox, as an item of kind `foundation` that the stream acknowledges in its Progress, so what was built for
-   it is known to have reached it.
-3. **The run** (`brief_run.py start NAME`): `run-streams.sh`, detached, with the run's directory as its watcher.
-   The watcher blocks in `brief_run.py wait NAME`, which returns only what needs it: a stream that is finished,
-   to merge (below), a loop that ended blocked (below), an integration check that stopped passing, a decision
-   open for the user, results that came back (below), a summary every 30 minutes, and the end of the run.
-4. **The report**: each loop's status, and whether it is merged, against the brief's `Done when`, what was deferred or is blocked on the
-   user, the watcher's decisions still to review, the cost, and what is left on the machine.
+Three things that section said hold for every run:
 
-**Each stream is merged the moment it is finished, by the watcher; there is no merge loop.** `run-streams.sh`
-puts a finished stream to the watcher (`conductor.py`'s `merge` question, half an hour at most,
-`RUN_STREAMS_MERGE_WAIT`), and the watcher runs `brief_run.py merge NAME STREAM` while the other streams go on.
-It merges the stream's `@-` into the default workspace's line as `land` does (moved forward or merged, the
-generated trace files regenerated, the session logs it names taken from the workspace that stores them; a merge
-that conflicts in real work is taken back), takes the stream's inbox acknowledgements, answers `merged`, and
-records the merge in the brief's Progress, whose status it sets to `done` once every stream is merged and says
-done (`blocked: stream S: ...` when one was left blocked), in one commit with the decision. The watcher then runs
-`default_run.py after-merge`, which runs the default test run when one is due (below). A conflict it can see through it resolves by hand, as the watcher of a
-proof run does between examples ([`runtime.md`](runtime.md)), and the same command then records it; anything else
-it answers `leave` and reports. A stream left blocked is put to it as well: what it committed is usually worth
-having. Without a watcher nothing is merged, and the end of the run names the command for each stream. Until
-2026-11-17 the brief's own loop ran once every stream was finished, to merge them and finish the work; in the
-first rehearsal (`/run-brief rehearsal`, 2026-11-17) it took the streams for empty because their notes were not in
-its working copy's files, and a finished stream sat waiting for the slowest one. A brief's own work after its
-streams is now a brief of its own, run after them; a brief that names no streams still runs as its own loop.
-
-**The watcher keeps the verification queue itself, and is the one session committing in the default working copy
-while the run is under way.** With a watcher, `run-streams.sh` starts no verification loop. At each look at the
-queue, `brief_run.py wait` collects the results that are back and commits them with the paths a commit of results
-holds and nothing else (`pipeline.py collect`, `sync.py commit --only $(pipeline.py commit-paths)`), starts the
-runner (`pipeline.py run`, no model) when jobs wait and none is at work, and records the inbox items the streams'
-committed Progress acknowledges. Its merges and its collections take turns, by a lock. It returns to the watcher
-only what needs it: results that came back, with the ones to triage in `attention` (a job that did not pass,
-outputs not applied), which the watcher triages as the run-verification skill says. Before, a verification loop's
-Sonnet sessions collected and committed in the same working copy as the watcher's merges, with nothing to keep
-the two apart. A verification loop already running when the run starts keeps the queue as it did, and `wait`
-leaves the results to it. Merging itself holds `sync.py`'s lock across its jj steps, and trace output left
-uncommitted in the working copy (sync.py writes it on every run, for any session) neither holds a merge back
-nor comes along: it is dropped and written again by the next `sync.py` run. In the first rehearsal it was there
-after the foundation landed, and a second merge would have waited for a commit no session was going to make.
-
-**When the streams' lines conflict, they are merged in an order.** Merging each stream the moment it is finished
-assumes the merges don't interact. `brief_run.py trial NAME` finds out early: it merges every pair of the streams'
-lines, and each with the default line, beside every working copy (a merge commit made with `jj new --no-edit`,
-read and abandoned), and lists the files each pair conflicts in beyond the generated ones and the test inventory.
-When a pair conflicts in real work, the watcher tells both streams and proposes an order to the user, set with
-`brief_run.py order NAME STREAM ...`: `merge` then refuses a stream while one before it in the order has commits
-the line lacks, and the held-back stream's question names what to merge first. A stream ahead in the order that
-is still at work is merged as far as it has committed (`merge NAME STREAM --early`: what its session has not
-committed stays with it, no question is answered, and the brief's status is left alone), so a finished stream
-does not wait for a running one. In the `domain-advances` run (2026-11-17) two streams conflicted in one file, an
-order was set by hand, and the stream held back had its merge question answered `leave` for four hours.
-
-**A stream whose loop died is run again inside the run.** `brief_run.py rerun NAME STREAM` leaves a request in the
-run's directory (`rerun/STREAM`), and `run-streams.sh` starts the stream's loop again once its own process there
-has ended, however it ended, with its counts at nought, and puts it to the watcher to merge when it is finished;
-after the run has ended, the same command starts the run again for that stream. Before any loop starts,
-`run-streams.sh` stops a scope (`feature-loop-BRIEF.scope`) that holds only what an ended loop left: when the
-kernel kills a session for memory, the tests it ran live on there, `feature-loop.sh` refuses to start beside them,
-and that refusal counted as the stream's second failure, which left it blocked for the rest of the run (VF-037).
-A scope with a loop at work in it, one started by hand, is left alone.
-
-**Helpers take work no stream owns.** The watcher does none of the brief's work, so work that turns up without an
-owner (a tool whose stream has finished, a repair the run needs now) went undone or was improvised. A helper is a
-Claude Code session the user has open in a tmux pane and names, at the start (`/multi-agent-brief --helper "tmux 3" NAME`)
-or at any time after; the first is for low-hanging work, and the user may add others with a role of their own (a
-specialist on a larger model for one wall). `brief_run.py helper NAME add HELPER --at "tmux 3"` records it (a pane
-at a shell prompt is refused: what is typed there would be run). `helper NAME task HELPER --title T --file F`
-writes a narrow brief with a stream's standing rules around the watcher's text, puts the helper's workspace,
-`NAME-HELPER`, at the default line's one last commit (never from a merge in progress), and types one line into the
-pane that names the brief. The helper commits there and ends with `helper NAME done TASK --report-file F`; `wait`
-returns the task with its report and commits, the watcher merges it (`helper NAME merge TASK`) and tells the
-streams it concerns with an inbox item of kind `delivered`. Material from a session outside the run (another
-tool's review, a note) comes in the same way: as new files only, merged by the watcher, and acknowledged by the
-stream it is for.
-
-**The watcher commits the run's decision record, the user's answers included.** `decisions.py answer` writes into
-the default working copy, where only the watcher commits during a run; `wait` commits the record whenever it has
-changed, under a message that says it holds both. Before 2026-11-18 only a merge did, and a user's answer went
-into a commit of verification results under that commit's message.
-
-**A loop's session is given nothing of the run.** `feature-loop.sh` drops its own and the run's variables
-(`RUN_STREAMS_*`, `FEATURE_LOOP_*`, `LOOP_WATCH_*`, `PROVE_LOOP_*`, `LOOP_CONDUCTOR`) before it starts `claude`:
-with `RUN_STREAMS_WATCHER` in its shell, a stream's test of these scripts put its made-up merge questions to the
-real watcher (2026-11-17). The preflight also refuses a watcher whose own environment carries a run's variables.
-
-**A stream no longer waits for the end of the run for an answer.** Without a watcher, a stream that stops
-`blocked:` is finished, as it stands. With one, `run-streams.sh` asks before it counts the
-stream as finished (`conductor.py`'s `blocked` question, half an hour at most, `RUN_STREAMS_BLOCKED_WAIT`): the
-watcher settles what it can by Design 3 of [stream-conductor.md](loops/stream-conductor.md), sends the stream
-the inbox item that says so, and answers `rerun`, and the stream goes on. Its answer is a decision in
-`llm-dlc/decisions/run-streams-NAME.jsonl`, reviewed like any other. This is the attended watcher of that
-brief's Design 8; a watcher that decides while nobody is there is not built.
-
-**A run is stopped at a boundary** with `brief_run.py stop NAME`: each loop is told to end after its cycle under
-way (the command line `feature-loop.sh` takes from its conductor directory), a loop waiting on jobs stops
-waiting, nothing is run again and no stream is put to the watcher to merge. `start` continues. `stop --now` interrupts instead.
-
-**Where the time went.** `run-streams.sh` logs each change of a loop's phase with its time, and a summary says
-per loop how long it worked, waited on jobs, was blocked, and, for a stream, sat finished while another stream
-still ran (merged at once, a finished stream no longer waits for the others, so this is only the time to its
-merge). The second is what going on to the next piece while jobs run would save.
-
-**Two sessions in one working copy.** The watcher's merges and the result collector both commit in the default
-workspace (and a brief without streams runs its own loop there). `sync.py commit --only PATH ...` commits the named files and folders alone and leaves everything else
-uncommitted where it is: the collector commits with the paths `pipeline.py commit-paths` names (its results,
-the findings, the examples table, the outputs it applied), and a loop's cycle is told to name its own. A
-collector in a workspace of its own was considered and not built: every reader of results (a stream waiting on
-its jobs, the watcher, the push gate) reads them on the default line, so its commits would have to be landed
-there one by one, which brings the shared working copy back.
-
-**While the foundation runs**, `wait` says at each interval how long it has run, its tool calls, the command under
-way and its last commit; its spend is known when it ends, and is then in every summary's total. **A blocked loop
-is run again twice at most** (`RUN_STREAMS_RERUNS`); the third time it is left blocked without a question, and put to the watcher to merge.
-**A workspace jj calls stale** is put right with [`tools/unstale.py`](tools/unstale.py), which keeps the edits
-that `jj workspace update-stale` alone would take off the disk. [`loops/rehearsal.md`](loops/rehearsal.md) is a
-throwaway brief of two streams that exercises all of this with real sessions for little money: its second
-stream stops blocked on purpose, for a word only the watcher can pass on.
-
-**Any brief runs.** `run-streams.sh NAME` takes a brief of `llm-dlc/loops/` by name or file and reads its
-streams from the brief's Loop settings (`- streams: a, b`); a brief that names none is run as its own loop
-alone. The five briefs older than the setting keep the lists the script used to hold. A stream brief's
-`- fork:` is optional: without one, each stream starts a session of its own. `run-streams.sh --plan NAME`
-prints what it read and starts nothing.
-
-**What else got faster** (2026-11-16, from the runs of 2026-11-08 to 2026-11-16): a stream waiting on jobs is
-checked every minute, not every five (`RUN_STREAMS_POLL`); and a loop runs the tests of what it changed before a
-commit, not the whole default run ([brief-template.md](loops/brief-template.md), CLAUDE.md's Tests).
+- **Two sessions in one working copy.** A watcher's landings and its collection of results both commit in the
+  default workspace, where an agent may be at work too. `sync.py commit --only PATH ...` commits the named files
+  and folders alone and leaves everything else uncommitted where it is: results are committed with the paths
+  `pipeline.py commit-paths` names (the results, the findings, the examples table, the outputs applied), and an
+  agent names its own.
+- **A loop's session is given nothing of the run.** `feature-loop.sh` drops its own and the run's variables
+  (`FEATURE_LOOP_*`, `LOOP_WATCH_*`, `LOOP_CONDUCTOR` and the retired workflows' prefixes) before it starts the
+  client: with a watcher's variable in its shell, an agent's test of these scripts put its made-up questions to the
+  real watcher (2026-11-17).
+- **A workspace jj calls stale** is put right with [`tools/unstale.py`](tools/unstale.py), which keeps the edits
+  that `jj workspace update-stale` alone would take off the disk.
 
 ### A single agent's run
 
-For an outcome well within one agent's reach, a brief with streams is more than the work needs.
+A run is one agent working toward one outcome, with one watcher outside it.
 `/orchestrate-run [OPTION ...] <the starting prompt>`
-([`.claude/skills/orchestrate-run`](../.claude/skills/orchestrate-run/SKILL.md)) runs one agent toward it with
-one watcher outside, as the first loops here ran one instruction over and over, with two differences: a watcher
+([`.claude/skills/orchestrate-run`](../.claude/skills/orchestrate-run/SKILL.md)) starts one, as the first loops
+here ran one instruction over and over, with two differences: a watcher
 judges after each cycle whether there is another, and a person can change what the later cycles are told while
 the run is under way. The watcher is a Claude Code session on Opus 5.5 in the checkout, or one already open there that is
 asked in words; it does none of the work and runs [`tools/single_run.py`](tools/single_run.py), whose state is all
@@ -471,13 +328,16 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   restart, and is told not to draft one unasked: when a run should not go on as the message reads, it answers
   `stop` and says why. The loop ending is preferred to a watcher steering.
 - **Where the agent works.** In the checkout, or with `--workspace NAME` in a jj workspace of its own, made from
-  the line's last commit, when the checkout is busy; `single_run.py land NAME` then brings its commits in as
-  `brief_run.py land` does. The watcher keeps the verification queue as a brief's watcher does (it collects and
-  commits results and starts the runner), unless another run's watcher keeps it or the checkout is not the default
-  workspace. A run whose agent only waits on jobs is stopped, `single_run.py jobs NAME` waits for the queue, and
+  the line's last commit, when the checkout is busy; `single_run.py land NAME` then brings its commits to the
+  default line (moved forward when that line has not moved, else by a merge whose generated trace files are
+  written again; a merge that conflicts in real work is taken back). The watcher keeps the verification queue
+  itself: at each look `wait` collects the results that are back and commits them with the paths a commit of
+  results holds and nothing else (`pipeline.py collect`, `sync.py commit --only $(pipeline.py commit-paths)`), and
+  starts the runner (`pipeline.py run`, no model) when jobs wait and none is at work. It does neither when
+  another run's watcher keeps the queue or the checkout is not the default workspace. A run whose agent only waits on jobs is stopped, `single_run.py jobs NAME` waits for the queue, and
   `start NAME` continues the same session. That leg keeps the leg before's count of cycles and its setting of
   the queue unless it is given its own (`--cycles N`, 0 for none; `--verification`), and `start` prints what it
-  kept. A Codex run is checked before it starts, as a brief's Codex streams are: that Codex is given the
+  kept. A Codex run is checked before it starts: that Codex is given the
   checkout's `CLAUDE.md` whole in the agent's folder, and at a restart that the thread the run had can still be
   found (a new thread would know nothing of the run).
 - **Stopping and continuing.** `stop NAME` ends the run after the cycle under way, `stop NAME --now` interrupts it,
@@ -504,13 +364,13 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   starts the next run. It records each step, so it resumes after a failure. It never promotes `main` or runs the
   default tests, which stay the user's.
 
-The loop statistics count such a run as a moonshot named `single-NAME`, each text it sent a cycle.
+The loop statistics count such a run as a moonshot named `single-NAME`, each text it sent a cycle, once its
+record is in the default workspace (see the run records, above).
 
 ### Claude Code or Codex
 
 A loop's session can be carried by Codex instead of Claude Code, chosen when the run starts: `single_run.py start
-NAME --client codex`, `brief_run.py start NAME --agent codex` (every stream) or `--agent claude --stream-agent
-b=codex` (a mixed run), `brief_run.py foundation NAME --agent codex`, a brief's own `- client: codex` setting, or
+NAME --client codex` (`setup` and `generate` take it too), a brief's own `- client: codex` setting, or
 `FEATURE_LOOP_CLIENT=codex` for a loop run by hand. Everything else is the same: the briefs, the instruction of a
 cycle, the commit check, the decision, the conductor's questions, the verification queue, the record.
 
@@ -531,7 +391,7 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   the turn as an error. Each attempt keeps Codex's own events, its stderr and its last message beside it
   (`agent-sessions/attempts/SESSION/`), so a turn that died leaves what it said. A session keeps its client, and a
   Codex session cannot start as a fork of a Claude Code conversation: both clients start from the written
-  handoff, the brief and its inbox.
+  handoff, the brief.
 - **Compaction is an operation, not a text.** Between cycles the loop compacts the session. `/compact` sent to
   Codex would only be text, so `agent_client.py compact` asks Codex's app server (`thread/compact/start`) and
   waits for the end. Codex's own automatic compaction keeps its own threshold (the model's default: the loop's
@@ -560,8 +420,8 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   (`allow approve`, `allow add`, `review accept`) leave a record of each decision on the machine, and `check`
   reports as an error a decision in either file that is neither in a published commit nor in that record
   ([specification](specification.md)). Such a decision waives nothing meanwhile (its finding stays raised),
-  `brief_run.py land` and `single_run.py land` ask the same of a workspace's line before they merge it (`sync.py
-  decisions --at REV`) and leave it where it is, and a push refuses while `check` has the error: a patch to
+  `single_run.py land` asks the same of a workspace's line before it merges it (`sync.py
+  decisions --at REV`) and leaves it where it is, and a push refuses while `check` has the error: a patch to
   either file is found at the next commit, takes no effect, and reaches neither the default line nor the remote.
   [`.codex/rules/`](../.codex/rules/llm-dlc.rules) says the same for a person's own Codex in a trusted checkout.
 - **The same instructions.** Codex reads this repository's `CLAUDE.md` in place (`project_doc_fallback_filenames`,
@@ -571,8 +431,8 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   `review-findings`) says so for Codex too (`agents/openai.yaml` beside it). `agent_client.py instructions
   --client codex` renders what the model would be given (no model is called) and checks it: `CLAUDE.md`'s first
   and last lines are there, nothing shadows it (`AGENTS.md`), it fits the byte budget, each skill is linked, and
-  no user-only skill is offered to a work turn. It prints paths, digests and pass or fail. A brief's preflight
-  runs it when a stream is Codex's.
+  no user-only skill is offered to a work turn. It prints paths, digests and pass or fail. `single_run.py start`
+  runs it when the agent is Codex's.
 - **Identity and cost.** A Codex started from a Claude Code session would inherit that session's identity and
   have its commits and jobs credited to the watcher: the boundary removes it and keeps who started the loop in
   the binding. A job is submitted under Codex's own thread. Codex reports a turn's tokens and no dollars, so a

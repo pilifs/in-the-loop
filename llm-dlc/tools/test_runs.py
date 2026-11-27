@@ -211,8 +211,8 @@ class Runs(unittest.TestCase):
 
 
 class Collect(unittest.TestCase):
-    """run_records.collect: a stream's records copied into the default workspace, which alone publishes
-    them, as run-streams.sh does after each of a stream's runs and before the merge."""
+    """run_records.collect: a workspace's records copied into the default workspace, which alone publishes
+    them."""
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

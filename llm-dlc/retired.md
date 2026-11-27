@@ -46,14 +46,17 @@ outdated.
 
 ### multi-agent-brief
 
-- **Status:** planned
+- **Status:** retired
 - **What it was:** a brief run as parallel streams. A foundation session on Fable 5.2 built what every stream
   would wait for, each stream ran a loop in a jj workspace of its own, and the watcher merged each stream the
   moment it finished. It had inboxes for telling a stream something, a rolling integration line, merge orders
-  for lines that conflicted, and helper sessions in tmux panes. It was called `/run-brief` until 2026-11-20.
+  for lines that conflicted, and helper sessions in tmux panes. It was called `/run-brief` until 2026-11-20. The foundation
+  session's prompt, which was the user's text, is `FOUNDATION_PROMPT` in `brief_run.py`.
 - **Replaced by:** `/orchestrate-run`. Parallel work is several runs, each in a workspace of its own
   (`single_run.py start NAME --workspace WS`), each landed by `single_run.py land`. The foundation stage is an
-  ordinary first run. Nothing replaces the inboxes, the integration line or the helpers.
+  ordinary first run. Nothing replaces the inboxes, the integration line, the helpers or
+  the transfer of a session to another machine. What the surviving tools shared with it is in `run_common.py`,
+  `landing.py` and `queue_keeping.py`.
 - **Names:** `multi-agent-brief`, `run-brief`, `brief_run.py`, `run-streams.sh`, `streams_status.py`,
   `inbox.py`, `integration.py`, `foundations-integration.sh`, `cleanup-integration.sh`,
   `example-targets-integration.sh`, `application-core-integration.sh`, `transfer-session.sh`
@@ -64,7 +67,7 @@ outdated.
   `llm-dlc/tools/application-core-integration.sh`, `llm-dlc/tools/transfer-session.sh`,
   `llm-dlc/tools/test_brief_run.py`, `llm-dlc/tools/test_inbox.py`, `llm-dlc/tools/test_integration.py`,
   `llm-dlc/tools/test_streams_status.py`
-- **Removed in:** not yet
+- **Removed in:** change `kkkqupwwxupp` (2026-11-27)
 
 ### proof-loop
 

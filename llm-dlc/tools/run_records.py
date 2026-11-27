@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-"""Copies a stream's run records into the default workspace, the only one that publishes them.
+"""Copies a workspace's run records into the default workspace, the only one that publishes them.
 
 feature-loop.sh writes a record of each run in llm-dlc/loop-summaries/ of the workspace it runs in
-(gitignored), and sync.py publishes, redacted, only the default workspace's. A stream's records
-are its own workspace's, so run-streams.sh copies them in after each of the stream's runs and
-before the merge, whose commit publishes them. A record only grows, so a copy is replaced only by
-the record it is a start of; one that is not (edited, or another run's of the same name) is left,
-and reported. Files there that are not run records, such as integration reports, are not copied.
+(gitignored), and sync.py publishes, redacted, only the default workspace's. The records of a run
+that worked in a workspace of its own are that workspace's, so they are copied in before the
+commit that should publish them. A record only grows, so a copy is replaced only by the record it
+is a start of; one that is not (edited, or another run's of the same name) is left, and reported.
+Files there that are not run records are not copied.
 
-Usage: python3 llm-dlc/tools/run_records.py collect STREAM_WORKSPACE DEFAULT_WORKSPACE
+Nothing calls this today. Until 2026-11-27 the script that ran a brief's streams did, after each
+of a stream's runs and before its merge; that workflow is retired (llm-dlc/retired.md), and the
+runs that replaced it do not copy their records yet, so a run in a workspace of its own is not in
+the published records or the loop statistics.
+
+Usage: python3 llm-dlc/tools/run_records.py collect WORKSPACE_DIR DEFAULT_WORKSPACE_DIR
 """
 import os
 import shutil

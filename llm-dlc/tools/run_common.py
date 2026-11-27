@@ -188,7 +188,7 @@ def codex_ready(root: Path) -> list[str]:
     """What stands in the way of a Codex worker here: no client, or one that is not given this checkout's CLAUDE.md."""
     import shutil
     if not shutil.which(os.environ.get("AGENT_CLIENT_CODEX") or "codex"):
-        return ["a stream is Codex's, and there is no `codex` on the PATH"]
+        return ["the agent is Codex's, and there is no `codex` on the PATH"]
     return [f"Codex would not be given this checkout's instructions: {p}" for p in agent_client.instructions(root)["problems"]]
 
 
@@ -218,8 +218,8 @@ NESTED_RUN_OK = "IN_THE_LOOP_NESTED_RUN"  # "allow": the tests' made-up loops, w
 
 
 def enclosing_loop(cgroup: str = "/proc/self/cgroup") -> str | None:
-    """The feature loop whose systemd scope this process runs in (feature-loop-NAME), or None. Every loop, single,
-    stream or proof, runs its agent in such a scope, and everything the agent starts inherits it."""
+    """The feature loop whose systemd scope this process runs in (feature-loop-NAME), or None. Every loop
+    runs its agent in such a scope, and everything the agent starts inherits it."""
     try:
         text = Path(cgroup).read_text()
     except OSError:

@@ -1256,9 +1256,9 @@ def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> 
 # holds local paths, so it is published only as a copy redacted by the transcripts' rules, beside
 # the session it names (runs/<record>.md), and linked from that session's summary. A record still
 # being written is published as it stands and again as it grows: a run that was killed never writes
-# an end line, and would otherwise never be published. Only the default workspace publishes: a
-# stream's records are its own workspace's, which run-streams.sh copies into the default one (run_records.py)
-# after each of the stream's runs and before the merge.
+# an end line, and would otherwise never be published. Only the default workspace publishes: the
+# records of a run that worked in another workspace are that workspace's until run_records.py copies
+# them into the default one, which no command of a run does today.
 
 RUN_HEADER = re.compile(r"^Started (?P<started>[^,\n]+), .*?\bsession (?P<sid>[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})\b",
                         re.M)
@@ -3303,7 +3303,7 @@ def unrecorded_decisions(rev: str | None = None) -> dict[str, dict[str, dict]]:
 
 def cmd_decisions(args: list[str]) -> int:
     """`sync.py decisions [--at REV]`: the decisions no person is recorded as having taken, in this working copy or
-    in a commit. Status 1 when there is one: brief_run.py's `land` asks it of a workspace's line before merging."""
+    in a commit. Status 1 when there is one: landing.py's `land` asks it of a workspace's line before merging."""
     if args and (len(args) != 2 or args[0] != "--at"):
         print("usage: sync.py decisions [--at REV]", file=sys.stderr)
         return 2

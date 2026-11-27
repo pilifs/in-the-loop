@@ -13,8 +13,8 @@ real-world halves of A3-A5 (Spring packets, example 105) are Phase 5's, on the m
 fixture's revisions. A5 here runs the tool's own checker on a one-line int method, only where a built jvmcontract is
 found. Rows not reachable on fixtures: A8's queued acceptance jobs (Phase 5).
 
-This file is the coordinator's: the streams make it pass and never edit it. The integration check
-(llm-dlc/tools/example-targets-integration.sh) reports a failure here as CONTRACT FAILED.
+This file was the coordinator's while the example-targets brief ran as streams (2026-11-14): the streams made it
+pass and never edited it, and that run's integration check reported a failure here as CONTRACT FAILED.
 """
 
 import contextlib

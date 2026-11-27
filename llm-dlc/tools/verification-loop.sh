@@ -24,7 +24,7 @@
 #
 # While it runs, type a command and Enter (see HELP below): stop ends it after
 # the run under way, or at once while it waits; now checks the queue at once.
-# SIGUSR1 is the same stop, for a script that runs it (run-streams.sh does).
+# SIGUSR1 is the same stop, for a script that runs it.
 #
 # Exits 0 when stopped, 2 for a bad argument, and 130 if interrupted.
 

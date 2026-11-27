@@ -152,7 +152,7 @@ def tend(run: Run) -> dict | None:
         return {"kind": "results", **got,
                 "note": "say what came back in a line. Triage each one in `attention` as the run-verification skill's "
                         "step 4 says, and record what needs a person in verification/findings.md (its step 5): a "
-                        "verdict goes to the stream it concerns too, through its inbox; a job out of time or memory "
+                        "job out of time or memory "
                         "is resubmitted (`pipeline.py resubmit ID ...`). Commit what you changed with `sync.py commit "
                         "--only $(python3 verification/pipeline.py commit-paths)`"
                         if got["attention"] else "say what came back in a line: every job passed"}

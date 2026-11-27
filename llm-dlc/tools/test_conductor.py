@@ -37,7 +37,7 @@ class ConductorTest(unittest.TestCase):
         self.assertEqual([e["n"] for e in conductor.read_events(self.dir)], [1, 2])
 
     def test_events_added_at_once_each_get_a_number_of_their_own(self):
-        # two streams of a brief's run that finish together each ask the watcher to merge them
+        # two loops that share a directory and end together each ask their watcher
         import threading
         read, start = conductor.read_events, threading.Barrier(8)
 

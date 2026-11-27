@@ -12,25 +12,25 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T17:38:03.001Z",
-  "duration_seconds": 8662,
+  "ended": "2026-11-27T17:49:11.847Z",
+  "duration_seconds": 9330,
   "stats": {
-    "turns": 12,
-    "api_calls": 178,
-    "tool_calls": 227,
+    "turns": 13,
+    "api_calls": 205,
+    "tool_calls": 255,
     "tool_errors": 2,
-    "compactions": 1,
-    "peak_context_tokens": 539514,
+    "compactions": 2,
+    "peak_context_tokens": 564675,
     "usage": {
-      "input_tokens": 360,
-      "output_tokens": 303027,
-      "cache_read_input_tokens": 47997172,
-      "cache_creation_input_tokens": 769591
+      "input_tokens": 414,
+      "output_tokens": 347250,
+      "cache_read_input_tokens": 55561495,
+      "cache_creation_input_tokens": 1023751
     }
   },
   "tools": {
-    "Bash": 159,
-    "Read": 45,
+    "Bash": 183,
+    "Read": 49,
     "Edit": 11,
     "Write": 10,
     "AskUserQuestion": 2
@@ -69,24 +69,38 @@
     {
       "index": 1,
       "started": "2026-11-27T15:41:46.350Z",
-      "ended": "2026-11-27T17:38:03.001Z",
+      "ended": "2026-11-27T17:39:27.105Z",
       "turns": 11,
-      "api_calls": 105,
+      "api_calls": 112,
       "usage": {
-        "input_tokens": 214,
-        "output_tokens": 199164,
-        "cache_read_input_tokens": 34835422,
-        "cache_creation_input_tokens": 522375
+        "input_tokens": 228,
+        "output_tokens": 205458,
+        "cache_read_input_tokens": 38652088,
+        "cache_creation_input_tokens": 547536
       },
-      "peak_context_tokens": 539514
+      "peak_context_tokens": 564675
+    },
+    {
+      "index": 2,
+      "started": "2026-11-27T17:39:27.601Z",
+      "ended": "2026-11-27T17:49:11.847Z",
+      "turns": 1,
+      "api_calls": 20,
+      "usage": {
+        "input_tokens": 40,
+        "output_tokens": 37929,
+        "cache_read_input_tokens": 3747657,
+        "cache_creation_input_tokens": 228999
+      },
+      "peak_context_tokens": 240906
     }
   ],
   "log": {
-    "sha256": "be9027345ccd6a31df540bd4265dd83d8a3bb4849634f45821823f82723e6a51",
-    "bytes": 5804633,
-    "lines": 1874,
-    "gzip_bytes": 1078690,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/be9027345ccd6a31df540bd4265dd83d8a3bb4849634f45821823f82723e6a51.jsonl.gz"
+    "sha256": "7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e",
+    "bytes": 7402345,
+    "lines": 2177,
+    "gzip_bytes": 1458851,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -145,6 +159,14 @@
       "summary": "Rename the run skill to orchestrate-run, with a page for each kind of run",
       "body": "The user decided on 2026-11-27 that the project converges on one run skill and named it orchestrate-run. It is single-agent-run under a new name: its commands (single_run.py, brief_queue.py) and a run's folder (single-NAME) are unchanged, so no record changes.\n\nThe one page of 388 lines is now a core page and four beside it. SKILL.md holds what every run needs: the watcher's rules, the request, a run under way, start, watch and report, and a table of the four kinds of run. setup.md, generation.md, queue.md and redaction.md hold the sections of those names, moved as they were, and the core page tells the watcher to read a kind's page in full before acting on it and again after a compaction. The opening no longer describes the watcher by two skills that are being retired; it says this is the repository's one run skill and points at llm-dlc/retired.md for the others.\n\nThe by-hand resolution of a landing that conflicts was written only on the proof run's page, which is to be retired: it is now in the operating notes (\"A landing that conflicts\"), and the skill and landing.py's message point there. The register's entry for single-agent-run is retired, and the check holds for it: no live file names the old skill without pointing at the register.\n\nVerified by the changed-tests run (60 of 60 test files, among them test_agent_client, whose list of the run skills that are the user's alone in Codex now names orchestrate-run), and by agent_client.py instructions --client codex, which finds every skill linked and reports no problem.",
       "log_sha256": "be9027345ccd6a31df540bd4265dd83d8a3bb4849634f45821823f82723e6a51"
+    },
+    {
+      "change_id": "kkkqupwwxuppwmvnlqyzkuxpprmmromr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Retire the streams workflow: /multi-agent-brief, brief_run.py and run-streams.sh",
+      "body": "The user decided on 2026-11-27 that the project converges on one run skill, /orchestrate-run, and that every other proof workflow is outdated. This removes the workflow that ran a brief as parallel streams: the skill multi-agent-brief, its controller brief_run.py, run-streams.sh with its status bar (streams_status.py), the streams' inboxes (inbox.py), the rolling integration line (integration.py and the four briefs' integration scripts), transfer-session.sh, and the four test files of those tools. Nothing is removed from the history: llm-dlc/retired.md names the change that removed them, and its parent is the last commit that has them. The entry also says where the foundation session's prompt, the user's text, is to be read.\n\nWhat the surviving tools shared with that workflow was moved out two commits ago (run_common.py, landing.py, queue_keeping.py) and is unchanged here. The rest is wording: the conductor no longer describes the two questions only streams asked (their three answers are still read, so an old run directory's verdicts are), feature-loop.sh no longer ends a brief's instruction with the sentence that pointed at an inbox no tool writes, and llm-dlc/README.md's section on a brief's run is replaced by a short one that points at the register and keeps the three things it said that hold for every run. The operating notes keep the user's rule about sessions beside a run.\n\nOne thing the removal makes visible, and does not fix: only the default workspace publishes run records, and run-streams.sh was the one caller of run_records.py, which copies a workspace's records there. No command of a single run does that, so no single run's record is published and the loop statistics count none (llm-dlc/traces/loops.md names no single-NAME run). The pages now say so. Copying them at a landing would publish some dozens of records at once and is for the user to decide.\n\nVerified by the changed-tests run (32 of 32 test files, among them test_single_run 29, test_brief_queue 12, test_prove_loop 32, test_watch 42, test_conductor 23, test_agent_client 27, test_landing 14, test_queue_keeping 6) and by retired.py check, which finds no retired file still here and no live paragraph that names the streams' tools without pointing at the register. The cost inventory drops the 77 rows of the removed tests, and its lint agrees.",
+      "log_sha256": "7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e"
     }
   ],
   "logs": {
@@ -158,6 +180,12 @@
       "bytes": 4850417,
       "lines": 1517,
       "gzip_bytes": 949744,
+      "url": null
+    },
+    "7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e": {
+      "bytes": 7402345,
+      "lines": 2177,
+      "gzip_bytes": 1458851,
       "url": null
     },
     "87055e7cc0abe270b09bcf7cf705929e21cc61b9dabc202a95b39d31fa590a0f": {

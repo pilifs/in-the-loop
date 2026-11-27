@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """The client boundary of a loop's turn: one place that starts or resumes a turn of Claude Code or of Codex.
 
-The loops build one instruction and decide everything around it (feature-loop.sh, run-streams.sh, brief_run.py,
-single_run.py); which client carries a turn is decided here and nowhere else. Claude Code's turns are started by
+The loops build one instruction and decide everything around it (feature-loop.sh, single_run.py); which client carries a turn is decided here and nowhere else. Claude Code's turns are started by
 the loops as they always were, with the arguments they always had. A Codex turn is started by this file, which
 prints **the same stream the loops already read**: Claude Code's stream-json events (`system`/`init`, `assistant`
 with text and tool_use blocks, `system`/`compact_boundary`, and one closing `result`), so what displays progress,

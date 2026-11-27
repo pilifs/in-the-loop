@@ -365,9 +365,10 @@ biggest, whoever's it was.
   quickly: helping the watcher decide when to stop a run (the user has ideas for later, and "quick fixes may
   present bigger problems than appear at the surface"), the stale cost in summaries (valid, low return), and
   cleaning up workspaces at a run's end ("any unexpected bug may cause us to lose data").
-- **Helpers of a brief's run** (2026-11-18): the user names a helper's pane; the watcher never picks a pane or
-  starts a helper session itself.
-- **The foundation prompt** of a brief's run (`FOUNDATION_PROMPT` in `llm-dlc/tools/brief_run.py`) is the
-  user's, kept word for word.
+- **Sessions beside a run** (2026-11-18, said of the helpers a brief's streams had): the user names a session
+  and its pane; a watcher never picks a pane or starts a session beside its run itself.
+- **The foundation prompt** of a brief's streams was the user's, kept word for word. That workflow is retired
+  ([`retired.md`](retired.md#multi-agent-brief)); the text is `FOUNDATION_PROMPT` in `brief_run.py` at the last
+  commit that has it.
 - **Folders** (2026-11-15): the user plans to reorganize the folder structure; until then, move no folders.
 - **Workspaces at the end of work**: forgetting a workspace or removing its folder is done at the user's word.

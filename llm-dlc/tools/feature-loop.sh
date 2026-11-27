@@ -121,13 +121,6 @@
 # and with neither, nor CYCLES, the loop runs until the session decides the
 # brief is done.
 #
-# A brief's instruction ends with one more sentence (llm-dlc/tools/inbox.py
-# instruction): read the brief's inbox, the default workspace's
-# llm-dlc/loop-summaries/BRIEF-inbox.md, where a parallel run's conductor puts
-# only what the stream has to act on, and acknowledge each item by its id in the
-# Progress update; the brief comes first, then the user's decisions, then the
-# conductor's messages, so one that contradicts the brief is reported, not obeyed.
-#
 # A brief may also set the session, model and effort in a "## Loop settings"
 # section of "- session: ID", "- model: ID" and "- effort: LEVEL" lines, the
 # memory cap with "- memory: SIZE", and with "- workspace: NAME" the jj workspace
@@ -154,14 +147,14 @@
 # which the session applies UNTIL to what it has done and ends its reply with
 # "LOOP: continue" or "LOOP: stop". A stop ends the loop after that cycle like
 # running out of cycles does; a reply with neither stops it as needing attention.
-# A brief whose Progress ends with a "- Status:" line (see run-streams.sh) has the
+# A brief whose Progress ends with a "- Status:" line has the
 # cycle keep it current. If the session decides to stop while it still says
 # working, one more turn, before the compact, sets the status that says why
 # (waiting on jobs, done or blocked) and commits it; the decision turn itself
 # can't, since it only decides. A status still working after that turn ends the
 # loop as needing attention. (Until 2026-11-08 a stop left it working, and
-# run-streams.sh counted three application-core streams as done that were waiting
-# on jobs or blocked.)
+# three application-core streams were counted as done that were waiting on jobs
+# or blocked.)
 #
 # While it runs, the number of cycles left can be changed by typing in its
 # terminal (see HELP below): +N, -N, =N, inf, or 0 or stop to end after the
@@ -245,7 +238,7 @@ case "$PROMPT" in
   *.md)
     # Found in this script's repo first, then from the caller's directory, and
     # named relative to the repo when it is inside it, which is where the loop
-    # runs. The repo comes first because run-streams.sh starts each stream's copy
+    # runs. The repo comes first because a brief's streams were each started
     # from the default workspace: found from there, a stream's brief was the
     # default workspace's copy, whose Progress no stream edits, so the session was
     # pointed at it and its status read from it (until 2026-11-08).
@@ -451,8 +444,7 @@ fi
 # matters: under the default, systemd stops the scope on the first kill, and
 # claude dies with the proof instead of seeing it fail. Without swap the cap is
 # exact, and a process over it is killed rather than left thrashing.
-# Stop this loop's scope when all it holds is what an ended loop left (as run-streams.sh's clear_scope does for a
-# stream): fails, leaving the scope alone, when a feature loop (it runs from a private copy, feature-loop.XXXXXX) or
+# Stop this loop's scope when all it holds is what an ended loop left: fails, leaving the scope alone, when a feature loop (it runs from a private copy, feature-loop.XXXXXX) or
 # an agent client is among its processes, or when its processes can't be read.
 CGROUPS=${FEATURE_LOOP_CGROUP_ROOT:-/sys/fs/cgroup}
 clear_leftovers() {
@@ -594,9 +586,6 @@ brief_hash() {
 if [[ -n "$BRIEF" ]]; then
   BRIEF_HASH=$(brief_hash) || exit 1
   INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. First run \`jj status\` and judge what a change in the working copy is. Another session may be at work in this repository at the same time (the verification loop collects job results and commits them, for one), and its uncommitted files are not yours. A change that belongs to the brief's current work (the step its \`## Progress\` section or your own last turn left in progress) is a cycle that was interrupted: finish, verify and commit it first. Anything else is another session's: leave it alone, never finish, revert or discard it, and keep it out of your commit by naming what is yours: \`sync.py commit --only PATH ... -m ...\` takes those files and folders alone and leaves everything else uncommitted where it is. Finishing an interrupted step is this cycle's piece of work. Otherwise take the next piece of work the brief calls for that is not done yet, by its \`## Progress\` section if it has one (it carries over from earlier runs of this loop) and by the commits since (\`jj log -r '$START..@-'\` lists this run's), finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief outside its \`## Progress\` section; if it has one, update it in the same commit with what this piece did and what comes next, and if it ends with a \`- Status:\` line, keep that line current there too: \`working\` while a piece of work that needs only you is left, otherwise the status the brief's \`## Loop until\` gives for stopping (\`waiting on jobs ID ...\` with the job ids, \`done\`, or \`blocked: ...\` with what needs the user or another stream). If the rest of the brief is wrong or out of date, say so in the commit message."
-  # The conductor's inbox for this brief (llm-dlc/tools/inbox.py, stream-conductor.md Design 2): one
-  # sentence, with the precedence of the brief over the user's decisions over the conductor's messages.
-  INSTRUCTION="$INSTRUCTION $(python3 llm-dlc/tools/inbox.py instruction "$PROMPT")" || exit 1
 fi
 # A session carried by Codex is traced under Codex's own thread id, which the record has to name for the run's
 # statistics and its published copy to find the session (loop_stats.py, sync.py). A session that is continued has
@@ -911,8 +900,8 @@ Weigh them against what this run has done so far (\`jj log -r '$START..@-'\` lis
   note "  - decided to $decision: $(printf '%s' "$answer" | sed '/^[[:space:]`*_]*LOOP:/Id' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//')"
 }
 
-# The last "- Status:" line under the brief's "## Progress", without the label
-# (as run-streams.sh reads it), and whether the brief has one at all.
+# The last "- Status:" line under the brief's "## Progress", without the label,
+# and whether the brief has one at all.
 brief_status() {
   awk '/^## / { inside = ($0 ~ /^## +Progress[[:space:]]*$/); next }
        inside && /^[-*] +Status: */ { s = $0 }
@@ -923,8 +912,8 @@ has_status() {
     inside && /^[-*] +Status: */ { found = 1 } END { exit !found }' "$BRIEF"
 }
 
-# After a decision to stop: a status that still says working tells run-streams.sh
-# nothing about why, so the session, which still has the cycle in context, sets
+# After a decision to stop: a status that still says working tells whoever runs
+# the loop nothing about why, so the session, which still has the cycle in context, sets
 # and commits the one the brief's Loop until gives. Sets $closed to ok or failed.
 close_status() {
   local before_close status

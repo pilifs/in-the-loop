@@ -119,7 +119,7 @@ DEFAULT_CONTINUE = ("Continue the work toward the outcome you were given. Take t
                     "is left needs a decision from the user, don't start something new: say so plainly at the end "
                     "of your reply, with what is left.")
 REPORT_LIMIT = 8000  # characters of a cycle's report a question carries: the watcher's context is the run's memory
-OTHER_RUNS = ("run-streams.sh", "prove-loop.sh")  # runs whose own watcher keeps the verification queue
+OTHER_RUNS = ("prove-loop.sh",)  # runs whose own watcher keeps the verification queue
 # A setup phase (`setup`): the texts' template, the agent it runs by default, and the record's last section, which
 # `notes` puts into the brief for the domain agent. Opus 5.5 did the first one (2026-11-22, the Spring brief).
 SETUP_TEMPLATE = "llm-dlc/loops/setup-agent-template.md"

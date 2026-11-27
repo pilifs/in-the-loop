@@ -49,6 +49,8 @@ EXEMPT = {
     "llm-dlc/tools/test_retired.py": "its test",
     "llm-dlc/tools/loop_stats.py": "adds up every loop the repository ever ran, the retired kinds included",
     "llm-dlc/tools/test_loop_stats.py": "tests that, on records of retired loops",
+    "llm-dlc/tools/tool_time.py": "says where the loops' time went from their logs, the retired kinds' commands included",
+    "llm-dlc/tools/test_tool_time.py": "tests that, on commands of retired loops",
 }
 # llm-dlc/README.md's table of sessions is generated from the sessions' own prompts (sync.py): a record.
 INDEX_BEGIN, INDEX_END = "<!-- index:begin", "<!-- index:end -->"
