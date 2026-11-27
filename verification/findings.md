@@ -34,7 +34,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-074: the README's table of sessions shows finished sessions as open, and long-running sessions under their first topic
 
-- **Status**: open (the user, 2026-11-27).
+- **Status**: settled 2026-11-27 by `qlssntwx`, merged at the user's request: a rendering sync ends idle sessions, and standing sessions have their own table (both shown after the merge). Earlier: open (the user, 2026-11-27).
   - **The scope:** both problems, plus cleaning up the rows already affected.
   - **Numbering:** VF-073 stays reserved for the user's reopening of VF-058.
 - **Raised**: 2026-11-27 by the advisor session, at the user's request, on develop `a380879e6426`.
