@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a21bd7-ffee-7d30-9a78-da62d442dbea` (open) |
+| Session | `01a21bd7-ffee-7d30-9a78-da62d442dbea` (ended) |
 | When | 2026-11-27 07:11 UTC to 2026-11-27 07:11 UTC |
 | Models | ? |
 | Client | codex 0.170.0 |
@@ -20,9 +20,27 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Document five Spring Boot property binding and restoration cases
 
-change `ooyknrmmmtqr` · [log `4eb4e90d755c`](https://terminalvalue.net/raw-traces/01a21bd7-ffee-7d30-9a78-da62d442dbea/4eb4e90d755ce3a64b6786e8277b06ccf4d0d2c78dba34a827727e30b2968172.jsonl.gz)
+[`fd99e7be7201`](https://github.com/pilifs/in-the-loop/commit/fd99e7be7201ccbf032fd846ab18eec36c872b7d) · [log `4eb4e90d755c`](https://terminalvalue.net/raw-traces/01a21bd7-ffee-7d30-9a78-da62d442dbea/4eb4e90d755ce3a64b6786e8277b06ccf4d0d2c78dba34a827727e30b2968172.jsonl.gz)
 
 Compare scoped system properties, placeholder defaults, empty and wildcard map binding, and escaped properties with pinned implementations and tests. The handoff audit checked five ordered sections and fifteen claims. The changed-file selector found no applicable tests.
+
+### Document configuration loading and migration behavior
+
+[`d804c89fe807`](https://github.com/pilifs/in-the-loop/commit/d804c89fe807d18519db94fc10b091a7827586a4) · [log `4eb4e90d755c`](https://terminalvalue.net/raw-traces/01a21bd7-ffee-7d30-9a78-da62d442dbea/4eb4e90d755ce3a64b6786e8277b06ccf4d0d2c78dba34a827727e30b2968172.jsonl.gz)
+
+Add cases for bracketed imports, config-tree paths, message bundles, property migration thresholds, and incremental configuration metadata. Check the shipped property names against the PR prose and the incremental exclusions against the Gradle fixtures. The ten-case audit passed.
+
+### Document startup ordering, context ownership, and registry lifetime
+
+[`b55504d0e510`](https://github.com/pilifs/in-the-loop/commit/b55504d0e510b084646b6e99ad271d9e216706f2) · [log `4eb4e90d755c`](https://terminalvalue.net/raw-traces/01a21bd7-ffee-7d30-9a78-da62d442dbea/4eb4e90d755ce3a64b6786e8277b06ccf4d0d2c78dba34a827727e30b2968172.jsonl.gz)
+
+Add five cases for auto-configuration ordering, runner dispatch, keep-alive ownership, resource bundles under distinct class loaders, and Micrometer registry reachability. Verify the predictions against source, context lifecycle regressions, and the reported failure modes.
+
+### Document WebFlux codecs, HTTP conversion, and server lifecycle
+
+[`f54c728093d4`](https://github.com/pilifs/in-the-loop/commit/f54c728093d49ee9bcb6ec7bf4660243e726bd9f) · [log `4eb4e90d755c`](https://terminalvalue.net/raw-traces/01a21bd7-ffee-7d30-9a78-da62d442dbea/4eb4e90d755ce3a64b6786e8277b06ccf4d0d2c78dba34a827727e30b2968172.jsonl.gz)
+
+Add public checks for codec customization, string encoding, JSON converter choice, redirect location, and graceful shutdown after restart. Confirm the historical WebFlux range covers all three landed commits and distinguish the Tomcat PR description from the landed default.
 
 ## Conversation
 

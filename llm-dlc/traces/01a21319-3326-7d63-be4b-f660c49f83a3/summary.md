@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a21319-3326-7d63-be4b-f660c49f83a3` (open) |
+| Session | `01a21319-3326-7d63-be4b-f660c49f83a3` (ended) |
 | When | 2026-11-25 14:25 UTC to 2026-11-25 14:33 UTC (7 min) |
 | Models | `gpt-6.2-astra` |
 | Client | codex 0.170.0 |
@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Document five Spring string, type and property changes
 
-change `yzxupnnswtsy` · [log `f568c706bd49`](https://terminalvalue.net/raw-traces/01a21319-3326-7d63-be4b-f660c49f83a3/f568c706bd49fde80a0b12e7e68b9de6a29ec972aa9be66c7fdbf14461497f88.jsonl.gz)
+[`7e88bbb4f062`](https://github.com/pilifs/in-the-loop/commit/7e88bbb4f06267dfbb31f249eedd445116760d9b) · [log `f568c706bd49`](https://terminalvalue.net/raw-traces/01a21319-3326-7d63-be4b-f660c49f83a3/f568c706bd49fde80a0b12e7e68b9de6a29ec972aa9be66c7fdbf14461497f88.jsonl.gz)
 
 Add the first five cases and their generation record. Checked 15 caller claims against the landed files, including typed annotation access, nested generic returns and the empty YAML sequence discrepancy. All 19 pinned Spring links resolved in the saved source. The changed-file selector found no applicable tests.
+
+### Specify Spring collection, copy and multipart behavior
+
+[`f9574eeee4dc`](https://github.com/pilifs/in-the-loop/commit/f9574eeee4dc8dce0bddcea0e25512b76a209300) · [log `f568c706bd49`](https://terminalvalue.net/raw-traces/01a21319-3326-7d63-be4b-f660c49f83a3/f568c706bd49fde80a0b12e7e68b9de6a29ec972aa9be66c7fdbf14461497f88.jsonl.gz)
+
+Add five cases on case-insensitive keys, mail dates, retry policy snapshots, session attribute replacement and repeatable multipart files. Checked the public servlet mock against the internal test copy, and both copy paths of SimpleMailMessage. Audited the first ten sections against their pinned sources. The changed-file selector found no applicable tests.
 
 ## Conversation
 

@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a2134f-d023-7cb1-9018-457c16c00c0a` (open) |
+| Session | `01a2134f-d023-7cb1-9018-457c16c00c0a` (ended) |
 | When | 2026-11-25 15:25 UTC to 2026-11-25 15:36 UTC (10 min) |
 | Models | `gpt-6.2-astra` |
 | Client | codex 0.170.0 |
@@ -20,9 +20,27 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Specify caller-visible behavior for five Java collection changes
 
-change `mtotrtytmmtx` · [log `9688a0156036`](https://terminalvalue.net/raw-traces/01a2134f-d023-7cb1-9018-457c16c00c0a/9688a0156036d69f07e2ae527e37b1fa87a0d0472a6f6078baace1cf6aef8ac5.jsonl.gz)
+[`e822c6541dbc`](https://github.com/pilifs/in-the-loop/commit/e822c6541dbc991ca023e1e6978b1bff3786a694) · [log `9688a0156036`](https://terminalvalue.net/raw-traces/01a2134f-d023-7cb1-9018-457c16c00c0a/9688a0156036d69f07e2ae527e37b1fa87a0d0472a6f6078baace1cf6aef8ac5.jsonl.gz)
 
 Add cases on exception-safe map updates, unique indexes, null remapping, primitive array copies and extreme rotations. Check 15 claims against pinned source and regression evidence. The changed-file selector found no applicable tests.
+
+### Specify arithmetic and graph behavior across signed and sparse inputs
+
+[`facbf8a85250`](https://github.com/pilifs/in-the-loop/commit/facbf8a8525071b23e69317b8fb7d3cf43b31ec0) · [log `9688a0156036`](https://terminalvalue.net/raw-traces/01a2134f-d023-7cb1-9018-457c16c00c0a/9688a0156036d69f07e2ae527e37b1fa87a0d0472a6f6078baace1cf6aef8ac5.jsonl.gz)
+
+Add claims for fraction division, coordinate cloning, connectivity notifications, undirected cycles and negative tour weights. Check both graph components and reconstruct a tour weight from the public path. The ten-case handoff check passed.
+
+### Specify Java reader, stream and Base58 boundary behavior
+
+[`fd790ecec05c`](https://github.com/pilifs/in-the-loop/commit/fd790ecec05cb9460cb48f221557c595ace43e71) · [log `9688a0156036`](https://terminalvalue.net/raw-traces/01a2134f-d023-7cb1-9018-457c16c00c0a/9688a0156036d69f07e2ae527e37b1fa87a0d0472a6f6078baace1cf6aef8ac5.jsonl.gz)
+
+Add claims on filtered reads, bounded skips, zero-length file reads, overwriting bytes and custom alphabets. Compare the read-ahead promise with the actual skip code and check mapped output against independent readers.
+
+### Specify archive, Unicode, geometry and CSV readback
+
+[`e9bf9d83a8fd`](https://github.com/pilifs/in-the-loop/commit/e9bf9d83a8fd1f037f510018e18b005c6ce5397b) · [log `9688a0156036`](https://terminalvalue.net/raw-traces/01a2134f-d023-7cb1-9018-457c16c00c0a/9688a0156036d69f07e2ae527e37b1fa87a0d0472a6f6078baace1cf6aef8ac5.jsonl.gz)
+
+Add checks for CPIO destination offsets, TAR sparse alignment, UTF-32 refill boundaries, XYM geometry and empty leading CSV fields. Derive the CPIO checksum and geometry length and record the MongoDB format documentation caveat.
 
 ## Conversation
 
