@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-110802-setup-build-spring-boot-50489-s10-at-bot",
+  "title": "Setup: build Spring Boot #50489 (S10) at both pins and run its landed tests",
+  "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S10 (spring-projects/spring-boot#50489: Preserve metadata descriptions for properties Gradle leaves uncompiled). In the worktrees $P/worktrees/S10-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), ONLINE: its landed test needs the network at test time (see the setup record), it builds the jars of build-plugin:spring-boot-gradle-plugin configuration-metadata:spring-boot-configuration-processor with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (JavaPluginActionIntegrationTests (test) DescriptionCacheTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of build-plugin:spring-boot-gradle-plugin configuration-metadata:spring-boot-configuration-processor in $P/artifacts/S10-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+    ]
+  },
+  "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S10",
+  "submitted": {
+    "at": "2026-11-27T11:08:02+00:00",
+    "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "unzip"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "7G",
+    "duration": "40m",
+    "memoryLimit": "10G",
+    "notes": "first run: peak 6.6 GiB in 8m33s, with the landed tests' TestKit builds; the closure resolution now covers the build"
+  },
+  "steps": [
+    {
+      "name": "S10 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 fix",
+      "cwd": "."
+    },
+    {
+      "name": "S10 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 parent",
+      "cwd": "."
+    },
+    {
+      "name": "S10 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 transplant",
+      "cwd": "."
+    },
+    {
+      "name": "S10 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S10 clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [],
+  "supersedes": "20261127-091101-setup-build-spring-boot-50489-s10-at-bot"
+}

@@ -338,34 +338,56 @@ pins' `test-support/spring-boot-docker-test-support/.../TestImage.java` (S29's f
 `$P/scripts/resolve_case.sh CASE-ROLE` (inline, each Gradle run in a 6 GB scope): one online run per worktree that configures
 the whole build (buildSrc and `gradle/plugins` compile, their dependencies and plugins resolve) and resolves **every
 configuration of the case's classpath projects** (column 4 of `$P/scripts/cases.tsv`) through the init script
-`$P/scripts/resolve-all.init.gradle` (task `setupResolveAll -PsetupResolve=ALL`; no upstream file changes). Projects that those
-depend on are resolved through them. `GRADLE_USER_HOME` is `$P/gradle-home`, new for this work (11 GB after resolution); nothing was
-copied from another setup's cache. All 98 Gradle worktrees exited 0 (`$P/logs/resolve.summary.all.txt`, logs
+`$P/scripts/resolve-all.init.gradle` (task `setupResolveAll -PsetupResolve=ALL`; no upstream file changes). That first pass did
+**not** resolve the configurations of the projects those depend on (the second pass below does). `GRADLE_USER_HOME` is
+`$P/gradle-home`, new for this work (11 GB after the first pass, 12 GB after the second); nothing was copied from another setup's
+cache. All 98 Gradle worktrees exited 0 (`$P/logs/resolve.summary.all.txt`, logs
 `$P/logs/CASE-ROLE.resolve.online.log`): 2,440 configurations, of which the only failures are the Kotlin plugin's IDE-only
 `*DependenciesMetadata` configurations (no compile or test task uses them) and, at first, S30's test classpaths
 ([below](#s30-substitutes-spring-kafka-420-m2)). Four resolutions at once on the one home stalled for minutes on Gradle's
 cross-process cache locks; the pass then ran one at a time and in two lanes (`$P/scripts/resolve_lane.sh`).
 
 Then `case_job.sh CASE dryrun` (offline `--dry-run` of both pins' task graphs, the classpath-writing tasks included) configured
-for all 49 Gradle cases, 98 of 98 exit 0 (`$P/logs/dryrun.summary.txt`).
+for all 49 Gradle cases, 98 of 98 exit 0 (`$P/logs/dryrun.summary.txt`). A dry-run resolves no compile classpath, so it did not
+show the gap: in the first run of the jobs 38 of the 49 cases failed offline, every one on `No cached version of … available for
+offline mode` for a configuration of a project the case's projects depend on, nearly always
+`:test-support:spring-boot-test-support:compileClasspath` (its optional `org.apache.cassandra:java-driver-core`,
+`spring-data-redis` and the like) ([Job results](#job-results)).
+
+**Second pass, the project closure** (`$P/scripts/resolve_closure.sh CASE-ROLE`, lanes `$P/scripts/closure_lane.sh`): the same
+online resolution of every configuration, now of the case's projects **and every project they reach through project dependencies
+in any configuration, transitively** (`$P/scripts/resolve-closure.init.gradle`, root task `setupResolveClosure
+-PsetupClosureOf=:a,:b`, which prints the closure; between 4 and 71 projects a worktree). It keeps snapshot builds already in the
+cache (`cacheChangingModulesFor 30 days`, so it fetched only what was missing; no inventoried snapshot jar changed, see
+[Snapshot dependencies](#snapshot-dependencies)); S30 ran with its Spring Kafka substitution. 98 of 98 worktrees resolved: 24,888
+configuration resolutions, the only failures again the Kotlin `*DependenciesMetadata` configurations (`$P/logs/resolve.closure.summary.txt`,
+logs `$P/logs/CASE-ROLE.resolve.closure.log`). Four runs (S06 at both pins, S44's parent, S49's fix) hit intermittent DNS failures for `repo.spring.io` (`Could not HEAD …`,
+the repository then disabled for the run) and were rerun until clean (the `retry` lines). **Then the same closure resolution
+`--offline`** (`$P/scripts/closure_offline_lane.sh`, logs `$P/logs/CASE-ROLE.resolve.closure.offline.log`, summary
+`$P/logs/resolve.closure.offline.summary.txt`): 98 of 98 exit 0, every closure configuration resolved from the cache, the only
+failures the same Kotlin metadata configurations.
 
 ## Snapshot dependencies
 
 Every Boot 4 pin but S02–S04 imports Spring snapshots (`$P/logs/snapshot-versions-by-case.txt`: Framework 7.0.9- to 7.1.0-SNAPSHOT,
 Micrometer, Reactor, Spring Data, Security, Kafka, AMQP, Batch, Integration and others). **Both pins of every case import the same
 snapshot versions**, so both read the same bytes. `repo.spring.io/snapshot` serves each snapshot only as its newest build, so that
-is what the cache holds: every one of the 107 cached snapshot jars has the sha1 of the newest build's `.sha1`
-(`$P/scripts/snapshots.sh`, sha256 per jar in `$P/logs/snapshots.txt`). Most of those builds are dated after the pins they serve
+is what the cache holds: every one of the 222 cached snapshot jars has the sha1 of the newest build's `.sha1`
+(`$P/scripts/snapshots.sh`, checked again after the second resolution pass; sha256 per jar in `$P/logs/snapshots.txt`, the
+first pass's 107 in `$P/logs/snapshots.first-pass.txt`, none of which changed; table by `$P/scripts/snapshot_table.py`). Most of those builds are dated after the pins they serve
 (the pins are of 2026-05 to 2026-11, the builds mostly of 2026-10 to 2026-11); a snapshot version still served at all is one not yet
 released. Build `--offline` to keep these bytes: an online build may fetch a newer build.
 
 | Group | Version | Newest build (= the cached bytes) | Modules cached |
 |---|---|---|---|
-| `io.micrometer` | 1.16.8-SNAPSHOT | `1.16.8-20261015.224611-45`, `1.16.8-20261015.224611-46` | micrometer-commons, micrometer-core, micrometer-observation, micrometer-observation-test |
-| `io.micrometer` | 1.16.9-SNAPSHOT | `1.16.9-20261113.010950-9` | micrometer-commons, micrometer-core, micrometer-observation |
+| `io.micrometer` | 1.6.8-SNAPSHOT | `1.6.8-20261015.212202-17` | micrometer-tracing |
+| `io.micrometer` | 1.6.9-SNAPSHOT | `1.6.9-20261113.010600-5` | micrometer-tracing |
+| `io.micrometer` | 1.8.0-SNAPSHOT | `1.8.0-20261113.011313-131` | micrometer-tracing |
+| `io.micrometer` | 1.16.8-SNAPSHOT | `1.16.8-20261015.224611-45`, `1.16.8-20261015.224611-46` | micrometer-commons, micrometer-core, micrometer-jakarta9, micrometer-java21, micrometer-observation, micrometer-observation-test, micrometer-registry-appoptics, micrometer-registry-atlas, micrometer-registry-datadog, micrometer-registry-dynatrace, micrometer-registry-elastic, micrometer-registry-ganglia, micrometer-registry-graphite, micrometer-registry-humio, micrometer-registry-influx, micrometer-registry-jmx, micrometer-registry-kairos, micrometer-registry-new-relic, micrometer-registry-otlp, micrometer-registry-prometheus, micrometer-registry-prometheus-simpleclient, micrometer-registry-stackdriver, micrometer-registry-statsd |
+| `io.micrometer` | 1.16.9-SNAPSHOT | `1.16.9-20261113.010950-9` | micrometer-commons, micrometer-core, micrometer-jakarta9, micrometer-java21, micrometer-observation, micrometer-observation-test, micrometer-registry-appoptics, micrometer-registry-atlas, micrometer-registry-datadog, micrometer-registry-dynatrace, micrometer-registry-elastic, micrometer-registry-ganglia, micrometer-registry-graphite, micrometer-registry-humio, micrometer-registry-influx, micrometer-registry-jmx, micrometer-registry-kairos, micrometer-registry-new-relic, micrometer-registry-otlp, micrometer-registry-prometheus, micrometer-registry-prometheus-simpleclient, micrometer-registry-stackdriver, micrometer-registry-statsd |
 | `io.micrometer` | 1.17.1-SNAPSHOT | `1.17.1-20260812.180937-42` | micrometer-commons, micrometer-observation |
 | `io.micrometer` | 1.17.2-SNAPSHOT | `1.17.2-20261015.224856-41` | micrometer-commons, micrometer-observation |
-| `io.micrometer` | 1.18.0-SNAPSHOT | `1.18.0-20261116.155816-313`, `1.18.0-20261116.155816-314`, `1.18.0-20261116.155816-315` | micrometer-commons, micrometer-core, micrometer-observation |
+| `io.micrometer` | 1.18.0-SNAPSHOT | `1.18.0-20261116.155816-313`, `1.18.0-20261116.155816-314`, `1.18.0-20261116.155816-315` | micrometer-commons, micrometer-core, micrometer-jakarta9, micrometer-java21, micrometer-observation, micrometer-observation-test, micrometer-registry-appoptics, micrometer-registry-atlas, micrometer-registry-datadog, micrometer-registry-dynatrace, micrometer-registry-elastic, micrometer-registry-ganglia, micrometer-registry-graphite, micrometer-registry-humio, micrometer-registry-influx, micrometer-registry-jmx, micrometer-registry-kairos, micrometer-registry-new-relic, micrometer-registry-otlp, micrometer-registry-prometheus, micrometer-registry-prometheus-simpleclient, micrometer-registry-stackdriver, micrometer-registry-statsd |
 | `io.projectreactor` | 3.8.7-SNAPSHOT | `3.8.7-20260807.084400-41`, `3.8.7-20260807.084400-42` | reactor-core, reactor-test |
 | `io.projectreactor` | 3.8.8-SNAPSHOT | `3.8.8-20261016.063046-44`, `3.8.8-20261016.063046-46` | reactor-core, reactor-test |
 | `io.projectreactor` | 3.8.9-SNAPSHOT | `3.8.9-20261110.081734-21` | reactor-core, reactor-test |
@@ -374,21 +396,33 @@ released. Build `--offline` to keep these bytes: an online build may fetch a new
 | `io.projectreactor.netty` | 1.3.8-SNAPSHOT | `1.3.8-20261022.061939-75` | reactor-netty-core, reactor-netty-http |
 | `io.projectreactor.netty` | 1.3.9-SNAPSHOT | `1.3.9-20261113.130042-44` | reactor-netty-core, reactor-netty-http |
 | `io.projectreactor.netty` | 1.4.0-SNAPSHOT | `1.4.0-20261113.130354-169`, `1.4.0-20261113.130354-170` | reactor-netty-core, reactor-netty-http |
-| `org.springframework` | 7.0.10-SNAPSHOT | `7.0.10-20261016.104357-125` | spring-aop, spring-beans, spring-context, spring-context-support, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-oxm, spring-r2dbc, spring-test, spring-tx, spring-web, spring-webflux, spring-webmvc |
-| `org.springframework` | 7.0.11-SNAPSHOT | `7.0.11-20261112.162258-46` | spring-aop, spring-beans, spring-context, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-r2dbc, spring-test, spring-tx, spring-web |
-| `org.springframework` | 7.0.9-SNAPSHOT | `7.0.9-20260813.170400-53` | spring-aop, spring-beans, spring-context, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-r2dbc, spring-test, spring-tx, spring-web |
-| `org.springframework` | 7.1.0-SNAPSHOT | `7.1.0-20261113.124602-603` | spring-aop, spring-beans, spring-context, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-messaging, spring-test, spring-tx, spring-web, spring-webflux, spring-webmvc |
+| `org.springframework` | 7.0.9-SNAPSHOT | `7.0.9-20260813.170400-53` | spring-aop, spring-beans, spring-context, spring-context-support, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-oxm, spring-r2dbc, spring-test, spring-tx, spring-web |
+| `org.springframework` | 7.0.10-SNAPSHOT | `7.0.10-20261016.104357-125` | spring-aop, spring-aspects, spring-beans, spring-context, spring-context-support, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-messaging, spring-orm, spring-oxm, spring-r2dbc, spring-test, spring-tx, spring-web, spring-webflux, spring-webmvc |
+| `org.springframework` | 7.0.11-SNAPSHOT | `7.0.11-20261112.162258-46` | spring-aop, spring-aspects, spring-beans, spring-context, spring-context-support, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-messaging, spring-orm, spring-oxm, spring-r2dbc, spring-test, spring-tx, spring-web, spring-webflux, spring-webmvc |
+| `org.springframework` | 7.1.0-SNAPSHOT | `7.1.0-20261113.124602-603` | spring-aop, spring-aspects, spring-beans, spring-context, spring-context-support, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-messaging, spring-orm, spring-oxm, spring-r2dbc, spring-test, spring-tx, spring-web, spring-webflux, spring-webmvc |
 | `org.springframework.amqp` | 4.2.0-SNAPSHOT | `4.2.0-20261119.051643-219` | spring-amqp, spring-rabbit, spring-rabbit-stream, spring-rabbitmq-client |
 | `org.springframework.batch` | 6.1.0-SNAPSHOT | `6.1.0-20261119.172345-140` | spring-batch-core, spring-batch-infrastructure |
-| `org.springframework.data` | 4.0.8-SNAPSHOT | `4.0.8-20261014.082734-8`, `4.0.8-20261014.082740-8`, `4.0.8-20261015.080402-19`, `4.0.8-20261015.100000-21` | spring-data-commons, spring-data-keyvalue, spring-data-r2dbc, spring-data-redis, spring-data-relational |
-| `org.springframework.data` | 4.0.9-SNAPSHOT | `4.0.9-20261113.094844-11`, `4.0.9-20261113.101053-6` | spring-data-commons, spring-data-r2dbc, spring-data-relational |
-| `org.springframework.data` | 4.1.1-SNAPSHOT | `4.1.1-20260813.071929-12`, `4.1.1-20260813.071929-21` | spring-data-commons, spring-data-r2dbc, spring-data-relational |
-| `org.springframework.data` | 4.1.2-SNAPSHOT | `4.1.2-20261014.082734-18`, `4.1.2-20261015.080407-23` | spring-data-commons, spring-data-r2dbc, spring-data-relational |
-| `org.springframework.data` | 4.2.0-SNAPSHOT | `4.2.0-20261117.141558-53` | spring-data-commons |
-| `org.springframework.data` | 5.0.8-SNAPSHOT | `5.0.8-20261014.083944-9` | spring-data-rest-core, spring-data-rest-webmvc |
-| `org.springframework.data` | 5.2.0-SNAPSHOT | `5.2.0-20261113.094917-46` | spring-data-mongodb |
+| `org.springframework.data` | 4.0.8-SNAPSHOT | `4.0.8-20261014.082734-8`, `4.0.8-20261014.082740-8`, `4.0.8-20261015.080402-19`, `4.0.8-20261015.100000-21` | spring-data-commons, spring-data-jdbc, spring-data-keyvalue, spring-data-r2dbc, spring-data-redis, spring-data-relational |
+| `org.springframework.data` | 4.0.9-SNAPSHOT | `4.0.9-20261113.094844-11`, `4.0.9-20261113.094849-4`, `4.0.9-20261113.094856-8`, `4.0.9-20261113.101053-6` | spring-data-commons, spring-data-keyvalue, spring-data-r2dbc, spring-data-redis, spring-data-relational |
+| `org.springframework.data` | 4.1.1-SNAPSHOT | `4.1.1-20260813.071920-11`, `4.1.1-20260813.071929-12`, `4.1.1-20260813.071929-21`, `4.1.1-20260813.071937-21` | spring-data-commons, spring-data-keyvalue, spring-data-r2dbc, spring-data-redis, spring-data-relational |
+| `org.springframework.data` | 4.1.2-SNAPSHOT | `4.1.2-20261014.082734-18`, `4.1.2-20261014.082737-11`, `4.1.2-20261015.080407-23`, `4.1.2-20261015.095958-25` | spring-data-commons, spring-data-keyvalue, spring-data-r2dbc, spring-data-redis, spring-data-relational |
+| `org.springframework.data` | 4.2.0-SNAPSHOT | `4.2.0-20261113.094852-31`, `4.2.0-20261113.094903-64`, `4.2.0-20261113.101051-58`, `4.2.0-20261117.141558-53` | spring-data-commons, spring-data-jdbc, spring-data-keyvalue, spring-data-r2dbc, spring-data-redis, spring-data-relational |
+| `org.springframework.data` | 5.0.8-SNAPSHOT | `5.0.8-20261014.082750-10`, `5.0.8-20261014.083944-9` | spring-data-mongodb, spring-data-rest-core, spring-data-rest-webmvc |
+| `org.springframework.data` | 5.0.9-SNAPSHOT | `5.0.9-20261113.094908-6` | spring-data-mongodb |
+| `org.springframework.data` | 5.2.0-SNAPSHOT | `5.2.0-20261113.094853-40`, `5.2.0-20261113.094917-46` | spring-data-mongodb, spring-data-rest-core, spring-data-rest-webmvc |
+| `org.springframework.data` | 8.0.8-SNAPSHOT | `8.0.8-20261016.072018-7` | spring-data-neo4j |
+| `org.springframework.data` | 8.0.9-SNAPSHOT | `8.0.9-20261113.094844-7` | spring-data-neo4j |
+| `org.springframework.data` | 8.2.0-SNAPSHOT | `8.2.0-20261113.094854-49` | spring-data-neo4j |
+| `org.springframework.graphql` | 2.0.6-SNAPSHOT | `2.0.6-20261016.102023-19` | spring-graphql |
+| `org.springframework.graphql` | 2.0.7-SNAPSHOT | `2.0.7-20261110.131650-4` | spring-graphql |
+| `org.springframework.graphql` | 2.1.0-SNAPSHOT | `2.1.0-20261110.131205-44` | spring-graphql |
 | `org.springframework.hateoas` | 3.0.6-SNAPSHOT | `3.0.6-20261013.200322-9` | spring-hateoas |
+| `org.springframework.hateoas` | 3.2.0-SNAPSHOT | `3.2.0-20261109.103826-36` | spring-hateoas |
 | `org.springframework.kafka` | 4.2.0-SNAPSHOT | `4.2.0-20261119.052259-227` | spring-kafka, spring-kafka-test |
+| `org.springframework.plugin` | 4.2.0-SNAPSHOT | `4.2.0-20261113.113009-22` | spring-plugin-core |
+| `org.springframework.security` | 7.0.8-SNAPSHOT | `7.0.8-20261014.180739-2`, `7.0.8-20261014.180739-31` | spring-security-config, spring-security-core, spring-security-crypto, spring-security-web |
+| `org.springframework.security` | 7.0.9-SNAPSHOT | `7.0.9-20261113.053915-49` | spring-security-config, spring-security-core, spring-security-crypto, spring-security-web |
+| `org.springframework.security` | 7.2.0-SNAPSHOT | `7.2.0-20261113.100953-212`, `7.2.0-20261113.100953-213` | spring-security-config, spring-security-core, spring-security-crypto, spring-security-web |
 
 ## S30 substitutes Spring Kafka 4.2.0-M2
 
@@ -416,7 +450,10 @@ One job per Gradle case (49; S16 has none, it is on its slice route), each of fo
    and `$P/scripts/setup-tests.init.gradle` (a `--tests` filter that matches nothing is not an error); then keeps
    `$P/artifacts/CASE-fix/`: `jars/`, `SHA256SUMS` (jars, and every class compiled from a production source file the landing changed,
    nested classes included) and, per classpath project P (`:` as `_` in the name), `P.runtimeClasspath.txt` and `P.testRuntimeClasspath.txt`
-   (`:`-joined; the project outputs they name are copied under `tree/`, the rest are paths into `$P/gradle-home`).
+   (`:`-joined; the project outputs they name are copied under `tree/`, Gradle's `gradle-api` and `gradle-test-kit` jars, which
+   Gradle generates in the job's own home, under `gradle-home/` (the first run rejected them: S10, S47, S49), the rest are paths
+   into `$P/gradle-home`). `$P/logs/CASE-ROLE.test.offline.class.txt` has the JUnit counts of each landed class alone (the first
+   run's steps that started before about 09:40 report `no-result` for a class without nested classes, a bug since fixed).
 2. `parent`: the same in `$W/CASE-parent`, with those landed classes that exist at the parent.
 3. `transplant`: `git archive` of the parent into `$P/build/CASE-parent-landed`, every changed file under `src/test`, `src/testFixtures`,
    `src/intTest` or `src/dockerTest` (and a changed module `build.gradle`: S09, S37) taken from the fix, then the same test classes.
@@ -439,57 +476,63 @@ services.gradle.org into the build directory) and **S48** (`WarIntegrationTests`
 `build/local-maven-repository` and whose plugins come from Maven Central). **S29** runs `dockerTest` and needs Docker (`docker compose`
 v5.7.0 is installed; images in [Docker images](#docker-images)).
 
-| Case | Job | Jar projects | Landed test classes (source set) | Network |
-|---|---|---|---|---|
-| S01 | `20261127-091100-setup-build-spring-boot-52125-s01-at-bot` | `:core:spring-boot-test` | `TestPropertyValuesTests` | offline |
-| S02 | `20261127-091100-setup-build-spring-boot-51661-s02-at-bot` | `:core:spring-boot` | `ValueObjectBinderTests`, `ConfigurationPropertiesTests` | offline |
-| S03 | `20261127-091101-setup-build-spring-boot-50773-s03-at-bot` | `:core:spring-boot` | `MapBinderTests` | offline |
-| S04 | `20261127-091101-setup-build-spring-boot-50798-s04-at-bot` | `:core:spring-boot` | `ValidationBindHandlerTests` | offline |
-| S05 | `20261127-091101-setup-build-spring-boot-52207-s05-at-bot` | `:core:spring-boot` | `OriginTrackedPropertiesLoaderTests` | offline |
-| S06 | `20261127-091101-setup-build-spring-boot-52277-s06-at-bot` | `:core:spring-boot` | `FileHintTests`, `StandardConfigDataLocationResolverTests` | offline |
-| S07 | `20261127-091101-setup-build-spring-boot-52666-s07-at-bot` | `:core:spring-boot` | `ConfigTreePropertySourceTests` | offline |
-| S08 | `20261127-091101-setup-build-spring-boot-52904-s08-at-bot` | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
-| S09 | `20261127-091101-setup-build-spring-boot-51855-s09-at-bot` | `:core:spring-boot-properties-migrator` | `PropertiesMigrationListenerTests` | offline |
-| S10 | `20261127-091101-setup-build-spring-boot-50489-s10-at-bot` | `:build-plugin:spring-boot-gradle-plugin`, `:configuration-metadata:spring-boot-configuration-processor` | `JavaPluginActionIntegrationTests`, `DescriptionCacheTests` | online |
-| S11 | `20261127-091101-setup-build-spring-boot-51867-s11-at-bot` | `:core:spring-boot-autoconfigure` | `AutoConfigurationSorterTests` | offline |
-| S12 | `20261127-091102-setup-build-spring-boot-52310-s12-at-bot` | `:core:spring-boot` | `SpringApplicationTests` | offline |
-| S13 | `20261127-091102-setup-build-spring-boot-52309-s13-at-bot` | `:core:spring-boot` | `SpringApplicationTests` | offline |
-| S14 | `20261127-091102-setup-build-spring-boot-52831-s14-at-bot` | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
-| S15 | `20261127-091102-setup-build-spring-boot-50886-s15-at-bot` | `:module:spring-boot-micrometer-metrics` | `MeterRegistryCloserTests`, `MeterRegistryPostProcessorTests`, `MetricsAutoConfigurationTests` | offline |
-| S17 | `20261127-091102-setup-build-spring-boot-52251-s17-at-bot` | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
-| S18 | `20261127-091102-setup-build-spring-boot-52304-s18-at-bot` | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
-| S19 | `20261127-091102-setup-build-spring-boot-51173-s19-at-bot` | `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryCustomizerTests`, `TomcatServerPropertiesTests`, `SampleOAuth2ClientApplicationTests` | offline |
-| S20 | `20261127-091102-setup-build-spring-boot-52162-s20-at-bot` | `:module:spring-boot-jetty`, `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryTests.givenARestartedServer*`, `TomcatReactiveWebServerFactoryTests.givenARestartedServer*`, `JettyServletWebServerFactoryTests.givenARestartedServer*`, `JettyReactiveWebServerFactoryTests.givenARestartedServer*` | offline |
-| S21 | `20261127-091103-setup-build-spring-boot-51410-s21-at-bot` | `:module:spring-boot-jdbc` | `DataSourceUnwrapperTests` | offline |
-| S22 | `20261127-091103-setup-build-spring-boot-50271-s22-at-bot` | `:module:spring-boot-jdbc` | `DataSourceBuilderTests`, `DataSourceUnwrapperTests`, `LiquibaseAutoConfigurationTests` | offline |
-| S23 | `20261127-091103-setup-build-spring-boot-52824-s23-at-bot` | `:module:spring-boot-hibernate` | `HibernateJpaAutoConfigurationTests` | offline |
-| S24 | `20261127-091103-setup-build-spring-boot-51725-s24-at-bot` | `:module:spring-boot-batch-data-mongodb` | `BatchDataMongoAutoConfigurationTests` | offline |
-| S25 | `20261127-091103-setup-build-spring-boot-52190-s25-at-bot` | `:module:spring-boot-data-redis` | `DataRedisAutoConfigurationTests` | offline |
-| S26 | `20261127-091103-setup-build-spring-boot-51844-s26-at-bot` | `:module:spring-boot-cache` | `CacheAutoConfigurationTests` | offline |
-| S27 | `20261127-091103-setup-build-spring-boot-52832-s27-at-bot` | `:core:spring-boot-docker-compose`, `:module:spring-boot-data-redis` | `DefaultConnectionPortsTests`, `DefaultRunningServiceTests` | offline |
-| S28 | `20261127-091103-setup-build-spring-boot-52625-s28-at-bot` | `:module:spring-boot-jdbc` | `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests` | offline |
-| S29 | `20261127-091103-setup-build-spring-boot-51940-s29-at-bot` | `:module:spring-boot-amqp-rabbitmq`, `:module:spring-boot-rabbitmq` | `AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitEnvironmentTests`, `RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqEnvironmentTests` | offline |
-| S30 | `20261127-091104-setup-build-spring-boot-51774-s30-at-bot` | `:module:spring-boot-kafka` | `KafkaAutoConfigurationTests` | offline |
-| S31 | `20261127-091104-setup-build-spring-boot-50296-s31-at-bot` | `:module:spring-boot-health` | `AvailabilityProbesHealthEndpointGroupsPostProcessorTests`, `AvailabilityProbesHealthEndpointGroupsTests`, `DelegatingAvailabilityProbesHealthEndpointGroupTests` | offline |
-| S32 | `20261127-091104-setup-build-spring-boot-52321-s32-at-bot` | `:module:spring-boot-health` | `HealthEndpointSupportTests` | offline |
-| S33 | `20261127-091104-setup-build-spring-boot-51470-s33-at-bot` | `:module:spring-boot-health`, `:module:spring-boot-webmvc` | `AdditionalHealthEndpointPathTests`, `HealthEndpointSupportTests`, `WebMvcHealthEndpointAdditionalPathIntegrationTests`, `WebFluxHealthEndpointAdditionalPathIntegrationTests`, `JerseyHealthEndpointAdditionalPathIntegrationTests` | offline |
-| S34 | `20261127-091104-setup-build-spring-boot-51937-s34-at-bot` | `:module:spring-boot-jersey` | `JerseyEndpointIntegrationTests` | offline |
-| S35 | `20261127-091104-setup-build-spring-boot-50734-s35-at-bot` | `:module:spring-boot-mongodb` | `MongoHealthIndicatorTests`, `MongoReactiveHealthIndicatorTests` | offline |
-| S36 | `20261127-091104-setup-build-spring-boot-50461-s36-at-bot` | `:module:spring-boot-micrometer-metrics`, `:module:spring-boot-micrometer-tracing-opentelemetry`, `:module:spring-boot-opentelemetry` | `OtlpMetricsExportAutoConfigurationTests`, `OtlpMetricsPropertiesConfigAdapterTests`, `OtlpMetricsPropertiesTests`, `OpenTelemetryTracingAutoConfigurationTests`, `OtlpTracingAutoConfigurationIntegrationTests`, `OpenTelemetryLoggingAutoConfigurationTests`, `OtlpLoggingAutoConfigurationIntegrationTests`, `OtlpLoggingAutoConfigurationTests` | offline |
-| S37 | `20261127-091104-setup-build-spring-boot-51959-s37-at-bot` | `:core:spring-boot` | `LoggingApplicationListenerWithContextPausingTests` | offline |
-| S38 | `20261127-091105-setup-build-spring-boot-51156-s38-at-bot` | `:core:spring-boot` | `AppendableByteArrayTests` | offline |
-| S39 | `20261127-091105-setup-build-spring-boot-52477-s39-at-bot` | `:core:spring-boot` | `JsonValueWriterTests` | offline |
-| S40 | `20261127-091105-setup-build-spring-boot-52522-s40-at-bot` | `:core:spring-boot` | `JsonWriterTests` | offline |
-| S41 | `20261127-091105-setup-build-spring-boot-52593-s41-at-bot` | `:buildpack:spring-boot-buildpack-platform` | `InspectedContentTests` | offline |
-| S42 | `20261127-091105-setup-build-spring-boot-52285-s42-at-bot` | `:loader:spring-boot-loader` | `NestedJarFileTests` | offline |
-| S43 | `20261127-091105-setup-build-spring-boot-52280-s43-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests`, `UrlEncoderTests` | offline |
-| S44 | `20261127-091105-setup-build-spring-boot-52244-s44-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
-| S45 | `20261127-091105-setup-build-spring-boot-52402-s45-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
-| S46 | `20261127-091105-setup-build-spring-boot-51653-s46-at-bot` | `:loader:spring-boot-jarmode-tools` | `IndexedLayersTests` | offline |
-| S47 | `20261127-091106-setup-build-spring-boot-52530-s47-at-bot` | `:build-plugin:spring-boot-gradle-plugin` | `LayeredSpecTests` | offline |
-| S48 | `20261127-091106-setup-build-spring-boot-51551-s48-at-bot` | `:loader:spring-boot-loader-tools` | `RepackagerTests`, `WarIntegrationTests` (intTest) | online |
-| S49 | `20261127-091106-setup-build-spring-boot-51372-s49-at-bot` | `:build-plugin:spring-boot-gradle-plugin`, `:loader:spring-boot-jarmode-tools`, `:loader:spring-boot-loader-tools` | `BootJarTests`, `BootWarTests`, `ExtractCommandTests`, `IndexedJarStructureTests` | offline |
-| S50 | `20261127-091106-setup-build-spring-boot-50433-s50-at-bot` | `:module:spring-boot-flyway` | `NativeImageResourceProviderTests` | offline |
+**First run and rerun.** The 49 jobs ran from 09:18 to 10:19 UTC on 2026-11-27. Seven passed every step, and S46 passed all
+but the transplant, whose result stands ([Job results](#job-results)). The other 41 failed for setup reasons: 38 on offline misses
+in projects outside the first resolution pass, S47 and S49 on the generated-jar check above, and S10 on both that check and a
+`NoRouteToHostException` in one TestKit test. After the second resolution pass and both script fixes, all 41 were resubmitted
+(`pipeline.py resubmit`, each superseding its first job; list in `$P/logs/jobs.resubmit.txt`).
+
+| Case | First job | Rerun (after the second resolution pass) | Jar projects | Landed test classes (source set) | Network |
+|---|---|---|---|---|---|
+| S01 | `20261127-091100-setup-build-spring-boot-52125-s01-at-bot` | `20261127-110819-setup-build-spring-boot-52125-s01-at-bot` | `:core:spring-boot-test` | `TestPropertyValuesTests` | offline |
+| S02 | `20261127-091100-setup-build-spring-boot-51661-s02-at-bot` | `20261127-110819-setup-build-spring-boot-51661-s02-at-bot` | `:core:spring-boot` | `ValueObjectBinderTests`, `ConfigurationPropertiesTests` | offline |
+| S03 | `20261127-091101-setup-build-spring-boot-50773-s03-at-bot` | `20261127-110819-setup-build-spring-boot-50773-s03-at-bot` | `:core:spring-boot` | `MapBinderTests` | offline |
+| S04 | `20261127-091101-setup-build-spring-boot-50798-s04-at-bot` | `20261127-110819-setup-build-spring-boot-50798-s04-at-bot` | `:core:spring-boot` | `ValidationBindHandlerTests` | offline |
+| S05 | `20261127-091101-setup-build-spring-boot-52207-s05-at-bot` | `20261127-110820-setup-build-spring-boot-52207-s05-at-bot` | `:core:spring-boot` | `OriginTrackedPropertiesLoaderTests` | offline |
+| S06 | `20261127-091101-setup-build-spring-boot-52277-s06-at-bot` | `20261127-110820-setup-build-spring-boot-52277-s06-at-bot` | `:core:spring-boot` | `FileHintTests`, `StandardConfigDataLocationResolverTests` | offline |
+| S07 | `20261127-091101-setup-build-spring-boot-52666-s07-at-bot` | `20261127-110820-setup-build-spring-boot-52666-s07-at-bot` | `:core:spring-boot` | `ConfigTreePropertySourceTests` | offline |
+| S08 | `20261127-091101-setup-build-spring-boot-52904-s08-at-bot` | `20261127-110820-setup-build-spring-boot-52904-s08-at-bot` | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
+| S09 | `20261127-091101-setup-build-spring-boot-51855-s09-at-bot` | `20261127-110819-setup-build-spring-boot-51855-s09-at-bot` | `:core:spring-boot-properties-migrator` | `PropertiesMigrationListenerTests` | offline |
+| S10 | `20261127-091101-setup-build-spring-boot-50489-s10-at-bot` | `20261127-110802-setup-build-spring-boot-50489-s10-at-bot` | `:build-plugin:spring-boot-gradle-plugin`, `:configuration-metadata:spring-boot-configuration-processor` | `JavaPluginActionIntegrationTests`, `DescriptionCacheTests` | online |
+| S11 | `20261127-091101-setup-build-spring-boot-51867-s11-at-bot` | `20261127-110820-setup-build-spring-boot-51867-s11-at-bot` | `:core:spring-boot-autoconfigure` | `AutoConfigurationSorterTests` | offline |
+| S12 | `20261127-091102-setup-build-spring-boot-52310-s12-at-bot` | `20261127-110821-setup-build-spring-boot-52310-s12-at-bot` | `:core:spring-boot` | `SpringApplicationTests` | offline |
+| S13 | `20261127-091102-setup-build-spring-boot-52309-s13-at-bot` | `20261127-110821-setup-build-spring-boot-52309-s13-at-bot` | `:core:spring-boot` | `SpringApplicationTests` | offline |
+| S14 | `20261127-091102-setup-build-spring-boot-52831-s14-at-bot` | `20261127-110821-setup-build-spring-boot-52831-s14-at-bot` | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
+| S15 | `20261127-091102-setup-build-spring-boot-50886-s15-at-bot` | `20261127-110820-setup-build-spring-boot-50886-s15-at-bot` | `:module:spring-boot-micrometer-metrics` | `MeterRegistryCloserTests`, `MeterRegistryPostProcessorTests`, `MetricsAutoConfigurationTests` | offline |
+| S17 | `20261127-091102-setup-build-spring-boot-52251-s17-at-bot` | `20261127-110821-setup-build-spring-boot-52251-s17-at-bot` | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
+| S18 | `20261127-091102-setup-build-spring-boot-52304-s18-at-bot` | `20261127-110821-setup-build-spring-boot-52304-s18-at-bot` | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
+| S19 | `20261127-091102-setup-build-spring-boot-51173-s19-at-bot` | `20261127-110820-setup-build-spring-boot-51173-s19-at-bot` | `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryCustomizerTests`, `TomcatServerPropertiesTests`, `SampleOAuth2ClientApplicationTests` | offline |
+| S20 | `20261127-091102-setup-build-spring-boot-52162-s20-at-bot` | `20261127-110821-setup-build-spring-boot-52162-s20-at-bot` | `:module:spring-boot-jetty`, `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryTests.givenARestartedServer*`, `TomcatReactiveWebServerFactoryTests.givenARestartedServer*`, `JettyServletWebServerFactoryTests.givenARestartedServer*`, `JettyReactiveWebServerFactoryTests.givenARestartedServer*` | offline |
+| S21 | `20261127-091103-setup-build-spring-boot-51410-s21-at-bot` | `20261127-110821-setup-build-spring-boot-51410-s21-at-bot` | `:module:spring-boot-jdbc` | `DataSourceUnwrapperTests` | offline |
+| S22 | `20261127-091103-setup-build-spring-boot-50271-s22-at-bot` | `20261127-110821-setup-build-spring-boot-50271-s22-at-bot` | `:module:spring-boot-jdbc` | `DataSourceBuilderTests`, `DataSourceUnwrapperTests`, `LiquibaseAutoConfigurationTests` | offline |
+| S23 | `20261127-091103-setup-build-spring-boot-52824-s23-at-bot` | `20261127-110822-setup-build-spring-boot-52824-s23-at-bot` | `:module:spring-boot-hibernate` | `HibernateJpaAutoConfigurationTests` | offline |
+| S24 | `20261127-091103-setup-build-spring-boot-51725-s24-at-bot` | `20261127-110821-setup-build-spring-boot-51725-s24-at-bot` | `:module:spring-boot-batch-data-mongodb` | `BatchDataMongoAutoConfigurationTests` | offline |
+| S25 | `20261127-091103-setup-build-spring-boot-52190-s25-at-bot` | `20261127-110822-setup-build-spring-boot-52190-s25-at-bot` | `:module:spring-boot-data-redis` | `DataRedisAutoConfigurationTests` | offline |
+| S26 | `20261127-091103-setup-build-spring-boot-51844-s26-at-bot` | `20261127-110822-setup-build-spring-boot-51844-s26-at-bot` | `:module:spring-boot-cache` | `CacheAutoConfigurationTests` | offline |
+| S27 | `20261127-091103-setup-build-spring-boot-52832-s27-at-bot` | `20261127-110822-setup-build-spring-boot-52832-s27-at-bot` | `:core:spring-boot-docker-compose`, `:module:spring-boot-data-redis` | `DefaultConnectionPortsTests`, `DefaultRunningServiceTests` | offline |
+| S28 | `20261127-091103-setup-build-spring-boot-52625-s28-at-bot` | `20261127-110822-setup-build-spring-boot-52625-s28-at-bot` | `:module:spring-boot-jdbc` | `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests` | offline |
+| S29 | `20261127-091103-setup-build-spring-boot-51940-s29-at-bot` | `20261127-110822-setup-build-spring-boot-51940-s29-at-bot` | `:module:spring-boot-amqp-rabbitmq`, `:module:spring-boot-rabbitmq` | `AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitEnvironmentTests`, `RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqEnvironmentTests` | offline |
+| S30 | `20261127-091104-setup-build-spring-boot-51774-s30-at-bot` | `20261127-110823-setup-build-spring-boot-51774-s30-at-bot` | `:module:spring-boot-kafka` | `KafkaAutoConfigurationTests` | offline |
+| S31 | `20261127-091104-setup-build-spring-boot-50296-s31-at-bot` | `20261127-110822-setup-build-spring-boot-50296-s31-at-bot` | `:module:spring-boot-health` | `AvailabilityProbesHealthEndpointGroupsPostProcessorTests`, `AvailabilityProbesHealthEndpointGroupsTests`, `DelegatingAvailabilityProbesHealthEndpointGroupTests` | offline |
+| S32 | `20261127-091104-setup-build-spring-boot-52321-s32-at-bot` | `20261127-110823-setup-build-spring-boot-52321-s32-at-bot` | `:module:spring-boot-health` | `HealthEndpointSupportTests` | offline |
+| S33 | `20261127-091104-setup-build-spring-boot-51470-s33-at-bot` | `20261127-110823-setup-build-spring-boot-51470-s33-at-bot` | `:module:spring-boot-health`, `:module:spring-boot-webmvc` | `AdditionalHealthEndpointPathTests`, `HealthEndpointSupportTests`, `WebMvcHealthEndpointAdditionalPathIntegrationTests`, `WebFluxHealthEndpointAdditionalPathIntegrationTests`, `JerseyHealthEndpointAdditionalPathIntegrationTests` | offline |
+| S34 | `20261127-091104-setup-build-spring-boot-51937-s34-at-bot` | `20261127-110823-setup-build-spring-boot-51937-s34-at-bot` | `:module:spring-boot-jersey` | `JerseyEndpointIntegrationTests` | offline |
+| S35 | `20261127-091104-setup-build-spring-boot-50734-s35-at-bot` | (none: this run stands) | `:module:spring-boot-mongodb` | `MongoHealthIndicatorTests`, `MongoReactiveHealthIndicatorTests` | offline |
+| S36 | `20261127-091104-setup-build-spring-boot-50461-s36-at-bot` | `20261127-110822-setup-build-spring-boot-50461-s36-at-bot` | `:module:spring-boot-micrometer-metrics`, `:module:spring-boot-micrometer-tracing-opentelemetry`, `:module:spring-boot-opentelemetry` | `OtlpMetricsExportAutoConfigurationTests`, `OtlpMetricsPropertiesConfigAdapterTests`, `OtlpMetricsPropertiesTests`, `OpenTelemetryTracingAutoConfigurationTests`, `OtlpTracingAutoConfigurationIntegrationTests`, `OpenTelemetryLoggingAutoConfigurationTests`, `OtlpLoggingAutoConfigurationIntegrationTests`, `OtlpLoggingAutoConfigurationTests` | offline |
+| S37 | `20261127-091104-setup-build-spring-boot-51959-s37-at-bot` | (none: this run stands) | `:core:spring-boot` | `LoggingApplicationListenerWithContextPausingTests` | offline |
+| S38 | `20261127-091105-setup-build-spring-boot-51156-s38-at-bot` | `20261127-110823-setup-build-spring-boot-51156-s38-at-bot` | `:core:spring-boot` | `AppendableByteArrayTests` | offline |
+| S39 | `20261127-091105-setup-build-spring-boot-52477-s39-at-bot` | (none: this run stands) | `:core:spring-boot` | `JsonValueWriterTests` | offline |
+| S40 | `20261127-091105-setup-build-spring-boot-52522-s40-at-bot` | (none: this run stands) | `:core:spring-boot` | `JsonWriterTests` | offline |
+| S41 | `20261127-091105-setup-build-spring-boot-52593-s41-at-bot` | `20261127-110824-setup-build-spring-boot-52593-s41-at-bot` | `:buildpack:spring-boot-buildpack-platform` | `InspectedContentTests` | offline |
+| S42 | `20261127-091105-setup-build-spring-boot-52285-s42-at-bot` | `20261127-110823-setup-build-spring-boot-52285-s42-at-bot` | `:loader:spring-boot-loader` | `NestedJarFileTests` | offline |
+| S43 | `20261127-091105-setup-build-spring-boot-52280-s43-at-bot` | `20261127-110823-setup-build-spring-boot-52280-s43-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests`, `UrlEncoderTests` | offline |
+| S44 | `20261127-091105-setup-build-spring-boot-52244-s44-at-bot` | (none: this run stands) | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
+| S45 | `20261127-091105-setup-build-spring-boot-52402-s45-at-bot` | `20261127-110823-setup-build-spring-boot-52402-s45-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
+| S46 | `20261127-091105-setup-build-spring-boot-51653-s46-at-bot` | (none: this run stands) | `:loader:spring-boot-jarmode-tools` | `IndexedLayersTests` | offline |
+| S47 | `20261127-091106-setup-build-spring-boot-52530-s47-at-bot` | `20261127-110824-setup-build-spring-boot-52530-s47-at-bot` | `:build-plugin:spring-boot-gradle-plugin` | `LayeredSpecTests` | offline |
+| S48 | `20261127-091106-setup-build-spring-boot-51551-s48-at-bot` | (none: this run stands) | `:loader:spring-boot-loader-tools` | `RepackagerTests`, `WarIntegrationTests` (intTest) | online |
+| S49 | `20261127-091106-setup-build-spring-boot-51372-s49-at-bot` | `20261127-110824-setup-build-spring-boot-51372-s49-at-bot` | `:build-plugin:spring-boot-gradle-plugin`, `:loader:spring-boot-jarmode-tools`, `:loader:spring-boot-loader-tools` | `BootJarTests`, `BootWarTests`, `ExtractCommandTests`, `IndexedJarStructureTests` | offline |
+| S50 | `20261127-091106-setup-build-spring-boot-50433-s50-at-bot` | (none: this run stands) | `:module:spring-boot-flyway` | `NativeImageResourceProviderTests` | offline |
 
 ## Commands for a rerun by hand
 
@@ -503,6 +546,8 @@ $P/scripts/gradle_case.sh $W/CASE-ROLE TAG "RESULTDIRS" --offline -x :buildSrc:t
 $P/scripts/gradle_case.sh $W/CASE-ROLE TAG "" --offline -x :buildSrc:test -x :buildSrc:checkstyleMain -x :buildSrc:checkstyleTest -x :buildSrc:checkFormat -I $P/scripts/resolve-all.init.gradle :PROJECT:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=FILE
 # more of a project's configurations into the cache: online once (resolve_case.sh resolves column 4 of cases.tsv), then offline
 RESOLVE_PAT=ALL $P/scripts/resolve_case.sh CASE-ROLE
+# ... and of every project they reach through project dependencies (what an offline build of them needs), then the offline check
+$P/scripts/resolve_closure.sh CASE-ROLE; RESOLVE_ARGS=--offline RESOLVE_TAG=resolve.closure.offline $P/scripts/resolve_closure.sh CASE-ROLE
 # a detached configuration of given coordinates, with their transitive dependencies (online once, then --offline)
 $P/scripts/gradle_case.sh $W/CASE-ROLE TAG "" -I $P/scripts/resolve-all.init.gradle :PROJECT:setupResolveCoords -PsetupCoords=G:A:V,G:A:V -x :buildSrc:test -x :buildSrc:checkstyleMain -x :buildSrc:checkstyleTest -x :buildSrc:checkFormat
 # S16's slice route (seconds, JDK 8)
@@ -529,13 +574,66 @@ once stalled for minutes on its cross-process locks during the first resolution 
   Their configurations were not resolved either.
 - **Not prepared**: a Redis cluster (S25.3), a Kafka broker (S30.3), a transaction-capable Mongo replica set (S24), a RabbitMQ stream
   setup (S29.3) and a native image (S50): only their images, GraalVM and the build tools are here.
+- **The first run of the jobs failed for 41 of 49 cases** on gaps in this setup: the first resolution pass missed the
+  dependencies' projects, and `keep()` rejected Gradle's generated API jars. Both are fixed and the 41 are rerun ([Jobs](#jobs)).
+  S10's first fix run also lost one TestKit test to a `NoRouteToHostException` (network).
 - The pull of `postgres:17` moved the machine's tag to the current image ([Docker images](#docker-images)).
 - No verifier, no claims, no examples.
 
 ## Job results
 
-Pending at this revision: the 49 jobs in [Jobs](#jobs) are queued. This section and the notes below are completed when their
-results come back.
+**First run** (the 49 jobs of [Jobs](#jobs), 09:18 to 10:19 UTC on 2026-11-27; results collected by the runner on its own line,
+`verification/results/2026/11/27/JOB-ID/`, not yet merged into this one when this was written; the step logs this table reads are
+`$P/logs/CASE-ROLE.test.offline.{log,junit.txt,class.txt}` and `$P/logs/CASE-parent-landed.test.offline.*`, `.test.*` for S10
+and S48). **Eight cases completed**: seven jobs passed every step, and S46 passed all but its transplant:
+
+| Case | Job | Status | Fix: landed classes | Parent: those that exist there | Transplant: the fix's tests on the parent |
+|---|---|---|---|---|---|
+| S35 | `20261127-091104-setup-build-spring-boot-50734-s35-at-bot` | passed | 6 tests, 0 failed, 0 errors | 4 tests, 0 failed, 0 errors | fails: `MongoHealthIndicatorTests#mongoIsUp()`, `MongoReactiveHealthIndicatorTests#mongoIsUp()` |
+| S37 | `20261127-091104-setup-build-spring-boot-51959-s37-at-bot` | passed | 3 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | fails: `LoggingApplicationListenerWithContextPausingTests$ReuseContextOne#test(CapturedOutput)` |
+| S39 | `20261127-091105-setup-build-spring-boot-52477-s39-at-bot` | passed | 36 tests, 0 failed, 0 errors, 1 skipped | 33 tests, 0 failed, 0 errors, 1 skipped | fails: `JsonValueWriterTests#writeWhenNegativeInfinity()`, `JsonValueWriterTests#writeWhenNotANumber()`, `JsonValueWriterTests#writeWhenPositiveInfinity()` |
+| S40 | `20261127-091105-setup-build-spring-boot-52522-s40-at-bot` | passed | 87 tests, 0 failed, 0 errors | 86 tests, 0 failed, 0 errors | fails: `JsonWriterTests$MembersTest#usingPairsWithName()` |
+| S44 | `20261127-091105-setup-build-spring-boot-52244-s44-at-bot` | passed | 8 tests, 0 failed, 0 errors | 7 tests, 0 failed, 0 errors | fails: `JarUrlClassLoaderTests#loadClassFromNestedWhenJarHasNoDirectoryEntriesDefinesPackageFromManifest()` |
+| S46 | `20261127-091105-setup-build-spring-boot-51653-s46-at-bot` | failed | 9 tests, 0 failed, 0 errors | 8 tests, 0 failed, 0 errors | **does not fail** (9 tests, 0 failed, 0 errors, gradle-exit=0) |
+| S48 | `20261127-091106-setup-build-spring-boot-51551-s48-at-bot` | passed | 81 tests, 0 failed, 0 errors | 78 tests, 0 failed, 0 errors | fails: `RepackagerTests#sbomManifestEntriesAreWrittenForWar()`, `WarIntegrationTests#apache-maven-3.6.3`, `WarIntegrationTests#apache-maven-3.9.13` |
+| S50 | `20261127-091106-setup-build-spring-boot-50433-s50-at-bot` | passed | 1 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | fails: `NativeImageResourceProviderTests#nativeImageResourceProviderShouldReadNestedMigrations()` |
+
+So for S35, S37, S39, S40, S44, S48 and S50 the landed tests pass at the fix, the parent's versions pass at the parent, and the
+fix's tests fail on the parent in the methods named. A parent count of 0 means the landed class is new (S37, S50: absent at the
+parent, so only the transplant runs it there). **S46 is the exception**: the fix's `IndexedLayersTests` (9 tests) also pass on
+the parent. The PR is a lookup optimisation whose landed test repeats identical candidates, so passing on the parent is
+consistent with the brief's account; the job reports it as a failure only because the transplant step expects one. It was not
+rerun.
+
+The other **41 failed for setup reasons** ([Jobs](#jobs)) and were resubmitted after the second resolution pass; their reruns
+are pending at this revision (`$P/logs/jobs.resubmit.txt`).
+
+**Digests of the built artifacts** (sha256 in full; `$P/artifacts/CASE-ROLE/SHA256SUMS` has every jar on the classpaths and each
+nested class): the case's jar, and the top-level classes compiled from each production source the landing changed (fix), with
+the parent's digests of the same classes in the same order. S37 and S40 have the same top-level class digest at both pins: their
+changes are in nested classes (S37: `LoggingApplicationListener$Lifecycle.class`, fix
+`063d900d6a62f5004c344f087f6f3b621f6e6619daecf1df78cef16bb1853800`, parent `d9ce29568a5bf327dcf09711e5b8b7191c28170acb28a1f83d8b197557cc8aa8`;
+S40: seven nested classes of `JsonWriter`, among them `JsonWriter$Member.class`, fix
+`503542587b00fad13319bf131f51a9b5c822ef22aa07c1ba0d163a4454e67379`, parent `f435b2c5864d4ab66e258ac0a68b570d55969c76395324ccfa6e745b029aa679`).
+
+| Case | Role | Jar (sha256) | Changed classes (sha256) |
+|---|---|---|---|
+| S35 | fix | `spring-boot-mongodb-4.0.8-SNAPSHOT.jar` `764ec81d6bc96891d232919d6a3333f00072597f4eb92bb23e3b5706edf017b8` | `MongoHealthIndicator.class` `c512839f6eb2a0ddc511cf2f4f9751bd0af2eea433fe0c001885e2b4e18a3289`, `MongoReactiveHealthIndicator.class` `c645847af61a2414be263f988ed42949bdbea759a3b11ab59a4b5cb9b844913d` |
+| S35 | parent | `spring-boot-mongodb-4.0.8-SNAPSHOT.jar` `3880ce589013b433dc3864fca1875100d2b04446e6f202c466e0df8f208a5f23` | `ad31580f174e48afeaa6688834f2eb7cb32ac580f930b855782995f1095ae051`, `c0d541fb2656c377a5d7c972f1dc99f59fd514cffc81462be390e6d6eb91b5c5` (same order) |
+| S37 | fix | `spring-boot-4.0.9-SNAPSHOT.jar` `f0e7a89aeb6752d30f4beb5056b32f1ff5734672e63f07c30fde8588be25840d` | `LoggingApplicationListener.class` `32af430d5978fc5364a8987663f70039370fdcb3964a118713371d0c3051671b` (+1 nested) |
+| S37 | parent | `spring-boot-4.0.9-SNAPSHOT.jar` `661058a4662116adf7c26df2d0e4e0af6f42ca9998c399d65f9f298b9fc138ff` | `32af430d5978fc5364a8987663f70039370fdcb3964a118713371d0c3051671b` (same order) |
+| S39 | fix | `spring-boot-4.0.10-SNAPSHOT.jar` `2eba7265a56b1b763769db70ccd31e65cf5aa0b7d3217565443445291f0715b2` | `JsonValueWriter.class` `d235fdca6511d20cb656e82effd54124c88a28238ae53ada3689339dd7c5b1d7` (+2 nested) |
+| S39 | parent | `spring-boot-4.0.10-SNAPSHOT.jar` `e60c1ce9cec8d0908b3d20da870ae387d3266234cf7301d4deb0a6b307c42e45` | `9f7e269ad625e7dfd10cba7af2403ffb904a2276c5cc61d9c773b77c44a26eff` (same order) |
+| S40 | fix | `spring-boot-4.0.10-SNAPSHOT.jar` `3cbbffb2548b25e59ef5fef33ea7a3e033bfb00a685910f18a3cd3122660838d` | `JsonWriter.class` `a8826336823bc059619ada7214b70cbe3e968069ff59f0d34f90b620192539ad` (+9 nested) |
+| S40 | parent | `spring-boot-4.0.10-SNAPSHOT.jar` `57463126ca7b854e7fe7b7df6668492121222300fe86c4af96172655752743c4` | `a8826336823bc059619ada7214b70cbe3e968069ff59f0d34f90b620192539ad` (same order) |
+| S44 | fix | `spring-boot-loader-4.0.9-SNAPSHOT.jar` `7ddd960c6592a19fff37db230fed2166aeafc5b8247d14186d6f897e7f4b4210` | `JarUrlClassLoader.class` `1b7a4eed352242b34ff1af8d036ca9f53528b93cecbfbf9a69b657ee04e72102` (+1 nested) |
+| S44 | parent | `spring-boot-loader-4.0.9-SNAPSHOT.jar` `1a7e634cfd62759ee6aec9b1bb56b34e85c78c2925a47d1f5e1c0dd8135bf31a` | `bb3e22f0aecd4d33726118edd84e3cf047c359a482351b34fdd1ae494642355a` (same order) |
+| S46 | fix | `spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar` `38c1227d60c661fa5936808dfc505923a4ed9308b08445f9ee4e0b4538f1d3b4` | `IndexedLayers.class` `346df1d0910991db583f0364ef7d8102a5073d52dbcab46c88e2ad9aad090e05` |
+| S46 | parent | `spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar` `b5df1e2f029bddc27b6ec158b6368f4e1dbd913f6ea392dc4a082fd2bd2263b0` | `9cb215d1725fbb18dd4ec84d42d1335af87e3275f2ad738b4cff32861998fe76` (same order) |
+| S48 | fix | `spring-boot-loader-tools-4.0.9-SNAPSHOT.jar` `2b5ea57830a9aefd35c52c3d35b9a985a5ac7c15d1f5ab54091486a1b2a8cd53` | `Packager.class` `20f85a8e7878f66a8fa2fed7812cc5a89452d18813e8a54ad69a2ac78a361f46` (+4 nested) |
+| S48 | parent | `spring-boot-loader-tools-4.0.9-SNAPSHOT.jar` `327cb8097f9ca7a2e150f4652e2fff06c898459552b8ec2424607496ef08a1f4` | `54b15e65939b7ff284c6ddcc359c541265d1dcd0f06642ed7b5380d367479d0e` (same order) |
+| S50 | fix | `spring-boot-flyway-4.0.8-SNAPSHOT.jar` `d8c95c8b682d498e466787e1094ec16ceacf5cf02cafb686cdb14af56e37c962` | `NativeImageResourceProvider.class` `79d329e2a25ff2422ed36495778071d2bd6d794cd8b7c6d767107d3d70c2d5ff` (+1 nested) |
+| S50 | parent | `spring-boot-flyway-4.0.8-SNAPSHOT.jar` `6b318ac6cd216c55fd0821dea87aa172d60513c1885a05699d1f562ecf029ba5` | `b42abbccb1d7d56370588e1a6598e4bcb9f79a75e23ad7e7fb4c343b5d1b3c71` (same order) |
 
 ## Setup Agent Notes
 
@@ -547,12 +645,15 @@ results come back.
   [Upstream revisions](#upstream-revisions); `CASE` labels are this record's, not example ids). Mirror `$M/spring-boot.git`, refs
   `refs/pins/s01-s50/*`. S16's intermediate commits and the two foreign commits (Spring Batch for S24, Spring Kafka's
   `AwaitAsyncResultsOnStopTests` for S30) are in [Upstream revisions](#upstream-revisions) and [Other repositories](#other-repositories).
-- **Dependencies resolved** for every configuration of each case's projects (`cases.tsv` column 4) at both pins, in
-  `$P/gradle-home`; the offline task graphs of all 49 Gradle cases configure. Run Gradle with `$P/scripts/gradle_case.sh` (the
+- **Dependencies resolved** for every configuration of each case's projects (`cases.tsv` column 4) **and of every project they
+  reach through project dependencies**, at both pins, in `$P/gradle-home`; that resolution was repeated `--offline` and resolves
+  from the cache for all 98 worktrees ([Online resolution](#online-resolution)). Run Gradle with `$P/scripts/gradle_case.sh` (the
   pins' own Gradle, verified) and `--offline`; the [Commands](#commands-for-a-rerun-by-hand) section has the forms for a task, a
   classpath file, and resolving more.
-- **Built artifacts** (when the jobs have run): `$P/artifacts/CASE-ROLE/` with `jars/`, `SHA256SUMS`, and
-  `PROJECT.runtimeClasspath.txt` / `PROJECT.testRuntimeClasspath.txt` (`:`-joined, ready for `java -cp`).
+- **Built artifacts**: `$P/artifacts/CASE-ROLE/` with `jars/`, `SHA256SUMS`, and `PROJECT.runtimeClasspath.txt` /
+  `PROJECT.testRuntimeClasspath.txt` (`:`-joined, ready for `java -cp`; project outputs under `tree/`, Gradle's generated API
+  jars under `gradle-home/`). Complete for S35, S37, S39, S40, S44, S46, S48 and S50 ([Job results](#job-results)); for the
+  other 41 cases, a folder from the first run may hold partial output until each rerun completes.
 - **Released versions the brief names** in `$P/releases/SET/` (`jars/`, `classpath.txt`): Boot 4.0.6, 4.0.7, 4.1.0, 4.1.1, 4.2.0-RC1,
   3.5.14, Framework 7.0.9, Tomcat 11.0.24, datasource-decorator 2.0.1, maven-war-plugin 3.5.1, GraalVM build tools 0.11.5
   ([Released artifacts](#released-artifacts) has the row per set).
@@ -563,8 +664,12 @@ results come back.
 
 ### What was verified on a JVM
 
-- Pending for the 49 Gradle cases: the jobs run each case's landed tests at the fix, the parent's versions at the parent, and the
-  fix's tests on the parent ([Job results](#job-results)).
+- **S35, S37, S39, S40, S44, S48, S50** (jobs, JDK 25, offline except S48): the landed tests pass at the fix, the parent's
+  versions pass at the parent, and the fix's tests fail on the parent in the methods named in [Job results](#job-results).
+- **S46**: the fix's `IndexedLayersTests` pass at the fix (9) and also on the parent (9, 0 failures); the parent's own 8 pass. No
+  landed regression separates the two pins here.
+- **The other 41 Gradle cases**: not yet. Their first run failed for setup reasons, and the reruns are queued
+  ([Jobs](#jobs), `$P/logs/jobs.resubmit.txt`).
 - S16 (slice route, JDK 8): the parent's `WebFluxAutoConfigurationTests` pass on the parent slice over Boot 2.0.0.M2 (15 tests); the
   fix's three landed test classes do not compile on the parent slice (`CodecCustomizer`, `WebClientCustomizer` absent); on the
   release Boot 2.0.0.M3 they run 21 tests with 1 failure (`WebClientAutoConfigurationTests#shouldGetPrototypeScopedBean`, RC3's
@@ -573,8 +678,11 @@ results come back.
 ### What to know before starting
 
 - **Snapshots are today's newest builds**, the same bytes for both pins of a case, mostly dated after the pins
-  ([Snapshot dependencies](#snapshot-dependencies), per-jar sha256 in `$P/logs/snapshots.txt`). Stay `--offline`, or a build may
-  fetch a newer one.
+  ([Snapshot dependencies](#snapshot-dependencies), 222 jars, per-jar sha256 in `$P/logs/snapshots.txt`). Stay `--offline`, or a
+  build may fetch a newer one.
+- **A `--dry-run` proves nothing about offline resolution**; resolve what you add with `resolve_closure.sh` (online, then the
+  same with `RESOLVE_ARGS=--offline RESOLVE_TAG=…`). `repo.spring.io` had intermittent DNS failures on 2026-11-27: an online
+  run that prints `Could not HEAD 'https://repo.spring.io/…'` is to be rerun, not believed.
 - **S30 substitutes Spring Kafka 4.2.0-M2** for the pins' `4.2.0-SNAPSHOT` (`-I $P/scripts/subst-spring-kafka.init.gradle`, which
   `case_job.sh` adds; add it yourself for any other S30 build). Label S30 evidence as built against 4.2.0-M2.
 - **S16's fix compiles against no released Framework**: its `CodecsAutoConfiguration` calls `jackson2Decoder/jackson2Encoder`, which
