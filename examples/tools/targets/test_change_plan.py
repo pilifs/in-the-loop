@@ -8,10 +8,18 @@ import unittest
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from targets import change_evidence, change_helpers, change_inventory, integer_codecs, resource_workflows
+from targets import change_evidence, change_helpers, change_inventory, integer_codecs, public_histories, resource_workflows
 
 
 class ChangePlanTest(unittest.TestCase):
+    def test_original_history_ranking_keeps_static_candidates_without_qualifying_forks(self):
+        candidates = [{"entry": "a.First#read()I", "rank": 1}, {"entry": "a.Other#read()I", "rank": 2}]
+        inventory = {"candidates": candidates, "candidateCount": len(candidates)}
+        result = public_histories.apply(inventory, [], {}, {}, {})
+        self.assertEqual(result["upstreamHistory"]["ranked"], [])
+        self.assertEqual([(c["entry"], c["rank"], c["staticRank"]) for c in result["candidates"]],
+                         [("a.First#read()I", 1, 1), ("a.Other#read()I", 2, 2)])
+
     def test_signed_codec_candidates_respect_instruction_boundaries_and_exception_handlers(self):
         encode = bytes.fromhex("1a 04 78 1a 10 1f 7a 82 ac")
         decode = bytes.fromhex("1a 04 7c 1a 04 7e 74 82 ac")

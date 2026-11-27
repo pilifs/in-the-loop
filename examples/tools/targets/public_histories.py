@@ -274,8 +274,8 @@ def apply(inventory, paths, views, launches, jdks):
     for row in inventory["candidates"]:
         if row["entry"] not in reported:
             reordered.append({**row, "staticRank": row.get("rank")})
-    for rank, row in enumerate(reordered, 1):
-        row["rank"] = rank
+    for position, row in enumerate(reordered, 1):
+        row["rank"] = position
     inventory["upstreamHistory"] = {"sources":sources,"ranked":rows,"qualifiedForks":dict(Counter(
         side for side, runs in sessions.items() for r in runs if r["fork"]["stop"] is None))}
     inventory["candidates"] = reordered
