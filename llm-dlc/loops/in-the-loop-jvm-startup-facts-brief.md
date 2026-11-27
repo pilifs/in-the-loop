@@ -116,3 +116,86 @@ Keep **recording reuse** and **proof-result reuse** separate. The Rust property 
 [companion]: https://chatgpt.com/library?file_id=libfile_fde3_f-4229445dcda481918d52fb185111ae45_1a220e41ac0481919d2d88e5f0713c02&account_id=personal
 [cache]: https://github.com/pilifs/in-the-loop/blob/32d3a22cfbae921d272649eaaae608d60ae89ecf/lib/src/property.rs#L294-L309
 [side-cache]: https://github.com/pilifs/in-the-loop/blob/32d3a22cfbae921d272649eaaae608d60ae89ecf/examples/tools/targets/change_evidence.py#L48-L105
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- Every case's inputs are prepared and checked; the only new download is Batik's upstream source at `1_17`. Pins,
+  digests and readers are in [Cases: inputs, pins and digests](#cases-inputs-pins-and-digests). In short:
+  - Commons IO, ThreeTenBP, POI: `lib/benchmark/organic-composition/{io,threeten,poi}/{old,new}/prepared.json`, which
+    point at `~/.cache/in-the-loop/organic-composition-ff/artifacts/{E-commons-io,A-threetenbp,B-poi}-{parent,fix}.jar`
+    (POI adds six jars from `~/.cache/in-the-loop/organic-composition-ff/m2`, including log4j-api 2.26.1 and its
+    sources jar). Source worktrees: `~/.cache/in-the-loop/organic-composition-ff/worktrees/{E-commons-io,A-threetenbp,B-poi}-{parent,fix}`.
+  - Batik 1.17 → 1.18: `~/.cache/in-the-loop/beyond-jbmc/panel/evaluation/04/packet/{old,new}/NNN.jar` with
+    `inputs.json`; upstream source at `~/.cache/in-the-loop/jvm-startup-facts/worktrees/batik-1_17` (commit
+    `3c83de345f21cae4f4a64dfe6244483f87885808`), mirror `~/.cache/in-the-loop/git-mirrors/xmlgraphics-batik.git` (shallow).
+  - Commons Configuration #565/#601: `callers.prepared_inputs(dir, [key])` in `lib/benchmark/receiver-discovery/callers.py`
+    over `~/.cache/in-the-loop/receiver-construction/receivers/area/slices/commons-configuration-{565,601}`; sources in
+    `~/.cache/in-the-loop/receiver-construction/src/configuration-{565,601}-{old,new}`.
+  - Examples 355 (Avro, two 124-entry classpaths) and 360 (JavaParser): their captured builds restore wholly from the
+    Maven cache ([table](#javaparser-4538-example-360-and-avro-3878-example-355-exercises-9-11)); 480 reads
+    `runtime.json` against `~/.cache/in-the-loop/spring-pr-links-p01-p30`; 332 and the countermodel fixtures are in
+    the repository.
+- Source blob ids and class digests of the startup classes (`Charsets`, `Chronology`, `DateTimeFormatter`,
+  `DataFormatter`, `XMLResourceDescriptor` and its properties, `ConfigurationInterpolator`, `LineSeparator`):
+  [Startup classes](#startup-classes-source-blobs-and-class-digests).
+- JDKs 8, 17, 21.0.13 and 25.0.5 with their `release` and `lib/modules` digests: [Tools](#tools). Every case except 480
+  names JDK 21.0.13 (`~/.sdkman/candidates/java/21.0.13.0+9-tem`); 480 names 17. The default `java` on `PATH` is
+  JDK 25: give the others by full path.
+- `lib/target/release/jvmcontract`, sha256 `d0bcabc8fe2cc1af89d2e999c55bbc5995231a47fe8b8b3cfb91090ba8895258`, is
+  current at `5f0b2389344879610f907ac9ee5b048dd59c9df8`. Rebuild it after changing `lib/src`.
+- The scripts that reproduce each check in seconds are in `~/.cache/in-the-loop/jvm-startup-facts/scripts/`, with
+  commands in [What was run on a JVM](#what-was-run-on-a-jvm).
+
+### What was verified on a JVM
+
+- The registered public observations, on the original deployments in fresh JVMs, equal the committed receipts: Commons
+  IO 8/8, ThreeTenBP 12/12 (the New York and Berlin overlaps), POI 12/12 (`poi/physical.json`), Spring 480.
+- **The 16 historical Commons IO charset trials reproduce byte for byte** (`verification/organic-composition/io/charset-profiles.json`):
+  under `C` the defaulted constructor encodes `Aé中Z` with `3f3f`, the explicit one keeps `c3a9e4b8ad5a`.
+- `"é".getBytes().length` on untouched JVMs: 2 under `C.UTF-8`; 1 under `C` with `-Dfile.encoding=COMPAT`; 2 under `C`
+  without the flag. The same on JDK 21.0.13 and 25.0.5.
+- Commons Configuration, all four deployments: own `_` gives `ExceptionInInitializerError` then `NoClassDefFoundError`;
+  `_` inherited through a defaults table gives the 14 ordinary lookups twice. JavaParser, both sides: cleared
+  `line.separator` gives `ExceptionInInitializerError` caused by `NullPointerException`, then `NoClassDefFoundError`.
+- Batik's `XMLResourceDescriptor.java` and `.properties` at `1_17` have the same git blob ids as the Debian `.orig` and
+  as the properties entry in both deployed jars that carry it.
+
+### What to know before starting
+
+- **Under `C` with `COMPAT`, `file.encoding` is not the canonical name**: it reads `ANSI_X3.4-1968` while
+  `Charset.defaultCharset().name()` is `US-ASCII`. Without `-Dfile.encoding=COMPAT`, JDK 18+ selects UTF-8 under `C`,
+  so the ASCII profile exists only with the flag.
+- **Batik has two copies of `XMLResourceDescriptor` on each side**: 1.17 `old/000.jar` (batik-all) and `old/014.jar`
+  (the util bundle, whose manifest says `Bundle-Version: 1.12.0`); 1.18 `new/000.jar` and `new/006.jar`. All four
+  copies of the class and of the properties file are identical, and 1.17 and 1.18 are identical, so the selected copy
+  follows classpath order, and changing the resource "at the same path" (exercise 4) has two candidate jars.
+- The brief's `batik-1_17` link is a branch; the release tag `1_17` points at the same commit. The mirror is shallow
+  (`--depth 1`): there is no history behind `3c83de345f21cae4f4a64dfe6244483f87885808`.
+- In-repository anchors moved since the brief's review commit: the `--observed-initializer`/`--cache` refusal is at
+  `lib/src/property.rs:302-304`, VF-054 at `verification/findings.md:485`; `change_evidence.py`, `recipes.py`,
+  `UpgradeTrace.java` and `llm-dlc/runtime.md` grew. The observer, importer, reflection and JAR-resource sources are
+  unchanged ([Starting commit](#starting-commit)).
+- POI's classpath has log4j-api but no log4j-core: Log4j prints "could not find a logging provider" on stderr, which
+  is harmless. The deployments are built `SNAPSHOT` jars at the pins (fixed bytes, digest-checked), not snapshot
+  resolutions that can move.
+- Configuration's sources in `~/.cache/in-the-loop/receiver-construction/src/` are exports, not git checkouts.
+- **Keep the evaluator material apart** where the brief asks for automatic recovery: the historical observers and
+  drivers (`lib/benchmark/organic-composition/*/UpgradeProbe.java`, `io/charset/`, `poi/StartupHistory.java`), their
+  receipts, and `~/.cache/in-the-loop/jvm-startup-facts/probes/` and `logs/` hold callers and actual outcomes. The
+  `DefaultBytes` and `TableModes` probes are this setup's checks, not product probes, and count as case-specific if used.
+- No verification job was queued or is pending for this setup.
+
+### What is left for the domain work on purpose
+
+- Everything the brief asks to build or measure: the typed startup facts and receipts, the capture rules, admission
+  checks and importer operations, the workflow integration, the cache keys, and the scorecard.
+- Running normal preparation, `ObservedInitializer` captures, the native checker and JBMC on any case, including
+  reproducing the original strict refusals (IO `Charsets.<clinit>`, ThreeTen `LOCALE_METHOD`, POI `DataFormatter.<clinit>`)
+  and Avro's four-root profile.
+- Observing Batik's `getCSSParserClassName()`, writing the labelled replaced-resource control and exercise 5's
+  properties fixture, the exercise 6 whole-table consumer, the exercise 10 cached-`Method` control, and the
+  perturbation, stale-receipt and interrupted-capture controls.
+- Running `lib/tests/observed_countermodels.rs` and any new tests under the repository's tiers.
+- Any new example ids or registrations.
