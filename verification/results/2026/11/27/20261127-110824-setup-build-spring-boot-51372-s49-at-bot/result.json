@@ -1,0 +1,402 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110824-setup-build-spring-boot-51372-s49-at-bot",
+  "title": "Setup: build Spring Boot #51372 (S49) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 9m41s, peak 4.4 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 2 (S49 parent: build and the parent's tests) was held back 1m59s by its 4-CPU quota in 3m32s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S49 transplant: the fix's tests on the parent) was held back 1m34s by its 4-CPU quota in 53.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110824-setup-build-spring-boot-51372-s49-at-bot.json",
+    "sha256": "f95a9af18e2fe0c980f1cdec58288fbb40caa5cdc9fa9b07d8bc592cfc54de42",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110824-setup-build-spring-boot-51372-s49-at-bot",
+      "title": "Setup: build Spring Boot #51372 (S49) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S49 (spring-projects/spring-boot#51372: Extract a runnable JAR and both library scopes from an executable WAR). In the worktrees $P/worktrees/S49-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of build-plugin:spring-boot-gradle-plugin loader:spring-boot-jarmode-tools loader:spring-boot-loader-tools with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (BootJarTests (test) BootWarTests (test) ExtractCommandTests (test) IndexedJarStructureTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of build-plugin:spring-boot-gradle-plugin loader:spring-boot-jarmode-tools loader:spring-boot-loader-tools in $P/artifacts/S49-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S49",
+      "submitted": {
+        "at": "2026-11-27T11:08:24+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S49 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S49 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S49 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S49 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S49 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S49 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S49 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S49 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091106-setup-build-spring-boot-51372-s49-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:57:33+00:00",
+  "finishedAt": "2026-11-27T12:07:26+00:00",
+  "wallSeconds": 593.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 4750684160,
+    "wallSeconds": 581.8,
+    "cpuSeconds": 1540.6,
+    "memoryOfEstimate": 0.74,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S49 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S49 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 313.966,
+      "cpuSeconds": 819.167,
+      "cpuThrottledSeconds": 135.883,
+      "peakMemoryBytes": 4750684160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s49-fix-build-and-landed-tests.log",
+        "lines": 56,
+        "bytes": 8673,
+        "sha256": "d7035c5c69dedbb705201ca30b779c8eb91a661ff2822b4e26bcfeb4decff36b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-fix/build-plugin_spring-boot-gradle-plugin.runtimeClasspath.txt 94 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-fix/build-plugin_spring-boot-gradle-plugin.testRuntimeClasspath.txt 152 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-fix/loader_spring-boot-jarmode-tools.runtimeClasspath.txt 4 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-fix/loader_spring-boot-jarmode-tools.testRuntimeClasspath.txt 18 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-fix/loader_spring-boot-loader-tools.runtimeClasspath.txt 7 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-fix/loader_spring-boot-loader-tools.testRuntimeClasspath.txt 22 entries",
+        "1817f9296edf4b3bbdb868dbb3f4531123e25d84718272d87b28d465270716b9  jars/spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar",
+        "27b6be8a0cf848a870d6f8f777c323b976f1ace07971a991e3612e0d6ae753fe  jars/spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar",
+        "39129147994afbf6dae620ce2f0475f22a8bd24e270b9dabe8f1825e0174930d  jars/spring-boot-loader-tools-4.2.0-SNAPSHOT.jar",
+        "326036787952615adc04a4b50aadb261b9e28941ccab61482ea2d31f8572cc71  gradle-home/caches/9.8.1/generated-gradle-jars/gradle-api-9.8.1.jar",
+        "630ee97a7f1cdc75e8afc279a96b18766a38b2a5a2c8d1a75d16c2e3825bc10e  gradle-home/caches/9.8.1/generated-gradle-jars/gradle-test-kit-9.8.1.jar",
+        "e10ce26b7b601ad927e14cc413a2222d50fd699194af8a97e8bfa9d06eb519c2  tree/buildpack/spring-boot-buildpack-platform/build/libs/spring-boot-buildpack-platform-4.2.0-SNAPSHOT.jar",
+        "b997589c23acbdbdad4e732711074079e82661b120a87286ae53985faed41b2b  tree/loader/spring-boot-loader/build/libs/spring-boot-loader-4.2.0-SNAPSHOT.jar",
+        "39129147994afbf6dae620ce2f0475f22a8bd24e270b9dabe8f1825e0174930d  tree/loader/spring-boot-loader-tools/build/libs/spring-boot-loader-tools-4.2.0-SNAPSHOT.jar",
+        "c8ce1a24f4751a4a4fc9ec0f62bf1b833bf42f0cd7a516207a6d348df2fbb481  tree/test-support/spring-boot-gradle-test-support/build/libs/spring-boot-gradle-test-support-4.2.0-SNAPSHOT.jar",
+        "c1193c28948bd53a2ca6d0e3f5b152ec9bb13ce15f4b5539063745fe1238db21  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "b363c2233dd3039def8b110226aee579f0e0cdcd460d9de157e76cc3839200f3  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootArchiveSupport.class",
+        "aff285bc9f3980e8caf711883c7217c1d15e23d236acef07fcf18ad91d7aa3f7  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootJar$LibrarySpec.class",
+        "a889a861a49d52b229988637af5f35f32fea6197d84b6df47248499f3d1e46d5  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootJar$ZipCompressionResolver.class",
+        "c508a7e19d6ef40e1ca99e56260ef36c29d7ab6d4a7de838557d4ff8b8ea33f8  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootJar.class",
+        "59c1014fb128685f5592f38b7cf9ed55962da2f5f7d4bfe885da78fa122afe00  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootWar$LibrarySpec.class",
+        "db356dfa74226d63d68a879cc30afcccc0b3803393b860a652b54da1b1c23bd9  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootWar$ZipCompressionResolver.class",
+        "b2b5d97608cbd642a61ed5fa2a0eb79db4dd7e586b380ad0fe35a9a576151097  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootWar.class",
+        "60bf937bd1cb4207028a6bd15b6e70060f0f433385cd9c8d48b5498bbff341ee  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ArchiveType.class",
+        "b60bfb214ed4081c387e4d35a5f202135c58663c2b8de8dba282d888c03344b7  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$EntryNameTransformer.class",
+        "232b1551496be2d587d11aa328357fdffd5c43c34939e925b43fff847c1b4703  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$FileResolver.class",
+        "d1370e9cd9e75660945148a9148c6b5d9f4592e522fcbe95781bf9d89c819829  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$LayersFileResolver.class",
+        "0971baa13126c43dc8217e1a2b60ad7fc3ee21241f811e5e5873e11a62122494  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$ManifestWriter.class",
+        "7cc38d33c4003eead16d9e54222e55dd1f021754601cb209a785379455b7edef  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$NoLayersFileResolver.class",
+        "e9e32c8e098a24cf54224d64e94da0bc0280fbf72f706e180f33ed3e3f63315d  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$ThrowingConsumer.class",
+        "3329d7df6d1eafb74592cf31c059a5ac34b1a48d72ef1682533ad7cd6f5bfe23  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand.class",
+        "69814d3b628d884c181cdb7ded420f3c54ad8d82d116b73448d4029f3c2a0f8e  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/IndexedJarStructure.class",
+        "671e970f5153d3ae36def43d51b38cc7b14613ed8f61a7946c29fe8b4fb368e6  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/JarStructure$Entry$Type.class",
+        "f1cf0b8d40e137387722b85075d8e32333c4f87d3b0f7f5e659c76724f569d4a  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/JarStructure$Entry.class",
+        "d5a9b5e2647f76da49e535429ec3ea5b5521d18baee8a17b10910163315855e5  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/JarStructure.class",
+        "f99fb80503acd3dfad221abeee955bce5eeac4fd25b5dc88f3aadf82cc82a48a  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager$MainClassTimeoutWarningListener.class",
+        "932c5df2cc15abe6be5dec6473f8fb6d8dd84baa2ca68b6fb0c0a1b464a03e5a  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager$PackagedLibraries$PackagedLibrariesUnpackHandler.class",
+        "b62d2bea816dd84068a69050e5296a45bc7a91d136ea243da22e6c54814ea8d7  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager$PackagedLibraries.class",
+        "85f80e3508f3e3cac0d23182ff27fe677129d4db6757cf1efd91ae8f40a67b73  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager$RepackagingEntryTransformer.class",
+        "53fb6ad0519faf3cdb37e7838b14ecac74c71d339d33c61b1dae67a58d92f2db  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S49 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S49 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 212.041,
+      "cpuSeconds": 559.58,
+      "cpuThrottledSeconds": 119.822,
+      "peakMemoryBytes": 3524571136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s49-parent-build-and-the-paren.log",
+        "lines": 55,
+        "bytes": 8523,
+        "sha256": "840c9f148e13f7518d9d0d5566dccea1743e415cd35224939a8228d758910b6a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "class org.springframework.boot.jarmode.tools.IndexedJarStructureTests junit tests=6 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-parent/build-plugin_spring-boot-gradle-plugin.runtimeClasspath.txt 94 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-parent/build-plugin_spring-boot-gradle-plugin.testRuntimeClasspath.txt 152 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-parent/loader_spring-boot-jarmode-tools.runtimeClasspath.txt 4 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-parent/loader_spring-boot-jarmode-tools.testRuntimeClasspath.txt 18 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-parent/loader_spring-boot-loader-tools.runtimeClasspath.txt 7 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S49-parent/loader_spring-boot-loader-tools.testRuntimeClasspath.txt 22 entries",
+        "0156b01e803df4ad3f7e9bd8e4807cf6d55e3d5eff1b9793722e1ed35cce2502  jars/spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar",
+        "9dcb48713b28480dc3ab0a8cb1a075d995aee13baec5b9473e08de91b7aa1426  jars/spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar",
+        "e45968b5cae64df15aee65c9d7e98b8f9f71628676d45042c8c3a7ab70588f69  jars/spring-boot-loader-tools-4.2.0-SNAPSHOT.jar",
+        "326036787952615adc04a4b50aadb261b9e28941ccab61482ea2d31f8572cc71  gradle-home/caches/9.8.1/generated-gradle-jars/gradle-api-9.8.1.jar",
+        "630ee97a7f1cdc75e8afc279a96b18766a38b2a5a2c8d1a75d16c2e3825bc10e  gradle-home/caches/9.8.1/generated-gradle-jars/gradle-test-kit-9.8.1.jar",
+        "e10ce26b7b601ad927e14cc413a2222d50fd699194af8a97e8bfa9d06eb519c2  tree/buildpack/spring-boot-buildpack-platform/build/libs/spring-boot-buildpack-platform-4.2.0-SNAPSHOT.jar",
+        "b997589c23acbdbdad4e732711074079e82661b120a87286ae53985faed41b2b  tree/loader/spring-boot-loader/build/libs/spring-boot-loader-4.2.0-SNAPSHOT.jar",
+        "e45968b5cae64df15aee65c9d7e98b8f9f71628676d45042c8c3a7ab70588f69  tree/loader/spring-boot-loader-tools/build/libs/spring-boot-loader-tools-4.2.0-SNAPSHOT.jar",
+        "c8ce1a24f4751a4a4fc9ec0f62bf1b833bf42f0cd7a516207a6d348df2fbb481  tree/test-support/spring-boot-gradle-test-support/build/libs/spring-boot-gradle-test-support-4.2.0-SNAPSHOT.jar",
+        "c1193c28948bd53a2ca6d0e3f5b152ec9bb13ce15f4b5539063745fe1238db21  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "36d472c7170968e8a81c47191a58ffe981863d4850c2529058e027136725ea6f  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootArchiveSupport.class",
+        "aff285bc9f3980e8caf711883c7217c1d15e23d236acef07fcf18ad91d7aa3f7  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootJar$LibrarySpec.class",
+        "a889a861a49d52b229988637af5f35f32fea6197d84b6df47248499f3d1e46d5  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootJar$ZipCompressionResolver.class",
+        "cc585ac56beaa3b5a9458b97320482aeb43944edd37b6c63bfe054001b326ca1  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootJar.class",
+        "59c1014fb128685f5592f38b7cf9ed55962da2f5f7d4bfe885da78fa122afe00  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootWar$LibrarySpec.class",
+        "db356dfa74226d63d68a879cc30afcccc0b3803393b860a652b54da1b1c23bd9  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootWar$ZipCompressionResolver.class",
+        "22e1bf914bc79f6c0fb78884b572863330d9397e899f6141dc1a305f06f51499  spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar!/org/springframework/boot/gradle/tasks/bundling/BootWar.class",
+        "b60bfb214ed4081c387e4d35a5f202135c58663c2b8de8dba282d888c03344b7  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$EntryNameTransformer.class",
+        "1c99aedee04407335af033e39861cfbdde026eb726c3d7f59d684643746eb0b2  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$FileResolver.class",
+        "bc8576a27bc30eab96fa1e324ecf8d23f47bb999c91d9768c89c986843ed221e  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$LayersFileResolver.class",
+        "0971baa13126c43dc8217e1a2b60ad7fc3ee21241f811e5e5873e11a62122494  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$ManifestWriter.class",
+        "a1a9d8d0f38b01c5336dc3488f7a9cba99835a77fd3304cfa87d33288b21cb39  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$NoLayersFileResolver.class",
+        "e9e32c8e098a24cf54224d64e94da0bc0280fbf72f706e180f33ed3e3f63315d  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand$ThrowingConsumer.class",
+        "db04e2ae0e210e128a13527ec0ba47177a1d7ae091ee777415f7e85c01b11343  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/ExtractCommand.class",
+        "800bd4b0624d4bb4485eaa8ec194c6dc7fe05b941498d4b81156c724a3ea0a03  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/IndexedJarStructure.class",
+        "69d3f3ed3c56d7a8af92ff7865e34514a8556198e5981d1d02eebaa657c03940  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/JarStructure$Entry$Type.class",
+        "f1cf0b8d40e137387722b85075d8e32333c4f87d3b0f7f5e659c76724f569d4a  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/JarStructure$Entry.class",
+        "d5a9b5e2647f76da49e535429ec3ea5b5521d18baee8a17b10910163315855e5  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/JarStructure.class",
+        "f99fb80503acd3dfad221abeee955bce5eeac4fd25b5dc88f3aadf82cc82a48a  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager$MainClassTimeoutWarningListener.class",
+        "510f623b42284bdfd76896b564b44dfa76326591345ccd594ddfa0f2cc2c5c67  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager$PackagedLibraries$PackagedLibrariesUnpackHandler.class",
+        "41a0f9449101debfce37016becf63431093e204eec8b240148e8f4fba701cf8e  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager$PackagedLibraries.class",
+        "3a509af6ccbb87419491727ceef1aff8d53ad837b7549c524a68ef134e480ccb  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager$RepackagingEntryTransformer.class",
+        "03915f3e8cb3cc32c98aed9a6c2b07fc483bb03d47ce768af0965d9bbed5dc20  spring-boot-loader-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/loader/tools/Packager.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S49 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S49 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 52.983,
+      "cpuSeconds": 160.298,
+      "cpuThrottledSeconds": 94.9,
+      "peakMemoryBytes": 3860946944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s49-transplant-the-fix-s-tests.log",
+        "lines": 31,
+        "bytes": 3400,
+        "sha256": "8a94aa008e50f06f75e11120c77066aebe7d056ee5d8ad949c1372aa8107643e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/java/org/springframework/boot/gradle/tasks/bundling/AbstractBootArchiveTests.java",
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/java/org/springframework/boot/gradle/tasks/bundling/BootJarTests.java",
+        "transplanted build-plugin/spring-boot-gradle-plugin/src/test/java/org/springframework/boot/gradle/tasks/bundling/BootWarTests.java",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/java/org/springframework/boot/jarmode/tools/AbstractJarModeTests.java",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/java/org/springframework/boot/jarmode/tools/ExtractCommandTests.java",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/java/org/springframework/boot/jarmode/tools/IndexedJarStructureTests.java",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/resources/jar-contents/war-classpath.idx",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/resources/jar-contents/war-duplicate-classpath.idx",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/resources/jar-contents/war-layers.idx",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/resources/org/springframework/boot/jarmode/tools/tools-error-option-missing-value-output.txt",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/resources/org/springframework/boot/jarmode/tools/tools-error-option-unknown-output.txt",
+        "transplanted loader/spring-boot-jarmode-tools/src/test/resources/org/springframework/boot/jarmode/tools/tools-help-extract-output.txt",
+        "transplanted loader/spring-boot-loader-tools/src/test/java/org/springframework/boot/loader/tools/AbstractPackagerTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S49-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=52 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=85 failures=1 errors=0 skipped=0",
+        "junit failed BootWarTests#basicArchiveCreation()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.gradle.tasks.bundling.BootJarTests junit tests=44 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.gradle.tasks.bundling.BootWarTests junit tests=41 failures=1 errors=0 skipped=0 junit failed BootWarTests#basicArchiveCreation() ",
+        "class org.springframework.boot.jarmode.tools.ExtractCommandTests no-result",
+        "class org.springframework.boot.jarmode.tools.IndexedJarStructureTests no-result",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S49 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S49 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 2.807,
+      "cpuSeconds": 1.586,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 96587776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s49-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "7ecda08b25d52402d259ed380e770a389fb5c4abd8dcf8bd27ef44a2981c9bf9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S49"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T12:08:06+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T120726Z-399508b38186ec73"
+    }
+  }
+}
