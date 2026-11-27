@@ -9,11 +9,13 @@ import shutil
 import subprocess
 import tempfile
 
-from draw import committed
 from eligibility_inventory import HERE, digest, read, relative, write
+from functional_scope import decision_hash, identity
 from packet_view import ARMS, PreparationStop, export_checker, export_packet, export_product
 from reference_rows import check_semantics, reviewed
 from sandbox_runner import launch
+from sealed_io import committed_input, pack_files
+from trace_packets import add_trace_inputs, trace_summary
 
 
 def filename(arm, index, phase, name):
@@ -24,7 +26,7 @@ def blob(revision, path):
     if not revision:
         raise ValueError("a committed phase seal is required")
     try:
-        return committed(revision, relative(path))
+        return committed_input(revision, relative(path))
     except subprocess.CalledProcessError:
         raise ValueError("phase barrier is incomplete at the specified revision") from None
 
@@ -52,6 +54,19 @@ def verify_predictions(revision, arm, draw):
     return records
 
 
+def verify_traces(revision, cold_seal, reference_seal, draw):
+    records = []
+    for index, row in enumerate(draw["cases"], 1):
+        status = at(revision, filename("test-assisted", index, "trace", "attempt.json"))
+        raw = blob(revision, filename("test-assisted", index, "trace", "trace.json"))
+        if (status.get("phase") != "trace" or status["arm"] != "test-assisted" or status["index"] != index
+                or status["url"] != row["url"] or status["referenceSeal"] != reference_seal or status["coldSeal"] != cold_seal
+                or status["producerRevision"] != draw["producerRevision"] or hashlib.sha256(raw).hexdigest() != status.get("traceSha256")):
+            raise ValueError("test-assisted arm is missing a committed, independently linked trace or source-only record")
+        records.append((status, raw))
+    return records
+
+
 def validate_prediction(value, url, arm):
     if value.get("url") != url or value.get("arm") != arm or not isinstance(value.get("candidates"), list):
         raise ValueError("prediction does not identify its public input and ranked candidates")
@@ -69,8 +84,12 @@ def material_index(packet, counts):
     names = {"packet.json", spec["productionDiff"], *(p["file"] for p in spec["productionSources"]),
              *(p["file"] for p in spec.get("publicDocumentation", [])),
              *(p["file"] for p in spec.get("upstreamTests", []))}
+    if spec.get("testTrace"):
+        names.add(spec["testTrace"]["file"])
     return {"counts": counts, "publicTitle": spec["title"], "visiblePRDescription": spec["description"],
             "testScope": spec.get("testScope"), "reviewed": spec.get("reviewed"), "jdkReleaseSha256": spec["jdkReleaseSha256"],
+            "functionalReview": spec["functionalReview"], "approvedTestLaunches": spec.get("approvedTestLaunches", []),
+            "testTraceAvailability": spec.get("testTraceAvailability"), "testTrace": spec.get("testTrace"),
             "deployments": spec["deployments"], "files": {name: digest(packet / name) for name in sorted(names)}}
 
 
@@ -87,42 +106,56 @@ def store_new(stage, destination):
             raise ValueError("a different immutable attempt already occupies this slot") from None
 
 
-def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, seconds):
+def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, seconds, trace_seal=None):
+    if phase == "trace" and arm != "test-assisted":
+        raise ValueError("upstream traces are exclusive to the test-assisted diagnostic")
     draw = at(reference_seal, HERE / "draw.json")
     refs = at(reference_seal, HERE / "references.json")
+    decisions = at(reference_seal, HERE / "functional-scope.json")
+    scope_code_sha = hashlib.sha256(blob(reference_seal, HERE / "functional_scope.py")).hexdigest()
     size = len(draw["cases"])
     if not (1 <= index <= size) or size != 20:
         raise ValueError("a draw slot from 1 through 20 is required")
     if len(refs["references"]) != size or refs["producerRevision"] != draw["producerRevision"] or refs["preregistration"] != draw["preregistration"]:
         raise ValueError("references were not sealed for this entire draw and producer")
-    for row, record in zip(draw["cases"], refs["references"], strict=True):
+    require_match = (decisions.get("producerRevision"), decisions.get("preregistration")) == (draw["producerRevision"], draw["preregistration"])
+    if not require_match:
+        raise ValueError("functional scope comes from another producer freeze")
+    for ordinal, (row, record, decision) in enumerate(zip(draw["cases"], refs["references"], decisions["cases"], strict=True), 1):
         if row["url"] != record["url"]:
             raise ValueError("reference and draw order differ")
         check_semantics(record)
+        if (decision["index"] != ordinal or decision["identitySha256"] != identity(row)
+                or decision["policySha256"] != scope_code_sha):
+            raise ValueError("per-slot functional review is missing or belongs to another PR")
     prior = None
+    trace_input = None
     if arm != "cold":
         verify_predictions(cold_seal, "cold", draw)
+    if arm == "test-assisted" and phase != "trace":
+        trace_input = verify_traces(trace_seal, cold_seal, reference_seal, draw)[index - 1]
     if phase == "measure":
         prior = verify_predictions(prediction_seal, arm, draw)[index - 1]
     row = draw["cases"][index - 1]
     ref = refs["references"][index - 1]
+    decision = decisions["cases"][index - 1]
     registered = next(r for r in at(draw["preregistration"], HERE / "eligibility.json")["rows"] if r["number"] == row["number"])
     if not registered["eligible"] or registered["url"] != row["url"] or registered["pins"] != row["pins"]:
         raise ValueError("selected case fails its eligibility join")
     policy_ref = draw["producerFiles"][0]
-    policy_bytes = committed(draw["producerRevision"], policy_ref["path"])
+    policy_bytes = committed_input(draw["producerRevision"], policy_ref["path"])
     if hashlib.sha256(policy_bytes).hexdigest() != policy_ref["sha256"]:
         raise ValueError("different frozen producer policy")
     policy = json.loads(policy_bytes)
-    limit = policy["predictionSeconds" if phase == "predict" else "measurementSeconds"]
+    limit = policy[{"predict": "predictionSeconds", "measure": "measurementSeconds", "trace": "traceSeconds"}[phase]]
     if seconds is not None and seconds != limit:
         raise ValueError("requested time budget differs from the frozen producer policy")
     destination = filename(arm, index, phase, "attempt.json").parent
     if (destination / "attempt.json").is_file():
         old = read(destination / "attempt.json")
         if (old["producerRevision"], old["referenceSeal"], old["arm"], old["phase"], old["url"],
-            old.get("predictionSeal"), old.get("coldSeal")) != (draw["producerRevision"], reference_seal,
-                    arm, phase, row["url"], prediction_seal, cold_seal):
+            old.get("predictionSeal"), old.get("coldSeal"), old.get("traceSeal")) != (draw["producerRevision"], reference_seal,
+                    arm, phase, row["url"], prediction_seal, cold_seal, trace_seal):
             raise ValueError("this slot already holds a different attempt")
         return old["status"]
     with tempfile.TemporaryDirectory(prefix="caller-sealed-view-") as tmp:
@@ -131,21 +164,37 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
         stage.mkdir()
         attempt = {"schema": "blind-caller-attempt/v1", "index": index, "phase": phase, "arm": arm, "url": row["url"],
                    "producerRevision": draw["producerRevision"], "preregistration": draw["preregistration"],
-                   "referenceSeal": reference_seal, "coldSeal": cold_seal, "predictionSeal": prediction_seal}
+                   "functionalDecisionSha256": decision_hash(decision),
+                   "referenceSeal": reference_seal, "coldSeal": cold_seal, "predictionSeal": prediction_seal, "traceSeal": trace_seal}
         try:
-            if ref["safetyAbstention"]:
-                raise PreparationStop("scoped abstention for a possible real security vulnerability")
+            if not decision["permitted"] or ref["safetyAbstention"]:
+                raise PreparationStop("scoped abstention: ordinary functionality was not affirmatively established")
             if prior is not None and prior["status"] != "sealed":
                 raise PreparationStop("prediction stopped before a candidate was sealed")
             if prior is not None and prior["candidateCount"] == 0:
                 raise PreparationStop("frozen prediction abstained from nominating a candidate")
-            counts = export_packet(registered, arm, work / "view", registration=reviewed(ref) if arm == "reviewed" else None)
+            counts = export_packet(registered, arm, work / "view", decision=decision,
+                                   registration=reviewed(ref) if arm == "reviewed" else None)
+            packet_file = work / "view/packet.json"
+            packet = read(packet_file)
+            if phase == "trace":
+                add_trace_inputs(work / "view", packet, registered, decision)
+                write(packet_file, packet)
+            elif trace_input:
+                trace_attempt, raw = trace_input
+                (work / "view/trace.json").write_bytes(raw)
+                packet["testTrace"] = {"file": "trace.json", "sha256": trace_attempt["traceSha256"],
+                                       "status": trace_attempt["status"]}
+                write(packet_file, packet)
             export_product(draw["producerRevision"], policy["sourceFiles"], work / "product")
-            if phase == "measure":
+            if phase != "predict":
                 export_checker(policy["checkerSha256"], work / "product")
             view = material_index(work / "view", counts)
             write(stage / "view.json", view)
             attempt["viewSha256"] = digest(stage / "view.json")
+            if phase == "trace" and not packet["approvedTestLaunches"]:
+                attempt["availability"] = packet["testTraceAvailability"]
+                raise PreparationStop("source-only: no independently approved unit method with a complete original runtime")
             if prior and attempt["viewSha256"] != prior["viewSha256"]:
                 raise PreparationStop("deployment or visible material changed since prediction")
             sentinel = work / "evaluator-only"
@@ -165,13 +214,25 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
             if phase == "predict" and not boundary["predictionSubprocessDenied"]:
                 raise ValueError("prediction subprocess barrier failed")
             stopped = boundary["exitCode"] or boundary["timedOut"]
-            if stopped and (phase == "predict" or not (out / "measurement.json").is_file()):
+            if phase == "trace":
+                trace = out / "trace.json"
+                if trace.is_file() and isinstance(read(trace), dict):
+                    pack_files(out, stage / "artifacts.zip")
+                    attempt["traceCounts"] = trace_summary(work / "view", packet, out)
+                    shutil.copyfile(trace, stage / "trace.json")
+                    counts = attempt["traceCounts"]
+                    status = "bound original test trace" if counts["boundTraceRuns"] else "original test coverage gap" if counts["parityRuns"] else "source-only"
+                    attempt.update(status=status, availability=packet["testTraceAvailability"], workerEndedEarly=bool(stopped))
+                else:
+                    attempt.update(status="source-only", reason="original vetted trace did not return a trace receipt",
+                                   availability=packet["testTraceAvailability"])
+            elif stopped and (phase == "predict" or not (out / "measurement.json").is_file()):
                 attempt.update(status="operator stop", stoppedAt="candidate" if phase == "predict" else "generated and old-API compiled caller",
                                reason="worker exceeded its time limit" if boundary["timedOut"] else f"worker exited {boundary['exitCode']}")
                 if phase == "measure":
                     # Preserve complete per-candidate receipts even if the worker stopped
                     # before publishing its aggregate record. They do not earn implicit credit.
-                    shutil.copytree(out, stage / "partial")
+                    pack_files(out, stage / "artifacts.zip")
             elif phase == "predict":
                 path = out / "prediction.json"
                 if not path.is_file():
@@ -184,13 +245,8 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
                 path = out / "measurement.json"
                 if not path.is_file() or read(path).get("predictionSha256") != prior["predictionSha256"]:
                     raise ValueError("measurement did not bind the sealed prediction bytes")
-                for file in sorted(out.rglob("*")):
-                    if file.is_symlink() or not file.resolve().is_relative_to(out.resolve()):
-                        raise ValueError("worker emitted an external evidence reference")
-                    if file.is_file():
-                        rel = file.relative_to(out)
-                        (stage / rel).parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copyfile(file, stage / rel)
+                pack_files(out, stage / "artifacts.zip")
+                shutil.copyfile(path, stage / path.name)
                 attempt["measurementSha256"] = digest(path)
                 attempt["status"] = "partial measurement" if stopped else "measured"
                 if stopped:
@@ -202,6 +258,12 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
             attempt.update(status="preparation stop", stoppedAt="deployment", reason=type(error).__name__ + " for a required view input")
         except ValueError as error:
             attempt.update(status="operator stop", stoppedAt="candidate" if phase == "predict" else "required-side reach", reason=str(error))
+        if phase == "trace":
+            if not (stage / "trace.json").exists():
+                write(stage / "trace.json", {"schema": "blind-test-source-only/v1", "status": "source-only",
+                                            "reason": attempt["reason"], "qualifiedTraces": 0, "launches": []})
+                attempt["status"] = "source-only"
+            attempt["traceSha256"] = digest(stage / "trace.json")
         write(stage / "attempt.json", attempt)
         store_new(stage, destination)
         return attempt["status"]
@@ -209,14 +271,15 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("predict", "measure"))
+    parser.add_argument("phase", choices=("predict", "measure", "trace"))
     parser.add_argument("arm", choices=ARMS)
     parser.add_argument("--slot", required=True, type=int, action="append")
     parser.add_argument("--reference-seal", required=True)
     parser.add_argument("--cold-seal")
     parser.add_argument("--prediction-seal")
+    parser.add_argument("--trace-seal")
     parser.add_argument("--seconds", type=int, help="assert the committed per-phase time limit")
     args = parser.parse_args()
     counts = Counter(run_one(i, args.phase, args.arm, args.reference_seal, args.cold_seal, args.prediction_seal,
-                             seconds=args.seconds) for i in args.slot)
+                             seconds=args.seconds, trace_seal=args.trace_seal) for i in args.slot)
     print(json.dumps(dict(counts)))

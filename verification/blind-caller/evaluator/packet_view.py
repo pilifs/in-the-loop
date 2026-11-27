@@ -1,15 +1,15 @@
 """Export one allow-listed upstream view. No case directories enter the operator sandbox."""
 import difflib
 import hashlib
-import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import shutil
 import subprocess
 import zipfile
 
-from draw import committed
 from eligibility_inventory import BATCHES, CACHE, JDKS, RESERVED, ROOT, digest, example, read, upstream_pr, worktree, write
+from sealed_io import committed_input
 
 
 class PreparationStop(ValueError):
@@ -49,12 +49,20 @@ def is_test(path):
     return bool(TEST_DIR.search(path) or TEST_CLASS.search(PurePosixPath(path).stem))
 
 
-def is_production(path):
+def is_production(path, *, legacy=False):
     name = PurePosixPath(path)
     lower = {p.lower() for p in name.parts}
-    return (name.suffix in SOURCE_EXTENSIONS and not is_test(path)
-            and not lower.intersection({"examples", "example", "samples", "fixtures", "fixture", "benchmarks", "benchmark", "demos", "docs"})
-            and re.search(r"(?:^|/)src/(?:main/|java/|com/|org/|io/|net/)|(?:^|/)(?:main/)?java/", path))
+    if is_test(path) or lower.intersection({"examples", "example", "samples", "fixtures", "fixture", "benchmarks", "benchmark", "demos", "docs"}):
+        return False
+    conventional = re.search(r"(?:^|/)src/(?:main/|java/|com/|org/|io/|net/)|(?:^|/)(?:main/)?java/", path)
+    if legacy:
+        return name.suffix in SOURCE_EXTENSIONS and bool(conventional)
+    if lower.intersection({"testdata", "testlib", "testing", "jmh", "test-resources"}) or re.search(r"(?:^|/)src/it/(?:java|resources)/", path):
+        return False
+    if name.suffix in SOURCE_EXTENSIONS:
+        return bool(conventional) or "src" in lower
+    return (name.suffix in {".drv", ".jjt", ".jj", ".g4"} or
+            "src/main" in path and name.suffix in {".proto", ".properties", ".dtd", ".xsd"})
 
 
 def clean_production(source):
@@ -102,7 +110,7 @@ def related_tests(path, stems, packages):
             or any(folder.endswith("/" + package) for package in packages))
 
 
-def source_material(row, destination, metadata, arm, *, tree=None, public_docs=True):
+def source_material(row, destination, metadata, arm, *, tree=None, public_docs=True, approved_tests=None):
     if tree is None:
         tree = worktree(CACHE / BATCHES[row["batch"]][3], row["slot"], "fix")
     old, new = row["pins"]["parent"], row["pins"]["fix"]
@@ -115,7 +123,7 @@ def source_material(row, destination, metadata, arm, *, tree=None, public_docs=T
         name = PurePosixPath(path)
         if name.is_absolute() or ".." in name.parts:
             raise PreparationStop("upstream source has no safe relative path")
-        if not is_production(path):
+        if not is_production(path, legacy=not public_docs):
             continue
         sources = []
         for side, revision in (("old", old), ("new", new)):
@@ -149,7 +157,9 @@ def source_material(row, destination, metadata, arm, *, tree=None, public_docs=T
         counts["prDescriptionOriginalBytes"] = len((metadata["body"] or "").encode())
         visible["publicDocumentation"] = documentation
     if arm == "test-assisted":
-        production = [p for p in changed if is_production(p)]
+        if approved_tests is None:
+            raise PreparationStop("upstream test sources lack the evaluator's independent functional review")
+        production = [p for p in changed if is_production(p, legacy=not public_docs)]
         stems = [PurePosixPath(p).stem for p in production]
         packages = {p.rsplit("/", 1)[0].split(marker)[-1] for p in production
                     for marker in ("/java/", "/kotlin/", "/groovy/", "/scala/") if marker in p}
@@ -163,7 +173,8 @@ def source_material(row, destination, metadata, arm, *, tree=None, public_docs=T
                     continue
                 content = raw_git(tree, "show", f"{revision}:{path}")
                 letters = content.decode("utf-8", "replace")
-                if HAZARD.search(letters) or UNSAFE_MATERIAL.search(letters):
+                if (hashlib.sha256(content).hexdigest() not in approved_tests[side]
+                        or HAZARD.search(letters) or UNSAFE_MATERIAL.search(letters)):
                     counts["testFilesWithheld"] += 1
                     continue
                 export = destination / "upstream-tests" / side / path
@@ -174,7 +185,7 @@ def source_material(row, destination, metadata, arm, *, tree=None, public_docs=T
                 counts["testFilesVisible"] += 1
         tests.sort(key=lambda t: (not t["changed"], t["file"]))
         visible["upstreamTests"] = tests
-        visible["testScope"] = "Original changed test sources plus tests in a changed production package or naming a changed class, at each pin."
+        visible["testScope"] = "Only original changed or related test sources affirmatively reviewed for the same ordinary operation and matched byte-for-byte at this pin."
     return visible, counts
 
 
@@ -247,19 +258,21 @@ def deployments(row, destination):
             "old": variants[0]["old"], "new": variants[0]["new"]}
 
 
-def export_packet(row, arm, destination, *, registration=None):
+def export_packet(row, arm, destination, *, decision, registration=None):
     if arm not in ARMS or row["number"] in RESERVED or not row["eligible"]:
         raise PreparationStop("row or arm outside the declared evaluation")
     if (arm == "reviewed") != (registration is not None):
         raise ValueError("reviewed input belongs only to the reviewed arm")
+    from functional_scope import require_decision
+    functional_review = require_decision(row, decision)
     metadata = upstream_pr(row)
     if HAZARD.search(" ".join([metadata["title"], metadata["body"] or "", *[label["name"] for label in metadata["labels"]]])):
         raise PreparationStop("scoped abstention for a possible real security vulnerability")
     destination.mkdir()
-    contents, visibility = source_material(row, destination, metadata, arm)
+    contents, visibility = source_material(row, destination, metadata, arm, approved_tests=decision["approvedTests"])
     packet = {"schema": "blind-caller-packet/v1", "arm": arm, "url": row["url"],
               "oldRevision": row["pins"]["parent"], "newRevision": row["pins"]["fix"],
-              **contents, **deployments(row, destination)}
+              "functionalReview": functional_review, **contents, **deployments(row, destination)}
     if registration is not None:
         packet["reviewed"] = registration
     write(destination / "packet.json", packet)
@@ -274,7 +287,7 @@ def export_product(revision, files, destination):
         if (path.is_absolute() or ".." in path.parts or path.parts[:2] != ("examples", "tools")
                 or any(p.startswith("test_") or p == "__pycache__" for p in path.parts)):
             raise ValueError("producer source manifest includes an unapproved source path")
-        blob = committed(revision, name)
+        blob = committed_input(revision, name)
         if hashlib.sha256(blob).hexdigest() != checksum:
             raise ValueError("producer source differs from its frozen digest")
         target = destination / path
@@ -288,7 +301,13 @@ def export_checker(checksum, destination):
         raise PreparationStop("the frozen checker has no SHA-256")
     target = destination / name
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(ROOT / name, target)
+    sources = [CACHE / "blind-caller-pr-verification/checkers" / checksum / "jvmcontract", ROOT / name]
+    if os.environ.get("JVMCONTRACT"):
+        sources.append(Path(os.environ["JVMCONTRACT"]))
+    source = next((p for p in sources if p.is_file() and digest(p) == checksum), None)
+    if not source:
+        raise PreparationStop("no retained original checker matches the frozen SHA-256")
+    shutil.copyfile(source, target)
     if digest(target) != checksum:
         raise PreparationStop("the available native checker differs from the producer freeze")
     target.chmod(0o555)

@@ -31,7 +31,16 @@ def reference(row, *, requested_safety_stop=False, metadata=None):
         raise ValueError("reserved case")
     folder = example(row["number"])
     cp, rp, op = (folder / name for name in ("comparison.json", "runtime.json", "observations.json"))
-    spec, runtime, physical = map(read, (cp, rp, op))
+    spec = read(cp)
+    if spec["revisions"] != row["pins"]:
+        raise ValueError("reference registration and selected pins differ")
+    if requested_safety_stop:
+        questions = [{"id": q["id"], "role": q["role"], "requiredSides": [SIDES[s] for s in q["expected"]], "variants": {}}
+                     for q in spec["questions"]]
+        return {"canonicalPR": row["canonicalPR"], "url": row["url"], "variants": {},
+                "primaryIndex": next(i for i, q in enumerate(questions) if q["role"] == "Intent"),
+                "questions": questions, "safetyAbstention": True}
+    runtime, physical = map(read, (rp, op))
     if spec["revisions"] != row["pins"] or physical["comparisonSha256"] != digest(cp) or physical["runtimeSha256"] != digest(rp):
         raise ValueError("historical pin or registration digest differs")
     if set(runtime["deployments"]) != set(physical["deployments"]):

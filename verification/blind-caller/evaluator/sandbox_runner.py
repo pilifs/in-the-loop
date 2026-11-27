@@ -119,7 +119,7 @@ def worker(phase, sentinel, entry, packet, out, limit, host_net_inode, sealed=No
 
 def launch(phase, product, packet, scratch, jdk, sentinel, *, sealed=None, seconds=50, worker_path=None,
            diagnostic_path=None):
-    if phase not in ("predict", "measure") or (phase == "measure") != bool(sealed):
+    if phase not in ("predict", "measure", "trace") or (phase == "measure") != bool(sealed):
         raise ValueError("unknown evaluation phase or missing sealed prediction")
     if not sentinel.is_file() or not sentinel.stat().st_size:
         raise ValueError("a real evaluator-only sentinel is required")
@@ -128,7 +128,8 @@ def launch(phase, product, packet, scratch, jdk, sentinel, *, sealed=None, secon
     scratch.mkdir()
     out = scratch / "out"
     out.mkdir()
-    entry = worker_path or product / "examples/tools/targets" / ("blind_prediction.py" if phase == "predict" else "blind_measure.py")
+    entry = worker_path or product / "examples/tools/targets" / {
+        "predict": "blind_prediction.py", "measure": "blind_measure.py", "trace": "approved_test_trace.py"}[phase]
     if not entry.resolve().is_relative_to(product.resolve()) or not entry.is_file():
         raise ValueError("worker missing from the frozen producer export")
     rules = ["setpriv", "--no-new-privs", "--landlock-access", "fs"]
@@ -147,27 +148,27 @@ def launch(phase, product, packet, scratch, jdk, sentinel, *, sealed=None, secon
     if sealed:
         grant(READ, [sealed])
     checker = product / "lib/target/release/jvmcontract"
-    if phase == "measure" and checker.is_file():
+    if phase != "predict" and checker.is_file():
         grant("execute,read-file", [checker])
     grant("read-file,write-file", ["/dev/null"])
     grant(WRITE, [scratch])
     env = {"HOME": str(scratch), "TMPDIR": str(scratch), "PATH": "/usr/bin:/bin", "LANG": "C.UTF-8",
            "JAVA_TOOL_OPTIONS": f"-XX:-UsePerfData -XX:ActiveProcessorCount=2 -Djava.io.tmpdir={scratch}",
            "PYTHONDONTWRITEBYTECODE": "1"}
-    if phase == "measure" and checker.is_file():
+    if phase != "predict" and checker.is_file():
         env["JVMCONTRACT"] = str(checker)
     host_net_inode = str(Path("/proc/self/ns/net").stat().st_ino)
     command = [*rules, "--", "/usr/bin/python3", "-I", "-B", BOOT, phase, sentinel, entry, packet, out, str(seconds), host_net_inode]
     if sealed:
         command.append(sealed)
-    if phase == "measure":
+    if phase != "predict":
         box = ["bwrap", "--unshare-user", "--unshare-net", "--unshare-pid", "--unshare-uts", "--hostname", "caller",
                "--die-with-parent", "--cap-drop", "ALL",
                "--ro-bind", "/usr", "/usr", "--symlink", "usr/lib", "/lib", "--symlink", "usr/lib64", "/lib64",
                "--symlink", "usr/bin", "/bin", "--dev", "/dev", "--proc", "/proc"]
         for mount in (jdk.resolve(), product, packet, sealed, BOOT, sentinel, Path("/etc/ld.so.cache"),
                       Path("/etc/localtime"), Path("/sys/devices/system/cpu")):
-            if mount.exists():
+            if mount is not None and mount.exists():
                 box += ["--ro-bind", str(mount.resolve()), str(mount)]
         hosts = scratch.parent / "private-loopback-hosts"
         hosts.write_text("127.0.0.1 localhost caller\n::1 localhost caller\n")

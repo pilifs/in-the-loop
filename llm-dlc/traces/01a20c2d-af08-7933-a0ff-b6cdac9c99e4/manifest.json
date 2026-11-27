@@ -12,29 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T05:14:17.388Z",
-  "duration_seconds": 255807,
+  "ended": "2026-11-27T05:25:05.126Z",
+  "duration_seconds": 256454,
   "stats": {
     "turns": 41,
-    "api_calls": 6792,
-    "tool_calls": 16635,
-    "tool_errors": 358,
+    "api_calls": 6823,
+    "tool_calls": 16703,
+    "tool_errors": 359,
     "compactions": 28,
     "peak_context_tokens": 550925,
     "usage": {
-      "input_tokens": 8484644,
-      "output_tokens": 3975820,
-      "cache_read_input_tokens": 1851644160,
+      "input_tokens": 8502450,
+      "output_tokens": 3998656,
+      "cache_read_input_tokens": 1864931072,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 9064,
-    "exec": 6459,
-    "apply_patch": 874,
+    "Bash": 9092,
+    "exec": 6484,
+    "apply_patch": 886,
     "wait": 113,
     "sleep": 97,
-    "send_message": 18,
+    "send_message": 21,
     "send_message_to_user_async": 7,
     "spawn_agent": 2,
     "request_user_input_async": 1
@@ -167,6 +167,7 @@
     "examples/schema/target-claim.schema.json",
     "examples/tools/build.py",
     "examples/tools/scaffold_example.py",
+    "examples/tools/targets/approved_test_trace.py",
     "examples/tools/targets/blind_measure.py",
     "examples/tools/targets/blind_prediction.py",
     "examples/tools/targets/change_evidence.py",
@@ -395,11 +396,14 @@
     "verification/blind-caller/collector.py",
     "verification/blind-caller/development.py",
     "verification/blind-caller/formatter.py",
+    "verification/blind-caller/historical_adverse.py",
     "verification/blind-caller/nominate_histories.py",
     "verification/blind-caller/parquet_trace.py",
+    "verification/blind-caller/producer_policy.py",
     "verification/blind-caller/product_controls.py",
     "verification/blind-caller/spring/SubscriptionHistory.java",
     "verification/blind-caller/strict_helper.py",
+    "verification/blind-caller/subscriptions.py",
     "verification/blind-caller/trace-policy.json",
     "verification/blind-caller/trace_control.py",
     "verification/findings.md",
@@ -1010,24 +1014,24 @@
     {
       "index": 28,
       "started": "2026-11-27T03:04:15.564Z",
-      "ended": "2026-11-27T05:14:17.388Z",
+      "ended": "2026-11-27T05:25:05.126Z",
       "turns": 2,
-      "api_calls": 220,
+      "api_calls": 251,
       "usage": {
-        "input_tokens": 262383,
-        "output_tokens": 172917,
-        "cache_read_input_tokens": 59966720,
+        "input_tokens": 280189,
+        "output_tokens": 195753,
+        "cache_read_input_tokens": 73253632,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 410755
+      "peak_context_tokens": 448733
     }
   ],
   "log": {
-    "sha256": "24bbf9f01cc6d517a7e3544bf04400634d29f202bf1a96de4257e57756071493",
-    "bytes": 108349914,
-    "lines": 53550,
-    "gzip_bytes": 19756209,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/24bbf9f01cc6d517a7e3544bf04400634d29f202bf1a96de4257e57756071493.jsonl.gz"
+    "sha256": "f6ad28555d35e512e681be5789711235e6623dcab16327d8be0f4565ab1d78c7",
+    "bytes": 108804324,
+    "lines": 53796,
+    "gzip_bytes": 19828367,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/f6ad28555d35e512e681be5789711235e6623dcab16327d8be0f4565ab1d78c7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3280,20 +3284,28 @@
       "log_sha256": "4a5a37bfa7e03389f4aa7aeae279e60bdb235702b58ea40a9cd44c15020e2dab"
     },
     {
-      "change_id": "xkoutolzqtptrrzuxrzkwuzwomwxrvsk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "24bbf9f01cc6d517a7e3544bf04400634d29f202bf1a96de4257e57756071493"
-    },
-    {
       "change_id": "mvmvulnrwnqxsplpxvvnrxqqwvllvmpv",
       "commit_id": null,
       "immutable": false,
       "summary": "Bind strict helper summaries to actual runtime uses (verification pending)",
       "body": "Resolve java.base helper bytes through the original bootstrap class resource on the selected JVM, cross-check the bound class, and give the same bytes to the native lemma query. Record a concrete consumption only inside the proved branch of a generated stub, at the original caller instruction and full tuple. A supplied but unused lemma cannot qualify the original application. Keep the closed finite certificate alongside the strict result.\n\nThe release build and all 56 selected Rust and Python groups passed. One capped original JDK 21 query verified CheckedHelperUse.check and recorded all six actual Math.min(int,int) tuples at six distinct bytecode sites. Using a different JDK retained the module-shadow refusal. Job 20261127-050122-verify-the-six-actual-math-min-tuples-us rechecks both Commons IO questions on both releases and the missing, incorrect and unused substitution controls.",
       "log_sha256": "24bbf9f01cc6d517a7e3544bf04400634d29f202bf1a96de4257e57756071493"
+    },
+    {
+      "change_id": "wrokvvmxoxontnkwpnovusrpovvpzrxy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "f6ad28555d35e512e681be5789711235e6623dcab16327d8be0f4565ab1d78c7"
+    },
+    {
+      "change_id": "klupltnzrsmrxolrtrntmwtqlrsrrvtl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Gate the blind draw on ordinary behavior and original unit traces",
+      "body": "Require an affirmative pre-attempt agreement between public PR material, changed production behavior and the registered public purpose. Security-sensitive and ambiguous slots remain in the denominator without a candidate packet. Admit only independently reviewed original test source and at most one zero-argument unit method per side on its complete, digest-bound applicable test graph. Keep source-only outcomes separate from a real test trace.\n\nThe three-arm evaluator now handles committed trace barriers, immutable archives and pipeline exports. It rechecks phase seals, raw debugger forks, original class bytes, compiled unit-test identity and plain-versus-traced parity. A source-only row cannot earn trace credit. All forty provisional producer files passed an isolated synthetic end-to-end run with one decided finite caller and two bound original test witnesses across four JVM executions. Eight deliberately altered scoring claims were rejected. No held-back PR was drawn.",
+      "log_sha256": "f6ad28555d35e512e681be5789711235e6623dcab16327d8be0f4565ab1d78c7"
     }
   ],
   "logs": {
@@ -4160,6 +4172,12 @@
       "lines": 13426,
       "gzip_bytes": 4319907,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/f5b9672c0e3ee1b1f028ef2dbd0032d033f9bdc6854e1b287fb83ae84e55c57c.jsonl.gz"
+    },
+    "f6ad28555d35e512e681be5789711235e6623dcab16327d8be0f4565ab1d78c7": {
+      "bytes": 108804324,
+      "lines": 53796,
+      "gzip_bytes": 19828367,
+      "url": null
     },
     "f74db1da5a52e88b57a8d60442d29310844bc71e3b328bafa79bc54ee2ceda91": {
       "bytes": 85829082,

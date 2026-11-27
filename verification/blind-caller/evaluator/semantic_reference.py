@@ -7,7 +7,7 @@ import re
 import subprocess
 import tempfile
 
-from eligibility_inventory import CACHE, HERE, JDKS, example, read, write
+from eligibility_inventory import CACHE, HERE, JDKS, digest, example, read, write
 from reference_rows import capture, reference
 
 
@@ -45,9 +45,13 @@ def static_facts(row, record, classes, directory):
     deployment = next(iter(runtime["deployments"].values()))
     side = deployment.get("compileAgainst", "fix")
     files = sorted((folder / "caller").rglob("*.java"))
-    keys = set(read(folder / "observations.json")["inputs"])
+    keys = read(folder / "observations.json")["inputs"]
     files = [f for f in files if f.relative_to(folder).as_posix() in keys]
+    if any(digest(f) != keys[f.relative_to(folder).as_posix()] for f in files):
+        raise ValueError("historical caller source differs from its independently recorded digest")
     original = [CACHE / runtime["cache"] / name for name in deployment["classpath"][side]]
+    if any(digest(p) != runtime["sha256"][key] for p, key in zip(original, deployment["classpath"][side], strict=True)):
+        raise ValueError("classfiles supplied to the historical source analyzer differ from the archived deployment")
     primary = record["questions"][record["primaryIndex"]]
     directory.mkdir()
     (directory / "source-files").write_text("\n".join(map(str, files)))
@@ -71,6 +75,8 @@ def static_facts(row, record, classes, directory):
         elif values[0] == "argument":
             _, selector, position, typ, value = values
             inputs.append({"member": selector, "position": int(position), "type": typ, "value": value})
+            if actions and actions[-1]["member"] == selector:
+                actions[-1].setdefault("literalArguments", []).append({"position": int(position), "type": typ, "value": value})
         elif values[0] == "analysis":
             errors = int(values[1])
     return actions, inputs, "partially resolved source declarations" if errors else "resolved source declarations"
@@ -153,8 +159,11 @@ def describe(row, record, classes, directory):
             "semanticLimits": "The preserved source identifies public declarations and possible branches. Runtime object identities and alternative routes require independent witnesses. The complete historical encoding and every separately named component remain obligations."}
 
 
-def build(draw, output, *, also_semantics=None):
+def build(draw, decisions, output, *, also_semantics=None):
     roster = {r["number"]: r for r in read(HERE / "eligibility.json")["rows"]}
+    from functional_scope import identity
+    if decisions["producerRevision"] != draw["producerRevision"] or decisions["preregistration"] != draw["preregistration"]:
+        raise ValueError("functional decisions belong to another draw")
     semantics = {}
     with tempfile.TemporaryDirectory(prefix="caller-reference-facts-") as tmp:
         root = Path(tmp)
@@ -162,9 +171,11 @@ def build(draw, output, *, also_semantics=None):
         classes.mkdir()
         subprocess.run([JDK / "bin/javac", "-proc:none", "-d", str(classes), SOURCE], check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=20)
-        for index, selected in enumerate(draw["cases"]):
+        for index, (selected, scope) in enumerate(zip(draw["cases"], decisions["cases"], strict=True)):
             row = roster[selected["number"]]
-            ref = reference(row)
+            if scope["index"] != index + 1 or scope["identitySha256"] != identity(row):
+                raise ValueError("functional decision belongs to another slot")
+            ref = reference(row, requested_safety_stop=not scope["permitted"])
             try:
                 facts = describe(row, ref, classes, root / str(index))
             except subprocess.TimeoutExpired:
@@ -178,6 +189,7 @@ def build(draw, output, *, also_semantics=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--draw", type=Path, default=HERE / "draw.json")
+    parser.add_argument("--functional-scope", type=Path, default=HERE / "functional-scope.json")
     parser.add_argument("--output", type=Path, default=HERE / "references.json")
     args = parser.parse_args()
-    build(read(args.draw), args.output)
+    build(read(args.draw), read(args.functional_scope), args.output)

@@ -12,6 +12,7 @@ from eligibility_inventory import HERE, ROOT, read, write
 from evaluate_arm import at, blob, filename, verify_predictions
 from packet_view import ARMS
 from reference_rows import check_semantics
+from sealed_io import read_member
 
 sys.path.insert(0, str(ROOT / "examples/tools"))
 from targets import change_evidence, change_plan
@@ -49,7 +50,7 @@ def get_evidence(revision, arm, index, desc, *, directory=None):
         ref = desc.get(name, {})
         rel = Path(ref.get("path", ""))
         require(not rel.is_absolute() and ".." not in rel.parts and rel.parts, "invalid measurement evidence path")
-        data = blob(revision, directory / rel if directory else filename(arm, index, "measure", rel))
+        data = read_member(revision, directory or filename(arm, index, "measure", "attempt.json").parent, rel)
         require(hashlib.sha256(data).hexdigest() == ref.get("sha256"), "measurement evidence digest mismatch")
         content[name] = data
     return content
@@ -61,7 +62,7 @@ def verified_bindings(revision, arm, index, measurement, ref, variant, *, direct
         return False
     path = Path(descriptor["path"])
     require(not path.is_absolute() and ".." not in path.parts, "binding receipt outside the case output")
-    raw = blob(revision, directory / path if directory else filename(arm, index, "measure", path))
+    raw = read_member(revision, directory or filename(arm, index, "measure", "attempt.json").parent, path)
     require(hashlib.sha256(raw).hexdigest() == descriptor["sha256"], "binding file differs from its digest")
     plan = json.loads(raw)
     require(change_plan.saved_bindings(plan)["status"] == "recorded", "saved binding evidence has no independently checked graph")
@@ -238,8 +239,13 @@ def attempt_result(reference_revision, arm_revision, arm, index, draw, ref, deci
               "compiledAgainstOld": False, "requiredSideReach": False, "allFieldsObserved": False,
               "candidateReviews": [], "stoppedAt": measured.get("stoppedAt", "candidate"),
               "reason": pred.get("reason", measured.get("reason")), "assistance": arm,
-              "secondaryQuestions": [{"id": q["id"], "role": q["role"], "newAttempt": "unqualified", "historical": {
-                  k: {"status": v["finiteDisposition"], "reason": v["reason"]} for k, v in q["variants"].items()}}
+              "predictionReceipt": filename(arm, index, "predict", "attempt.json").relative_to(ROOT).as_posix(),
+              "measurementReceipt": filename(arm, index, "measure", "attempt.json").relative_to(ROOT).as_posix(),
+              "functionalDecisionSha256": pred.get("functionalDecisionSha256"),
+              "secondaryQuestions": [{"id": q["id"], "role": q["role"], "newAttempt": "no independently qualified coverage",
+                  "requiredSides": q["requiredSides"], "history": q.get("registeredHistory"), "historical": {
+                  k: {"status": v["finiteDisposition"], "reason": v["reason"], "observed": v.get("actual"),
+                      "unpredictedSides": v.get("unpredictedSides", [])} for k, v in q["variants"].items()}}
                                      for q in questions if q is not primary]}
     if pred["status"] != "sealed":
         return result
@@ -270,6 +276,8 @@ def attempt_result(reference_revision, arm_revision, arm, index, draw, ref, deci
         equivalent = correspondence(judgment, candidate, ref)
         audit = {"rank": rank + 1, "entry": candidate["entry"], "kind": judgment["kind"], "equivalent": equivalent,
                  "qualified": False, "review": judgment["reason"], "deployments": {},
+                 "history": candidate["history"], "inputs": candidate["inputs"], "fields": candidate["fields"],
+                 "prediction": candidate["prediction"], "requiredSides": candidate["requiredSides"], "source": candidate.get("source"),
                  "stoppedAt": result["stoppedAt"], "reason": result["reason"]}
         if equivalent and rank < 3:
             result["rankAtThreeEquivalent"] = True
@@ -282,6 +290,7 @@ def attempt_result(reference_revision, arm_revision, arm, index, draw, ref, deci
             audit["deployments"][label] = evidence_status
             if not m:
                 continue
+            evidence_status.update(actual=m.get("observations"), finiteDisposition=m.get("status"), evidence=m.get("evidence"))
             require(m["candidateSha256"] == canonical(candidate) and m["entry"] == candidate["entry"], "measurement belongs to a different ranked candidate")
             try:
                 evidence_status["bound"] = verified_bindings(arm_revision, arm, index, m, ref, label)
@@ -313,6 +322,7 @@ def attempt_result(reference_revision, arm_revision, arm, index, draw, ref, deci
             result["allFieldsObserved"] = all(v["allFieldsObserved"] for v in variants)
             result["primaryQualified"] = audit["qualified"]
             result.update(stoppedAt=audit["stoppedAt"], reason=audit["reason"] or judgment["reason"])
+            result["semanticGap"] = judgment.get("gap")
         result["candidateReviews"].append(audit)
     return result
 
@@ -337,9 +347,13 @@ def score(reference_revision, seals, judgments, output):
                                "denominator": sum(batch == "all" or r["batch"] == batch for r in rows)}
                        for batch in ("all", "P", "Q", "R")}
     reasons = Counter(row["arms"]["cold"]["stoppedAt"] for row in rows if not row["arms"]["cold"]["primaryQualified"])
+    gaps = Counter(row["arms"]["cold"].get("semanticGap") or row["arms"]["cold"].get("reason") or "no nomination"
+                   for row in rows if not row["arms"]["cold"]["primaryQualified"] and
+                   isinstance(row["arms"]["cold"].get("semanticGap") or row["arms"]["cold"].get("reason"), (str, type(None))))
     write(output, {"schema": "blind-caller-paired-score/v1", "producerRevision": draw["producerRevision"],
                    "referenceSeal": reference_revision, "armSeals": seals, "counts": counts,
-                   "coldMissStages": reasons.most_common(), "coldNumericalTargetsMet": counts["cold"]["all"]["qualified"] >= 8
+                   "coldMissStages": reasons.most_common(), "recurringColdGaps": gaps.most_common(),
+                   "coldNumericalTargetsMet": counts["cold"]["all"]["qualified"] >= 8
                    and counts["cold"]["R"]["qualified"] >= 3, "plantedControls": "requires independent development falsifier evidence",
                    "rows": rows})
     print(json.dumps(counts))
