@@ -52,6 +52,11 @@ Commands:
                                 conflicts; lists any other conflict and exits 1 if one is left. It also
                                 takes from the repository's other workspaces the logs of the merged sessions
                                 that are stored only there (adopt-logs)
+  sync.py standing [SESSION ROLE... | --end SESSION]
+                                the standing sessions: ones meant to stay open for days in a role (the advisor,
+                                a queue's watcher), which README.md's table lists apart, under their roles. With
+                                a session and a role, record it; --end returns it to the ordinary rows. The
+                                change is to llm-dlc/standing-sessions.json; commit it as any change
   sync.py adopt-logs            take each log a manifest names and this workspace lacks from the workspace that
                                 stores it, checked against its sha256 before it is kept
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
@@ -179,6 +184,9 @@ TRACES = CHANGES / "traces"
 # Where older commits keep their manifests: before the changes/ layout, then before llm-dlc/.
 LEGACY_TRACES = ("traces", "changes/traces")
 INDEX = CHANGES / "index.json"
+# The standing sessions: ones meant to stay open for days in a role (the advisor, a queue's watcher), which the
+# README lists apart from the ordinary rows, under their roles (VF-074). Written by `sync.py standing`.
+STANDING = CHANGES / "standing-sessions.json"
 CHANGES_README = CHANGES / "README.md"
 SUMMARY_TEMPLATE = CHANGES / "summary-template.md"
 SESSION_NOTES = CHANGES / "session-notes"
@@ -706,6 +714,83 @@ def save_manifest(sid: str, m: dict) -> None:
 
 def all_manifests() -> dict[str, dict]:
     return {p.parent.name: json.loads(p.read_text()) for p in sorted(TRACES.glob("*/manifest.json"))}
+
+
+def transcript_anywhere(sid: str) -> Path | None:
+    """A session's transcript wherever it is on this machine: in any Claude Code project folder (every workspace
+    has its own), or Codex's rollout of that thread. None when this machine has none (it ran on another)."""
+    found = sorted((Path.home() / ".claude" / "projects").glob(f"*/{sid}.jsonl"))
+    if not found:
+        home = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
+        found = sorted((home / "sessions").glob(f"*/*/*/rollout-*{sid}.jsonl"))
+    return max(found, key=lambda f: f.stat().st_mtime) if found else None
+
+
+def end_idle_elsewhere(here: set[str], now: float | None = None) -> list[str]:
+    """Mark `ended` each session whose manifest says `open`, whose transcript is not in this checkout's folder
+    (`here` are synced by the loop of cmd_sync), and that has written nothing for LIVE_SECONDS. Its transcript is
+    looked for in every workspace's folder; a session with none on this machine goes by its manifest's last
+    activity. A session that ran in another workspace was last synced by its own commits while it was still
+    running, and nothing else read it again, so its row stayed `open` for good (VF-074). Only the status changes:
+    the log, which the commits' trailers name, is as its workspace stored it. Returns the sessions it ended."""
+    now = time.time() if now is None else now
+    ended = []
+    for sid, m in all_manifests().items():
+        if sid in here or m.get("status") != "open":
+            continue
+        transcript = transcript_anywhere(sid)
+        if transcript is not None:
+            last = transcript.stat().st_mtime
+        else:
+            try:
+                last = datetime.fromisoformat(str(m.get("ended")).replace("Z", "+00:00")).timestamp()
+            except ValueError:
+                continue
+        if now - last < LIVE_SECONDS:
+            continue
+        save_manifest(sid, {**m, "status": "ended"})
+        ended.append(sid)
+    return ended
+
+
+def standing_sessions() -> dict[str, dict]:
+    """The standing sessions (STANDING): session id -> its role, since when, and who recorded it."""
+    try:
+        doc = json.loads(STANDING.read_text())
+    except (OSError, ValueError):
+        return {}
+    return {sid: e for sid, e in (doc.get("sessions") or {}).items() if isinstance(e, dict) and e.get("role")}
+
+
+def cmd_standing(args: list[str]) -> int:
+    """`sync.py standing [SESSION ROLE... | --end SESSION]`: list, record or end a standing session."""
+    entries = standing_sessions()
+    if args[:1] == ["--end"] and len(args) == 2:
+        sid = args[1]
+        if entries.pop(sid, None) is None:
+            print(f"{sid} is not a standing session", file=sys.stderr)
+            return 1
+    elif len(args) >= 2 and not args[0].startswith("-"):
+        sid, role = args[0], " ".join(args[1:]).strip()
+        if not re.fullmatch(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", sid):
+            print(f"not a session id: {sid}", file=sys.stderr)
+            return 2
+        was = entries.get(sid) or {}
+        entries[sid] = {"role": role, "since": was.get("since") or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                        "recordedBy": os.environ.get("CLAUDE_CODE_SESSION_ID") or os.environ.get("CODEX_THREAD_ID")
+                        or "a person, at their terminal"}
+    elif args:
+        print("usage: sync.py standing [SESSION ROLE... | --end SESSION]", file=sys.stderr)
+        return 2
+    if args:
+        write_if_changed(STANDING, json.dumps({"schema": "standing-sessions/v1", "sessions": dict(sorted(entries.items()))},
+                                              indent=2, ensure_ascii=False) + "\n")
+        write_index()
+    for sid, e in sorted(entries.items(), key=lambda kv: kv[1]["since"]):
+        print(f"{sid}  {e['role']}  (since {e['since']})")
+    if not entries:
+        print("no standing sessions")
+    return 0
 
 
 def redacted(transcript: Path, sid: str, known: str | None, redact: Redactor, key: str,
@@ -1448,12 +1533,13 @@ def write_index() -> None:
     """llm-dlc/index.json lists every session with the commits it made, so a reader can go from
     a commit or a date to a session without opening every manifest. The same rows are rendered as
     a table in llm-dlc/README.md, between the index markers."""
-    rows, manifests = [], all_manifests()
+    rows, manifests, standing = [], all_manifests(), standing_sessions()
     for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
             continue
         rows.append({
             "session_id": sid, "title": m.get("title"), "status": m.get("status"),
+            **({"role": standing[sid]["role"]} if sid in standing else {}),
             "started": m.get("started"), "ended": m.get("ended"), "models": m.get("models", []),
             "turns": m.get("stats", {}).get("turns"),
             "log_sha256": m.get("log", {}).get("sha256"),
@@ -1465,8 +1551,18 @@ def write_index() -> None:
     index = {"schema": INDEX_SCHEMA, "sessions": rows}
     write_if_changed(INDEX, json.dumps(index, indent=2, ensure_ascii=False) + "\n")
     if CHANGES_README.exists():
-        table = ["| Started | Session | Prompts | Commits | Status |", "|---|---|---|---|---|"]
+        # The standing sessions first, under their roles, then every other session (VF-074).
+        held = [r for r in rows if r.get("role")]
+        table = (["**Standing sessions**, meant to stay open for days in a role (`sync.py standing`):", "",
+                  "| Role | Started | Session | Prompts | Commits | Status |", "|---|---|---|---|---|---|"]
+                 + [f"| {r['role'].replace('|', '/')} | {_when(r['started'])} | "
+                    f"[{r['session_id'][:8]}]({r['summary']}) | {r['turns']} | {len(r['commits'])} | {r['status']} |"
+                    for r in sorted(held, key=lambda r: r["started"] or "")]
+                 + ["", "**Every other session:**", ""]) if held else []
+        table += ["| Started | Session | Prompts | Commits | Status |", "|---|---|---|---|---|"]
         for r in reversed(rows):
+            if r.get("role"):
+                continue
             title = (r["title"] or r["session_id"]).replace("|", "\\|")
             table.append(f"| {_when(r['started'])} | [{title}]({r['summary']}) | {r['turns']} | "
                          f"{len(r['commits'])} | {r['status']} |")
@@ -2307,7 +2403,8 @@ HOOK_LOCK_WAIT = 15  # seconds hook-commit waits for another operation (its hook
 # only its Langfuse cursor, and hook-commit takes it itself, once it knows the call was a commit.
 LOCKING = {"check": "shared", "scan": "shared", "sync": "exclusive", "render": "exclusive", "commit": "exclusive", "push": "exclusive",
            "upload": "exclusive", "unpublish": "exclusive", "stamp": "exclusive", "allow": "exclusive",
-           "review": "exclusive", "delegate": "exclusive", "init": "exclusive", "regenerate": "exclusive", "adopt-logs": "exclusive"}
+           "review": "exclusive", "delegate": "exclusive", "init": "exclusive", "regenerate": "exclusive", "adopt-logs": "exclusive",
+           "standing": "exclusive"}
 
 
 def _terminated(signum, frame) -> None:
@@ -2690,6 +2787,8 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
         if render:
             with perf.phase("metrics elsewhere"):
                 here = {sid_of(p) for p in session_transcripts()}
+                for sid in end_idle_elsewhere(here):
+                    print(f"{sid}  ended: idle for {LIVE_SECONDS // 60} minutes, in another workspace's folder or none")
                 refresh_metrics(here, redact, states)
                 bound_metrics()
                 render_elsewhere(here, redact, states)
@@ -4752,6 +4851,8 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_decisions(args)
     elif cmd == "adopt-logs":
         return cmd_adopt_logs(args)
+    elif cmd == "standing":
+        return cmd_standing(args)
     elif cmd == "langfuse":
         return cmd_langfuse(args)
     elif cmd == "perf":
