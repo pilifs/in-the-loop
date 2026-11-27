@@ -27,11 +27,11 @@
 | spring-projects/spring-boot#52824 | written | Checked both Hikari setting permutations in the builder tests and the author’s H2/PostgreSQL rollback reports. Fresh JDBC readback when varying only the unused primary pool remains open. |
 | spring-projects/spring-boot#51725 | written | The pinned regression checks the identity of a non-Mongo manager through a configuration getter. The pinned Batch interface declares instance creation, execution creation and ID lookup. Which manager handles that public write remains open. |
 | spring-projects/spring-boot#52190 | written | Checked both 30-second bean regressions and the author’s versioned live-cluster report. Periodic activity under isolated bean and property configurations has not been repeated. |
-| spring-projects/spring-boot#51844 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52832 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52625 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51940 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51774 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#51844 | written | Compared the proposed property name with the landed enum and guide. The test asserts named-cache backing. On-demand future completion and synchronous readback remain open. |
+| spring-projects/spring-boot#52832 | written | Compared the regression’s distinct TCP/UDP ports and deprecated lookup exception with the Redis factory’s getTcp call. Real Redis PING after reordering mappings remains open. |
+| spring-projects/spring-boot#52625 | written | The pinned driver-parser regression checks the database, timeout and application name together. The literal `%2B` versus `+` pair remains unexecuted. |
+| spring-projects/spring-boot#51940 | written | Checked virtual-host precedence and three protocol-specific integration fixtures. Combined ordinary AMQP and stream sessions against one vhost remain unobserved here. |
+| spring-projects/spring-boot#51774 | written | Read the factory regression with the opt-in enabled; it asserts the template flag. Propagation to a real container and the order of future completion and the stop callback remain open. |
 | spring-projects/spring-boot#50296 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52321 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#51470 | not yet | Awaiting source review and claims. |
