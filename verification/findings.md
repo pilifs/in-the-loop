@@ -18,6 +18,56 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-074: the README's table of sessions shows finished sessions as open, and long-running sessions under their first topic
+
+- **Status**: open (the user, 2026-11-27).
+  - **The scope:** both problems, plus cleaning up the rows already affected.
+  - **Numbering:** VF-073 stays reserved for the user's reopening of VF-058.
+- **Raised**: 2026-11-27 by the advisor session, at the user's request, on develop `a380879e6426`.
+- **Found**:
+  - **Finished sessions marked open:** the generated table in `llm-dlc/README.md` (between the `index:begin` and `index:end` lines) marks 15 sessions `open`. Two of them really are still running. The other 13 ended between 2026-11-06 and 2026-11-27.
+  - **Why the status sticks:**
+    - **The rule:** `sync.py` sets a session's status when it syncs it. A transcript written less than `LIVE_SECONDS` (600 s) before is `open`; anything older is `ended`.
+    - **How a session's last sync happens:** a session that ran in another jj workspace is last synced by that workspace's commits. Its final commit comes while it is still running, so its manifest says `open`, and that is the manifest the merge brings to develop.
+    - **Why nothing corrects it:** the default workspace syncs only the transcripts of its own Claude Code project folder (`claude_project_dir()`, `session_transcripts()`; `transcript_of()` looks nowhere else) and its Codex rollouts. It never reads those sessions again, so nothing marks them `ended`.
+  - **The 13 stale rows, by where their transcripts are:**
+
+    | Session | Folder | Last written |
+    |---|---|---|
+    | `e73cfdaf`, the S01-S50 setup run | foundation-domain-streams | 11-27 12:45 |
+    | `b9b56f5e` | dlc-plumbing | 11-21 22:19 |
+    | `f28025bc` | domain-advances-preservation | 11-18 03:22 |
+    | `f8bc7b54` | domain-advances-challenge | 11-18 02:06 |
+    | `9896d870` | domain-advances-state | 11-18 00:13 |
+    | `7ece8184` | domain-advances-evidence | 11-17 17:07 |
+    | `4a47a539` "Recent sessions summary" | stream-conductor | 11-14 21:50 |
+    | `3bb5a1f4` "Application-core feature streams exiting early" | example-targets-runtime | 11-14 18:25 |
+    | `aa238023` "Multi agent feature stream run" | application-core-reuse | 11-08 11:57 |
+    | `a8cc612f` | cleanup-jbmc | 11-07 21:29 |
+    | `750c8a36` "Next multi-stream loop draft" | heap | 11-07 12:21 |
+    | `7b8a1d3b` "Feature loop run review actions" | jbmc | 11-07 00:11 |
+    | `0e86a358` "setup-repo-on-ryzen-machine" | none on this machine: it came from another one | 11-06 |
+
+    Several of those workspaces no longer exist, but their transcripts are still under `~/.claude/projects/`.
+  - **Long-running sessions under their first topic:** the two sessions that really are open are standing sessions, continued for days.
+    - **The advisor** (`e61d882b`) is titled "/run-brief invocation options". It started 2026-11-17.
+    - **The queue's watcher** (`6c5c7798`) is titled "Moonshot loop status". It started 2026-11-15.
+
+    A row's title comes from the session's start, so a reader can't tell what these sessions are now, or that they are meant to stay open.
+- **Needs**:
+  1. **A status that stays true.** When syncing, find sessions whose manifest says `open` but whose last activity is older than `LIVE_SECONDS`, and mark them `ended`. Do this for every Claude Code project folder of this repository's workspaces, not only the current one.
+     - **Where the transcript still exists:** re-render the session from it, through `sync.py` as any session is rendered, never by editing `llm-dlc/traces/` by hand.
+     - **Where it doesn't (`0e86a358`):** go by the stored log and the manifest's own last activity.
+  2. **Clean up the 13 rows above** with that same code, in one commit through `sync.py commit`. The README table and those sessions' generated files are rewritten. Report any redaction finding the re-render raises, as for any log.
+  3. **Show the standing sessions apart from the ordinary rows (the user's direction).** The advisor and the queue's watcher belong in a list of their own beside the table, under their roles, rather than among the ordinary rows with first-topic titles. That list shows each one's role, when it started, and that it is meant to stay open.
+     - **Recording a role:** either an explicit role, recorded by a command a person or watcher runs, or one derived from the run records (the queue's watcher session, `brief_queue.py` defaults).
+     - **Ending a role:** a session that stops holding its role returns to the ordinary table.
+  4. **A test for each:**
+     - a session synced while live in another workspace's folder is shown `ended` once it is idle;
+     - a standing session is listed under its role and not as an ordinary row.
+- **Tracked in**: the advisor's backlog (item 11).
+- **Closes when**: no session idle for longer than `LIVE_SECONDS` is `open` in the table, the 13 rows above read `ended`, and the advisor and the watcher appear under their roles.
+
 ### VF-072: run agents lack the direction and the tools for fan-out, sealed producers and model-driven workers, so they reach for the run skills
 
 - **Status**: open, a refactor (the user, 2026-11-27). VF-045's enforcement is done (see there); this is the cause it treated.
