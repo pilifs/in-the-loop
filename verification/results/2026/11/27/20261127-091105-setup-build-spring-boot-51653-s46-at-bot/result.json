@@ -1,0 +1,342 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-091105-setup-build-spring-boot-51653-s46-at-bot",
+  "title": "Setup: build Spring Boot #51653 (S46) at both pins and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 3 passed, 1 failed step(s) in 5m32s, peak 2.8 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 3 (S46 transplant: the fix's tests on the parent) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-091105-setup-build-spring-boot-51653-s46-at-bot.json",
+    "sha256": "57fca043e84edafa38e62ebb236ea87c120e4adf89fa24da111f97cbafe69de2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-091105-setup-build-spring-boot-51653-s46-at-bot",
+      "title": "Setup: build Spring Boot #51653 (S46) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S46 (spring-projects/spring-boot#51653: Preserve layer assignment when extracting a Boot-generated index). In the worktrees $P/worktrees/S46-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of loader:spring-boot-jarmode-tools with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (IndexedLayersTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of loader:spring-boot-jarmode-tools in $P/artifacts/S46-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S46",
+      "submitted": {
+        "at": "2026-11-27T09:11:05+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "steps": [
+        {
+          "name": "S46 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S46 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S46 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S46 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S46 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S46 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S46 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S46 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+  "startedAt": "2026-11-27T09:51:42+00:00",
+  "finishedAt": "2026-11-27T09:57:25+00:00",
+  "wallSeconds": 343.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2137390,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "usage": {
+    "peakMemoryBytes": 2994712576,
+    "wallSeconds": 332.6,
+    "cpuSeconds": 808.1,
+    "memoryOfEstimate": 0.46,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S46 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S46 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 144.853,
+      "cpuSeconds": 358.914,
+      "cpuThrottledSeconds": 18.791,
+      "peakMemoryBytes": 2981158912,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s46-fix-build-and-landed-tests.log",
+        "lines": 18,
+        "bytes": 1975,
+        "sha256": "c162d0043a7cc98df1e1d60882c4b35a5f6ea8b0847488faa5126156b6178ccf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S46-fix gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=75 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/sc",
+        "junit tests=9 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.jarmode.tools.IndexedLayersTests junit tests=9 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S46-fix/loader_spring-boot-jarmode-tools.runtimeClasspath.txt 4 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S46-fix/loader_spring-boot-jarmode-tools.testRuntimeClasspath.txt 18 entries",
+        "38c1227d60c661fa5936808dfc505923a4ed9308b08445f9ee4e0b4538f1d3b4  jars/spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar",
+        "50ff054fb66288c8d7ab9b59099417dd1d8d5e73e6890068fa09083c032d7497  tree/loader/spring-boot-loader/build/libs/spring-boot-loader-4.2.0-SNAPSHOT.jar",
+        "346df1d0910991db583f0364ef7d8102a5073d52dbcab46c88e2ad9aad090e05  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/IndexedLayers.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S46 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S46 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 116.329,
+      "cpuSeconds": 282.44,
+      "cpuThrottledSeconds": 4.364,
+      "peakMemoryBytes": 2271424512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s46-parent-build-and-the-paren.log",
+        "lines": 18,
+        "bytes": 1984,
+        "sha256": "35ccff6da9a84a8e8af253bb2672d3165063f4a5ca46bc5cbd31e38d4a336ead",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S46-parent gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=45 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=8 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.jarmode.tools.IndexedLayersTests junit tests=8 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S46-parent/loader_spring-boot-jarmode-tools.runtimeClasspath.txt 4 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S46-parent/loader_spring-boot-jarmode-tools.testRuntimeClasspath.txt 18 entries",
+        "b5df1e2f029bddc27b6ec158b6368f4e1dbd913f6ea392dc4a082fd2bd2263b0  jars/spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar",
+        "50ff054fb66288c8d7ab9b59099417dd1d8d5e73e6890068fa09083c032d7497  tree/loader/spring-boot-loader/build/libs/spring-boot-loader-4.2.0-SNAPSHOT.jar",
+        "9cb215d1725fbb18dd4ec84d42d1335af87e3275f2ad738b4cff32861998fe76  spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar!/org/springframework/boot/jarmode/tools/IndexedLayers.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S46 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S46 transplant",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 66.819,
+      "cpuSeconds": 164.175,
+      "cpuThrottledSeconds": 5.868,
+      "peakMemoryBytes": 2994712576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s46-transplant-the-fix-s-tests.log",
+        "lines": 15,
+        "bytes": 1285,
+        "sha256": "7093550bd299c5728870ec3fa3ac367b5a1eb85fce0f807660a1d85dc4de3e9c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted loader/spring-boot-jarmode-tools/src/test/java/org/springframework/boot/jarmode/tools/IndexedLayersTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S46-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=65 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=9 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.jarmode.tools.IndexedLayersTests junit tests=9 failures=0 errors=0 skipped=0 ",
+        "TRANSPLANT DID NOT FAIL (gradle-exit=0)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S46 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S46 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 4.613,
+      "cpuSeconds": 2.522,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 108642304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s46-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "9bdd4ebc1f06f6ab406c1da4e55e19cf8fbbd584b3cafb7a8d144b81921f963c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S46"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T09:58:16+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T095725Z-878438b5bd740e1f",
+      "workdir": "20261127T095751Z-99149687b5a85632"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-091105-setup-build-spring-boot-51653-s46-at-bot"
+}
