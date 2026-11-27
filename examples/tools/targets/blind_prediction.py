@@ -236,6 +236,16 @@ def scalar_cases(descriptor, evidence):
     return [{"arguments": [v[i%len(v)] for v in values]} for i in range(count)]
 
 
+def reviewed_descriptor(registration):
+    """Read an exact public declaration from a reviewed registration, including an unchanged API owner."""
+    target = registration.get("entry", "")
+    owner, separator, member = target.partition("#")
+    if (not separator or len(target) > 1024 or not re.fullmatch(JAVA_NAME + r"(?:\." + JAVA_NAME + r")*", owner)
+            or not re.fullmatch(r"(?:<init>|" + JAVA_NAME + r")\([^)]*\).+", member)):
+        return None
+    return owner, target
+
+
 def derive(root, packet):
     arm = packet["arm"]
     if arm not in {"cold","test-assisted","reviewed"}:
@@ -275,6 +285,15 @@ def derive(root, packet):
             witnesses = [w for run in trace["runs"] if run["plainParity"] for w in run["witnesses"]]
     owners = set(sources) | {w["entry"].partition("#")[0].split("$")[0] for w in witnesses}
     sides = {s:definitions(root, packet[s]["classpath"], owners, feature) for s in ("old","new")}
+    exact_review = reviewed_descriptor(reviewed)
+    if exact_review:
+        owner, target = exact_review
+        # The public API can delegate to the changed class and be absent from the production diff.
+        for side in sides:
+            if owner not in sides[side]:
+                extra = definitions(root, packet[side]["classpath"], {owner.split("$", 1)[0]}, feature)
+                if owner in extra:
+                    sides[side][owner] = extra[owner]
     observed = defaultdict(set)
     for w in witnesses:
         definition = sides[w["side"]].get(w["entry"].partition("#")[0])
@@ -283,6 +302,10 @@ def derive(root, packet):
         else:
             raise ValueError("a witnessed public method has a different current physical definition")
     ranked, count, inspected = signature_candidates(sides, diff, prose, test_text, reviewed, observed)
+    missing_review = None
+    if exact_review and not any(r[1] == exact_review[1] for r in ranked):
+        missing_review = "Which original public declaration and deployment provide the reviewed member " + exact_review[1] + "?"
+        ranked = []
     candidates = []
     for rank,(weight, entry, scalar, basis, bindings) in enumerate(ranked[:LIMIT], 1):
         if len(candidates) == 3:
@@ -345,7 +368,7 @@ def derive(root, packet):
             "sourceClasses":{s:len(v) for s,v in sides.items()}, "testsInspected":len(tests), "subjectLaunches":0,
             "upstreamTrace":packet.get("testTrace"), "upstreamUnitRuns":len(trace["runs"]) if trace else 0,
             "visibleDescription":packet.get("description",""), "productionDiffSha256":digest(read_local(root,packet["productionDiff"]).read_bytes()),
-            "firstOpenDependency":None if candidates else "which original public production entry exposes this change?"}
+            "firstOpenDependency":None if candidates else missing_review or "which original public production entry exposes this change?"}
 
 
 def publish(path, doc):

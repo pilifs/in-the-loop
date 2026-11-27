@@ -44,6 +44,19 @@ def local(token, parent):
     return Path(os.path.normpath(parent / token))
 
 
+def loader_decision(document):
+    loader = document.get("loader", {"scope": "application", "delegation": "parent-first"})
+    custom = not isinstance(loader, dict) or (loader.get("scope"), loader.get("delegation")) != ("application", "parent-first")
+    if document.get("layoutKnown", True) is not True or (
+            custom and (not document.get("classpath") or any(not row.get("deploymentPath") for row in document["classpath"]))):
+        return "Which original loader URL maps to each artifact, in what order, and which parent or child delegates the lookup?"
+    if custom:
+        return "Which defining loader and delegation rule selected this class or resource on each original deployment?"
+    if document.get("ordered", True) is not True:
+        return "In what order did the original loader search these artifacts?"
+    return None
+
+
 def resolve(document, base, feature, file_digest, *, layout_cache=None, index=None):
     # A signed or acquired root supplies paths. A basename or a matching digest alone cannot locate a URL.
     captured = (base / document["deploymentRoot"]).resolve() if document.get("deploymentRoot") else None
@@ -86,7 +99,8 @@ def resolve(document, base, feature, file_digest, *, layout_cache=None, index=No
         issues.append({"reason": "provider order is unknown; supply the original ordered launch roots"})
     loader = document.get("loader", {"scope": "application", "delegation": "parent-first"})
     if not isinstance(loader, dict) or loader.get("delegation") != "parent-first" or loader.get("scope") != "application":
-        issues.append({"reason": "loader search or delegation is not established for this launch", "loader": loader})
+        issues.append({"reason": "loader search or delegation is not established for this launch",
+                       "loader": loader, "ownerDecision": loader_decision(document)})
     order, positions, via = [], {}, []
     manifests = {}
     def tokens(file, sha, name):

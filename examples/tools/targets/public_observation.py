@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import re
 
-from targets import blind_measure, blind_prediction, change_evidence
+from targets import blind_measure, blind_prediction, change_evidence, deployment_graph
 
 
 def canonical_url(url):
@@ -16,6 +16,25 @@ def canonical_url(url):
     return f"https://github.com/{owner.lower()}/{repo.lower()}/pull/{number}"
 
 
+def intent_decision(choices):
+    qualified = []
+    for row in choices:
+        observed = row.get("originalObservations", {})
+        sides = row.get("requiredSides") or list(observed)
+        if (row.get("disposition") in ("established", "refuted", "preserved", "changed") and row.get("evidence")
+                and sides and all(observed.get(side) and all(value is not None for value in observed[side]) for side in sides)):
+            qualified.append(row)
+    if len(qualified) > 1:
+        labels = []
+        for row in qualified:
+            names = [f["name"] if isinstance(f, dict) else f for f in row["observationFields"]]
+            labels.append(row["entry"] + " (" + ", ".join(names) + ")")
+        return "Which measured public observation matters to your caller, " + " or ".join(labels) + "?"
+    if qualified:
+        return None
+    return next((row["reason"] for row in choices if row.get("reason")), None)
+
+
 def report(prediction, measurement=None):
     choices = []
     measured = {r["candidateIndex"]:r for r in (measurement or {}).get("measurements",[])}
@@ -23,15 +42,16 @@ def report(prediction, measurement=None):
         row = measured.get(index,{})
         choices.append({"rank":index+1,"entry":candidate["entry"],"history":candidate["history"],
                         "prediction":candidate["prediction"],"observationFields":candidate["fields"],
-                        "originalObservations":row.get("observations",{}),"disposition":row.get("status","unmeasured"),
+                        "originalObservations":row.get("observations",{}),"requiredSides":row.get("requiredSides",[]),
+                        "disposition":row.get("status","unmeasured"),
                         "scope":"registered finite public history","stoppedAt":row.get("stoppedAt","frozen prediction"),
                         "reason":row.get("reason"),"evidence":row.get("evidence",{})})
     if not choices:
         decision = prediction["firstOpenDependency"]
-    elif len(choices)>1:
-        decision = "Which public history matters to your caller: " + " or ".join(c["entry"] for c in choices) + "?"
     else:
-        decision = choices[0].get("reason")
+        decision = intent_decision(choices)
+        if not decision and len(choices) > 1 and not measurement:
+            decision = "Which proposed public history should be measured first?"
     return {"schema":"public-observation-review/v1","url":prediction["url"],"assistance":prediction["assistance"],
             "primary":prediction["primary"],"candidates":choices,"ownerDecision":decision}
 
@@ -49,6 +69,17 @@ def watch(url, packet, work, execute=False):
     metadata = json.loads((packet/"packet.json").read_bytes())
     if canonical_url(metadata["url"]) != url:
         raise ValueError("the prepared deployment belongs to a different public PR")
+    deployments = metadata.get("deployments") or [metadata]
+    for deployment in deployments:
+        for side in ("old", "new"):
+            decision = deployment_graph.loader_decision(deployment[side])
+            if decision:
+                result = {"schema": "public-observation-review/v1", "url": url,
+                          "deployment": deployment.get("name", "original"), "side": side,
+                          "stoppedAt": "original loader binding", "ownerDecision": decision,
+                          "loader": deployment[side].get("loader"), "packet": str(packet)}
+                change_evidence.write_json(work / "review.json", result)
+                return result
     sealed = work/"prediction"
     blind_prediction.main([str(packet),str(sealed)])
     prediction = json.loads((sealed/"prediction.json").read_bytes())

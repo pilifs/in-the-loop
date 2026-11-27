@@ -41,22 +41,42 @@ def check_saved(root, row):
                 raise ValueError("saved fields do not establish the published finite disposition")
 
 
+def pinned_artifacts(root, deployment, key):
+    pinned = []
+    captured = deployment.get("deploymentRoot")
+    for row in deployment.get(key, []):
+        path = blind_prediction.read_local(root, row["file"])
+        if change_inventory.file_digest(path) != row["sha256"]:
+            raise ValueError("a prepared artifact changed after pinning: " + row["file"])
+        if "deploymentPath" in row:
+            original = Path(row["deploymentPath"])
+            if not captured or not original.is_absolute() or ".." in original.parts:
+                raise ValueError("a mapped original URL needs its captured deployment root")
+            physical = blind_prediction.read_local(blind_prediction.read_local(root, captured),
+                                                  original.relative_to("/"))
+            if change_inventory.file_digest(physical) != row["sha256"]:
+                raise ValueError("captured deployment artifact changed at " + str(original))
+        pinned.append({**{k: row[k] for k in ("sha256", "role", "deploymentPath") if k in row},
+                       "file": str(path)})
+    return pinned
+
+
 def original_manifests(root, packet, deployment, output, jdk_pin):
     manifests = {}
     for side in ("old","new"):
         data = deployment[side]
-        cp = []
-        for row in data["classpath"]:
-            path = blind_prediction.read_local(root,row["file"])
-            if change_inventory.file_digest(path) != row["sha256"]:
-                raise ValueError("changed original deployment artifact on " + side)
-            cp.append({"file":str(path), "sha256":row["sha256"]})
+        cp = pinned_artifacts(root, data, "classpath")
         if not cp:
             raise ValueError("missing original classpath on " + side)
-        manifests[side] = output/(side+".json")
-        change_evidence.write_json(manifests[side],{"classpath":cp,"jdkReleaseSha256":jdk_pin,
-                                   "commit":data.get("revision") or packet[side+"Revision"],
-                                   "scope":"original public PR deployment"})
+        doc = {key: data[key] for key in ("loader", "layoutKnown", "ordered") if key in data}
+        if data.get("deploymentRoot"):
+            doc["deploymentRoot"] = str(blind_prediction.read_local(root, data["deploymentRoot"]))
+        if data.get("manifestProviders"):
+            doc["manifestProviders"] = pinned_artifacts(root, data, "manifestProviders")
+        manifests[side] = output / (side + ".json")
+        change_evidence.write_json(manifests[side], {**doc, "classpath": cp, "jdkReleaseSha256": jdk_pin,
+                                  "commit": data.get("revision") or packet[side + "Revision"],
+                                  "scope": "original public PR deployment"})
     return manifests
 
 
@@ -245,9 +265,8 @@ def verified_review(packet_dir, sealed, measured):
         raise ValueError("this saved measurement belongs to a different prediction or deployment view")
     for deployment in packet.get("deployments") or [packet]:
         for side in ("old","new"):
-            for artifact in deployment[side]["classpath"]:
-                if change_inventory.file_digest(blind_prediction.read_local(packet_dir,artifact["file"])) != artifact["sha256"]:
-                    raise ValueError("a prepared artifact changed after measurement on " + side)
+            for key in ("classpath", "manifestProviders"):
+                pinned_artifacts(packet_dir, deployment[side], key)
     for deployment in record["deployments"]:
         for row in deployment["measurements"]:
             check_saved(measured,row)

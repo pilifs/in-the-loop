@@ -377,6 +377,13 @@ is a worked one, and what the [example-targets loop](loops/example-targets.md) d
    `records/entry-bindings.json` and reports each open lookup. If the builds became available after scaffolding,
    run `python3 examples/tools/scaffold_example.py bind --before OLD --after NEW --jdk JDK --workflows WORKFLOWS --output RECORD`.
    Both forms check each pinned deployment on its own JVM and ask the native resolver for the exact descriptor.
+   To review a public PR and its neutral deployment packet, run
+   `python3 llm-dlc/tools/watch.py public-observation URL --packet PACKET --work DIR`.
+   A packet can also be supplied through the URL-keyed `PUBLIC_PR_PACKETS` directory. The first call seals the
+   ranked public histories, inputs, observable fields and predictions. Add `--measure` to bind and generate their
+   callers, compile against the older API and compare the original JVM receipts. The review gives the exact
+   missing artifact mapping for an unknown loader and lists the public fields for competing measured histories.
+   An exact reviewed JVM member can belong to a stable API outside the production diff.
    For a reviewed behavioral prediction, give `preparedDeployments` its `registration` and `predictions` files.
    For an existing numbered numeric or nullable-selection registration, set `publicComparison` to
    `{"deployment":"pins"}` instead. Stage 3 reads its `comparison.json` and `runtime.json`, resolves the public
