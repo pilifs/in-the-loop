@@ -12,11 +12,11 @@
 | spring-projects/spring-boot#52904 | written | Compared the indexed test and the PR’s comma claim. The merge joins the list then tokenizes on commas; a single literal comma-bearing resource remains an open public lookup. |
 | spring-projects/spring-boot#51855 | written | Compared the proposed option spelling with the landed metadata, documentation and six startup assertions. Mixed keys in reversed argument order and failure-path diagnostics remain open. |
 | spring-projects/spring-boot#50489 | written | Compared the cached and uncached javac fixtures and the Gradle task wiring. Whether deleting one comment yields byte-independent, clean-equivalent descriptions in a real incremental build remains open. |
-| spring-projects/spring-boot#51867 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52310 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52309 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52831 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#50886 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#51867 | written | Read the mixed graph, reversal and duplicate regressions. Both permutations have one pinned expected order. Transitive ordering through a real conditional bean remains unexecuted. |
+| spring-projects/spring-boot#52310 | written | Compared the after-refresh and started-listener close fixtures with their running-state guards. Post-close creation of a runner dependency remains unmeasured. |
+| spring-projects/spring-boot#52309 | written | Compared the owning-context identity guard with the child-close regression and PR process report. Sibling service access after main returns remains open. |
+| spring-projects/spring-boot#52831 | written | Read the hidden-then-visible regression with `foo=bar`; it asserts the second context’s public message. The reverse-order bean and message checks are open. |
+| spring-projects/spring-boot#50886 | written | Read the old registry snapshot, the landed tracking calls and the maintainer’s removal of the test-default change. Two live contexts with late real registries remain unexecuted. |
 | spring-projects/spring-boot#9558 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52251 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52304 | not yet | Awaiting source review and claims. |
