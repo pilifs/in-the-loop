@@ -1,0 +1,175 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-145111-isolate-the-third-class-in-the-gradle-bo",
+  "title": "Isolate the third class in the Gradle bootJar challenge",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 28.7s, peak 1.1 GiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Read all six original bootJar builds) was held back 20.8s by its 2-CPU quota in 28.7s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-145111-isolate-the-third-class-in-the-gradle-bo.json",
+    "sha256": "c2521076235cd024534ea45b3b747b91c21c0d305071553565a704d333ae05e5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-145111-isolate-the-third-class-in-the-gradle-bo",
+      "title": "Isolate the third class in the Gradle bootJar challenge",
+      "description": "Repeat all layer observations on the two original Gradle plugins. Assert that each baseline archive contains only the two fixture classes, then introduce Third only in the challenge and reopen each packaged entry to check its bytes and its layer.",
+      "kind": "real-world",
+      "capabilities": [
+        "public-api-comparison"
+      ],
+      "links": {
+        "examples": [
+          "634"
+        ]
+      },
+      "expected": "The two controls and the independent third-class challenge cover distinct inputs on both plugins.",
+      "submitted": {
+        "at": "2026-11-27T14:51:11+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Read all six original bootJar builds",
+          "run": "python3 verification/merged-pr-links/s01-s50/gradle/replay.py S47 --output verification/merged-pr-links/s01-s50/gradle/S47-isolated.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/gradle/S47-isolated.json"
+      ]
+    }
+  },
+  "sourceCommit": "ac3239d19d9c77e30049f444d2aba5e93fd17e57",
+  "startedAt": "2026-11-27T14:53:17+00:00",
+  "finishedAt": "2026-11-27T14:53:58+00:00",
+  "wallSeconds": 41.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1155002,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1210527744,
+    "wallSeconds": 28.7,
+    "cpuSeconds": 55.1,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Read all six original bootJar builds",
+      "run": "python3 verification/merged-pr-links/s01-s50/gradle/replay.py S47 --output verification/merged-pr-links/s01-s50/gradle/S47-isolated.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 28.71,
+      "cpuSeconds": 55.073,
+      "cpuThrottledSeconds": 20.781,
+      "peakMemoryBytes": 1210527744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-read-all-six-original-bootjar.log",
+        "lines": 2,
+        "bytes": 563,
+        "sha256": "e2e2928f2b18e6c857b58f4dc9f6a3431e1c8d474bf00e7c3ee755ffe3f6c05d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "S47 parent {\"challenge\": {\"org/example/Open\": \"public\", \"org/example/internal/Hidden\": \"public\", \"other/Third\": \"rest\"}, \"control\": {\"org/example/Open\": \"rest\", \"org/example/internal/Hidden\": \"public\"}, \"intent\": {\"org/example/Open\": \"rest\", \"org/example/internal/Hidden\": \"public\"}}",
+        "S47 fix {\"challenge\": {\"org/example/Open\": \"public\", \"org/example/internal/Hidden\": \"rest\", \"other/Third\": \"rest\"}, \"control\": {\"org/example/Open\": \"rest\", \"org/example/internal/Hidden\": \"public\"}, \"intent\": {\"org/example/Open\": \"public\", \"org/example/internal/Hidden\": \"rest\"}}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/s01-s50/gradle/S47-isolated.json",
+      "change": "added",
+      "bytes": 722,
+      "sha256": "23a557f30c45f5626763ae2040b781f6ee83a5b3f3276a6b05d83e48c9640a93",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T14:54:10+00:00",
+    "applied": [
+      "verification/merged-pr-links/s01-s50/gradle/S47-isolated.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T145358Z-252579b9c4ff79a3",
+      "outputs": "20261127T145358Z-27554456c105d3ba",
+      "diff": "20261127T145358Z-294435fba0f60ca3"
+    }
+  }
+}
