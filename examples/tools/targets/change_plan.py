@@ -188,6 +188,15 @@ def compare(args, *, original_binary=True, archive_index=None):
                          "totalCandidates": inventory["candidateCount"], "manualProviderIndices": 0, **measurements}
     eligible = sorted(e for e in selected_entries if all(bindings[s][e]["status"] == "bound" for s in graphs))
     plan["discovery"]["boundOnBothRevisions"] = eligible
+    if inventory.get("upstreamHistory") and not declared:
+        inventory["intentOptions"] = [
+            {"entry": candidate["entry"], "rank": candidate["rank"], "staticRank": candidate.get("staticRank"),
+             "observedRank": candidate["observedRank"], "coverage": candidate["originalTestCoverage"]}
+            for candidate in inventory["candidates"]
+            if candidate["entry"] in eligible and "observedRank" in candidate]
+        if len(inventory["intentOptions"]) > 1:
+            options = ", ".join(row["entry"] for row in inventory["intentOptions"])
+            inventory["intentQuestion"] = "Which of these measured public histories matters to your caller? " + options
     plan["discovery"]["selectedEntries"] = (eligible if declared or inventory["candidateCount"] == 1 else [])
     previous = json.loads(args.previous.read_text()) if args.previous else None
     if previous is not None:

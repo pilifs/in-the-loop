@@ -1,4 +1,5 @@
 """Reproduce the sealed public nominations through ordinary Stage 2 and compare the original traces."""
+import argparse
 import json
 from pathlib import Path
 import sys
@@ -51,7 +52,7 @@ def observation_members(entries, document):
     return selected
 
 
-def run(work):
+def run(work, *, require_choices=False):
     archives = {s: HERE / ("parquet-" + s + "-separate.zip") for s in ("old", "new")}
     jdk = runtime_jdk.home(21)
     selector = ["application", "--jdk", str(jdk), "--probe-limit", "5"]
@@ -80,6 +81,10 @@ def run(work):
     histories = {r["entry"] for r in receipts}
     if not histories.issubset(top_five & set(discovery["boundOnBothRevisions"])):
         raise ValueError("a historical entry lacks an independent Stage 2 binding")
+    choices = plan["inventory"].get("intentOptions", [])
+    if require_choices and (not histories.issubset({row["entry"] for row in choices}) or any(
+            name not in plan["inventory"]["intentQuestion"] for name in histories)):
+        raise ValueError("the owner cannot see both distinct original public alternatives")
     reversed_doc = read_summary(HERE / "parquet-new-reversed-separate.zip")
     graph = docs["new"]["orderedDeployment"].copy()
     graph[0], graph[2] = graph[2], graph[0]
@@ -101,16 +106,20 @@ def run(work):
     if not any(row["classSha256"] != changed["reversed"].get(owner, {}).get("classSha256") and
                owner in changed["reversed"] for owner, row in changed["new"].items()):
         raise ValueError("reversal never changed a loaded definition")
-    result = {"stage2Sha256": upgrade_replay.sha(path), "normalDiscovery": discovery,
+    result = {"stage2Sha256": upgrade_replay.sha(path), "normalDiscovery": discovery, "qualifiedChoices": choices,
               "originalTestRanking": ranks, "intentQuestion": plan["inventory"]["intentQuestion"],
               "historicalPublicEntries": sorted(histories), "perSideWitnesses": details,
               "changedDefinitions": changed}
-    with zipfile.ZipFile(HERE / "stage2-histories.zip", "w", zipfile.ZIP_DEFLATED) as output:
+    name = "stage2-histories-reviewed.zip" if require_choices else "stage2-histories.zip"
+    with zipfile.ZipFile(HERE / name, "w", zipfile.ZIP_DEFLATED) as output:
         output.write(path, "stage2.json")
         output.writestr("qualification.json", json.dumps(result, indent=2) + "\n")
     print("Stage 2 bound the historical file and page entries among five unhinted alternatives")
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--qualified-choices", action="store_true")
+    args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="stage2-original-histories-") as scratch:
-        run(Path(scratch))
+        run(Path(scratch), require_choices=args.qualified_choices)

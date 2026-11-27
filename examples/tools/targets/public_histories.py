@@ -271,7 +271,11 @@ def apply(inventory, paths, views, launches, jdks):
         r["originalTestCoverage"] = row
         reordered.append(r)
     reported = {r["entry"] for r in reordered}
-    reordered.extend(r for r in inventory["candidates"] if r["entry"] not in reported)
+    for row in inventory["candidates"]:
+        if row["entry"] not in reported:
+            reordered.append({**row, "staticRank": row.get("rank")})
+    for rank, row in enumerate(reordered, 1):
+        row["rank"] = rank
     inventory["upstreamHistory"] = {"sources":sources,"ranked":rows,"qualifiedForks":dict(Counter(
         side for side, runs in sessions.items() for r in runs if r["fork"]["stop"] is None))}
     inventory["candidates"] = reordered
