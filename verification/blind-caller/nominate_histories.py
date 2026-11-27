@@ -1,4 +1,5 @@
 """Seal trace nominations without reading the historical callers, observations or nominated entry names."""
+import argparse
 import json
 from pathlib import Path
 import sys
@@ -9,12 +10,12 @@ sys.path.insert(0,str(HERE.parents[1]/"examples/tools"))
 from targets import blind_prediction, public_histories, upgrade_replay
 
 
-def nominate():
+def nominate(suffix=""):
     traces = {}
     inputs = {}
     summaries = {}
     for side in ("old","new"):
-        path = HERE/("parquet-"+side+".zip")
+        path = HERE/("parquet-"+side+suffix+".zip")
         inputs[side] = upgrade_replay.sha(path)
         with zipfile.ZipFile(path) as z:
             doc = json.loads(z.read("summary.json"))
@@ -25,7 +26,7 @@ def nominate():
             for run in doc["runs"]:
                 for record in run["forks"]:
                     fork = record["fork"]
-                    raw = z.read(fork["module"]+"-traced/"+fork["rawFile"])
+                    raw = z.read(fork.get("rawDirectory",fork["module"]+"-traced")+"/"+fork["rawFile"])
                     if blind_prediction.digest(raw) != fork["rawSha256"]:
                         raise ValueError("the original event sequence changed")
                     fork["sequence"] = [line.split("\t")[1:] for line in raw.decode().splitlines() if line.partition("\t")[0].isdigit()]
@@ -38,6 +39,9 @@ def nominate():
 
 
 if __name__=="__main__":
-    result=nominate()
-    blind_prediction.publish(HERE/"first-nominations.json",result)
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--separate",action="store_true")
+    options=parser.parse_args()
+    result=nominate("-separate" if options.separate else "")
+    blind_prediction.publish(HERE/("separate-nominations.json" if options.separate else "first-nominations.json"),result)
     print("sealed",len(result["candidates"]),"original public entries before comparison")

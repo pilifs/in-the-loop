@@ -13,6 +13,69 @@ def method_frame(text):
     return {"member":member,"loader":int(loader),"bci":int(bci),"public":exported=="1","receiver":int(receiver)}
 
 
+def handoffs(fork, declarations, changed, *, withhold=()):
+    """Join a subscription, dispatch, queued Runnable, worker invocation and the original changed-body stack."""
+    subscriptions, sources, requested, queued, running, deliveries = {}, {}, {}, {}, {}, {}
+    cancelled = set()
+    hits = []
+    for serial,event in enumerate(fork["sequence"],1):
+        kind, thread, _, *parts = event
+        if kind == "tap":
+            role, loader, target, caller, pc, instance, *extra = parts
+            if target != declarations.get(role):
+                raise ValueError("unregistered handoff action")
+            boundary = extra.index("STACK")
+            values = list(map(int,extra[:boundary]))
+            stack = [method_frame(s) for s in extra[boundary+1:]]
+            instance = int(instance)
+            if role == "subscribe" and values[0] > 0:
+                subscriptions[values[0]] = (target,instance)
+            elif role == "register":
+                ticket, source = values
+                if min(ticket,source)>0 and any((f["member"],f["receiver"]) == subscriptions.get(ticket) for f in stack):
+                    sources[ticket] = source
+            elif role == "dispatch":
+                ticket, source, task = values
+                if min(ticket,source,task)>0 and sources.get(ticket) == source:
+                    requested[task] = (ticket,source,serial)
+            elif role == "queue":
+                task, = values
+                if (task in requested and task not in withhold and
+                        any(f["member"] == declarations["dispatch"] for f in stack)):
+                    queued[task] = (*requested[task],serial,thread)
+            elif role == "run":
+                if instance in queued:
+                    running[instance] = (*queued[instance],serial,thread)
+            elif role == "deliver":
+                ticket,source = values[:2]
+                for frame in stack:
+                    task = frame["receiver"]
+                    state = running.get(task)
+                    if frame["member"] == declarations["run"] and state and state[:2] == (ticket,source) and state[-1] == thread:
+                        deliveries[task] = (*state,serial)
+                        break
+            elif role == "cancel":
+                cancelled.add(instance)
+        elif kind == "hit":
+            frames = [method_frame(s) for s in parts[1:]]
+            if not frames or frames[0]["member"] not in changed:
+                continue
+            delivery = next((f for f in frames if f["member"] == declarations["run"]),None)
+            if not delivery:
+                continue
+            task = delivery["receiver"]
+            state = deliveries.get(task)
+            hit = {"event":serial,"changed":frames[0]["member"],"worker":thread,"task":task,"status":"unattributed"}
+            if state:
+                ticket,source,dispatch,enqueue,dispatch_thread,start,worker,deliver = state
+                if (ticket not in cancelled and worker == thread and worker != dispatch_thread and
+                        any(f["receiver"] == source and f["member"].partition("#")[2].startswith("next(") for f in frames)):
+                    hit.update(status="attributed",ticket=ticket,source=source,dispatch=dispatch,queued=enqueue,
+                               started=start,delivered=deliver,relationship="observed subscription and queued handoff")
+            hits.append(hit)
+    return {"registered":sources,"cancelled":sorted(cancelled),"hits":hits}
+
+
 def read_fork(path, graph, test_classes, test_module, revision, jdk_pin, feature):
     """Each original loaded definition must match the physical bytes and source of this fork."""
     roots = [Path(r["file"]).resolve() for r in graph]
@@ -168,10 +231,11 @@ def apply(inventory, paths, views, launches, jdks):
                     continue
                 for stored in run["forks"]:
                     fork = dict(stored["fork"])
-                    raw = z.read(fork["module"]+"-traced/"+fork["rawFile"])
+                    directory = fork.get("rawDirectory",fork["module"]+"-traced")
+                    raw = z.read(directory+"/"+fork["rawFile"])
                     if hashlib.sha256(raw).hexdigest() != fork["rawSha256"]:
                         raise ValueError("upstream raw test events changed")
-                    stem = fork["module"]+"-traced/"+Path(fork["rawFile"]).stem
+                    stem = directory+"/"+Path(fork["rawFile"]).stem
                     originals = z.read(stem+".classes")
                     loads = z.read(stem+".loads")
                     if (hashlib.sha256(originals).hexdigest() != fork["classBytesSha256"]

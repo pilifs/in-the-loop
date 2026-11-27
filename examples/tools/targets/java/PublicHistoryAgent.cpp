@@ -20,11 +20,14 @@ struct Member {
 };
 struct Call { jmethodID method; jlong object; jlong id; };
 struct History { jlong test = 0; std::vector<Call> calls; };
+struct Tap { string role; std::vector<int> reference_slots; };
 jvmtiEnv* ti;
 std::recursive_mutex lock;
 std::ofstream out;
 std::ofstream class_bytes;
 std::unordered_set<string> changes, public_shapes, tests, prefixes;
+std::unordered_set<string> tap_owners;
+std::unordered_map<string,Tap> taps;
 std::unordered_map<jmethodID, Member> methods;
 std::unordered_map<jlong, History> histories;
 long long next_tag = 0, next_call = 0, sequence = 0, limit = 0;
@@ -105,7 +108,7 @@ void line(const string& event) {
 
 void JNICALL loaded(jvmtiEnv*, JNIEnv*, jclass, jobject loader, const char* name, jobject,
                     jint length, const unsigned char* bytes, jint*, unsigned char**) {
-    if (!name || (!production(name) && !test_class(name))) return;
+    if (!name || (!production(name) && !test_class(name) && !tap_owners.count(name))) return;
     std::lock_guard<std::recursive_mutex> guard(lock);
     auto offset = class_bytes.tellp();
     class_bytes.write(reinterpret_cast<const char*>(bytes),length);
@@ -114,7 +117,7 @@ void JNICALL loaded(jvmtiEnv*, JNIEnv*, jclass, jobject loader, const char* name
 
 void JNICALL prepared(jvmtiEnv*, JNIEnv*, jthread, jclass klass) {
     string owner = owner_of(klass);
-    if (!production(owner) && !test_class(owner)) return;
+    if (!production(owner) && !test_class(owner) && !tap_owners.count(owner)) return;
     std::lock_guard<std::recursive_mutex> guard(lock);
     jint count = 0;
     jmethodID* ids = nullptr;
@@ -122,7 +125,7 @@ void JNICALL prepared(jvmtiEnv*, JNIEnv*, jthread, jclass klass) {
     for (int i=0; i<count; ++i) {
         const auto& m = member(ids[i]);
         bool test = test_class(owner) && !m.name.empty() && m.name[0] != '<' && m.name.find("lambda$") != 0;
-        if (!test && !changes.count(m.selector) && !(m.exported && public_shapes.count(m.name+m.signature))) continue;
+        if (!test && !changes.count(m.selector) && !taps.count(m.selector) && !(m.exported && public_shapes.count(m.name+m.signature))) continue;
         jlocation start = -1, end = -1;
         if (ti->GetMethodLocation(ids[i],&start,&end) == JVMTI_ERROR_NONE && start >= 0)
             ti->SetBreakpoint(ids[i],start);
@@ -136,6 +139,31 @@ void JNICALL hit(jvmtiEnv*, JNIEnv*, jthread thread, jmethodID id, jlocation) {
     const Member m = member(id);
     jlong tid = tag(thread);
     auto& h = histories[tid];
+    auto tap = taps.find(m.selector);
+    if (tap != taps.end()) {
+        jvmtiFrameInfo callers[2]; jint count = 0;
+        if (ti->GetStackTrace(thread,0,2,callers,&count) != JVMTI_ERROR_NONE || count != 2) return;
+        const Member caller = member(callers[1].method);
+        std::ostringstream event;
+        event << "tap\t" << tid << '\t' << h.test << '\t' << tap->second.role << '\t' << m.loader
+              << '\t' << m.selector << '\t' << caller.selector << '\t' << callers[1].location
+              << '\t' << receiver(thread,0,m);
+        for (int slot : tap->second.reference_slots) {
+            jobject value = nullptr;
+            auto error = ti->GetLocalObject(thread,0,slot,&value);
+            event << '\t' << (error == JVMTI_ERROR_NONE ? tag(value) : -1);
+        }
+        jvmtiFrameInfo trace[96]; jint depth = 0;
+        event << "\tSTACK";
+        if (ti->GetStackTrace(thread,0,96,trace,&depth) == JVMTI_ERROR_NONE) {
+            for (int i=0; i<depth; ++i) {
+                const Member f = member(trace[i].method);
+                jlong object = production(f.owner) || tap_owners.count(f.owner) || test_class(f.owner) ? receiver(thread,i,f) : 0;
+                event << '\t' << f.loader << ' ' << trace[i].location << ' ' << (f.exported?1:0) << ' ' << object << ' ' << f.selector;
+            }
+        }
+        line(event.str());
+    }
     if (test_class(m.owner)) {
         if (!h.test && ti->NotifyFramePop(thread,0) == JVMTI_ERROR_NONE) {
             h.test = ++next_call;
@@ -200,6 +228,17 @@ JNIEXPORT jint JNICALL Agent_OnLoad(JavaVM* vm, char* options, void*) {
         else if (key == "public") public_shapes.insert(value);
         else if (key == "test") tests.insert(value);
         else if (key == "prefix") prefixes.insert(value);
+        else if (key == "tap") {
+            std::istringstream row(value);
+            Tap rule; string member; int slot;
+            if (!(row >> rule.role >> member) || member.find('#') == string::npos) return JNI_ERR;
+            while (row >> slot) {
+                if (slot < 0 || slot > 255) return JNI_ERR;
+                rule.reference_slots.push_back(slot);
+            }
+            taps.emplace(member,rule);
+            tap_owners.insert(member.substr(0,member.find('#')));
+        }
         else if (key == "directory") directory = value;
         else if (key == "limit") {
             std::istringstream number(value);

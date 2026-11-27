@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-052202-isolate-selected-parquet-new-reversed-up",
+  "title": "Isolate selected Parquet new reversed upstream test classes",
+  "description": "Retain the first frozen test selection and ranking. Re-run the exact five selected classes in their own fresh JVMs, each plain and traced in a privately hydrated original module, so upstream target files cannot collide and an unrelated overflowing test class cannot erase another class’s coverage. Preserve all parity failures and limits.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-history-trace"
+  ],
+  "links": {},
+  "expected": "Every selected original class is accounted for with per-class parity and raw loaded method evidence in the original deployment order.",
+  "submitted": {
+    "at": "2026-11-27T05:22:02+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "g++"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "8m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "python3 verification/blind-caller/parquet_trace.py new --rev",
+      "run": "python3 verification/blind-caller/parquet_trace.py new --reverse --separate",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/parquet-new-reversed-separate.zip"
+  ]
+}

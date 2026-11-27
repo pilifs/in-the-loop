@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tarfile
 import tempfile
 import xml.etree.ElementTree as ET
 import zipfile
@@ -94,11 +95,23 @@ def test_rows(folder):
     return sorted(result,key=lambda r:json.dumps(r))
 
 
-def launch(base, module, tests, cp, tree, agent, config):
+def launch(base, module, tests, cp, tree, agent, config, *, isolated=False):
     base.mkdir()
     reports = base/"junit"
     tmp = base/"tmp"
     tmp.mkdir()
+    cwd = tree/module
+    if isolated:
+        # Upstream tests use target/ relative to the module as well as java.io.tmpdir.
+        # Each plain run and each traced fork gets the same tracked tree and an empty target.
+        checkout = base/"checkout"
+        checkout.mkdir()
+        with subprocess.Popen(["git","-C",tree,"archive","HEAD",module],stdout=subprocess.PIPE) as export:
+            with tarfile.open(fileobj=export.stdout,mode="r|") as source:
+                source.extractall(checkout,filter="data")
+            if export.wait():
+                raise ValueError("could not hydrate the pinned module for an isolated upstream test")
+        cwd = checkout/module
     args = [JDK/"bin/java","-Xmx1536m","-XX:MaxJavaStackTraceDepth=8","-XX:+IgnoreUnrecognizedVMOptions",
             *re.findall(r"--add-[a-z]+=[^ <\r\n]+",(tree/"pom.xml").read_text()),
             "-Dorg.slf4j.simpleLogger.defaultLogLevel=ERROR","-Dhadoop.logLevel=ERROR","-DenableResourceIntensiveTests=true",
@@ -111,19 +124,24 @@ def launch(base, module, tests, cp, tree, agent, config):
     if agent:
         env["JAVA_TOOL_OPTIONS"] = "-agentpath:"+str(agent)+"="+str(config)+" -Xlog:class+load=info:file="+str(base/"%p.loads")
     with (base/"launcher.log").open("w") as log:
-        proc = subprocess.run(args,cwd=tree/module,stdout=log,stderr=subprocess.STDOUT,env=env,timeout=600)
+        proc = subprocess.run(args,cwd=cwd,stdout=log,stderr=subprocess.STDOUT,env=env,timeout=600)
     if proc.returncode not in (0,1):
         raise ValueError("test launch failed: "+(base/"launcher.log").read_text()[-600:])
     return test_rows(reports)
 
 
-def run(side,reverse,root):
+def run(side,reverse,root,*,separate=False):
     revold,old = graph("old")
     revnew,new = graph("new")
     targets = changed_methods(old,new)
     graph_rows = list(old if side=="old" else new)
     if reverse:
-        graph_rows.append(graph_rows.pop(0))
+        if separate:
+            member = targets[0].partition("#")[0]
+            shadow = next(i for i,row in enumerate(graph_rows) if i and runtime_jar.effective_class(row["file"],member,21))
+            graph_rows[0],graph_rows[shadow] = graph_rows[shadow],graph_rows[0]
+        else:
+            graph_rows.append(graph_rows.pop(0))
     rev = revold if side=="old" else revnew
     tree = PRODUCT/"worktrees/J08-parquet-java-fix"
     classes = SETUP/"upstream-tests/J08/fix/classes"
@@ -140,20 +158,22 @@ def run(side,reverse,root):
                "orderedDeployment":graph_rows,"jdkReleaseSha256":upgrade_replay.sha(JDK/"release"),
                "policySha256":upgrade_replay.sha(POLICY),"agentSourceSha256":upgrade_replay.sha(AGENT),
                "changedSelectors":targets,"selection":selection_rows,"runs":[]}
-    for module,selection_row in selection_rows.items():
-        names = selection_row["selected"]
+    groups = [(module,[name],module+"-"+str(i)) for module,s in selection_rows.items()
+              for i,name in enumerate(s["selected"])] if separate else [(module,s["selected"],module) for module,s in selection_rows.items()]
+    for module,names,group in groups:
         shapes = {n+d for test in names for _,targets_in_method in calls(classes,test).values()
                   for owner,n,d in targets_in_method if owner.startswith(namespace) and n not in ("<init>","<clinit>")}
-        plain = launch(root/(module+"-plain"),module,names,cp,tree,None,None)
-        dest = root/(module+"-traced")
-        config = root/(module+".tsv")
+        plain = launch(root/(group+"-plain"),module,names,cp,tree,None,None,isolated=separate)
+        dest = root/(group+"-traced")
+        config = root/(group+".tsv")
         values = {"directory":[str(dest)],"limit":["262144"],"changed":targets,"public":sorted(shapes),
                   "test":sorted(all_tests),"prefix":[namespace]}
         config.write_text("".join(k+"\t"+v+"\n" for k,items in values.items() for v in items))
-        traced = launch(dest,module,names,cp,tree,agent,config)
+        traced = launch(dest,module,names,cp,tree,agent,config,isolated=separate)
         forks = []
         for path in sorted(dest.glob("*.events")):
             fork = public_histories.read_fork(path,graph_rows,classes,module,rev,summary["jdkReleaseSha256"],21)
+            fork["rawDirectory"] = dest.name
             rows = public_histories.witnesses(fork)
             counts = Counter((r["test"],r["entry"],r["changed"],r["relationship"]) for r in rows)
             examples = {}
@@ -165,9 +185,9 @@ def run(side,reverse,root):
             forks.append({"plainParity":plain==traced,"fork":fork,"witnesses":list(examples.values())})
         if not forks:
             raise ValueError("original traced launch produced no VM events")
-        summary["runs"].append({"module":module,"plain":plain,"traced":traced,"forks":forks})
+        summary["runs"].append({"module":module,"selected":names,"plain":plain,"traced":traced,"forks":forks})
     change_evidence.write_json(root/"summary.json",summary)
-    out = HERE/("parquet-"+side+("-reversed" if reverse else "")+".zip")
+    out = HERE/("parquet-"+side+("-reversed" if reverse else "")+("-separate" if separate else "")+".zip")
     with zipfile.ZipFile(out,"w",zipfile.ZIP_DEFLATED) as z:
         for p in [root/"summary.json",*root.glob("*.tsv"),*root.glob("*-traced/*.events"),*root.glob("*-traced/*.classes"),
                   *root.glob("*-traced/*.loads"),*root.glob("*/launcher.log")]:
@@ -180,6 +200,7 @@ if __name__ == "__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("side",choices=("old","new"))
     parser.add_argument("--reverse",action="store_true")
+    parser.add_argument("--separate",action="store_true",help="same selection, one original test class and private module tree per JVM")
     args=parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="upstream-history-") as temp:
-        run(args.side,args.reverse,Path(temp))
+        run(args.side,args.reverse,Path(temp),separate=args.separate)

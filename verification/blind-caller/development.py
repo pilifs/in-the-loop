@@ -56,8 +56,10 @@ def qualify(case, work):
         if node["status"] != ref["status"] or not node.get("children"):
             raise ValueError(f"{node['id']}: {node.get('firstOpenDependency')} {node.get('reason')}")
         for a,b in zip(node["children"],ref["children"],strict=True):
-            if any(a.get(side) != b.get(side) for side in ("old","new")):
-                raise ValueError("original side observation changed")
+            for side in ("old","new"):
+                if a.get(side) != b.get(side):
+                    raise ValueError(f"{node['id']} input {a['input']} {side}: original side observation changed; "
+                                     + str(node.get("reason") or node.get("firstOpenDependency")))
         evidence = campaign.read(work/node["receipt"]["path"])
         for side in evidence["sides"].values():
             for trial in side["trials"]:
@@ -72,7 +74,19 @@ def qualify(case, work):
     for name, candidate in plants(case, source, generation["recipe"]).items():
         controls[name] = {}
         for side in ("old", "new"):
-            result = falsifiers.dynamic(bundle, jdk, work/(name+"-"+side), candidate, question, 0, side)
+            planted = candidate
+            if name == "inner-only":
+                # On the fix, the registered invalid retry completes normally. A labelled publisher
+                # failure exercises the public error and its cause on both unmodified releases.
+                error_body = ".body(reactor.core.publisher.Flux.error(new IllegalStateException(\"outer\", new IllegalArgumentException(\"cause\"))))"
+                positive = replace(source, ".body(text)", error_body)
+                planted = replace(candidate, ".body(text)", error_body)
+                baseline = falsifiers.dynamic(bundle,jdk,work/("terminal-original-"+side),positive,question,0,side)
+                returned, = json.loads(baseline["raw"]["return"])
+                if "projection" not in baseline or returned[1] != "error" or not returned[3] or returned[2] == returned[3]:
+                    raise ValueError("labelled terminal failure did not expose a distinct outer and cause")
+                controls.setdefault("labelled-terminal-original",{})[side] = baseline
+            result = falsifiers.dynamic(bundle, jdk, work/(name+"-"+side), planted, question, 0, side)
             if "refusal" not in result:
                 raise ValueError("planted " + name + " qualified on " + side)
             controls[name][side] = result
