@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "634",
+  "title": "An excluded archive entry remains available to the next Gradle layer",
+  "summary": "The original Gradle builds assign Open and Hidden to opposite layers under an exclusion. The merge also keeps Hidden out of the first layer when a broader include matches it.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Gradle bootJar → BOOT-INF/layers.idx"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "An excluded archive entry remains available to the next Gradle layer"
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52530"
+  },
+  "recordedComparison": "recorded-comparison.json",
+  "verdictLabel": "3/3 merged Gradle predictions matched",
+  "notes": [
+    "The consumer expands directory rules from the packaged layers.idx and rejects a missing entry, duplicate owner or changed class bytes."
+  ]
+}

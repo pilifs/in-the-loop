@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "619",
+  "title": "Missing intermediate health contributors resolve as absent",
+  "summary": "Reads a known healthy leaf and a missing terminal child on the same owned composite using the original health module.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Actuator health contributor HTTP lookup"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Health endpoint traversal stops at the first missing child. The HTTP result should remain a missing resource even when more path segments follow that child."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52321"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [
+    "The two original S32 health modules are first on their own classpaths. Both run over the same pinned Jersey/Tomcat transport from S34. This caller covers the two terminal-leaf controls.",
+    "On the merged health class, a bytecode check found an immediate return after a missing child. The two public intermediate-path claims remain open. [Merged class evidence](../../verification/merged-pr-links/s01-s50/repaired-guards.json)"
+  ],
+  "verdictLabel": "1/1 merged predictions matched"
+}

@@ -6,10 +6,12 @@ import os
 from pathlib import Path
 import re
 import subprocess
-import tempfile
+import sys
 from zipfile import ZipFile
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0,str(HERE.parent))
+from workspace import scratch
 
 
 def sha(path):
@@ -98,15 +100,20 @@ def layer_owner(index, name):
 
 def layers(work, install, jdk, base):
     sources = {"org/example/Open": "public static void main(String[] args) {}", "org/example/internal/Hidden": "", "other/Third": ""}
-    for name, body in sources.items():
+    def write_source(name,body):
         path = work / "src/main/java" / (name + ".java")
         path.parent.mkdir(parents=True, exist_ok=True)
         pkg, cls = name.rsplit("/", 1)
         path.write_text(f"package {pkg.replace('/', '.')}; public class {cls} {{ {body} }}\n")
+    for name, body in sources.items():
+        if name != "other/Third":
+            write_source(name,body)
     modes = {"intent": "exclude 'org/example/internal/**'", "control": "include 'org/example/internal/**'",
              "challenge": "include 'org/example/**'\n                exclude 'org/example/internal/**'"}
     records = {}
     for mode, rule in modes.items():
+        if mode == "challenge":
+            write_source("other/Third",sources["other/Third"])
         (work / "build.gradle").write_text(base + """
 springBoot { mainClass = 'org.example.Open' }
 tasks.named('bootJar') {
@@ -128,6 +135,10 @@ tasks.named('bootJar') {
             result = {}
             for name in sources:
                 entry = "BOOT-INF/classes/" + name + ".class"
+                if name == "other/Third" and mode != "challenge":
+                    if entry in archive.namelist():
+                        raise ValueError("challenge-only class present in baseline")
+                    continue
                 if archive.namelist().count(entry) != 1 or archive.read(entry) != (work / "build/classes/java/main" / (name + ".class")).read_bytes():
                     raise ValueError("packaged bytes differ for " + entry)
                 result[name] = layer_owner(index, entry)
@@ -156,7 +167,7 @@ def main(case, output, check):
         if check:
             print(case, side, "verified", len(files), "inputs")
             continue
-        with tempfile.TemporaryDirectory(prefix="boot-gradle-") as tmp:
+        with scratch("boot-gradle-") as tmp:
             work = Path(tmp) / "fixture"
             base = project(work, [cache / n for n in row["plugin"]])
             results[side] = (metadata(work,install,jdk,base,cache/row["processor"],cache/row["annotation"])

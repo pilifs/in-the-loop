@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51551",
+  "revisions": {
+    "parent": "d34a479879d348a1758196b7d1c696ea4f8ea8f0",
+    "fix": "69ad59c413ec8dfbd884ba0e712e8ada89513d29"
+  },
+  "entry": "Repackager.repackage → JarFile manifest and named entry",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51551.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Package the single CycloneDX fixture under the WAR classes path.",
+      "prediction": "The PR reports the parent WAR contains the file but omits both attributes. On the merge expect `Sbom-Format=CycloneDX` and `Sbom-Location=WEB-INF/classes/META-INF/sbom/application.cdx.json`, resolving to the supplied bytes.",
+      "basis": "The physical WAR path follows the classes layout. The Maven integration fixture asserts the entry and both attributes.",
+      "refutation": "Missing or wrong attributes, a dangling manifest path, or bytes different from the supplied fixture.",
+      "expected": {
+        "parent": {
+          "return": "absent/absent:present"
+        },
+        "fix": {
+          "return": "CycloneDX/WEB-INF/classes/META-INF/sbom/application.cdx.json:selected"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51551.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use the existing packager JAR fixture with a source entry at `META-INF/sbom/application.cdx.json` and `Layouts.Jar`. Inspect the recorded source location as the shared packager test does.",
+      "prediction": "On both revisions the format attribute should equal `CycloneDX` and the location attribute should equal `META-INF/sbom/application.cdx.json` in the fixture’s generated manifest.",
+      "basis": "The root-level discovery rule remains in the landed implementation and the shared JAR test asserts these values.",
+      "refutation": "Either attribute disappears or the WAR prefix appears in this JAR fixture.",
+      "expected": {
+        "parent": {
+          "return": "CycloneDX/META-INF/sbom/application.cdx.json"
+        },
+        "fix": {
+          "return": "CycloneDX/META-INF/sbom/application.cdx.json"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51551.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "In the WAR retain the one recognized SBOM. Add an ordinary resource named `other/application.cdx.json` with different bytes and put it earlier in the archive.",
+      "prediction": "On the merge the location should still select the file under `WEB-INF/classes/META-INF/sbom/`. Reading its entry must yield the original marker, independent of the decoy’s position.",
+      "basis": "The file suffix alone is insufficient; the recognized SBOM directory and the physical entry named by the manifest determine the selection.",
+      "refutation": "The decoy is advertised or returned, the manifest omits the SBOM, or its value cannot be looked up in the WAR.",
+      "expected": {
+        "fix": {
+          "return": "CycloneDX/WEB-INF/classes/META-INF/sbom/application.cdx.json:selected"
+        }
+      }
+    }
+  ]
+}

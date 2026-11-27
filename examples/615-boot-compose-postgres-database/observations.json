@@ -1,0 +1,70 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "f9272da1f4afd83da7b2d2834d176bb433905e4babd0c7c109ec3c36872d5f1c",
+  "runtimeSha256": "8fb29fb0d253de87023edd8d3d3208e7e831831499fec4a1b515f0b8c1019da1",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/ComposeProject.java": "4dae3477485b5e1d0b4f056bd140f95e2330617dbc3c0bf288961633005685ad",
+    "caller/PublicCaller.java": "4b0f34494106849b225d8d198b524cdd04535292210614c84a447c93515e42ac"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "ComposeProject$App.class": "e0b059cb2e1451991c6c4b124af3152c53b82475ab1eda2d76ef52dbd7754b46",
+        "ComposeProject.class": "9e7c4b07c9af60d0b47890cfa7d4c20d183148393383173d65a07ffa9cc4f011",
+        "PublicCaller.class": "f82df90c9725b2d19969648e06abdaa2de10fadb7ae3ab534ccf5972a33eea12",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52625.1",
+          "outcome": {
+            "return": "my db/30/my-app"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52625.2",
+          "outcome": {
+            "return": "database/30/my-app"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#52625.3",
+          "outcome": {
+            "return": "my db/30/my-app;my+db/30/my-app"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52625.1",
+          "outcome": {
+            "return": "my+db/30/my-app"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52625.2",
+          "outcome": {
+            "return": "database/30/my-app"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#52625.3",
+          "outcome": {
+            "return": "my+db/30/my-app;my%2Bdb/30/my-app"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

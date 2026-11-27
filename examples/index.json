@@ -30638,6 +30638,45 @@
       "target": null
     },
     {
+      "id": "597",
+      "path": "examples/597-boot-gradle-incremental-descriptions",
+      "title": "Preserve metadata descriptions for properties Gradle leaves uncompiled",
+      "summary": "The merged incremental compile preserved the untouched description, replaced an edited comment and removed a deleted comment. The parent lost the untouched property’s description.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Gradle compileJava → spring-configuration-metadata.json",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged Gradle predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The original plugin and processor come from each pin. The consumer uses the same released Boot 4.0.7 configuration-properties annotation on both sides."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/50489",
+      "target": null
+    },
+    {
       "id": "598",
       "path": "examples/598-boot-fallback-bean-order",
       "title": "Auto-configuration ordering still determines which fallback bean wins",
@@ -30820,6 +30859,46 @@
       "existingTestsPassed": null,
       "notes": [],
       "source": "https://github.com/spring-projects/spring-boot/pull/50886",
+      "target": null
+    },
+    {
+      "id": "603",
+      "path": "examples/603-boot-webflux-milestone-codecs",
+      "title": "Shared WebFlux JSON codecs across server and clients",
+      "summary": "Both original Boot source slices compiled on one reconstructed July 2017 codec profile. The parent emitted firstName and read a snake-case POST as null. The merge emitted first_name, decoded Lin, and both injected clients decoded Mia.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "SpringApplication, WebClient.Builder and WebTestClient",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched on the reconstructed profile",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Six unmodified Framework codec configuration sources from 2ccbc55ffdff supply the historical method names. Boot 2.0.0.M2 supplies unchanged dependencies, Framework RC3 supplies the remaining HTTP classes, and Jackson 2.9.0.pr4 supplies the nonblocking parser. All JAR and source digests and the original loaded providers are recorded.",
+        "The July 2017 published snapshot binaries are unavailable. The earlier parent-slice/M3 release comparison is retained as a separate profile."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/9558",
       "target": null
     },
     {
@@ -31084,6 +31163,43 @@
       "target": null
     },
     {
+      "id": "611",
+      "path": "examples/611-boot-mongo-batch-writer",
+      "title": "Selecting the transaction manager for a Mongo Batch repository",
+      "summary": "Writes Batch metadata on a local Mongo replica set. Records the selected manager’s acquisition and commit before reading back the execution ID and job name.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "JobRepository.createJobInstance, createJobExecution and getJobExecution",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51725",
+      "target": null
+    },
+    {
       "id": "612",
       "path": "examples/612-boot-redis-cluster-options",
       "title": "Apply topology refresh to a Redis cluster supplied by a bean",
@@ -31112,7 +31228,7 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "2/2 merged predictions matched",
+      "verdictLabel": "3/3 merged predictions matched",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
@@ -31160,6 +31276,117 @@
       "target": null
     },
     {
+      "id": "614",
+      "path": "examples/614-boot-compose-redis-tcp",
+      "title": "Redis connection details select the TCP port when UDP is also published",
+      "summary": "Reads the Redis endpoint chosen from actual loopback TCP and UDP publications and sends a PING to the advertised TCP listener.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "DataRedisConnectionDetails.getStandalone and Redis PING",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52832",
+      "target": null
+    },
+    {
+      "id": "615",
+      "path": "examples/615-boot-compose-postgres-database",
+      "title": "The PostgreSQL driver recovers a Compose database name exactly",
+      "summary": "Parses the JDBC URL supplied by a real Compose service. The driver returns the database name, timeout and application name independently.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "JdbcConnectionDetails.getJdbcUrl → PostgreSQL Driver.parseURL",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52625",
+      "target": null
+    },
+    {
+      "id": "616",
+      "path": "examples/616-boot-compose-rabbit-vhost",
+      "title": "Connect to the RabbitMQ virtual host configured by Compose",
+      "summary": "Uses the classic broker and stream connection details from an owned Compose service. Reads an absent stream through the stream protocol.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "RabbitConnectionDetails and RabbitStreamConnectionDetails",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51940",
+      "target": null
+    },
+    {
       "id": "617",
       "path": "examples/617-boot-kafka-async-stop-policy",
       "title": "Apply the configured Kafka shutdown policy to asynchronous listener results",
@@ -31188,14 +31415,167 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "2/2 merged predictions matched",
+      "verdictLabel": "3/3 merged predictions matched",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "This original Boot pair uses the setup’s Spring Kafka 4.2.0-M2 dependency. These configuration observations do not measure completion ordering at a broker."
+        "Both Boot revisions use the setup’s Spring Kafka 4.2.0-M2 substitution. The challenge runs its test kit’s genuine Kafka 4.3.1 KRaft broker on loopback and records a completed listener future and the container stop callback."
       ],
       "source": "https://github.com/spring-projects/spring-boot/pull/51774",
+      "target": null
+    },
+    {
+      "id": "618",
+      "path": "examples/618-boot-liveness-group-status",
+      "title": "A custom liveness URL retains liveness-only membership",
+      "summary": "Reads the canonical liveness group, its alias and overall HTTP health while a separately registered indicator changes state.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Actuator liveness group, alias and overall HTTP health",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both sides use the same recorded MVC transport and dependencies from S33. The S31 and S33-fix MVC main source trees agree. The health implementation and its owning dependencies come first from each original S31 deployment."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/50296",
+      "target": null
+    },
+    {
+      "id": "619",
+      "path": "examples/619-boot-health-existing-and-absent-leaves",
+      "title": "Missing intermediate health contributors resolve as absent",
+      "summary": "Reads a known healthy leaf and a missing terminal child on the same owned composite using the original health module.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Actuator health contributor HTTP lookup",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "1/1 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The two original S32 health modules are first on their own classpaths. Both run over the same pinned Jersey/Tomcat transport from S34. This caller covers the two terminal-leaf controls.",
+        "On the merged health class, a bytecode check found an immediate return after a missing child. The two public intermediate-path claims remain open. [Merged class evidence](../../verification/merged-pr-links/s01-s50/repaired-guards.json)"
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52321",
+      "target": null
+    },
+    {
+      "id": "620",
+      "path": "examples/620-boot-health-group-longest-alias",
+      "title": "Reach a named health group through a multi-segment path",
+      "summary": "Parses the health status and component names at exact aliases and a nested component URL on an original MVC server.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Actuator HTTP health group alias and component",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51470",
+      "target": null
+    },
+    {
+      "id": "621",
+      "path": "examples/621-boot-jersey-management-json",
+      "title": "Apply the Actuator endpoint mapper on a separate Jersey management port",
+      "summary": "Reads the serialized scope only for two named fixture beans on shared and separate loopback ports.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Jersey management and shared HTTP beans endpoint",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51937",
       "target": null
     },
     {
@@ -31233,6 +31613,43 @@
       "existingTestsPassed": null,
       "notes": [],
       "source": "https://github.com/spring-projects/spring-boot/pull/50734",
+      "target": null
+    },
+    {
+      "id": "623",
+      "path": "examples/623-boot-otlp-signal-defaults",
+      "title": "Common OTLP settings reach the signal-specific exporters",
+      "summary": "Decodes three independently emitted protobuf signals after HTTP delivery and compares request paths, compression and all suite header values.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Original OTLP logging, tracing and metrics exporters → HTTP collector",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/50461",
       "target": null
     },
     {
@@ -31307,7 +31724,9 @@
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
-      "notes": [],
+      "notes": [
+        "On the merged output class, a bytecode check found buffer and encoder cleanup on normal and exceptional exit. The two public interrupted-write claims remain open. [Merged class evidence](../../verification/merged-pr-links/s01-s50/repaired-guards.json)"
+      ],
       "source": "https://github.com/spring-projects/spring-boot/pull/51156",
       "target": null
     },
@@ -31568,6 +31987,199 @@
       "existingTestsPassed": null,
       "notes": [],
       "source": "https://github.com/spring-projects/spring-boot/pull/52402",
+      "target": null
+    },
+    {
+      "id": "633",
+      "path": "examples/633-boot-layer-index-precedence",
+      "title": "Preserve layer assignment when extracting a Boot-generated index",
+      "summary": "Compares physical layer contents from a genuinely generated index and a separate hand-authored overlapping index under each original extractor.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "tools jarmode extract --layers --launcher",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "agreement"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both inputs use the same S49 packager to produce the ordinary compacted index. The root launcher class files are then taken from the respective S46 build, and the nested tools JAR is byte-identical to its S46 original. The mixed-index experiment edits only that index."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51653",
+      "target": null
+    },
+    {
+      "id": "634",
+      "path": "examples/634-boot-gradle-layer-owners",
+      "title": "An excluded archive entry remains available to the next Gradle layer",
+      "summary": "The original Gradle builds assign Open and Hidden to opposite layers under an exclusion. The merge also keeps Hidden out of the first layer when a broader include matches it.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Gradle bootJar → BOOT-INF/layers.idx",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged Gradle predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The consumer expands directory rules from the packaged layers.idx and rejects a missing entry, duplicate owner or changed class bytes."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52530",
+      "target": null
+    },
+    {
+      "id": "635",
+      "path": "examples/635-boot-war-sbom-location",
+      "title": "An executable Maven WAR advertises its embedded SBOM",
+      "summary": "Checks the format, physical WAR location and actual SBOM bytes, with a differently located CycloneDX filename encountered first.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Repackager.repackage → JarFile manifest and named entry",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The numbered caller exercises the shared original Repackager. The Maven goal’s independent fixture is accounted for in the campaign evidence."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51551",
+      "target": null
+    },
+    {
+      "id": "636",
+      "path": "examples/636-boot-war-extracted-classpath",
+      "title": "Extract a runnable JAR and both library scopes from an executable WAR",
+      "summary": "Extracts an actual packaged executable, reads the relocated web resources and dependency bytes, then launches its application JAR from a separate directory.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Repackager.repackage → tools extraction and extracted java -jar",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51372",
+      "target": null
+    },
+    {
+      "id": "637",
+      "path": "examples/637-boot-native-flyway-migration",
+      "title": "Execute the Flyway migration found in a native image subdirectory",
+      "summary": "Six GraalVM executables distinguish a root migration from nested ones. All three merged images applied version 2 once with checksum −391086276 and a durable marker of 73.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Flyway.info → independent JDBC query in a native executable",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged native predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Every native executable has a fresh resource layout and H2 database. Its ordinary and Spring AOT JVM controls applied the SQL independently. The full native compilation belongs in the verification pipeline."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/50433",
       "target": null
     }
   ]

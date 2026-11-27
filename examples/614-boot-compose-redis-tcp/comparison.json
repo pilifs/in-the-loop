@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52832",
+  "revisions": {
+    "parent": "3a7a19b7c5b16d4cc6dd8f0c22ea88d206e90a9a",
+    "fix": "05356df632d8bec937e55cc486377871a201f084"
+  },
+  "entry": "DataRedisConnectionDetails.getStandalone and Redis PING",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52832.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Publish the two distinct host ports for container port 6379.",
+      "prediction": "The parent could choose the UDP publication. On the merge the returned port should be 16379 and a TCP client should receive `PONG`.",
+      "basis": "Compose’s protocol-qualified port declarations identify the endpoint where the Redis TCP listener is reachable.",
+      "refutation": "The merge returns 26379, treats the service connection as ambiguous, or cannot obtain `PONG` while the declared TCP endpoint is healthy.",
+      "expected": {
+        "fix": {
+          "return": "tcp:PONG"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52832.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Publish only `6379/tcp` on 16379.",
+      "prediction": "Both revisions should return 16379 and reach the same Redis instance.",
+      "basis": "There is exactly one eligible host mapping even for a number-only lookup.",
+      "refutation": "Either revision returns another port or cannot reach the confirmed healthy endpoint.",
+      "expected": {
+        "parent": {
+          "return": "tcp:PONG"
+        },
+        "fix": {
+          "return": "tcp:PONG"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52832.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep TCP fixed and publish UDP on a different free port. Reverse the order of the Compose port entries and relaunch.",
+      "prediction": "On the merge the Redis connection details and `PING` result should be unchanged across launches. The UDP mapping may change.",
+      "basis": "Neither the UDP port number nor declaration order changes the TCP listener.",
+      "refutation": "A UDP-only change alters the Redis endpoint or response.",
+      "expected": {
+        "fix": {
+          "return": "tcp:PONG/tcp:PONG"
+        }
+      }
+    }
+  ]
+}

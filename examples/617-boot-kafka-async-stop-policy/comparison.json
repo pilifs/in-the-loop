@@ -44,6 +44,22 @@
           "return": "false:false/false:false"
         }
       }
+    },
+    {
+      "id": "spring-projects/spring-boot#51774.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge, enable awaiting and choose a shutdown timeout long enough for a synchronized test. After the listener returns its pending future, request `stop(callback)`; complete the future before the deadline.",
+      "prediction": "Shutdown completion should follow the result’s completion. The result should complete normally and the container’s stop callback should eventually run.",
+      "basis": "The stop contract allows in-flight work to finish within the timeout. Recording the two signals tests delivery beyond a factory getter.",
+      "refutation": "The stop callback completes while the result is still pending, the future is cancelled before the timeout, or shutdown never completes after release.",
+      "expected": {
+        "fix": {
+          "return": "stopping:true/future:normal/callback:after"
+        }
+      }
     }
   ]
 }

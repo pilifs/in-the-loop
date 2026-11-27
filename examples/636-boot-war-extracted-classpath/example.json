@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "636",
+  "title": "Extract a runnable JAR and both library scopes from an executable WAR",
+  "summary": "Extracts an actual packaged executable, reads the relocated web resources and dependency bytes, then launches its application JAR from a separate directory.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Repackager.repackage → tools extraction and extracted java -jar"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The packagers can record a second library root in `Spring-Boot-Lib-Provided`. The tools jarmode uses both roots to translate the WAR’s classpath index into the extracted application JAR’s class path."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51372"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

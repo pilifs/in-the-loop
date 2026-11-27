@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "611",
+  "title": "Selecting the transaction manager for a Mongo Batch repository",
+  "summary": "Writes Batch metadata on a local Mongo replica set. Records the selected manager’s acquisition and commit before reading back the execution ID and job name.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "JobRepository.createJobInstance, createJobExecution and getJobExecution"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Boot widens the eligible transaction managers for the Mongo Batch repository to `PlatformTransactionManager`, retaining the batch-qualified bean’s precedence and the Mongo default."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51725"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

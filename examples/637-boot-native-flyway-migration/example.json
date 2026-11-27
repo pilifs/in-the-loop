@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "637",
+  "title": "Execute the Flyway migration found in a native image subdirectory",
+  "summary": "Six GraalVM executables distinguish a root migration from nested ones. All three merged images applied version 2 once with checksum −391086276 and a durable marker of 73.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Flyway.info → independent JDBC query in a native executable"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Execute the Flyway migration found in a native image subdirectory"
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/50433"
+  },
+  "recordedComparison": "recorded-comparison.json",
+  "verdictLabel": "3/3 merged native predictions matched",
+  "notes": [
+    "Every native executable has a fresh resource layout and H2 database. Its ordinary and Spring AOT JVM controls applied the SQL independently. The full native compilation belongs in the verification pipeline."
+  ]
+}

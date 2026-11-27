@@ -2,6 +2,8 @@
 
 Reads successive successful encodes from one public writer on a new thread and checks event boundaries.
 
+On the merged output class, a bytecode check found buffer and encoder cleanup on normal and exceptional exit. The two public interrupted-write claims remain open. [Merged class evidence](../../verification/merged-pr-links/s01-s50/repaired-guards.json)
+
 | History | Parent | Merge | Merged prediction |
 |---|---|---|---|
 | Control | `{"ok":"a"}/{"ok":"b"}` | `{"ok":"a"}/{"ok":"b"}` | matched |

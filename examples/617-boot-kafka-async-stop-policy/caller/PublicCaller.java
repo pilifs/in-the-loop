@@ -18,7 +18,8 @@ public class PublicCaller {
         });
         return value.get();
     }
-    public static String observe(String[] args) {
+    public static String observe(String[] args) throws Exception {
+        if (args[0].equals("challenge")) return PendingListener.observe();
         return args[0].equals("control") ? read(null) + "/" + read("false") : read("true");
     }
 }

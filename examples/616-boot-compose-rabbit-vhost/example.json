@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "616",
+  "title": "Connect to the RabbitMQ virtual host configured by Compose",
+  "summary": "Uses the classic broker and stream connection details from an owned Compose service. Reads an absent stream through the stream protocol.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "RabbitConnectionDetails and RabbitStreamConnectionDetails"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The Compose integrations take the broker’s virtual host from `RABBITMQ_DEFAULT_VHOST`, falling back to `RABBITMQ_VHOST` and ultimately `/`."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51940"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

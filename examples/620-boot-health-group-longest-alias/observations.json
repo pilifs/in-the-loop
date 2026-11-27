@@ -1,0 +1,71 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "e5bb7057cd0cb981da378cb509225cd8b52180fd9a8a09ec3cd69eebd24e403d",
+  "runtimeSha256": "636d337d3b01adc0257393f7ff43893db33dbb3d49c59f1a34c290681555797e",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/HealthHttp.java": "f100716388447cdc87c96f16344803f566cb263e5fb8e0d6148e8ea247070214",
+    "caller/PublicCaller.java": "1849f2d8d50e53150c6f896c2897bd011846f2b59fa4585bc1faa0ba6b27c773"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "HealthHttp$Transport.class": "0c3aa42262bc2a6256aaa192943e8a0359609639cd721e7f06ee16a1f9a88032",
+        "HealthHttp.class": "f447f39797e615fdf0b0776ecfaa3b4d4c95810bd948278a1320266720bbe0b8",
+        "PublicCaller$Markers.class": "1ba5e908ae7756352547fde7ed8d9ea486224be1dd8182f2833468469d81dc33",
+        "PublicCaller.class": "4ab615638ab02020298fa3495e70ff91ed39f8c1f7299877b2d7e4b73b831b8e",
+        "UpgradeObservation.class": "b59f169ba7e18015ae1843c6430e52695cff77be08cf4b422c1eed838431bd37"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#51470.1",
+          "outcome": {
+            "throws": "org.springframework.beans.factory.BeanCreationException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#51470.2",
+          "outcome": {
+            "return": "200:UP:diskSpace"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "spring-projects/spring-boot#51470.3",
+          "outcome": {
+            "throws": "org.springframework.beans.factory.BeanCreationException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#51470.1",
+          "outcome": {
+            "return": "200:UP:diskSpace"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#51470.2",
+          "outcome": {
+            "return": "200:UP:diskSpace"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "spring-projects/spring-boot#51470.3",
+          "outcome": {
+            "return": "200:UP:near/200:UP:far/404;200:UP:near/200:UP:far/404"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

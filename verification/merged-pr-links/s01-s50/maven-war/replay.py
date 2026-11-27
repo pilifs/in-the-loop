@@ -8,9 +8,33 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
+from urllib.request import ProxyHandler, build_opener
+from zipfile import ZipFile
 
 HERE = Path(__file__).resolve().parent
 PINS = {"parent":"d34a479879d348a1758196b7d1c696ea4f8ea8f0", "fix":"69ad59c413ec8dfbd884ba0e712e8ada89513d29"}
+MAVEN = "apache-maven-3.9.13-bin.tar.gz"
+MAVEN_SHA512 = "d9ccd44ba2991586e359c29eb86780ae8ff4ec1b88b0b8af3af074803472690cf2017782a9c4401343c62cbcd056231db9612e1e551cbd9747c21746d732c015"
+
+
+def maven_distribution(cache, fetch):
+    path = cache/"downloads"/MAVEN
+    if fetch and not path.exists():
+        path.parent.mkdir(parents=True,exist_ok=True)
+        url = "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/" + MAVEN
+        with tempfile.NamedTemporaryFile(dir=path.parent,delete=False) as dest:
+            candidate = Path(dest.name)
+        try:
+            with build_opener(ProxyHandler({})).open(url,timeout=60) as response, candidate.open("wb") as out:
+                shutil.copyfileobj(response,out)
+            if hashlib.sha512(candidate.read_bytes()).hexdigest() != MAVEN_SHA512:
+                raise ValueError("Maven distribution checksum differs")
+            candidate.replace(path)
+        finally:
+            candidate.unlink(missing_ok=True)
+    if not path.is_file() or hashlib.sha512(path.read_bytes()).hexdigest() != MAVEN_SHA512:
+        raise ValueError("missing original Maven 3.9.13 distribution; --fetch retrieves the published archive")
+    return path
 
 
 def local_mirror(cache, destination):
@@ -35,7 +59,22 @@ def local_mirror(cache, destination):
             out.symlink_to(src)
 
 
-def run(side, preflight):
+def install_order_goal(work, destination, maven_home, jdk):
+    classes = work/"order-classes"
+    classes.mkdir()
+    subprocess.run([jdk/"bin/javac","--release","17","-proc:none","-cp",str(maven_home/"lib/*"),
+                    "-d",classes,HERE/"WarOrderMojo.java"],check=True)
+    component = destination/"fixture/war-order/1"
+    component.mkdir(parents=True)
+    with ZipFile(component/"war-order-1.jar","w") as plugin:
+        plugin.write(classes/"fixture/WarOrderMojo.class","fixture/WarOrderMojo.class")
+        plugin.write(HERE/"order-plugin.xml","META-INF/maven/plugin.xml")
+    (component/"war-order-1.pom").write_text(
+        "<project><modelVersion>4.0.0</modelVersion><groupId>fixture</groupId><artifactId>war-order</artifactId>"
+        "<version>1</version><packaging>maven-plugin</packaging></project>")
+
+
+def run(side, preflight, fetch=False):
     cache = Path(os.environ.get("SPRING_BOOT_S_CACHE", Path.home()/".cache/in-the-loop/spring-boot-pr-links-s01-s50"))
     source = cache / ("worktrees/S48-" + side)
     ref = subprocess.check_output(["git","-C",source,"rev-parse","HEAD"],text=True).strip()
@@ -46,8 +85,9 @@ def run(side, preflight):
     harness = module / "src/intTest/java/org/springframework/boot/maven"
     if not gradle.exists() or not (source/harness/"MavenBuildExtension.java").is_file():
         raise ValueError("missing original Maven plugin harness")
+    maven = maven_distribution(cache,fetch)
     if preflight:
-        return {"revision":ref,"gradle":gradle.parent.parent.name}
+        return {"revision":ref,"gradle":gradle.parent.parent.name,"mavenSha512":MAVEN_SHA512}
     temp_root = Path(os.environ.get("TMPDIR") or cache / "tmp")
     if not temp_root.resolve().is_relative_to(Path.home()/".cache/in-the-loop"):
         temp_root = cache / "tmp"
@@ -61,11 +101,18 @@ def run(side, preflight):
         if export.returncode:
             raise RuntimeError("source export failed")
         shutil.copyfile(HERE/"MavenWarObservation.java",tree/harness/"MavenWarObservation.java")
+        binaries = tree/module/"build/maven-binaries"
+        binaries.mkdir(parents=True)
+        with tarfile.open(maven) as archive:
+            archive.extractall(binaries,filter="data")
+        if not (binaries/"apache-maven-3.9.13/bin/mvn").is_file():
+            raise ValueError("original Maven launcher missing from distribution")
         fixture = tree/module/"src/intTest/projects/verified-sbom"
         fixture.mkdir()
         shutil.copyfile(HERE/"pom.xml",fixture/"pom.xml")
         local = work/"public-mirror"
         local_mirror(cache,local)
+        install_order_goal(work, local, binaries/"apache-maven-3.9.13", Path.home()/".sdkman/candidates/java/25.0.5.0+8-tem")
         resolver = tree/"buildSrc/src/main/java/org/springframework/boot/build/bom/BomResolver.java"
         original_resolver = resolver.read_text()
         hook = "private File resolveBom(String coordinates) {"
@@ -119,6 +166,7 @@ beforeProject { p ->
                "-Porg.gradle.java.installations.auto-detect=false","-Porg.gradle.java.installations.auto-download=false",
                "-Porg.gradle.java.installations.paths=" + ",".join(str(jdks/n) for n in names),
                "-x",":buildSrc:test","-x",":buildSrc:checkstyleMain","-x",":buildSrc:checkstyleTest","-x",":buildSrc:checkFormat",
+               "-x",":build-plugin:spring-boot-maven-plugin:prepareMavenBinaries",
                ":build-plugin:spring-boot-maven-plugin:intTest","--tests","org.springframework.boot.maven.MavenWarObservation"]
         log = subprocess.run(cmd, cwd=tree,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=1200)
         if log.returncode:
@@ -130,8 +178,8 @@ beforeProject { p ->
             raise RuntimeError("original Maven integration build failed")
         rows = {}
         for path in receipts.glob("*.txt"):
-            name,fmt,loc,payload,order = path.read_text().splitlines()
-            row = dict(format=fmt,location=loc,payload=payload,decoyBeforeSbom=order)
+            name,fmt,loc,payload,input_order,output_order = path.read_text().splitlines()
+            row = dict(format=fmt,location=loc,payload=payload,inputDecoyBeforeSbom=input_order,outputDecoyBeforeSbom=output_order)
             if name in rows and row != rows[name]:
                 raise ValueError("Maven versions disagreed")
             rows[name] = row
@@ -144,9 +192,10 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("side", choices=PINS)
     p.add_argument("--check-inputs", action="store_true")
+    p.add_argument("--fetch", action="store_true", help="retrieve the pinned Apache Maven binary if absent")
     p.add_argument("--output", type=Path)
     args = p.parse_args()
-    result = run(args.side,args.check_inputs)
+    result = run(args.side,args.check_inputs,args.fetch)
     print(json.dumps(result,sort_keys=True))
     if args.output:
         args.output.write_text(json.dumps(result,indent=2)+"\n")

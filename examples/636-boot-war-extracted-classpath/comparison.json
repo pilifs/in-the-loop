@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51372",
+  "revisions": {
+    "parent": "b1966933c60d136fed1c860445180f13f3d39db7",
+    "fix": "535d133bdaa0ed46bbfb7ce578c14261806f39ac"
+  },
+  "entry": "Repackager.repackage → tools extraction and extracted java -jar",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51372.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Use distinct filenames, both indexed, and build the fixture with each revision’s packager and bundled extractor.",
+      "prediction": "Issue #51367 reports `Invalid library location WEB-INF/lib-provided/...` before the change. The merged pair should emit `test/test.jar` and the two original dependency files under `test/lib/`. Reading the extracted application JAR should also find the original HTML and JSP payloads under META-INF/resources/index.html and META-INF/resources/WEB-INF/jsp/hello.jsp.",
+      "basis": "The WAR index enumerates both dependencies. The landed extract test asserts these three output paths and the structure test checks manifest class-path order.",
+      "refutation": "The merged extraction aborts, produces only one library, or the extracted manifest points to a nonexistent file. A web resource missing from its relocated path also refutes the extraction prediction.",
+      "expected": {
+        "fix": {
+          "return": "both:ordered:html+jsp:REG/PROV"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51372.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Use an ordinary executable JAR with two distinct regular dependencies and no provided library root.",
+      "prediction": "Both revisions should extract a launchable application JAR. Its relative manifest class path should locate both library files in index order.",
+      "basis": "The single library root and existing JAR extraction fixture do not depend on WAR layout.",
+      "refutation": "JAR extraction fails or a formerly usable library disappears from its class path.",
+      "expected": {
+        "parent": {
+          "return": "both:ordered:REG/PROV"
+        },
+        "fix": {
+          "return": "both:ordered:REG/PROV"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51372.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the two WAR dependencies unchanged. Start the extracted application from an unrelated working directory and have it read both marker resources through the application class loader. Separately give the two original libraries the same basename with different contents.",
+      "prediction": "On the merge the distinct-name case should read both original markers. In the collision case extraction should fail with a diagnostic identifying the conflicting library name and both source paths.",
+      "basis": "Manifest class-path entries resolve relative to the extracted JAR. Both WAR roots flatten into one destination. The landed tests reject a collision rather than silently choosing one file.",
+      "refutation": "Both files appear in a listing but either marker is missing at launch, or a collision silently replaces one dependency and produces a successful extraction.",
+      "expected": {
+        "fix": {
+          "return": "both:ordered:html+jsp:REG/PROV/collision:both-paths"
+        }
+      }
+    }
+  ]
+}

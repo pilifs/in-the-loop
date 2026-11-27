@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52625",
+  "revisions": {
+    "parent": "cb47b14cfdabdfae7f4372aa7b21661f57444bca",
+    "fix": "a938beab5f1d370f63d62ce78f3ab029f868bd03"
+  },
+  "entry": "JdbcConnectionDetails.getJdbcUrl → PostgreSQL Driver.parseURL",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52625.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Set `POSTGRES_DB=my+db` and leave the connection settings fixed.",
+      "prediction": "The PR reports that a literal plus in the parent URL is decoded as a space. On the merge the driver should return `PGDBNAME=my+db`, `connectTimeout=30` and `ApplicationName=my-app`.",
+      "basis": "The selected database name is determined by the service environment. The driver parser is the consumer of the URL and the landed parameterized regression asserts all three fields.",
+      "refutation": "The merged parser produces `my db`, rejects the URL, or changes either connection parameter.",
+      "expected": {
+        "parent": {
+          "return": "my db/30/my-app"
+        },
+        "fix": {
+          "return": "my+db/30/my-app"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52625.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Set `POSTGRES_DB=database` and retain the two settings.",
+      "prediction": "Both revisions should parse to `database`, `30` and `my-app` for the three respective fields.",
+      "basis": "ASCII letters need no escaping, so the existing plain-name fixture should remain usable.",
+      "refutation": "The parser returns a different database, timeout or application name.",
+      "expected": {
+        "parent": {
+          "return": "database/30/my-app"
+        },
+        "fix": {
+          "return": "database/30/my-app"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52625.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge compare the two distinct database names `my+db` and `my%2Bdb` with identical service and query configuration.",
+      "prediction": "The first must parse back as `my+db`; the second must retain the literal characters `%2B` in `my%2Bdb`. The query settings must be identical.",
+      "basis": "A database name is a literal service setting. Percent-encoding followed by exactly one decode must distinguish these two inputs.",
+      "refutation": "The driver parses both names identically, or treats the percent-bearing name as an already encoded plus.",
+      "expected": {
+        "fix": {
+          "return": "my+db/30/my-app;my%2Bdb/30/my-app"
+        }
+      }
+    }
+  ]
+}

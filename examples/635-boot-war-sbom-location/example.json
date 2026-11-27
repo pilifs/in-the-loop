@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "635",
+  "title": "An executable Maven WAR advertises its embedded SBOM",
+  "summary": "Checks the format, physical WAR location and actual SBOM bytes, with a differently located CycloneDX filename encountered first.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "routing-change",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Repackager.repackage → JarFile manifest and named entry"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The shared packager now recognizes CycloneDX filenames below a layout’s classes directory. An executable Maven WAR can advertise the SBOM already packaged under `WEB-INF/classes`."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51551"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [
+    "The numbered caller exercises the shared original Repackager. The Maven goal’s independent fixture is accounted for in the campaign evidence."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

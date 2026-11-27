@@ -44,6 +44,22 @@
           "return": "cluster:30"
         }
       }
+    },
+    {
+      "id": "spring-projects/spring-boot#52190.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "With a live three-node cluster supplied through connection details, shorten the period to one second. Open and initialize the client, record a quiet node’s topology-command counter after startup, then observe during an idle interval spanning several periods with adaptive triggers disabled.",
+      "prediction": "On the merge periodic refresh should be enabled and the cluster should see additional topology requests while idle. Allow timing and command counts to vary with the client version.",
+      "basis": "A node-side observation exercises the consumer of the settings. The PR author reports the counter stayed flat on the parent and rose from 7 to 13 over six seconds after the change on Redis 8.6.2.",
+      "refutation": "The factory exposes the requested option but the initialized client has periodic refresh off or issues no later topology request under the controlled conditions.",
+      "expected": {
+        "fix": {
+          "return": "true:1:increased"
+        }
+      }
     }
   ]
 }

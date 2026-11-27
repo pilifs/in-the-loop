@@ -7,10 +7,12 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
-import tempfile
+import sys
 import zlib
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0,str(HERE.parent))
+from workspace import scratch
 MAIN = "fixture.springboot.NativeMigrationApp"
 APP = ["--spring.datasource.url=jdbc:h2:mem:migrations", "--spring.datasource.username=sa",
        "--spring.flyway.locations=classpath:db/migration", "--spring.main.banner-mode=off"]
@@ -56,7 +58,7 @@ def run(side, layouts, stage):
         if sha(cache / name) != inputs["sha256"][name]:
             raise ValueError("deployment digest mismatch for " + name)
     results = {}
-    with tempfile.TemporaryDirectory(prefix="boot-flyway-") as tmp:
+    with scratch("boot-flyway-") as tmp:
         root = Path(tmp)
         classes = root / "classes"
         classes.mkdir()

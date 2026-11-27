@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-143936-recheck-spring-boot-services-deployments",
+  "title": "Recheck Spring Boot services, deployments and original 2017 source",
+  "description": "Repeat the 14 newly added or extended public callers including live local Mongo, Redis, Postgres, RabbitMQ and Kafka, real endpoint status and decoded telemetry, generated layer extraction and an extracted WAR application. Rebuild both unchanged 2017 Boot source slices with the locked historical Framework codec sources and rerun the separate release comparison. Verify all archived integration evidence and the two repaired bytecode guards.",
+  "kind": "real-world",
+  "capabilities": [
+    "public-api-comparison",
+    "original-jvm"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T14:39:36+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "git",
+    "docker"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "7m",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Recompile and replay only the added and extended case histories",
+      "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay-case S24 --replay-case S25 --replay-case S27 --replay-case S28 --replay-case S29 --replay-case S30 --replay-case S31 --replay-case S32 --replay-case S33 --replay-case S34 --replay-case S36 --replay-case S46 --replay-case S48 --replay-case S49",
+      "cwd": "."
+    },
+    {
+      "name": "Rebuild the original Boot and July Framework source slices",
+      "run": "python3 verification/merged-pr-links/s01-s50/webflux-2017/reconstruct.py --fetch",
+      "cwd": "."
+    },
+    {
+      "name": "Repeat the separately labeled WebFlux release comparison",
+      "run": "python3 verification/merged-pr-links/s01-s50/webflux-2017/replay.py",
+      "cwd": "."
+    },
+    {
+      "name": "Check the fixed structural protections",
+      "run": "python3 verification/merged-pr-links/s01-s50/repaired_guards.py",
+      "cwd": "."
+    },
+    {
+      "name": "Verify the restored result digests",
+      "run": "python3 verification/merged-pr-links/s01-s50/collect.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

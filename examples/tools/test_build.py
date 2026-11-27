@@ -112,6 +112,34 @@ def empty_result():
             "output": "verifier-output.txt", "after": {"startLine": 1}}
 
 
+class RecordedComparisonTest(unittest.TestCase):
+    def test_changed_receipt_and_outside_path_are_rejected(self):
+        import hashlib
+        from targets import recorded_comparison
+
+        with tempfile.TemporaryDirectory() as work:
+            root = Path(work)
+            folder = root / "examples/999-fixture"
+            folder.mkdir(parents=True)
+            receipt = root / "verification/observed.json"
+            receipt.parent.mkdir()
+            receipt.write_bytes(b'{"observed": 7}')
+            digest = hashlib.sha256(receipt.read_bytes()).hexdigest()
+            registration = {"schema": "recorded-public-comparison/v1", "questions": ["fixture.1"],
+                            "evidence": {"verification/observed.json": digest}, "reproduce": ["fixture command"]}
+            sidecar = folder / "recorded-comparison.json"
+            sidecar.write_text(json.dumps(registration))
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(recorded_comparison.check(folder)["runner"], "recorded-comparison")
+            receipt.write_bytes(b'{"observed": 8}')
+            with self.assertRaisesRegex(ValueError, "archived evidence changed"):
+                recorded_comparison.check(folder)
+            registration["evidence"] = {"../outside.json": digest}
+            sidecar.write_text(json.dumps(registration))
+            with self.assertRaisesRegex(ValueError, "invalid archived verification receipt"):
+                recorded_comparison.plan(folder)
+
+
 class ExecutionStatusTest(unittest.TestCase):
     def test_a_signal_is_a_kill_whatever_the_output(self):
         for code in (-9, 137):

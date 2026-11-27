@@ -76,6 +76,8 @@ def plans(number: str) -> tuple[bool, str, list[str]]:
         if "tasks" not in plan:
             if plan.get("runner") == "public-comparison":
                 return True, f"{len(plan['questions'])} public questions", ["public-comparison"]
+            if plan.get("runner") == "recorded-comparison":
+                return True, f"{len(plan['questions'])} questions with archived evidence", ["recorded-comparison"]
             return plan["executable"], plan.get("notExecuted") or f"ordinary {plan['approach']} plan", []
         tasks = plan["tasks"]
     except (ValueError, LookupError, TypeError):
@@ -107,6 +109,9 @@ def validate(numbers: list[str], replay: bool) -> dict:
         step("form", ok, detail, number)
         ok, detail, tasks = plans(number)
         step("plans", ok, detail, number)
+        if "recorded-comparison" in tasks:
+            ok, out, _ = run([sys.executable, "examples/tools/build.py", number])
+            step("archived observation digests", ok, tail(out, 2), number)
         ok, detail = oracle(folder)
         if ok is not None:
             step("oracle self-test", ok, detail, number)

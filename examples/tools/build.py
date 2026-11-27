@@ -380,6 +380,11 @@ def main(argv):
             public_comparison.replay(folder)
             replayed_comparisons.add(example["id"])
             continue
+        if example.get("recordedComparison") == "recorded-comparison.json":
+            from targets import recorded_comparison
+            recorded_comparison.check(folder)
+            replayed_comparisons.add(example["id"])
+            continue
         reason = not_executable(example)
         if reason:
             # Nothing ran, so nothing is written: an earlier result.json stays the record of its own run.
@@ -561,6 +566,9 @@ def plan(example):
     if example.get("publicComparison"):
         from targets import public_comparison
         return public_comparison.comparison_plan(next(EXAMPLES.glob(f"{example['id']}-*")))
+    if example.get("recordedComparison") == "recorded-comparison.json":
+        from targets import recorded_comparison
+        return recorded_comparison.plan(next(EXAMPLES.glob(f"{example['id']}-*")))
     reason = not_executable(example)
     p = {"example": example["id"], "approach": approach, "executable": reason is None, "notExecuted": reason}
     if reason and example.get("target"):
