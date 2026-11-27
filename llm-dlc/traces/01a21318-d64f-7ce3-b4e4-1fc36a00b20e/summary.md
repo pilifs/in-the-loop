@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a21318-d64f-7ce3-b4e4-1fc36a00b20e` (open) |
+| Session | `01a21318-d64f-7ce3-b4e4-1fc36a00b20e` (ended) |
 | When | 2026-11-25 14:25 UTC to 2026-11-25 14:34 UTC (9 min) |
 | Models | `gpt-6.2-astra` |
 | Client | codex 0.170.0 |
@@ -20,9 +20,27 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Document five Spring string, type and property changes
 
-change `yzxupnnswtsy` · [log `74563aee2d48`](https://terminalvalue.net/raw-traces/01a21318-d64f-7ce3-b4e4-1fc36a00b20e/74563aee2d48737aec51f989b514e1b3c09fc72b6e0701ed13753e60c46d8786.jsonl.gz)
+[`7e88bbb4f062`](https://github.com/pilifs/in-the-loop/commit/7e88bbb4f06267dfbb31f249eedd445116760d9b) · [log `74563aee2d48`](https://terminalvalue.net/raw-traces/01a21318-d64f-7ce3-b4e4-1fc36a00b20e/74563aee2d48737aec51f989b514e1b3c09fc72b6e0701ed13753e60c46d8786.jsonl.gz)
 
 Add the first five cases and their generation record. Checked 15 caller claims against the landed files, including typed annotation access, nested generic returns and the empty YAML sequence discrepancy. All 19 pinned Spring links resolved in the saved source. The changed-file selector found no applicable tests.
+
+### Specify Spring collection, copy and multipart behavior
+
+[`f9574eeee4dc`](https://github.com/pilifs/in-the-loop/commit/f9574eeee4dc8dce0bddcea0e25512b76a209300) · [log `74563aee2d48`](https://terminalvalue.net/raw-traces/01a21318-d64f-7ce3-b4e4-1fc36a00b20e/74563aee2d48737aec51f989b514e1b3c09fc72b6e0701ed13753e60c46d8786.jsonl.gz)
+
+Add five cases on case-insensitive keys, mail dates, retry policy snapshots, session attribute replacement and repeatable multipart files. Checked the public servlet mock against the internal test copy, and both copy paths of SimpleMailMessage. Audited the first ten sections against their pinned sources. The changed-file selector found no applicable tests.
+
+### Specify Spring HTTP encoding, multipart and stream behavior
+
+[`cc9368e27478`](https://github.com/pilifs/in-the-loop/commit/cc9368e27478f16b65d114cb2d1b87eb49185cf9) · [log `74563aee2d48`](https://terminalvalue.net/raw-traces/01a21318-d64f-7ce3-b4e4-1fc36a00b20e/74563aee2d48737aec51f989b514e1b3c09fc72b6e0701ed13753e60c46d8786.jsonl.gz)
+
+Add five HTTP cases. Check protobuf response readback and JSON Lines framing, empty field multiplicity, Jackson recycler ownership and partial reads after interruption. Checked both commits of the multipart and stream changes, and audited the 15 sections written so far. The changed-file selector found no applicable tests.
+
+### Specify Spring SQL, connection and transaction behavior
+
+[`b76e09d0d42b`](https://github.com/pilifs/in-the-loop/commit/b76e09d0d42b9f180e8970a0d5f184d980eca36b) · [log `74563aee2d48`](https://terminalvalue.net/raw-traces/01a21318-d64f-7ce3-b4e4-1fc36a00b20e/74563aee2d48737aec51f989b514e1b3c09fc72b6e0701ed13753e60c46d8786.jsonl.gz)
+
+Add five JDBC and reactive transaction cases with independent observations of stored rows, connection close, and commit completion. Compared the public ScriptUtils signatures, read the historic Flux cancellation report and checked the R2DBC cleanup chain. Audited the first 20 sections. The changed-file selector found no applicable tests.
 
 ## Conversation
 

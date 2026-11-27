@@ -615,8 +615,8 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 
 | Role | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|---|
-| the brief queue's watcher: runs and lands the queued briefs | 2026-11-15 17:27 UTC | [6c5c7798](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 1852 | 2177 | open |
-| the advisor: monitors the brief queue, relays the user, builds product fixes in its own workspaces | 2026-11-17 12:37 UTC | [e61d882b](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 335 | 1888 | open |
+| the brief queue's watcher: runs and lands the queued briefs | 2026-11-15 17:27 UTC | [6c5c7798](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 1853 | 2182 | open |
+| the advisor: monitors the brief queue, relays the user, builds product fixes in its own workspaces | 2026-11-17 12:37 UTC | [e61d882b](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 335 | 1893 | ended |
 
 **Every other session:**
 

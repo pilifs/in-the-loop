@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Replay pinned public Java callers and compare six merged changes
 
-change `zzsmtppzmkmk` · [log `b5147851c032`](https://terminalvalue.net/raw-traces/01a211df-4e3f-7832-b43f-4a24aa960775/b5147851c032e37343e3d29a651622edeaf891232dee44734a816b4164949a1e.jsonl.gz)
+[`b930070c66f2`](https://github.com/pilifs/in-the-loop/commit/b930070c66f23866c94fef858cb981fb2fe39097) · [log `b5147851c032`](https://terminalvalue.net/raw-traces/01a211df-4e3f-7832-b43f-4a24aa960775/b5147851c032e37343e3d29a651622edeaf891232dee44734a816b4164949a1e.jsonl.gz)
 
 Add a finite public-API comparison to the example router. Each history gets the same compiled caller in a fresh JVM with a checked JDK, ordered JAR digests and observed class providers. Examples 403–406, 419 and 422 cover Lucene, JTS, RoaringBitmap, DataSketches, both jOOλ modules and both Guava editions.
 
@@ -28,7 +28,7 @@ Eight deployment pairs ran 48 physical trials and reproduced their receipts thro
 
 ### Complete the merged Java public API campaign (verification pending)
 
-change `urtzsomwsynn` · [log `d90df5fa3ea6`](https://terminalvalue.net/raw-traces/01a211df-4e3f-7832-b43f-4a24aa960775/d90df5fa3ea632e7c146c892207b02719f46871f6c028e422b9c3ddb2e1e2b29.jsonl.gz)
+[`f4205bdfeb78`](https://github.com/pilifs/in-the-loop/commit/f4205bdfeb7870f5992ef45700c64be7f9d1a664) · [log `d90df5fa3ea6`](https://terminalvalue.net/raw-traces/01a211df-4e3f-7832-b43f-4a24aa960775/d90df5fa3ea632e7c146c892207b02719f46871f6c028e422b9c3ddb2e1e2b29.jsonl.gz)
 
 Add the other fourteen public callers, the campaign audit and the twenty-case report. All 20 merged intent predictions and 20 unchanged controls held. Jackson CSV, Avro, ical4j and both jOOλ modules refuted four challenge predictions. Preserve the original expectations, typed outcomes, runtime digests and overlay boundaries. The H2 and PostgreSQL 16.16 and 18.1 jOOQ histories reproduce both the counting discrepancy and the repair.
 

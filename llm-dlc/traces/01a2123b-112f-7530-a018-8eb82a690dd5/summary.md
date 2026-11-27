@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a2123b-112f-7530-a018-8eb82a690dd5` (open) |
+| Session | `01a2123b-112f-7530-a018-8eb82a690dd5` (ended) |
 | When | 2026-11-25 10:23 UTC to 2026-11-25 10:32 UTC (9 min) |
 | Models | `gpt-6.2-astra` |
 | Client | codex 0.170.0 |
@@ -20,9 +20,33 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Document numeric keys, multiset views, command aliases and diff rows
 
-change `xpwwxuyuxrxp` · [log `73c96238e0b7`](https://terminalvalue.net/raw-traces/01a2123b-112f-7530-a018-8eb82a690dd5/73c96238e0b74d3c5054f6de760fa9f0c8135b82a569c9d5cf855c1d9a27794b.jsonl.gz)
+[`47030503623a`](https://github.com/pilifs/in-the-loop/commit/47030503623a05d70b2d96d5b01606b5230f8c16) · [log `73c96238e0b7`](https://terminalvalue.net/raw-traces/01a2123b-112f-7530-a018-8eb82a690dd5/73c96238e0b74d3c5054f6de760fa9f0c8135b82a569c9d5cf855c1d9a27794b.jsonl.gz)
 
 Trace four public API histories through the landed sources and regressions. Recover picocli’s three-commit target range. Check the first four cases against the input, their 12 claims and 16 pinned file links. The changed-file selector found no applicable tests.
+
+### Specify nested test replay, Arrow views, graph paths and tail quantiles
+
+[`669e0237c744`](https://github.com/pilifs/in-the-loop/commit/669e0237c74409b3a0a37bb42c8386bf14991fc9) · [log `73c96238e0b7`](https://terminalvalue.net/raw-traces/01a2123b-112f-7530-a018-8eb82a690dd5/73c96238e0b74d3c5054f6de760fa9f0c8135b82a569c9d5cf855c1d9a27794b.jsonl.gz)
+
+Compare public JUnit replay identities, Arrow child slices, edge-disjoint path costs and extreme Cauchy quantiles with independent expectations. The first eight cases contain 24 public claim rows and 34 pinned file links. Source and order checks passed and the changed-file selector found no applicable tests.
+
+### Specify query cardinality, TIFF edge pixels and trigger persistence
+
+[`1dd401bb8812`](https://github.com/pilifs/in-the-loop/commit/1dd401bb8812ea876a49dde1305b184bece081f3) · [log `73c96238e0b7`](https://terminalvalue.net/raw-traces/01a2123b-112f-7530-a018-8eb82a690dd5/73c96238e0b74d3c5054f6de760fa9f0c8135b82a569c9d5cf855c1d9a27794b.jsonl.gz)
+
+Trace explicit SPARQL groups, SQL multiset projections, JPEG-in-TIFF crop boundaries and JDBC trigger replacements through their public readers. Check twelve ordered cases against upstream sources and all 36 refutation conditions. The changed-file selector found no applicable tests.
+
+### Cover shaded services, delete keys, named actions and future ordering
+
+[`0aa0096160b7`](https://github.com/pilifs/in-the-loop/commit/0aa0096160b7e094bad7555498885e959ecea10f) · [log `73c96238e0b7`](https://terminalvalue.net/raw-traces/01a2123b-112f-7530-a018-8eb82a690dd5/73c96238e0b74d3c5054f6de760fa9f0c8135b82a569c9d5cf855c1d9a27794b.jsonl.gz)
+
+Check provider discovery from the finished JAR, binary equality deletes and buffer ownership, Gradle incremental output, and Guava listener registration with ordered results. All 16 cases passed the handoff checks. The changed-file selector found no applicable tests.
+
+### Complete the 20-case L01–L20 Java verification brief
+
+[`9538e9348cc3`](https://github.com/pilifs/in-the-loop/commit/9538e9348cc351ed6c98e77a2d29587b33402538) · [log `73c96238e0b7`](https://terminalvalue.net/raw-traces/01a2123b-112f-7530-a018-8eb82a690dd5/73c96238e0b74d3c5054f6de760fa9f0c8135b82a569c9d5cf855c1d9a27794b.jsonl.gz)
+
+Add the zoned calendar, grouped-stream demand, Kafka session boundary and SQL deparser histories. Check all 20 identifiers and landed ranges, all 60 public claims and 97 pinned links, including the TIFF blob metadata. Record open questions and the source receipts. The changed-file selector found no applicable tests.
 
 ## Conversation
 
