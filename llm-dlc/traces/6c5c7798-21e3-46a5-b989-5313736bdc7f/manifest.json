@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-27T13:21:40.083Z",
-  "duration_seconds": 1022053,
+  "ended": "2026-11-27T13:27:19.235Z",
+  "duration_seconds": 1022393,
   "stats": {
-    "turns": 1817,
-    "api_calls": 7538,
-    "tool_calls": 6601,
+    "turns": 1819,
+    "api_calls": 7545,
+    "tool_calls": 6608,
     "tool_errors": 73,
     "compactions": 18,
     "peak_context_tokens": 666881,
     "usage": {
-      "input_tokens": 18800,
-      "output_tokens": 3048475,
-      "cache_read_input_tokens": 2399049190,
-      "cache_creation_input_tokens": 9981979
+      "input_tokens": 18820,
+      "output_tokens": 3050865,
+      "cache_read_input_tokens": 2400866500,
+      "cache_creation_input_tokens": 9986652
     }
   },
   "tools": {
-    "Bash": 6343,
-    "SendMessage": 110,
-    "Edit": 39,
+    "Bash": 6347,
+    "SendMessage": 111,
+    "Edit": 41,
     "ToolSearch": 27,
     "Write": 20,
     "TaskStop": 17,
@@ -335,24 +335,24 @@
     {
       "index": 18,
       "started": "2026-11-27T10:10:55.850Z",
-      "ended": "2026-11-27T13:21:40.083Z",
-      "turns": 42,
-      "api_calls": 150,
+      "ended": "2026-11-27T13:27:19.235Z",
+      "turns": 44,
+      "api_calls": 157,
       "usage": {
-        "input_tokens": 392,
-        "output_tokens": 46048,
-        "cache_read_input_tokens": 31055166,
-        "cache_creation_input_tokens": 228997
+        "input_tokens": 412,
+        "output_tokens": 48438,
+        "cache_read_input_tokens": 32872476,
+        "cache_creation_input_tokens": 233670
       },
-      "peak_context_tokens": 257487
+      "peak_context_tokens": 262162
     }
   ],
   "log": {
-    "sha256": "ccd6c43dd7b3a8d4270a8d6ef53229078dd7fbf95628d816a33a27a672229059",
-    "bytes": 113736278,
-    "lines": 66416,
-    "gzip_bytes": 17470819,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/ccd6c43dd7b3a8d4270a8d6ef53229078dd7fbf95628d816a33a27a672229059.jsonl.gz"
+    "sha256": "e76b1efe4b8b3cf5b24bb90546e3c9239aa1323b11ed36a3a5c4b6a0808d33f4",
+    "bytes": 113822764,
+    "lines": 66488,
+    "gzip_bytes": 17481242,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/e76b1efe4b8b3cf5b24bb90546e3c9239aa1323b11ed36a3a5c4b6a0808d33f4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -17427,6 +17427,14 @@
       "summary": "VF-072: record the user's direction on worker requests and the producer's client",
       "body": "At the user's request (2026-11-27, relayed by the advisor), VF-072's third need, the worker request, now carries the user's direction, to revisit after the PR-URL review: worker requests may run unattended; a request outside the allow list of worker kinds and limits warns at once (next report and the run's record) and doesn't block; and the watcher gets delegated authority over named items (start approved worker kinds, stop or restart within limits), the list still to be written. It also records the producer's client: the user leans to Claude, pending review. Astra keeps the intent and registration judgment, the mechanics run as tools and jobs, Claude is the fallback where the filter stops a case, and the request records the client used. No other change.",
       "log_sha256": "ccd6c43dd7b3a8d4270a8d6ef53229078dd7fbf95628d816a33a27a672229059"
+    },
+    {
+      "change_id": "mryqvmplxlonvrkunokztwwnnnxzuwys",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-072: no fallback to another model on a filter stop; Astra keeps the judgment",
+      "body": "The user's correction (2026-11-27, relayed by the advisor) to the producer's-client note under VF-072's worker request. The client question is decided: Astra keeps the judgment. There is no fallback to another model or client when the filter stops a case, because that goes around the filter and risks triggering it again. On a filter stop the run records a finding (the case, the step, the stop text; VF-061), leaves that case unfinished with no retry of the same material, carries on with the rest, and the harness is fixed afterwards.",
+      "log_sha256": "e76b1efe4b8b3cf5b24bb90546e3c9239aa1323b11ed36a3a5c4b6a0808d33f4"
     }
   ],
   "logs": {
@@ -23284,6 +23292,12 @@
       "bytes": 98807801,
       "lines": 55112,
       "gzip_bytes": 15462910,
+      "url": null
+    },
+    "e76b1efe4b8b3cf5b24bb90546e3c9239aa1323b11ed36a3a5c4b6a0808d33f4": {
+      "bytes": 113822764,
+      "lines": 66488,
+      "gzip_bytes": 17481242,
       "url": null
     },
     "e77cb5f158aa1027493c8bd54a94e82862eecb819df20b983af100ecd19561e6": {

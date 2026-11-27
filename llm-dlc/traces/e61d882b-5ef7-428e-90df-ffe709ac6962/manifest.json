@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-27T13:21:43.525Z",
-  "duration_seconds": 866640,
+  "ended": "2026-11-27T13:27:14.313Z",
+  "duration_seconds": 866971,
   "stats": {
-    "turns": 311,
-    "api_calls": 2930,
-    "tool_calls": 2586,
+    "turns": 312,
+    "api_calls": 2938,
+    "tool_calls": 2594,
     "tool_errors": 28,
     "compactions": 10,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 106387,
-      "output_tokens": 1868490,
-      "cache_read_input_tokens": 948664340,
-      "cache_creation_input_tokens": 6821367
+      "input_tokens": 106409,
+      "output_tokens": 1874505,
+      "cache_read_input_tokens": 953336136,
+      "cache_creation_input_tokens": 6829649
     }
   },
   "tools": {
-    "Bash": 2266,
-    "SendMessage": 89,
-    "Edit": 80,
+    "Bash": 2270,
+    "SendMessage": 90,
+    "Edit": 82,
     "Read": 58,
-    "Write": 36,
+    "Write": 37,
     "ToolSearch": 18,
     "ListAgents": 9,
     "Agent": 7,
@@ -72,6 +72,7 @@
     "~/.claude/projects/-home-user-code-in-the-loop/memory/brief-queue.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/cache-cleanup-check-references.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/develop-checkpoints.md",
+    "~/.claude/projects/-home-user-code-in-the-loop/memory/filter-stops-no-fallback.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/fresh-workspace-test-costs.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/hung-wait-kill-delegation.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/organic-pr-composition-productize.md",
@@ -252,24 +253,24 @@
     {
       "index": 10,
       "started": "2026-11-26T13:12:13.083Z",
-      "ended": "2026-11-27T13:21:43.525Z",
-      "turns": 24,
-      "api_calls": 411,
+      "ended": "2026-11-27T13:27:14.313Z",
+      "turns": 25,
+      "api_calls": 419,
       "usage": {
-        "input_tokens": 996,
-        "output_tokens": 241507,
-        "cache_read_input_tokens": 148261276,
-        "cache_creation_input_tokens": 536032
+        "input_tokens": 1018,
+        "output_tokens": 247522,
+        "cache_read_input_tokens": 152933072,
+        "cache_creation_input_tokens": 544314
       },
-      "peak_context_tokens": 581347
+      "peak_context_tokens": 589629
     }
   ],
   "log": {
-    "sha256": "78621b77c00f866f3a96609897d55dc6698e70088e3591d1775d9c4673d5cd6c",
-    "bytes": 50154284,
-    "lines": 23832,
-    "gzip_bytes": 8477093,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/78621b77c00f866f3a96609897d55dc6698e70088e3591d1775d9c4673d5cd6c.jsonl.gz"
+    "sha256": "3a089b82a9681e524e7d654fd50c705ca9bb4e8bac1d82bba1e83bfcef6124bb",
+    "bytes": 50294010,
+    "lines": 23912,
+    "gzip_bytes": 8496104,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/3a089b82a9681e524e7d654fd50c705ca9bb4e8bac1d82bba1e83bfcef6124bb.jsonl.gz"
   },
   "subagents": [
     {
@@ -15222,6 +15223,14 @@
       "summary": "VF-072: record the user's direction on worker requests and the producer's client",
       "body": "At the user's request (2026-11-27, relayed by the advisor), VF-072's third need, the worker request, now carries the user's direction, to revisit after the PR-URL review: worker requests may run unattended; a request outside the allow list of worker kinds and limits warns at once (next report and the run's record) and doesn't block; and the watcher gets delegated authority over named items (start approved worker kinds, stop or restart within limits), the list still to be written. It also records the producer's client: the user leans to Claude, pending review. Astra keeps the intent and registration judgment, the mechanics run as tools and jobs, Claude is the fallback where the filter stops a case, and the request records the client used. No other change.",
       "log_sha256": "78621b77c00f866f3a96609897d55dc6698e70088e3591d1775d9c4673d5cd6c"
+    },
+    {
+      "change_id": "mryqvmplxlonvrkunokztwwnnnxzuwys",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-072: no fallback to another model on a filter stop; Astra keeps the judgment",
+      "body": "The user's correction (2026-11-27, relayed by the advisor) to the producer's-client note under VF-072's worker request. The client question is decided: Astra keeps the judgment. There is no fallback to another model or client when the filter stops a case, because that goes around the filter and risks triggering it again. On a filter stop the run records a finding (the case, the step, the stop text; VF-061), leaves that case unfinished with no retry of the same material, carries on with the rest, and the harness is fixed afterwards.",
+      "log_sha256": "3a089b82a9681e524e7d654fd50c705ca9bb4e8bac1d82bba1e83bfcef6124bb"
     }
   ],
   "logs": {
@@ -15673,6 +15682,12 @@
       "bytes": 48803731,
       "lines": 22976,
       "gzip_bytes": 8306172,
+      "url": null
+    },
+    "3a089b82a9681e524e7d654fd50c705ca9bb4e8bac1d82bba1e83bfcef6124bb": {
+      "bytes": 50294010,
+      "lines": 23912,
+      "gzip_bytes": 8496104,
       "url": null
     },
     "3a5cdc6be686fc7a132ae54269fc646b7bafb80f9dbcb411b8d695db650fb269": {
