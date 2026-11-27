@@ -1,0 +1,34 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-134852-repeat-34-original-spring-boot-public-ap",
+  "title": "Repeat 34 original Spring Boot public API comparisons",
+  "description": "Recompile the 34 registered callers and reproduce 195 fresh-JVM observations. The added cases exercise both HTTP directions, two real servlet containers and shutdown ordering, durable H2 rows, original JUnit context reuse and nested executable JARs. Check both preserved controls and the merged package-version contradiction after an unsuccessful optional lookup.",
+  "kind": "real-world",
+  "capabilities": [
+    "public-api-comparison"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T13:48:52+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "6m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Rebuild the original callers and check predictions and receipts",
+      "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

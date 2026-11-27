@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "625",
+  "title": "Recover the next JSON event after an interrupted encode",
+  "summary": "Reads successive successful encodes from one public writer on a new thread and checks event boundaries.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "agreement",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "JsonWriter.write → WritableJson.toByteArray"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The byte-output path now resets its reusable buffer on exit, including after an encode throws. An unrelated writer on the same thread should start with empty output."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51156"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "1/1 merged predictions matched"
+}

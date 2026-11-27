@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "612",
+  "title": "Apply topology refresh to a Redis cluster supplied by a bean",
+  "summary": "Reads topology refresh options from the Boot-managed Lettuce factory for two bean forms and the property-driven cluster.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "LettuceConnectionFactory.getClientConfiguration"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Lettuce now chooses cluster client options from the resolved Redis mode, including clusters declared outside Boot’s cluster-node properties."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52190"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "2/2 merged predictions matched"
+}

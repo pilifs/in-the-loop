@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "604",
+  "title": "An application customizer can select the string converter",
+  "summary": "Reads HTTP bytes from a servlet response and an independent endpoint receiving the Boot-customized synchronous client’s request.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "HttpMessageConvertersAutoConfiguration → servlet and RestClient"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Boot orders its default string-converter customizer at zero so ordinary application customizers can replace its choice for both HTTP directions."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52251"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [
+    "Both deployments use the same released Tomcat 11.0.24 transport. Spring MVC and RestClient consume the original Boot server and client customizers in their declared order."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

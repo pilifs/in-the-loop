@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52244",
+  "revisions": {
+    "parent": "d5b807d26efd1fc658e76b966e4a947ff829d439",
+    "fix": "bba5f11efc7f28ced96961d9e16dbc8862b06010"
+  },
+  "entry": "LaunchedClassLoader.loadClass → Package.getImplementationVersion",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52244.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "In a fresh loader make the first lookup in `demo` a successful `loadClass(\"demo.Application\")`.",
+      "prediction": "The PR reports null nested-JAR versions before the fix. On the merge the class should load and its package version should be `1.2.3`.",
+      "basis": "An independent manifest reader can confirm the version in the inner archive. The landed loader regression asserts that exact value.",
+      "refutation": "The class cannot load or its package version differs from the inner manifest.",
+      "expected": {
+        "parent": {
+          "return": "null"
+        },
+        "fix": {
+          "return": "1.2.3"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52244.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "With a fresh loader and otherwise identical nested JAR, add an explicit `demo/` directory entry.",
+      "prediction": "Both revisions should load the same class and return `1.2.3`.",
+      "basis": "The parent checks for the directory and class. A ZIP directory contributes no class bytes and changes no manifest attribute.",
+      "refutation": "Only the directory-bearing fixture has a different version, or its class fails to load.",
+      "expected": {
+        "parent": {
+          "return": "1.2.3"
+        },
+        "fix": {
+          "return": "1.2.3"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52244.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge repeat the directory-free fixture in two fresh loaders. In one, first call `loadClass(\"demo.DoesNotExist\")`, catch `ClassNotFoundException`, then load the real class.",
+      "prediction": "A failed optional lookup should leave the real class’s version at `1.2.3` in both runs. The PR reports an analogous remaining failure, and the retained negative package cache predicts that the lookup order may refute this.",
+      "basis": "The class bytes, manifest and classpath are identical. Only the order of public class requests changes.",
+      "refutation": "A null or changed version only after the failed lookup, even though both real class loads succeed.",
+      "expected": {
+        "fix": {
+          "return": "1.2.3/1.2.3"
+        }
+      }
+    }
+  ]
+}

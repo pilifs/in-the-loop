@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52251",
+  "revisions": {
+    "parent": "54aa8e789e001ea43307d9ceb09eeb6f2031f2c4",
+    "fix": "2998c84ca55100f867b090706fe0426052e1491e"
+  },
+  "entry": "HttpMessageConvertersAutoConfiguration → servlet and RestClient",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52251.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Request the single-character text response with the custom server converter registered.",
+      "prediction": "The report says the Boot converter wins on the parent. With the fixture’s Boot default that predicts UTF-8 bytes `C3 A9`. The merge should use the replacement and send the single byte `E9`.",
+      "basis": "The pinned tests distinguish Boot’s default UTF-8 from configured charsets. The two encodings of the chosen character are distinct.",
+      "refutation": "The merged response decodes plausibly but contains the two UTF-8 bytes, or the status/body shows that no string converter wrote it.",
+      "expected": {
+        "parent": {
+          "return": "200:c3a9"
+        },
+        "fix": {
+          "return": "200:e9"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52251.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Remove both application customizers and leave the Boot string encoding unset.",
+      "prediction": "Both revisions should send `C3 A9` for the same string.",
+      "basis": "The fixture explicitly asserts UTF-8 for the unconfigured Boot converter.",
+      "refutation": "The bytes change between revisions without an application replacement.",
+      "expected": {
+        "parent": {
+          "return": "200:c3a9"
+        },
+        "fix": {
+          "return": "200:c3a9"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52251.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the server fixture fixed. On the merge also supply an unordered `ClientHttpMessageConvertersCustomizer` selecting ISO-8859-1. Use the Boot-configured synchronous client to POST `é` without an explicit charset to a byte-recording endpoint.",
+      "prediction": "Both outbound operations should write `E9`. Compare actual request and response bytes separately.",
+      "basis": "The client and server select converters through distinct builders. Wire bytes supply an oracle independent of class registration.",
+      "refutation": "The response uses the custom encoding but the independently recorded request uses UTF-8, or vice versa.",
+      "expected": {
+        "fix": {
+          "return": "200:e9/200:e9"
+        }
+      }
+    }
+  ]
+}

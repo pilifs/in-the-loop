@@ -1,0 +1,71 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52824",
+  "revisions": {
+    "parent": "60bed32467b7391003fcf81c414d66c5835e66b0",
+    "fix": "79d3cc26509620e47d9f3db445795b4984b6f567"
+  },
+  "entry": "EntityManagerFactoryBuilder.dataSource → EntityTransaction and JDBC",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52824.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Rollback after an explicit flush with primary auto-commit off and target auto-commit on.",
+      "prediction": "The author reports that the old H2 configuration leaves the row committed. After the merge rollback should complete and the JDBC count for that ID should be zero.",
+      "basis": "Flush sends the INSERT to the database but does not authorize commit. A fresh connection sees committed state independently of JPA’s first-level cache.",
+      "refutation": "A rollback exception on H2 or a count of one after merged rollback.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "1:0:"
+          ]
+        },
+        "fix": {
+          "return": "0:0:absent"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52824.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "With the same pools, insert a different ID, flush and commit normally.",
+      "prediction": "On both revisions the independent count should be one in the secondary database.",
+      "basis": "A successful resource-local commit makes the row visible to another connection. It also confirms the query reaches the correct schema.",
+      "refutation": "The committed row is absent or appears in the primary database.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "1:0:"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "1:0:"
+          ]
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52824.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Keep the enabled secondary pool and its database fixed. Vary only primary auto-commit across two runs and use fresh IDs for rollback.",
+      "prediction": "On the merge both rolled-back IDs should be absent. In both cases `build().getJpaPropertyMap()` should omit `hibernate.connection.provider_disables_autocommit` unless the application overrides it.",
+      "basis": "Changing a pool which the secondary unit never uses cannot change the secondary transaction’s outcome. The property map and JDBC read test separate boundaries.",
+      "refutation": "Changing only the primary setting changes the property or leaves a rolled-back row.",
+      "expected": {
+        "fix": {
+          "return": "0:0:absent/0:0:absent"
+        }
+      }
+    }
+  ]
+}

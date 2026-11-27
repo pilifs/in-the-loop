@@ -991,11 +991,52 @@
         "fix": "—",
         "landedTestsOnParent": "`HttpMessageConvertersAutoConfigurationTests` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#52251.1",
-        "spring-projects/spring-boot#52251.2",
-        "spring-projects/spring-boot#52251.3"
-      ]
+      "example": "604-boot-http-string-wire-encoding",
+      "observations": {
+        "spring-projects/spring-boot#52251.1": {
+          "parent": {
+            "outcome": {
+              "return": "200:c3a9"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:e9"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52251.2": {
+          "parent": {
+            "outcome": {
+              "return": "200:c3a9"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:c3a9"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52251.3": {
+          "parent": {
+            "outcome": {
+              "return": "200:c3a9/200:c3a9"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "200:e9/200:e9"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S18",
@@ -1016,11 +1057,52 @@
         "fix": "—",
         "landedTestsOnParent": "`HttpMessageConvertersAutoConfigurationTests` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#52304.1",
-        "spring-projects/spring-boot#52304.2",
-        "spring-projects/spring-boot#52304.3"
-      ]
+      "example": "605-boot-jsonb-map-converter",
+      "observations": {
+        "spring-projects/spring-boot#52304.1": {
+          "parent": {
+            "outcome": {
+              "return": "true:true"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52304.2": {
+          "parent": {
+            "outcome": {
+              "return": "true:false"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:false"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52304.3": {
+          "parent": {
+            "outcome": {
+              "throws": "org.springframework.http.converter.HttpMessageNotWritableException"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "jsonb:7/jsonb:7"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S19",
@@ -1041,11 +1123,52 @@
         "fix": "`20261127-121807-setup-build-spring-boot-51173-s19-at-bot`",
         "landedTestsOnParent": "`TomcatServletWebServerFactoryCustomizerTests`, `TomcatServerPropertiesTests`, `SampleOAuth2ClientApplicationTests` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#51173.1",
-        "spring-projects/spring-boot#51173.2",
-        "spring-projects/spring-boot#51173.3"
-      ]
+      "example": "606-boot-tomcat-relative-location",
+      "observations": {
+        "spring-projects/spring-boot#51173.1": {
+          "parent": {
+            "outcome": {
+              "return": "302:absolute:same"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "302:/login:same"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51173.2": {
+          "parent": {
+            "outcome": {
+              "return": "302:absolute:same"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "302:absolute:same"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51173.3": {
+          "parent": {
+            "outcome": {
+              "return": "false/302:absolute:same"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false/302:/login:same"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S20",
@@ -1066,11 +1189,52 @@
         "fix": "—",
         "landedTestsOnParent": "`TomcatServletWebServerFactoryTests.givenARestartedServer*`, `TomcatReactiveWebServerFactoryTests.givenARestartedServer*`, `JettyServletWebServerFactoryTests.givenARestartedServer*`, `JettyReactiveWebServerFactoryTests.givenARestartedServer*` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#52162.1",
-        "spring-projects/spring-boot#52162.2",
-        "spring-projects/spring-boot#52162.3"
-      ]
+      "example": "607-boot-webserver-restart-drain",
+      "observations": {
+        "spring-projects/spring-boot#52162.1": {
+          "parent": {
+            "outcome": {
+              "return": "REQUESTS_ACTIVE@0:[200:finished]/REQUESTS_ACTIVE@0:[200:finished]"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "IDLE@1:[200:finished]/IDLE@1:[200:finished]"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52162.2": {
+          "parent": {
+            "outcome": {
+              "return": "IDLE@1:[200:finished]/IDLE@1:[200:finished]"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "IDLE@1:[200:finished]/IDLE@1:[200:finished]"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52162.3": {
+          "parent": {
+            "outcome": {
+              "return": "REQUESTS_ACTIVE@0:[200:finished, 200:finished]/REQUESTS_ACTIVE@0:[200:finished, 200:finished]"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "IDLE@2:[200:finished, 200:finished]/IDLE@2:[200:finished, 200:finished]"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S21",
@@ -1223,11 +1387,52 @@
         "fix": "—",
         "landedTestsOnParent": "`HibernateJpaAutoConfigurationTests` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#52824.1",
-        "spring-projects/spring-boot#52824.2",
-        "spring-projects/spring-boot#52824.3"
-      ]
+      "example": "610-boot-secondary-jpa-rollback",
+      "observations": {
+        "spring-projects/spring-boot#52824.1": {
+          "parent": {
+            "outcome": {
+              "return": "1:0:present"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "0:0:absent"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52824.2": {
+          "parent": {
+            "outcome": {
+              "return": "1:0:present"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1:0:absent"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52824.3": {
+          "parent": {
+            "outcome": {
+              "return": "1:0:present/0:0:absent"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "0:0:absent/0:0:absent"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S24",
@@ -1273,9 +1478,38 @@
         "fix": "—",
         "landedTestsOnParent": "`DataRedisAutoConfigurationTests` | offline"
       },
+      "example": "612-boot-redis-cluster-options",
+      "observations": {
+        "spring-projects/spring-boot#52190.1": {
+          "parent": {
+            "outcome": {
+              "return": "plain/plain"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "cluster:30/cluster:30"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52190.2": {
+          "parent": {
+            "outcome": {
+              "return": "cluster:30"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "cluster:30"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
       "unmeasured": [
-        "spring-projects/spring-boot#52190.1",
-        "spring-projects/spring-boot#52190.2",
         "spring-projects/spring-boot#52190.3"
       ]
     },
@@ -1439,9 +1673,38 @@
         "fix": "`20261127-121808-setup-build-spring-boot-51774-s30-at-bot`",
         "landedTestsOnParent": "`KafkaAutoConfigurationTests` | offline"
       },
+      "example": "617-boot-kafka-async-stop-policy",
+      "observations": {
+        "spring-projects/spring-boot#51774.1": {
+          "parent": {
+            "outcome": {
+              "return": "false:false"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:true"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51774.2": {
+          "parent": {
+            "outcome": {
+              "return": "false:false/false:false"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "false:false/false:false"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
       "unmeasured": [
-        "spring-projects/spring-boot#51774.1",
-        "spring-projects/spring-boot#51774.2",
         "spring-projects/spring-boot#51774.3"
       ]
     },
@@ -1655,11 +1918,52 @@
         "fix": "—",
         "landedTestsOnParent": "`LoggingApplicationListenerWithContextPausingTests` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#51959.1",
-        "spring-projects/spring-boot#51959.2",
-        "spring-projects/spring-boot#51959.3"
-      ]
+      "example": "624-boot-jul-paused-context",
+      "observations": {
+        "spring-projects/spring-boot#51959.1": {
+          "parent": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,0/1"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,1/1"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51959.2": {
+          "parent": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,1/1"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,1/1"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51959.3": {
+          "parent": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,0/1,0/1"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "reused:true;1/1,1/1,1/1,1/1"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S38",
@@ -1680,9 +1984,25 @@
         "fix": "—",
         "landedTestsOnParent": "`AppendableByteArrayTests` | offline"
       },
+      "example": "625-boot-json-successive-events",
+      "observations": {
+        "spring-projects/spring-boot#51156.2": {
+          "parent": {
+            "outcome": {
+              "return": "{\"ok\":\"a\"}/{\"ok\":\"b\"}"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "{\"ok\":\"a\"}/{\"ok\":\"b\"}"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
       "unmeasured": [
         "spring-projects/spring-boot#51156.1",
-        "spring-projects/spring-boot#51156.2",
         "spring-projects/spring-boot#51156.3"
       ]
     },
@@ -1963,11 +2283,52 @@
         "fix": "—",
         "landedTestsOnParent": "`JarUrlClassLoaderTests`, `UrlEncoderTests` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#52280.1",
-        "spring-projects/spring-boot#52280.2",
-        "spring-projects/spring-boot#52280.3"
-      ]
+      "example": "630-boot-nested-resource-urls",
+      "observations": {
+        "spring-projects/spring-boot#52280.1": {
+          "parent": {
+            "outcome": {
+              "return": "FileNotFoundException/42"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "42/42"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52280.2": {
+          "parent": {
+            "outcome": {
+              "return": "17/17"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "17/17"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52280.3": {
+          "parent": {
+            "outcome": {
+              "return": "FileNotFoundException/42,FileNotFoundException/99"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "42/42,99/99"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S44",
@@ -1988,11 +2349,52 @@
         "fix": "—",
         "landedTestsOnParent": "`JarUrlClassLoaderTests` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#52244.1",
-        "spring-projects/spring-boot#52244.2",
-        "spring-projects/spring-boot#52244.3"
-      ]
+      "example": "631-boot-nested-package-version",
+      "observations": {
+        "spring-projects/spring-boot#52244.1": {
+          "parent": {
+            "outcome": {
+              "return": "null"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1.2.3"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52244.2": {
+          "parent": {
+            "outcome": {
+              "return": "1.2.3"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1.2.3"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52244.3": {
+          "parent": {
+            "outcome": {
+              "return": "null/null"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "1.2.3/null"
+            },
+            "verdict": "refuted"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S45",
@@ -2013,11 +2415,52 @@
         "fix": "—",
         "landedTestsOnParent": "`JarUrlClassLoaderTests` | offline"
       },
-      "unmeasured": [
-        "spring-projects/spring-boot#52402.1",
-        "spring-projects/spring-boot#52402.2",
-        "spring-projects/spring-boot#52402.3"
-      ]
+      "example": "632-boot-nested-classpath-roots",
+      "observations": {
+        "spring-projects/spring-boot#52402.1": {
+          "parent": {
+            "outcome": {
+              "return": "missing-root"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "true:app"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52402.2": {
+          "parent": {
+            "outcome": {
+              "return": "xml"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "xml"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52402.3": {
+          "parent": {
+            "outcome": {
+              "return": ""
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "first:A,second:B"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
     },
     {
       "case": "S46",
@@ -2147,13 +2590,13 @@
   ],
   "totals": {
     "registeredClaims": 150,
-    "casesWithPublicCallers": 22,
-    "twoSidedPublicClaims": 65,
-    "unmeasuredClaims": 84,
-    "jvmObservations": 131,
-    "parent matched": 42,
-    "fix matched": 64,
-    "parent observed only": 23,
-    "fix refuted": 2
+    "casesWithPublicCallers": 34,
+    "twoSidedPublicClaims": 97,
+    "unmeasuredClaims": 52,
+    "jvmObservations": 195,
+    "parent matched": 62,
+    "fix matched": 95,
+    "parent observed only": 35,
+    "fix refuted": 3
   }
 }

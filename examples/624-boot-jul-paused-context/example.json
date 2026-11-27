@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "624",
+  "title": "JUL records still reach the logging backend after a test context resumes",
+  "summary": "Checks context identity and counts JUL and direct SLF4J markers at the same Logback appender after each reuse.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Spring TestContext cache → JUL and Logback appender"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The Boot logging lifecycle opts out of pauses so reusing a cached context leaves its JUL-to-SLF4J bridge intact."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51959"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [
+    "The TestContext adapter uses the unchanged spring-boot-test main tree 40d684720ce0fde87e00849f58ec523058db2deb shared by both S37 pins and S34 parent. Both S37 runs use those same adapter bytes. The logging module itself comes from the respective S37 build."
+  ],
+  "verdictLabel": "3/3 merged predictions matched"
+}

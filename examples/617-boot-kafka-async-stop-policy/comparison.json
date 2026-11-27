@@ -1,0 +1,49 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51774",
+  "revisions": {
+    "parent": "d28fc5b5ffe3bb26d83960bb4b0fbd03a0b894f0",
+    "fix": "3c1f0c4e543b3c20db34e224a0670e59f82dc767"
+  },
+  "entry": "ConcurrentKafkaListenerContainerFactory.createContainer",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51774.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Set the property to `true` with no factory customizer.",
+      "prediction": "The earlier Boot configurer has no mapping. With the same Spring Kafka implementation the service should see false before, true after, on its configured container.",
+      "basis": "The landed `listenerProperties` test asserts the factory template’s true flag. Copying that policy to the actual listener is necessary to change its behavior.",
+      "refutation": "The template or the created container reports false on the merge.",
+      "expected": {
+        "parent": {
+          "return": "false:false"
+        },
+        "fix": {
+          "return": "true:true"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#51774.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Omit the property, then explicitly set it to `false` in a fresh default configuration.",
+      "prediction": "Both configurations on both revisions should leave awaiting disabled.",
+      "basis": "The Java boolean default and the documented Spring Kafka default agree.",
+      "refutation": "A created container reports true without an opt-in.",
+      "expected": {
+        "parent": {
+          "return": "false:false/false:false"
+        },
+        "fix": {
+          "return": "false:false/false:false"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/51156",
+  "revisions": {
+    "parent": "175702174462775baa8a66f8b0e21542ed6807a8",
+    "fix": "af69828ce6cbdc159c8847067ec9c85f22bcdb30"
+  },
+  "entry": "JsonWriter.write → WritableJson.toByteArray",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#51156.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "On a fresh thread, use only the healthy writer for successive inputs `a` and `b`.",
+      "prediction": "Both revisions should yield one independent UTF-8 JSON object per call, with `ok` equal to the respective input.",
+      "basis": "Each public `write` describes a single value. A successful previous event should have no influence on it.",
+      "refutation": "The second object includes the first value or lacks its own value.",
+      "expected": {
+        "parent": {
+          "return": "{\"ok\":\"a\"}/{\"ok\":\"b\"}"
+        },
+        "fix": {
+          "return": "{\"ok\":\"a\"}/{\"ok\":\"b\"}"
+        }
+      }
+    }
+  ]
+}

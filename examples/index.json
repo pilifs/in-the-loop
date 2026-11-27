@@ -30823,6 +30823,156 @@
       "target": null
     },
     {
+      "id": "604",
+      "path": "examples/604-boot-http-string-wire-encoding",
+      "title": "An application customizer can select the string converter",
+      "summary": "Reads HTTP bytes from a servlet response and an independent endpoint receiving the Boot-customized synchronous client’s request.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "HttpMessageConvertersAutoConfiguration → servlet and RestClient",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both deployments use the same released Tomcat 11.0.24 transport. Spring MVC and RestClient consume the original Boot server and client customizers in their declared order."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52251",
+      "target": null
+    },
+    {
+      "id": "605",
+      "path": "examples/605-boot-jsonb-map-converter",
+      "title": "Let JSON-B handle JSON maps when Kotlin Serialization is present",
+      "summary": "Checks Kotlin map eligibility and selects the first JSON writer from the actual client and server lists, then parses their bytes.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "HttpMessageConverters.forServer and forClient",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52304",
+      "target": null
+    },
+    {
+      "id": "606",
+      "path": "examples/606-boot-tomcat-relative-location",
+      "title": "Embedded Tomcat returns a relative redirect by default",
+      "summary": "Compares raw and resolved redirect locations at a fixed local target, including strict servlet mode in a fresh JVM.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "ServletResponse.sendRedirect on Boot-managed Tomcat",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51173",
+      "target": null
+    },
+    {
+      "id": "607",
+      "path": "examples/607-boot-webserver-restart-drain",
+      "title": "Graceful shutdown drains requests after a web server restarts",
+      "summary": "Runs the same blocking servlet over real Tomcat and Jetty loopback ports. Records completed requests at the shutdown callback and each response body.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "WebServer.start, stop and shutDownGracefully",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52162",
+      "target": null
+    },
+    {
       "id": "608",
       "path": "examples/608-boot-advertised-jdbc-root",
       "title": "Derive a JDBC pool from the root exposed by its wrapper",
@@ -30897,6 +31047,80 @@
       "target": null
     },
     {
+      "id": "610",
+      "path": "examples/610-boot-secondary-jpa-rollback",
+      "title": "A secondary entity manager rolls back flushed inserts in its own pool",
+      "summary": "Reads committed H2 state through separate connections after flushing and rolling back or committing a secondary persistence unit.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "EntityManagerFactoryBuilder.dataSource → EntityTransaction and JDBC",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "lost-committed-data"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52824",
+      "target": null
+    },
+    {
+      "id": "612",
+      "path": "examples/612-boot-redis-cluster-options",
+      "title": "Apply topology refresh to a Redis cluster supplied by a bean",
+      "summary": "Reads topology refresh options from the Boot-managed Lettuce factory for two bean forms and the property-driven cluster.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "LettuceConnectionFactory.getClientConfiguration",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/2 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52190",
+      "target": null
+    },
+    {
       "id": "613",
       "path": "examples/613-boot-caffeine-async-retrieval",
       "title": "Retrieve asynchronous values from a Boot-configured Caffeine cache",
@@ -30936,6 +31160,45 @@
       "target": null
     },
     {
+      "id": "617",
+      "path": "examples/617-boot-kafka-async-stop-policy",
+      "title": "Apply the configured Kafka shutdown policy to asynchronous listener results",
+      "summary": "Reads the shutdown policy independently from the factory template and an actual container created from it.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "ConcurrentKafkaListenerContainerFactory.createContainer",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/2 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "This original Boot pair uses the setup’s Spring Kafka 4.2.0-M2 dependency. These configuration observations do not measure completion ordering at a broker."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51774",
+      "target": null
+    },
+    {
       "id": "622",
       "path": "examples/622-boot-mongo-health-commands",
       "title": "Mongo health reports all visible databases with one explicit hello",
@@ -30970,6 +31233,82 @@
       "existingTestsPassed": null,
       "notes": [],
       "source": "https://github.com/spring-projects/spring-boot/pull/50734",
+      "target": null
+    },
+    {
+      "id": "624",
+      "path": "examples/624-boot-jul-paused-context",
+      "title": "JUL records still reach the logging backend after a test context resumes",
+      "summary": "Checks context identity and counts JUL and direct SLF4J markers at the same Logback appender after each reuse.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "Spring TestContext cache → JUL and Logback appender",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "liveness"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The TestContext adapter uses the unchanged spring-boot-test main tree 40d684720ce0fde87e00849f58ec523058db2deb shared by both S37 pins and S34 parent. Both S37 runs use those same adapter bytes. The logging module itself comes from the respective S37 build."
+      ],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51959",
+      "target": null
+    },
+    {
+      "id": "625",
+      "path": "examples/625-boot-json-successive-events",
+      "title": "Recover the next JSON event after an interrupted encode",
+      "summary": "Reads successive successful encodes from one public writer on a new thread and checks event boundaries.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "JsonWriter.write → WritableJson.toByteArray",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "agreement"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "1/1 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/51156",
       "target": null
     },
     {
@@ -31118,6 +31457,117 @@
       "existingTestsPassed": null,
       "notes": [],
       "source": "https://github.com/spring-projects/spring-boot/pull/52285",
+      "target": null
+    },
+    {
+      "id": "630",
+      "path": "examples/630-boot-nested-resource-urls",
+      "title": "A URL for a nested resource with escaped ASCII opens the original entry",
+      "summary": "Opens each URL returned by the launched Boot class loader and compares its byte with the original library ZIP.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "LaunchedClassLoader.getResource → URL.openStream",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52280",
+      "target": null
+    },
+    {
+      "id": "631",
+      "path": "examples/631-boot-nested-package-version",
+      "title": "Package versions from nested JARs without directory entries",
+      "summary": "Reads package metadata from the first real class load in a fresh executable, with and without a directory entry or a preceding failed optional lookup.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "LaunchedClassLoader.loadClass → Package.getImplementationVersion",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "stale-messages"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52244",
+      "target": null
+    },
+    {
+      "id": "632",
+      "path": "examples/632-boot-nested-classpath-roots",
+      "title": "An executable JAR exposes each nested classpath root",
+      "summary": "Reads marker payloads from Spring’s wildcard resolver and the two independently enumerated library roots inside a real executable archive.",
+      "origin": "real-world",
+      "system": "Spring Boot",
+      "symbol": "LaunchedClassLoader.getResources and PathMatchingResourcePatternResolver",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [],
+      "source": "https://github.com/spring-projects/spring-boot/pull/52402",
       "target": null
     }
   ]
