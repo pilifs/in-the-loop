@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "591",
+  "title": "Binding a validated bean with wildcard map values",
+  "summary": "Reads a wildcard map through a validating binder and tests the enclosing bean’s concrete age constraint.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "validation-gap",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "Binder.bind with ValidationBindHandler"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "An unresolved value type in a map can reach validation after its value has already bound. Boot now skips the validator for that unresolved target and still validates concrete targets."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/50798"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

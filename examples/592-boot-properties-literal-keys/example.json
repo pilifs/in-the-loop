@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "592",
+  "title": "Read escaped comment characters at the start of a property name",
+  "summary": "Reads the literal property names from Boot and the JDK over identical ASCII bytes.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "parser-differential",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "PropertiesPropertySourceLoader.load"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A leading hash or exclamation mark that was escaped in the file can now participate in a property key."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52207"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

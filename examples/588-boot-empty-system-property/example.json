@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "588",
+  "title": "Restore an explicitly empty JVM property after a scoped override",
+  "summary": "Reads the callback value and the process property after a scoped override, including nested exceptional exit.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "TestPropertyValues.applyToSystemProperties"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Closing the scope restores the distinction between a missing property and one set to the empty string."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/52125"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

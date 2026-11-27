@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "589",
+  "title": "Resolve constructor defaults before type conversion",
+  "summary": "Reads a typed duration from the application’s configuration-properties bean under explicit, fallback and invalid settings.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spring Boot",
+    "symbol": "EnableConfigurationProperties → Options.duration"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Constructor binding now resolves each string in a missing parameter’s `@DefaultValue` through the binder’s placeholder resolver before coercing it to the declared type."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-boot",
+    "url": "https://github.com/spring-projects/spring-boot/pull/51661"
+  },
+  "publicComparison": "comparison.json",
+  "notes": [],
+  "verdictLabel": "3/3 merged predictions matched"
+}

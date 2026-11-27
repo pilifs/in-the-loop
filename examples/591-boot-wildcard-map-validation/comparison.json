@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/50798",
+  "revisions": {
+    "parent": "3d280c4354a127e9f08bb1ea782b02165bbbfa7e",
+    "fix": "0836e3673a74e47a2e5eed3a8e8ad45cfa4a0ccf"
+  },
+  "entry": "Binder.bind with ValidationBindHandler",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#50798.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Supply `test.params.toto=titi` and call `bind(\"test\", Bindable.of(Bean.class), handler).get()`.",
+      "prediction": "The PR reports a parent bind failure caused by `IllegalStateException` for the wildcard. The merge should return the string `titi` under `toto`.",
+      "basis": "The untyped leaf receives the supplied string. The regression asserts its value; issue #50795 identifies the failing property.",
+      "refutation": "A merge exception, missing entry, or value other than the string `titi`.",
+      "expected": {
+        "parent": {
+          "return": "unresolved-type"
+        },
+        "fix": {
+          "return": "titi"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50798.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Bind the concrete constrained bean from `bindShouldFailWithHandler`, with `foo.age=4`.",
+      "prediction": "Both revisions should throw `BindException` with a `BindValidationException` cause.",
+      "basis": "The concrete bean’s validation constraint still applies, and the existing test checks this cause.",
+      "refutation": "The bind succeeds or reports an unresolved-type failure instead of a validation failure.",
+      "expected": {
+        "parent": {
+          "return": "validation:age"
+        },
+        "fix": {
+          "return": "validation:age"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#50798.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "On the merge, retain `test.params.toto=titi` and add a concrete `@Min(10) int age` property to the same bean. Bind first with `age=9`, then with `age=10`.",
+      "prediction": "At 9 validation should reject `age`. At 10 the bind should succeed, preserving `toto=titi` and `age=10`.",
+      "basis": "A constraint on the concrete containing bean is independent of whether a map leaf has a resolvable declared type.",
+      "refutation": "The invalid age is accepted, validation fails on the wildcard instead, or the valid bind loses the map entry.",
+      "expected": {
+        "fix": {
+          "return": "validation:age/titi:10"
+        }
+      }
+    }
+  ]
+}

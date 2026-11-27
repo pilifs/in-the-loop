@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/spring-projects/spring-boot/pull/52207",
+  "revisions": {
+    "parent": "6c0b7df312e0fb1eaeecab9967e676726ce29057",
+    "fix": "42b182259cc6d4f9ed67bb2f387fed7e6b2c4979"
+  },
+  "entry": "PropertiesPropertySourceLoader.load",
+  "questions": [
+    {
+      "id": "spring-projects/spring-boot#52207.1",
+      "role": "Intent",
+      "args": [
+        "intent"
+      ],
+      "history": "Look up `#hash-prefixed`, `!bang-prefixed`, and `normal` in the single document.",
+      "prediction": "The PR reports only `normal=ok` on the parent. The merge should return `hash`, `bang`, and `ok` respectively.",
+      "basis": "The Java reader treats the leading backslash as an escape. The landed loader test asserts the two literal keys and values.",
+      "refutation": "Either escaped name is absent, retains its backslash, or resolves to the other value.",
+      "expected": {
+        "parent": {
+          "return": "null,null,ok / hash,bang,ok"
+        },
+        "fix": {
+          "return": "hash,bang,ok / hash,bang,ok"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52207.2",
+      "role": "Control",
+      "args": [
+        "control"
+      ],
+      "history": "Remove the backslashes and leave `normal=ok` in place.",
+      "prediction": "Both revisions should ignore the two comment lines and still expose `normal=ok`.",
+      "basis": "An unescaped comment marker at the first non-whitespace position discards that line under the properties grammar.",
+      "refutation": "A commented key appears, or the following ordinary line disappears.",
+      "expected": {
+        "parent": {
+          "return": "null,null,ok / null,null,ok"
+        },
+        "fix": {
+          "return": "null,null,ok / null,null,ok"
+        }
+      }
+    },
+    {
+      "id": "spring-projects/spring-boot#52207.3",
+      "role": "Challenge",
+      "args": [
+        "challenge"
+      ],
+      "history": "Prepend two ordinary spaces to each of the three lines and append an unescaped comment line containing `#hash-prefixed=wrong`.",
+      "prediction": "On the merge both independent readers should give the original three values. The later comment must leave the earlier value intact.",
+      "basis": "Leading layout does not consume the escape. A true comment has no assignment to override the earlier key.",
+      "refutation": "Boot and the Java reader disagree on a value, or the appended comment changes the literal-hash property.",
+      "expected": {
+        "fix": {
+          "return": "hash,bang,ok / hash,bang,ok"
+        }
+      }
+    }
+  ]
+}

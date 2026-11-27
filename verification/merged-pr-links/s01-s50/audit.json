@@ -1,0 +1,1120 @@
+{
+  "schema": "spring-boot-public-audit/v1",
+  "cases": [
+    {
+      "case": "S01",
+      "pr": 52125,
+      "revisions": {
+        "parent": "e664baa4001e2a12cfd292771f63d747d86b831f",
+        "fix": "d3c0359e0196e9d604a65e6ff677d114cc270a0f"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52125.1",
+        "spring-projects/spring-boot#52125.2",
+        "spring-projects/spring-boot#52125.3"
+      ],
+      "example": "588-boot-empty-system-property",
+      "observations": {
+        "spring-projects/spring-boot#52125.1": {
+          "parent": {
+            "outcome": {
+              "return": "temporary/default"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "temporary/empty"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52125.2": {
+          "parent": {
+            "outcome": {
+              "return": "temporary/default;temporary/original"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "temporary/default;temporary/original"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52125.3": {
+          "parent": {
+            "outcome": {
+              "return": "inner/true/temporary/default"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "inner/true/temporary/empty"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S02",
+      "pr": 51661,
+      "revisions": {
+        "parent": "042c69a4f9c7e7bfb7be14dff6a5dd5af5ff3e72",
+        "fix": "26b0e813b0b82e5683524d1ad817ca9b66228b4d"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51661.1",
+        "spring-projects/spring-boot#51661.2",
+        "spring-projects/spring-boot#51661.3"
+      ],
+      "example": "589-boot-constructor-default-duration",
+      "observations": {
+        "spring-projects/spring-boot#51661.1": {
+          "parent": {
+            "outcome": {
+              "return": "conversion-failed"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "PT72H"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51661.2": {
+          "parent": {
+            "outcome": {
+              "return": "PT120H"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "PT120H"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#51661.3": {
+          "parent": {
+            "outcome": {
+              "return": "PT120H/conversion-failed"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "PT120H/conversion-failed"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S03",
+      "pr": 50773,
+      "revisions": {
+        "parent": "f71e7977614682ced49221321a38bb5cb18bc938",
+        "fix": "fe554ff822bf48ee9b04fbc511f54332aa2ca10b"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50773.1",
+        "spring-projects/spring-boot#50773.2",
+        "spring-projects/spring-boot#50773.3"
+      ],
+      "example": "590-boot-empty-map-binding",
+      "observations": {
+        "spring-projects/spring-boot#50773.1": {
+          "parent": {
+            "outcome": {
+              "return": "conversion-failed"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "bound:{}"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50773.2": {
+          "parent": {
+            "outcome": {
+              "return": "bound:{a=one, b=two}"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "bound:{a=one, b=two}"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50773.3": {
+          "parent": {
+            "outcome": {
+              "return": "conversion-failed/conversion-failed"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "{}/{}"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S04",
+      "pr": 50798,
+      "revisions": {
+        "parent": "3d280c4354a127e9f08bb1ea782b02165bbbfa7e",
+        "fix": "0836e3673a74e47a2e5eed3a8e8ad45cfa4a0ccf"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50798.1",
+        "spring-projects/spring-boot#50798.2",
+        "spring-projects/spring-boot#50798.3"
+      ],
+      "example": "591-boot-wildcard-map-validation",
+      "observations": {
+        "spring-projects/spring-boot#50798.1": {
+          "parent": {
+            "outcome": {
+              "return": "unresolved-type"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "titi"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50798.2": {
+          "parent": {
+            "outcome": {
+              "return": "validation:age"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "validation:age"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#50798.3": {
+          "parent": {
+            "outcome": {
+              "return": "unresolved-type/unresolved-type"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "validation:age/titi:10"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S05",
+      "pr": 52207,
+      "revisions": {
+        "parent": "6c0b7df312e0fb1eaeecab9967e676726ce29057",
+        "fix": "42b182259cc6d4f9ed67bb2f387fed7e6b2c4979"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52207.1",
+        "spring-projects/spring-boot#52207.2",
+        "spring-projects/spring-boot#52207.3"
+      ],
+      "example": "592-boot-properties-literal-keys",
+      "observations": {
+        "spring-projects/spring-boot#52207.1": {
+          "parent": {
+            "outcome": {
+              "return": "null,null,ok / hash,bang,ok"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "hash,bang,ok / hash,bang,ok"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52207.2": {
+          "parent": {
+            "outcome": {
+              "return": "null,null,ok / null,null,ok"
+            },
+            "verdict": "matched"
+          },
+          "fix": {
+            "outcome": {
+              "return": "null,null,ok / null,null,ok"
+            },
+            "verdict": "matched"
+          }
+        },
+        "spring-projects/spring-boot#52207.3": {
+          "parent": {
+            "outcome": {
+              "return": "null,null,ok / hash,bang,ok"
+            },
+            "verdict": "observed only"
+          },
+          "fix": {
+            "outcome": {
+              "return": "hash,bang,ok / hash,bang,ok"
+            },
+            "verdict": "matched"
+          }
+        }
+      },
+      "unmeasured": []
+    },
+    {
+      "case": "S06",
+      "pr": 52277,
+      "revisions": {
+        "parent": "5b40ad76e7cc2c05d8e9a816fdaf080a354667f9",
+        "fix": "c89f27ace1483333681b074c4f3d4924ba77f1ea"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52277.1",
+        "spring-projects/spring-boot#52277.2",
+        "spring-projects/spring-boot#52277.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52277.1",
+        "spring-projects/spring-boot#52277.2",
+        "spring-projects/spring-boot#52277.3"
+      ]
+    },
+    {
+      "case": "S07",
+      "pr": 52666,
+      "revisions": {
+        "parent": "5b88a2ad273ea810ae0aa56cf8819bac33521e95",
+        "fix": "aff28f4f77acc49c3f7d1bf4725d841a21ddf6e1"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52666.1",
+        "spring-projects/spring-boot#52666.2",
+        "spring-projects/spring-boot#52666.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52666.1",
+        "spring-projects/spring-boot#52666.2",
+        "spring-projects/spring-boot#52666.3"
+      ]
+    },
+    {
+      "case": "S08",
+      "pr": 52904,
+      "revisions": {
+        "parent": "906029c2a9b33ef5052141a91eac5de8177ede9d",
+        "fix": "cc44b73aca16f06ebac4f1d8692751a80b2b6615"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52904.1",
+        "spring-projects/spring-boot#52904.2",
+        "spring-projects/spring-boot#52904.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52904.1",
+        "spring-projects/spring-boot#52904.2",
+        "spring-projects/spring-boot#52904.3"
+      ]
+    },
+    {
+      "case": "S09",
+      "pr": 51855,
+      "revisions": {
+        "parent": "789e06631baace79ffe874d54de269342f6b76c5",
+        "fix": "ef67de058ed35c0f6246d47abdb09fbdd4ce5c1a"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51855.1",
+        "spring-projects/spring-boot#51855.2",
+        "spring-projects/spring-boot#51855.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51855.1",
+        "spring-projects/spring-boot#51855.2",
+        "spring-projects/spring-boot#51855.3"
+      ]
+    },
+    {
+      "case": "S10",
+      "pr": 50489,
+      "revisions": {
+        "parent": "01afdc8dc738d1c016bcbc572b2376d270dc3335",
+        "fix": "47d4b222827148e780ea7e5118b88676659a753d"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50489.1",
+        "spring-projects/spring-boot#50489.2",
+        "spring-projects/spring-boot#50489.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#50489.1",
+        "spring-projects/spring-boot#50489.2",
+        "spring-projects/spring-boot#50489.3"
+      ]
+    },
+    {
+      "case": "S11",
+      "pr": 51867,
+      "revisions": {
+        "parent": "ab8d5266fbf617b1462d60f5bba5ade2d0f6302d",
+        "fix": "b00a873c002d3e5f6edf4cc58313030855ec86cd"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51867.1",
+        "spring-projects/spring-boot#51867.2",
+        "spring-projects/spring-boot#51867.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51867.1",
+        "spring-projects/spring-boot#51867.2",
+        "spring-projects/spring-boot#51867.3"
+      ]
+    },
+    {
+      "case": "S12",
+      "pr": 52310,
+      "revisions": {
+        "parent": "25adba2b4e3e69a49e2128fd5c0185ee1ea437a9",
+        "fix": "53328b76db4ffb107ee38ad82bf090ac1be59a9c"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52310.1",
+        "spring-projects/spring-boot#52310.2",
+        "spring-projects/spring-boot#52310.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52310.1",
+        "spring-projects/spring-boot#52310.2",
+        "spring-projects/spring-boot#52310.3"
+      ]
+    },
+    {
+      "case": "S13",
+      "pr": 52309,
+      "revisions": {
+        "parent": "aaca41eb4262b0570d610d97e30857fb3cb17089",
+        "fix": "76246db920dbafc1e45441ef736f14d4548dc8d0"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52309.1",
+        "spring-projects/spring-boot#52309.2",
+        "spring-projects/spring-boot#52309.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52309.1",
+        "spring-projects/spring-boot#52309.2",
+        "spring-projects/spring-boot#52309.3"
+      ]
+    },
+    {
+      "case": "S14",
+      "pr": 52831,
+      "revisions": {
+        "parent": "68f823ceabc77d1786ec0ff416bb128dc13ce93b",
+        "fix": "3a7a19b7c5b16d4cc6dd8f0c22ea88d206e90a9a"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52831.1",
+        "spring-projects/spring-boot#52831.2",
+        "spring-projects/spring-boot#52831.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52831.1",
+        "spring-projects/spring-boot#52831.2",
+        "spring-projects/spring-boot#52831.3"
+      ]
+    },
+    {
+      "case": "S15",
+      "pr": 50886,
+      "revisions": {
+        "parent": "39c87d595e24091a4966be36404c87d0dffab9a7",
+        "fix": "e1a1e1be824c1720aad9817388394fe55e89e189"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50886.1",
+        "spring-projects/spring-boot#50886.2",
+        "spring-projects/spring-boot#50886.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#50886.1",
+        "spring-projects/spring-boot#50886.2",
+        "spring-projects/spring-boot#50886.3"
+      ]
+    },
+    {
+      "case": "S16",
+      "pr": 9558,
+      "revisions": {
+        "parent": "89af4a65cf1fa99df62a9fbcbe3c10ab9ab7c738",
+        "fix": "f2e77e46cd12a9eb5a7d701cb4612bdd41c613b0"
+      },
+      "questions": [
+        "spring-projects/spring-boot#9558.1",
+        "spring-projects/spring-boot#9558.2",
+        "spring-projects/spring-boot#9558.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#9558.1",
+        "spring-projects/spring-boot#9558.2",
+        "spring-projects/spring-boot#9558.3"
+      ]
+    },
+    {
+      "case": "S17",
+      "pr": 52251,
+      "revisions": {
+        "parent": "54aa8e789e001ea43307d9ceb09eeb6f2031f2c4",
+        "fix": "2998c84ca55100f867b090706fe0426052e1491e"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52251.1",
+        "spring-projects/spring-boot#52251.2",
+        "spring-projects/spring-boot#52251.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52251.1",
+        "spring-projects/spring-boot#52251.2",
+        "spring-projects/spring-boot#52251.3"
+      ]
+    },
+    {
+      "case": "S18",
+      "pr": 52304,
+      "revisions": {
+        "parent": "a9bfca2346c74c2bb46e70aa4f61b162d36dee33",
+        "fix": "f2ffba784085ae4c1f8fcd6ac7f9c850e722cecc"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52304.1",
+        "spring-projects/spring-boot#52304.2",
+        "spring-projects/spring-boot#52304.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52304.1",
+        "spring-projects/spring-boot#52304.2",
+        "spring-projects/spring-boot#52304.3"
+      ]
+    },
+    {
+      "case": "S19",
+      "pr": 51173,
+      "revisions": {
+        "parent": "a07c43466b7231a6bd8c84b638ce89fe6b78fcff",
+        "fix": "d265e67685580d0b417b5bb192af1069eb12c5cf"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51173.1",
+        "spring-projects/spring-boot#51173.2",
+        "spring-projects/spring-boot#51173.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51173.1",
+        "spring-projects/spring-boot#51173.2",
+        "spring-projects/spring-boot#51173.3"
+      ]
+    },
+    {
+      "case": "S20",
+      "pr": 52162,
+      "revisions": {
+        "parent": "2ed46d765577c63e733fc8cc8a7de2c6f2102333",
+        "fix": "70b92fc5085090348ccf822d90178208d93be9d6"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52162.1",
+        "spring-projects/spring-boot#52162.2",
+        "spring-projects/spring-boot#52162.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52162.1",
+        "spring-projects/spring-boot#52162.2",
+        "spring-projects/spring-boot#52162.3"
+      ]
+    },
+    {
+      "case": "S21",
+      "pr": 51410,
+      "revisions": {
+        "parent": "4ee67a3f6b817bc8727069e083f0506bb8aefa33",
+        "fix": "cbaaa0fe45652d32ac5cc532cbfb5737e086769f"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51410.1",
+        "spring-projects/spring-boot#51410.2",
+        "spring-projects/spring-boot#51410.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51410.1",
+        "spring-projects/spring-boot#51410.2",
+        "spring-projects/spring-boot#51410.3"
+      ]
+    },
+    {
+      "case": "S22",
+      "pr": 50271,
+      "revisions": {
+        "parent": "96a36cfc8c8d6f76df41c6ca17a38fa46c3d9689",
+        "fix": "607e4bbe65e00bc401b3c33e9c1a615a9f1888aa"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50271.1",
+        "spring-projects/spring-boot#50271.2",
+        "spring-projects/spring-boot#50271.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#50271.1",
+        "spring-projects/spring-boot#50271.2",
+        "spring-projects/spring-boot#50271.3"
+      ]
+    },
+    {
+      "case": "S23",
+      "pr": 52824,
+      "revisions": {
+        "parent": "60bed32467b7391003fcf81c414d66c5835e66b0",
+        "fix": "79d3cc26509620e47d9f3db445795b4984b6f567"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52824.1",
+        "spring-projects/spring-boot#52824.2",
+        "spring-projects/spring-boot#52824.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52824.1",
+        "spring-projects/spring-boot#52824.2",
+        "spring-projects/spring-boot#52824.3"
+      ]
+    },
+    {
+      "case": "S24",
+      "pr": 51725,
+      "revisions": {
+        "parent": "683d41b3232b98bb10d7b60705abe300af1c5e20",
+        "fix": "32b09e479b78afd151577df37e800f47711db749"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51725.1",
+        "spring-projects/spring-boot#51725.2",
+        "spring-projects/spring-boot#51725.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51725.1",
+        "spring-projects/spring-boot#51725.2",
+        "spring-projects/spring-boot#51725.3"
+      ]
+    },
+    {
+      "case": "S25",
+      "pr": 52190,
+      "revisions": {
+        "parent": "425bad9c72f10bdd03964c5ed0c0290a4678a663",
+        "fix": "ac1b357395ee443a87c6d20a4faf815f40550b88"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52190.1",
+        "spring-projects/spring-boot#52190.2",
+        "spring-projects/spring-boot#52190.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52190.1",
+        "spring-projects/spring-boot#52190.2",
+        "spring-projects/spring-boot#52190.3"
+      ]
+    },
+    {
+      "case": "S26",
+      "pr": 51844,
+      "revisions": {
+        "parent": "0eed305ce08b030f45a9dbcd5b1969926b36b7d8",
+        "fix": "ed4d85df8032b6574c0912d80ffb8e7663aaa79e"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51844.1",
+        "spring-projects/spring-boot#51844.2",
+        "spring-projects/spring-boot#51844.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51844.1",
+        "spring-projects/spring-boot#51844.2",
+        "spring-projects/spring-boot#51844.3"
+      ]
+    },
+    {
+      "case": "S27",
+      "pr": 52832,
+      "revisions": {
+        "parent": "3a7a19b7c5b16d4cc6dd8f0c22ea88d206e90a9a",
+        "fix": "05356df632d8bec937e55cc486377871a201f084"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52832.1",
+        "spring-projects/spring-boot#52832.2",
+        "spring-projects/spring-boot#52832.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52832.1",
+        "spring-projects/spring-boot#52832.2",
+        "spring-projects/spring-boot#52832.3"
+      ]
+    },
+    {
+      "case": "S28",
+      "pr": 52625,
+      "revisions": {
+        "parent": "cb47b14cfdabdfae7f4372aa7b21661f57444bca",
+        "fix": "a938beab5f1d370f63d62ce78f3ab029f868bd03"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52625.1",
+        "spring-projects/spring-boot#52625.2",
+        "spring-projects/spring-boot#52625.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52625.1",
+        "spring-projects/spring-boot#52625.2",
+        "spring-projects/spring-boot#52625.3"
+      ]
+    },
+    {
+      "case": "S29",
+      "pr": 51940,
+      "revisions": {
+        "parent": "305b97344b2b7abb9173b0e63a8d2c01a96c9e06",
+        "fix": "f2cc019fe5bd51ce405995f3c89c48e2003cd9e7"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51940.1",
+        "spring-projects/spring-boot#51940.2",
+        "spring-projects/spring-boot#51940.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51940.1",
+        "spring-projects/spring-boot#51940.2",
+        "spring-projects/spring-boot#51940.3"
+      ]
+    },
+    {
+      "case": "S30",
+      "pr": 51774,
+      "revisions": {
+        "parent": "d28fc5b5ffe3bb26d83960bb4b0fbd03a0b894f0",
+        "fix": "3c1f0c4e543b3c20db34e224a0670e59f82dc767"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51774.1",
+        "spring-projects/spring-boot#51774.2",
+        "spring-projects/spring-boot#51774.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51774.1",
+        "spring-projects/spring-boot#51774.2",
+        "spring-projects/spring-boot#51774.3"
+      ]
+    },
+    {
+      "case": "S31",
+      "pr": 50296,
+      "revisions": {
+        "parent": "4b51d350ee77b98e038c14e8ba831c5c47e5bb80",
+        "fix": "c398259cb871da425bdbdf792a276c058a253213"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50296.1",
+        "spring-projects/spring-boot#50296.2",
+        "spring-projects/spring-boot#50296.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#50296.1",
+        "spring-projects/spring-boot#50296.2",
+        "spring-projects/spring-boot#50296.3"
+      ]
+    },
+    {
+      "case": "S32",
+      "pr": 52321,
+      "revisions": {
+        "parent": "53328b76db4ffb107ee38ad82bf090ac1be59a9c",
+        "fix": "b50d0244ea95127b783868b24f8ad9d5b9ce5a4b"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52321.1",
+        "spring-projects/spring-boot#52321.2",
+        "spring-projects/spring-boot#52321.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52321.1",
+        "spring-projects/spring-boot#52321.2",
+        "spring-projects/spring-boot#52321.3"
+      ]
+    },
+    {
+      "case": "S33",
+      "pr": 51470,
+      "revisions": {
+        "parent": "1f3209130d661a96626f3b545ae219762a8201f0",
+        "fix": "333d336ca95b6fcf9b404152bad2323d762b467b"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51470.1",
+        "spring-projects/spring-boot#51470.2",
+        "spring-projects/spring-boot#51470.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51470.1",
+        "spring-projects/spring-boot#51470.2",
+        "spring-projects/spring-boot#51470.3"
+      ]
+    },
+    {
+      "case": "S34",
+      "pr": 51937,
+      "revisions": {
+        "parent": "fcc6d421578939b5a960deaa77f7ea1eef45cabe",
+        "fix": "3d7e61639c18d6858013257fd338c12ff8dd79f8"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51937.1",
+        "spring-projects/spring-boot#51937.2",
+        "spring-projects/spring-boot#51937.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51937.1",
+        "spring-projects/spring-boot#51937.2",
+        "spring-projects/spring-boot#51937.3"
+      ]
+    },
+    {
+      "case": "S35",
+      "pr": 50734,
+      "revisions": {
+        "parent": "790f66c37a6fe69ea6e40c0c09212fab007d345f",
+        "fix": "33bf9d3777eac3f6bc13909571b612d0d2702233"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50734.1",
+        "spring-projects/spring-boot#50734.2",
+        "spring-projects/spring-boot#50734.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#50734.1",
+        "spring-projects/spring-boot#50734.2",
+        "spring-projects/spring-boot#50734.3"
+      ]
+    },
+    {
+      "case": "S36",
+      "pr": 50461,
+      "revisions": {
+        "parent": "2051b60a1ad79b941fb97b0f886e0e59b0356bf1",
+        "fix": "d6940b260bba2c22133f2856c224e80fcf0b4d60"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50461.1",
+        "spring-projects/spring-boot#50461.2",
+        "spring-projects/spring-boot#50461.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#50461.1",
+        "spring-projects/spring-boot#50461.2",
+        "spring-projects/spring-boot#50461.3"
+      ]
+    },
+    {
+      "case": "S37",
+      "pr": 51959,
+      "revisions": {
+        "parent": "6a8b2d04940b9be002d9ab0314eb8c7024aeecfb",
+        "fix": "8a76a2dfef003fe0d02a9b7f451907a84cb8baba"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51959.1",
+        "spring-projects/spring-boot#51959.2",
+        "spring-projects/spring-boot#51959.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51959.1",
+        "spring-projects/spring-boot#51959.2",
+        "spring-projects/spring-boot#51959.3"
+      ]
+    },
+    {
+      "case": "S38",
+      "pr": 51156,
+      "revisions": {
+        "parent": "175702174462775baa8a66f8b0e21542ed6807a8",
+        "fix": "af69828ce6cbdc159c8847067ec9c85f22bcdb30"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51156.1",
+        "spring-projects/spring-boot#51156.2",
+        "spring-projects/spring-boot#51156.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51156.1",
+        "spring-projects/spring-boot#51156.2",
+        "spring-projects/spring-boot#51156.3"
+      ]
+    },
+    {
+      "case": "S39",
+      "pr": 52477,
+      "revisions": {
+        "parent": "7814f5327a8ee30be2012969b579c64eb18d6355",
+        "fix": "873231a509e28f42b6b1f45ad6a43fe17bcf8692"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52477.1",
+        "spring-projects/spring-boot#52477.2",
+        "spring-projects/spring-boot#52477.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52477.1",
+        "spring-projects/spring-boot#52477.2",
+        "spring-projects/spring-boot#52477.3"
+      ]
+    },
+    {
+      "case": "S40",
+      "pr": 52522,
+      "revisions": {
+        "parent": "0b8c2a7ef227e008fdc3dc397f8987bf4c90f5f7",
+        "fix": "430fa2b6891a6bbb82a92fed1f2e1c01fe709571"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52522.1",
+        "spring-projects/spring-boot#52522.2",
+        "spring-projects/spring-boot#52522.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52522.1",
+        "spring-projects/spring-boot#52522.2",
+        "spring-projects/spring-boot#52522.3"
+      ]
+    },
+    {
+      "case": "S41",
+      "pr": 52593,
+      "revisions": {
+        "parent": "a938beab5f1d370f63d62ce78f3ab029f868bd03",
+        "fix": "979ccd4e9ff5d5a34f2552ff5973a2254dcebc4f"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52593.1",
+        "spring-projects/spring-boot#52593.2",
+        "spring-projects/spring-boot#52593.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52593.1",
+        "spring-projects/spring-boot#52593.2",
+        "spring-projects/spring-boot#52593.3"
+      ]
+    },
+    {
+      "case": "S42",
+      "pr": 52285,
+      "revisions": {
+        "parent": "1434d2112bb979f6464e283d7a17ab728bf40ce4",
+        "fix": "57a1ca37c36f3cf355211aa8dea8c500b2dd3a09"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52285.1",
+        "spring-projects/spring-boot#52285.2",
+        "spring-projects/spring-boot#52285.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52285.1",
+        "spring-projects/spring-boot#52285.2",
+        "spring-projects/spring-boot#52285.3"
+      ]
+    },
+    {
+      "case": "S43",
+      "pr": 52280,
+      "revisions": {
+        "parent": "a2338765ea747b695f6cd95a471da85d52bc54bb",
+        "fix": "1b2d2fc80900d849fef7b937385594d63ac3bef3"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52280.1",
+        "spring-projects/spring-boot#52280.2",
+        "spring-projects/spring-boot#52280.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52280.1",
+        "spring-projects/spring-boot#52280.2",
+        "spring-projects/spring-boot#52280.3"
+      ]
+    },
+    {
+      "case": "S44",
+      "pr": 52244,
+      "revisions": {
+        "parent": "d5b807d26efd1fc658e76b966e4a947ff829d439",
+        "fix": "bba5f11efc7f28ced96961d9e16dbc8862b06010"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52244.1",
+        "spring-projects/spring-boot#52244.2",
+        "spring-projects/spring-boot#52244.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52244.1",
+        "spring-projects/spring-boot#52244.2",
+        "spring-projects/spring-boot#52244.3"
+      ]
+    },
+    {
+      "case": "S45",
+      "pr": 52402,
+      "revisions": {
+        "parent": "70b0b134a7472dc634f43cc143a9d37416ad6bbb",
+        "fix": "9c0bef7f8e9ac00dce1b45d70ad172e76de91bb3"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52402.1",
+        "spring-projects/spring-boot#52402.2",
+        "spring-projects/spring-boot#52402.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52402.1",
+        "spring-projects/spring-boot#52402.2",
+        "spring-projects/spring-boot#52402.3"
+      ]
+    },
+    {
+      "case": "S46",
+      "pr": 51653,
+      "revisions": {
+        "parent": "59379ae449f15a6d17a333f5505941f4165ab3b2",
+        "fix": "c966eca3e7467c2524df980aa52bac517b59a40b"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51653.1",
+        "spring-projects/spring-boot#51653.2",
+        "spring-projects/spring-boot#51653.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51653.1",
+        "spring-projects/spring-boot#51653.2",
+        "spring-projects/spring-boot#51653.3"
+      ]
+    },
+    {
+      "case": "S47",
+      "pr": 52530,
+      "revisions": {
+        "parent": "6529cc7f81a938953a6dfdf5d9ca3f1ce984bfed",
+        "fix": "4f67ceb843a890b56bf37cdcd0144729c1f553de"
+      },
+      "questions": [
+        "spring-projects/spring-boot#52530.1",
+        "spring-projects/spring-boot#52530.2",
+        "spring-projects/spring-boot#52530.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#52530.1",
+        "spring-projects/spring-boot#52530.2",
+        "spring-projects/spring-boot#52530.3"
+      ]
+    },
+    {
+      "case": "S48",
+      "pr": 51551,
+      "revisions": {
+        "parent": "d34a479879d348a1758196b7d1c696ea4f8ea8f0",
+        "fix": "69ad59c413ec8dfbd884ba0e712e8ada89513d29"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51551.1",
+        "spring-projects/spring-boot#51551.2",
+        "spring-projects/spring-boot#51551.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51551.1",
+        "spring-projects/spring-boot#51551.2",
+        "spring-projects/spring-boot#51551.3"
+      ]
+    },
+    {
+      "case": "S49",
+      "pr": 51372,
+      "revisions": {
+        "parent": "b1966933c60d136fed1c860445180f13f3d39db7",
+        "fix": "535d133bdaa0ed46bbfb7ce578c14261806f39ac"
+      },
+      "questions": [
+        "spring-projects/spring-boot#51372.1",
+        "spring-projects/spring-boot#51372.2",
+        "spring-projects/spring-boot#51372.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#51372.1",
+        "spring-projects/spring-boot#51372.2",
+        "spring-projects/spring-boot#51372.3"
+      ]
+    },
+    {
+      "case": "S50",
+      "pr": 50433,
+      "revisions": {
+        "parent": "f83576eb2954c007464c696d1dabc7a871a7becc",
+        "fix": "21cb821f9553c048566b9a1779729c78167439a0"
+      },
+      "questions": [
+        "spring-projects/spring-boot#50433.1",
+        "spring-projects/spring-boot#50433.2",
+        "spring-projects/spring-boot#50433.3"
+      ],
+      "unmeasured": [
+        "spring-projects/spring-boot#50433.1",
+        "spring-projects/spring-boot#50433.2",
+        "spring-projects/spring-boot#50433.3"
+      ]
+    }
+  ],
+  "totals": {
+    "registeredClaims": 150,
+    "casesWithPublicCallers": 5,
+    "twoSidedPublicClaims": 15,
+    "unmeasuredClaims": 135,
+    "jvmObservations": 30,
+    "parent matched": 11,
+    "fix matched": 15,
+    "parent observed only": 4
+  }
+}
