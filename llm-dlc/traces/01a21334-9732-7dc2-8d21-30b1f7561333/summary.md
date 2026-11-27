@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a21334-9732-7dc2-8d21-30b1f7561333` (open) |
+| Session | `01a21334-9732-7dc2-8d21-30b1f7561333` (ended) |
 | When | 2026-11-25 14:55 UTC to 2026-11-25 15:04 UTC (8 min) |
 | Models | `gpt-6.2-astra` |
 | Client | codex 0.170.0 |
@@ -20,9 +20,21 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Specify Spring naming, annotation and bean lookup behavior
 
-change `xurzrrkvvwyy` · [log `448b04e39eab`](https://terminalvalue.net/raw-traces/01a21334-9732-7dc2-8d21-30b1f7561333/448b04e39eab6909e0ce0f989d8b1ab69c70731edeb9f949a093e5c1ece73a35.jsonl.gz)
+[`e343d00aefbc`](https://github.com/pilifs/in-the-loop/commit/e343d00aefbcc7bab9b70bdd75e029b3c846b095) · [log `448b04e39eab`](https://terminalvalue.net/raw-traces/01a21334-9732-7dc2-8d21-30b1f7561333/448b04e39eab6909e0ce0f989d8b1ab69c70731edeb9f949a093e5c1ece73a35.jsonl.gz)
 
 Add the first five verification cases and their generation record. Checked 15 claims, 20 changed paths and 30 revision-pinned Spring file links. Compared the public callers with upstream tests, including the mock-only Kotlin and autowiring checks. The changed-file selector found no applicable tests.
+
+### Specify Spring collection, executor and scheduling behavior
+
+[`81176362bfc2`](https://github.com/pilifs/in-the-loop/commit/81176362bfc2cf6462ca08f6bd6c6f3f451cae2a) · [log `448b04e39eab`](https://terminalvalue.net/raw-traces/01a21334-9732-7dc2-8d21-30b1f7561333/448b04e39eab6909e0ce0f989d8b1ab69c70731edeb9f949a093e5c1ece73a35.jsonl.gz)
+
+Add five cases on composite-map value removal, reference-map size, SQL parameter sources, live executor settings and cron dates. Distinguish the public map view from the two-list test and check the leap-day oracle across 2100. The ten-case audit passed. The changed-file selector found no applicable tests.
+
+### Specify Spring database binding, mapping and connection behavior
+
+[`c49645bf0fa3`](https://github.com/pilifs/in-the-loop/commit/c49645bf0fa390398143e81fb2366e217157be0f) · [log `448b04e39eab`](https://terminalvalue.net/raw-traces/01a21334-9732-7dc2-8d21-30b1f7561333/448b04e39eab6909e0ce0f989d8b1ab69c70731edeb9f949a093e5c1ece73a35.jsonl.gz)
+
+Add five cases on R2DBC array parameters, optional result cardinality, JDBC row limits, duplicate column labels and lazy connection settings. Checked the JDBC zero-limit contract and compared persisted or returned values with independent consumers. Audited fifteen cases. The changed-file selector found no applicable tests.
 
 ## Conversation
 

@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a2120d-a9dc-7d40-a1b0-8d4f44ffe3e9` (open) |
+| Session | `01a2120d-a9dc-7d40-a1b0-8d4f44ffe3e9` (ended) |
 | When | 2026-11-25 09:33 UTC to 2026-11-25 10:02 UTC (29 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Classify four merged Java challenges (verification pending)
 
-change `ysxolvkmqrrn` · [log `3956a0d57436`](https://terminalvalue.net/raw-traces/01a2120d-a9dc-7d40-a1b0-8d4f44ffe3e9/3956a0d574368fa54e33f2401442e5cf6d498a9f0dcaa3289f64887833c55b93.jsonl.gz)
+[`5fcacf0c1fe1`](https://github.com/pilifs/in-the-loop/commit/5fcacf0c1fe1812cdbfc15987fe818a161cfe4f7) · [log `3956a0d57436`](https://terminalvalue.net/raw-traces/01a2120d-a9dc-7d40-a1b0-8d4f44ffe3e9/3956a0d574368fa54e33f2401442e5cf6d498a9f0dcaa3289f64887833c55b93.jsonl.gz)
 
 Replayed the four disputed public callers on the current Maven releases and frozen upstream development commits. The same caller bytecode confirmed the Avro array-default and jOOλ window defects on release and development builds, and the ical4j override-order defect on its development branch. Three public reproductions and related tracker checks are ready for the user in VF-065. Jackson's documented wrapping and the independent token reader both preserved both rows on all four tested deployments, correcting the brief's two-row configuration assumption.
 

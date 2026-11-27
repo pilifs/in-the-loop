@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a21334-7ac0-7021-a2ae-d855d5c52530` (open) |
+| Session | `01a21334-7ac0-7021-a2ae-d855d5c52530` (ended) |
 | When | 2026-11-25 14:55 UTC to 2026-11-25 15:04 UTC (8 min) |
 | Models | `gpt-6.2-astra` |
 | Client | codex 0.170.0 |
@@ -20,9 +20,15 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Specify Spring naming, annotation and bean lookup behavior
 
-change `xurzrrkvvwyy` · [log `c4624bb05243`](https://terminalvalue.net/raw-traces/01a21334-7ac0-7021-a2ae-d855d5c52530/c4624bb05243b1309b1a47178c6ab51a11e53dcb48d30aed78f699c56caef0f4.jsonl.gz)
+[`e343d00aefbc`](https://github.com/pilifs/in-the-loop/commit/e343d00aefbcc7bab9b70bdd75e029b3c846b095) · [log `c4624bb05243`](https://terminalvalue.net/raw-traces/01a21334-7ac0-7021-a2ae-d855d5c52530/c4624bb05243b1309b1a47178c6ab51a11e53dcb48d30aed78f699c56caef0f4.jsonl.gz)
 
 Add the first five verification cases and their generation record. Checked 15 claims, 20 changed paths and 30 revision-pinned Spring file links. Compared the public callers with upstream tests, including the mock-only Kotlin and autowiring checks. The changed-file selector found no applicable tests.
+
+### Specify Spring collection, executor and scheduling behavior
+
+[`81176362bfc2`](https://github.com/pilifs/in-the-loop/commit/81176362bfc2cf6462ca08f6bd6c6f3f451cae2a) · [log `c4624bb05243`](https://terminalvalue.net/raw-traces/01a21334-7ac0-7021-a2ae-d855d5c52530/c4624bb05243b1309b1a47178c6ab51a11e53dcb48d30aed78f699c56caef0f4.jsonl.gz)
+
+Add five cases on composite-map value removal, reference-map size, SQL parameter sources, live executor settings and cron dates. Distinguish the public map view from the two-list test and check the leap-day oracle across 2100. The ten-case audit passed. The changed-file selector found no applicable tests.
 
 ## Conversation
 

@@ -20,73 +20,73 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Start the setup record for the merged Java PR links brief
 
-change `qmtzywmqtquy` · [log `e6118b540109`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/e6118b5401090d5d738aa289959c3effbe9c9cdda1cf008e8aafb611fd9bf66a.jsonl.gz)
+[`0b672708af02`](https://github.com/pilifs/in-the-loop/commit/0b672708af02ea32219f328e77e5077c0ef1d7fc) · [log `e6118b540109`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/e6118b5401090d5d738aa289959c3effbe9c9cdda1cf008e8aafb611fd9bf66a.jsonl.gz)
 
 Setup agent for llm-dlc/loops/organic-java-merged-pr-links-brief.md: all 41 pinned revisions of the 20 cases fetched into shallow bare mirrors with a worktree each, every PR's merge SHA and first parent checked against the brief, and six Gradle distributions checked against services.gradle.org. Per-case builds follow.
 
 ### Queue the setup builds of the merged Java PR links brief (verification pending)
 
-change `ulxnwtzsswoy` · [log `1ca7dc7ddefe`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/1ca7dc7ddefeda55b2984ae7fe53acc24695ad32ece6d7efbc56ef2f142f921e.jsonl.gz)
+[`c4f20114aeca`](https://github.com/pilifs/in-the-loop/commit/c4f20114aecae2c2aac6139da7a1fb1da82d23cc) · [log `1ca7dc7ddefe`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/1ca7dc7ddefeda55b2984ae7fe53acc24695ad32ece6d7efbc56ef2f142f921e.jsonl.gz)
 
 Upstream builds and landed-test runs that take over a minute, for llm-dlc/loops/organic-java-merged-pr-links-brief.md: Lucene core (#14732) on JDK 24, Solr core with TestJsonFacets (#3158), jOOQ with the reporter's H2 loader test (#19875), Guava JRE and Android with SetViewTest (#7784), HikariCP's PostgresTest in Docker (#2346), JUnit's DisplayNameGenerationTests (#2646) and RoaringBitmap's FastAggregation tests (#914). Each runs the fix, the parent and where it compiles the fix's test on the parent, mostly offline after an online first step, in worktrees under ~/.cache/in-the-loop/merged-pr-links.
 
 ### Record the setup of the merged Java PR links brief
 
-change `rqqurvolzzrz` · [log `a6c8e4146ae0`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/a6c8e4146ae0bf706d8289dac306b3178042edd50193c0d8af5b5709e277a13a.jsonl.gz)
+[`de1334ae5b92`](https://github.com/pilifs/in-the-loop/commit/de1334ae5b9259ac8d86ae04fdbc0151f8707264) · [log `a6c8e4146ae0`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/a6c8e4146ae0bf706d8289dac306b3178042edd50193c0d8af5b5709e277a13a.jsonl.gz)
 
 The setup record for llm-dlc/loops/organic-java-merged-pr-links-brief.md now covers all 20 cases: per-case pins, build facts, online and offline commands, built or overlay jars of both sides with full sha256 and changed-class digests, release sets and which side each equals, landed-test runs, signatures, and Setup Agent Notes for the domain agent. Landed tests were run on a JVM inline for 16 cases (each passes on the fix and fails when moved onto the parent, M16 by the reporter's H2 test); M20's landed test cannot separate the sides; M03, M05 and M19 wait on jobs. Gaps recorded: M07's SNAPSHOT inputs are gone (built over released Jackson 3.2.0), RxJava's signing key is revoked, Solr 9.8.0 is signed by an expired key, M11 needs -Dapi.version=1.44 for Testcontainers on Docker 29. No claims, examples or probes of the brief's scenarios.
 
 ### Propose eight false positives from the merged-pr-links setup for the allow list
 
-change `lprplvpzoyzl` · [log `33fc820e4bad`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/33fc820e4bad5052ebc5306571ddd700a61daed3eb95fd4c136c57aa221d6f19.jsonl.gz)
+[`21ffc52fc225`](https://github.com/pilifs/in-the-loop/commit/21ffc52fc225a3fc4f2c031890139b6fe9b85a49) · [log `33fc820e4bad`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/33fc820e4bad5052ebc5306571ddd700a61daed3eb95fd4c136c57aa221d6f19.jsonl.gz)
 
 Setup session f1c44a2e's logs raised long-token and public-ip warnings that are jar file names (M19-junit-framework-*), a public OpenPGP key fingerprint used as a file name, a JDK 21 version string and a four-part Maven version. Proposed only; a person approves.
 
 ### Record the seven setup job results of the merged Java PR links brief
 
-change `xuysovwpmrqr` · [log `aa0f0f101e8a`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/aa0f0f101e8a757af9209ecf5bc6fd9c07b9668504c5db0fee3493b0478c792e.jsonl.gz)
+[`d1297eed3096`](https://github.com/pilifs/in-the-loop/commit/d1297eed309600a9f6685e037f576c57a9d91efd) · [log `aa0f0f101e8a`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/aa0f0f101e8a757af9209ecf5bc6fd9c07b9668504c5db0fee3493b0478c792e.jsonl.gz)
 
 All seven setup jobs passed (results recorded by the pipeline on the default line). Lucene #14732, Solr #3158, jOOQ #19875 and Guava #7784 now also have jars built from the pins themselves, with full sha256 and the digests of the changed classes. Their landed or reporter regressions agree with the overlay runs: the fix passes, the parent fails, offline included. HikariCP's whole PostgresTest gives 7/7 on the fix and 6/6 on the parent; with the fix's class moved onto the parent, only testSchema fails. RoaringBitmap #914 and JUnit #2646, whose landed tests had not run before, separate the sides: ArrayStoreException in both new tests, and indicativeSentencesGeneratorOnNestedClass fails on the parent. So the regression separates the sides in 19 of 20 cases; for Guava, the fix's test does not compile on the parent. Noted: the jOOQ jar is not byte-reproducible between builds of one pin. The Setup Agent Notes now say setup is complete.
 
 ### Record verification results for 1 job(s)
 
-change `ruyozwpyrzkz` · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
+[`e0ca3df789c0`](https://github.com/pilifs/in-the-loop/commit/e0ca3df789c07c140accac75c3b4f71be0df286c) · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-072322-setup-run-roaringbitmap-914-s-landed-fas: passed: 5 passed step(s) in 1m11s, peak 710.0 MiB (estimated 5m00s, 4.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `mynnkymuytlp` · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
+[`f9535c675257`](https://github.com/pilifs/in-the-loop/commit/f9535c675257b25afaf5f6a4e3b799b147f5d8d1) · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
 
 Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261125-071414-setup-build-lucene-core-at-both-14732-re: passed: 5 passed step(s) in 3m55s, peak 1.6 GiB (estimated 25m00s, 5.0 GiB) 20261125-071415-setup-build-jooq-at-both-19875-revisions: passed: 4 passed step(s) in 2m41s, peak 1.2 GiB (estimated 30m00s, 5.0 GiB) 20261125-072322-setup-run-junit-2646-s-landed-displaynam: passed: 5 passed step(s) in 3m50s, peak 2.2 GiB (estimated 15m00s, 4.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `ttuwqwvppors` · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
+[`ca5c7319f76a`](https://github.com/pilifs/in-the-loop/commit/ca5c7319f76acbe2d0966bcc89c679b6b90f1960) · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
 
 Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261125-071415-setup-build-solr-core-at-both-3158-revis: passed: 5 passed step(s) in 7m16s, peak 3.8 GiB (estimated 1h00m, 8.0 GiB) 20261125-071708-setup-run-hikaricp-s-landed-postgrestest: passed: 3 passed step(s) in 7m02s, peak 723.7 MiB (estimated 10m00s, 3.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `omvqzwuyylsl` · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
+[`94f4d2b0b1c2`](https://github.com/pilifs/in-the-loop/commit/94f4d2b0b1c2e49dbc5efdeafd9d9c30131484d7) · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-071415-setup-build-guava-jre-and-android-at-bot: passed: 6 passed step(s) in 7m27s, peak 1.8 GiB (estimated 45m00s, 5.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.
 
 ### Queue a brief to be generated from 20 pull requests: organic-java-merged-pr-links-l01-l20
 
-change `vvplkvnomyqr` · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
+[`84513f853784`](https://github.com/pilifs/in-the-loop/commit/84513f853784da01b028ce5cf3c5e69171d17e4d) · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
 
 The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-l01-l20.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-l01-l20.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.
 
 ### Queue a brief to be generated from 10 pull requests: organic-java-merged-pr-links-m01-m10
 
-change `vluwvlyxknmw` · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
+[`f8596ccb0817`](https://github.com/pilifs/in-the-loop/commit/f8596ccb0817caedb56dbee06cedae5799b423f5) · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
 
 The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-m01-m10.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-m01-m10.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.
 
 ### Queue a brief to be generated from 5 pull requests: organic-java-merged-pr-links-n01-n05
 
-change `umqvqqmlozwk` · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
+[`4327d8156965`](https://github.com/pilifs/in-the-loop/commit/4327d8156965d121dbb1a92ea963955391f372f0) · [log `83a846a7140f`](https://terminalvalue.net/raw-traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/83a846a7140fc2ff7d060d1f9173957ff97f4199fb783f609e8c89db87dec7a5.jsonl.gz)
 
 The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-n01-n05.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-n01-n05.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.
 
