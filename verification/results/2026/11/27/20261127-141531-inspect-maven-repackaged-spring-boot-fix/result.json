@@ -1,0 +1,204 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-141531-inspect-maven-repackaged-spring-boot-fix",
+  "title": "Inspect Maven-repackaged Spring Boot fix WARs by entry bytes",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m14s, peak 3.7 GiB (estimated 7m00s, 5.0 GiB)",
+  "attention": [
+    "declared output verification/merged-pr-links/s01-s50/maven-war/fix.json was not produced",
+    "step 1 (Run the original Maven integration and inspect both WAR outputs) exited 1, expected 0",
+    "step 1 (Run the original Maven integration and inspect both WAR outputs) was held back 53.6s by its 3-CPU quota in 1m14s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-141531-inspect-maven-repackaged-spring-boot-fix.json",
+    "sha256": "124d2586fb2e6e028383e6130f6c94636e8529cf0943fe38816f9abd9acc2515",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-141531-inspect-maven-repackaged-spring-boot-fix",
+      "title": "Inspect Maven-repackaged Spring Boot fix WARs by entry bytes",
+      "description": "Build the exact S48 fix Maven plugin in its original integration harness. Run the Maven WAR 3.5.1 and Boot repackage goals on a small consumer. Read both SBOM manifest attributes and the bytes of the named entry with and without a differently located CycloneDX file, and record actual archive ordering. Restrict dependency resolution to prepared local caches.",
+      "kind": "real-world",
+      "capabilities": [
+        "spring-boot-packaging",
+        "public-api-comparison"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T14:15:31+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "git"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "7m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Run the original Maven integration and inspect both WAR outputs",
+          "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/maven-war/fix.json"
+      ]
+    }
+  },
+  "sourceCommit": "d64ecc52509a94e06ec2a8f839a0e3b0d34e0ecb",
+  "startedAt": "2026-11-27T14:16:23+00:00",
+  "finishedAt": "2026-11-27T14:17:48+00:00",
+  "wallSeconds": 85.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 780208,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3920269312,
+    "wallSeconds": 75.0,
+    "cpuSeconds": 179.4,
+    "memoryOfEstimate": 0.73,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the original Maven integration and inspect both WAR outputs",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 74.997,
+      "cpuSeconds": 179.438,
+      "cpuThrottledSeconds": 53.635,
+      "peakMemoryBytes": 3920269312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-original-maven-integra.log",
+        "lines": 73,
+        "bytes": 4996,
+        "sha256": "f7033e434de713b3db80e24d5ebfbe5dc2d6a2f1450bd28a9ddf381d24cd81ae",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "\t\t^",
+        "/tmp/boot-maven-war-c_bxwi3y/tree/loader/spring-boot-loader-tools/src/main/java/org/springframework/boot/loader/tools/SignalUtils.java:39: warning: Signal is internal proprietary API and may be removed in a future release",
+        "\t\tSignal.handle(SIG_INT, (signal) -> runnable.run());",
+        "\t\t                        ^",
+        "5 warnings",
+        "",
+        "> Task :build-plugin:spring-boot-maven-plugin:copySettingsXml",
+        "> Task :platform:spring-boot-dependencies:createResolvedBom FAILED",
+        "> Task :buildpack:spring-boot-buildpack-platform:compileJava",
+        "> Task :test-support:spring-boot-test-support:compileJava",
+        "",
+        "[Incubating] Problems report is available at: file:///tmp/boot-maven-war-c_bxwi3y/tree/build/reports/problems/problems-report.html",
+        "",
+        "FAILURE: Build failed with an exception.",
+        "",
+        "* What went wrong:",
+        "Execution failed for task ':platform:spring-boot-dependencies:createResolvedBom' (registered by plugin 'org.springframework.boot.bom').",
+        "> Could not download activemq-bom-6.1.8.pom (org.apache.activemq:activemq-bom:6.1.8): No cached version available for offline mode",
+        "",
+        "* Try:",
+        "> Run with --stacktrace option to get the stack trace.",
+        "> Run with --info or --debug option to get more log output.",
+        "> Get more help at https://help.gradle.org.",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD FAILED in 1m 12s",
+        "21 actionable tasks: 21 executed",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-141531-inspect-maven-repackaged-spring-boot-fix/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 107, in <module>",
+        "    result = run(args.side,args.check_inputs)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-141531-inspect-maven-repackaged-spring-boot-fix/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 88, in run",
+        "    raise RuntimeError(\"original Maven integration build failed\")",
+        "RuntimeError: original Maven integration build failed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T14:18:12+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T141748Z-330769c46367dfba",
+      "outputs": "20261127T141748Z-350226137b462f53",
+      "workdir": "20261127T141804Z-619938d15dd91be4"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-141531-inspect-maven-repackaged-spring-boot-fix"
+}
