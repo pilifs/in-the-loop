@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-032259-setup-run-parquet-3638-s-upstream-parque",
+  "title": "Setup: run Parquet #3638's upstream parquet-column and parquet-hadoop suites on the original 113-entry graphs",
+  "description": "Setup for part B of llm-dlc/loops/in-the-loop-blind-caller-and-pr-verification-brief.md (trace-guided ranking on Parquet J08). The brief ranks public histories from the original upstream test launch. J08's deployments are pinned-source overlays over Parquet 1.18.2 with Hadoop 3.3.0 (113 entries, verification/product-behaviour/cases/J08/bindings.json); the pins' own build needs a thrift 0.23.0 binary and cannot run here. The setup compiled the pins' parquet-column and parquet-hadoop test trees (180 files each pin) against each pin's graph plus the POM's test dependencies (resolved from Maven Central, signatures checked), and the landed TestDictionary and TestParquetWriter behave as recorded. This job runs the whole suites, one JVM per module as surefire forks them, with the POM's argLine and properties, minus the six InterOpTester classes that download test files: fix tests on the fix graph, parent tests on the parent graph, and fix tests on the parent graph. It records which upstream tests pass on these overlays, so that the domain agent knows the coverage of the original test launch before freezing its test-selection policy. Test failures are results, not job failures; JUnit XML goes to ~/.cache/in-the-loop/blind-caller-pr-verification/upstream-tests/J08/reports/.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-test-run",
+    "java:original-classpath"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/in-the-loop-blind-caller-and-pr-verification-brief-setup.md",
+      "verification/product-behaviour/cases/J08"
+    ]
+  },
+  "expected": "Each step exits 0 (every module ran to completion). Fix-on-parent must show the two landed TestDictionary failures (testDictionaryWriterReusableAfterFirstPageFallBack, testDictionaryWriterReusableAfterFallBack); the other failures, if any, are listed in each summary.txt.",
+  "submitted": {
+    "at": "2026-11-27T03:22:59+00:00",
+    "session": "2e72030d-e2c0-463f-80e4-1ad3a8d1675f",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "45m",
+    "memoryLimit": "8G",
+    "notes": "144 test classes per run, three runs; the resource-intensive tests are enabled as in the POM (TestLargeColumnChunk and friends write large files). Two classes ran in 3-4 s inline; the full suites are a guess"
+  },
+  "steps": [
+    {
+      "name": "fix tests on the fix graph",
+      "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh fix fix",
+      "cwd": "."
+    },
+    {
+      "name": "parent tests on the parent graph",
+      "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh parent parent",
+      "cwd": "."
+    },
+    {
+      "name": "fix tests on the parent graph",
+      "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh fix parent",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

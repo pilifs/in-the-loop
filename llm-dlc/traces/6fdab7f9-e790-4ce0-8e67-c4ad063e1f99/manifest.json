@@ -78,8 +78,8 @@
   "commits": [
     {
       "change_id": "uwoturnskmuwnwoztpyylpyrrxvqxvyk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5b1c0292b913209cad111af175587329de1fd121",
+      "immutable": true,
       "summary": "Record the setup for the JVM startup facts brief",
       "body": "Mechanical setup for llm-dlc/loops/in-the-loop-jvm-startup-facts-brief.md, recorded in llm-dlc/loops/in-the-loop-jvm-startup-facts-brief-setup.md. Every case the brief names (Commons IO #520, ThreeTenBP #77, POI #1420 with log4j-api, Batik 1.17, Commons Configuration #565/#601, JavaParser #4538 / example 360, Avro #3878 / example 355, Spring example 480) was already prepared by earlier campaigns; a script checked every deployment against its recorded digest and every worktree against its pin and tree, and all match. The one new download is Batik's upstream source at tag 1_17 (3c83de345f21cae4f4a64dfe6244483f87885808, the commit the brief's batik-1_17 branch link points at), in a shallow bare mirror; its XMLResourceDescriptor source and properties have the same git blobs as the Debian .orig and the deployed jars.\n\nVerified on fresh JVMs, read-only: the registered public observations of Commons IO (8/8), ThreeTenBP (12/12), POI (12/12) and Spring 480 equal their receipts; the 16 historical Commons IO charset trials reproduce byte for byte; \"é\".getBytes().length is 2 under C.UTF-8 and 1 under C with -Dfile.encoding=COMPAT (whose file.encoding reads ANSI_X3.4-1968); Configuration's own invalid lookup name gives ExceptionInInitializerError then NoClassDefFoundError while the inherited one does not; JavaParser's cleared line.separator gives ExceptionInInitializerError with a NullPointerException cause. No claim, example, adapter or library code was written, no verifier or capture was run, and no verification job was needed.",
       "log_sha256": "06198c7f9edc497fe804a781b788fd9aab4a96c747b44d6ce26ff7cbe1fc6865"
