@@ -1,0 +1,221 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-052201-qualify-two-detached-spring-subscription",
+  "title": "Qualify two detached Spring subscriptions on both original releases",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 11.6s, peak 158.3 MiB (estimated 2m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-052201-qualify-two-detached-spring-subscription.json",
+    "sha256": "5c290a947929dfa3d2cf3547a5f6085f147130f841666f109536a7d8e78a0308",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-052201-qualify-two-detached-spring-subscription",
+      "title": "Qualify two detached Spring subscriptions on both original releases",
+      "description": "Run a labelled local scheduler hop with two interleaved public subscriptions, cancellation and an unrelated task of the same class on one reused worker. Bind the registered source, actual queued Runnable, executing instance and changed original Spring body on each deployment. Compare plain JVM signals, remove one handoff from the trace and check that only its attribution disappears.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-history-trace",
+        "java:subscription-provenance"
+      ],
+      "links": {},
+      "expected": "Both releases qualify the two causal subscriptions, keep unrelated invocations unattributed and reproduce ordered completion, cancellation or the full terminal error.",
+      "submitted": {
+        "at": "2026-11-27T05:22:01+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "g++"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Original parent hop",
+          "run": "python3 verification/blind-caller/subscriptions.py old",
+          "cwd": "."
+        },
+        {
+          "name": "Original landing hop",
+          "run": "python3 verification/blind-caller/subscriptions.py new",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/subscriptions-old.zip",
+        "verification/blind-caller/subscriptions-new.zip"
+      ]
+    }
+  },
+  "sourceCommit": "656584a8bb1ff82b2aacce9935d61d58ac928f3c",
+  "startedAt": "2026-11-27T05:32:47+00:00",
+  "finishedAt": "2026-11-27T05:33:20+00:00",
+  "wallSeconds": 33.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 338257,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 165941248,
+    "wallSeconds": 11.6,
+    "cpuSeconds": 12.3,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Original parent hop",
+      "run": "python3 verification/blind-caller/subscriptions.py old",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 6.009,
+      "cpuSeconds": 6.33,
+      "cpuThrottledSeconds": 0.121,
+      "peakMemoryBytes": 165941248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-original-parent-hop.log",
+        "lines": 1,
+        "bytes": 260,
+        "sha256": "74d208612490c731ed2fdcbcf670692829419cd3d3fd78a23e33145f1c43645f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "old ['A [event(same,null), error(org.springframework.web.reactive.function.client.WebClientResponseException,java.lang.NumberFormatException)]', 'B [event(same,null), cancel]', 'unrelated [event(same,null), complete]'] registered 3 attributed 3 unattributed 1"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Original landing hop",
+      "run": "python3 verification/blind-caller/subscriptions.py new",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 5.63,
+      "cpuSeconds": 5.942,
+      "cpuThrottledSeconds": 0.164,
+      "peakMemoryBytes": 162799616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-original-landing-hop.log",
+        "lines": 1,
+        "bytes": 172,
+        "sha256": "44803dfab2329c3017cf630e8e990c478c0c815fc12856b6c5fc18e05970acda",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "new ['A [event(same,null), event(last,null), complete]', 'B [event(same,null), cancel]', 'unrelated [event(same,null), complete]'] registered 3 attributed 3 unattributed 1"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/subscriptions-old.zip",
+      "change": "added",
+      "bytes": 893372,
+      "sha256": "58fa988d249eebcff26a2a3796aea859368cfcc648425477a75635c58416e512",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/blind-caller/subscriptions-new.zip",
+      "change": "added",
+      "bytes": 866863,
+      "sha256": "2c59d912862151884fb6ac667acd5076b46728a0903e9ff59dbfe00af25c76ef",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T05:33:33+00:00",
+    "applied": [
+      "verification/blind-caller/subscriptions-old.zip",
+      "verification/blind-caller/subscriptions-new.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T053320Z-8972303bbbadd671",
+      "outputs": "20261127T053320Z-94970061c3f08301",
+      "diff": "20261127T053320Z-9707173b65a042c3"
+    }
+  }
+}
