@@ -358,11 +358,12 @@ public final class ObservedInitializer {
             Path dir = Path.of(ObservedInitializer.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             args = Files.readAllLines(dir.resolve("startup.request"), StandardCharsets.UTF_8).toArray(String[]::new);
         }
-        boolean charset = false, liveTable = false;
+        boolean charset = false, liveTable = false, recordZone = false;
         Path audit = null;
         while (args[0].startsWith("--record-") || args[0].startsWith("--audit-init=")) {
             if (args[0].startsWith("--audit-init=")) audit = Path.of(args[0].substring("--audit-init=".length()));
             else if (args[0].equals("--record-charset")) charset = true;
+            else if (args[0].equals("--record-fixed-zone")) recordZone = true;
             else if (args[0].equals("--record-methods")) methodOwners = new IdentityHashMap<>();
             else if (args[0].equals("--record-table")) liveTable = true;
             else throw new IllegalArgumentException("unknown recorder option");
@@ -377,6 +378,7 @@ public final class ObservedInitializer {
         String format = Locale.getDefault(Locale.Category.FORMAT).toLanguageTag();
         String display = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
         String zone = java.util.TimeZone.getDefault().getID();
+        String originalZone = recordZone ? fixedZone() : null;
         Path log = args.length > 1 ? Path.of(args[1]) : null;
         boolean weakMapValues = args.length >= 3 && args[2].equals("together-weak-map-values");
         boolean together = weakMapValues || args.length >= 3 && args[2].equals("together");
@@ -411,6 +413,10 @@ public final class ObservedInitializer {
         byte[] logged = evidenceLog == null ? null : Files.readAllBytes(evidenceLog);
         String profile = (charset ? ",\"charsetProfile\":" + charsetProfile() : "") + (methodOwners != null ? ",\"reflectiveMembers\":true" : "");
         if (audit != null) profile += ",\"startupBoundary\":" + startupBoundary(c, app, logged, mark);
+        if (recordZone) {
+            if (!originalZone.equals(fixedZone())) throw new IllegalStateException("default time zone changed across initialization");
+            profile += ",\"fixedZone\":" + originalZone;
+        }
         if (liveTable) {
             if (original != System.getProperties() || !beforeTable.equals(tableSnapshot(original)))
                 throw new IllegalStateException("live system-properties table changed during startup");
@@ -628,6 +634,24 @@ public final class ObservedInitializer {
             return true;
         }
         catch (java.io.IOException | RuntimeException | LinkageError | java.util.ServiceConfigurationError e) { return false; }
+    }
+
+    @SuppressWarnings("removal")
+    private static String fixedZone() {
+        java.util.TimeZone first = java.util.TimeZone.getDefault();
+        java.util.TimeZone second = java.util.TimeZone.getDefault();
+        String id = second.getID();
+        int offset = second.getRawOffset();
+        boolean fixed = !second.useDaylightTime() && !second.observesDaylightTime()
+                && second.getDSTSavings() == 0 && second.hasSameRules(java.util.TimeZone.getTimeZone(id));
+        first.setRawOffset(offset == 0 ? 60000 : 0);
+        java.util.TimeZone third = java.util.TimeZone.getDefault();
+        boolean clones = first != second && first != third && second != third
+                && second.getRawOffset() == offset && third.getRawOffset() == offset && third.getID().equals(id);
+        return "{\"id\":" + text(id) + ",\"property\":" + text(System.getProperty("user.timezone"))
+                + ",\"offset\":" + offset + ",\"type\":" + text(second.getClass().getName())
+                + ",\"freshClones\":" + clones + ",\"fixedRules\":" + fixed
+                + ",\"noSecurityManager\":" + (System.getSecurityManager() == null) + "}";
     }
 
     /** The sha256 of the class file the loader reads of the class, or "" where it reads none. */

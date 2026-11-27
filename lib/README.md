@@ -616,6 +616,8 @@ On that JDK the loader also supplies the lexical path of an unescaped, absolute 
 On supported Integer cache images the checker boxes arbitrary signed ints, including a hash computed from class identities. Repeated calls agree on cached identity throughout one execution, including the VM's optional cache above 127. Each uncached call allocates a distinct box. The native fixture checks two independent ints, and the JVM repeats the boundary cases under three cache limits. [Integer cache controls](tests/fixtures/claims/claims/L.java)
 
 
+For a strict property that reads the process time zone, `--observed-initializer CLASS --observed-runtime '{"fixedZone":"GMT+10:00"}'` launches the original JVM under the named fixed offset and witnesses the root's first active use. On the qualified Temurin 21 image, each default read produces a fresh copy. Installing a non-null fixed zone copies the supplied value into that execution path. A later raw-offset mutation of a returned or supplied object therefore has its own observable result. The statement identifies the initial-offset receipt when the claim consumes it. `expectedZoneReceipt` pins that receipt on a retry. Resetting to the host default or inspecting an unqualified zone field leaves a named gap.
+
 ## Library use
 
 ```rust

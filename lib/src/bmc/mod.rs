@@ -5193,6 +5193,9 @@ impl<'a> Engine<'a> {
     /// The key the instance field `owner.name:descriptor` has in object `o`: its name, unless a subclass along the
     /// object's class declares the name again ([`ClassPath::field_key`]), as the interpreter keys it.
     fn field_key(&mut self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<String, Stop> {
+        if Self::fixed_zone_object(path,o) {
+            return unsupported(format!("the internal field {owner}.{name} is outside the qualified public fixed-offset zone operations"));
+        }
         if name == "threadLocalHashCode" && path.objects[o].fields.contains_key(thread_locals::FRESH)
             && self.cp.resolve_field(owner, name, descriptor).as_deref() == Some("java/lang/ThreadLocal") {
             return unsupported("the VM-assigned internal hash of a fresh ThreadLocal key");
@@ -5570,6 +5573,7 @@ impl<'a> Engine<'a> {
             if let Some(step) = self.concat_strings(path, member, &args) { return step; }
         }
         if let Some(step) = self.image_list_static(path, caller, member, &args) { return step; }
+        if let Some(step) = self.fixed_zone_factory(path, member, &args) { return step; }
         if let Some(step) = self.utc_calendar_factory(path, member, &args) { return step; }
         if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             if let Some(class) = runtime::cached_wrapper(&member.owner, &member.name, &member.descriptor) {
