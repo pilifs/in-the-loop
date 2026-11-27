@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T14:29:59.525Z",
-  "duration_seconds": 289149,
+  "ended": "2026-11-27T14:35:14.389Z",
+  "duration_seconds": 289464,
   "stats": {
     "turns": 43,
-    "api_calls": 7350,
-    "tool_calls": 18057,
+    "api_calls": 7364,
+    "tool_calls": 18090,
     "tool_errors": 386,
     "compactions": 30,
     "peak_context_tokens": 551391,
     "usage": {
-      "input_tokens": 9710239,
-      "output_tokens": 4373445,
-      "cache_read_input_tokens": 2025446272,
+      "input_tokens": 9714131,
+      "output_tokens": 4383686,
+      "cache_read_input_tokens": 2032664448,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 9873,
-    "exec": 6963,
-    "apply_patch": 956,
+    "Bash": 9888,
+    "exec": 6977,
+    "apply_patch": 960,
     "wait": 121,
     "sleep": 98,
     "send_message": 35,
@@ -210,6 +210,7 @@
     "examples/tools/targets/test_recipes.py",
     "examples/tools/targets/upgrade_replay.py",
     "examples/tools/targets/workflow.py",
+    "examples/tools/test_build.py",
     "examples/tools/validate_example.py",
     "lib/README.md",
     "lib/benchmark/beyond-jbmc/README.md",
@@ -444,13 +445,16 @@
     "verification/merged-pr-links/s01-s50/audit.py",
     "verification/merged-pr-links/s01-s50/collect.py",
     "verification/merged-pr-links/s01-s50/external_results.py",
+    "verification/merged-pr-links/s01-s50/gradle/replay.py",
     "verification/merged-pr-links/s01-s50/maven-war/MavenWarObservation.java",
     "verification/merged-pr-links/s01-s50/maven-war/pom.xml",
     "verification/merged-pr-links/s01-s50/maven-war/replay.py",
     "verification/merged-pr-links/s01-s50/native-flyway/replay.py",
     "verification/merged-pr-links/s01-s50/webflux-2017/MilestoneClients.java",
     "verification/merged-pr-links/s01-s50/webflux-2017/PersonApplication.java",
+    "verification/merged-pr-links/s01-s50/webflux-2017/reconstruct.py",
     "verification/merged-pr-links/s01-s50/webflux-2017/replay.py",
+    "verification/merged-pr-links/s01-s50/workspace.py",
     "verification/merged-pr-links/upstream/JacksonWrapping.java",
     "verification/merged-pr-links/upstream/README.md",
     "verification/merged-pr-links/upstream/recheck.py",
@@ -1171,24 +1175,24 @@
     {
       "index": 30,
       "started": "2026-11-27T06:57:37.602Z",
-      "ended": "2026-11-27T14:29:59.525Z",
+      "ended": "2026-11-27T14:35:14.389Z",
       "turns": 2,
-      "api_calls": 228,
+      "api_calls": 242,
       "usage": {
-        "input_tokens": 468602,
-        "output_tokens": 217637,
-        "cache_read_input_tokens": 74071424,
+        "input_tokens": 472494,
+        "output_tokens": 227878,
+        "cache_read_input_tokens": 81289600,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 508920
+      "peak_context_tokens": 522164
     }
   ],
   "log": {
-    "sha256": "d49cc1a78b9ce072ca4698670945a0dd221f450199298c0f68d1886f9124ce84",
-    "bytes": 117883805,
-    "lines": 58086,
-    "gzip_bytes": 21410777,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/d49cc1a78b9ce072ca4698670945a0dd221f450199298c0f68d1886f9124ce84.jsonl.gz"
+    "sha256": "727e791b6694b922b0c7c2f3facab2c49feea025f8bbb180cb809822a250deca",
+    "bytes": 118024652,
+    "lines": 58197,
+    "gzip_bytes": 21431071,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/727e791b6694b922b0c7c2f3facab2c49feea025f8bbb180cb809822a250deca.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -4361,20 +4365,28 @@
       "log_sha256": "2b7e2b2b6cc6a147259a57a9c09330b273974877b5a605f910e1df70b00d1f88"
     },
     {
-      "change_id": "yxxtolkpywsurzksprtwnvznuwmutrzo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "d49cc1a78b9ce072ca4698670945a0dd221f450199298c0f68d1886f9124ce84"
-    },
-    {
       "change_id": "vvzmtuplxymknksossmromvvotkmwxvq",
       "commit_id": null,
       "immutable": false,
       "summary": "Use retained POMs for detached Gradle resolution (verification pending)",
       "body": "The detached @pom lookup stayed tied to its original remote repository. In the temporary build tooling only, resolve immutable release BOMs by their original coordinates in the local Maven-layout mirror. Check each Gradle POM against its SHA-1 directory and keep large integration build work off tmpfs. The two Spring Boot production trees and Maven goals are unchanged.\n\nThe cached ActiveMQ BOM is present in both original caches, the fixed input preflight passed, and job 20261127-142917-read-retained-pom-bytes-at-the-original exercises the full scoped build.",
       "log_sha256": "d49cc1a78b9ce072ca4698670945a0dd221f450199298c0f68d1886f9124ce84"
+    },
+    {
+      "change_id": "kltzsluqwsouvrvtxlzqlovxrxskowky",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "727e791b6694b922b0c7c2f3facab2c49feea025f8bbb180cb809822a250deca"
+    },
+    {
+      "change_id": "mvlkvzsnovxosrlxpwwlxmqrrktvknro",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Validate short Gradle cache digest names (verification pending)",
+      "body": "Gradle omitted the leading zero in the SHA-1 directory for the retained ANTLR POM. Pad its hexadecimal directory name to 40 characters before comparing all bytes. The complete local Maven mirror was created and verified on the development host, including the previously missing ActiveMQ BOM.\n\nJob 20261127-143502-run-both-original-maven-war-builds-with rebuilds both original Maven plugins and reads the produced WARs.",
+      "log_sha256": "727e791b6694b922b0c7c2f3facab2c49feea025f8bbb180cb809822a250deca"
     }
   ],
   "logs": {
@@ -4911,6 +4923,12 @@
       "lines": 5208,
       "gzip_bytes": 1787988,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/726ace1167c232f2be46f62e73daf6a44c8c05ef03205d861c67c022c5642cd4.jsonl.gz"
+    },
+    "727e791b6694b922b0c7c2f3facab2c49feea025f8bbb180cb809822a250deca": {
+      "bytes": 118024652,
+      "lines": 58197,
+      "gzip_bytes": 21431071,
+      "url": null
     },
     "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b": {
       "bytes": 105994472,

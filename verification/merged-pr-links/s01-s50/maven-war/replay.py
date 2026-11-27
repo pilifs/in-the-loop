@@ -27,7 +27,7 @@ def local_mirror(cache, destination):
         group,artifact,version,_,filename = src.relative_to(modules).parts
         if "SNAPSHOT" in version:
             continue
-        if src.suffix == ".pom" and hashlib.sha1(src.read_bytes()).hexdigest() != src.parent.name:
+        if src.suffix == ".pom" and hashlib.sha1(src.read_bytes()).hexdigest() != src.parent.name.zfill(40):
             raise ValueError("retained POM differs from its Gradle content address: " + filename)
         out = destination.joinpath(*group.split("."),artifact,version,filename)
         if not out.exists():
