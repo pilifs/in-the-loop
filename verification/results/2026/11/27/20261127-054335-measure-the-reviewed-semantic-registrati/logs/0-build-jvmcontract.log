@@ -1,0 +1,68 @@
+   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-054335-measure-the-reviewed-semantic-registrati/lib)
+error[E0433]: cannot find `zone` in `observed`
+  --> src/bmc/calendar.rs:52:47
+   |
+52 |                 let offset = crate::observed::zone::offset(&name)?;
+   |                                               ^^^^ could not find `zone` in `observed`
+
+error[E0609]: no field `fixed_zone` on type `On`
+  --> src/bmc/calendar.rs:45:85
+   |
+45 |             (path.classes.get(name) == Some(&ClassState::Done)).then_some(record.on.fixed_zone.as_ref()).flatten()
+   |                                                                                     ^^^^^^^^^^ unknown field
+   |
+   = note: available fields are: `charset`, `reflective_members`, `member_receipt`, `table_receipt`, `table_read` ... and 22 others
+
+warning: method call on a diverging inference variable
+  --> src/bmc/calendar.rs:46:13
+   |
+46 |         })?.clone();
+   |             ^^^^^
+   |
+   = help: consider providing a type annotation
+   = warning: this was previously accepted by the compiler but is being phased out; it will become a hard error in a future release!
+   = note: for more information, see issue #156047 <https://github.com/rust-lang/rust/issues/156047>
+   = note: `#[warn(method_call_on_diverging_infer_var)]` (part of `#[warn(future_incompatible)]`) on by default
+
+error[E0308]: `?` operator has incompatible types
+  --> src/bmc/calendar.rs:44:20
+   |
+44 |           let fact = self.observed.iter().find_map(|(name, record)| {
+   |  ____________________^
+45 | |             (path.classes.get(name) == Some(&ClassState::Done)).then_some(record.on.fixed_zone.as_ref()).flatten()
+46 | |         })?.clone();
+   | |___________^ expected `&_`, found `!`
+   |
+   = note: `?` operator cannot convert from `!` to `&_`
+   = note: expected reference `&_`
+                   found type `!`
+
+error[E0061]: this method takes 5 arguments but 4 arguments were supplied
+    --> src/bmc/calendar.rs:134:45
+     |
+ 134 |                     if let Err(stop) = self.reads_field(path,o,ZONE,"rawOffset") { return Some(Err(stop)); }
+     |                                             ^^^^^^^^^^^------------------------- argument #5 of type `&str` is missing
+     |
+note: method defined here
+    --> src/bmc/mod.rs:3574:8
+     |
+3574 |     fn reads_field(&self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<(), Stop> {
+     |        ^^^^^^^^^^^                                                        ----------------
+help: provide the argument
+     |
+ 134 -                     if let Err(stop) = self.reads_field(path,o,ZONE,"rawOffset") { return Some(Err(stop)); }
+ 134 +                     if let Err(stop) = self.reads_field(path, o, ZONE, "rawOffset", /* &str */) { return Some(Err(stop)); }
+     |
+
+error[E0609]: no field `fixed_zone` on type `Runtime`
+    --> src/property.rs:1081:81
+     |
+1081 |         || options.observed_runtime.live_properties || options.observed_runtime.fixed_zone.is_some() {
+     |                                                                                 ^^^^^^^^^^ unknown field
+     |
+     = note: available fields are: `processors`, `empty_environment`, `preinitialize_together`, `root_working_directory`, `weak_map_values` ... and 10 others
+
+Some errors have detailed explanations: E0061, E0308, E0433, E0609.
+For more information about an error, try `rustc --explain E0061`.
+warning: `jvmcontract` (lib) generated 1 warning
+error: could not compile `jvmcontract` (lib) due to 5 previous errors; 2 warnings emitted
