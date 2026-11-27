@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-26T23:53:47.483Z",
-  "duration_seconds": 818164,
+  "ended": "2026-11-27T00:23:40.662Z",
+  "duration_seconds": 819957,
   "stats": {
     "turns": 299,
-    "api_calls": 2716,
-    "tool_calls": 2403,
+    "api_calls": 2719,
+    "tool_calls": 2405,
     "tool_errors": 27,
     "compactions": 10,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 105863,
-      "output_tokens": 1732202,
-      "cache_read_input_tokens": 850759469,
-      "cache_creation_input_tokens": 6594912
+      "input_tokens": 105869,
+      "output_tokens": 1733676,
+      "cache_read_input_tokens": 851811830,
+      "cache_creation_input_tokens": 6597227
     }
   },
   "tools": {
-    "Bash": 2103,
+    "Bash": 2105,
     "Edit": 80,
     "SendMessage": 74,
     "Read": 55,
@@ -251,24 +251,24 @@
     {
       "index": 10,
       "started": "2026-11-26T13:12:13.083Z",
-      "ended": "2026-11-26T23:53:47.483Z",
+      "ended": "2026-11-27T00:23:40.662Z",
       "turns": 12,
-      "api_calls": 197,
+      "api_calls": 200,
       "usage": {
-        "input_tokens": 472,
-        "output_tokens": 105219,
-        "cache_read_input_tokens": 50356405,
-        "cache_creation_input_tokens": 309577
+        "input_tokens": 478,
+        "output_tokens": 106693,
+        "cache_read_input_tokens": 51408766,
+        "cache_creation_input_tokens": 311892
       },
-      "peak_context_tokens": 349383
+      "peak_context_tokens": 352294
     }
   ],
   "log": {
-    "sha256": "a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587",
-    "bytes": 47208166,
-    "lines": 21943,
-    "gzip_bytes": 8082126,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587.jsonl.gz"
+    "sha256": "fc8c2bbe13dcdc6ad1dd88b30e6da2d8e71bd8e695bc9c64da4bf88d164b58c9",
+    "bytes": 47245819,
+    "lines": 21971,
+    "gzip_bytes": 8087622,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/fc8c2bbe13dcdc6ad1dd88b30e6da2d8e71bd8e695bc9c64da4bf88d164b58c9.jsonl.gz"
   },
   "subagents": [
     {
@@ -13527,6 +13527,14 @@
       "log_sha256": "a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587"
     },
     {
+      "change_id": "uwoturnskmuwnwoztpyylpyrrxvqxvyk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup for the JVM startup facts brief",
+      "body": "Mechanical setup for llm-dlc/loops/in-the-loop-jvm-startup-facts-brief.md, recorded in llm-dlc/loops/in-the-loop-jvm-startup-facts-brief-setup.md. Every case the brief names (Commons IO #520, ThreeTenBP #77, POI #1420 with log4j-api, Batik 1.17, Commons Configuration #565/#601, JavaParser #4538 / example 360, Avro #3878 / example 355, Spring example 480) was already prepared by earlier campaigns; a script checked every deployment against its recorded digest and every worktree against its pin and tree, and all match. The one new download is Batik's upstream source at tag 1_17 (3c83de345f21cae4f4a64dfe6244483f87885808, the commit the brief's batik-1_17 branch link points at), in a shallow bare mirror; its XMLResourceDescriptor source and properties have the same git blobs as the Debian .orig and the deployed jars.\n\nVerified on fresh JVMs, read-only: the registered public observations of Commons IO (8/8), ThreeTenBP (12/12), POI (12/12) and Spring 480 equal their receipts; the 16 historical Commons IO charset trials reproduce byte for byte; \"é\".getBytes().length is 2 under C.UTF-8 and 1 under C with -Dfile.encoding=COMPAT (whose file.encoding reads ANSI_X3.4-1968); Configuration's own invalid lookup name gives ExceptionInInitializerError then NoClassDefFoundError while the inherited one does not; JavaParser's cleared line.separator gives ExceptionInInitializerError with a NullPointerException cause. No claim, example, adapter or library code was written, no verifier or capture was run, and no verification job was needed.",
+      "log_sha256": "fc8c2bbe13dcdc6ad1dd88b30e6da2d8e71bd8e695bc9c64da4bf88d164b58c9"
+    },
+    {
       "change_id": "rlyypupxyxpmwrukqvpkwozzkrtmprmk",
       "commit_id": null,
       "immutable": false,
@@ -13549,6 +13557,14 @@
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587"
+    },
+    {
+      "change_id": "knvuozmxuzoyzqyvzlrrwnmxwypyqllk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261127-001753-qualify-native-charset-receipts-on-the-o: passed: 1 passed step(s) in 30.9s, peak 126.5 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261127-001759-retry-both-commons-io-originals-with-obs: passed: 1 passed step(s) in 24.1s, peak 126.4 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
+      "log_sha256": "fc8c2bbe13dcdc6ad1dd88b30e6da2d8e71bd8e695bc9c64da4bf88d164b58c9"
     }
   ],
   "logs": {
@@ -15429,6 +15445,12 @@
       "lines": 2071,
       "gzip_bytes": 1039966,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fbb070cfc1abb7601b883a5f35c3586fd64cf6855618183164e8cb3ce952bbe9.jsonl.gz"
+    },
+    "fc8c2bbe13dcdc6ad1dd88b30e6da2d8e71bd8e695bc9c64da4bf88d164b58c9": {
+      "bytes": 47245819,
+      "lines": 21971,
+      "gzip_bytes": 8087622,
+      "url": null
     },
     "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d": {
       "bytes": 37200309,

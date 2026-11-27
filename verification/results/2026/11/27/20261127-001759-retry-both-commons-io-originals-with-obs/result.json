@@ -1,0 +1,201 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-001759-retry-both-commons-io-originals-with-obs",
+  "title": "Retry both Commons IO originals with observed charset selection",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24.1s, peak 126.4 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-001759-retry-both-commons-io-originals-with-obs.json",
+    "sha256": "d8cf45aa77db7c75aa5afdaa23166c9e58bf50d09a405aa5b16c4fcd7e6797ab",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-001759-retry-both-commons-io-originals-with-obs",
+      "title": "Retry both Commons IO originals with observed charset selection",
+      "description": "Run the unchanged rewind property on both original JARs, qualify its initializer boundary and record the actual next native gap. Independently compare sixteen ordinary JVM histories and eight instrumented constructor histories to the registered byte and reset observations.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T00:17:59+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Record initialization and compare public byte histories",
+          "run": "python3 lib/benchmark/startup-facts/charset.py io --output verification/startup-facts/charset-io.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/charset-io.zip"
+      ]
+    }
+  },
+  "sourceCommit": "47720191574f8491afe15ff88ae635c3f900e284",
+  "startedAt": "2026-11-27T00:21:48+00:00",
+  "finishedAt": "2026-11-27T00:26:11+00:00",
+  "wallSeconds": 263.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 80516,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 132571136,
+    "wallSeconds": 24.1,
+    "cpuSeconds": 34.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Record initialization and compare public byte histories",
+      "run": "python3 lib/benchmark/startup-facts/charset.py io --output verification/startup-facts/charset-io.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 24.051,
+      "cpuSeconds": 34.576,
+      "cpuThrottledSeconds": 6.358,
+      "peakMemoryBytes": 132571136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-record-initialization-and-comp.log",
+        "lines": 29,
+        "bytes": 4258,
+        "sha256": "fb3c1f6642e4071913c0e6f57ec55e004b21690e19de08c21d1c790891cb6337",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Original property  unverifiable  UpgradeProbe#rewind()Z",
+        "Startup  org.apache.commons.io.Charsets  C.UTF-8  UTF-8",
+        "Recording  fresh JVM trace  f4a0a6dab4469c50b7aec6f9a003be1fd7d95da0939bc20cc55673341956ab5c",
+        "Conditional retry  unverifiable",
+        "Consumed assumptions  observed-initializer:org.apache.commons.io.Charsets:1d252090d6d4a98f141f9d5bc5df2c4f8bb382212409f8e74c24337f6f27db8d:6fdf9d4e2351aa3cae273f2b237eb8823bc09c8d27b53d323ceb0372927cd0ae",
+        "Remaining  the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13 (java.nio.charset.Charset.newEncoder() at org.apache.commons.io.inpu",
+        "Original property  unverifiable  UpgradeProbe#rewind()Z",
+        "Startup  org.apache.commons.io.Charsets  C  US-ASCII",
+        "Recording  fresh JVM trace  7ca86240cd8ad3a62b916791f00dbdb1bd063f8dc24a028a94895d9cc08c9c98",
+        "Conditional retry  unverifiable",
+        "Consumed assumptions  observed-initializer:org.apache.commons.io.Charsets:1d252090d6d4a98f141f9d5bc5df2c4f8bb382212409f8e74c24337f6f27db8d:6fdf9d4e2351aa3cae273f2b237eb8823bc09c8d27b53d323ceb0372927cd0ae",
+        "Remaining  the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13 (java.nio.charset.Charset.newEncoder() at org.apache.commons.io.inpu",
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Original property  unverifiable  UpgradeProbe#rewind()Z",
+        "Startup  org.apache.commons.io.Charsets  C.UTF-8  UTF-8",
+        "Recording  fresh JVM trace  5d35d128b621ee8c8015144224eb7723b33104145e4eca74d335d7fb387a733e",
+        "Conditional retry  unverifiable",
+        "Consumed assumptions  observed-initializer:org.apache.commons.io.Charsets:1d252090d6d4a98f141f9d5bc5df2c4f8bb382212409f8e74c24337f6f27db8d:6fdf9d4e2351aa3cae273f2b237eb8823bc09c8d27b53d323ceb0372927cd0ae",
+        "Remaining  the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13 (java.nio.charset.Charset.newEncoder() at org.apache.commons.io.inpu",
+        "Original property  unverifiable  UpgradeProbe#rewind()Z",
+        "Startup  org.apache.commons.io.Charsets  C  US-ASCII",
+        "Recording  fresh JVM trace  ef96d3b3b11fb16fdcc14669d68dca334a994676792e33fc90be66a75c61e32b",
+        "Conditional retry  unverifiable",
+        "Consumed assumptions  observed-initializer:org.apache.commons.io.Charsets:1d252090d6d4a98f141f9d5bc5df2c4f8bb382212409f8e74c24337f6f27db8d:6fdf9d4e2351aa3cae273f2b237eb8823bc09c8d27b53d323ceb0372927cd0ae",
+        "Remaining  the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13 (java.nio.charset.Charset.newEncoder() at org.apache.commons.io.inpu",
+        "io 8 qualified rows"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/charset-io.zip",
+      "change": "added",
+      "bytes": 9887,
+      "sha256": "a0bab1ba8874e0f74133bc737630f81fa57b800760c76a28410408f5b585145f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T00:26:19+00:00",
+    "applied": [
+      "verification/startup-facts/charset-io.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3690b5540898e37fa71c2812e6ec3c0e10c59e98",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3690b5540898e37fa71c2812e6ec3c0e10c59e98/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T002611Z-481222f073a8f67b",
+      "outputs": "20261127T002611Z-5051424bd686685d",
+      "diff": "20261127T002611Z-528403e10720231c"
+    }
+  }
+}

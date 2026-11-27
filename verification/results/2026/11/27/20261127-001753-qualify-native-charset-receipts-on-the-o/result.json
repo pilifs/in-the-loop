@@ -1,0 +1,232 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-001753-qualify-native-charset-receipts-on-the-o",
+  "title": "Qualify native charset receipts on the original encoded fixture",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 30.9s, peak 126.5 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-001753-qualify-native-charset-receipts-on-the-o.json",
+    "sha256": "ef2b3d0595458c0c570a00002516e7da5be22aa08d434bb989d8116e2d2d18b3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-001753-qualify-native-charset-receipts-on-the-o",
+      "title": "Qualify native charset receipts on the original encoded fixture",
+      "description": "Derive the missing startup dependency from the unchanged strict native claim. Run the two pinned locale profiles, confirm the separating byte length on untouched JVMs and check cold, resumed, crossed, tampered and restored receipts including a second claim.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T00:17:53+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Original property, profile replays and invalidations",
+          "run": "python3 lib/benchmark/startup-facts/charset.py small --output verification/startup-facts/charset-small.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/charset-small.zip"
+      ]
+    }
+  },
+  "sourceCommit": "47720191574f8491afe15ff88ae635c3f900e284",
+  "startedAt": "2026-11-27T00:21:48+00:00",
+  "finishedAt": "2026-11-27T00:26:18+00:00",
+  "wallSeconds": 270.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 80516,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 132685824,
+    "wallSeconds": 30.9,
+    "cpuSeconds": 47.9,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 228.201,
+      "cpuSeconds": 228.504,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2356637696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "143128286774244a02c028d0256e1db7b26e9950453390ee350227ee9cd64f2c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-001753-qualify-native-charset-receipts-on-the-o/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 48s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Original property, profile replays and invalidations",
+      "run": "python3 lib/benchmark/startup-facts/charset.py small --output verification/startup-facts/charset-small.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 30.871,
+      "cpuSeconds": 47.889,
+      "cpuThrottledSeconds": 8.83,
+      "peakMemoryBytes": 132685824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-original-property-profile-repl.log",
+        "lines": 25,
+        "bytes": 1363,
+        "sha256": "74a14d0e0e9d49b212e5766af4cc7afd41c74c432fe69f5b4bbd051c347a89e7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Original property  unverifiable  sc.M#encoded()I",
+        "Startup  sc.Encoded  C.UTF-8  UTF-8",
+        "Recording  fresh JVM trace  0ea9a559b8ce7d194cc90b15f6c0818e3638ad14b23e17688aa5a41b0cbe45c2",
+        "Conditional retry  verified",
+        "Consumed assumptions  startup-charset:0ea9a559b8ce7d194cc90b15f6c0818e3638ad14b23e17688aa5a41b0cbe45c2",
+        "Remaining  none",
+        "Original property  unverifiable  sc.M#encoded()I",
+        "Startup  sc.Encoded  C.UTF-8  UTF-8",
+        "Recording  reused trace, freshly checked subject  0ea9a559b8ce7d194cc90b15f6c0818e3638ad14b23e17688aa5a41b0cbe45c2",
+        "Conditional retry  verified",
+        "Consumed assumptions  startup-charset:0ea9a559b8ce7d194cc90b15f6c0818e3638ad14b23e17688aa5a41b0cbe45c2",
+        "Remaining  none",
+        "Original property  unverifiable  sc.M#encoded()I",
+        "Startup  sc.Encoded  C  US-ASCII",
+        "Recording  fresh JVM trace  ea3a3443e2ec531cb914f3b040c49da4a07b671efe548ba6077227c7049b5d10",
+        "Conditional retry  violation",
+        "Consumed assumptions  startup-charset:ea3a3443e2ec531cb914f3b040c49da4a07b671efe548ba6077227c7049b5d10",
+        "Remaining  none",
+        "Original property  unverifiable  sc.M#encoded()I",
+        "Startup  sc.Encoded  C  US-ASCII",
+        "Recording  reused trace, freshly checked subject  ea3a3443e2ec531cb914f3b040c49da4a07b671efe548ba6077227c7049b5d10",
+        "Conditional retry  violation",
+        "Consumed assumptions  startup-charset:ea3a3443e2ec531cb914f3b040c49da4a07b671efe548ba6077227c7049b5d10",
+        "Remaining  none",
+        "small 2 qualified rows"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/charset-small.zip",
+      "change": "added",
+      "bytes": 6241,
+      "sha256": "41b318c50fb99a4c850dd607365a570e126e5561dd0d6eba3a02556b8662a085",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T00:26:19+00:00",
+    "applied": [
+      "verification/startup-facts/charset-small.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3690b5540898e37fa71c2812e6ec3c0e10c59e98",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3690b5540898e37fa71c2812e6ec3c0e10c59e98/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T002618Z-3048658faf289a6e",
+      "outputs": "20261127T002618Z-328925b20bf84f91",
+      "diff": "20261127T002618Z-3536384680771761"
+    }
+  }
+}
