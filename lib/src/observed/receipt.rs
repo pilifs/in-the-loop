@@ -23,7 +23,8 @@ pub(super) fn bindings(tool: &ClassPath, home: &Path, entries: &[PathBuf], roots
     }
     let image = tool.jdk().ok_or_else(|| Error::new("startup receipt requires a JDK image"))?;
     let mut classes = serde_json::Map::new();
-    let required = if runtime.live_properties { ["java/util/Properties", "java/lang/System", "java/util/Hashtable", "java/util/concurrent/ConcurrentHashMap"] }
+    let required = if runtime.record_joint_startup { ["java/lang/Class", "java/lang/System", "java/lang/Thread", "java/lang/ClassLoader"] }
+        else if runtime.live_properties { ["java/util/Properties", "java/lang/System", "java/util/Hashtable", "java/util/concurrent/ConcurrentHashMap"] }
         else if runtime.reflective_members { ["java/lang/Class", "java/lang/reflect/Method", "java/lang/reflect/AccessibleObject", "java/lang/reflect/Executable"] }
         else { ["java/lang/String", "java/nio/charset/Charset", "sun/nio/cs/UTF_8", "sun/nio/cs/US_ASCII"] };
     for class in required {
@@ -32,6 +33,7 @@ pub(super) fn bindings(tool: &ClassPath, home: &Path, entries: &[PathBuf], roots
     }
     let mut request = runtime.clone();
     request.expected_charset_receipt = None;
+    request.expected_charset_name = None;
     request.charset_receipt_directory = None;
     let supplied = if request.startup_properties.is_empty() { None } else { Some(sha256_hex(json!(request.startup_properties).to_string().as_bytes())) };
     request.startup_properties.clear();
@@ -40,7 +42,7 @@ pub(super) fn bindings(tool: &ClassPath, home: &Path, entries: &[PathBuf], roots
         "jdkModulesSha256":sha256_reader(File::open(home.join("lib/modules"))?)?, "jdkClasses":classes,
         "javaSha256":sha256_reader(File::open(home.join("bin/java"))?)?, "vmSha256":sha256_reader(File::open(home.join("lib/server/libjvm.so"))?)?,
         "observerSha256":sha256_hex(super::SOURCE.as_bytes()), "tracerSha256":sha256_hex(TRACER.as_bytes()),
-        "rulesSha256": if runtime.live_properties { sha256_hex(include_bytes!("table.rs")) } else if runtime.reflective_members { sha256_hex(include_bytes!("member.rs")) } else { sha256_hex(include_bytes!("charset.rs")) },
+        "rulesSha256": if runtime.record_joint_startup { sha256_hex(include_bytes!("../observed.rs")) } else if runtime.live_properties { sha256_hex(include_bytes!("table.rs")) } else if runtime.reflective_members { sha256_hex(include_bytes!("member.rs")) } else { sha256_hex(include_bytes!("charset.rs")) },
         "tableRecorderSha256":runtime.live_properties.then(||sha256_hex(super::table::SOURCE.as_bytes())), "startupPropertiesSha256":supplied,
         "bindingRulesSha256":sha256_hex(include_bytes!("receipt.rs")), "runtime":request,
         "fileEncodingOption":runtime.charset_locale.map(|_| "COMPAT"),

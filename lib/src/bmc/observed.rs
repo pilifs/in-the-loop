@@ -76,7 +76,7 @@ impl Engine<'_> {
         let text = crate::observed::assumption(class, observed);
         self.assumption_ids.insert(text.clone(), format!("observed-initializer:{}:{}:{}", class.replace('/', "."), observed.on.sha256, observed.state_sha256));
         self.assumed.insert(text);
-        if let Some(id) = &observed.on.table_receipt {
+        if let Some(id) = observed.on.table_receipt.as_ref().filter(|_| observed.on.table_read) {
             let text = format!("The imported startup state of {} used the exact original live system-properties table and its observed iteration order (receipt {id})", class.replace('/', "."));
             self.assumption_ids.insert(text.clone(), format!("startup-table:{id}"));
             self.assumed.insert(text);

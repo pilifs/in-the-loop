@@ -301,6 +301,17 @@ class RecipesTest(unittest.TestCase):
             outcome = {"stated": {"assumptions": [{"id": i, "kind": "library", "basis": "engine"} for i in actual]}}
             return qualification.library_bindings_problem(plan, outcome, classes)
         self.assertIsNone(problem(ids))
+        receipt = "e" * 64
+        typed_id = "startup-charset:" + receipt
+        typed = replace(plan, kind="prove", revisions=["fix"], claim={**plan.claim, "namedModels": [],
+                        "observedRuntime":{"charsetLocale":"C"}, "startupPremises":[typed_id]})
+        row = {"kind":"default-charset", "root":name, "classSha256":"b"*64, "stateSha256":state,
+               "route":"execute initializer bytecode","receipt":receipt}
+        outcome = {"startup_evidence":[row],"stated":{"assumptions":[{"id":typed_id,"kind":"library","basis":"engine"}]}}
+        self.assertIsNone(qualification.library_bindings_problem(typed,outcome,classes))
+        for wrong in ({"receipt":"f"*64},{"classSha256":"a"*64},{"stateSha256":"0"*64}):
+            self.assertIsNotNone(qualification.library_bindings_problem(typed,{**outcome,"startup_evidence":[{**row,**wrong}]},classes))
+        self.assertIsNotNone(qualification.library_bindings_problem(typed,{**outcome,"stated":{"assumptions":[]}},classes))
         for changed in [ids[1:], ids[:-1], ids + ["jdk-model:other.Model"],
                         [*ids[:2], ids[2].replace("b" * 64, "c" * 64)],
                         [*ids[:2], ids[2].replace(state, "0" * 64)]]:

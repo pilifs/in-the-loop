@@ -132,14 +132,33 @@ def library_bindings_problem(plan, outcome, initializer_classes):
     """Match the native engine's actual library assumptions to the frozen states and the prepared classes."""
     assumptions = (outcome.get("stated") or {}).get("assumptions") or []
     ids = {a["id"] for a in assumptions if a.get("kind") == "library" and a.get("basis") == "engine"
-           and isinstance(a.get("id"), str) and a["id"].startswith(("observed-initializer:", "jdk-model:"))}
-    expected = {"jdk-model:" + name for name in plan.claim.get("namedModels", [])}
+           and isinstance(a.get("id"), str) and a["id"].startswith(("observed-initializer:", "jdk-model:", "startup-"))}
+    expected = {"jdk-model:" + name for name in plan.claim.get("namedModels", [])} | set(plan.claim.get("startupPremises", []))
+    recordings = outcome.get("startup_evidence", [])
+    kinds = {"startup-charset":"default-charset", "startup-method":"reflective-members", "startup-table":"live-properties"}
+    for id_ in ids:
+        if id_.startswith("startup-"):
+            kind, _, rest = id_.partition(":")
+            if not any(r.get("kind") == kinds.get(kind) and r.get("receipt") == rest.split(":",1)[0] for r in recordings):
+                return "the executed typed startup premise lacks a matching observation receipt"
     for revision in plan.revisions:
         prefix = "before." if plan.kind == "equivalence" and revision == plan.revisions[0] else ""
         for name, state in plan.claim.get("observedInitializers", {}).items():
             digest = (initializer_classes or {}).get(revision, {}).get(name)
             if not digest:
                 return f"{revision} has no prepared class digest for the observed initializer {name}"
+            for row in recordings:
+                if row.get("root") != name:
+                    continue
+                if row.get("classSha256") != digest or row.get("stateSha256") != state:
+                    return f"{revision} startup receipt differs from the prepared class or its frozen state"
+            executed = [r for r in recordings if r.get("root") == name and r.get("route") == "execute initializer bytecode"]
+            if executed:
+                settings = plan.claim.get("observedRuntime", {})
+                if (len(executed) != 1 or executed[0].get("kind") != "default-charset" or not settings.get("charsetLocale")
+                        or "startup-charset:" + str(executed[0].get("receipt")) not in expected):
+                    return "the executed charset operation requires its registered startup receipt"
+                continue
             expected.add(f"observed-initializer:{prefix}{name}:{digest}:{state}")
     if ids != expected:
         return "the executed library assumptions differ from the frozen named models, initializer states or prepared classes"

@@ -41,6 +41,11 @@ impl Runtime {
                 return Err("expectedCharsetReceipt requires charsetLocale and a lowercase SHA-256".into());
             }
         }
+        if let Some(name) = &self.expected_charset_name {
+            if self.charset_locale.is_none() || !matches!(name.as_str(), "UTF-8" | "US-ASCII") {
+                return Err("expectedCharsetName requires charsetLocale and a supported standard charset".into());
+            }
+        }
         Ok(())
     }
 }
@@ -115,6 +120,9 @@ pub(super) fn qualify(binary: &str, line: &str, jvm: &Jvm, tool: &ClassPath, bin
         &fresh["events"]
     }.as_array().ok_or_else(|| Error::new("missing charset events"))?;
     let canonical = profile["canonical"].as_str().unwrap_or("");
+    if jvm.runtime.expected_charset_name.as_deref().is_some_and(|n| n != canonical) {
+        return Err(Error::new("effective charset differs from the registered name"));
+    }
     let implementation = match canonical { "UTF-8" => "sun.nio.cs.UTF_8", "US-ASCII" => "sun.nio.cs.US_ASCII", _ => return Err(Error::new("unsupported effective default charset")) };
     if profile["implementation"] != implementation || profile["standardSingleton"] != true || profile["bootstrap"] != true
         || profile["module"] != "java.base" || profile["locale"] != jvm.runtime.charset_locale.unwrap().name() {

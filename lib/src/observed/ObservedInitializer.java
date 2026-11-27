@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
  */
 public final class ObservedInitializer {
     private static final Pattern INITIALIZING = Pattern.compile("Initializing '([^']+)'");
+    private static final Pattern INITIALIZING_THREAD = Pattern.compile("(?m)^\\[\\s*(\\d+)\\s*\\].*?Initializing '([^']+)'");
 
     private ObservedInitializer() {
     }
@@ -439,6 +440,14 @@ public final class ObservedInitializer {
         String fields = together ? null : dump.fieldsOf(c);
         String after = new String(logged, (int) Math.min(mark, logged.length), (int) Math.max(0, logged.length - mark), StandardCharsets.UTF_8);
         Map<String, Class<?>> members = new LinkedHashMap<>();
+        Map<String, String> initThreads = new HashMap<>();
+        if (together) {
+            Matcher threads = INITIALIZING_THREAD.matcher(after);
+            while (threads.find()) initThreads.putIfAbsent(threads.group(2), threads.group(1));
+        }
+        String initiatingThread = initThreads.get(c.getName().replace('.', '/'));
+        if (together && initiatingThread == null)
+            throw new IllegalStateException("missing initiating thread of the joint startup root");
         List<String> seen = new ArrayList<>();
         Matcher m = INITIALIZING.matcher(after);
         while (m.find()) {
@@ -462,7 +471,11 @@ public final class ObservedInitializer {
             }
             // An initializer may have caught another class's initialization failure.
             // An erroneous member cannot be installed as successfully initialized.
-            if (together) Class.forName(k.getName(), true, app);
+            if (together) {
+                if (!initiatingThread.equals(initThreads.get(internal)))
+                    throw new IllegalStateException("overlapping application initialization on different JVM threads: " + c.getName() + " and " + k.getName());
+                Class.forName(k.getName(), true, app);
+            }
             members.put(internal, k);
         }
         if (together) {
@@ -503,11 +516,13 @@ public final class ObservedInitializer {
         String internal = c.getName().replace('.', '/');
         java.security.CodeSource source = c.getProtectionDomain().getCodeSource();
         String from = source == null || source.getLocation() == null ? null : source.getLocation().toString();
+        List<String> applicationOrder = seen.stream().filter(n -> n.equals(internal) || members.containsKey(n)).map(ObservedInitializer::text).toList();
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
                 + text(display) + "},\"zone\":" + text(zone) + profile + ",\"preinitializeTogether\":" + together
                 + ",\"weakMapValues\":" + weakMapValues
+                + ",\"applicationInitializationOrder\":[" + String.join(",", applicationOrder) + "]"
                 + ",\"captureObjects\":[" + String.join(",", captured.stream().map(ObservedInitializer::text).toList()) + "]"
                 + ",\"additionalRoots\":[" + String.join(",", additionalRoots) + "],\"rootWorkingDirectory\":" + (atRoot && unixRoot())
                 + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())

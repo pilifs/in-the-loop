@@ -229,6 +229,9 @@ pub struct Counterexample {
 #[derive(Debug, Clone, Serialize)]
 pub struct Outcome {
     pub verdict: Verdict,
+    /// Completed startup recordings. The statement names only the premises the checker consumed.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub startup_evidence: Vec<serde_json::Value>,
     pub target: String,
     pub domain: Option<String>,
     /// The assumption, as given.
@@ -421,6 +424,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
             sarif::write(&report.join("property.sarif"), &findings)?;
         }
         Ok(Outcome {
+            startup_evidence: Vec::new(),
             verdict: Verdict::Unverifiable,
             target: options.target.clone(),
             domain: None,
@@ -1080,6 +1084,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
     if let Some((previous, classes)) = &options.previous {
         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime.clone())?);
     }
+    let startup_evidence = crate::observed::startup_evidence(&observed);
     let observed = std::sync::Arc::new(observed);
     let witness_charset = options.observed_runtime.charset_locale.and_then(|locale| observed.values().find_map(|o|
         o.on.charset.as_ref().map(|fact| (locale, fact.canonical.as_str()))));
@@ -1114,7 +1119,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
         let mut s = stated(None, None, false);
         s.checker = crate::statement::scan_checker();
         s.gap_mode = Some(crate::bmc::gaps::GapMode::Advised);
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain.clone()), assume: options.assume.clone(), assert: Some(assertion.clone()), throws: options.throws.clone(), throws_checked: throws_checked.clone(), counterexample: None, proof: None, problem: Some(p), statement: Some(statement.clone()), findings, output: out.clone(), work: work.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice), refused: None, reuse: None })
+        Ok(Outcome { startup_evidence: startup_evidence.clone(), verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain.clone()), assume: options.assume.clone(), assert: Some(assertion.clone()), throws: options.throws.clone(), throws_checked: throws_checked.clone(), counterexample: None, proof: None, problem: Some(p), statement: Some(statement.clone()), findings, output: out.clone(), work: work.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice), refused: None, reuse: None })
     };
     if options.engine != crate::Engine::Jbmc {
         // Under advised, what the harness may reach first: the contract library closes only gaps it reaches.
@@ -1341,7 +1346,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
         let call = witness::typed_call(&target, &layout, &found, false, &[]);
         let counterexample = Some(Counterexample { input: rendered, outcome, expected: None, values, found: None, shrink_runs: 0, inputs: witness::typed_inputs(&flat, &found), found_inputs: None, call });
         let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
-        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None, reuse: None });
+        return Ok(Outcome { startup_evidence: startup_evidence.clone(), verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None, reuse: None });
     }
     match last.verdict {
         Verdict::Verified => {
@@ -1481,7 +1486,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
                 }
                 let by = if jvm_ran { "jvm" } else { "interpreter" };
                 let replay = Some(crate::equivalence::Replay { by: by.into(), reproduced: false });
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None, reuse: None });
+                return Ok(Outcome { startup_evidence: startup_evidence.clone(), verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None, reuse: None });
             }
             // Over objects the property reads the heap, which only the harness can: the interpreter runs the harness
             // itself on the witness, which makes the objects as the checker did.
@@ -1511,7 +1516,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
                     sarif::write(&report.join("property.sarif"), &findings)?;
                 }
                 let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: false });
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None, reuse: None });
+                return Ok(Outcome { startup_evidence: startup_evidence.clone(), verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None, reuse: None });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -1554,7 +1559,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
                             sarif::write(&report.join("property.sarif"), &findings)?;
                         }
                         let replay = Some(crate::equivalence::Replay { by: "jvm".into(), reproduced: false });
-                        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None, reuse: None });
+                        return Ok(Outcome { startup_evidence: startup_evidence.clone(), verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None, refused: None, reuse: None });
                     }
                     Ok(run) => jvm_note = Some((false, format!("not confirmed on a JVM, where the harness threw {}", match run.check { crate::jvm_witness::Check::Threw(c) => c, _ => unreachable!() }))),
                     Err(e) => jvm_note = Some((false, format!("not run on a JVM: {e}"))),
@@ -1627,6 +1632,7 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
     stated.vacuity = vacuity_status.filter(|_| verdict == Verdict::Verified);
     let stated = Some(stated);
     Ok(Outcome {
+        startup_evidence,
         verdict,
         target: options.target.clone(),
         domain: Some(domain),

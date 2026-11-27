@@ -21,6 +21,9 @@ final class LiveTableTrace {
     private int depth;
     private final List<byte[]> pairs = new ArrayList<>();
     private final Map<String, Integer> reads = new TreeMap<>();
+    private final Map<String,Value> own = new HashMap<>();
+    private final Map<EventRequest,KeyRead> keyed = new HashMap<>();
+    private record KeyRead(String name,String descriptor,String key,String caller,int depth,Value expected,boolean booleanResult,boolean present) {}
 
     LiveTableTrace(VirtualMachine vm, List<String> events) {
         this.vm = vm; this.req = vm.eventRequestManager(); this.events = events;
@@ -61,6 +64,7 @@ final class LiveTableTrace {
                     throw new IllegalStateException("unrepresented or changing JDK Properties table shape");
                 if (!(field(node,"key") instanceof StringReference key) || !(field(node,"val") instanceof StringReference value))
                     throw new IllegalStateException("non-string system property key or value");
+                own.put(key.value(),value);
                 entries.add(ObservedInitializer.tablePair(key.value(), value.value()));
                 hash += key.value().hashCode() ^ value.value().hashCode();
                 node = (ObjectReference) field(node,"next");
@@ -98,6 +102,41 @@ final class LiveTableTrace {
         return l.declaringType().name() + "#" + l.method().name() + l.method().signature() + "@" + l.codeIndex();
     }
 
+    private String applicationCaller() throws Exception {
+        for (StackFrame f : thread.frames().subList(1, thread.frameCount())) {
+            if (f.location().declaringType().classLoader() != null) return site(f);
+            if (!Set.of("java.lang.System","java.lang.Integer","java.lang.Long","java.lang.Boolean").contains(f.location().declaringType().name())) break;
+        }
+        return null;
+    }
+
+    private void keyEntry(Method m) throws Exception {
+        String caller = applicationCaller();
+        if (caller == null) return;
+        var args = thread.frame(0).getArgumentValues();
+        if (args.isEmpty()) return;
+        if (!(args.get(0) instanceof StringReference key)) throw new IllegalStateException("non-string live property lookup");
+        String name = key.value();
+        boolean present = own.containsKey(name);
+        Value expected = present ? own.get(name) : args.size()==2 ? args.get(1) : null;
+        MethodExitRequest exit = req.createMethodExitRequest();
+        exit.addClassFilter(m.declaringType());exit.addThreadFilter(thread); enable(exit);
+        keyed.put(exit,new KeyRead(m.name(),m.signature(),name,caller,thread.frameCount(),expected,m.name().equals("containsKey"),present));
+    }
+
+    private void keyReturned(MethodExitEvent exit, KeyRead read) throws Exception {
+        if (!exit.method().name().equals(read.name()) || !exit.method().signature().equals(read.descriptor()) || thread.frameCount()!=read.depth()) return;
+        Value v=exit.returnValue();
+        if (read.booleanResult() ? !(v instanceof BooleanValue b) || b.booleanValue()!=read.present() : !Objects.equals(v,read.expected()))
+            throw new IllegalStateException("live property read disagrees with original membership or value identity at "+read.caller());
+        String key=HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(read.key().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        String result=v instanceof StringReference s ? q(HexFormat.of().formatHex(ObservedInitializer.tablePair("",s.value())))
+                : v==null ? "null" : read.booleanResult() ? Boolean.toString(read.present()) : q(v.type().signature());
+        events.add("{\"operation\":"+q(read.name()+read.descriptor())+",\"caller\":"+q(read.caller())
+                +",\"keySha256\":"+q(key)+",\"present\":"+read.present()+",\"resultProjection\":"+result+"}");
+        req.deleteEventRequest(exit.request());requests.remove(exit.request());keyed.remove(exit.request());
+    }
+
     boolean handle(Event e) throws Exception {
         if (e.request() == null || !Boolean.TRUE.equals(e.request().getProperty("liveTable"))) return false;
         if (!(e instanceof LocatableEvent l) || !l.thread().equals(thread))
@@ -117,6 +156,7 @@ final class LiveTableTrace {
             String name = m.name();
             if (Set.of("getProperty","get","getOrDefault","containsKey","size","isEmpty").contains(name)) {
                 reads.merge(name, 1, Integer::sum);
+                keyEntry(m);
                 return true;
             }
             String where = site(thread.frame(1));
@@ -134,6 +174,8 @@ final class LiveTableTrace {
                 enable(visit);
                 pairs.clear();
             }
+        } else if (e instanceof MethodExitEvent exit && keyed.containsKey(exit.request())) {
+            keyReturned(exit,keyed.get(exit.request()));
         } else if (e instanceof MethodExitEvent exit && returned == exit.request()
                 && (exit.method().name() + exit.method().signature()).equals(operation) && thread.frameCount() == depth) {
             String result;
@@ -151,7 +193,7 @@ final class LiveTableTrace {
     }
 
     void finish() throws Exception {
-        if (operation != null) throw new IllegalStateException("live system-properties read did not finish");
+        if (operation != null || !keyed.isEmpty()) throw new IllegalStateException("live system-properties read did not finish");
         Set<Long> after = references();
         after.removeAll(before);
         if (!after.isEmpty()) throw new IllegalStateException("a new reference to the live system-properties table escaped the boundary");

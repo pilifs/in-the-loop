@@ -35,6 +35,8 @@ fn checked_events(snapshot: &Value, trace: Value) -> Result<Value, Error> {
         let good = match event["operation"].as_str() {
             Some("forEach(Ljava/util/function/BiConsumer;)V") => ["count","orderSha256","entriesSha256"].iter().all(|k| event[k] == snapshot[k]),
             Some("hashCode()I") => event["hashCode"] == snapshot["hashCode"],
+            Some(s) if ["getProperty(", "get(", "containsKey(", "getOrDefault("].iter().any(|prefix| s.starts_with(prefix)) =>
+                event["present"].is_boolean() && event["keySha256"].as_str().is_some_and(|k| k.len() == 64) && event.get("resultProjection").is_some(),
             _ => false,
         };
         if !good { return Err(Error::new(format!("live table consumer disagrees with ordinary original projection at {}", event["caller"]))); }

@@ -7,6 +7,7 @@ public class TableControls {
     static final class Custom extends Properties {}
     public static int sample() {
         Properties table = System.getProperties();
+        if (mode.equals("named")) return System.getProperty("startup.fixture.selected", "missing").length();
         if (mode.equals("view")) return table.keySet().size();
         if (mode.equals("save")) retained = table;
         if (mode.equals("replace")) System.setProperties(new Properties());

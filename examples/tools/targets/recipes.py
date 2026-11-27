@@ -179,6 +179,12 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
         return refused("observedRuntime", "weakMapValues requires a shared pre-entry heap")
     if settings.get("captureObjects") and not settings.get("preinitializeTogether"):
         return refused("observedRuntime", "captureObjects requires a shared pre-entry heap")
+    if settings.get("recordJointStartup") and not settings.get("preinitializeTogether"):
+        return refused("observedRuntime", "ordered recording requires a jointly initialized heap")
+    if (settings.get("liveProperties") or settings.get("charsetLocale")) and (plan.kind != "prove" or plan.gaps != "strict" or len(roots) != 1):
+        return refused("observedRuntime", "this setting recording requires a strict property on one original root")
+    if settings.get("liveProperties") and not settings.get("emptyEnvironment"):
+        return refused("observedRuntime", "a live properties recording requires a controlled empty environment")
     arguments = []
     def add(field, flag, values):
         arguments.extend(Argument(field, flag, str(value)) for value in values)

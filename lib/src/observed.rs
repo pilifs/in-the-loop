@@ -207,6 +207,8 @@ pub struct On {
     pub reflective_members: bool,
     pub(crate) member_receipt: Option<String>,
     pub(crate) table_receipt: Option<String>,
+    pub(crate) table_read: bool,
+    pub(crate) joint_receipt: Option<String>,
     /// The sha256 of the class file the JVM's class loader read, and the location it came from.
     pub sha256: String,
     pub from: Option<String>,
@@ -252,6 +254,22 @@ pub struct Initialized {
 /// The observations a check was given, by the class's internal name.
 pub type Observations = BTreeMap<String, Observed>;
 
+pub(crate) fn startup_evidence(observations: &Observations) -> Vec<serde_json::Value> {
+    let mut rows = Vec::new();
+    for (root, o) in observations {
+        let mut add = |kind: &str, id: &str, route: &str| rows.push(serde_json::json!({
+            "kind":kind,"receipt":id,"root":root.replace('/',"."),"classSha256":o.on.sha256,
+            "stateSha256":o.state_sha256,"route":route}));
+        if let Some(f) = &o.on.charset {
+            add("default-charset", &f.id, if f.encoding.is_some() { "execute initializer bytecode" } else { "import observed state" });
+        }
+        if let Some(id) = &o.on.member_receipt { add("reflective-members",id,"import observed state"); }
+        if let Some(id) = &o.on.table_receipt { add("live-properties",id,"import observed state"); }
+        if let Some(id) = &o.on.joint_receipt { add("ordered-startup",id,"import joint heap"); }
+    }
+    rows
+}
+
 /// Launch settings for a separately scoped initializer observation and its comparison JVMs.
 #[derive(Debug, Default, Clone, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 #[serde(default, rename_all = "camelCase", deny_unknown_fields)]
@@ -264,10 +282,12 @@ pub struct Runtime {
     pub capture_objects: BTreeSet<String>,
     pub charset_locale: Option<CharsetLocale>,
     pub expected_charset_receipt: Option<String>,
+    pub expected_charset_name: Option<String>,
     pub charset_receipt_directory: Option<PathBuf>,
     pub reflective_members: bool,
     pub live_properties: bool,
     pub startup_properties: BTreeMap<String, String>,
+    pub record_joint_startup: bool,
 }
 
 impl std::str::FromStr for Runtime {
@@ -285,6 +305,7 @@ impl std::str::FromStr for Runtime {
         }
         r.validate_charset()?;
         table::validate(&r).map_err(|e| e.to_string())?;
+        if r.record_joint_startup && !r.preinitialize_together { return Err("recordJointStartup requires preinitializeTogether".into()); }
         Ok(r)
     }
 }
@@ -343,6 +364,7 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
 fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
     runtime.validate_charset().map_err(Error::new)?;
     table::validate(&runtime)?;
+    if runtime.record_joint_startup && !runtime.preinitialize_together { return Err(Error::new("recordJointStartup requires preinitializeTogether")); }
     if runtime.live_properties && classes.len() != 1 { return Err(Error::new("liveProperties requires one first-use root")); }
     if runtime.reflective_members && (classes.len() != 1 || runtime.preinitialize_together) {
         return Err(Error::new("reflectiveMembers captures one first-use root and compares transitive reflective fields on independent JVMs"));
@@ -362,7 +384,7 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     // Absolute: the JVM runs in this folder, and is given the log's path in it (an option and an argument).
     let temp;
     let traced = runtime.charset_locale.is_some() || runtime.reflective_members || runtime.live_properties;
-    let dir = if traced {
+    let dir = if traced || runtime.record_joint_startup {
         std::fs::create_dir_all(work)?;
         temp = tempfile::Builder::new().prefix("startup-capture-").tempdir_in(work)?;
         std::path::absolute(temp.path())?
@@ -407,7 +429,7 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     }
     let additional: Vec<String> = if runtime.preinitialize_together { classes.iter().skip(1).map(|c| c.replace('/', ".")).collect() } else { vec![] };
     let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime: runtime.clone(), additional };
-    let binding = traced.then(|| receipt::bindings(&tool, &home, &entries[1..], classes, &runtime)).transpose()?;
+    let binding = (traced || runtime.record_joint_startup).then(|| receipt::bindings(&tool, &home, &entries[1..], classes, &runtime)).transpose()?;
     let mut alone: BTreeMap<String, serde_json::Value> = BTreeMap::new();
     for class in classes.iter().take(if runtime.preinitialize_together { 1 } else { classes.len() }) {
         let internal = class.replace('.', "/");
@@ -505,7 +527,26 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         if let Some(record) = table_record {
             let consumed = record["events"].as_array().is_some_and(|events| events.iter().any(|e| e["operation"] != "table boundary" || e["keyedReads"].as_u64().unwrap_or(0) != 0));
             let id = table::publish(work, record, true)?;
-            if consumed { observed.on.table_receipt = Some(id); }
+            observed.on.table_read = consumed;
+            observed.on.table_receipt = Some(id);
+        }
+        if runtime.record_joint_startup {
+            let raw: serde_json::Value = serde_json::from_str(&line).map_err(|e| Error::new(e.to_string()))?;
+            let order = &raw["on"]["applicationInitializationOrder"];
+            if order.as_array().is_none_or(|v| v.len() != 1 + observed.on.initialized.len()) {
+                return Err(Error::new("joint capture did not account for the application's actual initialization order"));
+            }
+            let mut record = serde_json::json!({"schema":"jvm-ordered-startup/v1","binding":binding,"requestedRoots":classes,
+                "actualApplicationOrder":order,"primaryRootSha256":observed.on.sha256,"additionalRoots":observed.additional_roots,
+                "stateSha256":observed.state_sha256,"jdk":observed.jdk,"vendor":observed.on.vendor,"locale":raw["on"]["locale"],
+                "zone":observed.on.zone,"classes":1+observed.on.initialized.len(),"objects":observed.objects.len(),
+                "startupJvms":1,"observationBytes":line.len(),"rawSha256":crate::digest::sha256_hex(line.as_bytes()),
+                "effectCoverage":"one ordered application heap; external effects and aliases remain assumptions"});
+            let id = crate::digest::sha256_hex(record.to_string().as_bytes());
+            record["id"] = id.clone().into();
+            receipt::write(&work.join("startup-receipts"), &record)?;
+            eprintln!("ordered startup receipt {id}: {} classes, {} objects", 1+observed.on.initialized.len(), observed.objects.len());
+            observed.on.joint_receipt = Some(id);
         }
         out.insert(internal, observed);
     }
@@ -536,7 +577,8 @@ impl Jvm {
         command.args(["--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.reflect=ALL-UNNAMED"]);
         if let Some(log) = log {
             let _ = std::fs::remove_file(log);
-            command.arg(format!("-Xlog:class+init=info:file={}::filecount=0", log.display()));
+            let decorators = if self.runtime.preinitialize_together { "tid" } else { "" };
+            command.arg(format!("-Xlog:class+init=info:file={}:{decorators}:filecount=0", log.display()));
         }
         command.arg("-cp").arg(&self.class_path);
         if self.runtime.charset_locale.is_some() { command.arg("-Dfile.encoding=COMPAT"); }
@@ -597,6 +639,9 @@ impl Jvm {
             Some(line) => Ok(line.to_string()),
             None => {
                 let said = std::fs::read_to_string(&stderr).unwrap_or_default();
+                if let Some(reason) = said.lines().find(|l| l.starts_with("Exception in thread") || l.starts_with("Caused by:")) {
+                    return Err(Error::new(format!("--observed-initializer {binary}: {reason}")));
+                }
                 let tail: Vec<&str> = said.lines().rev().take(3).collect();
                 Err(Error::new(format!("--observed-initializer {binary}: the JVM gave no observation{}", if tail.is_empty() { String::new() } else { format!(": {}", tail.into_iter().rev().collect::<Vec<_>>().join(" / ")) })))
             }
@@ -1062,6 +1107,8 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         reflective_members: on.get("reflectiveMembers").map(|v| v.as_bool().ok_or_else(|| bad("reflectiveMembers"))).transpose()?.unwrap_or(false),
         member_receipt: None,
         table_receipt: None,
+        table_read: false,
+        joint_receipt: None,
         sha256: text(on, "sha256")?,
         from: on.get("from").and_then(|f| f.as_str()).map(String::from),
         classpath: list("classpath")?.iter().map(|e| e.as_str().map(String::from).ok_or_else(|| bad("the class path"))).collect::<Result<_, _>>()?,
