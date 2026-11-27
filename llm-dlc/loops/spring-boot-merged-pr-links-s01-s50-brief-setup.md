@@ -452,8 +452,10 @@ One job per Gradle case (49; S16 has none, it is on its slice route), each of fo
    nested classes included) and, per classpath project P (`:` as `_` in the name), `P.runtimeClasspath.txt` and `P.testRuntimeClasspath.txt`
    (`:`-joined; the project outputs they name are copied under `tree/`, Gradle's `gradle-api` and `gradle-test-kit` jars, which
    Gradle generates in the job's own home, under `gradle-home/` (the first run rejected them: S10, S47, S49), the rest are paths
-   into `$P/gradle-home`). `$P/logs/CASE-ROLE.test.offline.class.txt` has the JUnit counts of each landed class alone (the first
-   run's steps that started before about 09:40 report `no-result` for a class without nested classes, a bug since fixed).
+   into `$P/gradle-home`). `$P/logs/CASE-ROLE.test.offline.class.txt` has the JUnit counts of each landed class alone, found by the XML's `<testsuite
+   name>` (`$P/scripts/class_counts.py`, from the third run on). Earlier runs looked the class up by file name and report
+   `no-result` for classes without nested classes (first run, before about 09:40) and for long class names (Gradle 9 hashes
+   those file names).
 2. `parent`: the same in `$W/CASE-parent`, with those landed classes that exist at the parent.
 3. `transplant`: `git archive` of the parent into `$P/build/CASE-parent-landed`, every changed file under `src/test`, `src/testFixtures`,
    `src/intTest` or `src/dockerTest` (and a changed module `build.gradle`: S09, S37) taken from the fix, then the same test classes.
@@ -480,59 +482,63 @@ v5.7.0 is installed; images in [Docker images](#docker-images)).
 but the transplant, whose result stands ([Job results](#job-results)). The other 41 failed for setup reasons: 38 on offline misses
 in projects outside the first resolution pass, S47 and S49 on the generated-jar check above, and S10 on both that check and a
 `NoRouteToHostException` in one TestKit test. After the second resolution pass and both script fixes, all 41 were resubmitted
-(`pipeline.py resubmit`, each superseding its first job; list in `$P/logs/jobs.resubmit.txt`).
+(`pipeline.py resubmit`, each superseding its first job; list in `$P/logs/jobs.resubmit.txt`). That second run (11:11 to 12:08
+UTC) passed 36. S11 and S12 failed only on their transplant, and those results stand. S24, S30 and S32 failed for setup reasons:
+the Micrometer snapshot's deprecation under `-Werror`, and an abstract test class. Five passing cases lost their per-class counts
+to Gradle's hashed XML names. After the fixes ([Job results](#job-results)), eight were resubmitted at 12:18 UTC
+(`$P/tmp/resubmit2.txt`, column "Third run" below).
 
-| Case | First job | Rerun (after the second resolution pass) | Jar projects | Landed test classes (source set) | Network |
-|---|---|---|---|---|---|
-| S01 | `20261127-091100-setup-build-spring-boot-52125-s01-at-bot` | `20261127-110819-setup-build-spring-boot-52125-s01-at-bot` | `:core:spring-boot-test` | `TestPropertyValuesTests` | offline |
-| S02 | `20261127-091100-setup-build-spring-boot-51661-s02-at-bot` | `20261127-110819-setup-build-spring-boot-51661-s02-at-bot` | `:core:spring-boot` | `ValueObjectBinderTests`, `ConfigurationPropertiesTests` | offline |
-| S03 | `20261127-091101-setup-build-spring-boot-50773-s03-at-bot` | `20261127-110819-setup-build-spring-boot-50773-s03-at-bot` | `:core:spring-boot` | `MapBinderTests` | offline |
-| S04 | `20261127-091101-setup-build-spring-boot-50798-s04-at-bot` | `20261127-110819-setup-build-spring-boot-50798-s04-at-bot` | `:core:spring-boot` | `ValidationBindHandlerTests` | offline |
-| S05 | `20261127-091101-setup-build-spring-boot-52207-s05-at-bot` | `20261127-110820-setup-build-spring-boot-52207-s05-at-bot` | `:core:spring-boot` | `OriginTrackedPropertiesLoaderTests` | offline |
-| S06 | `20261127-091101-setup-build-spring-boot-52277-s06-at-bot` | `20261127-110820-setup-build-spring-boot-52277-s06-at-bot` | `:core:spring-boot` | `FileHintTests`, `StandardConfigDataLocationResolverTests` | offline |
-| S07 | `20261127-091101-setup-build-spring-boot-52666-s07-at-bot` | `20261127-110820-setup-build-spring-boot-52666-s07-at-bot` | `:core:spring-boot` | `ConfigTreePropertySourceTests` | offline |
-| S08 | `20261127-091101-setup-build-spring-boot-52904-s08-at-bot` | `20261127-110820-setup-build-spring-boot-52904-s08-at-bot` | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
-| S09 | `20261127-091101-setup-build-spring-boot-51855-s09-at-bot` | `20261127-110819-setup-build-spring-boot-51855-s09-at-bot` | `:core:spring-boot-properties-migrator` | `PropertiesMigrationListenerTests` | offline |
-| S10 | `20261127-091101-setup-build-spring-boot-50489-s10-at-bot` | `20261127-110802-setup-build-spring-boot-50489-s10-at-bot` | `:build-plugin:spring-boot-gradle-plugin`, `:configuration-metadata:spring-boot-configuration-processor` | `JavaPluginActionIntegrationTests`, `DescriptionCacheTests` | online |
-| S11 | `20261127-091101-setup-build-spring-boot-51867-s11-at-bot` | `20261127-110820-setup-build-spring-boot-51867-s11-at-bot` | `:core:spring-boot-autoconfigure` | `AutoConfigurationSorterTests` | offline |
-| S12 | `20261127-091102-setup-build-spring-boot-52310-s12-at-bot` | `20261127-110821-setup-build-spring-boot-52310-s12-at-bot` | `:core:spring-boot` | `SpringApplicationTests` | offline |
-| S13 | `20261127-091102-setup-build-spring-boot-52309-s13-at-bot` | `20261127-110821-setup-build-spring-boot-52309-s13-at-bot` | `:core:spring-boot` | `SpringApplicationTests` | offline |
-| S14 | `20261127-091102-setup-build-spring-boot-52831-s14-at-bot` | `20261127-110821-setup-build-spring-boot-52831-s14-at-bot` | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
-| S15 | `20261127-091102-setup-build-spring-boot-50886-s15-at-bot` | `20261127-110820-setup-build-spring-boot-50886-s15-at-bot` | `:module:spring-boot-micrometer-metrics` | `MeterRegistryCloserTests`, `MeterRegistryPostProcessorTests`, `MetricsAutoConfigurationTests` | offline |
-| S17 | `20261127-091102-setup-build-spring-boot-52251-s17-at-bot` | `20261127-110821-setup-build-spring-boot-52251-s17-at-bot` | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
-| S18 | `20261127-091102-setup-build-spring-boot-52304-s18-at-bot` | `20261127-110821-setup-build-spring-boot-52304-s18-at-bot` | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
-| S19 | `20261127-091102-setup-build-spring-boot-51173-s19-at-bot` | `20261127-110820-setup-build-spring-boot-51173-s19-at-bot` | `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryCustomizerTests`, `TomcatServerPropertiesTests`, `SampleOAuth2ClientApplicationTests` | offline |
-| S20 | `20261127-091102-setup-build-spring-boot-52162-s20-at-bot` | `20261127-110821-setup-build-spring-boot-52162-s20-at-bot` | `:module:spring-boot-jetty`, `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryTests.givenARestartedServer*`, `TomcatReactiveWebServerFactoryTests.givenARestartedServer*`, `JettyServletWebServerFactoryTests.givenARestartedServer*`, `JettyReactiveWebServerFactoryTests.givenARestartedServer*` | offline |
-| S21 | `20261127-091103-setup-build-spring-boot-51410-s21-at-bot` | `20261127-110821-setup-build-spring-boot-51410-s21-at-bot` | `:module:spring-boot-jdbc` | `DataSourceUnwrapperTests` | offline |
-| S22 | `20261127-091103-setup-build-spring-boot-50271-s22-at-bot` | `20261127-110821-setup-build-spring-boot-50271-s22-at-bot` | `:module:spring-boot-jdbc` | `DataSourceBuilderTests`, `DataSourceUnwrapperTests`, `LiquibaseAutoConfigurationTests` | offline |
-| S23 | `20261127-091103-setup-build-spring-boot-52824-s23-at-bot` | `20261127-110822-setup-build-spring-boot-52824-s23-at-bot` | `:module:spring-boot-hibernate` | `HibernateJpaAutoConfigurationTests` | offline |
-| S24 | `20261127-091103-setup-build-spring-boot-51725-s24-at-bot` | `20261127-110821-setup-build-spring-boot-51725-s24-at-bot` | `:module:spring-boot-batch-data-mongodb` | `BatchDataMongoAutoConfigurationTests` | offline |
-| S25 | `20261127-091103-setup-build-spring-boot-52190-s25-at-bot` | `20261127-110822-setup-build-spring-boot-52190-s25-at-bot` | `:module:spring-boot-data-redis` | `DataRedisAutoConfigurationTests` | offline |
-| S26 | `20261127-091103-setup-build-spring-boot-51844-s26-at-bot` | `20261127-110822-setup-build-spring-boot-51844-s26-at-bot` | `:module:spring-boot-cache` | `CacheAutoConfigurationTests` | offline |
-| S27 | `20261127-091103-setup-build-spring-boot-52832-s27-at-bot` | `20261127-110822-setup-build-spring-boot-52832-s27-at-bot` | `:core:spring-boot-docker-compose`, `:module:spring-boot-data-redis` | `DefaultConnectionPortsTests`, `DefaultRunningServiceTests` | offline |
-| S28 | `20261127-091103-setup-build-spring-boot-52625-s28-at-bot` | `20261127-110822-setup-build-spring-boot-52625-s28-at-bot` | `:module:spring-boot-jdbc` | `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests` | offline |
-| S29 | `20261127-091103-setup-build-spring-boot-51940-s29-at-bot` | `20261127-110822-setup-build-spring-boot-51940-s29-at-bot` | `:module:spring-boot-amqp-rabbitmq`, `:module:spring-boot-rabbitmq` | `AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitEnvironmentTests`, `RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqEnvironmentTests` | offline |
-| S30 | `20261127-091104-setup-build-spring-boot-51774-s30-at-bot` | `20261127-110823-setup-build-spring-boot-51774-s30-at-bot` | `:module:spring-boot-kafka` | `KafkaAutoConfigurationTests` | offline |
-| S31 | `20261127-091104-setup-build-spring-boot-50296-s31-at-bot` | `20261127-110822-setup-build-spring-boot-50296-s31-at-bot` | `:module:spring-boot-health` | `AvailabilityProbesHealthEndpointGroupsPostProcessorTests`, `AvailabilityProbesHealthEndpointGroupsTests`, `DelegatingAvailabilityProbesHealthEndpointGroupTests` | offline |
-| S32 | `20261127-091104-setup-build-spring-boot-52321-s32-at-bot` | `20261127-110823-setup-build-spring-boot-52321-s32-at-bot` | `:module:spring-boot-health` | `HealthEndpointSupportTests` | offline |
-| S33 | `20261127-091104-setup-build-spring-boot-51470-s33-at-bot` | `20261127-110823-setup-build-spring-boot-51470-s33-at-bot` | `:module:spring-boot-health`, `:module:spring-boot-webmvc` | `AdditionalHealthEndpointPathTests`, `HealthEndpointSupportTests`, `WebMvcHealthEndpointAdditionalPathIntegrationTests`, `WebFluxHealthEndpointAdditionalPathIntegrationTests`, `JerseyHealthEndpointAdditionalPathIntegrationTests` | offline |
-| S34 | `20261127-091104-setup-build-spring-boot-51937-s34-at-bot` | `20261127-110823-setup-build-spring-boot-51937-s34-at-bot` | `:module:spring-boot-jersey` | `JerseyEndpointIntegrationTests` | offline |
-| S35 | `20261127-091104-setup-build-spring-boot-50734-s35-at-bot` | (none: this run stands) | `:module:spring-boot-mongodb` | `MongoHealthIndicatorTests`, `MongoReactiveHealthIndicatorTests` | offline |
-| S36 | `20261127-091104-setup-build-spring-boot-50461-s36-at-bot` | `20261127-110822-setup-build-spring-boot-50461-s36-at-bot` | `:module:spring-boot-micrometer-metrics`, `:module:spring-boot-micrometer-tracing-opentelemetry`, `:module:spring-boot-opentelemetry` | `OtlpMetricsExportAutoConfigurationTests`, `OtlpMetricsPropertiesConfigAdapterTests`, `OtlpMetricsPropertiesTests`, `OpenTelemetryTracingAutoConfigurationTests`, `OtlpTracingAutoConfigurationIntegrationTests`, `OpenTelemetryLoggingAutoConfigurationTests`, `OtlpLoggingAutoConfigurationIntegrationTests`, `OtlpLoggingAutoConfigurationTests` | offline |
-| S37 | `20261127-091104-setup-build-spring-boot-51959-s37-at-bot` | (none: this run stands) | `:core:spring-boot` | `LoggingApplicationListenerWithContextPausingTests` | offline |
-| S38 | `20261127-091105-setup-build-spring-boot-51156-s38-at-bot` | `20261127-110823-setup-build-spring-boot-51156-s38-at-bot` | `:core:spring-boot` | `AppendableByteArrayTests` | offline |
-| S39 | `20261127-091105-setup-build-spring-boot-52477-s39-at-bot` | (none: this run stands) | `:core:spring-boot` | `JsonValueWriterTests` | offline |
-| S40 | `20261127-091105-setup-build-spring-boot-52522-s40-at-bot` | (none: this run stands) | `:core:spring-boot` | `JsonWriterTests` | offline |
-| S41 | `20261127-091105-setup-build-spring-boot-52593-s41-at-bot` | `20261127-110824-setup-build-spring-boot-52593-s41-at-bot` | `:buildpack:spring-boot-buildpack-platform` | `InspectedContentTests` | offline |
-| S42 | `20261127-091105-setup-build-spring-boot-52285-s42-at-bot` | `20261127-110823-setup-build-spring-boot-52285-s42-at-bot` | `:loader:spring-boot-loader` | `NestedJarFileTests` | offline |
-| S43 | `20261127-091105-setup-build-spring-boot-52280-s43-at-bot` | `20261127-110823-setup-build-spring-boot-52280-s43-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests`, `UrlEncoderTests` | offline |
-| S44 | `20261127-091105-setup-build-spring-boot-52244-s44-at-bot` | (none: this run stands) | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
-| S45 | `20261127-091105-setup-build-spring-boot-52402-s45-at-bot` | `20261127-110823-setup-build-spring-boot-52402-s45-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
-| S46 | `20261127-091105-setup-build-spring-boot-51653-s46-at-bot` | (none: this run stands) | `:loader:spring-boot-jarmode-tools` | `IndexedLayersTests` | offline |
-| S47 | `20261127-091106-setup-build-spring-boot-52530-s47-at-bot` | `20261127-110824-setup-build-spring-boot-52530-s47-at-bot` | `:build-plugin:spring-boot-gradle-plugin` | `LayeredSpecTests` | offline |
-| S48 | `20261127-091106-setup-build-spring-boot-51551-s48-at-bot` | (none: this run stands) | `:loader:spring-boot-loader-tools` | `RepackagerTests`, `WarIntegrationTests` (intTest) | online |
-| S49 | `20261127-091106-setup-build-spring-boot-51372-s49-at-bot` | `20261127-110824-setup-build-spring-boot-51372-s49-at-bot` | `:build-plugin:spring-boot-gradle-plugin`, `:loader:spring-boot-jarmode-tools`, `:loader:spring-boot-loader-tools` | `BootJarTests`, `BootWarTests`, `ExtractCommandTests`, `IndexedJarStructureTests` | offline |
-| S50 | `20261127-091106-setup-build-spring-boot-50433-s50-at-bot` | (none: this run stands) | `:module:spring-boot-flyway` | `NativeImageResourceProviderTests` | offline |
+| Case | First job | Rerun (after the second resolution pass) | Third run (12:18 UTC) | Jar projects | Landed test classes (source set) | Network |
+|---|---|---|---|---|---|---|
+| S01 | `20261127-091100-setup-build-spring-boot-52125-s01-at-bot` | `20261127-110819-setup-build-spring-boot-52125-s01-at-bot` | — | `:core:spring-boot-test` | `TestPropertyValuesTests` | offline |
+| S02 | `20261127-091100-setup-build-spring-boot-51661-s02-at-bot` | `20261127-110819-setup-build-spring-boot-51661-s02-at-bot` | — | `:core:spring-boot` | `ValueObjectBinderTests`, `ConfigurationPropertiesTests` | offline |
+| S03 | `20261127-091101-setup-build-spring-boot-50773-s03-at-bot` | `20261127-110819-setup-build-spring-boot-50773-s03-at-bot` | — | `:core:spring-boot` | `MapBinderTests` | offline |
+| S04 | `20261127-091101-setup-build-spring-boot-50798-s04-at-bot` | `20261127-110819-setup-build-spring-boot-50798-s04-at-bot` | — | `:core:spring-boot` | `ValidationBindHandlerTests` | offline |
+| S05 | `20261127-091101-setup-build-spring-boot-52207-s05-at-bot` | `20261127-110820-setup-build-spring-boot-52207-s05-at-bot` | — | `:core:spring-boot` | `OriginTrackedPropertiesLoaderTests` | offline |
+| S06 | `20261127-091101-setup-build-spring-boot-52277-s06-at-bot` | `20261127-110820-setup-build-spring-boot-52277-s06-at-bot` | — | `:core:spring-boot` | `FileHintTests`, `StandardConfigDataLocationResolverTests` | offline |
+| S07 | `20261127-091101-setup-build-spring-boot-52666-s07-at-bot` | `20261127-110820-setup-build-spring-boot-52666-s07-at-bot` | — | `:core:spring-boot` | `ConfigTreePropertySourceTests` | offline |
+| S08 | `20261127-091101-setup-build-spring-boot-52904-s08-at-bot` | `20261127-110820-setup-build-spring-boot-52904-s08-at-bot` | — | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
+| S09 | `20261127-091101-setup-build-spring-boot-51855-s09-at-bot` | `20261127-110819-setup-build-spring-boot-51855-s09-at-bot` | — | `:core:spring-boot-properties-migrator` | `PropertiesMigrationListenerTests` | offline |
+| S10 | `20261127-091101-setup-build-spring-boot-50489-s10-at-bot` | `20261127-110802-setup-build-spring-boot-50489-s10-at-bot` | — | `:build-plugin:spring-boot-gradle-plugin`, `:configuration-metadata:spring-boot-configuration-processor` | `JavaPluginActionIntegrationTests`, `DescriptionCacheTests` | online |
+| S11 | `20261127-091101-setup-build-spring-boot-51867-s11-at-bot` | `20261127-110820-setup-build-spring-boot-51867-s11-at-bot` | — | `:core:spring-boot-autoconfigure` | `AutoConfigurationSorterTests` | offline |
+| S12 | `20261127-091102-setup-build-spring-boot-52310-s12-at-bot` | `20261127-110821-setup-build-spring-boot-52310-s12-at-bot` | — | `:core:spring-boot` | `SpringApplicationTests` | offline |
+| S13 | `20261127-091102-setup-build-spring-boot-52309-s13-at-bot` | `20261127-110821-setup-build-spring-boot-52309-s13-at-bot` | — | `:core:spring-boot` | `SpringApplicationTests` | offline |
+| S14 | `20261127-091102-setup-build-spring-boot-52831-s14-at-bot` | `20261127-110821-setup-build-spring-boot-52831-s14-at-bot` | — | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
+| S15 | `20261127-091102-setup-build-spring-boot-50886-s15-at-bot` | `20261127-110820-setup-build-spring-boot-50886-s15-at-bot` | — | `:module:spring-boot-micrometer-metrics` | `MeterRegistryCloserTests`, `MeterRegistryPostProcessorTests`, `MetricsAutoConfigurationTests` | offline |
+| S17 | `20261127-091102-setup-build-spring-boot-52251-s17-at-bot` | `20261127-110821-setup-build-spring-boot-52251-s17-at-bot` | — | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
+| S18 | `20261127-091102-setup-build-spring-boot-52304-s18-at-bot` | `20261127-110821-setup-build-spring-boot-52304-s18-at-bot` | — | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
+| S19 | `20261127-091102-setup-build-spring-boot-51173-s19-at-bot` | `20261127-110820-setup-build-spring-boot-51173-s19-at-bot` | `20261127-121807-setup-build-spring-boot-51173-s19-at-bot` | `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryCustomizerTests`, `TomcatServerPropertiesTests`, `SampleOAuth2ClientApplicationTests` | offline |
+| S20 | `20261127-091102-setup-build-spring-boot-52162-s20-at-bot` | `20261127-110821-setup-build-spring-boot-52162-s20-at-bot` | — | `:module:spring-boot-jetty`, `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryTests.givenARestartedServer*`, `TomcatReactiveWebServerFactoryTests.givenARestartedServer*`, `JettyServletWebServerFactoryTests.givenARestartedServer*`, `JettyReactiveWebServerFactoryTests.givenARestartedServer*` | offline |
+| S21 | `20261127-091103-setup-build-spring-boot-51410-s21-at-bot` | `20261127-110821-setup-build-spring-boot-51410-s21-at-bot` | — | `:module:spring-boot-jdbc` | `DataSourceUnwrapperTests` | offline |
+| S22 | `20261127-091103-setup-build-spring-boot-50271-s22-at-bot` | `20261127-110821-setup-build-spring-boot-50271-s22-at-bot` | — | `:module:spring-boot-jdbc` | `DataSourceBuilderTests`, `DataSourceUnwrapperTests`, `LiquibaseAutoConfigurationTests` | offline |
+| S23 | `20261127-091103-setup-build-spring-boot-52824-s23-at-bot` | `20261127-110822-setup-build-spring-boot-52824-s23-at-bot` | — | `:module:spring-boot-hibernate` | `HibernateJpaAutoConfigurationTests` | offline |
+| S24 | `20261127-091103-setup-build-spring-boot-51725-s24-at-bot` | `20261127-110821-setup-build-spring-boot-51725-s24-at-bot` | `20261127-121807-setup-build-spring-boot-51725-s24-at-bot` | `:module:spring-boot-batch-data-mongodb` | `BatchDataMongoAutoConfigurationTests` | offline |
+| S25 | `20261127-091103-setup-build-spring-boot-52190-s25-at-bot` | `20261127-110822-setup-build-spring-boot-52190-s25-at-bot` | — | `:module:spring-boot-data-redis` | `DataRedisAutoConfigurationTests` | offline |
+| S26 | `20261127-091103-setup-build-spring-boot-51844-s26-at-bot` | `20261127-110822-setup-build-spring-boot-51844-s26-at-bot` | — | `:module:spring-boot-cache` | `CacheAutoConfigurationTests` | offline |
+| S27 | `20261127-091103-setup-build-spring-boot-52832-s27-at-bot` | `20261127-110822-setup-build-spring-boot-52832-s27-at-bot` | — | `:core:spring-boot-docker-compose`, `:module:spring-boot-data-redis` | `DefaultConnectionPortsTests`, `DefaultRunningServiceTests` | offline |
+| S28 | `20261127-091103-setup-build-spring-boot-52625-s28-at-bot` | `20261127-110822-setup-build-spring-boot-52625-s28-at-bot` | — | `:module:spring-boot-jdbc` | `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests` | offline |
+| S29 | `20261127-091103-setup-build-spring-boot-51940-s29-at-bot` | `20261127-110822-setup-build-spring-boot-51940-s29-at-bot` | `20261127-121807-setup-build-spring-boot-51940-s29-at-bot` | `:module:spring-boot-amqp-rabbitmq`, `:module:spring-boot-rabbitmq` | `AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitEnvironmentTests`, `RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqEnvironmentTests` | offline |
+| S30 | `20261127-091104-setup-build-spring-boot-51774-s30-at-bot` | `20261127-110823-setup-build-spring-boot-51774-s30-at-bot` | `20261127-121808-setup-build-spring-boot-51774-s30-at-bot` | `:module:spring-boot-kafka` | `KafkaAutoConfigurationTests` | offline |
+| S31 | `20261127-091104-setup-build-spring-boot-50296-s31-at-bot` | `20261127-110822-setup-build-spring-boot-50296-s31-at-bot` | `20261127-121808-setup-build-spring-boot-50296-s31-at-bot` | `:module:spring-boot-health` | `AvailabilityProbesHealthEndpointGroupsPostProcessorTests`, `AvailabilityProbesHealthEndpointGroupsTests`, `DelegatingAvailabilityProbesHealthEndpointGroupTests` | offline |
+| S32 | `20261127-091104-setup-build-spring-boot-52321-s32-at-bot` | `20261127-110823-setup-build-spring-boot-52321-s32-at-bot` | `20261127-121808-setup-build-spring-boot-52321-s32-at-bot` | `:module:spring-boot-health` | `HealthEndpointSupportTests` (abstract; third run: its subclasses `HealthEndpointTests`, `HealthEndpointWebExtensionTests`, `ReactiveHealthEndpointWebExtensionTests`) | offline |
+| S33 | `20261127-091104-setup-build-spring-boot-51470-s33-at-bot` | `20261127-110823-setup-build-spring-boot-51470-s33-at-bot` | `20261127-121808-setup-build-spring-boot-51470-s33-at-bot` | `:module:spring-boot-health`, `:module:spring-boot-webmvc` | `AdditionalHealthEndpointPathTests`, `HealthEndpointSupportTests` (abstract; third run: its subclasses `HealthEndpointTests`, `HealthEndpointWebExtensionTests`, `ReactiveHealthEndpointWebExtensionTests`), `WebMvcHealthEndpointAdditionalPathIntegrationTests`, `WebFluxHealthEndpointAdditionalPathIntegrationTests`, `JerseyHealthEndpointAdditionalPathIntegrationTests` | offline |
+| S34 | `20261127-091104-setup-build-spring-boot-51937-s34-at-bot` | `20261127-110823-setup-build-spring-boot-51937-s34-at-bot` | — | `:module:spring-boot-jersey` | `JerseyEndpointIntegrationTests` | offline |
+| S35 | `20261127-091104-setup-build-spring-boot-50734-s35-at-bot` | (none: this run stands) | — | `:module:spring-boot-mongodb` | `MongoHealthIndicatorTests`, `MongoReactiveHealthIndicatorTests` | offline |
+| S36 | `20261127-091104-setup-build-spring-boot-50461-s36-at-bot` | `20261127-110822-setup-build-spring-boot-50461-s36-at-bot` | `20261127-121808-setup-build-spring-boot-50461-s36-at-bot` | `:module:spring-boot-micrometer-metrics`, `:module:spring-boot-micrometer-tracing-opentelemetry`, `:module:spring-boot-opentelemetry` | `OtlpMetricsExportAutoConfigurationTests`, `OtlpMetricsPropertiesConfigAdapterTests`, `OtlpMetricsPropertiesTests`, `OpenTelemetryTracingAutoConfigurationTests`, `OtlpTracingAutoConfigurationIntegrationTests`, `OpenTelemetryLoggingAutoConfigurationTests`, `OtlpLoggingAutoConfigurationIntegrationTests`, `OtlpLoggingAutoConfigurationTests` | offline |
+| S37 | `20261127-091104-setup-build-spring-boot-51959-s37-at-bot` | (none: this run stands) | — | `:core:spring-boot` | `LoggingApplicationListenerWithContextPausingTests` | offline |
+| S38 | `20261127-091105-setup-build-spring-boot-51156-s38-at-bot` | `20261127-110823-setup-build-spring-boot-51156-s38-at-bot` | — | `:core:spring-boot` | `AppendableByteArrayTests` | offline |
+| S39 | `20261127-091105-setup-build-spring-boot-52477-s39-at-bot` | (none: this run stands) | — | `:core:spring-boot` | `JsonValueWriterTests` | offline |
+| S40 | `20261127-091105-setup-build-spring-boot-52522-s40-at-bot` | (none: this run stands) | — | `:core:spring-boot` | `JsonWriterTests` | offline |
+| S41 | `20261127-091105-setup-build-spring-boot-52593-s41-at-bot` | `20261127-110824-setup-build-spring-boot-52593-s41-at-bot` | — | `:buildpack:spring-boot-buildpack-platform` | `InspectedContentTests` | offline |
+| S42 | `20261127-091105-setup-build-spring-boot-52285-s42-at-bot` | `20261127-110823-setup-build-spring-boot-52285-s42-at-bot` | — | `:loader:spring-boot-loader` | `NestedJarFileTests` | offline |
+| S43 | `20261127-091105-setup-build-spring-boot-52280-s43-at-bot` | `20261127-110823-setup-build-spring-boot-52280-s43-at-bot` | — | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests`, `UrlEncoderTests` | offline |
+| S44 | `20261127-091105-setup-build-spring-boot-52244-s44-at-bot` | (none: this run stands) | — | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
+| S45 | `20261127-091105-setup-build-spring-boot-52402-s45-at-bot` | `20261127-110823-setup-build-spring-boot-52402-s45-at-bot` | — | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
+| S46 | `20261127-091105-setup-build-spring-boot-51653-s46-at-bot` | (none: this run stands) | — | `:loader:spring-boot-jarmode-tools` | `IndexedLayersTests` | offline |
+| S47 | `20261127-091106-setup-build-spring-boot-52530-s47-at-bot` | `20261127-110824-setup-build-spring-boot-52530-s47-at-bot` | — | `:build-plugin:spring-boot-gradle-plugin` | `LayeredSpecTests` | offline |
+| S48 | `20261127-091106-setup-build-spring-boot-51551-s48-at-bot` | (none: this run stands) | — | `:loader:spring-boot-loader-tools` | `RepackagerTests`, `WarIntegrationTests` (intTest) | online |
+| S49 | `20261127-091106-setup-build-spring-boot-51372-s49-at-bot` | `20261127-110824-setup-build-spring-boot-51372-s49-at-bot` | — | `:build-plugin:spring-boot-gradle-plugin`, `:loader:spring-boot-jarmode-tools`, `:loader:spring-boot-loader-tools` | `BootJarTests`, `BootWarTests`, `ExtractCommandTests`, `IndexedJarStructureTests` | offline |
+| S50 | `20261127-091106-setup-build-spring-boot-50433-s50-at-bot` | (none: this run stands) | — | `:module:spring-boot-flyway` | `NativeImageResourceProviderTests` | offline |
 
 ## Commands for a rerun by hand
 
@@ -550,6 +556,9 @@ RESOLVE_PAT=ALL $P/scripts/resolve_case.sh CASE-ROLE
 $P/scripts/resolve_closure.sh CASE-ROLE; RESOLVE_ARGS=--offline RESOLVE_TAG=resolve.closure.offline $P/scripts/resolve_closure.sh CASE-ROLE
 # a detached configuration of given coordinates, with their transitive dependencies (online once, then --offline)
 $P/scripts/gradle_case.sh $W/CASE-ROLE TAG "" -I $P/scripts/resolve-all.init.gradle :PROJECT:setupResolveCoords -PsetupCoords=G:A:V,G:A:V -x :buildSrc:test -x :buildSrc:checkstyleMain -x :buildSrc:checkstyleTest -x :buildSrc:checkFormat
+# one landed class's JUnit counts in a result folder, by <testsuite name> (Gradle 9 hashes long XML file names)
+python3 -I $P/scripts/class_counts.py $W/CASE-ROLE/PROJECT-DIR/build/test-results/test org.springframework.boot.SomeTests
+# S24 and S30 at either pin: add -I $P/scripts/no-werror-micrometer-metrics.init.gradle to any run that compiles :module:spring-boot-micrometer-metrics
 # S16's slice route (seconds, JDK 8)
 bash $P/scripts/slice_s16.sh
 # a released set (':'-joined jar paths in $P/m2)
@@ -577,61 +586,222 @@ once stalled for minutes on its cross-process locks during the first resolution 
 - **The first run of the jobs failed for 41 of 49 cases** on gaps in this setup: the first resolution pass missed the
   dependencies' projects, and `keep()` rejected Gradle's generated API jars. Both are fixed and the 41 are rerun ([Jobs](#jobs)).
   S10's first fix run also lost one TestKit test to a `NoRouteToHostException` (network).
+- **The second run left three setup faults**, now fixed and rerun:
+  - S24 and S30: the served Micrometer `1.18.0-SNAPSHOT` deprecates AppOptics, so a dependency project fails under `-Werror`.
+  - S32: `--tests` named an abstract class, so its tests never ran.
+  The second run also reported `no-result` per class for long class names in five passing cases; they are rerun for their counts.
+- **S11, S12 and S46: the landed tests do not separate the pins in this build** (they pass on the parent too). This is a
+  result, not a fault, and nothing was changed to alter it.
 - The pull of `postgres:17` moved the machine's tag to the current image ([Docker images](#docker-images)).
 - No verifier, no claims, no examples.
 
 ## Job results
 
-**First run** (the 49 jobs of [Jobs](#jobs), 09:18 to 10:19 UTC on 2026-11-27; results collected by the runner on its own line,
-`verification/results/2026/11/27/JOB-ID/`, not yet merged into this one when this was written; the step logs this table reads are
-`$P/logs/CASE-ROLE.test.offline.{log,junit.txt,class.txt}` and `$P/logs/CASE-parent-landed.test.offline.*`, `.test.*` for S10
-and S48). **Eight cases completed**: seven jobs passed every step, and S46 passed all but its transplant:
+**Three runs** of the 49 jobs of [Jobs](#jobs), all on 2026-11-27, collected by the runner on its own line
+(`verification/results/2026/11/27/JOB-ID/`, not merged into this one when this was written; the copies this record was made from
+are in `$P/tmp/results-current/`). The step logs the table reads are `$P/logs/CASE-ROLE.test.offline.{log,junit.txt,class.txt}`
+and `$P/logs/CASE-parent-landed.test.offline.*` (`.test.*` for S10 and S48, which run online).
+
+1. **First run**, 09:18 to 10:19 UTC: 8 cases completed (S35, S37, S39, S40, S44, S46, S48, S50); 41 failed for setup reasons
+   ([Jobs](#jobs)) and were resubmitted.
+2. **Second run** of those 41, 11:11 to 12:08 UTC: 36 passed every step; 5 failed. **S11 and S12** failed only because their
+   transplant did not fail (results, below). **S24 and S30** failed to compile a project their tests need, and **S32**'s job ran no
+   test at all: setup faults, fixed and resubmitted.
+3. **Third run**, queued 12:18 UTC, **pending at this revision**: S24, S30 and S32 after their fixes, and S19, S29, S31, S33 and
+   S36, whose second run passed but whose per-class counts were lost (below).
+
+Status per case, the latest finished run of each (for the eight in the third run, their second run):
 
 | Case | Job | Status | Fix: landed classes | Parent: those that exist there | Transplant: the fix's tests on the parent |
 |---|---|---|---|---|---|
+| S01 | `20261127-110819-setup-build-spring-boot-52125-s01-at-bot` | passed | 21 tests, 0 failed, 0 errors | 20 tests, 0 failed, 0 errors | fails: `TestPropertyValuesTests#applyToSystemPropertiesShouldRestoreEmptySystemProperty()` |
+| S02 | `20261127-110819-setup-build-spring-boot-51661-s02-at-bot` | passed | 163 tests, 0 failed, 0 errors | 157 tests, 0 failed, 0 errors | fails: `ConfigurationPropertiesTests#loadWhenDefaultValuesContainPlaceholdersShouldResolveAndConvert()`, `ConfigurationPropertiesTests#loadWhenDefaultValuesContainPlaceholdersShouldUsePlaceholderDefaults()`, `ValueObjectBinderTests#createWithDefaultValuePlaceholderResolvingToNonStringShouldConvert()` |
+| S03 | `20261127-110819-setup-build-spring-boot-50773-s03-at-bot` | passed | 47 tests, 0 failed, 0 errors | 45 tests, 0 failed, 0 errors | fails: `MapBinderTests#bindToMapWhenEmptyStringShouldReturnEmptyMap()`, `MapBinderTests#nestedMapsWhenEmptyStringShouldReturnEmptyMap()` |
+| S04 | `20261127-110819-setup-build-spring-boot-50798-s04-at-bot` | passed | 17 tests, 0 failed, 0 errors | 16 tests, 0 failed, 0 errors | fails: `ValidationBindHandlerTests#bindShouldValidateMapWithWildcardValue()` |
+| S05 | `20261127-110820-setup-build-spring-boot-52207-s05-at-bot` | passed | 40 tests, 0 failed, 0 errors | 39 tests, 0 failed, 0 errors | fails: `OriginTrackedPropertiesLoaderTests#compareToJavaProperties()`, `OriginTrackedPropertiesLoaderTests#getPropertyWithEscapedCommentPrefixCharacter()` |
+| S06 | `20261127-110820-setup-build-spring-boot-52277-s06-at-bot` | passed | 53 tests, 0 failed, 0 errors | 32 tests, 0 failed, 0 errors | fails: `FileHintTests#[1] value = "foo[a]/bar.yaml"`, `FileHintTests#[2] value = "foo[1].yaml"`, `FileHintTests#[2] value = "foo[a]/bar[.yaml]", expected = "foo[a]/bar"`, `FileHintTests#[3] value = "file:/tmp/team[a]/app[1].yaml"`, `FileHintTests#[4] value = "a[b]c[.yaml]d"`, `FileHintTests#[4] value = "foo[a]bar[b]", expected = "foo[a]bar"`, `FileHintTests#[5] value = "foo[.yaml]/"`, `FileHintTests#[7] value = "foo[a]]"`, `FileHintTests#[9] value = "foo[[x]", expected = "foo["`, `FileHintTests#shouldParseTrailingHintWhenValueContainsOtherBrackets()`, `StandardConfigDataLocationResolverTests#resolveWhenLocationContainsBracketsResolves()` |
+| S07 | `20261127-110820-setup-build-spring-boot-52666-s07-at-bot` | passed | 26 tests, 0 failed, 0 errors | 25 tests, 0 failed, 0 errors | fails: `ConfigTreePropertySourceTests#getPropertyNamesWhenSourceDirectoryIsReferencedViaDotDotReturnsPropertyNames()` |
+| S08 | `20261127-110820-setup-build-spring-boot-52904-s08-at-bot` | passed | 23 tests, 0 failed, 0 errors, 1 skipped | 22 tests, 0 failed, 0 errors, 1 skipped | fails: `MessageSourceAutoConfigurationTests#testMultipleMessageSourceCreatedWithIndexedBasename()` |
+| S09 | `20261127-110819-setup-build-spring-boot-51855-s09-at-bot` | passed | 7 tests, 0 failed, 0 errors | 1 tests, 0 failed, 0 errors | fails: `PropertiesMigrationListenerTests#failOnErrorWithUnsupportedKeyFails()`, `PropertiesMigrationListenerTests#failOnWarningWithRenamedKeyFails()`, `PropertiesMigrationListenerTests#failOnWarningWithUnsupportedKeyFails()` |
+| S10 | `20261127-110802-setup-build-spring-boot-50489-s10-at-bot` | passed | 98 tests, 0 failed, 0 errors | 87 tests, 0 failed, 0 errors | fails: `JavaPluginActionIntegrationTests#Gradle 9.0.0` ×2, `JavaPluginActionIntegrationTests#Gradle 9.7.0` ×2, `JavaPluginActionIntegrationTests#Gradle 9.7.0 --configuration-cache` ×2; does not compile (`:configuration-metadata:spring-boot-configuration-processor:compileTestJava`; first error: `DescriptionCacheTests.java`: cannot find symbol) |
+| S11 | `20261127-110820-setup-build-spring-boot-51867-s11-at-bot` | failed | 23 tests, 0 failed, 0 errors | 18 tests, 0 failed, 0 errors | **does not fail** (23 tests, 0 failed, 0 errors, gradle-exit=0) |
+| S12 | `20261127-110821-setup-build-spring-boot-52310-s12-at-bot` | failed | 107 tests, 0 failed, 0 errors, 2 skipped | 104 tests, 0 failed, 0 errors, 2 skipped | **does not fail** (107 tests, 0 failed, 0 errors, 2 skipped, gradle-exit=0) |
+| S13 | `20261127-110821-setup-build-spring-boot-52309-s13-at-bot` | passed | 104 tests, 0 failed, 0 errors, 2 skipped | 103 tests, 0 failed, 0 errors, 2 skipped | fails: `SpringApplicationTests#shouldNotStopKeepAliveThreadIfChildContextIsClosed()` |
+| S14 | `20261127-110821-setup-build-spring-boot-52831-s14-at-bot` | passed | 21 tests, 0 failed, 0 errors, 1 skipped | 20 tests, 0 failed, 0 errors, 1 skipped | fails: `MessageSourceAutoConfigurationTests#propertiesBundleIsDetectedAfterPreviousContextCouldNotLoadIt()` |
+| S15 | `20261127-110820-setup-build-spring-boot-50886-s15-at-bot` | passed | 33 tests, 0 failed, 0 errors | 26 tests, 0 failed, 0 errors | does not compile (`:module:spring-boot-micrometer-metrics:compileTestJava`; first error: `MeterRegistryPostProcessorTests.java`: cannot find symbol) |
+| S17 | `20261127-110821-setup-build-spring-boot-52251-s17-at-bot` | passed | 40 tests, 0 failed, 0 errors | 38 tests, 0 failed, 0 errors | fails: `HttpMessageConvertersAutoConfigurationTests#stringConvertersCustomizerHasOrderZero()`, `HttpMessageConvertersAutoConfigurationTests#stringCustomConverterWithCustomizer()` |
+| S18 | `20261127-110821-setup-build-spring-boot-52304-s18-at-bot` | passed | 43 tests, 0 failed, 0 errors | 40 tests, 0 failed, 0 errors | fails: `HttpMessageConvertersAutoConfigurationTests#kotlinSerializationUsesLimitedPredicateWhenOnlyJsonbApiIsAvailable()`, `HttpMessageConvertersAutoConfigurationTests#kotlinSerializationUsesLimitedPredicateWhenOnlyJsonbIsAvailable()` |
+| S19 | `20261127-110820-setup-build-spring-boot-51173-s19-at-bot` | passed | 36 tests, 0 failed, 0 errors | 34 tests, 0 failed, 0 errors | fails: `SampleOAuth2ClientApplicationTests#everythingShouldRedirectToLogin()`, `TomcatServerPropertiesTests#tomcatUseRelativeRedirectsDefaultsToTrue()`, `TomcatServerPropertiesTests#tomcatUseRelativeRedirectsMatchesDefault()`, `TomcatServletWebServerFactoryCustomizerTests#useRelativeRedirectsDefaultsToTrue()` |
+| S20 | `20261127-110821-setup-build-spring-boot-52162-s20-at-bot` | passed | 4 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | fails: `JettyReactiveWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()`, `JettyServletWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()`, `TomcatReactiveWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()`, `TomcatServletWebServerFactoryTests#givenARestartedServerWhenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()` |
+| S21 | `20261127-110821-setup-build-spring-boot-51410-s21-at-bot` | passed | 17 tests, 0 failed, 0 errors | 15 tests, 0 failed, 0 errors | fails: `DataSourceUnwrapperTests#unwrapRootWithDelegateWrappingSelfReturningWrapper()` |
+| S22 | `20261127-110821-setup-build-spring-boot-50271-s22-at-bot` | passed | 98 tests, 0 failed, 0 errors | 91 tests, 0 failed, 0 errors | fails: `LiquibaseAutoConfigurationTests#lazyConnectionDataSource()`; does not compile (`:module:spring-boot-jdbc:compileTestJava`; first error: `DataSourceUnwrapperTests.java`: cannot find symbol) |
+| S23 | `20261127-110822-setup-build-spring-boot-52824-s23-at-bot` | passed | 69 tests, 0 failed, 0 errors, 3 skipped | 67 tests, 0 failed, 0 errors, 3 skipped | fails: `HibernateJpaAutoConfigurationTests#providerDisablesAutoCommitIsConfiguredWhenBuilderDataSourceHasAutoCommitDisabled()`, `HibernateJpaAutoConfigurationTests#providerDisablesAutoCommitIsNotConfiguredWhenBuilderDataSourceHasAutoCommitEnabled()` |
+| S24 | `20261127-110821-setup-build-spring-boot-51725-s24-at-bot` | failed | 0 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | **does not fail** (0 tests, 0 failed, 0 errors, gradle-exit=1) |
+| S25 | `20261127-110822-setup-build-spring-boot-52190-s25-at-bot` | passed | 58 tests, 0 failed, 0 errors | 56 tests, 0 failed, 0 errors | fails: `DataRedisAutoConfigurationTests#testRedisConfigurationWithClusterRefreshPeriodAndClusterConfigurationBean()`, `DataRedisAutoConfigurationTests#testRedisConfigurationWithClusterRefreshPeriodAndCustomConnectionDetails()` |
+| S26 | `20261127-110822-setup-build-spring-boot-51844-s26-at-bot` | passed | 61 tests, 0 failed, 0 errors | 59 tests, 0 failed, 0 errors | fails: `CacheAutoConfigurationTests#caffeineCacheWithAsyncCacheMode()` |
+| S27 | `20261127-110822-setup-build-spring-boot-52832-s27-at-bot` | passed | 21 tests, 0 failed, 0 errors | 15 tests, 0 failed, 0 errors | does not compile (`:core:spring-boot-docker-compose:compileTestJava`; first error: `DefaultRunningServiceTests.java`: cannot find symbol) |
+| S28 | `20261127-110822-setup-build-spring-boot-52625-s28-at-bot` | passed | 13 tests, 0 failed, 0 errors | 6 tests, 0 failed, 0 errors | fails: `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[1] database = "my+db"`, `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[2] database = "my?db"`, `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[3] database = "my/db"`, `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[4] database = "my%db"`, `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests#[5] database = "my%db"` |
+| S29 | `20261127-110822-setup-build-spring-boot-51940-s29-at-bot` | passed | 35 tests, 0 failed, 0 errors | 24 tests, 0 failed, 0 errors | does not compile (`:module:spring-boot-amqp-rabbitmq:compileTestJava`, `:module:spring-boot-rabbitmq:compileTestJava`; first error: `RabbitEnvironmentTests.java`: cannot find symbol) |
+| S30 | `20261127-110823-setup-build-spring-boot-51774-s30-at-bot` | failed | 0 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | **does not fail** (0 tests, 0 failed, 0 errors, gradle-exit=1) |
+| S31 | `20261127-110822-setup-build-spring-boot-50296-s31-at-bot` | passed | 26 tests, 0 failed, 0 errors | 20 tests, 0 failed, 0 errors | does not compile (`:module:spring-boot-health:compileTestJava`; first error: `AvailabilityProbesHealthEndpointGroupsPostProcessorTests.java`: constructor AvailabilityProbesHealthEndpointGroupsPostProcessor in class AvailabilityProbesHealthEndpointGroupsPostProcessor cannot be applied to given types;) |
+| S32 | `20261127-110823-setup-build-spring-boot-52321-s32-at-bot` | failed | 0 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | **does not fail** (0 tests, 0 failed, 0 errors, gradle-exit=0) |
+| S33 | `20261127-110823-setup-build-spring-boot-51470-s33-at-bot` | passed | 45 tests, 0 failed, 0 errors | 39 tests, 0 failed, 0 errors | fails: `AdditionalHealthEndpointPathTests#fromPathWithMultipleSegmentsNotStartingWithSlashShouldCreatePath()`, `AdditionalHealthEndpointPathTests#fromPathWithMultipleSegmentsShouldCreatePath()`, `AdditionalHealthEndpointPathTests#ofWithMultipleSegmentValueShouldCreatePath()`, `JerseyHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()`, `JerseyHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()`, `WebFluxHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()`, `WebFluxHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()`, `WebMvcHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()`, `WebMvcHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()` |
+| S34 | `20261127-110823-setup-build-spring-boot-51937-s34-at-bot` | passed | 5 tests, 0 failed, 0 errors | 4 tests, 0 failed, 0 errors | fails: `JerseyEndpointIntegrationTests#[2] separateManagementPort = true` |
 | S35 | `20261127-091104-setup-build-spring-boot-50734-s35-at-bot` | passed | 6 tests, 0 failed, 0 errors | 4 tests, 0 failed, 0 errors | fails: `MongoHealthIndicatorTests#mongoIsUp()`, `MongoReactiveHealthIndicatorTests#mongoIsUp()` |
+| S36 | `20261127-110822-setup-build-spring-boot-50461-s36-at-bot` | passed | 148 tests, 0 failed, 0 errors | 126 tests, 0 failed, 0 errors | fails: `OpenTelemetryTracingAutoConfigurationTests#shouldAppendTracesPathToCommonEndpoint()`, `OpenTelemetryTracingAutoConfigurationTests#shouldMergeCommonAndSignalSpecificHeadersForTracing()`, `OtlpTracingAutoConfigurationIntegrationTests#httpSpanExporterFallsBackToCommonCompressionWhenSignalSpecificCompressionIsNotSet()`; does not compile (`:module:spring-boot-micrometer-metrics:compileTestJava`, `:module:spring-boot-opentelemetry:compileTestJava`; first error: `OtlpLoggingAutoConfigurationTests.java`: cannot find symbol) |
 | S37 | `20261127-091104-setup-build-spring-boot-51959-s37-at-bot` | passed | 3 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | fails: `LoggingApplicationListenerWithContextPausingTests$ReuseContextOne#test(CapturedOutput)` |
+| S38 | `20261127-110823-setup-build-spring-boot-51156-s38-at-bot` | passed | 5 tests, 0 failed, 0 errors | 4 tests, 0 failed, 0 errors | does not compile (`:core:spring-boot:compileTestJava`; first error: `AppendableByteArrayTests.java`: method toByteArray in class AppendableByteArray cannot be applied to given types;) |
 | S39 | `20261127-091105-setup-build-spring-boot-52477-s39-at-bot` | passed | 36 tests, 0 failed, 0 errors, 1 skipped | 33 tests, 0 failed, 0 errors, 1 skipped | fails: `JsonValueWriterTests#writeWhenNegativeInfinity()`, `JsonValueWriterTests#writeWhenNotANumber()`, `JsonValueWriterTests#writeWhenPositiveInfinity()` |
 | S40 | `20261127-091105-setup-build-spring-boot-52522-s40-at-bot` | passed | 87 tests, 0 failed, 0 errors | 86 tests, 0 failed, 0 errors | fails: `JsonWriterTests$MembersTest#usingPairsWithName()` |
+| S41 | `20261127-110824-setup-build-spring-boot-52593-s41-at-bot` | passed | 10 tests, 0 failed, 0 errors | 8 tests, 0 failed, 0 errors | fails: `InspectedContentTests#ofWritingRangeShouldWork()`, `InspectedContentTests#ofWritingRangesThatExceedMemoryLimitShouldWork()` |
+| S42 | `20261127-110823-setup-build-spring-boot-52285-s42-at-bot` | passed | 36 tests, 0 failed, 0 errors | 34 tests, 0 failed, 0 errors | fails: `NestedJarFileTests#readAllBytesAfterReadingStoredContentReturnsRemainingContent()` |
+| S43 | `20261127-110823-setup-build-spring-boot-52280-s43-at-bot` | passed | 20 tests, 0 failed, 0 errors | 17 tests, 0 failed, 0 errors | fails: `JarUrlClassLoaderTests#resolveFromNestedWhenNameNeedsEncoding()`, `UrlEncoderTests#encodeWhenHasSingleByteEncodedCharacters()` |
 | S44 | `20261127-091105-setup-build-spring-boot-52244-s44-at-bot` | passed | 8 tests, 0 failed, 0 errors | 7 tests, 0 failed, 0 errors | fails: `JarUrlClassLoaderTests#loadClassFromNestedWhenJarHasNoDirectoryEntriesDefinesPackageFromManifest()` |
+| S45 | `20261127-110823-setup-build-spring-boot-52402-s45-at-bot` | passed | 16 tests, 0 failed, 0 errors | 14 tests, 0 failed, 0 errors | fails: `JarUrlClassLoaderTests#resolveRootPathFromNested()`, `JarUrlClassLoaderTests#resolveRootResourcesFromNested()` |
 | S46 | `20261127-091105-setup-build-spring-boot-51653-s46-at-bot` | failed | 9 tests, 0 failed, 0 errors | 8 tests, 0 failed, 0 errors | **does not fail** (9 tests, 0 failed, 0 errors, gradle-exit=0) |
+| S47 | `20261127-110824-setup-build-spring-boot-52530-s47-at-bot` | passed | 4 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | fails: `LayeredSpecTests#excludeExcludesApplicationContent()`, `LayeredSpecTests#excludeExcludesDependencies()`, `LayeredSpecTests#includeAndExcludeSelectApplicationContent()`, `LayeredSpecTests#includeAndExcludeSelectDependencies()` |
 | S48 | `20261127-091106-setup-build-spring-boot-51551-s48-at-bot` | passed | 81 tests, 0 failed, 0 errors | 78 tests, 0 failed, 0 errors | fails: `RepackagerTests#sbomManifestEntriesAreWrittenForWar()`, `WarIntegrationTests#apache-maven-3.6.3`, `WarIntegrationTests#apache-maven-3.9.13` |
+| S49 | `20261127-110824-setup-build-spring-boot-51372-s49-at-bot` | passed | 127 tests, 0 failed, 0 errors | 114 tests, 0 failed, 0 errors | fails: `BootWarTests#basicArchiveCreation()`; does not compile (`:loader:spring-boot-jarmode-tools:compileTestJava`; first error: `IndexedJarStructureTests.java`: cannot find symbol) |
 | S50 | `20261127-091106-setup-build-spring-boot-50433-s50-at-bot` | passed | 1 tests, 0 failed, 0 errors | 0 tests, 0 failed, 0 errors | fails: `NativeImageResourceProviderTests#nativeImageResourceProviderShouldReadNestedMigrations()` |
 
-So for S35, S37, S39, S40, S44, S48 and S50 the landed tests pass at the fix, the parent's versions pass at the parent, and the
-fix's tests fail on the parent in the methods named. A parent count of 0 means the landed class is new (S37, S50: absent at the
-parent, so only the transplant runs it there). **S46 is the exception**: the fix's `IndexedLayersTests` (9 tests) also pass on
-the parent. The PR is a lookup optimisation whose landed test repeats identical candidates, so passing on the parent is
-consistent with the brief's account; the job reports it as a failure only because the transplant step expects one. It was not
+A **passed** job means the landed tests pass at the fix, the parent's versions pass at the parent, and the fix's tests fail on a
+copy of the parent in the methods named, or do not compile there (the task and the first error are given). A parent count of 0
+means the landed classes or methods are new (S20, S37, S47, S50).
+
+**43 cases are complete** (7 from the first run, 36 from the second); S19, S29, S31, S33 and S36 among them are rerun only for
+their per-class counts, and their verdicts stand.
+
+**Three cases whose transplant does not fail.** These are results of the build, not setup faults, and were not rerun:
+
+- **S46**: the fix's `IndexedLayersTests` (9 tests) pass on the parent. The PR is a lookup optimisation whose landed test repeats
+  identical candidates; passing on the parent is consistent with the brief's account.
+- **S11**: the fix's `AutoConfigurationSorterTests` (23 tests; the parent's own version has 18) pass on the parent. The PR is a sorting optimisation,
+  and every claim of the brief for S11 expects the same result on both revisions.
+- **S12**: the fix's `SpringApplicationTests` (107 tests, 2 skipped) pass on the parent, including the three landed tests
+  `runnersAreCalledOnceWhenContextIsRefreshed`, `runnersAreNotCalledWhenContextIsClosedImmediatelyAfterRefresh` and
+  `runnersAreNotCalledWhenContextIsClosedWhileHandlingApplicationStartedEvent`. These are the tests whose parent failures the
+  brief cites from the PR. The tests ran on the parent's own `SpringApplication` (a `git archive` of the parent with only the test
+  file replaced). One known difference from the PR author's run: the pins import Spring Framework `7.0.10-SNAPSHOT`, and that
+  snapshot is today's build ([Snapshot dependencies](#snapshot-dependencies)). This setup did not look further.
+
+**Three setup faults, fixed for the third run:**
+
+- **S24 and S30**: both pins import Micrometer `1.18.0-SNAPSHOT`, and the only build of it still served deprecates the AppOptics
+  registry (`io.micrometer.appoptics.AppOpticsMeterRegistry`, `AppOpticsConfig`). Boot compiles with `-Werror -Xlint:deprecation`,
+  so `:module:spring-boot-micrometer-metrics:compileJava`, which both cases' tests need, failed at both pins with `warnings found
+  and -Werror specified` and no other error. The other cases on that snapshot (S29, S42, S43, S49) do not compile that project.
+  `$P/scripts/no-werror-micrometer-metrics.init.gradle` removes `-Werror` from that one project's Java compile tasks.
+  `case_job.sh` adds it for S24 and S30, and it prints the remaining arguments in the log. `-Werror` only turns warnings into a
+  failure: the class files are the same, and the warnings stay in the log.
+- **S32**: its landed class `HealthEndpointSupportTests` is abstract (the PR's shared fixture). A `--tests` filter on an abstract
+  class matches nothing, so the fix and the parent "passed" with 0 tests. The third run names the three concrete subclasses that
+  run its tests (`HealthEndpointTests`, `HealthEndpointWebExtensionTests`, `ReactiveHealthEndpointWebExtensionTests`, all present
+  at both pins), and the transplant still takes the fix's changed `HealthEndpointSupportTests.java`. S33 names the same abstract
+  class beside its other four, so its third run adds the subclasses as well. No other landed class in `cases.tsv` is abstract.
+
+**Per-class counts.** `CASE-ROLE.test*.class.txt` should give each landed class's own JUnit counts. In the second run it reported
+`no-result` for classes that did run. Gradle 9 writes `TEST-CLASS.xml` only while that name fits 120 bytes
+(`org.gradle.internal.SafeFileLocationUtils`), and it shortens longer names with a hash; the lookup was by file name. The step
+totals and the pass and fail verdicts were not affected: they count every XML file, and for S31, for example, the total of 26 is
+exactly the three classes' 9 + 14 + 3 tests. `$P/scripts/class_counts.py` now finds each class by the XML's `<testsuite name>`.
+S28 and S37 have one landed class each, so their totals are the class's counts (S28: 13 at the fix, 6 at the parent; S37: 3 at the
+fix, absent at the parent). Their `class.txt` files still say `no-result` (S37's is from the first run's earlier bug) and were not
 rerun.
 
-The other **41 failed for setup reasons** ([Jobs](#jobs)) and were resubmitted after the second resolution pass; their reruns
-are pending at this revision (`$P/logs/jobs.resubmit.txt`).
+**Digests of the built artifacts** for the 41 cases that are final (sha256 in full; `$P/artifacts/CASE-ROLE/SHA256SUMS` has every
+jar on the classpaths and each nested class). Each row gives the case's jars and the top-level classes compiled from each
+production source the landing changed (fix), with the parent's digests of the same classes in the same order (`(absent)`: the
+class is new at the fix). S37 and S40 have the same top-level class digest at both pins; their changes are in nested classes:
 
-**Digests of the built artifacts** (sha256 in full; `$P/artifacts/CASE-ROLE/SHA256SUMS` has every jar on the classpaths and each
-nested class): the case's jar, and the top-level classes compiled from each production source the landing changed (fix), with
-the parent's digests of the same classes in the same order. S37 and S40 have the same top-level class digest at both pins: their
-changes are in nested classes (S37: `LoggingApplicationListener$Lifecycle.class`, fix
-`063d900d6a62f5004c344f087f6f3b621f6e6619daecf1df78cef16bb1853800`, parent `d9ce29568a5bf327dcf09711e5b8b7191c28170acb28a1f83d8b197557cc8aa8`;
-S40: seven nested classes of `JsonWriter`, among them `JsonWriter$Member.class`, fix
-`503542587b00fad13319bf131f51a9b5c822ef22aa07c1ba0d163a4454e67379`, parent `f435b2c5864d4ab66e258ac0a68b570d55969c76395324ccfa6e745b029aa679`).
+- S37: `LoggingApplicationListener$Lifecycle.class`, fix `063d900d6a62f5004c344f087f6f3b621f6e6619daecf1df78cef16bb1853800`,
+  parent `d9ce29568a5bf327dcf09711e5b8b7191c28170acb28a1f83d8b197557cc8aa8`.
+- S40: seven nested classes of `JsonWriter`, among them `JsonWriter$Member.class`, fix
+  `503542587b00fad13319bf131f51a9b5c822ef22aa07c1ba0d163a4454e67379`, parent `f435b2c5864d4ab66e258ac0a68b570d55969c76395324ccfa6e745b029aa679`.
+
+The other eight cases' digests come with the third run.
 
 | Case | Role | Jar (sha256) | Changed classes (sha256) |
 |---|---|---|---|
+| S01 | fix | `spring-boot-test-4.0.9-SNAPSHOT.jar` `e79ab518b957878312752fc2c2e2b55da146b0e7051127412e2f01fef82a974e` | `TestPropertyValues.class` `09ace1438755879de3fca560e55a14e939f9501c5353cf4d22dbe93d5a1a89a4` (+3 nested) |
+| S01 | parent | `spring-boot-test-4.0.9-SNAPSHOT.jar` `d2e917c2f291687b210e4fbd6a20c2517966a4ea9c5860c97d9b0210dae4c60d` | `09ace1438755879de3fca560e55a14e939f9501c5353cf4d22dbe93d5a1a89a4` (same order) |
+| S02 | fix | `spring-boot-4.2.0-SNAPSHOT.jar` `49dcb19167e3fc3afbba246f5ed86f79cf813f0ff01309fd8fe947eeb67ba936` | `DefaultValue.class` `4ace1ad78fd398dd3672a80472db983f97a4b271dba9fa8cf6351b3926ef156e`, `ValueObjectBinder.class` `8bddd06d025b635323b56524974ea5cc16173aede865f461b833a67d271e0a5d` (+6 nested) |
+| S02 | parent | `spring-boot-4.2.0-SNAPSHOT.jar` `4ec3cb0a2f098da14eaec38687cd90cccf289019015eae24510eeae2b7bd27ba` | `4ace1ad78fd398dd3672a80472db983f97a4b271dba9fa8cf6351b3926ef156e`, `823c94cf914f757a15c3da77c3886e5ef69a92d88295a113f01a8c6d87a56eef` (same order) |
+| S03 | fix | `spring-boot-4.1.1-SNAPSHOT.jar` `35efd24550a31a66213321c493b91a885c92b56b3ef5b00ba437e0dc18bc1c36` | `MapBinder.class` `f49f6a234a7710c63c54f89407713b22ac615f25c6d2cb1b752e50e76de850d4` (+1 nested) |
+| S03 | parent | `spring-boot-4.1.1-SNAPSHOT.jar` `b3d2713ade2a50accb3fffaa54ce5a8869bf0ea9224fbaa9c4f6ddcede6dffdf` | `ba8302f753e8cfe0b26ea839090f2bc19b0893ac43944c74b0424ad852c0952b` (same order) |
+| S04 | fix | `spring-boot-4.0.8-SNAPSHOT.jar` `0e110526273a0485ba90ee90b00a0ef0abdf316ba1f475afc2cfa69cf6fd660e` | `ValidationBindHandler.class` `cead9c00c77d2c099c5fe5e89660a57c1e2d91e6f50b97792c2710e15c242938` (+1 nested) |
+| S04 | parent | `spring-boot-4.0.8-SNAPSHOT.jar` `96867950a33284521a16435e5becb25b1ea37ac90b4eb3d1a283c809113e367b` | `382affd4278dbdfe91f13c65eed7d8d327f3cf85caf0316b352d024c875ccce2` (same order) |
+| S05 | fix | `spring-boot-4.0.9-SNAPSHOT.jar` `e1ac163d9fcf3c604dc532026b03d5adf8f48ba28873701f906945b50c13108a` | `OriginTrackedPropertiesLoader.class` `f4503250b4797447dcb3b87df189c52d496fa37910f9c3d22f280a0a395c761f` (+2 nested) |
+| S05 | parent | `spring-boot-4.0.9-SNAPSHOT.jar` `5a46f304aa9d5a5e24934583b1656d3be3573e90d0884a98536f88664228e0a6` | `f4503250b4797447dcb3b87df189c52d496fa37910f9c3d22f280a0a395c761f` (same order) |
+| S06 | fix | `spring-boot-4.1.3-SNAPSHOT.jar` `d12aa41d068e91352992f44583af4a08db5f982b0927aa43a8c02c9c800ccaad` | `FileHint.class` `ab4b23479d7141c48b1d9e8bf486ae6b78b50939f610ae7a151f9e4a0fe35075` |
+| S06 | parent | `spring-boot-4.1.3-SNAPSHOT.jar` `ac1ac86049c3be27a6eb04bfe34a1502c5c998a7e1c300a1e14165fc4c6c8b64` | `5ea2ee9adafe3c9781899ca074c545123178e1c1ae40b9d39d8ed8a04ea603da` (same order) |
+| S07 | fix | `spring-boot-4.0.10-SNAPSHOT.jar` `22d12d73dfc086e418a5f4d9b5a8efe1ed28f01d8800434845f8365a0efa54ef` | `ConfigTreePropertySource.class` `2d4a377838b70c1b346c534f644c7061f3332a1713a39edee14f3b4044581087` (+4 nested) |
+| S07 | parent | `spring-boot-4.0.10-SNAPSHOT.jar` `519d5271e5da50b23adfd880896e3b25077df6dc83ec41042637e4c2a1615fad` | `346f93ebfcda6e0572403d945909efb33db4127b2bfa4ccc3d62d27635f9ed46` (same order) |
+| S08 | fix | `spring-boot-autoconfigure-4.0.11-SNAPSHOT.jar` `16938e4391a3e66bf989786aa98661984a3bfa396d60aad98b3717bcd40795d1` | `MessageSourceAutoConfiguration.class` `d7751b66b35a3643d98b87561a8beecdbd818d3d0b999bf49b579e94af82a363` (+3 nested) |
+| S08 | parent | `spring-boot-autoconfigure-4.0.11-SNAPSHOT.jar` `1ed144a23455f3680f2085988edcf630a4c80d7b943a9cb1513b3d4227d05168` | `2d0c6727fe477547484642eeae0c0b20daf6d1271070ff04d15347648b4189c4` (same order) |
+| S09 | fix | `spring-boot-properties-migrator-4.2.0-SNAPSHOT.jar` `1e9d937038cf142f779f436213b7dea54f4b46c3877d6a7d9d73de09f8dc3045` | `PropertiesMigrationListener.class` `7e71e02f0bf45f2af9a6bb401bd9b4578e96768b4fde6703ebbd6eabae66493a` (+1 nested) |
+| S09 | parent | `spring-boot-properties-migrator-4.2.0-SNAPSHOT.jar` `fbd2f3b24d2716d1e092667318bcbe5f523de505dc498b011f615a8489b2f15b` | `a277ce74777a4fbd20fafccc234e41e5846a91f1058bc34e09bbf7f0aded3308` (same order) |
+| S10 | fix | `spring-boot-configuration-processor-4.0.9-SNAPSHOT.jar` `48c6cd37b11e23664181b9051de2a6b3d4266ef21007033aefd519dd4619cef5`, `spring-boot-gradle-plugin-4.0.9-SNAPSHOT.jar` `79e1b6bfc1145d097c2f6fe15b84e244bcc8ff2595c685158871f3f1dc8cc2d3` | `spring-boot-configuration-processor ConfigurationMetadataAnnotationProcessor.class` `d80a951193508f43579ae7ceaecb1a5f2f8da0ee9efda17d1e13c2ed743a0241`, `spring-boot-configuration-processor DescriptionCache.class` `98771c7f072e5479a12c3e2234ef76ec0822ef4d11d837db7f8b9353c9dfec2e`, `spring-boot-configuration-processor MetadataGenerationEnvironment.class` `7f597a5d94af1078e96487c26fae032fc49929dfb974e5c335d54f3926badf7b`, `spring-boot-configuration-processor FieldValuesParser.class` `d814a0550f5a2635195cb6f384e383cbac0772d899e5311c32c4777226524053` (+1 nested), `spring-boot-configuration-processor JavaCompilerFieldValuesParser.class` `ff7bbd26b05a44ea8c6e25530222f578257a7c79ba5dd07a3e55bfb4eb4b1b53` (+1 nested), `spring-boot-gradle-plugin JavaPluginAction.class` `9656815268331987e5fc14d65bf52fed5f5a19507954d1c8fd081ce47f37f36a` (+1 nested) |
+| S10 | parent | `spring-boot-configuration-processor-4.0.9-SNAPSHOT.jar` `bb181d6418208516fa9b0ede51410942bb3c96132d7568bf0b7ce6ff3a137a76`, `spring-boot-gradle-plugin-4.0.9-SNAPSHOT.jar` `b937fad8c95a9cc17f88205e14516b6c99ab5bd7edbb6b09fe79473cd43c1ffe` | `c50702ccea62b9412d1fe318392ef05fc761c41cce470a943661ffe0a3d2fa65`, (absent), `b383b6be04761bb0071b55dad0a54cd3a6fee96548e2b33a2be7d9bc5455c8ff`, `42ff079909a4b6e4fb13acc24080b95a87a5486f90b5595ef100d7ca01adb248`, `d9516e0229aa9b3f9df793e35c3691f29254a3692ae66fc3fa2818c63cc40165`, `4b0c04d35faf7819af7ac3883a572eaf34fea1f8546d6a563c9a00a08181fbaf` (same order) |
+| S11 | fix | `spring-boot-autoconfigure-4.2.0-SNAPSHOT.jar` `5ea05160c059a44a683954ebc904933a20433c79d8967e0828dbe1fad4ba43c5` | `AutoConfigurationSorter.class` `f190efd3a4ee29f510f5cff586a03ec4297bd95a4552eb441ba2b3e66179ea68` (+2 nested) |
+| S11 | parent | `spring-boot-autoconfigure-4.2.0-SNAPSHOT.jar` `d068765653fface12faa91dcd9ffedd5a0d16047b5d944ebfd84f51c661dcdfd` | `7770c07578a8c2caac41eae42177b76e8339e17091c01a065961edd92767a31a` (same order) |
+| S12 | fix | `spring-boot-4.0.10-SNAPSHOT.jar` `a86c700b31df5810f760fabf4330d6a3eae67457ebe54f0266fb78775ccdc9b5` | `SpringApplication.class` `cc5a15990668abfb14f053953c65b2feb6e570aa71342b5cb55b08448ebdc52b` (+12 nested), `SpringApplicationRunListeners.class` `bcb1feecef3f58f83873071c506b3d4c658ba053a4b67508b12fa93f30b7bd76` |
+| S12 | parent | `spring-boot-4.0.10-SNAPSHOT.jar` `99dc776393a774199604a6c9e9e19aee915f7bb2c96da76d62004fb068b2f83e` | `5d5088d40368fce7c16eada15c8bf199366d2fcf3bade0138c6e505e2fca7d89`, `ca5820e2ace96ad45a3349b898c3cf1fc65a73572c09921cf39ab58cd48c7520` (same order) |
+| S13 | fix | `spring-boot-4.0.10-SNAPSHOT.jar` `d5d6e6e357b9ca63f26152b880fe5bafff04224876831a9b142bb8d503846cf6` | `SpringApplication.class` `5d5088d40368fce7c16eada15c8bf199366d2fcf3bade0138c6e505e2fca7d89` (+12 nested) |
+| S13 | parent | `spring-boot-4.0.10-SNAPSHOT.jar` `afce47c45984ddd9b7c7629ca292d73710d56fc2e44437352503676d7ceb2fb2` | `1605c4096ee2a929c44199657df13bfa977105698b19feead6f2882728bc709a` (same order) |
+| S14 | fix | `spring-boot-autoconfigure-4.0.11-SNAPSHOT.jar` `0e95b45f54c2d46e9dce6f42a85382184cc7786f03fcb4910af8d587abeba6da` | `MessageSourceAutoConfiguration.class` `2d0c6727fe477547484642eeae0c0b20daf6d1271070ff04d15347648b4189c4` (+3 nested) |
+| S14 | parent | `spring-boot-autoconfigure-4.0.11-SNAPSHOT.jar` `1c7a5f8ae6d7186011815ef4f139a936e24cd42b3a25465469458e0dee6edcf9` | `0879fd74a31034fa4a2a9d5c8ecc94548667f8109699ea2b6bf00a1c11a28069` (same order) |
+| S15 | fix | `spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar` `e55c521a9bd878f34e9d664279f50526203cbf14ace729990750b7e37646154d` | `MeterRegistryCloser.class` `84ae8bee5477a2066ad42c4dcd69f1d3fca36fd738fd50f73279098a6e06f9ff`, `MeterRegistryPostProcessor.class` `dd736cf01d35e2e3cf5a3a02a1bdf146fac13a3886721ee25f598f4a3c113841` (+1 nested), `MetricsAutoConfiguration.class` `262f634a604136ccf428703e7e09f8f20cfb4b3562c69604aec9b86b28abfffc` |
+| S15 | parent | `spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar` `d9fde5aa9e4d5d0667fc70460d935b948d59d457d2fbe07d1ec1058c7ffc03e2` | (absent), `dac4c4ce8130ba105fd00167d42626915c934644613dc2f09d8b87a9698b95be`, `a557ccc16f1742bdcd03916a557730e2e33ab223fb0f0b90accbde0e0ba3cb4a` (same order) |
+| S17 | fix | `spring-boot-http-converter-4.0.10-SNAPSHOT.jar` `e82d397be044b1c03d5f0c384b70a17973703c2cfa1d4d3d0ca7187c457882a1` | `HttpMessageConvertersAutoConfiguration.class` `b8182d82f4cf517a499a832f2fba4212e8f06e585f9fda51bb950397aae78630` (+4 nested) |
+| S17 | parent | `spring-boot-http-converter-4.0.10-SNAPSHOT.jar` `1b53fe6cd434ff27db0dab0ef38ce3d1a3ded32800e11e15a90ceefb3b5d2d9b` | `b8182d82f4cf517a499a832f2fba4212e8f06e585f9fda51bb950397aae78630` (same order) |
+| S18 | fix | `spring-boot-http-converter-4.0.10-SNAPSHOT.jar` `67dd4371841ed3dd8c7864a538f9f1099d158729052fe18921e586c88470bcea` | `KotlinSerializationHttpMessageConvertersConfiguration.class` `a7de43bfee1559545dd4fa89c2bed816aac30ca2e9a415f95ecd6786a6eb8b80` (+1 nested) |
+| S18 | parent | `spring-boot-http-converter-4.0.10-SNAPSHOT.jar` `e82d397be044b1c03d5f0c384b70a17973703c2cfa1d4d3d0ca7187c457882a1` | `a7de43bfee1559545dd4fa89c2bed816aac30ca2e9a415f95ecd6786a6eb8b80` (same order) |
+| S20 | fix | `spring-boot-jetty-4.0.10-SNAPSHOT.jar` `8ab09a2fd46fa0e14c65e52c9250bfbddd3101a536253f0b98ff344196410c71`, `spring-boot-tomcat-4.0.10-SNAPSHOT.jar` `6b3e986499dc331ca74b453feb6177dc9d17c35c0af76d92993013ec2c765fbf` | `spring-boot-jetty GracefulShutdown.class` `2e696c203ca0d556916607c8f2714c1cdf9d0e943a0cd420e53110fa13b78912`, `spring-boot-jetty JettyWebServer.class` `ef0677e5898aca5f580ee06039427ea8debf922ddca38ab39bf436e7c61da756`, `spring-boot-tomcat GracefulShutdown.class` `bb27587f09aec8fdbf3780523d60ce6c419ee09afbf442ad1689de38d5a7019c`, `spring-boot-tomcat TomcatWebServer.class` `95707faf071a7a66ce99380c068e34ad54ccf1a15fa0c261f496e3fbc95fb896` (+1 nested) |
+| S20 | parent | `spring-boot-jetty-4.0.10-SNAPSHOT.jar` `3563cdc81b9f9a1ef493d08faafe956aae31f6ffc6a451949118fa788c6fe3a7`, `spring-boot-tomcat-4.0.10-SNAPSHOT.jar` `944dc742324eddfd7fcec1ba91bd09b4680c7856975c7dcfd40ca66dced6c79a` | `a4f007b64467ebd4f2d7fdc17760b67e70c1a76d9e6ef63a95cc7efebdcb0b8e`, `80c23d89f7b4d84d9fe7ed6c81be4d624fd7d363f1003a0d06f040351e7b2f64`, `4d0b62206bf5a099a8fe11a5523d55e6fc2704d9632176749a033a221708e3bf`, `c45a1dbde9c9d6645ec7bcedc0c4f4712b4d3f1013868274e6f98528248f2298` (same order) |
+| S21 | fix | `spring-boot-jdbc-4.1.2-SNAPSHOT.jar` `e0e2e55d763b7e63a47bcfa03ad30c5a7acaf05419d55d0a2132b225ad4d4868` | `DataSourceUnwrapper.class` `34615163c439903272c827e7fbb4201509560576f87f26499f0069d73b8020fb` (+1 nested) |
+| S21 | parent | `spring-boot-jdbc-4.1.2-SNAPSHOT.jar` `01eda88c7a0b68b1266c0e48c3842ff12e7e17586378115cd0ccf8141a1fe895` | `665e332e4b5b2583cbddcc79851eebcc04ff144e1459d0c123c6ca1b52f5885f` (same order) |
+| S22 | fix | `spring-boot-jdbc-4.1.0-SNAPSHOT.jar` `d84d0b6ba77896feb4e2cfa0a6b91290701820fdf066823d145f90c2a31fa7f0` | `DataSourceBuilder.class` `581c71ac69d6c1b4083536ce9d2c4e311b1736f0032fb859fca3a1427223a347` (+17 nested), `DataSourceUnwrapper.class` `665e332e4b5b2583cbddcc79851eebcc04ff144e1459d0c123c6ca1b52f5885f` (+1 nested) |
+| S22 | parent | `spring-boot-jdbc-4.1.0-SNAPSHOT.jar` `7c6c0083608fa959926e14c30d60eb520987d102bf11f9c50af9539624cab110` | `17525efe25f1fa6453ac3eec2c88922d113a7196b84721789479749337ceee8f`, `36a6a04272697a269c151f8412995c723374af808d26ccf176da857278d6ed43` (same order) |
+| S23 | fix | `spring-boot-hibernate-4.0.11-SNAPSHOT.jar` `2b3f97cefbe26bcca8a28682a75b22cf2a150d8635946011f5245aa13debb70d` | `HibernateJpaConfiguration.class` `14d40b9902219f231e84c0e65de43e1f1797cb4965323670ea5f602ef5ab52a9` (+2 nested) |
+| S23 | parent | `spring-boot-hibernate-4.0.11-SNAPSHOT.jar` `c05291cb2f8703f6535c5bf7ab3fce0d482688ca7c763713b009a48aaf6e68ab` | `c9428dd563bff28ed59d236fac675480e6bbdff8df0bf8d2fce945310bbfa0ae` (same order) |
+| S25 | fix | `spring-boot-data-redis-4.0.10-SNAPSHOT.jar` `1f112a1e41ad3b5b4e0ea4d1f5b65963a4a8b3b27cdc59e90071991bc76eefbc` | `LettuceConnectionConfiguration.class` `30080fea4c622586ed32f291c4f930736852ae9a815225dea3a8cb9435228cbe` (+2 nested) |
+| S25 | parent | `spring-boot-data-redis-4.0.10-SNAPSHOT.jar` `e05734526a34f2c69f305a5fdd43c407175c3c09edbee2a198ddf1f96f9a99bf` | `b48f2638d59e28b61ef7eb14691d80900ff2ccc6daa2d5fd77e5c11f3839ef74` (same order) |
+| S26 | fix | `spring-boot-cache-4.2.0-SNAPSHOT.jar` `dc9e1253f1fce4f3dde3ea01d4c79aeb1f86a3700653c35dad5be583965476dc` | `CacheProperties.class` `a05b2ac73073602c5542ba46c0738624ba38b37bab963ae2061e0bab0855ffd0` (+6 nested), `CaffeineCacheConfiguration.class` `2194f40c8974118770fbda64e8473912c990344903f877f32eeb44e404305e58` |
+| S26 | parent | `spring-boot-cache-4.2.0-SNAPSHOT.jar` `279e94fc008e34c5995aca0c9eac046eebd05db02b57edf3fb3e28939a8c1758` | `7937963e43a56d0bb4c599d805c65a921dc66f81402d8e93ff39b37c4adbd167`, `24a4af0b48a9175a8a6f972e866a8bf1ceef1891e4bfa9e6fef075011f26fdbd` (same order) |
+| S27 | fix | `spring-boot-data-redis-4.0.11-SNAPSHOT.jar` `c7fb8dc9e4c3c133a4a0fa1f0c495ef59597813eef8e8cf205c241caa5407f83`, `spring-boot-docker-compose-4.0.11-SNAPSHOT.jar` `054812b7f6de9e2e8f6ee4e89dc417924cbb500dca159fe71b398e7fbfbcbc75` | `spring-boot-data-redis RedisDockerComposeConnectionDetailsFactory.class` `6bef861cb104dd8ade26230358a64b892d262173457ff2c3f808f6c3e6fe65f3` (+1 nested), `spring-boot-docker-compose ConnectionPorts.class` `0e295219adc45c6247a6ea7a5439058fed63b92aab32645a0db8968eabd40544`, `spring-boot-docker-compose DefaultConnectionPorts.class` `810baee2c73051c5d889e94286e3f3ed3dbb22fe1337f99dfd607c042a4d3fe8` (+1 nested) |
+| S27 | parent | `spring-boot-data-redis-4.0.11-SNAPSHOT.jar` `765952e2bc3b21333b2e3f0ca54a2c84619643957a12dd46576f1d5bdb7f91f0`, `spring-boot-docker-compose-4.0.11-SNAPSHOT.jar` `ec3417692a87d470cee6c222c3df1caa9eb1729bf02e24b56f0c3233b24079d5` | `6bef861cb104dd8ade26230358a64b892d262173457ff2c3f808f6c3e6fe65f3`, `6fcab3d78317c52dbad38ac9e4bf85aa9abc5cf30373c18d6183326bb3b50565`, `62fbc308c8ba1cfea90a534b6d6dc5dc89cc77192aab794f8738102b51a86e45` (same order) |
+| S28 | fix | `spring-boot-jdbc-4.0.10-SNAPSHOT.jar` `f855f8c64cea74787c6a5dc74f754b575b1cbba9975e946a4737d646349eaf51` | `PostgresJdbcDockerComposeConnectionDetailsFactory.class` `4a74db2829ac685f425988cb568d6d4998551fd7e9570c80fc5c47f4dc92986a` (+1 nested) |
+| S28 | parent | `spring-boot-jdbc-4.0.10-SNAPSHOT.jar` `736e43c5f70c1dee9c3d4f570ee6877f26412f5cd393e158e811ae46d8997224` | `5460209d53d2ade1666a5e44061fc75fdbe99dca6f47dfe5de76447f2966b5a3` (same order) |
+| S34 | fix | `spring-boot-jersey-4.0.9-SNAPSHOT.jar` `2809d47028f7ebbe3c72234d2184360d1dd4544ec5b1e8295b4f083dc4e37f8b` | `JerseyWebEndpointManagementContextConfiguration.class` `0dfcf01793e0e771eff9a694ac88d30955d65e62b206a40d9d24404038173559` (+4 nested) |
+| S34 | parent | `spring-boot-jersey-4.0.9-SNAPSHOT.jar` `cc213865389c18c427b861dcf399f6a5152ec1158bf91c3b62dedac96e5098bf` | `1d2000c37a5e33d095b96d0f955a87a4bf6df02cf5200c41263be46f7611ac75` (same order) |
 | S35 | fix | `spring-boot-mongodb-4.0.8-SNAPSHOT.jar` `764ec81d6bc96891d232919d6a3333f00072597f4eb92bb23e3b5706edf017b8` | `MongoHealthIndicator.class` `c512839f6eb2a0ddc511cf2f4f9751bd0af2eea433fe0c001885e2b4e18a3289`, `MongoReactiveHealthIndicator.class` `c645847af61a2414be263f988ed42949bdbea759a3b11ab59a4b5cb9b844913d` |
 | S35 | parent | `spring-boot-mongodb-4.0.8-SNAPSHOT.jar` `3880ce589013b433dc3864fca1875100d2b04446e6f202c466e0df8f208a5f23` | `ad31580f174e48afeaa6688834f2eb7cb32ac580f930b855782995f1095ae051`, `c0d541fb2656c377a5d7c972f1dc99f59fd514cffc81462be390e6d6eb91b5c5` (same order) |
 | S37 | fix | `spring-boot-4.0.9-SNAPSHOT.jar` `f0e7a89aeb6752d30f4beb5056b32f1ff5734672e63f07c30fde8588be25840d` | `LoggingApplicationListener.class` `32af430d5978fc5364a8987663f70039370fdcb3964a118713371d0c3051671b` (+1 nested) |
 | S37 | parent | `spring-boot-4.0.9-SNAPSHOT.jar` `661058a4662116adf7c26df2d0e4e0af6f42ca9998c399d65f9f298b9fc138ff` | `32af430d5978fc5364a8987663f70039370fdcb3964a118713371d0c3051671b` (same order) |
+| S38 | fix | `spring-boot-4.1.1-SNAPSHOT.jar` `c11970f4170e8a4ada64035a438c92f2e92b7d1cc4a74cfeebc22235c335cd8a` | `AppendableByteArray.class` `fec4defbe6b07608fa19f6e99cb128fffeb6b2b2aee3bcc729c4661c3055db2f`, `WritableJson.class` `d1778c7ce8b15acbc6a75362ef37642b93961d25f18ab00d15529b071dff0d66` (+1 nested) |
+| S38 | parent | `spring-boot-4.1.1-SNAPSHOT.jar` `c969ba334a3db0ee7fbd136e557500a87cfb00df575a0a7bb26fe2322ebe559b` | `06216e1fe93f9a81c2c2c301db5736409255dfa02984787971b152c32bf6f6ec`, `281db625ad75f38faef3ae3fb548c9cbd2b646f299831c12bab23177660cce21` (same order) |
 | S39 | fix | `spring-boot-4.0.10-SNAPSHOT.jar` `2eba7265a56b1b763769db70ccd31e65cf5aa0b7d3217565443445291f0715b2` | `JsonValueWriter.class` `d235fdca6511d20cb656e82effd54124c88a28238ae53ada3689339dd7c5b1d7` (+2 nested) |
 | S39 | parent | `spring-boot-4.0.10-SNAPSHOT.jar` `e60c1ce9cec8d0908b3d20da870ae387d3266234cf7301d4deb0a6b307c42e45` | `9f7e269ad625e7dfd10cba7af2403ffb904a2276c5cc61d9c773b77c44a26eff` (same order) |
 | S40 | fix | `spring-boot-4.0.10-SNAPSHOT.jar` `3cbbffb2548b25e59ef5fef33ea7a3e033bfb00a685910f18a3cd3122660838d` | `JsonWriter.class` `a8826336823bc059619ada7214b70cbe3e968069ff59f0d34f90b620192539ad` (+9 nested) |
 | S40 | parent | `spring-boot-4.0.10-SNAPSHOT.jar` `57463126ca7b854e7fe7b7df6668492121222300fe86c4af96172655752743c4` | `a8826336823bc059619ada7214b70cbe3e968069ff59f0d34f90b620192539ad` (same order) |
+| S41 | fix | `spring-boot-buildpack-platform-4.0.10-SNAPSHOT.jar` `7d1f134db90a75167359ebc169528384cddc5207245c4196d3165287f21ddb34` | `InspectedContent.class` `e2ada71208b0b37f3cd334ff870e89e0f5a61bce6941205888f662789faa1049` (+2 nested) |
+| S41 | parent | `spring-boot-buildpack-platform-4.0.10-SNAPSHOT.jar` `7466a893469b4821f0c23a88eab9c2801b2bd0da124242c4a11b42cf27dbdc34` | `e2ada71208b0b37f3cd334ff870e89e0f5a61bce6941205888f662789faa1049` (same order) |
+| S42 | fix | `spring-boot-loader-4.2.0-SNAPSHOT.jar` `3d9595c819ac5882899bb3abdab6975d2b38a9a11e20b0c9786852075c126dab` | `NestedJarFile.class` `f5f00db8ac03c65d3bba7fcf26dff69e739336bb69404f3d5e97b58813fd16f7` (+6 nested), `ZipInflaterInputStream.class` `848baaa86e04607a46fd509a8cb92563d5a93d963fc364062d7c0ed4601eba6d` |
+| S42 | parent | `spring-boot-loader-4.2.0-SNAPSHOT.jar` `76394fa14f9aa2be6aed953cb8c490313e7cddebf78eb9146c034db4989c5999` | `f5f00db8ac03c65d3bba7fcf26dff69e739336bb69404f3d5e97b58813fd16f7`, `88bff081d28852fc886cdc2d511ddb1dd476150ef70d2af063cfd9e8d392da82` (same order) |
+| S43 | fix | `spring-boot-loader-4.2.0-SNAPSHOT.jar` `ed366c3ab7a8faa55c83846ef4572ca01ac8783ea72c3c5ddafd21dad73f92da` | `UrlEncoder.class` `8fe851da482d438b828c2f1dc4da4df595a293b786d27f98ab2e5d8011ca8d1c` |
+| S43 | parent | `spring-boot-loader-4.2.0-SNAPSHOT.jar` `4d6403ff434ea34f9bb770d5d07884e8906610ef8d377d0378fc32582c64fdc8` | `6ddfabf0b536aff92910940d4dacf10a965843052b68f3c7ad05bf441a028b24` (same order) |
 | S44 | fix | `spring-boot-loader-4.0.9-SNAPSHOT.jar` `7ddd960c6592a19fff37db230fed2166aeafc5b8247d14186d6f897e7f4b4210` | `JarUrlClassLoader.class` `1b7a4eed352242b34ff1af8d036ca9f53528b93cecbfbf9a69b657ee04e72102` (+1 nested) |
 | S44 | parent | `spring-boot-loader-4.0.9-SNAPSHOT.jar` `1a7e634cfd62759ee6aec9b1bb56b34e85c78c2925a47d1f5e1c0dd8135bf31a` | `bb3e22f0aecd4d33726118edd84e3cf047c359a482351b34fdd1ae494642355a` (same order) |
+| S45 | fix | `spring-boot-loader-4.2.0-SNAPSHOT.jar` `c5bdb4a5c215170a58c968a5f5678890dcc72d97ce37e190dff2067f0a667bf6` | `JarUrlClassLoader.class` `f96328af0d437348a066ebeb14af039617384536fec04907de7b4ae94afc7b7b` (+2 nested) |
+| S45 | parent | `spring-boot-loader-4.2.0-SNAPSHOT.jar` `217f1895c8df9adb6b9c72af6cbab2c24836a984131eac85bf64e931e591ce2f` | `f96328af0d437348a066ebeb14af039617384536fec04907de7b4ae94afc7b7b` (same order) |
 | S46 | fix | `spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar` `38c1227d60c661fa5936808dfc505923a4ed9308b08445f9ee4e0b4538f1d3b4` | `IndexedLayers.class` `346df1d0910991db583f0364ef7d8102a5073d52dbcab46c88e2ad9aad090e05` |
 | S46 | parent | `spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar` `b5df1e2f029bddc27b6ec158b6368f4e1dbd913f6ea392dc4a082fd2bd2263b0` | `9cb215d1725fbb18dd4ec84d42d1335af87e3275f2ad738b4cff32861998fe76` (same order) |
+| S47 | fix | `spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar` `5105654f3969b598938d5efb9706e7bf50668ceb9aa08f1a8d0665e39a9d8d89` | `LayeredSpec.class` `13f5e96370db47012cce0a2d49d51b0f9a51e80afa2702bbffc72db47209c203` (+7 nested) |
+| S47 | parent | `spring-boot-gradle-plugin-4.0.10-SNAPSHOT.jar` `86796434210cd2429f81bfebc1c43c9a6816d8794c7e6ffaf6ee802fa5a3b289` | `13f5e96370db47012cce0a2d49d51b0f9a51e80afa2702bbffc72db47209c203` (same order) |
 | S48 | fix | `spring-boot-loader-tools-4.0.9-SNAPSHOT.jar` `2b5ea57830a9aefd35c52c3d35b9a985a5ac7c15d1f5ab54091486a1b2a8cd53` | `Packager.class` `20f85a8e7878f66a8fa2fed7812cc5a89452d18813e8a54ad69a2ac78a361f46` (+4 nested) |
 | S48 | parent | `spring-boot-loader-tools-4.0.9-SNAPSHOT.jar` `327cb8097f9ca7a2e150f4652e2fff06c898459552b8ec2424607496ef08a1f4` | `54b15e65939b7ff284c6ddcc359c541265d1dcd0f06642ed7b5380d367479d0e` (same order) |
+| S49 | fix | `spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar` `1817f9296edf4b3bbdb868dbb3f4531123e25d84718272d87b28d465270716b9`, `spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar` `27b6be8a0cf848a870d6f8f777c323b976f1ace07971a991e3612e0d6ae753fe`, `spring-boot-loader-tools-4.2.0-SNAPSHOT.jar` `39129147994afbf6dae620ce2f0475f22a8bd24e270b9dabe8f1825e0174930d` | `spring-boot-gradle-plugin BootArchiveSupport.class` `b363c2233dd3039def8b110226aee579f0e0cdcd460d9de157e76cc3839200f3`, `spring-boot-gradle-plugin BootJar.class` `c508a7e19d6ef40e1ca99e56260ef36c29d7ab6d4a7de838557d4ff8b8ea33f8` (+2 nested), `spring-boot-gradle-plugin BootWar.class` `b2b5d97608cbd642a61ed5fa2a0eb79db4dd7e586b380ad0fe35a9a576151097` (+2 nested), `spring-boot-jarmode-tools ArchiveType.class` `60bf937bd1cb4207028a6bd15b6e70060f0f433385cd9c8d48b5498bbff341ee`, `spring-boot-jarmode-tools ExtractCommand.class` `3329d7df6d1eafb74592cf31c059a5ac34b1a48d72ef1682533ad7cd6f5bfe23` (+6 nested), `spring-boot-jarmode-tools IndexedJarStructure.class` `69814d3b628d884c181cdb7ded420f3c54ad8d82d116b73448d4029f3c2a0f8e`, `spring-boot-jarmode-tools JarStructure.class` `d5a9b5e2647f76da49e535429ec3ea5b5521d18baee8a17b10910163315855e5` (+2 nested), `spring-boot-loader-tools Packager.class` `53fb6ad0519faf3cdb37e7838b14ecac74c71d339d33c61b1dae67a58d92f2db` (+4 nested) |
+| S49 | parent | `spring-boot-gradle-plugin-4.2.0-SNAPSHOT.jar` `0156b01e803df4ad3f7e9bd8e4807cf6d55e3d5eff1b9793722e1ed35cce2502`, `spring-boot-jarmode-tools-4.2.0-SNAPSHOT.jar` `9dcb48713b28480dc3ab0a8cb1a075d995aee13baec5b9473e08de91b7aa1426`, `spring-boot-loader-tools-4.2.0-SNAPSHOT.jar` `e45968b5cae64df15aee65c9d7e98b8f9f71628676d45042c8c3a7ab70588f69` | `36d472c7170968e8a81c47191a58ffe981863d4850c2529058e027136725ea6f`, `cc585ac56beaa3b5a9458b97320482aeb43944edd37b6c63bfe054001b326ca1`, `22e1bf914bc79f6c0fb78884b572863330d9397e899f6141dc1a305f06f51499`, (absent), `db04e2ae0e210e128a13527ec0ba47177a1d7ae091ee777415f7e85c01b11343`, `800bd4b0624d4bb4485eaa8ec194c6dc7fe05b941498d4b81156c724a3ea0a03`, `d5a9b5e2647f76da49e535429ec3ea5b5521d18baee8a17b10910163315855e5`, `03915f3e8cb3cc32c98aed9a6c2b07fc483bb03d47ce768af0965d9bbed5dc20` (same order) |
 | S50 | fix | `spring-boot-flyway-4.0.8-SNAPSHOT.jar` `d8c95c8b682d498e466787e1094ec16ceacf5cf02cafb686cdb14af56e37c962` | `NativeImageResourceProvider.class` `79d329e2a25ff2422ed36495778071d2bd6d794cd8b7c6d767107d3d70c2d5ff` (+1 nested) |
 | S50 | parent | `spring-boot-flyway-4.0.8-SNAPSHOT.jar` `6b318ac6cd216c55fd0821dea87aa172d60513c1885a05699d1f562ecf029ba5` | `b42abbccb1d7d56370588e1a6598e4bcb9f79a75e23ad7e7fb4c343b5d1b3c71` (same order) |
 
@@ -652,8 +822,8 @@ S40: seven nested classes of `JsonWriter`, among them `JsonWriter$Member.class`,
   classpath file, and resolving more.
 - **Built artifacts**: `$P/artifacts/CASE-ROLE/` with `jars/`, `SHA256SUMS`, and `PROJECT.runtimeClasspath.txt` /
   `PROJECT.testRuntimeClasspath.txt` (`:`-joined, ready for `java -cp`; project outputs under `tree/`, Gradle's generated API
-  jars under `gradle-home/`). Complete for S35, S37, S39, S40, S44, S46, S48 and S50 ([Job results](#job-results)); for the
-  other 41 cases, a folder from the first run may hold partial output until each rerun completes.
+  jars under `gradle-home/`). Complete for 41 cases ([Job results](#job-results) has their digests). For S19, S24, S29, S30,
+  S31, S32, S33 and S36 the third run rewrites the folder; until it finishes, S24's and S30's folders are partial.
 - **Released versions the brief names** in `$P/releases/SET/` (`jars/`, `classpath.txt`): Boot 4.0.6, 4.0.7, 4.1.0, 4.1.1, 4.2.0-RC1,
   3.5.14, Framework 7.0.9, Tomcat 11.0.24, datasource-decorator 2.0.1, maven-war-plugin 3.5.1, GraalVM build tools 0.11.5
   ([Released artifacts](#released-artifacts) has the row per set).
@@ -664,12 +834,14 @@ S40: seven nested classes of `JsonWriter`, among them `JsonWriter$Member.class`,
 
 ### What was verified on a JVM
 
-- **S35, S37, S39, S40, S44, S48, S50** (jobs, JDK 25, offline except S48): the landed tests pass at the fix, the parent's
-  versions pass at the parent, and the fix's tests fail on the parent in the methods named in [Job results](#job-results).
-- **S46**: the fix's `IndexedLayersTests` pass at the fix (9) and also on the parent (9, 0 failures); the parent's own 8 pass. No
-  landed regression separates the two pins here.
-- **The other 41 Gradle cases**: not yet. Their first run failed for setup reasons, and the reruns are queued
-  ([Jobs](#jobs), `$P/logs/jobs.resubmit.txt`).
+- **43 Gradle cases** (jobs, JDK 25, offline except S10 and S48): the landed tests pass at the fix, the parent's versions pass at
+  the parent, and the fix's tests fail on a copy of the parent (or do not compile there). The methods, or the task and first
+  error, are in [Job results](#job-results): S01–S10, S13–S15, S17–S23, S25–S29, S31, S33–S45 and S47–S50.
+- **S11, S12, S46**: the landed tests pass at the fix and the parent's at the parent, but the fix's tests **also pass on the
+  parent** (S11 23, S12 107 with the three landed runner tests, S46 9). No landed regression separates the two pins of these
+  three in this build; see [Job results](#job-results) for S12's snapshot caveat.
+- **S24, S30, S32: not yet.** Their second run failed for setup reasons (the Micrometer snapshot's deprecation under `-Werror`; an
+  abstract test class); the third run is queued (`$P/tmp/resubmit2.txt`).
 - S16 (slice route, JDK 8): the parent's `WebFluxAutoConfigurationTests` pass on the parent slice over Boot 2.0.0.M2 (15 tests); the
   fix's three landed test classes do not compile on the parent slice (`CodecCustomizer`, `WebClientCustomizer` absent); on the
   release Boot 2.0.0.M3 they run 21 tests with 1 failure (`WebClientAutoConfigurationTests#shouldGetPrototypeScopedBean`, RC3's
@@ -685,6 +857,13 @@ S40: seven nested classes of `JsonWriter`, among them `JsonWriter$Member.class`,
   run that prints `Could not HEAD 'https://repo.spring.io/…'` is to be rerun, not believed.
 - **S30 substitutes Spring Kafka 4.2.0-M2** for the pins' `4.2.0-SNAPSHOT` (`-I $P/scripts/subst-spring-kafka.init.gradle`, which
   `case_job.sh` adds; add it yourself for any other S30 build). Label S30 evidence as built against 4.2.0-M2.
+- **S24 and S30 build `:module:spring-boot-micrometer-metrics` without `-Werror`**
+  (`-I $P/scripts/no-werror-micrometer-metrics.init.gradle`, which `case_job.sh` adds). The only Micrometer `1.18.0-SNAPSHOT`
+  still served deprecates the AppOptics registry, which that project uses. Add the script to any other build at these pins that
+  compiles that project.
+- **Name concrete test classes in `--tests`**: a filter on an abstract class (S32's `HealthEndpointSupportTests`) matches nothing,
+  and Gradle reports success with 0 tests. Gradle 9 also hashes the XML file name of a class whose `TEST-CLASS.xml` passes 120
+  bytes, so find results by `<testsuite name>` (`$P/scripts/class_counts.py RESULTDIR CLASS`), not by file name.
 - **S16's fix compiles against no released Framework**: its `CodecsAutoConfiguration` calls `jackson2Decoder/jackson2Encoder`, which
   RC3 renamed `jackson2JsonDecoder/jackson2JsonEncoder`, and RC2 lacks `WebClient.Builder.clone()` and `codecs(...)`. Boot 2.0.0.M3
   matches the fix apart from formatting, Javadoc and that rename (`$P/logs/s16-fix-vs-m3.diff`). Label any M3 evidence as the
