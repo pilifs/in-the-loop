@@ -37,11 +37,11 @@
 | spring-projects/spring-boot#51470 | written | Read the old validation, landed longest-prefix loop and shared HTTP fixture. Overlapping aliases with distinguishable markers and reversed group order remain open. |
 | spring-projects/spring-boot#51937 | written | Read the reverse-string mapper and parameterized port fixture. It checks one substring. A typed lookup of separate singleton and prototype entries remains open. |
 | spring-projects/spring-boot#50734 | written | Read both indicator implementations and the tests for visible and absent admin. Single-hello parity with a larger permuted list remains open. |
-| spring-projects/spring-boot#50461 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51959 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51156 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52477 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52522 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#50461 | written | The landed common properties are endpoint, headers and compression. Read the separate log/trace HTTP and metrics adapter fixtures. Simultaneous three-signal wire readback with a log-only override remains open. |
+| spring-projects/spring-boot#51959 | written | Compared the reported A/B/A cache sequence and pause-never control with the landed test runtime and logging lifecycle. Exactly-once JUL delivery after a second resume remains open. |
+| spring-projects/spring-boot#51156 | written | Read the issue’s same-thread public output and the merged helper’s finally block and test. An IOException followed by independent healthy writer readback remains open. |
+| spring-projects/spring-boot#52477 | written | Read the finite-number branch and the test assertions for both widths and a double array. Strict parse and type checks on the full ECS event remain open. |
+| spring-projects/spring-boot#52522 | written | For named pairs following `version`, the landed regression asserts a nested object. Independent parse/readback of duplicate names across scopes and an empty group remains open. |
 | spring-projects/spring-boot#52593 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52285 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52280 | not yet | Awaiting source review and claims. |
