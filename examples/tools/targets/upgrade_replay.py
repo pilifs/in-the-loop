@@ -461,6 +461,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                 launch.insert(1, "-Dupgrade.trace.changed=" + "|".join(trace_changes))
             if "generatedObserver" in spec:
                 launch.insert(1, "-Dupgrade.observe.history=true")
+                from targets import observer_actions
+                launch[1:1] = observer_actions.flags(frozen["recipe"])
                 if frozen["recipe"]["family"] == "typed numeric conversions":
                     launch.insert(1, "-Dupgrade.observe.numeric=true")
                 if not checked_helper and "helperCandidate" in frozen:
@@ -607,6 +609,10 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if "generatedObserver" in spec:
                         question = next(q for q in _registration["questions"] if q["id"] == spec["generatedObserver"]["question"])
                         projection = observer_generation.correspondence(frozen["recipe"], question["inputs"][index], marks, observation)
+                        if "publicActions" in projection:
+                            projection["actionBindings"] = observer_actions.bindings(
+                                projection["publicActions"], class_origins(child_output), files, side_record["classpath"],
+                                subject_feature, subject_jdk, output)
                         trial_record.setdefault("publicProjections", []).append(projection)
                     trials.append(observation)
                     operand_classes.update(classes)

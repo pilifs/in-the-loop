@@ -12,30 +12,30 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T04:15:12.213Z",
-  "duration_seconds": 252261,
+  "ended": "2026-11-27T04:19:32.576Z",
+  "duration_seconds": 252522,
   "stats": {
     "turns": 41,
-    "api_calls": 6627,
-    "tool_calls": 16336,
+    "api_calls": 6638,
+    "tool_calls": 16359,
     "tool_errors": 353,
     "compactions": 28,
     "peak_context_tokens": 550925,
     "usage": {
-      "input_tokens": 8364851,
-      "output_tokens": 3851428,
-      "cache_read_input_tokens": 1799029504,
+      "input_tokens": 8383142,
+      "output_tokens": 3862297,
+      "cache_read_input_tokens": 1801589504,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8947,
-    "exec": 6335,
-    "apply_patch": 832,
+    "Bash": 8957,
+    "exec": 6343,
+    "apply_patch": 835,
     "wait": 113,
     "sleep": 97,
+    "send_message": 6,
     "send_message_to_user_async": 6,
-    "send_message": 4,
     "request_user_input_async": 1,
     "spawn_agent": 1
   },
@@ -167,6 +167,7 @@
     "examples/schema/target-claim.schema.json",
     "examples/tools/build.py",
     "examples/tools/scaffold_example.py",
+    "examples/tools/targets/blind_prediction.py",
     "examples/tools/targets/change_evidence.py",
     "examples/tools/targets/change_helpers.py",
     "examples/tools/targets/change_inventory.py",
@@ -184,6 +185,7 @@
     "examples/tools/targets/observer_recipes.py",
     "examples/tools/targets/observer_rescore.py",
     "examples/tools/targets/observer_review.py",
+    "examples/tools/targets/observer_scalar.py",
     "examples/tools/targets/observer_state.py",
     "examples/tools/targets/observer_structures.py",
     "examples/tools/targets/property_reads.py",
@@ -993,24 +995,24 @@
     {
       "index": 28,
       "started": "2026-11-27T03:04:15.564Z",
-      "ended": "2026-11-27T04:15:12.213Z",
+      "ended": "2026-11-27T04:19:32.576Z",
       "turns": 2,
-      "api_calls": 55,
+      "api_calls": 66,
       "usage": {
-        "input_tokens": 142590,
-        "output_tokens": 48525,
-        "cache_read_input_tokens": 7352064,
+        "input_tokens": 160881,
+        "output_tokens": 59394,
+        "cache_read_input_tokens": 9912064,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 195737
+      "peak_context_tokens": 223170
     }
   ],
   "log": {
-    "sha256": "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b",
-    "bytes": 105994472,
-    "lines": 52254,
-    "gzip_bytes": 19370545,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b.jsonl.gz"
+    "sha256": "d9b4a7fc018dc1d9fefe33374a12214869a503cdb5b2896f99dcac33c1f0e11a",
+    "bytes": 106211866,
+    "lines": 52345,
+    "gzip_bytes": 19423053,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/d9b4a7fc018dc1d9fefe33374a12214869a503cdb5b2896f99dcac33c1f0e11a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3175,20 +3177,28 @@
       "log_sha256": "632b7580c6ce508105cbfd27a55a8dd29d2850e801aeff5c3d7e05c58a6d043e"
     },
     {
-      "change_id": "vluwrznxxvuwlyvsmuqwvtpuqsxmnmmp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b"
-    },
-    {
       "change_id": "qumutvxoyzxymqxyllwlysyvvqnnouxn",
       "commit_id": null,
       "immutable": false,
       "summary": "Isolate caller predictions and measurements from evaluator data",
       "body": "Build allow-listed views from original ordered JARs, pinned source and sanitized PR prose. Fresh Landlock and seccomp processes deny evaluator files and sockets in both phases. Prediction additionally denies subprocesses and new executable mappings. Test-assisted views identify the original test sources admitted by the selection. Capture historical predicates by question, deployment and side with baseline contradictions and unpredicted sides preserved.\n\nVerified both sentinel and socket denials with an original JDK 17 compiler and JVM measuring a synthetic public result. Checked removed test listings, a denied executable mapping, source export on a disclosed development example, and historical reference shape on every eligible row. No case from the evaluation population was drawn.",
       "log_sha256": "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b"
+    },
+    {
+      "change_id": "lvtyrtpptuyuxmrtprnqlqqspnsqvqvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "d9b4a7fc018dc1d9fefe33374a12214869a503cdb5b2896f99dcac33c1f0e11a"
+    },
+    {
+      "change_id": "lztnmumzurnypypmzrwlwzppznyprxkt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify object and action histories on original JVMs (verification pending)",
+      "body": "Bind the actual public actions of a generated history to JVM objects, order, defining loader, bytes and member. Reconstruct copied message samples, terminal signals and error causes, and sorted hits after reopening the same index from original method returns. Register distinct equal-value, missing action and incomplete projection challenges on both releases.\n\nAll 55 change-selected suites passed. Fresh unchanged original calls reproduced Lucene B/20 and A/30, the Spring response exception with its number-format cause, and the three aliasing date samples. All three had independent debugger evidence. Jobs 20261127-041323-qualify-reopened-lucene-blocks-and-order, 20261127-041323-qualify-spring-subscription-and-terminal, and 20261127-041323-qualify-retained-spring-message-and-copy repeat all nine disclosed questions and twelve planted histories.",
+      "log_sha256": "d9b4a7fc018dc1d9fefe33374a12214869a503cdb5b2896f99dcac33c1f0e11a"
     }
   ],
   "logs": {
@@ -3856,6 +3866,12 @@
       "bytes": 98447113,
       "lines": 48631,
       "gzip_bytes": 18064490,
+      "url": null
+    },
+    "d9b4a7fc018dc1d9fefe33374a12214869a503cdb5b2896f99dcac33c1f0e11a": {
+      "bytes": 106211866,
+      "lines": 52345,
+      "gzip_bytes": 19423053,
       "url": null
     },
     "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8": {

@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 import zipfile
 
-from targets import change_evidence, change_inventory, deployment_graph, observer_fields, observer_fixtures, observer_recipes, runtime_jdk, upgrade_replay
+from targets import change_evidence, change_inventory, deployment_graph, observer_actions, observer_fields, observer_fixtures, observer_recipes, runtime_jdk, upgrade_replay
 from targets.change_inventory import digest
 from targets.observer_recipes import Unsupported
 from targets.upgrade_replay import sha
@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 def identity():
     files = [Path(__file__), HERE / "observer_recipes.py", HERE / "observer_histories.py", HERE / "observer_state.py",
              HERE / "observer_io.py", HERE / "observer_public_data.py", HERE / "observer_structures.py",
-             HERE / "observer_fields.py", HERE / "observer_fixtures.py", observer_recipes.TEMPLATE]
+             HERE / "observer_fields.py", HERE / "observer_actions.py", HERE / "observer_fixtures.py", observer_recipes.TEMPLATE]
     return {p.name: sha(p) for p in files}
 
 
@@ -392,18 +392,8 @@ def correspondence(recipe, inputs, marks, observation):
         if len(values) != 2**(inputs["maximumSize"] + 1) - 1 or len(aliases) != 2*len(values) or any(
                 a != b for a,b in zip(aliases[::2], aliases[1::2])):
             raise ValueError("missing paired removal on a retained map")
-    elif family == "paired mutable-property samples":
-        arity = [2,2,2] if inputs["mode"] == "paired mutations" else [3]
-        if len(aliases) != 1 or [len(v) for v in values] != arity:
-            raise ValueError("missing public samples of the original, copy or recording target")
-    elif family == "consume an event-stream response":
-        if len(aliases) != len(inputs["streams"]) or len(values) != len(aliases) or any(
-                len(v) != 4 or not isinstance(v[0], list) or v[1] not in {"error","complete"} for v in values):
-            raise ValueError("missing a subscribed public stream or terminal signal")
-    elif family == "reopened block index and sorted hits":
-        if len(aliases) < 1 or not values or any(len(v) != 2 or type(v[0]) != int or len(v[1]) != v[0]
-                for v in values if v != ["overload-absent"]):
-            raise ValueError("missing sorted public hits or total after reopening the index")
+    elif observer_actions.selectors(recipe):
+        result["publicActions"] = observer_actions.qualify(recipe, inputs, marks, values)
     tuples = []
     for line in marks:
         if line.startswith("UPGRADE-HELPER-VALUE "):
