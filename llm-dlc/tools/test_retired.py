@@ -110,6 +110,31 @@ class TheRegister(Fixture):
         self.assertIn("llm-dlc/tools/old_run.py: still here", said.getvalue())
 
 
+class ARetiredFolder(Fixture):
+    def setUp(self):
+        super().setUp()
+        self.put("llm-dlc/retired.md", REGISTER.replace("- **Files:** `llm-dlc/tools/old_run.py`",
+                                                         "- **Files:** `llm-dlc/tools/old_run.py`, `old-plugin/`"))
+        self.found = retired.register(self.root)
+
+    def test_a_folder_that_keeps_only_a_cache_python_left_behind_is_gone(self):
+        # what jj leaves when a change removes a folder a checkout once imported a module from
+        self.put("old-plugin/skills/old/__pycache__/bootstrap.cpython-314.pyc", "\x00")
+        (self.root / "old-plugin/empty").mkdir()
+        self.assertEqual(retired.still_here(self.root, self.found), [])
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(retired.main(["check"], root=self.root), 0)
+
+    def test_a_folder_with_a_file_of_its_own_is_still_here(self):
+        self.put("old-plugin/skills/old/__pycache__/bootstrap.cpython-314.pyc", "\x00")
+        self.put("old-plugin/skills/old/SKILL.md", "# Old\n")
+        self.assertEqual(retired.still_here(self.root, self.found), [{"entry": "old-run", "file": "old-plugin/"}])
+        (self.root / "old-plugin/skills/old/SKILL.md").unlink()
+        self.assertEqual(retired.still_here(self.root, self.found), [])
+        (self.root / "old-plugin/link").symlink_to("nowhere")  # a link counts, whatever it points at
+        self.assertEqual(retired.still_here(self.root, self.found), [{"entry": "old-run", "file": "old-plugin/"}])
+
+
 class HistoricalPages(Fixture):
     def setUp(self):
         super().setUp()

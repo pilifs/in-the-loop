@@ -1,5 +1,6 @@
-//! The integration contract of `llm-dlc/loops/application-core.md` (Phase 0 step 4), run by
-//! `llm-dlc/tools/application-core-integration.sh` on the merge of the four streams while they work. One test per
+//! The integration contract of `llm-dlc/loops/application-core.md` (Phase 0 step 4). While the four streams
+//! worked, `application-core-integration.sh` ran it on their merge; that script went with the streams workflow
+//! (`llm-dlc/retired.md`, multi-agent-brief). One test per
 //! row of the acceptance contract (`llm-dlc/loops/application-core-acceptance.md`) that a unit-level run can reach,
 //! on the frozen fixtures of `tests/fixtures/application-core/` and the verdicts their `golden/expected.json` fixes.
 //!

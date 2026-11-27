@@ -1,6 +1,6 @@
 //! The integration contract of `llm-dlc/loops/foundations.md` (Phase 0): the joint example's fixture, the golden
-//! files of its IR, and a check per stream's part. `llm-dlc/tools/foundations-integration.sh` runs it on a merge of
-//! the four streams while they work.
+//! files of its IR, and a check per stream's part. While the four streams worked, `foundations-integration.sh` ran
+//! it on a merge of them; that script went with the streams workflow (`llm-dlc/retired.md`, multi-agent-brief).
 //!
 //! A part passes when it reaches the verdict `golden/expected.json` gives each case, or still returns its named
 //! [`Unsupported`]; it fails on anything else (a wrong verdict, a different error, a result that drops a required

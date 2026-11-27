@@ -46,7 +46,7 @@ LIVE = (
     "llm-dlc/*.md", "llm-dlc/*.schema.json", "llm-dlc/tools/*",
     "llm-dlc/loops/brief-generation-template.md", "llm-dlc/loops/setup-agent-template.md", "llm-dlc/loops/domain-prompt-*.md",
     "verification/README.md", "verification/*.py", "verification/pipeline.toml",
-    "lib/README.md", "lib/tools/*.py", "lib/tests/costs.json", "lib/tests/fixtures/*/README.md",
+    "lib/README.md", "lib/tools/*.py", "lib/tests/costs.json", "lib/tests/fixtures/*/README.md", "lib/tests/*.rs",
     "examples/README.md", "examples/approaches.md", "examples/tools/*.py", "examples/tools/targets/*.py",
     "examples/schema/*.json",
 )
@@ -188,10 +188,23 @@ def scan(root: Path, found: list[dict], planned: bool = False) -> list[dict]:
     return out
 
 
+def present(path: Path) -> bool:
+    """Whether a retired file or folder is still here. A folder is here by the files in it, and a cache Python left
+    behind is not one: when a change removes a folder, jj takes away the files it tracks and leaves what it
+    ignores, so a checkout that once imported a module from there keeps a `__pycache__` of it (the default
+    checkout did, 2026-11-27, and its default test run failed on it)."""
+    if path.is_symlink() or path.is_file():
+        return True
+    if not path.is_dir():
+        return False
+    return any(p.is_symlink() or p.is_file() for p in path.rglob("*")
+               if "__pycache__" not in p.relative_to(path).parts and p.suffix != ".pyc")
+
+
 def still_here(root: Path, found: list[dict], planned: bool = False) -> list[dict]:
     """The files of a retired entry that are still in the repository."""
     return [{"entry": e["name"], "file": f} for e in found if e["status"] == "retired" or planned
-            for f in e["files"] if (root / f).exists() or (root / f).is_symlink()]
+            for f in e["files"] if present(root / f)]
 
 
 def queue_copies(root: Path) -> set[str]:
