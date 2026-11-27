@@ -3011,7 +3011,7 @@
       "example": "634-boot-gradle-layer-owners",
       "evidenceKind": "Gradle bootJar",
       "evidence": [
-        "gradle/S47.json"
+        "gradle/S47-isolated.json"
       ],
       "observations": {
         "spring-projects/spring-boot#52530.1": {
@@ -3130,6 +3130,10 @@
             "verdict": "matched"
           }
         }
+      },
+      "separateMavenBuilds": {
+        "parent": "maven-war/parent.json",
+        "fix": "maven-war/fix.json"
       },
       "unmeasured": []
     },
@@ -3307,5 +3311,28 @@
     "parent observed only": 55,
     "fix refuted": 4,
     "externalBuildSideResults": 23
+  },
+  "mergedByRole": {
+    "Intent": {
+      "matched": 47,
+      "differentOnBoth": 45,
+      "identicalOnBoth": 2,
+      "refuted": 1,
+      "unmeasured": 2,
+      "mergeOnly": 1
+    },
+    "Control": {
+      "matched": 50,
+      "identicalOnBoth": 48,
+      "differentOnBoth": 2
+    },
+    "Challenge": {
+      "matched": 45,
+      "differentOnBoth": 41,
+      "identicalOnBoth": 4,
+      "refuted": 3,
+      "mergeOnly": 3,
+      "unmeasured": 2
+    }
   }
 }

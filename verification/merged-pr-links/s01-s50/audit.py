@@ -123,6 +123,7 @@ def audit(replay=False, replay_cases=()):
     cases = inventory()
     require(set(replay_cases) <= cases.keys(), "unknown Spring Boot replay case")
     counts = Counter()
+    by_role = {role: Counter() for role in ("Intent", "Control", "Challenge")}
     rows = []
     for case_id, case in cases.items():
         number = int(case_id[1:]) + 587
@@ -160,7 +161,20 @@ def audit(replay=False, replay_cases=()):
             row["separateProfiles"] = release["profiles"]
         if case_id in ("S32","S38") and (HERE/"repaired-guards.json").is_file():
             row["separateMergedBytecodeReview"] = "repaired-guards.json"
+        if case_id == "S48":
+            maven = external_results.maven_wars(case["revisions"])
+            if maven:
+                row["separateMavenBuilds"] = maven
         row["unmeasured"] = [q for q in qids if q not in measured]
+        for qid, question in case["questions"].items():
+            outcomes = measured.get(qid, {})
+            role = by_role[question["role"]]
+            role[outcomes["fix"]["verdict"] if "fix" in outcomes else "unmeasured"] += 1
+            if set(outcomes) == set(SIDES):
+                same = outcomes["parent"]["outcome"] == outcomes["fix"]["outcome"]
+                role["identicalOnBoth" if same else "differentOnBoth"] += 1
+            elif "fix" in outcomes:
+                role["mergeOnly"] += 1
         counts["registeredClaims"] += len(qids)
         counts["casesWithPublicCallers"] += numbered
         counts["casesWithOriginalMeasurements"] += bool(measured)
@@ -171,7 +185,8 @@ def audit(replay=False, replay_cases=()):
             for side, evidence in r.items():
                 counts[f"{side} {evidence['verdict']}"] += 1
         rows.append(row)
-    return {"schema": "spring-boot-public-audit/v1", "cases": rows, "totals": dict(counts)}
+    return {"schema": "spring-boot-public-audit/v1", "cases": rows, "totals": dict(counts),
+            "mergedByRole": {role: dict(totals) for role, totals in by_role.items()}}
 
 
 if __name__ == "__main__":

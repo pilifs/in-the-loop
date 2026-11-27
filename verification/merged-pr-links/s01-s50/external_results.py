@@ -1,9 +1,11 @@
 """Score the independent consumer builds and native executions at the public observations in the brief."""
+import hashlib
 import json
 from pathlib import Path
 import zlib
 
 HERE = Path(__file__).resolve().parent
+LAYER_RECEIPT = "gradle/S47-isolated.json"
 
 
 def read(name):
@@ -38,7 +40,7 @@ def metadata():
 
 
 def layers():
-    data = read("gradle/S47.json")
+    data = read(LAYER_RECEIPT)
     result = [{}, {}, {}]
     for name in ("parent","fix"):
         d = data[name]
@@ -48,6 +50,8 @@ def layers():
             if role == "challenge":
                 items.append("other/Third")
                 expected = ["public","rest","rest"] if name == "fix" else None
+            if set(d[role]) != set(items):
+                raise ValueError(f"{name} {role} has a different set of packaged fixture classes")
             result[i][name] = side([d[role][item] for item in items],expected)
     return result
 
@@ -66,6 +70,28 @@ def webflux():
     return result
 
 
+def maven_wars(revisions):
+    """Check the Maven goal against the actual resources and physical input ordering."""
+    files = {side: HERE / "maven-war" / (side + ".json") for side in revisions}
+    if not any(path.exists() for path in files.values()):
+        return None
+    location = "WEB-INF/classes/META-INF/sbom/application.cdx.json"
+    for side, path in files.items():
+        data = json.loads(path.read_text())
+        if data["revision"] != revisions[side] or data["mavenBuilds"] != 2:
+            raise ValueError(f"{side} Maven revision or number of consumer builds differs")
+        rows = data["observations"]
+        if set(rows) != {"intent", "challenge"}:
+            raise ValueError(f"{side} Maven WAR evidence is incomplete")
+        for role, row in rows.items():
+            if row["inputDecoyBeforeSbom"] != ("true" if role == "challenge" else "single"):
+                raise ValueError(f"{side} {role} Maven did not receive the registered input ordering")
+            expected = ("CycloneDX", location, '{"fixture":"original"}') if side == "fix" else ("null", "null", "absent")
+            if (row["format"], row["location"], row["payload"]) != expected:
+                raise ValueError(f"{side} {role} Maven manifest or selected WAR bytes differ")
+    return {side: str(path.relative_to(HERE)) for side, path in files.items()}
+
+
 def migrations():
     result = [{}, {}, {}]
     sql = (HERE / "native-flyway/V2__users.sql").read_bytes()
@@ -77,6 +103,8 @@ def migrations():
         parsed = {}
         for layout in ("root","nested","deep"):
             record = data[layout]
+            if record["sqlSha256"] != hashlib.sha256(sql).hexdigest():
+                raise ValueError(f"{name} {layout} received different migration SQL")
             expected_control = {**applied, "runtime":"jvm"}
             if record["JVM"] != expected_control or record["AOT JVM"] != expected_control:
                 raise ValueError("missing ordinary/AOT JVM migration control")
@@ -97,6 +125,6 @@ MEASUREMENTS = {
     "S10": ("Gradle consumer build", ["gradle/S10.json"], metadata),
     "S16": ("Original Boot source slices on the reconstructed July Framework codec profile",
             ["webflux-2017/reconstructed-observations.json"], webflux),
-    "S47": ("Gradle bootJar", ["gradle/S47.json"], layers),
+    "S47": ("Gradle bootJar", [LAYER_RECEIPT], layers),
     "S50": ("GraalVM native executable and JDBC", ["native-flyway/parent.json","native-flyway/fix.json"], migrations),
 }
