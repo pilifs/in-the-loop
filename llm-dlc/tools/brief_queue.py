@@ -44,6 +44,10 @@ Commands (python3 llm-dlc/tools/brief_queue.py COMMAND ...):
         brief. A run that has stopped is taken as finished only with --finished: one stopped to wait on its jobs is
         continued with `single_run.py jobs` and `start`, not handed over. It never promotes `main` and never runs the
         default tests: both are the user's to decide, and it says so when a brief is done.
+  hold [--reason TEXT]          hold the queue: `next` still lands, checkpoints and clears what has finished, but
+                                starts no run (no generation, setup or domain run) until `resume`; for a pause
+                                between briefs, such as work by hand on the code the next run will start from
+  resume                        end a hold: the next `next` starts what is due
   report [--json]               each brief with its runs, cycles, landing and state
 
 Standard library only.
@@ -621,6 +625,9 @@ def steps_of(s: dict) -> tuple[str, ...]:
     return (STEPS_SETUP if s["setup"] != "none" else ()) + STEPS_DOMAIN
 
 
+START_STEPS = ("generate-start", "setup-start", "domain-start")
+
+
 def cmd_next(root: Path, finished: bool) -> dict:
     report = {"inbox": take_inbox(root), "done": [], "steps": []}
     while True:
@@ -633,6 +640,11 @@ def cmd_next(root: Path, finished: bool) -> dict:
             todo = [n for n in steps_of(s) if n not in entry["done"]]
             stop = None
             for name in todo:
+                if name in START_STEPS and data.get("hold"):
+                    # Held: what had finished is landed, checkpointed and cleared above; nothing new starts.
+                    stop = "held"
+                    held = {"brief": entry["name"], "heldAt": name, "hold": data["hold"]}
+                    break
                 try:
                     stop = step(root, data, entry, s, name, finished)
                 except Problem as e:
@@ -659,6 +671,12 @@ def cmd_next(root: Path, finished: bool) -> dict:
                 made_at = "right after it" if entry.get("queuedAt") == "next" else "at the end"
         if stop == "failed":
             log(root, "failed", name, step=report["failedAt"], problem=report["problem"])
+            break
+        if stop == "held":
+            report.update(**held, next=f"the queue is held (since {held['hold']['since']}"
+                                        + (f": {held['hold']['reason']}" if held["hold"].get("reason") else "")
+                                        + f"): {held['heldAt']} of {name} waits for `brief_queue.py resume`")
+            log(root, "held", name, step=held["heldAt"])
             break
         if stop is None:
             log(root, "done", name)
@@ -706,7 +724,8 @@ def describe(root: Path) -> dict:
     known = {Path(e["source"]).expanduser().resolve() for e in data["entries"] if e["state"] != "removed"}
     waiting = [shown(p) for p in inbox_briefs(folder)] if folder.is_dir() else []
     waiting = [w for w in waiting if Path(w).expanduser().resolve() not in known]
-    return {"queue": rows, "inboxNotYetAdded": waiting, "lastSession": data.get("lastSession"),
+    return {"queue": rows, "inboxNotYetAdded": waiting, **({"hold": data["hold"]} if data.get("hold") else {}),
+            "lastSession": data.get("lastSession"),
             "lastGenerateSession": data.get("lastGenerateSession"), "defaults": {**DEFAULTS, **data["defaults"]}}
 
 
@@ -760,6 +779,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     d.add_argument("--last-generate-session")
     sub.add_parser("next", help="the handover: every step that is due").add_argument("--finished", action="store_true")
     sub.add_parser("report", help="each brief's runs and state").add_argument("--json", action="store_true")
+    sub.add_parser("hold", help="land what finishes, start nothing until `resume`").add_argument("--reason", default="")
+    sub.add_parser("resume", help="end a hold")
     args = ap.parse_args(argv)
     root = (args.root or root).resolve()
     try:
@@ -788,6 +809,10 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
                     print("inbox, not yet added: " + ", ".join(d["inboxNotYetAdded"]))
                 if not d["queue"] and not d["inboxNotYetAdded"]:
                     print("the queue is empty")
+                if d.get("hold"):
+                    print(f"HELD since {d['hold']['since']} by {d['hold']['by']}"
+                          + (f": {d['hold']['reason']}" if d["hold"].get("reason") else "")
+                          + "; `next` lands what finishes and starts nothing until `resume`")
         elif args.command == "move":
             w, other = position(args)
             if w is None:
@@ -842,6 +867,23 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
                     **({"lastGenerateSession": args.last_generate_session} if args.last_generate_session else {}))
             print(json.dumps({**DEFAULTS, **read(root)["defaults"], "lastSession": read(root).get("lastSession"),
                               "lastGenerateSession": read(root).get("lastGenerateSession")}, indent=1))
+        elif args.command == "hold":
+            with locked(root) as data:
+                was = data.get("hold")
+                data["hold"] = was or {"since": now(), "by": who(), "reason": args.reason}
+                if was and args.reason:
+                    data["hold"]["reason"] = args.reason
+            if not was:
+                log(root, "hold", None, reason=args.reason)
+            print(json.dumps({"hold": read(root)["hold"], **({"already": True} if was else {})}, indent=1))
+        elif args.command == "resume":
+            with locked(root) as data:
+                was = data.pop("hold", None)
+            if was:
+                log(root, "resume", None, heldSince=was["since"])
+            print(json.dumps({"resumed": bool(was), **({"heldSince": was["since"]} if was else {}),
+                              "next": "run `brief_queue.py next` (with --finished if a run has ended) to start what is due"
+                              if was else "the queue was not held"}, indent=1))
         elif args.command == "next":
             print(json.dumps(cmd_next(root, args.finished), indent=1))
         elif args.command == "report":
