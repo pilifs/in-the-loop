@@ -1,0 +1,210 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-010104-repeat-original-poi-properties-with-loss",
+  "title": "Repeat original POI properties with lossless console output",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6m47s, peak 138.0 MiB (estimated 5m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-010104-repeat-original-poi-properties-with-loss.json",
+    "sha256": "c9cde4d7b13c6dfce6f4237b8dd6cd29320dc4415dc46a258baf43559222f0c0",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-010104-repeat-original-poi-properties-with-loss",
+      "title": "Repeat original POI properties with lossless console output",
+      "description": "In the empty launch environment set the console transport to UTF-8 so the original fixed-side Kazakh currency literal reaches the evaluator intact. Repeat both native startup diagnostics, all twelve paired public histories, the property change and restore, and the table controls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T01:01:04+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "Original POI JVMs, live table receipt and controls",
+          "run": "python3 lib/benchmark/startup-facts/tables.py --output verification/startup-facts/poi-tables.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/poi-tables.zip"
+      ]
+    }
+  },
+  "sourceCommit": "32188430fb05b82f930ef04f7229ec398d5b8942",
+  "startedAt": "2026-11-27T01:09:36+00:00",
+  "finishedAt": "2026-11-27T01:20:53+00:00",
+  "wallSeconds": 677.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 995674,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 144691200,
+    "wallSeconds": 407.8,
+    "cpuSeconds": 433.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 1.36
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 258.461,
+      "cpuSeconds": 258.796,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2329739264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "bb22d548b13ab5f7edb2c240388ea922474d158ff03595f3fe6a3e9d007e02bc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-010104-repeat-original-poi-properties-with-loss/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 18s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Original POI JVMs, live table receipt and controls",
+      "run": "python3 lib/benchmark/startup-facts/tables.py --output verification/startup-facts/poi-tables.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 407.827,
+      "cpuSeconds": 432.967,
+      "cpuThrottledSeconds": 6.232,
+      "peakMemoryBytes": 144691200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-original-poi-jvms-live-table-r.log",
+        "lines": 3,
+        "bytes": 338,
+        "sha256": "bb10ccafec24f37892b10aaf88ff19acf8510c263ea9ba4abfb8e5e0c224a2f0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-010104-repeat-original-poi-properties-with-loss/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "both POI deployments, twelve original histories and controlled live table tests qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/poi-tables.zip",
+      "change": "added",
+      "bytes": 9932,
+      "sha256": "5dc6f1f0d92c2cb343b29ce2579d0ef1f18b78b2a405630b150f4e1508235722",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T01:21:54+00:00",
+    "applied": [
+      "verification/startup-facts/poi-tables.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "69191c6e32f40bdd26a4f6007698b522aba00dfd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/69191c6e32f40bdd26a4f6007698b522aba00dfd/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T012054Z-12336131e1378bb2",
+      "outputs": "20261127T012054Z-16419663f1ed3eb6",
+      "diff": "20261127T012054Z-2216929d1347c691"
+    }
+  }
+}
