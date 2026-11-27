@@ -1,0 +1,171 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-142917-read-retained-pom-bytes-at-the-original",
+  "title": "Read retained POM bytes at the original Maven build boundary",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2.6s, peak 151.1 MiB (estimated 5m00s, 5.0 GiB)",
+  "attention": [
+    "declared output verification/merged-pr-links/s01-s50/maven-war/fix.json was not produced",
+    "step 1 (Build the original fixed plugin and check its two Maven WARs) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-142917-read-retained-pom-bytes-at-the-original.json",
+    "sha256": "370adcccc46010400c478a098f1e6a23577e3b2e80791ec7ae88660e7d05bf06",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-142917-read-retained-pom-bytes-at-the-original",
+      "title": "Read retained POM bytes at the original Maven build boundary",
+      "description": "The detached Gradle configuration continued to select the original repository after a local release repository was added. Give only the build-time BOM reader the exact retained release POM by group, artifact and version, checking cached POMs against their content address. Build the unmodified fixed Spring Boot Maven goal and read both physical WARs.",
+      "kind": "real-world",
+      "capabilities": [
+        "spring-boot-packaging"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T14:29:17+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "git"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "5m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Build the original fixed plugin and check its two Maven WARs",
+          "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/maven-war/fix.json"
+      ]
+    }
+  },
+  "sourceCommit": "73c95cd2626104cc86176d4ce2a3335a9534ae80",
+  "startedAt": "2026-11-27T14:30:32+00:00",
+  "finishedAt": "2026-11-27T14:30:43+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 867164,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 158478336,
+    "wallSeconds": 2.6,
+    "cpuSeconds": 2.6,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build the original fixed plugin and check its two Maven WARs",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 2.606,
+      "cpuSeconds": 2.602,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 158478336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-the-original-fixed-plugi.log",
+        "lines": 9,
+        "bytes": 915,
+        "sha256": "518df1368b55a6e48b0da5ae4bb735573da0643309da048bb62a4b3b047e692d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-142917-read-retained-pom-bytes-at-the-original/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 149, in <module>",
+        "    result = run(args.side,args.check_inputs)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-142917-read-retained-pom-bytes-at-the-original/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 68, in run",
+        "    local_mirror(cache,local)",
+        "    ~~~~~~~~~~~~^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-142917-read-retained-pom-bytes-at-the-original/verification/merged-pr-links/s01-s50/maven-war/replay.py\", line 31, in local_mirror",
+        "    raise ValueError(\"retained POM differs from its Gradle content address: \" + filename)",
+        "ValueError: retained POM differs from its Gradle content address: antlr4-master-4.9.3.pom"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T14:31:18+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T143043Z-88663162d86d9a27",
+      "outputs": "20261127T143043Z-9019357e064e90f5",
+      "workdir": "20261127T143047Z-440824df5180df72"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-142917-read-retained-pom-bytes-at-the-original"
+}
