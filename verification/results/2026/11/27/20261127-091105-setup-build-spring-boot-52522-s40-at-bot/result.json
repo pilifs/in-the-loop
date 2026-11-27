@@ -1,0 +1,361 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-091105-setup-build-spring-boot-52522-s40-at-bot",
+  "title": "Setup: build Spring Boot #52522 (S40) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 7m17s, peak 3.9 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-091105-setup-build-spring-boot-52522-s40-at-bot.json",
+    "sha256": "85c4adb07aa58b12a889b0d40162b01274a73e9ef330e04d6d38a8c0398e2b67",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-091105-setup-build-spring-boot-52522-s40-at-bot",
+      "title": "Setup: build Spring Boot #52522 (S40) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S40 (spring-projects/spring-boot#52522: Named JSON pair members retain their object boundary). In the worktrees $P/worktrees/S40-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of core:spring-boot with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (JsonWriterTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of core:spring-boot in $P/artifacts/S40-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S40",
+      "submitted": {
+        "at": "2026-11-27T09:11:05+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "steps": [
+        {
+          "name": "S40 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S40 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S40 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S40 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S40 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S40 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S40 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S40 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+  "startedAt": "2026-11-27T09:57:52+00:00",
+  "finishedAt": "2026-11-27T10:05:22+00:00",
+  "wallSeconds": 450.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2137390,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "usage": {
+    "peakMemoryBytes": 4202463232,
+    "wallSeconds": 437.7,
+    "cpuSeconds": 1151.4,
+    "memoryOfEstimate": 0.65,
+    "durationOfEstimate": 0.29
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S40 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S40 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 193.689,
+      "cpuSeconds": 508.466,
+      "cpuThrottledSeconds": 40.369,
+      "peakMemoryBytes": 4091957248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s40-fix-build-and-landed-tests.log",
+        "lines": 29,
+        "bytes": 3580,
+        "sha256": "7fa61c07e6290fea3ead70ab515d9c07f6db01db2735c65e17e4fb6cb4013c67",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S40-fix gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=124 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/s",
+        "junit tests=87 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.json.JsonWriterTests junit tests=87 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S40-fix/core_spring-boot.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S40-fix/core_spring-boot.testRuntimeClasspath.txt 147 entries",
+        "3cbbffb2548b25e59ef5fef33ea7a3e033bfb00a685910f18a3cd3122660838d  jars/spring-boot-4.0.10-SNAPSHOT.jar",
+        "3cbbffb2548b25e59ef5fef33ea7a3e033bfb00a685910f18a3cd3122660838d  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT.jar",
+        "686fc27ab6659c721225277a2d51384938ce537bd880e7aa55501237fc0b2304  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT-test-fixtures.jar",
+        "389ba14f806fe174cf99df2d5e28d6c25389dc0b06f3fb750bca80a4b31b89f4  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.10-SNAPSHOT.jar",
+        "aa35bada5badee4f175523a0e224e4f2b059ac6f25329afd9d0734e8fa309a45  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$Extractor.class",
+        "66190921e54e26bbaeb392625a2e2c9751302999fa7adbf38b6c73f631623d12  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$Member$ValueExtractor.class",
+        "503542587b00fad13319bf131f51a9b5c822ef22aa07c1ba0d163a4454e67379  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$Member.class",
+        "822c6e5e8ab9a52729fc360bdecd896f0e50ee4316109070dee455534dbafdba  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$MemberPath.class",
+        "b311e880ec7185b5e84c46e7fb67f14f3ba27e44574a3cad907b220a7c51f068  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$Members.class",
+        "ff4fd30cc67278af0e7648f71d7a7f7fb1582ebc1f5819f54b410ce0c0fc1e5f  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$NameProcessor.class",
+        "3b2a0977b33f0b8530b785d3e4fbc3b3a944dab94937350c5e7a95eab71256b4  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$PairExtractor$1.class",
+        "f391f89640a11de0e906731d907b3b72e8cbd25f842fa9bf241e39aa9bd52e5b  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$PairExtractor.class",
+        "5738f67e1de11a7205a3c5bd3278780d58605e855833ee220a6564e23a320c60  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$ValueProcessor.class",
+        "a8826336823bc059619ada7214b70cbe3e968069ff59f0d34f90b620192539ad  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S40 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S40 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 141.33,
+      "cpuSeconds": 375.526,
+      "cpuThrottledSeconds": 23.577,
+      "peakMemoryBytes": 3577081856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s40-parent-build-and-the-paren.log",
+        "lines": 29,
+        "bytes": 3588,
+        "sha256": "2de7280313abbfbb444e11166563ca6e843fa532f4f716127bf81b1174ee8ca0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S40-parent gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=78 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=86 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.json.JsonWriterTests junit tests=86 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S40-parent/core_spring-boot.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S40-parent/core_spring-boot.testRuntimeClasspath.txt 147 entries",
+        "57463126ca7b854e7fe7b7df6668492121222300fe86c4af96172655752743c4  jars/spring-boot-4.0.10-SNAPSHOT.jar",
+        "57463126ca7b854e7fe7b7df6668492121222300fe86c4af96172655752743c4  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT.jar",
+        "686fc27ab6659c721225277a2d51384938ce537bd880e7aa55501237fc0b2304  tree/core/spring-boot/build/libs/spring-boot-4.0.10-SNAPSHOT-test-fixtures.jar",
+        "389ba14f806fe174cf99df2d5e28d6c25389dc0b06f3fb750bca80a4b31b89f4  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.10-SNAPSHOT.jar",
+        "aa35bada5badee4f175523a0e224e4f2b059ac6f25329afd9d0734e8fa309a45  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$Extractor.class",
+        "4744da7be667038c102754f06f2c4e0b1724378117932822785ee18c46183fcd  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$Member$ValueExtractor.class",
+        "f435b2c5864d4ab66e258ac0a68b570d55969c76395324ccfa6e745b029aa679  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$Member.class",
+        "31e95c502c11760e84889326bc16d2aefff22d0d903b5889e181f966811e7755  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$MemberPath.class",
+        "b311e880ec7185b5e84c46e7fb67f14f3ba27e44574a3cad907b220a7c51f068  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$Members.class",
+        "32c980a13a0b66e2adf3c351b7b768278c0eae9ac5d804ec03b1efbcc4a25ded  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$NameProcessor.class",
+        "9ce4f6a9d8839d1674d7248ab54755a2fabdda2efb5ea414a6c57baa1ff73b9f  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$PairExtractor$1.class",
+        "5a3135068941d591a47b9773e0b82ead351cce288ac7847081718948e6eb733f  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$PairExtractor.class",
+        "ed2bf4ddd104fd04f9ba390550ecbacdb18d95aaf1c7b8c388a80cdaf6e6d526  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter$ValueProcessor.class",
+        "a8826336823bc059619ada7214b70cbe3e968069ff59f0d34f90b620192539ad  spring-boot-4.0.10-SNAPSHOT.jar!/org/springframework/boot/json/JsonWriter.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S40 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S40 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 95.831,
+      "cpuSeconds": 264.18,
+      "cpuThrottledSeconds": 22.762,
+      "peakMemoryBytes": 4202463232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s40-transplant-the-fix-s-tests.log",
+        "lines": 16,
+        "bytes": 1332,
+        "sha256": "cb742d60da0635cda62f2f451a665967aee9533c0370a501d034c889a21d68d0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted core/spring-boot/src/test/java/org/springframework/boot/json/JsonWriterTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S40-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=96 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=87 failures=1 errors=0 skipped=0",
+        "junit failed JsonWriterTests$MembersTest#usingPairsWithName()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.json.JsonWriterTests junit tests=87 failures=1 errors=0 skipped=0 junit failed JsonWriterTests$MembersTest#usingPairsWithName() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S40 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S40 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 6.818,
+      "cpuSeconds": 3.25,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 198578176,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s40-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "eb8310f67215a62fbe3fe10cdcbb1cf880d932c0dc4a79ef59a52331314d6044",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S40"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T10:05:38+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T100522Z-1493265557ffcef6"
+    }
+  }
+}
