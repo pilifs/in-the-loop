@@ -3,6 +3,38 @@
   "shard": "2026/11/27",
   "results": [
     {
+      "id": "20261127-091106-setup-build-spring-boot-50433-s50-at-bot",
+      "title": "Setup: build Spring Boot #50433 (S50) at both pins and run its landed tests",
+      "status": "passed",
+      "summary": "passed: 4 passed step(s) in 7m33s, peak 4.6 GiB (estimated 25m00s, 6.0 GiB)",
+      "attention": [
+        "step 1 (S50 fix: build and landed tests) was held back 2m54s by its 4-CPU quota in 3m18s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (S50 parent: build and the parent's tests) was held back 1m56s by its 4-CPU quota in 2m33s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 3 (S50 transplant: the fix's tests on the parent) was held back 2m20s by its 4-CPU quota in 1m33s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+      "finishedAt": "2026-11-27T10:07:56+00:00",
+      "wallSeconds": 453.2,
+      "peakMemoryBytes": 4907630592,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 1500.0,
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "host": "vm-1",
+      "result": "2026/11/27/20261127-091106-setup-build-spring-boot-50433-s50-at-bot/result.json"
+    },
+    {
       "id": "20261127-091105-setup-build-spring-boot-52522-s40-at-bot",
       "title": "Setup: build Spring Boot #52522 (S40) at both pins and run its landed tests",
       "status": "passed",
