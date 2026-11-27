@@ -17767,26 +17767,34 @@
     },
     {
       "change_id": "xkxzktumvqzxylxlsovwyrzvvnqwrnpy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3c164a397533d201296646acdbf95969a819237e",
+      "immutable": true,
       "summary": "Record the watcher's decisions on brief-generation-quality",
       "body": "The watcher's verdicts on the single-agent run brief-generation-quality (llm-dlc/decisions/single-brief-generation-quality.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "3f9dabcc6dfba6a68cae927f7225a9831cf2fad7f3c6065d36fb7885eded908e"
     },
     {
       "change_id": "ntuqprskyppsztouplnkuuunvvywtoqm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "523dd364de34589f6d503b79d85927c006feede3",
+      "immutable": true,
       "summary": "Give the brief author four rules for each case, and count what a brief shows of them",
       "body": "The user compared six generated briefs (155 cases) with rationale files of their own, which stay private, and wrote the result up as llm-dlc/loops/brief-generation-quality-takeaway.md. The brief author misread and missed nothing, but in every batch it dropped or blurred the second observation that changes one input, three times accepted \"either order\" where the behaviour defines an order, and reached for a database, JMS or a child process where a public call would show the same. Its own predictions that the merged code is still wrong were a strength worth keeping. The rate did not vary with the size of the list, so the gap is in the instructions. This is now VF-075 in verification/findings.md, with the cause, what landed, the baseline and what the user's next comparison should count.\n\nllm-dlc/loops/brief-generation-template.md gives the author four rules for each case, in the first text in full and in the continue message in short (a later cycle starts after a compaction with the continue message alone): a claim row with the role Variation that repeats the main observation with exactly one input changed and says what each revision should do, the reversal where the behaviour depends on order; the order stated and checked wherever the code under change produces one; the cheapest observation that shows the change, with the reason in the technical notes when more than a public call is needed; and a claim row with the role Remaining defect wherever the landed code still looks wrong. The two are claim rows because the agent that verifies a brief decides every claim row. The author checks the rules before a cycle ends and gives its counts with \"The brief is complete\" and in its record. The user's handoff is unchanged, and single_run.py renders the template as before.\n\nbrief_queue.py counts what a written brief shows of the rules: the cases with a Variation row and those without, the Remaining defect rows, and the cases whose words leave an order open. The brief step of next gives the count when it queues a generated brief (caseRules, a line for the user, the queue's log) and refuses nothing; brief_queue.py rules FILE counts any brief. Over the nine generated briefs on the line (235 cases) it finds no such rows, as the roles did not exist, and 13 cases that leave an order open. The single-agent-run skill page describes the rules and the count for the watcher.\n\nVerified by tests of the texts an author is given, not of the template file: both texts as generate renders them hold each rule (they lacked all four before the change, in both); the text the Codex stand-in was started with and the run's continue message hold them; and so do the first and the continued prompt of an author the queue started, whose brief the brief step then counts. python3 lib/tools/test_costs.py run --changed passed 7 of 7 test files, and the lint of the test inventory agrees (two new unit rows). Nothing here runs a prover, so there is no verification job. Not shown yet: that an author follows the rules, which the user's comparison of the next generated list with a rationale file will show.",
       "log_sha256": "bf0fd9ad7a7ba57481d4d29387d499c3e9b5b0e91f0796a4041c72f481fc9840"
     },
     {
       "change_id": "plvoytpsnrqsxruztwsyxtxoxprqlpql",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5c01d557d59268484d761a087fc33e3462cd7e04",
+      "immutable": true,
       "summary": "Merge the single-agent run brief-generation-quality into the line",
       "body": "The single-agent run brief-generation-quality (session 43b290ac-3fdc-4f32-8f05-45e7bcb78ce2) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "bf0fd9ad7a7ba57481d4d29387d499c3e9b5b0e91f0796a4041c72f481fc9840"
+    },
+    {
+      "change_id": "qwlvsvqourmptsyytnoukllpllxknvrk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "bf0fd9ad7a7ba57481d4d29387d499c3e9b5b0e91f0796a4041c72f481fc9840"
     }
   ],
