@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T23:47:43.785Z",
-  "duration_seconds": 30842,
+  "ended": "2026-11-27T23:48:20.459Z",
+  "duration_seconds": 30879,
   "stats": {
     "turns": 32,
-    "api_calls": 709,
-    "tool_calls": 771,
+    "api_calls": 710,
+    "tool_calls": 772,
     "tool_errors": 11,
     "compactions": 5,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1444,
-      "output_tokens": 1198187,
-      "cache_read_input_tokens": 219782664,
-      "cache_creation_input_tokens": 2683747
+      "input_tokens": 1446,
+      "output_tokens": 1200356,
+      "cache_read_input_tokens": 220201984,
+      "cache_creation_input_tokens": 2685223
     }
   },
   "tools": {
-    "Bash": 625,
+    "Bash": 626,
     "Read": 82,
     "Write": 31,
     "Edit": 19,
@@ -152,24 +152,24 @@
     {
       "index": 5,
       "started": "2026-11-27T23:01:49.090Z",
-      "ended": "2026-11-27T23:47:43.785Z",
+      "ended": "2026-11-27T23:48:20.459Z",
       "turns": 1,
-      "api_calls": 114,
+      "api_calls": 115,
       "usage": {
-        "input_tokens": 228,
-        "output_tokens": 220411,
-        "cache_read_input_tokens": 29490700,
-        "cache_creation_input_tokens": 404155
+        "input_tokens": 230,
+        "output_tokens": 222580,
+        "cache_read_input_tokens": 29910020,
+        "cache_creation_input_tokens": 405631
       },
-      "peak_context_tokens": 419322
+      "peak_context_tokens": 420798
     }
   ],
   "log": {
-    "sha256": "bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d",
-    "bytes": 20949143,
-    "lines": 7039,
-    "gzip_bytes": 4065758,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d.jsonl.gz"
+    "sha256": "78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9",
+    "bytes": 20973431,
+    "lines": 7051,
+    "gzip_bytes": 4068781,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -414,20 +414,20 @@
       "log_sha256": "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a"
     },
     {
-      "change_id": "tuzzvyzmxxtmxquywzzyzknqlqwqwwrr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d"
-    },
-    {
       "change_id": "voyswovkusxkrvxtvsvmxzuksllkqkmm",
       "commit_id": null,
       "immutable": false,
       "summary": "Submit a batch from one manifest, as ordinary jobs with a published map from rows to jobs",
       "body": "python3 jobs/pipeline.py submit --manifest FILE checks a whole batch before it writes any of it (each row's job against the schema, duplicate rows, a variable no row gives, a prerequisite on a row that is not there, prerequisites in a circle) and writes one ordinary job of the second format for each row, with the rows' map in verification/batches/NAME.json. A job's id is the manifest's created time, the batch, the row and the first characters of the row's work identity (the digest of its steps, environment, outputs, requirements, prerequisites, source revision, purpose, workload and case), and a submission writes no clock and no session: submitting the same manifest again, at the same time or after a submission was killed, writes the same files with the same bytes. A row whose work changed gets a new job that supersedes the old one; a changed title, estimate or priority changes no id. resubmit moves a row to the job that replaces it, so a rerun (another attempt), a resubmission (another job, the same work) and changed work (another job, other work) stay apart in the row's history. wait --batch NAME blocks until every row has a result or will not start as things are (exit 0; 3 on --timeout; 4 when the queue cannot be read), batch NAME gives the batch row by row (itl-job-batch-view/v1), and the audit joins every map with the specifications both ways.\n\nVerified: jobs/test_fanout.py runs the 49 rows of jobs/fixtures/batch-49.json through jobs/pipeline.py in a throwaway repository: submitted, 29 job files and the map removed as a killed submission leaves it, submitted twice more (exactly 49 ids, the first's), run (47 pass, R13 fails, R14 which needs it is blocked with no attempt, R20's test fails by assertion as its row says and the job is fulfilled), watched as a batch (settled: 48 finished, 1 blocked), collected and reported (all 48 that ran), R13 resubmitted with more memory (the map follows; two jobs with one work identity, failed then passed), R14 then run with its own file unchanged, 50 job files in all. jobs/test_batch.py (9, in process): a submission killed at its 21st write and run twice more ends with the same 49 files to the byte, four submissions at once write what one writes, other inputs or another revision give a new id and an estimate does not. jobs/test_audit.py: the batch join on a made-up corpus, one fault at a time; the pinned corpus still reconciles to its frozen census. The tests of what changed: 37 of 37 Python test files passed.",
       "log_sha256": "bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d"
+    },
+    {
+      "change_id": "mxustosppnwnmryumuxzktzvstxztxku",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Test the pipeline of the pinned revision beside this one: one exclusion, a refused second-format job, a rollback with a job in flight",
+      "body": "jobs/test_coexistence.py reads verification/pipeline.py, layout.py and capture.py at b52a084f5d11 out of git and runs them beside this checkout's code on one throwaway repository, since a runner of before is at work when this line lands and a rollback puts it back. A state directory has one runner whichever code it is, and each sees the other at work (the old runner's pid in this code's wait --json and view; this runner in the old wait). VF-051's lock across workspaces turns a second runner away both ways. The old runner says 'invalid, not run' for a job of the second format and runs nothing of it, runs a first-format job this code's submit wrote, and the old collect takes a result this runner wrote. A runner of this code killed with its process group while a job runs: the old runner runs the job again and the old collect applies its output; the killed attempt's log is byte for byte where it was, this code's view shows the job collected with one interrupted attempt, and the audit reports no discrepancy.\n\nVerified: the 4 tests pass (7 s); the cost lint is clean. Not shown by a test, and said in the results page: the watcher's own cycle on the real pipeline end to end, and the default checkout's runner, which is the old code until this line lands.",
+      "log_sha256": "78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9"
     }
   ],
   "logs": {
@@ -513,6 +513,12 @@
       "bytes": 11102876,
       "lines": 3544,
       "gzip_bytes": 2107303,
+      "url": null
+    },
+    "78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9": {
+      "bytes": 20973431,
+      "lines": 7051,
+      "gzip_bytes": 4068781,
       "url": null
     },
     "7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e": {

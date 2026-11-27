@@ -66,8 +66,7 @@ For whoever continues (this run's later cycles): each item is one commit, with i
 3. *Done (same section).* The lifecycle view, `status` rendered from it, the typed `wait` and `collect`, and the
    keepers on it and on `jobs/pipeline.py`. Left of it: the batch views, with fan-out (next).
 4. *Done (see Gate 2: fan-out, below).* Manifest fan-out, the map, the batch's wait and view, the 49-row fixture.
-5. **Old and new together**: the pinned old command and the new one from two workspaces on one lock; the old
-   runner refusing a second-format job; a rollback with a job in flight.
+5. *Done (see Gate 2: the pipeline of before beside this one, below).*
 6. **Delayed setup** (gate 3): `jobs/readiness.py` (the operation's description and key, receipts, bundles
    published atomically and verified), `jobs/workloads/resolution.py` (online resolution in an isolated home, an
    offline proof in the sandbox, bounded rounds), `needs: readiness`, the nested Gradle and Maven fixture, then
@@ -192,6 +191,22 @@ in a throwaway repository, about 7 s; `jobs/test_batch.py` tests the map's rules
     manifest whose estimate was corrected gives no new jobs. A row that needs other resources is resubmitted.
 24. **The audit's census does not count batches.** It is the corpus as frozen before there were any; the
     batches' join is a block of its own in the report.
+
+## Gate 2: the pipeline of before beside this one
+
+`jobs/test_coexistence.py` takes `verification/pipeline.py`, `layout.py` and `capture.py` as they are at
+`b52a084f5d11` out of git, and runs them beside this checkout's code on one throwaway repository.
+
+| The brief asks | What the test shows |
+|---|---|
+| A still-running legacy runner and a new command share one exclusion | With the old runner at work on a state directory, this code's `run` is refused ("another runner is using"), and its `wait --json` and `view` name the old runner's pid as at work. The other way round, the old `run` is refused and the old `wait` names this runner. Across two workspaces of one repository the lock of VF-051 turns the second away whichever code holds it, both ways |
+| The v1 formats and commands are preserved | The old runner runs a first-format job written by this code's `submit`, and the old `collect` collects it. `verification/test_pipeline.py`'s 52 tests go on running every command through the old entry point |
+| A second-format job is safe on an old runner | The old runner says "invalid, not run" for it and runs nothing of it; this runner then runs it, and does not run again the job the old collector collected |
+| Rollback with a job in flight | This runner is killed (SIGKILL, its whole process group) while a job runs. The old runner takes the queue as it finds it, runs the job again, and the old `collect` collects it and applies its output. The killed attempt's log is byte for byte where it was; this code's `view` shows the job `collected` with one `interrupted` attempt, the audit reports no discrepancy and lists the attempt under what is only on this machine; a later run of this runner starts nothing and removes nothing |
+
+What is not shown by a test: the compatibility path through the *watcher's* own cycle on the real pipeline (its
+keeper is tested against a stand-in for the pipeline, and the pipeline against throwaway repositories, not the
+two together), and the default checkout's runner, which is the old code until this line lands.
 
 ## Gate 1: the census
 
