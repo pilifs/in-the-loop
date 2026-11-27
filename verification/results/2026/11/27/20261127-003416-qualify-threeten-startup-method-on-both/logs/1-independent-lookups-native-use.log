@@ -1,0 +1,30 @@
+/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/src/observed/StartupTrace.java:21: error: cannot find symbol
+    private final LiveTableTrace table;
+                  ^
+  symbol:   class LiveTableTrace
+  location: class StartupTrace
+/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/src/observed/StartupTrace.java:48: error: cannot find symbol
+        this.table = mode.equals("--live-table") ? new LiveTableTrace(vm, events) : null;
+                                                       ^
+  symbol:   class LiveTableTrace
+  location: class StartupTrace
+Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 errors
+Traceback (most recent call last):
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/benchmark/startup-facts/members.py", line 127, in <module>
+    main()
+    ~~~~^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/benchmark/startup-facts/members.py", line 118, in main
+    doc = {"rows":qualify(work),"controls":controls(work),"caseSpecificStartupProbes":0}
+                  ~~~~~~~^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/benchmark/startup-facts/members.py", line 20, in qualify
+    compile_to(tools, [OBSERVER / "ObservedInitializer.java", OBSERVER / "StartupTrace.java"])
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/benchmark/startup-facts/charset.py", line 32, in compile_to
+    subprocess.run(command + (["-cp", cp] if cp else []) + list(sources), check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '[PosixPath('/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/javac'), '-proc:none', '-g', '-encoding', 'UTF-8', '-d', PosixPath('/tmp/qualify-members-w6bejbwm/recorder'), PosixPath('/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/src/observed/ObservedInitializer.java'), PosixPath('/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/src/observed/StartupTrace.java')]' returned non-zero exit status 1.

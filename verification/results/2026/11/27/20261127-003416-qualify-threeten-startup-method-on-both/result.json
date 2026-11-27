@@ -1,0 +1,230 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-003416-qualify-threeten-startup-method-on-both",
+  "title": "Qualify ThreeTen startup Method on both original deployments",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1.0s, peak 107.5 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "declared output verification/startup-facts/threeten-members.zip was not produced",
+    "step 1 (Independent lookups, native uses and all public histories) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-003416-qualify-threeten-startup-method-on-both.json",
+    "sha256": "33ec8c9893c812344508110de2a56d2296413d5904f6e065121a1553bca99a76",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-003416-qualify-threeten-startup-method-on-both",
+      "title": "Qualify ThreeTen startup Method on both original deployments",
+      "description": "Resolve the original formatter initializer refusal, observe the lookup and write of the same reflection object under the original loader, compare Chronology alone, and replay twelve New York and Berlin histories on ordinary and traced JVMs. Exercise arity, aliases, separate reflection copies, missing-member fallback and accessibility changes.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T00:34:16+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Independent lookups, native uses and all public histories",
+          "run": "python3 lib/benchmark/startup-facts/members.py --output verification/startup-facts/threeten-members.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/threeten-members.zip"
+      ]
+    }
+  },
+  "sourceCommit": "db9709e7a12b4a30adb3002a46ed1a3f8ed78ed0",
+  "startedAt": "2026-11-27T00:38:43+00:00",
+  "finishedAt": "2026-11-27T00:41:58+00:00",
+  "wallSeconds": 195.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 434043,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 112689152,
+    "wallSeconds": 1.0,
+    "cpuSeconds": 1.7,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 185.567,
+      "cpuSeconds": 185.901,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2325880832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "73d3172bcd43e6e4ea387787ea5864091f7d6db92b31a0fa5009eecffc2c2ec8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 05s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Independent lookups, native uses and all public histories",
+      "run": "python3 lib/benchmark/startup-facts/members.py --output verification/startup-facts/threeten-members.zip",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 1.005,
+      "cpuSeconds": 1.731,
+      "cpuThrottledSeconds": 0.41,
+      "peakMemoryBytes": 112689152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-independent-lookups-native-use.log",
+        "lines": 30,
+        "bytes": 2949,
+        "sha256": "bbfda56312e5c9d98c8e05908c8e1e1fcb47d6e9f1f5f4be04bd705ecf87f5b8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/src/observed/StartupTrace.java:21: error: cannot find symbol",
+        "    private final LiveTableTrace table;",
+        "                  ^",
+        "  symbol:   class LiveTableTrace",
+        "  location: class StartupTrace",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/src/observed/StartupTrace.java:48: error: cannot find symbol",
+        "        this.table = mode.equals(\"--live-table\") ? new LiveTableTrace(vm, events) : null;",
+        "                                                       ^",
+        "  symbol:   class LiveTableTrace",
+        "  location: class StartupTrace",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/src/observed/ObservedInitializer.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "2 errors",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/benchmark/startup-facts/members.py\", line 127, in <module>",
+        "    main()",
+        "    ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/benchmark/startup-facts/members.py\", line 118, in main",
+        "    doc = {\"rows\":qualify(work),\"controls\":controls(work),\"caseSpecificStartupProbes\":0}",
+        "                  ~~~~~~~^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/benchmark/startup-facts/members.py\", line 20, in qualify",
+        "    compile_to(tools, [OBSERVER / \"ObservedInitializer.java\", OBSERVER / \"StartupTrace.java\"])",
+        "    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both/lib/benchmark/startup-facts/charset.py\", line 32, in compile_to",
+        "    subprocess.run(command + ([\"-cp\", cp] if cp else []) + list(sources), check=True)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/subprocess.py\", line 578, in run",
+        "    raise CalledProcessError(retcode, process.args,",
+        "                             output=stdout, stderr=stderr)",
+        "subprocess.CalledProcessError: Command '[PosixPath('/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/javac'), '-proc:none', '-g', '-encoding', 'UTF-8', '-d', PosixPath('/tmp/qualify-members-w6bejbwm/recorder'), PosixPath('/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-q"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T00:42:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "b8d0f238e9b26c7ec958b55376e4db965d819c08",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b8d0f238e9b26c7ec958b55376e4db965d819c08/jvmcontract",
+    "built": true
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T004158Z-599243dbd16ef2a6",
+      "outputs": "20261127T004158Z-61486266b96a3b17",
+      "workdir": "20261127T004202Z-2940419196521214"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-003416-qualify-threeten-startup-method-on-both"
+}
