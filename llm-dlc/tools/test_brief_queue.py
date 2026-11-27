@@ -152,8 +152,8 @@ class TheQueuesRules(unittest.TestCase):
             self.assertTrue(folders["unsealed"].exists() and folders["elsewhere"].exists())
 
 
-class TheHold(unittest.TestCase):
-    """`hold` lets `next` land what has finished and start nothing; `resume` lets it start again."""
+class HeldQueue(unittest.TestCase):
+    """A queue with one ended run and one waiting brief, and `next`'s steps recorded instead of taken."""
 
     def setUp(self):
         self.root = Path(tempfile.mkdtemp())
@@ -186,6 +186,10 @@ class TheHold(unittest.TestCase):
             self.assertEqual(brief_queue.main(list(args), root=self.root), 0)
         return json.loads(out.getvalue()) if out.getvalue().lstrip().startswith("{") else out.getvalue()
 
+
+class TheHold(HeldQueue):
+    """`hold` lets `next` land what has finished and start nothing; `resume` lets it start again."""
+
     def test_a_held_queue_lands_what_ended_and_starts_nothing_until_resumed(self):
         self.assertEqual(self.queue("hold", "--reason", "work by hand on the code")["hold"]["reason"], "work by hand on the code")
         self.assertTrue(self.queue("hold")["already"], "a second hold keeps the first")
@@ -205,6 +209,23 @@ class TheHold(unittest.TestCase):
         self.assertEqual(self.steps[-1], "waiting: setup-start")
         actions = [json.loads(l)["action"] for l in (self.root / brief_queue.LOG).read_text().splitlines()]
         self.assertEqual([a for a in actions if a in ("hold", "held", "resume")], ["hold", "held", "held", "resume"])
+
+
+class TheHoldAfter(HeldQueue):
+    """A brief with holdAfter=yes holds the queue once it is done; the briefs before it run on."""
+
+    def test_a_brief_that_asks_to_hold_after_it_stops_the_queue_once_it_is_done(self):
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(brief_queue.main(["set", "ended", "holdAfter=maybe"], root=self.root), 1)
+        self.queue("set", "ended", "holdAfter=yes")
+        out = self.queue("next", "--finished")
+        self.assertEqual(self.steps, ["ended: domain-land", "ended: checkpoint", "ended: cleanup"])
+        self.assertEqual((out["done"], out["heldAfter"], out["heldAt"]), (["ended"], "ended", "setup-start"))
+        hold = brief_queue.read(self.root)["hold"]
+        self.assertIn("holdAfter=yes", hold["by"])
+        self.assertIn("ended is done", hold["reason"])
+        self.queue("resume")
+        self.assertEqual(self.queue("next")["started"], "waiting", "the hold is ended as any other")
 
 
 class TheHandover(unittest.TestCase):

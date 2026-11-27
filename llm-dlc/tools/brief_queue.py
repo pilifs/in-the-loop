@@ -47,7 +47,8 @@ Commands (python3 llm-dlc/tools/brief_queue.py COMMAND ...):
   hold [--reason TEXT]          hold the queue: `next` still lands, checkpoints and clears what has finished, but
                                 starts no run (no generation, setup or domain run) until `resume`; for a pause
                                 between briefs, such as work by hand on the code the next run will start from
-  resume                        end a hold: the next `next` starts what is due
+  resume                        end a hold: the next `next` starts what is due. A brief with holdAfter=yes holds the
+                                queue itself once it is done, so that the briefs before it run on and it stops after
   report [--json]               each brief with its runs, cycles, landing and state
 
 Standard library only.
@@ -98,6 +99,9 @@ DEFAULTS = {
     "effort": "max",
     "session": "previous",             # previous (the last domain run's session), new, or a session id
     "workspace": "foundation-domain-streams",
+    # yes: when this brief is done (landed, checkpointed, cleared), the queue holds itself (`hold`) before the next
+    # one starts, for a person to look at what it did (the user, 2026-11-27, after an architecture refactor).
+    "holdAfter": "no",
     "memory": "20G",
     "cycles": "0",
     "prompt": "aspirational",          # PROMPT_TEMPLATE's name
@@ -284,6 +288,8 @@ def checked(over: dict, allow_run: bool = False) -> dict:
         raise Problem(f"unknown setting(s) {', '.join(unknown)}: the keys are {', '.join(sorted(keys))}")
     if "cycles" in over and not str(over["cycles"]).isdigit():
         raise Problem("cycles is a count, 0 for no limit")
+    if "holdAfter" in over and over["holdAfter"] not in ("yes", "no"):
+        raise Problem("holdAfter is yes (hold the queue once this brief is done) or no")
     if "generatedBrief" in over and over["generatedBrief"] not in ("next", "end"):
         raise Problem("generatedBrief is next (right after its list) or end (the end of the queue)")
     return over
@@ -667,6 +673,10 @@ def cmd_next(root: Path, finished: bool) -> dict:
                 entry["state"] = "done"
                 entry["ended"] = now()
                 report["done"].append(name)
+                if s.get("holdAfter") == "yes" and not data.get("hold"):
+                    data["hold"] = {"since": now(), "by": f"the queue, after {name} (holdAfter=yes)",
+                                    "reason": f"{name} is done: a person looks at it before the next brief starts"}
+                    report["heldAfter"] = name
                 made = entry.get("queued")
                 made_at = "right after it" if entry.get("queuedAt") == "next" else "at the end"
         if stop == "failed":

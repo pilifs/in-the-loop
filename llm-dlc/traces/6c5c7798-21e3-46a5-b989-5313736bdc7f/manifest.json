@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-27T14:35:58.847Z",
-  "duration_seconds": 1026512,
+  "ended": "2026-11-27T14:49:48.559Z",
+  "duration_seconds": 1027342,
   "stats": {
-    "turns": 1833,
-    "api_calls": 7616,
-    "tool_calls": 6671,
+    "turns": 1836,
+    "api_calls": 7625,
+    "tool_calls": 6678,
     "tool_errors": 73,
     "compactions": 18,
     "peak_context_tokens": 666881,
     "usage": {
-      "input_tokens": 18998,
-      "output_tokens": 3074793,
-      "cache_read_input_tokens": 2421143718,
-      "cache_creation_input_tokens": 10035477
+      "input_tokens": 19024,
+      "output_tokens": 3077489,
+      "cache_read_input_tokens": 2423966767,
+      "cache_creation_input_tokens": 10040171
     }
   },
   "tools": {
-    "Bash": 6404,
+    "Bash": 6411,
     "SendMessage": 116,
     "Edit": 41,
     "ToolSearch": 27,
@@ -336,24 +336,24 @@
     {
       "index": 18,
       "started": "2026-11-27T10:10:55.850Z",
-      "ended": "2026-11-27T14:35:58.847Z",
-      "turns": 58,
-      "api_calls": 228,
+      "ended": "2026-11-27T14:49:48.559Z",
+      "turns": 61,
+      "api_calls": 237,
       "usage": {
-        "input_tokens": 590,
-        "output_tokens": 72366,
-        "cache_read_input_tokens": 53149694,
-        "cache_creation_input_tokens": 282495
+        "input_tokens": 616,
+        "output_tokens": 75062,
+        "cache_read_input_tokens": 55972743,
+        "cache_creation_input_tokens": 287189
       },
-      "peak_context_tokens": 311374
+      "peak_context_tokens": 316068
     }
   ],
   "log": {
-    "sha256": "56a43d7f80f36ae68fa382c8195b25e0187299bebc8cc458998c6e9a0e6a942d",
-    "bytes": 114645148,
-    "lines": 67139,
-    "gzip_bytes": 17580941,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/56a43d7f80f36ae68fa382c8195b25e0187299bebc8cc458998c6e9a0e6a942d.jsonl.gz"
+    "sha256": "104a17bdf6fca8b9beeebddfcb65885209dc9bb587f9b7b412ef1990d19cdb84",
+    "bytes": 114757447,
+    "lines": 67215,
+    "gzip_bytes": 17596565,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/104a17bdf6fca8b9beeebddfcb65885209dc9bb587f9b7b412ef1990d19cdb84.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -17572,6 +17572,22 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-143502-run-both-original-maven-war-builds-with: failed: 1 failed, 1 skipped step(s) in 1m24s, peak 4.1 GiB (estimated 8m00s, 5.0 GiB) removed 1 kept work directory of failed jobs, 1.8 GiB: collected, and their originals remote_verified Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "56a43d7f80f36ae68fa382c8195b25e0187299bebc8cc458998c6e9a0e6a942d"
+    },
+    {
+      "change_id": "swlxknskxolossmkvnxzyuwzsosquusr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Let a queued brief hold the queue once it is done (holdAfter=yes)",
+      "body": "A hold stops every start, so pausing after a later brief (the user, 2026-11-27: run the Fable refactor brief straight after the Spring Boot run, then stop for review before the next brief) took a watcher's sequence of resume, next and hold by hand. A brief's new holdAfter setting (yes or no, default no) makes the queue hold itself when that brief is done, after its landing, checkpoint and cleanup: the briefs before it run on, and the next start waits for brief_queue.py resume as with any hold, the hold naming the brief that asked for it. The single-agent-run skill says when to use it. Verified: a unit test (holdAfter=maybe refused; with yes, the ended brief lands, checkpoints and clears, the queue holds itself and the waiting brief's start waits; resume and next start it), beside the hold test, now on a shared fixture; test_costs run --changed passes; lint agrees.",
+      "log_sha256": "104a17bdf6fca8b9beeebddfcb65885209dc9bb587f9b7b412ef1990d19cdb84"
+    },
+    {
+      "change_id": "qqpokwvkyzzszqykzszlrwunpslxrtwl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge queue-hold-after: a queued brief can hold the queue once it is done",
+      "body": "Merges the workspace queue-hold-after (swlxknsk) into the line at the user's request. A brief set with holdAfter=yes makes the queue hold itself once that brief is landed, checkpointed and cleaned up, so the briefs before it run on and the queue stops for the user after it; the single-agent-run skill describes it. The merge had no conflicts; the generated trace files were regenerated. The workspace's unit test and changed tests passed.",
+      "log_sha256": "104a17bdf6fca8b9beeebddfcb65885209dc9bb587f9b7b412ef1990d19cdb84"
     }
   ],
   "logs": {
@@ -18119,6 +18135,12 @@
       "bytes": 110384322,
       "lines": 64262,
       "gzip_bytes": 16922374,
+      "url": null
+    },
+    "104a17bdf6fca8b9beeebddfcb65885209dc9bb587f9b7b412ef1990d19cdb84": {
+      "bytes": 114757447,
+      "lines": 67215,
+      "gzip_bytes": 17596565,
       "url": null
     },
     "104aa707227f185c0ff0b7d9350731943484215d249182919cc9c724117e7a18": {
