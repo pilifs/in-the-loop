@@ -1,0 +1,384 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110820-setup-build-spring-boot-50886-s15-at-bot",
+  "title": "Setup: build Spring Boot #50886 (S15) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m53s, peak 4.2 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S15 fix: build and landed tests) was held back 1m44s by its 4-CPU quota in 3m03s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S15 parent: build and the parent's tests) was held back 1m28s by its 4-CPU quota in 2m18s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S15 transplant: the fix's tests on the parent) was held back 1m18s by its 4-CPU quota in 1m29s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110820-setup-build-spring-boot-50886-s15-at-bot.json",
+    "sha256": "5c9b0f1f76bd92bd4238599b21395890627f1b3ea1d612791c67511fcc39bdb6",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110820-setup-build-spring-boot-50886-s15-at-bot",
+      "title": "Setup: build Spring Boot #50886 (S15) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S15 (spring-projects/spring-boot#50886: Closing a context detaches meters registered after startup). In the worktrees $P/worktrees/S15-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-micrometer-metrics with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (MeterRegistryCloserTests (test) MeterRegistryPostProcessorTests (test) MetricsAutoConfigurationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-micrometer-metrics in $P/artifacts/S15-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S15",
+      "submitted": {
+        "at": "2026-11-27T11:08:20+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S15 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S15 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S15 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S15 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S15 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S15 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S15 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S15 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091102-setup-build-spring-boot-50886-s15-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:18:02+00:00",
+  "finishedAt": "2026-11-27T11:25:07+00:00",
+  "wallSeconds": 425.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 4517462016,
+    "wallSeconds": 413.4,
+    "cpuSeconds": 1162.6,
+    "memoryOfEstimate": 0.7,
+    "durationOfEstimate": 0.28
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S15 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S15 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 183.853,
+      "cpuSeconds": 499.283,
+      "cpuThrottledSeconds": 104.072,
+      "peakMemoryBytes": 4517462016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s15-fix-build-and-landed-tests.log",
+        "lines": 34,
+        "bytes": 4994,
+        "sha256": "a0aa63235b29d447a028a73a43f2fd58ea91f5303434cc38b86d50d8222f75af",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S15-fix gradle=9.6.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=120 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/s",
+        "junit tests=33 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCloserTests junit tests=5 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests junit tests=17 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfigurationTests junit tests=11 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S15-fix/module_spring-boot-micrometer-metrics.runtimeClasspath.txt 150 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S15-fix/module_spring-boot-micrometer-metrics.testRuntimeClasspath.txt 204 entries",
+        "e55c521a9bd878f34e9d664279f50526203cbf14ace729990750b7e37646154d  jars/spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar",
+        "891db0d418938d9e7bbe4a921e620956acc254ad11f4437022292796ff451a19  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.8-SNAPSHOT.jar",
+        "28ad7c0cb8bdb49c133c097b3994cf2feaa15385415b401b1cfc3c5a3cfa6e08  tree/core/spring-boot/build/libs/spring-boot-4.0.8-SNAPSHOT.jar",
+        "3ee804715c9ca44c5ad372f8f03d21f60e161ed17000cf945c8758bb705443a1  tree/core/spring-boot-docker-compose/build/libs/spring-boot-docker-compose-4.0.8-SNAPSHOT.jar",
+        "f9da199bbba36dbfd67b84b0e5c1fb6417149cf77d9209427bb61877f3354549  tree/core/spring-boot-test/build/libs/spring-boot-test-4.0.8-SNAPSHOT.jar",
+        "2b54723152920ee73c9b1b3ce82aeef8a29558baea78bcc1aaea0908029a4d8c  tree/core/spring-boot-testcontainers/build/libs/spring-boot-testcontainers-4.0.8-SNAPSHOT.jar",
+        "074677a3d440088c154961574f9ae5809cefffcea2ee93afd565ec2e0a9eb5a1  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.0.8-SNAPSHOT.jar",
+        "94ac00fddf24c076dfe1fb42228407a3234a667134fa9cf011c4956a55971320  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.0.8-SNAPSHOT.jar",
+        "e55c521a9bd878f34e9d664279f50526203cbf14ace729990750b7e37646154d  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar",
+        "875b6d4a85bb062f89904c72a02136c44db5e1de153d2df96d4a513bba692939  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.0.8-SNAPSHOT-test-fixtures.jar",
+        "5c00f4a1d8cdbd823f24d40de67a3490ff3307480d3af01bc28425e185be1c45  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.0.8-SNAPSHOT.jar",
+        "46a99ef1f35fd5bef6ce8712aa0a25522b31c1c0819fed4f16fd2a409fb3fbf5  tree/module/spring-boot-opentelemetry/build/libs/spring-boot-opentelemetry-4.0.8-SNAPSHOT.jar",
+        "cac9c3c1b0c7f75b7df40c21d3e67a0e222ba8f5b19800c2d1bbf1836c82b837  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.8-SNAPSHOT.jar",
+        "84ae8bee5477a2066ad42c4dcd69f1d3fca36fd738fd50f73279098a6e06f9ff  spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryCloser.class",
+        "1ee2d40606c7adf6a183cdd32046b19f42d75ac641767b49893101baac50ac6e  spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessor$CompositeMeterRegistries.class",
+        "dd736cf01d35e2e3cf5a3a02a1bdf146fac13a3886721ee25f598f4a3c113841  spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessor.class",
+        "262f634a604136ccf428703e7e09f8f20cfb4b3562c69604aec9b86b28abfffc  spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/MetricsAutoConfiguration.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S15 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S15 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 138.209,
+      "cpuSeconds": 395.956,
+      "cpuThrottledSeconds": 88.16,
+      "peakMemoryBytes": 3892359168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s15-parent-build-and-the-paren.log",
+        "lines": 34,
+        "bytes": 4901,
+        "sha256": "c6c9d5dfb46ec1976906db6f2f690aa5643266ed760ab267efcdc89c2e5d4819",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S15-parent gradle=9.6.1 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=75 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=26 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCloserTests no-result",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests junit tests=15 failures=0 errors=0 skipped=0 ",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfigurationTests junit tests=11 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S15-parent/module_spring-boot-micrometer-metrics.runtimeClasspath.txt 150 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S15-parent/module_spring-boot-micrometer-metrics.testRuntimeClasspath.txt 204 entries",
+        "d9fde5aa9e4d5d0667fc70460d935b948d59d457d2fbe07d1ec1058c7ffc03e2  jars/spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar",
+        "891db0d418938d9e7bbe4a921e620956acc254ad11f4437022292796ff451a19  tree/core/spring-boot-autoconfigure/build/libs/spring-boot-autoconfigure-4.0.8-SNAPSHOT.jar",
+        "28ad7c0cb8bdb49c133c097b3994cf2feaa15385415b401b1cfc3c5a3cfa6e08  tree/core/spring-boot/build/libs/spring-boot-4.0.8-SNAPSHOT.jar",
+        "3ee804715c9ca44c5ad372f8f03d21f60e161ed17000cf945c8758bb705443a1  tree/core/spring-boot-docker-compose/build/libs/spring-boot-docker-compose-4.0.8-SNAPSHOT.jar",
+        "f9da199bbba36dbfd67b84b0e5c1fb6417149cf77d9209427bb61877f3354549  tree/core/spring-boot-test/build/libs/spring-boot-test-4.0.8-SNAPSHOT.jar",
+        "2b54723152920ee73c9b1b3ce82aeef8a29558baea78bcc1aaea0908029a4d8c  tree/core/spring-boot-testcontainers/build/libs/spring-boot-testcontainers-4.0.8-SNAPSHOT.jar",
+        "074677a3d440088c154961574f9ae5809cefffcea2ee93afd565ec2e0a9eb5a1  tree/module/spring-boot-actuator-autoconfigure/build/libs/spring-boot-actuator-autoconfigure-4.0.8-SNAPSHOT.jar",
+        "94ac00fddf24c076dfe1fb42228407a3234a667134fa9cf011c4956a55971320  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.0.8-SNAPSHOT.jar",
+        "d9fde5aa9e4d5d0667fc70460d935b948d59d457d2fbe07d1ec1058c7ffc03e2  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar",
+        "875b6d4a85bb062f89904c72a02136c44db5e1de153d2df96d4a513bba692939  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.0.8-SNAPSHOT-test-fixtures.jar",
+        "5c00f4a1d8cdbd823f24d40de67a3490ff3307480d3af01bc28425e185be1c45  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.0.8-SNAPSHOT.jar",
+        "46a99ef1f35fd5bef6ce8712aa0a25522b31c1c0819fed4f16fd2a409fb3fbf5  tree/module/spring-boot-opentelemetry/build/libs/spring-boot-opentelemetry-4.0.8-SNAPSHOT.jar",
+        "cac9c3c1b0c7f75b7df40c21d3e67a0e222ba8f5b19800c2d1bbf1836c82b837  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.8-SNAPSHOT.jar",
+        "6b6d5d0b1906d715263876577adfc4fc757948e55fe9830a7b9eb33ca6abc298  spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessor$CompositeMeterRegistries.class",
+        "dac4c4ce8130ba105fd00167d42626915c934644613dc2f09d8b87a9698b95be  spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessor.class",
+        "7ca653c02b568a3de34c7c252a69328343fd2652bdf3c6c0a8d391b6bdbc194e  spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/MetricsAutoConfiguration$MeterRegistryCloser.class",
+        "a557ccc16f1742bdcd03916a557730e2e33ab223fb0f0b90accbde0e0ba3cb4a  spring-boot-micrometer-metrics-4.0.8-SNAPSHOT.jar!/org/springframework/boot/micrometer/metrics/autoconfigure/MetricsAutoConfiguration.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S15 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S15 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 89.48,
+      "cpuSeconds": 265.925,
+      "cpuThrottledSeconds": 78.663,
+      "peakMemoryBytes": 4154142720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s15-transplant-the-fix-s-tests.log",
+        "lines": 24,
+        "bytes": 3362,
+        "sha256": "bb67eb0004c37d26a9ff3651cbabf95cf6d6170b027ed05bd7c4fd3e6a197dfc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryCloserTests.java",
+        "transplanted module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessorTests.java",
+        "transplanted module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/MetricsAutoConfigurationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S15-parent-landed gradle=9.6.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=89 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCloserTests no-result",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests no-result",
+        "class org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfigurationTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S15-parent-landed/module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessorTests.java:91: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S15-parent-landed/module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessorTests.java:359: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S15-parent-landed/module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessorTests.java:359: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S15-parent-landed/module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/MetricsAutoConfigurationTests.java:86: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S15-parent-landed/module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/micrometer/metrics/autoconfigure/MeterRegistryPostProcessorTests.java:95: error: cannot find symbol",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S15 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S15 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 1.817,
+      "cpuSeconds": 1.48,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 22974464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s15-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "beb76d7acff9b77b4465f5f67693e4a16f9b9956ccdbc9c6629d8293b4776713",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S15"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:25:42+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T112507Z-47967117b6bfe723"
+    }
+  }
+}
