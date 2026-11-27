@@ -4884,11 +4884,615 @@
       }
     }
   },
+  "finalOriginals": {
+    "producer": "ec4bfa899003edbbfb7bf8c24ecc98d817623ba988b562f5f44a5a25fd0de237",
+    "rows": [
+      {
+        "case": "charset-small",
+        "profiles": 2,
+        "archive": "charset-small.zip",
+        "sha256": "c23243386f523d9f0100db822a46de7415226c2b3b2d6b0222ec194c6c0e6990"
+      },
+      {
+        "case": "charset-io",
+        "profiles": 8,
+        "archive": "charset-io.zip",
+        "sha256": "66797c799751bd2cdc4d85ef5c01edd7c28c4896687928ec66d90c3aea06744b"
+      },
+      {
+        "case": "threeten-members",
+        "profiles": 2,
+        "archive": "threeten-members.zip",
+        "sha256": "226c9d86579963ddab9080e16dae0a1a64747db591c36a397c8773bbdc87182c"
+      },
+      {
+        "case": "poi-tables",
+        "profiles": 2,
+        "archive": "poi-tables.zip",
+        "sha256": "d49f989c15aaa9d7d9dfc8469c1384d350c56f3aab5761b9b1a621994c0bb800"
+      },
+      {
+        "case": "batik-resource",
+        "profiles": 10,
+        "archive": "batik-resource.zip",
+        "sha256": "b5f5d1a3a8c3144a9ed2e79ab82abd9423eb03f14b428a229915e1ef397d2e72"
+      },
+      {
+        "case": "properties-file",
+        "profiles": 10,
+        "archive": "properties-file.zip",
+        "sha256": "e698f9120e2ef3887f02cd833a63f3c53d8940c2cd32d914aaed645e4a64a515"
+      }
+    ],
+    "failedStartup": {
+      "schema": "startup-claim-report/v1",
+      "command": [
+        "prove",
+        "TableControls$Failing#count()I",
+        "--assert",
+        "result == 0",
+        "--classes",
+        "/home/filip/.cache/in-the-loop/agent-tmp/final-startup-originals-ivjkmk4m/subject",
+        "--classpath",
+        "/home/filip/.cache/in-the-loop/agent-tmp/final-startup-originals-ivjkmk4m/tools",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--json"
+      ],
+      "claimSha256": "e17c2445bdf9ec0eb45bd0cf4f8b72831764b0b4c0db26b90c7225611a5a47cc",
+      "locale": null,
+      "attempt": "attempt-8dp5lz0s",
+      "route": "native strict",
+      "original": {
+        "verdict": "unverifiable",
+        "reason": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperties()Ljava/util/Properties;@jdk-21.0.13 (java.lang.System.getProperties() at TableControls$Failing.<clinit>:47). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "target": "TableControls$Failing#count()I"
+      },
+      "root": "TableControls$Failing",
+      "receiptId": null,
+      "consumed": [],
+      "recording": "failed startup observation",
+      "resume": false,
+      "retry": null,
+      "remaining": "jvmcontract: --observed-initializer TableControls$Failing: startup exited exceptionally (diagnostic e50419e41f8b1dd526fa019de3f4701ed9b5385c977725c2a9380ad400c0cbec): [{\"externalCatch\":\"ObservedInitializer#main([Ljava/lang/String;)V@531\",\"site\":\"TableControls$Failing#<clinit>()V@24\",\"type\":\"java.lang.IllegalArgumentException\"},{\"externalCatch\":\"ObservedInitializer#main([Ljava/lang/String;)V@531\",\"site\":\"java.lang.Class#forName0(Ljava/lang/String;ZLjava/lang/ClassLoader;Ljava/lang/Class;)Ljava/lang/Class;@-1\",\"type\":\"java.lang.ExceptionInInitializerError\"}]",
+      "propertyInputsSha256": "d850230b2efeb5ea8c0a6b1dceba6fbf72076cfb7761413bd486bab6497307a0",
+      "revision": null,
+      "initializerStop": "jvmcontract: --observed-initializer TableControls$Failing: TableControls$Failing read the system properties as a whole (their keys, entries or values, through System.getProperties()), and an observation lists only the properties read by name, so the check cannot take it",
+      "failure": {
+        "id": "e50419e41f8b1dd526fa019de3f4701ed9b5385c977725c2a9380ad400c0cbec",
+        "root": "TableControls$Failing",
+        "exceptions": [
+          {
+            "externalCatch": "ObservedInitializer#main([Ljava/lang/String;)V@531",
+            "site": "TableControls$Failing#<clinit>()V@24",
+            "type": "java.lang.IllegalArgumentException"
+          },
+          {
+            "externalCatch": "ObservedInitializer#main([Ljava/lang/String;)V@531",
+            "site": "java.lang.Class#forName0(Ljava/lang/String;ZLjava/lang/ClassLoader;Ljava/lang/Class;)Ljava/lang/Class;@-1",
+            "type": "java.lang.ExceptionInInitializerError"
+          }
+        ],
+        "partialEvents": [
+          {
+            "caller": "TableControls$Failing#<clinit>()V@3",
+            "hashCode": 653197834,
+            "operation": "hashCode()I"
+          },
+          {
+            "caller": "TableControls$Failing#<clinit>()V@9",
+            "keySha256": "ec3e524deacd7a7fcc34aa6110db59cb38776048d104513fcaafd50ed812c861",
+            "operation": "getProperty(Ljava/lang/String;)Ljava/lang/String;",
+            "present": true,
+            "resultProjection": "9e72561b79039cfd875b509d3dda3581832839a8fe8f41fbce26dd51fec2f800"
+          }
+        ]
+      }
+    },
+    "firstUseControls": {
+      "cold": {
+        "originalMember": "public java.lang.String java.lang.String.trim()",
+        "originalPublicArity": 0,
+        "record": {
+          "alone": [],
+          "binding": {
+            "bindingRulesSha256": "12e7a788f8c747e253667c5fd96bb6dc079fe6adb6f832e3e8f8a7a3c9d7fa30",
+            "boundary": "ObservedInitializer#initializeRoots([Ljava/lang/String;Ljava/lang/ClassLoader;ZI)Ljava/lang/Class;",
+            "fileEncodingOption": null,
+            "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+            "jdkClasses": {
+              "java/lang/Class": "b7c8164c4a7cfefec12b2fa51bd44e582c1e93dd69083c121b4d8846d62f18af",
+              "java/lang/reflect/AccessibleObject": "97c544516362dceb514a4cf9876a753a4b4198743fea12b68c85d5cbfbbf8507",
+              "java/lang/reflect/Executable": "0c6704694945f9d26f7a2d7e61337d73b63b3f11e1eabb30cd181e7f247b74e2",
+              "java/lang/reflect/Method": "a3ae3c1f2bbd8499362ab7190101b312db1fa67668e061493a893da3c20d4767"
+            },
+            "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+            "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+            "jdkReleaseSha256": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
+            "loader": "system application loader, parent delegation",
+            "observerSha256": "e0a0fd544c1c43b7906f0d99ec4da4fd460991643b60a8c49f926dabe4c82c42",
+            "orderedArtifacts": [
+              {
+                "origin": "/home/filip/.cache/in-the-loop/agent-tmp/final-startup-originals-ivjkmk4m/first-use/classes",
+                "path": "/home/filip/.cache/in-the-loop/agent-tmp/final-startup-originals-ivjkmk4m/first-use/classes",
+                "sha256": "c98e1f9b9dc73a52cd9bc14e2a3fddbcff721ef7fa7db796c0ad2c281fd127bd"
+              }
+            ],
+            "orderedRoots": [
+              "FirstUseControl$Early"
+            ],
+            "rulesSha256": "34559bb3906ff7230178dd8d2345a515cf04e60070ec11549f307751d28ea906",
+            "runtime": {
+              "captureObjects": [],
+              "charsetLocale": null,
+              "charsetReceiptDirectory": null,
+              "emptyEnvironment": false,
+              "expectedCharsetName": null,
+              "expectedCharsetReceipt": null,
+              "liveProperties": false,
+              "preinitializeTogether": false,
+              "processors": null,
+              "recordJointStartup": false,
+              "reflectiveMembers": true,
+              "rootWorkingDirectory": false,
+              "startupProperties": {},
+              "weakMapValues": false
+            },
+            "startupPropertiesSha256": null,
+            "tableRecorderSha256": null,
+            "tracerSha256": "a4b65da70d31be46a666225b1eaa403978a3cb5814b19710f4a0cda8369f7da7",
+            "vmSha256": "b1a6a98962406718a491922ea6a3f8d898ea7c4a9ebe814a7963defc61ce62b2"
+          },
+          "capture": {
+            "events": [
+              {
+                "member": {
+                  "accessibleOverride": false,
+                  "alias": 0,
+                  "descriptor": "()Ljava/lang/String;",
+                  "loader": "bootstrap",
+                  "modifiers": 1,
+                  "name": "trim",
+                  "owner": "java/lang/String"
+                },
+                "operation": "getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
+                "requested": {
+                  "class": "java.lang.String",
+                  "name": "trim",
+                  "parameters": ""
+                },
+                "stack": [
+                  "java.lang.Class#getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;@0",
+                  "FirstUseControl$Early#<clinit>()V@8",
+                  "java.lang.Class#forName0(Ljava/lang/String;ZLjava/lang/ClassLoader;Ljava/lang/Class;)Ljava/lang/Class;@-1",
+                  "java.lang.Class#forName(Ljava/lang/String;ZLjava/lang/ClassLoader;Ljava/lang/Class;)Ljava/lang/Class;@37",
+                  "java.lang.Class#forName(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;@20",
+                  "ObservedInitializer#initializeRoots([Ljava/lang/String;Ljava/lang/ClassLoader;ZI)Ljava/lang/Class;@5",
+                  "ObservedInitializer#main([Ljava/lang/String;)V@523"
+                ]
+              },
+              {
+                "field": "FirstUseControl$Early#CACHED",
+                "member": {
+                  "accessibleOverride": false,
+                  "alias": 0,
+                  "descriptor": "()Ljava/lang/String;",
+                  "loader": "bootstrap",
+                  "modifiers": 1,
+                  "name": "trim",
+                  "owner": "java/lang/String"
+                },
+                "operation": "putstatic",
+                "stack": [
+                  "FirstUseControl$Early#<clinit>()V@11",
+                  "java.lang.Class#forName0(Ljava/lang/String;ZLjava/lang/ClassLoader;Ljava/lang/Class;)Ljava/lang/Class;@-1",
+                  "java.lang.Class#forName(Ljava/lang/String;ZLjava/lang/ClassLoader;Ljava/lang/Class;)Ljava/lang/Class;@37",
+                  "java.lang.Class#forName(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;@20",
+                  "ObservedInitializer#initializeRoots([Ljava/lang/String;Ljava/lang/ClassLoader;ZI)Ljava/lang/Class;@5",
+                  "ObservedInitializer#main([Ljava/lang/String;)V@523"
+                ]
+              }
+            ],
+            "fields": [
+              {
+                "alias": 0,
+                "arity": 0,
+                "field": "FirstUseControl$Early#CACHED",
+                "member": {
+                  "accessibleOverride": false,
+                  "declaringSha256": "831a11d5c76c84b8777a7813440b4570d49934dee05c285c9068a0ec43158412",
+                  "descriptor": "()Ljava/lang/String;",
+                  "loader": "bootstrap",
+                  "modifiers": 1,
+                  "module": "java.base",
+                  "name": "trim",
+                  "owner": "java/lang/String"
+                }
+              }
+            ]
+          },
+          "effectCoverage": "all transitive comparisons passed",
+          "id": "dc5dd167c82b0a973bd7a4d1ac816293a1af1a024e28ffae29ba3387e1530afc",
+          "jdk": "21.0.13",
+          "loader": {
+            "defining": "jdk.internal.loader.ClassLoaders$AppClassLoader",
+            "parent": "jdk.internal.loader.ClassLoaders$PlatformClassLoader",
+            "system": true
+          },
+          "locale": {
+            "default": "en-US",
+            "display": "en-US",
+            "format": "en-US"
+          },
+          "root": "FirstUseControl$Early",
+          "rootOrigin": "file:/home/filip/.cache/in-the-loop/agent-tmp/final-startup-originals-ivjkmk4m/first-use/classes/",
+          "rootSha256": "4fe8867ff7bb65968042907f842264e841335420027bd77cfbb554e33f950687",
+          "schema": "jvm-startup-member/v1",
+          "snapshotSha256": "59cf71d273d117d86f3433e145c235266419c60231e6784d233974b982bfeaf2",
+          "startupBoundary": {
+            "alreadyInitializedApplication": [],
+            "rootInitializedDuring": true,
+            "rootPreviouslyInitialized": false
+          },
+          "supportedOperations": [
+            "reference identity",
+            "getDeclaringClass",
+            "getName",
+            "getReturnType",
+            "getModifiers",
+            "getParameterCount"
+          ],
+          "vendor": "Eclipse Adoptium",
+          "zone": "Etc/UTC"
+        },
+        "consumed": [
+          "startup-method:dc5dd167c82b0a973bd7a4d1ac816293a1af1a024e28ffae29ba3387e1530afc:831a11d5c76c84b8777a7813440b4570d49934dee05c285c9068a0ec43158412:trim()Ljava/lang/String;",
+          "observed-initializer:FirstUseControl$Early:4fe8867ff7bb65968042907f842264e841335420027bd77cfbb554e33f950687:59cf71d273d117d86f3433e145c235266419c60231e6784d233974b982bfeaf2"
+        ],
+        "nativeVerdict": "verified"
+      },
+      "alreadyInitialized": {
+        "originalMember": "public java.lang.String java.lang.String.trim()",
+        "originalPublicArity": 0,
+        "record": {
+          "binding": {
+            "bindingRulesSha256": "12e7a788f8c747e253667c5fd96bb6dc079fe6adb6f832e3e8f8a7a3c9d7fa30",
+            "boundary": "ObservedInitializer#initializeRoots([Ljava/lang/String;Ljava/lang/ClassLoader;ZI)Ljava/lang/Class;",
+            "fileEncodingOption": null,
+            "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+            "jdkClasses": {
+              "java/lang/Class": "b7c8164c4a7cfefec12b2fa51bd44e582c1e93dd69083c121b4d8846d62f18af",
+              "java/lang/reflect/AccessibleObject": "97c544516362dceb514a4cf9876a753a4b4198743fea12b68c85d5cbfbbf8507",
+              "java/lang/reflect/Executable": "0c6704694945f9d26f7a2d7e61337d73b63b3f11e1eabb30cd181e7f247b74e2",
+              "java/lang/reflect/Method": "a3ae3c1f2bbd8499362ab7190101b312db1fa67668e061493a893da3c20d4767"
+            },
+            "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+            "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+            "jdkReleaseSha256": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
+            "loader": "system application loader, parent delegation",
+            "observerSha256": "e0a0fd544c1c43b7906f0d99ec4da4fd460991643b60a8c49f926dabe4c82c42",
+            "orderedArtifacts": [
+              {
+                "origin": "/home/filip/.cache/in-the-loop/agent-tmp/final-startup-originals-ivjkmk4m/first-use/classes",
+                "path": "/home/filip/.cache/in-the-loop/agent-tmp/final-startup-originals-ivjkmk4m/first-use/classes",
+                "sha256": "c98e1f9b9dc73a52cd9bc14e2a3fddbcff721ef7fa7db796c0ad2c281fd127bd"
+              }
+            ],
+            "orderedRoots": [
+              "FirstUseControl$Early"
+            ],
+            "rulesSha256": "34559bb3906ff7230178dd8d2345a515cf04e60070ec11549f307751d28ea906",
+            "runtime": {
+              "captureObjects": [],
+              "charsetLocale": null,
+              "charsetReceiptDirectory": null,
+              "emptyEnvironment": false,
+              "expectedCharsetName": null,
+              "expectedCharsetReceipt": null,
+              "liveProperties": false,
+              "preinitializeTogether": false,
+              "processors": null,
+              "recordJointStartup": false,
+              "reflectiveMembers": true,
+              "rootWorkingDirectory": false,
+              "startupProperties": {},
+              "weakMapValues": false
+            },
+            "startupPropertiesSha256": null,
+            "tableRecorderSha256": null,
+            "tracerSha256": "a4b65da70d31be46a666225b1eaa403978a3cb5814b19710f4a0cda8369f7da7",
+            "vmSha256": "b1a6a98962406718a491922ea6a3f8d898ea7c4a9ebe814a7963defc61ce62b2"
+          },
+          "id": "e07b08fb313f9c73c54a41bbf8c47514df894af8666e555f82eeb54fdf615e34",
+          "root": "FirstUseControl$Early",
+          "schema": "jvm-startup-prestate-refusal/v1",
+          "startupBoundary": {
+            "alreadyInitializedApplication": [
+              "FirstUseControl",
+              "FirstUseControl$Early"
+            ],
+            "rootInitializedDuring": false,
+            "rootPreviouslyInitialized": true
+          },
+          "usableAsPremise": false
+        },
+        "consumed": [],
+        "nativeVerdict": "refused"
+      }
+    },
+    "orderedAvroFirstUse": {
+      "task": "bounds-fix-lookup-startup",
+      "revision": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
+      "side": "fix",
+      "requestedRoots": [
+        "org.apache.avro.Schema",
+        "org.apache.hadoop.io.BytesWritable",
+        "org.apache.hadoop.mapred.JobConf",
+        "org.apache.hadoop.security.Credentials"
+      ],
+      "verdict": "verified",
+      "remaining": null,
+      "scope": "conditional on the registered startup and bounds",
+      "consumed": [
+        "observed-initializer:org.apache.hadoop.io.BytesWritable:202dc66d5c9c8be8495ded8063a0ab9091a1b3b2302650d7d8bf88fb87f9e8e1:540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+        "observed-initializer:org.apache.hadoop.mapred.JobConf:2b828f5129092889c2fd2411439e7904c4dca9a37d21f6fa9c2d1eb176c49e18:540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+        "observed-initializer:org.apache.hadoop.security.Credentials:c3deea968c409a843c4c67f8024d6afae8af0a59d070fec8499ab289ffa7a45b:540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+        "observed-initializer:org.apache.avro.Schema:93abb1fcb588b7ff63b42879077a4df504311156bfb835f0a5cc211258301f45:540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64"
+      ],
+      "record": {
+        "id": "60a2b8877d557368b152faab413ca3b03302afc1782d562f4891ae3b82607ee7",
+        "stateSha256": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+        "classes": 220,
+        "objects": 1079,
+        "startupJvms": 1,
+        "observationBytes": 364675,
+        "rawSha256": "de6350c9e3446e5983ba491015ab8c8b2cc6bcb3ea68b4f1b9b35669256f0f01",
+        "actualApplicationOrder": [
+          "org/apache/avro/JsonProperties",
+          "org/apache/avro/util/internal/Accessor$JsonPropertiesAccessor",
+          "org/apache/avro/JsonProperties$1",
+          "org/apache/avro/util/internal/Accessor",
+          "org/apache/avro/JsonProperties$Null",
+          "org/apache/avro/Schema",
+          "com/fasterxml/jackson/core/TokenStreamFactory",
+          "com/fasterxml/jackson/core/JsonFactory",
+          "com/fasterxml/jackson/core/JsonFactory$Feature",
+          "com/fasterxml/jackson/core/JsonParser$Feature",
+          "com/fasterxml/jackson/core/JsonGenerator$Feature",
+          "com/fasterxml/jackson/core/io/SerializedString",
+          "com/fasterxml/jackson/core/io/JsonStringEncoder",
+          "com/fasterxml/jackson/core/io/CharTypes",
+          "com/fasterxml/jackson/core/sym/ByteQuadsCanonicalizer",
+          "com/fasterxml/jackson/core/sym/ByteQuadsCanonicalizer$TableInfo",
+          "com/fasterxml/jackson/core/util/JsonRecyclerPools",
+          "com/fasterxml/jackson/core/util/RecyclerPool",
+          "com/fasterxml/jackson/core/util/RecyclerPool$ThreadLocalPoolBase",
+          "com/fasterxml/jackson/core/util/JsonRecyclerPools$ThreadLocalPool",
+          "com/fasterxml/jackson/core/StreamReadConstraints",
+          "com/fasterxml/jackson/core/StreamWriteConstraints",
+          "com/fasterxml/jackson/core/ErrorReportConfiguration",
+          "com/fasterxml/jackson/core/sym/CharsToNameCanonicalizer",
+          "com/fasterxml/jackson/core/sym/CharsToNameCanonicalizer$TableInfo",
+          "org/slf4j/LoggerFactory",
+          "org/slf4j/helpers/SubstituteServiceProvider",
+          "org/slf4j/helpers/SubstituteLoggerFactory",
+          "org/slf4j/helpers/BasicMarkerFactory",
+          "org/slf4j/helpers/BasicMDCAdapter",
+          "org/slf4j/helpers/ThreadLocalMapOfStacks",
+          "org/slf4j/helpers/BasicMDCAdapter$1",
+          "org/slf4j/helpers/NOP_FallbackServiceProvider",
+          "org/slf4j/helpers/NOPLoggerFactory",
+          "org/slf4j/helpers/NOPMDCAdapter",
+          "org/slf4j/helpers/Util",
+          "org/slf4j/helpers/Reporter",
+          "org/slf4j/helpers/Reporter$TargetChoice",
+          "org/slf4j/helpers/Reporter$Level",
+          "org/slf4j/Logger",
+          "org/slf4j/helpers/NamedLoggerBase",
+          "org/slf4j/helpers/NOPLogger",
+          "com/fasterxml/jackson/core/TreeCodec",
+          "com/fasterxml/jackson/core/ObjectCodec",
+          "com/fasterxml/jackson/databind/ObjectMapper",
+          "com/fasterxml/jackson/databind/AnnotationIntrospector",
+          "com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector",
+          "com/fasterxml/jackson/databind/ext/Java7Support",
+          "com/fasterxml/jackson/databind/ext/Java7SupportImpl",
+          "com/fasterxml/jackson/databind/util/ClassUtil",
+          "com/fasterxml/jackson/databind/util/LookupCache",
+          "com/fasterxml/jackson/databind/util/LRUMap",
+          "com/fasterxml/jackson/databind/util/internal/PrivateMaxEntriesMap$Builder",
+          "com/fasterxml/jackson/databind/util/internal/PrivateMaxEntriesMap",
+          "com/fasterxml/jackson/databind/util/internal/LinkedDeque",
+          "com/fasterxml/jackson/databind/util/internal/PrivateMaxEntriesMap$DrainStatus",
+          "com/fasterxml/jackson/databind/util/internal/PrivateMaxEntriesMap$DrainStatus$1",
+          "com/fasterxml/jackson/databind/util/internal/PrivateMaxEntriesMap$DrainStatus$2",
+          "com/fasterxml/jackson/databind/util/internal/PrivateMaxEntriesMap$DrainStatus$3",
+          "com/fasterxml/jackson/databind/cfg/BaseSettings",
+          "com/fasterxml/jackson/databind/type/TypeFactory",
+          "com/fasterxml/jackson/databind/type/TypeParser",
+          "com/fasterxml/jackson/databind/type/TypeBindings",
+          "com/fasterxml/jackson/core/type/ResolvedType",
+          "com/fasterxml/jackson/databind/JavaType",
+          "com/fasterxml/jackson/databind/type/TypeBase",
+          "com/fasterxml/jackson/databind/type/SimpleType",
+          "com/fasterxml/jackson/databind/util/StdDateFormat",
+          "com/fasterxml/jackson/core/Base64Variants",
+          "com/fasterxml/jackson/core/Base64Variant",
+          "com/fasterxml/jackson/core/Base64Variant$PaddingReadBehaviour",
+          "com/fasterxml/jackson/databind/jsontype/PolymorphicTypeValidator",
+          "com/fasterxml/jackson/databind/jsontype/PolymorphicTypeValidator$Base",
+          "com/fasterxml/jackson/databind/jsontype/impl/LaissezFaireSubTypeValidator",
+          "com/fasterxml/jackson/databind/introspect/AccessorNamingStrategy$Provider",
+          "com/fasterxml/jackson/databind/introspect/DefaultAccessorNamingStrategy$Provider",
+          "com/fasterxml/jackson/databind/cfg/DefaultCacheProvider",
+          "com/fasterxml/jackson/databind/jsontype/SubtypeResolver",
+          "com/fasterxml/jackson/databind/jsontype/impl/StdSubtypeResolver",
+          "com/fasterxml/jackson/databind/util/RootNameLookup",
+          "com/fasterxml/jackson/databind/introspect/SimpleMixInResolver",
+          "com/fasterxml/jackson/databind/introspect/ClassIntrospector",
+          "com/fasterxml/jackson/databind/introspect/BasicClassIntrospector",
+          "com/fasterxml/jackson/databind/introspect/AnnotatedClassResolver",
+          "com/fasterxml/jackson/databind/introspect/AnnotationCollector",
+          "com/fasterxml/jackson/databind/introspect/AnnotationCollector$NoAnnotations",
+          "com/fasterxml/jackson/databind/introspect/Annotated",
+          "com/fasterxml/jackson/databind/introspect/AnnotatedClass",
+          "com/fasterxml/jackson/databind/introspect/AnnotatedClass$Creators",
+          "com/fasterxml/jackson/databind/BeanDescription",
+          "com/fasterxml/jackson/databind/introspect/BasicBeanDescription",
+          "com/fasterxml/jackson/databind/cfg/ConfigOverrides",
+          "com/fasterxml/jackson/annotation/JsonInclude$Value",
+          "com/fasterxml/jackson/annotation/JsonInclude$Include",
+          "com/fasterxml/jackson/annotation/JsonSetter$Value",
+          "com/fasterxml/jackson/annotation/Nulls",
+          "com/fasterxml/jackson/databind/introspect/VisibilityChecker$Std",
+          "com/fasterxml/jackson/annotation/JsonAutoDetect$Visibility",
+          "com/fasterxml/jackson/databind/cfg/CoercionConfigs",
+          "com/fasterxml/jackson/databind/type/LogicalType",
+          "com/fasterxml/jackson/databind/cfg/CoercionAction",
+          "com/fasterxml/jackson/databind/cfg/CoercionConfig",
+          "com/fasterxml/jackson/databind/cfg/CoercionInputShape",
+          "com/fasterxml/jackson/databind/cfg/MutableCoercionConfig",
+          "com/fasterxml/jackson/databind/cfg/MapperConfig",
+          "com/fasterxml/jackson/annotation/JsonFormat$Value",
+          "com/fasterxml/jackson/annotation/JsonFormat$Shape",
+          "com/fasterxml/jackson/annotation/JsonFormat$Features",
+          "com/fasterxml/jackson/databind/cfg/MapperConfigBase",
+          "com/fasterxml/jackson/databind/cfg/ConfigOverride",
+          "com/fasterxml/jackson/databind/cfg/ConfigOverride$Empty",
+          "com/fasterxml/jackson/databind/MapperFeature",
+          "com/fasterxml/jackson/databind/SerializationConfig",
+          "com/fasterxml/jackson/core/util/DefaultPrettyPrinter",
+          "com/fasterxml/jackson/core/PrettyPrinter",
+          "com/fasterxml/jackson/core/util/Separators",
+          "com/fasterxml/jackson/core/util/Separators$Spacing",
+          "com/fasterxml/jackson/core/util/DefaultPrettyPrinter$NopIndenter",
+          "com/fasterxml/jackson/core/util/DefaultPrettyPrinter$FixedSpaceIndenter",
+          "com/fasterxml/jackson/core/util/DefaultIndenter",
+          "com/fasterxml/jackson/databind/SerializationFeature",
+          "com/fasterxml/jackson/databind/cfg/DatatypeFeatures",
+          "com/fasterxml/jackson/databind/cfg/DatatypeFeatures$DefaultHolder",
+          "com/fasterxml/jackson/databind/cfg/EnumFeature",
+          "com/fasterxml/jackson/databind/cfg/JsonNodeFeature",
+          "com/fasterxml/jackson/databind/cfg/ContextAttributes",
+          "com/fasterxml/jackson/databind/cfg/ContextAttributes$Impl",
+          "com/fasterxml/jackson/databind/DeserializationConfig",
+          "com/fasterxml/jackson/databind/DeserializationFeature",
+          "com/fasterxml/jackson/databind/node/JsonNodeFactory",
+          "com/fasterxml/jackson/databind/DatabindContext",
+          "com/fasterxml/jackson/databind/SerializerProvider",
+          "com/fasterxml/jackson/databind/JsonSerializer",
+          "com/fasterxml/jackson/databind/ser/std/StdSerializer",
+          "com/fasterxml/jackson/databind/ser/impl/FailingSerializer",
+          "com/fasterxml/jackson/databind/ser/std/ToEmptyObjectSerializer",
+          "com/fasterxml/jackson/databind/ser/impl/UnknownSerializer",
+          "com/fasterxml/jackson/databind/ser/DefaultSerializerProvider",
+          "com/fasterxml/jackson/databind/ser/DefaultSerializerProvider$Impl",
+          "com/fasterxml/jackson/databind/ser/std/NullSerializer",
+          "com/fasterxml/jackson/databind/ser/SerializerCache",
+          "com/fasterxml/jackson/databind/DeserializationContext",
+          "com/fasterxml/jackson/databind/deser/DefaultDeserializationContext",
+          "com/fasterxml/jackson/databind/deser/DefaultDeserializationContext$Impl",
+          "com/fasterxml/jackson/databind/deser/DeserializerFactory",
+          "com/fasterxml/jackson/databind/deser/BasicDeserializerFactory",
+          "com/fasterxml/jackson/databind/deser/BeanDeserializerFactory",
+          "com/fasterxml/jackson/databind/cfg/DeserializerFactoryConfig",
+          "com/fasterxml/jackson/databind/deser/std/StdKeyDeserializers",
+          "com/fasterxml/jackson/databind/deser/DeserializerCache",
+          "com/fasterxml/jackson/databind/ser/SerializerFactory",
+          "com/fasterxml/jackson/databind/ser/BasicSerializerFactory",
+          "com/fasterxml/jackson/databind/ser/std/StdScalarSerializer",
+          "com/fasterxml/jackson/databind/ser/std/StringSerializer",
+          "com/fasterxml/jackson/databind/ser/std/ToStringSerializerBase",
+          "com/fasterxml/jackson/databind/ser/std/ToStringSerializer",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializers",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializers$Base",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializers$IntegerSerializer",
+          "com/fasterxml/jackson/core/JsonParser$NumberType",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializers$LongSerializer",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializers$IntLikeSerializer",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializers$ShortSerializer",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializers$DoubleSerializer",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializers$FloatSerializer",
+          "com/fasterxml/jackson/databind/ser/std/BooleanSerializer",
+          "com/fasterxml/jackson/databind/ser/std/NumberSerializer",
+          "com/fasterxml/jackson/databind/ser/std/DateTimeSerializerBase",
+          "com/fasterxml/jackson/databind/ser/std/CalendarSerializer",
+          "com/fasterxml/jackson/databind/ser/std/DateSerializer",
+          "com/fasterxml/jackson/databind/ser/std/StdJdkSerializers",
+          "com/fasterxml/jackson/databind/ser/std/UUIDSerializer",
+          "com/fasterxml/jackson/databind/ser/BeanSerializerFactory",
+          "com/fasterxml/jackson/databind/cfg/SerializerFactoryConfig",
+          "org/apache/avro/util/internal/ThreadLocalWithInitial",
+          "org/apache/avro/Schema$Type",
+          "org/apache/hadoop/io/BinaryComparable",
+          "org/apache/hadoop/io/BytesWritable",
+          "org/apache/hadoop/io/WritableComparator",
+          "org/apache/hadoop/io/BytesWritable$Comparator",
+          "org/apache/hadoop/conf/Configuration",
+          "org/codehaus/stax2/XMLInputFactory2",
+          "com/ctc/wstx/stax/WstxInputFactory",
+          "com/ctc/wstx/util/DefaultXmlSymbolTable",
+          "com/ctc/wstx/util/SymbolTable",
+          "com/ctc/wstx/util/SymbolTable$Bucket",
+          "com/ctc/wstx/api/CommonConfig",
+          "com/ctc/wstx/api/ReaderConfig",
+          "com/ctc/wstx/api/WstxInputProperties",
+          "com/ctc/wstx/api/WstxInputProperties$ParsingMode",
+          "org/apache/hadoop/conf/Configuration$DeprecationDelta",
+          "org/apache/hadoop/util/Preconditions",
+          "org/apache/hadoop/conf/Configuration$DeprecationContext",
+          "org/apache/hadoop/conf/Configuration$DeprecatedKeyInfo",
+          "org/apache/commons/collections4/map/AbstractIterableMap",
+          "org/apache/commons/collections4/map/AbstractMapDecorator",
+          "org/apache/commons/collections4/map/UnmodifiableMap",
+          "org/apache/hadoop/mapred/JobConf",
+          "org/apache/hadoop/mapreduce/util/ConfigUtil",
+          "org/apache/hadoop/mapreduce/OutputFormat",
+          "org/apache/hadoop/mapreduce/lib/output/FileOutputFormat",
+          "org/apache/hadoop/mapreduce/lib/output/SequenceFileOutputFormat",
+          "org/apache/hadoop/mapreduce/lib/output/SequenceFileAsBinaryOutputFormat",
+          "org/apache/hadoop/mapreduce/lib/partition/KeyFieldBasedComparator",
+          "org/apache/hadoop/mapreduce/Partitioner",
+          "org/apache/hadoop/mapreduce/lib/partition/KeyFieldBasedPartitioner",
+          "org/apache/hadoop/mapreduce/Mapper",
+          "org/apache/hadoop/mapreduce/lib/map/RegexMapper",
+          "org/apache/hadoop/mapreduce/lib/output/FilterOutputFormat",
+          "org/apache/hadoop/mapreduce/lib/output/LazyOutputFormat",
+          "org/apache/hadoop/mapreduce/lib/output/TextOutputFormat",
+          "org/apache/commons/collections4/collection/AbstractCollectionDecorator",
+          "org/apache/commons/collections4/set/AbstractSetDecorator",
+          "org/apache/commons/collections4/map/UnmodifiableEntrySet",
+          "org/apache/commons/collections4/iterators/AbstractUntypedIteratorDecorator",
+          "org/apache/commons/collections4/iterators/AbstractIteratorDecorator",
+          "org/apache/commons/collections4/map/UnmodifiableEntrySet$UnmodifiableEntrySetIterator",
+          "org/apache/commons/collections4/keyvalue/AbstractMapEntryDecorator",
+          "org/apache/commons/collections4/map/UnmodifiableEntrySet$UnmodifiableEntry",
+          "org/apache/hadoop/security/Credentials"
+        ],
+        "effectCoverage": "one ordered application heap; external effects and aliases remain assumptions",
+        "startupBoundary": {
+          "alreadyInitializedApplication": [],
+          "rootInitializedDuring": true,
+          "rootPreviouslyInitialized": false
+        }
+      },
+      "verdictReused": false,
+      "captureReused": false,
+      "historical": "established",
+      "historicalReceiptSha256": "b08616d804725ba69cef80b24329ee50f258f2551d15c41c02a86856dfb36fa4",
+      "sameRegisteredState": true
+    }
+  },
   "artifacts": {
     "batik-resource.zip": "46fb9ad8cd2aea3df226fecf26d20f3746dd2bc458684bf38b83dbcc00d144be",
     "charset-io.zip": "a0bab1ba8874e0f74133bc737630f81fa57b800760c76a28410408f5b585145f",
     "charset-small.zip": "41b318c50fb99a4c850dd607365a570e126e5561dd0d6eba3a02556b8662a085",
     "deployment-bindings.zip": "1750b44aaae6e9aba82c58d9eb2ebcafb05c4bb9e4fb2ea81c6f06ff2d2460d3",
+    "first-use-originals.zip": "b9a47c5a6b8bf0ccedd8885621075c920da6900c123701089784d0530122aefd",
     "poi-tables.zip": "5dc6f1f0d92c2cb343b29ce2579d0ef1f18b78b2a405630b150f4e1508235722",
     "postfreeze-configuration.zip": "b074276da6d343484e39172655349abac95c6623424eb4c0108c2fcebb75a09d",
     "postfreeze-originals.zip": "8eeadfa1cc3d87c1d56eafcd9638bf1bd5e9b8f798559e6a82b6d9571afb26b7",
