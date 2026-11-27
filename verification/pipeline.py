@@ -1752,6 +1752,48 @@ def cmd_commit_paths(args):
     return 0
 
 
+def prune_workdirs(state_dir: Path, archive=None, dry_run: bool = False) -> list[tuple[str, int]]:
+    """Remove the work directories kept for failed jobs once they are of no more use here: the job's result is
+    collected (its folder in verification/results), and its work directory's original is remote_verified in the
+    archive, so `artifacts.py fetch` restores it. (job id, bytes) for each, removed unless DRY_RUN. Without an archive
+    nothing is removed. A failed setup batch kept ~2 GB a job (about 80 GB for one 49-job batch on 2026-11-27), and
+    the watcher cleared them by hand by this same rule."""
+    work = state_dir / "work"
+    if archive is None:
+        capture = originals()
+        arts = capture.tool(ROOT) if capture else None
+        try:
+            archive = arts.Archive() if arts else None
+        except Exception:
+            archive = None
+    if archive is None or not work.is_dir():
+        return []
+    gone = []
+    for folder in sorted(p for p in work.iterdir() if p.is_dir()):
+        job_id = folder.name
+        if (state_dir / "results" / job_id / "result.json").exists():
+            continue  # finished and not yet collected
+        if layout.find_result(ROOT, job_id) is None or not archive.workdir_verified(job_id):
+            continue
+        size = sum(f.stat().st_size for f in folder.rglob("*") if f.is_file() and not f.is_symlink())
+        if not dry_run:
+            shutil.rmtree(folder, ignore_errors=True)
+        gone.append((job_id, size))
+    return gone
+
+
+def cmd_prune(args):
+    config = load_config(args)
+    gone = prune_workdirs(config["runner"]["state_dir"], dry_run=args.dry_run)
+    total = sum(n for _, n in gone)
+    for job_id, n in gone:
+        print(f"{'would remove' if args.dry_run else 'removed'} {job_id}: {n / 2**30:.1f} GiB")
+    print(f"{len(gone)} kept work director{'y' if len(gone) == 1 else 'ies'}, {total / 2**30:.1f} GiB"
+          + (" (dry run)" if args.dry_run else " freed")
+          + ("" if gone else ": none is both collected and remote_verified yet"))
+    return 0
+
+
 def cmd_collect(args):
     config = load_config(args)
     state = config["runner"]["state_dir"] / "results"
@@ -1838,6 +1880,14 @@ def cmd_collect(args):
     print("\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
     print(f"  Record verification results for {len(ids)} job(s)")
     print("  " + collect_totals(tally, len(ids)) + " " + " ".join(lines))
+    try:  # earlier failures' kept work directories whose originals have since been read back from the store
+        pruned = prune_workdirs(config["runner"]["state_dir"])
+    except Exception as e:  # never fails a collect
+        pruned = []
+        print(f"(kept work directories not pruned: {e})", file=sys.stderr)
+    if pruned:
+        print(f"\nremoved {len(pruned)} kept work director{'y' if len(pruned) == 1 else 'ies'} of failed jobs, "
+              f"{sum(n for _, n in pruned) / 2**30:.1f} GiB: collected, and their originals remote_verified")
     return 0
 
 
@@ -2287,6 +2337,12 @@ def main(argv=None):
     p.add_argument("--apply-failed", action="store_true", help="apply the outputs of jobs that did not pass too")
     p.add_argument("ids", nargs="*")
     p.set_defaults(func=cmd_collect)
+
+    p = sub.add_parser("prune", help="remove failed jobs' kept work directories that are collected and whose originals "
+                                     "are remote_verified (collect does this too)")
+    p.add_argument("--state-dir")
+    p.add_argument("--dry-run", action="store_true", help="name them and their sizes, remove nothing")
+    p.set_defaults(func=cmd_prune)
 
     p = sub.add_parser("commit-paths", help="the paths a commit of collected results holds, for sync.py commit --only")
     p.set_defaults(func=cmd_commit_paths)
