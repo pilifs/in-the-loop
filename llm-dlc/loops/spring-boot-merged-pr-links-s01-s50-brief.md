@@ -1,0 +1,105 @@
+# Spring Boot — caller-visible behavior across 50 merged changes
+
+## Objective
+
+Determine which changes an application can observe through Spring Boot configuration, application startup, or a client of the configured service. Compare the listed revisions with the same fixture, including an unaffected use and a second observation that could expose an incomplete fix. Separate evidence from upstream reports and tests from predictions that still need execution.
+
+## spring-projects/spring-boot#52125 · Spring Boot #52125 — Restore an explicitly empty JVM property after a scoped override
+
+**Change and revisions.** [Merged PR #52125](https://github.com/spring-projects/spring-boot/pull/52125). Before `e664baa4001e2a12cfd292771f63d747d86b831f`, after `d3c0359e0196e9d604a65e6ff677d114cc270a0f`. Closing the scope restores the distinction between a missing property and one set to the empty string. [Landed comparison](https://github.com/spring-projects/spring-boot/compare/e664baa4001e2a12cfd292771f63d747d86b831f...d3c0359e0196e9d604a65e6ff677d114cc270a0f)
+
+**Public scenario.** In an isolated JVM, set `example.option` to `""`. Call `TestPropertyValues.of("example.option=temporary").applyToSystemProperties(Runnable)`. Read the property in the callback and read it again with `System.getProperty("example.option", "default")` after the call. Restore the original process state after the observation.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| spring-projects/spring-boot#52125.1 · Intent | Start present and empty, override with `temporary`, then return normally. | Both callbacks see `temporary`. The PR reports `default` afterward on the parent. The merge should return `""` afterward. | The default argument distinguishes absence from an intentionally empty value. The landed test checks an empty value after scope exit. | The merge returns `default`, retains `temporary`, or never exposes the override. |
+| spring-projects/spring-boot#52125.2 · Control | Repeat with an initially absent property and with the initial value `original`. | On both revisions the final reads should be `default` and `original`, respectively. | The two distinct initial states are recorded before entering the same scope. | The formerly absent key remains present or the original nonempty value changes. |
+| spring-projects/spring-boot#52125.3 · Challenge | Keep the initially empty key and nest a second override with value `inner`. Throw a sentinel `RuntimeException` from the inner Runnable and catch it inside the outer callback. | On the merge the reader should see `inner`, then `temporary` after the catch, then `""` outside both scopes. The caught exception should be the sentinel. | Each nested scope has its own entry state. Exception unwinding exercises the same restoration obligation before the outer callback continues. | Either scope leaks its override or the caller receives a different exception. |
+
+**Evidence and limits.** The PR author reports a failing pre-change regression and a passing test class after the fix. The landed test uses the callable overload. Reading only inside the callback misses the loss of an explicitly empty property.
+
+**Technical notes.** Use the `spring-boot-test` module and JVM system properties. The implementation still treats an empty temporary assignment as a request to clear the key. The fixture uses nonempty overrides so that its final read isolates restoration.
+
+**Sources.** [TestPropertyValues.java](https://github.com/spring-projects/spring-boot/blob/d3c0359e0196e9d604a65e6ff677d114cc270a0f/core/spring-boot-test/src/main/java/org/springframework/boot/test/util/TestPropertyValues.java) · [TestPropertyValuesTests.java](https://github.com/spring-projects/spring-boot/blob/d3c0359e0196e9d604a65e6ff677d114cc270a0f/core/spring-boot-test/src/test/java/org/springframework/boot/test/util/TestPropertyValuesTests.java) · [spring-boot-test build](https://github.com/spring-projects/spring-boot/blob/d3c0359e0196e9d604a65e6ff677d114cc270a0f/core/spring-boot-test/build.gradle)
+
+## spring-projects/spring-boot#51661 · Spring Boot #51661 — Resolve constructor defaults before type conversion
+
+**Change and revisions.** [Merged PR #51661](https://github.com/spring-projects/spring-boot/pull/51661). Before `042c69a4f9c7e7bfb7be14dff6a5dd5af5ff3e72`, after `26b0e813b0b82e5683524d1ad817ca9b66228b4d`. Constructor binding now resolves each string in a missing parameter’s `@DefaultValue` through the binder’s placeholder resolver before coercing it to the declared type. The comparison spans the merge from its first parent, with the submitted head as its second parent. [Landed comparison](https://github.com/spring-projects/spring-boot/compare/042c69a4f9c7e7bfb7be14dff6a5dd5af5ff3e72...26b0e813b0b82e5683524d1ad817ca9b66228b4d)
+
+**Public scenario.** Register a `@ConfigurationProperties("test")` record through `@EnableConfigurationProperties`. Give its `Duration duration` component `@DefaultValue("${defaults.duration:1d}")`. Start the context with `defaults.duration=3d`, retrieve the bean, and read `duration()`.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| spring-projects/spring-boot#51661.1 · Intent | Omit `test.duration` and supply `defaults.duration=3d`. | The PR reports pre-change failures in typed default cases. On the merge the context should start and the component should equal `Duration.ofDays(3)`. | The environment supplies the text `3d` and Boot duration syntax assigns it three days. The context test asserts that value. | A bind exception or any duration other than 72 hours on the merge. |
+| spring-projects/spring-boot#51661.2 · Control | Explicitly set `test.duration=5d` as well. | Both revisions should return five days. | The annotation supplies a value only for a missing property. The upstream explicit-override control passed before the fix. | The constructor receives three days or startup fails. |
+| spring-projects/spring-boot#51661.3 · Challenge | Keep `test.duration=5d`, but change the unused `defaults.duration` to `not-a-duration`. Then remove `test.duration` in a fresh context on the merge. | With the override, both contexts across revisions should still expose five days. Without the override the merged bind should fail conversion. | An invalid fallback distinguishes evaluating an unused default from binding the explicit value. The same invalid text is observable when selected. | The unused invalid value breaks the override, or the selected invalid value silently produces five days. |
+
+**Evidence and limits.** Issue #29495 reports a literal placeholder in a missing string property. The PR describes a pre-fix reproduction and the landed context tests assert values for strings, durations, arrays and lists. Checking an untyped string alone misses conversion order. The invalid-default pair is a prediction.
+
+**Technical notes.** `core/spring-boot` owns `ValueObjectBinder` and `@DefaultValue`. Use the normal application environment’s resolver. The public `Binder` also supports other resolvers and the bare-binder tests cover a different configuration.
+
+**Sources.** [Application-context regression](https://github.com/spring-projects/spring-boot/blob/26b0e813b0b82e5683524d1ad817ca9b66228b4d/core/spring-boot/src/test/java/org/springframework/boot/context/properties/ConfigurationPropertiesTests.java) · [Annotation contract](https://github.com/spring-projects/spring-boot/blob/26b0e813b0b82e5683524d1ad817ca9b66228b4d/core/spring-boot/src/main/java/org/springframework/boot/context/properties/bind/DefaultValue.java) · [Constructor binding](https://github.com/spring-projects/spring-boot/blob/26b0e813b0b82e5683524d1ad817ca9b66228b4d/core/spring-boot/src/main/java/org/springframework/boot/context/properties/bind/ValueObjectBinder.java) · [Binding documentation](https://github.com/spring-projects/spring-boot/blob/26b0e813b0b82e5683524d1ad817ca9b66228b4d/documentation/spring-boot-docs/src/docs/antora/modules/reference/pages/features/external-config.adoc) · [spring-boot build](https://github.com/spring-projects/spring-boot/blob/26b0e813b0b82e5683524d1ad817ca9b66228b4d/core/spring-boot/build.gradle) · [spring-boot-docs build](https://github.com/spring-projects/spring-boot/blob/26b0e813b0b82e5683524d1ad817ca9b66228b4d/documentation/spring-boot-docs/build.gradle) · [Issue #29495](https://github.com/spring-projects/spring-boot/issues/29495)
+
+## spring-projects/spring-boot#50773 · Spring Boot #50773 — An explicitly empty map binds as a present value
+
+**Change and revisions.** [Merged PR #50773](https://github.com/spring-projects/spring-boot/pull/50773). Before `f71e7977614682ced49221321a38bb5cb18bc938`, after `fe554ff822bf48ee9b04fbc511f54332aa2ca10b`. An empty direct property now creates an empty target map after placeholder resolution. Other direct values still go through conversion. The comparison spans the merge from its first parent, with the submitted head as its second parent. [Landed comparison](https://github.com/spring-projects/spring-boot/compare/f71e7977614682ced49221321a38bb5cb18bc938...fe554ff822bf48ee9b04fbc511f54332aa2ca10b)
+
+**Public scenario.** Give a `Binder` a `MapConfigurationPropertySource` containing `foo` mapped to the empty string. Bind `foo` with `Bindable.mapOf(String.class, String.class)`. Check `isBound()` before reading the map with `get()`. For the application-level check, enable the issue’s `@ConfigurationProperties("test")` bean and read `getTestmap()` after startup.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| spring-projects/spring-boot#50773.1 · Intent | Direct `foo=""` with no children or custom converters. | The parent is expected to fail conversion. On the merge the result is bound, non-null and has zero entries. | The landed regression calls `get()` and checks emptiness. A supplied empty aggregate is distinct from a missing property. | The merge throws, returns an unbound result, or introduces an entry. |
+| spring-projects/spring-boot#50773.2 · Control | Replace `foo=""` with `foo.a=one` and `foo.b=two`. | On both revisions `get()` returns exactly `a→one` and `b→two`, in either iteration order. | Each descendant contributes a named entry. There is no direct scalar to convert. | Either name is missing, an extra entry appears, or either value changes. |
+| spring-projects/spring-boot#50773.3 · Challenge | Start the issue’s application with YAML `test: {testmap: {}}`. In a second launch add unrelated `test.label: kept`, leaving the map empty and the bean’s default unknown-field handling in place. | The issue reports startup failure for the original YAML. Both merged launches should complete and the bound bean’s getter should yield an empty map. | The YAML object contains zero pairs. A sibling of `testmap` contributes no map entry. Bean lookup exercises the YAML and configuration-properties layers together. | Either merged launch fails, or adding the sibling changes the map read through the bean. |
+
+**Evidence and limits.** Issue #50756 reports a startup failure rooted in `ConverterNotFoundException`. The two landed tests supply strings directly to the binder, including one nested map. Checking only that startup succeeds could miss a spurious entry. The paired YAML launches remain predictions.
+
+**Technical notes.** `core/spring-boot` contains `MapBinder` and its regression. The application-level fixture needs Boot’s YAML property source, the YAML parser, and configuration-properties registration. Start with an empty map and no user conversion service.
+
+**Sources.** [Map binding](https://github.com/spring-projects/spring-boot/blob/fe554ff822bf48ee9b04fbc511f54332aa2ca10b/core/spring-boot/src/main/java/org/springframework/boot/context/properties/bind/MapBinder.java) · [Direct and nested map regressions](https://github.com/spring-projects/spring-boot/blob/fe554ff822bf48ee9b04fbc511f54332aa2ca10b/core/spring-boot/src/test/java/org/springframework/boot/context/properties/bind/MapBinderTests.java) · [spring-boot build](https://github.com/spring-projects/spring-boot/blob/fe554ff822bf48ee9b04fbc511f54332aa2ca10b/core/spring-boot/build.gradle) · [YAML startup report #50756](https://github.com/spring-projects/spring-boot/issues/50756)
+
+## spring-projects/spring-boot#50798 · Spring Boot #50798 — Binding a validated bean with wildcard map values
+
+**Change and revisions.** [Merged PR #50798](https://github.com/spring-projects/spring-boot/pull/50798). Before `3d280c4354a127e9f08bb1ea782b02165bbbfa7e`, after `0836e3673a74e47a2e5eed3a8e8ad45cfa4a0ccf`. An unresolved value type in a map can reach validation after its value has already bound. Boot now skips the validator for that unresolved target and still validates concrete targets. The comparison spans the merge from its first parent, with the submitted head as its second parent. [Landed comparison](https://github.com/spring-projects/spring-boot/compare/3d280c4354a127e9f08bb1ea782b02165bbbfa7e...0836e3673a74e47a2e5eed3a8e8ad45cfa4a0ccf)
+
+**Public scenario.** Initialize a `LocalValidatorFactoryBean`, pass it to `ValidationBindHandler`, and use a `Binder` over a `MapConfigurationPropertySource`. Bind `test` to an `@Validated` JavaBean with a writable `Map<String, ?> params`; read `getParams().get("toto")` from the returned bean.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| spring-projects/spring-boot#50798.1 · Intent | Supply `test.params.toto=titi` and call `bind("test", Bindable.of(Bean.class), handler).get()`. | The PR reports a parent bind failure caused by `IllegalStateException` for the wildcard. The merge should return the string `titi` under `toto`. | The untyped leaf receives the supplied string. The regression asserts its value; issue #50795 identifies the failing property. | A merge exception, missing entry, or value other than the string `titi`. |
+| spring-projects/spring-boot#50798.2 · Control | Bind the concrete constrained bean from `bindShouldFailWithHandler`, with `foo.age=4`. | Both revisions should throw `BindException` with a `BindValidationException` cause. | The concrete bean’s validation constraint still applies, and the existing test checks this cause. | The bind succeeds or reports an unresolved-type failure instead of a validation failure. |
+| spring-projects/spring-boot#50798.3 · Challenge | On the merge, retain `test.params.toto=titi` and add a concrete `@Min(10) int age` property to the same bean. Bind first with `age=9`, then with `age=10`. | At 9 validation should reject `age`. At 10 the bind should succeed, preserving `toto=titi` and `age=10`. | A constraint on the concrete containing bean is independent of whether a map leaf has a resolvable declared type. | The invalid age is accepted, validation fails on the wildcard instead, or the valid bind loses the map entry. |
+
+**Evidence and limits.** The issue gives the startup failure following an upgrade to 4.1.0. The PR also reports a failing parent run of the binder test. The merged test checks the wildcard entry. Binding without the validation handler would miss the original failure; validation of a constrained sibling in this same bean remains an open check.
+
+**Technical notes.** The binder and regression reside in `core/spring-boot`. Keep a Jakarta Bean Validation provider on the classpath and initialize `LocalValidatorFactoryBean` as in the regression.
+
+**Sources.** [Validation handler](https://github.com/spring-projects/spring-boot/blob/0836e3673a74e47a2e5eed3a8e8ad45cfa4a0ccf/core/spring-boot/src/main/java/org/springframework/boot/context/properties/bind/validation/ValidationBindHandler.java) · [Wildcard bind and concrete constraint fixtures](https://github.com/spring-projects/spring-boot/blob/0836e3673a74e47a2e5eed3a8e8ad45cfa4a0ccf/core/spring-boot/src/test/java/org/springframework/boot/context/properties/bind/validation/ValidationBindHandlerTests.java) · [spring-boot build](https://github.com/spring-projects/spring-boot/blob/0836e3673a74e47a2e5eed3a8e8ad45cfa4a0ccf/core/spring-boot/build.gradle) · [Original startup report](https://github.com/spring-projects/spring-boot/issues/50795)
+
+## spring-projects/spring-boot#52207 · Spring Boot #52207 — Read escaped comment characters at the start of a property name
+
+**Change and revisions.** [Merged PR #52207](https://github.com/spring-projects/spring-boot/pull/52207). Before `6c0b7df312e0fb1eaeecab9967e676726ce29057`, after `42b182259cc6d4f9ed67bb2f387fed7e6b2c4979`. A leading hash or exclamation mark that was escaped in the file can now participate in a property key. The comparison spans the merge from its first parent, with the submitted head as its second parent. [Landed comparison](https://github.com/spring-projects/spring-boot/compare/6c0b7df312e0fb1eaeecab9967e676726ce29057...42b182259cc6d4f9ed67bb2f387fed7e6b2c4979)
+
+**Public scenario.** Give `PropertiesPropertySourceLoader.load` a `ByteArrayResource` containing three ASCII lines, `\#hash-prefixed=hash`, `\!bang-prefixed=bang`, and `normal=ok`. Read the three decoded keys from the returned `PropertySource`. Load the identical bytes with `java.util.Properties.load(InputStream)` as a second reader.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| spring-projects/spring-boot#52207.1 · Intent | Look up `#hash-prefixed`, `!bang-prefixed`, and `normal` in the single document. | The PR reports only `normal=ok` on the parent. The merge should return `hash`, `bang`, and `ok` respectively. | The Java reader treats the leading backslash as an escape. The landed loader test asserts the two literal keys and values. | Either escaped name is absent, retains its backslash, or resolves to the other value. |
+| spring-projects/spring-boot#52207.2 · Control | Remove the backslashes and leave `normal=ok` in place. | Both revisions should ignore the two comment lines and still expose `normal=ok`. | An unescaped comment marker at the first non-whitespace position discards that line under the properties grammar. | A commented key appears, or the following ordinary line disappears. |
+| spring-projects/spring-boot#52207.3 · Challenge | Prepend two ordinary spaces to each of the three lines and append an unescaped comment line containing `#hash-prefixed=wrong`. | On the merge both independent readers should give the original three values. The later comment must leave the earlier value intact. | Leading layout does not consume the escape. A true comment has no assignment to override the earlier key. | Boot and the Java reader disagree on a value, or the appended comment changes the literal-hash property. |
+
+**Evidence and limits.** The PR gives a before/after comparison with the JDK reader. The landed regression examines an internal document map. A successful load or a check of `normal` alone misses both dropped entries.
+
+**Technical notes.** Use the `spring-boot` properties loader and ASCII bytes, with one document and no profile activation. Read the names literally from the `PropertySource` to avoid relaxed binding changing the question.
+
+**Sources.** [OriginTrackedPropertiesLoader.java](https://github.com/spring-projects/spring-boot/blob/42b182259cc6d4f9ed67bb2f387fed7e6b2c4979/core/spring-boot/src/main/java/org/springframework/boot/env/OriginTrackedPropertiesLoader.java) · [OriginTrackedPropertiesLoaderTests.java](https://github.com/spring-projects/spring-boot/blob/42b182259cc6d4f9ed67bb2f387fed7e6b2c4979/core/spring-boot/src/test/java/org/springframework/boot/env/OriginTrackedPropertiesLoaderTests.java) · [test-properties.properties](https://github.com/spring-projects/spring-boot/blob/42b182259cc6d4f9ed67bb2f387fed7e6b2c4979/core/spring-boot/src/test/resources/org/springframework/boot/env/test-properties.properties) · [spring-boot build](https://github.com/spring-projects/spring-boot/blob/42b182259cc6d4f9ed67bb2f387fed7e6b2c4979/core/spring-boot/build.gradle)
