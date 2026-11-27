@@ -13,6 +13,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path.insert(0,str(ROOT/"lib/benchmark/classpath-entry-discovery"))
 from controls import CHECKER, compile_sources, jar
+from checker_output import decode
 from targets import runtime_jdk, stock_projection, upgrade_replay
 
 
@@ -79,10 +80,13 @@ def original(checker,stock,work):
     refusals={}
     for label,cmd in raw_checks.items():
         proc=subprocess.run([*cmd,"--engine","jbmc","--gaps","strict","--json"],env=env,capture_output=True,text=True,timeout=80)
-        row,=json.loads(proc.stdout)
+        outcomes, reason = decode(proc.stdout, cmd[1])
+        if not outcomes or len(outcomes) != 1:
+            raise ValueError("unreadable checker result for " + label + ": " + str(reason))
+        row = outcomes[0]
         if row["verdict"]!="unverifiable" or "multi-release" not in proc.stdout:
             raise ValueError("an unqualified raw or paired classpath bypassed its binding refusal: "+proc.stdout[-550:])
-        refusals[label]=row.get("problem") or row.get("output")
+        refusals[label]={"verdict": row["verdict"], "result": row}
     return {"schema":"qualified-stock-multi-release/v1","profiles":evidence,
             "negative":{"missingRead":no_read,"wrongBinding":wrong_binding,**refusals}}
 
