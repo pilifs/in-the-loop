@@ -51,7 +51,8 @@ pub(super) fn qualify(jvm: &Jvm, name: &str, log: Option<&Path>, line: &str, bin
     let ordinary = parse(&jvm.run(name, log, false)?)?;
     if ordinary != raw { return Err(Error::new("instrumented and ordinary initializer observations or live property projections differ")); }
     let record = json!({"schema":"jvm-startup-table/v1","root":name,"rootSha256":observed.on.sha256,"rootOrigin":observed.on.from,
-        "binding":binding,"loader":observed.on.loader,"jdk":observed.jdk, "vendor":observed.on.vendor,"locale":raw["on"]["locale"],"zone":observed.on.zone,
+        "binding":binding,"loader":observed.on.loader,"startupBoundary":observed.on.startup_boundary,
+        "jdk":observed.jdk, "vendor":observed.on.vendor,"locale":raw["on"]["locale"],"zone":observed.on.zone,
         "table":snapshot,"events":events,"ordinaryInitializerParity":true,"snapshotSha256":observed.state_sha256,
         "supportedOperations":["own string membership","Properties.forEach callback order","Properties.hashCode"],
         "defaults":null,"replaced":false,"mutated":false});

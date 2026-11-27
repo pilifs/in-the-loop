@@ -57,6 +57,20 @@ pub(super) fn trace(jvm: &Jvm, binary: &str, suffix: &str) -> Result<Value, Erro
     Ok(data)
 }
 
+pub(super) fn first_use(work: &Path, name: &str, boundary: Option<&Value>, binding: &Value) -> Result<(), Error> {
+    let scope = boundary.ok_or_else(|| Error::new("startup recording has no first-use boundary"))?;
+    let prior = scope["alreadyInitializedApplication"].as_array().ok_or_else(|| Error::new("startup recording omits prior application state"))?;
+    if scope["rootPreviouslyInitialized"] == false && scope["rootInitializedDuring"] == true && prior.is_empty() {
+        return Ok(());
+    }
+    let mut record = json!({"schema":"jvm-startup-prestate-refusal/v1","root":name,"binding":binding,
+        "startupBoundary":scope,"usableAsPremise":false});
+    let id = sha256_hex(record.to_string().as_bytes());
+    record["id"] = id.clone().into();
+    write(&work.join("startup-diagnostics"), &record)?;
+    Err(Error::new(format!("--observed-initializer {name}: first active use was not established from a fresh application prestate ({scope}; diagnostic {id})")))
+}
+
 pub(super) fn write(dir: &Path, receipt: &Value) -> Result<PathBuf, Error> {
     std::fs::create_dir_all(&dir)?;
     let path = dir.join(format!("{}.json", receipt["id"].as_str().unwrap()));

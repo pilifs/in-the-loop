@@ -11,6 +11,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 from freeze import files
 from charset import compile_to, command, ENV, OBSERVER, startup_facts
+from first_use import control
+from transfer_avro import avro
 
 HERE = Path(__file__).resolve().parent
 CASES = {
@@ -26,6 +28,7 @@ CASES = {
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--qualify-first-use", action="store_true")
     args = parser.parse_args()
     scratch = Path(os.environ.get("TMPDIR") or Path.home()/".cache/in-the-loop/agent-tmp")
     if scratch == Path("/tmp") or Path("/tmp") in scratch.parents:
@@ -35,6 +38,19 @@ def main():
     source = hashlib.sha256(json.dumps(files(), sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     with tempfile.TemporaryDirectory(prefix="final-startup-originals-", dir=scratch) as tmp:
         work = Path(tmp)
+        extra = {}
+        if args.qualify_first_use:
+            prestate = work / "first-use"
+            prestate.mkdir()
+            extra["firstUseControls"] = control(prestate)
+            large = work / "ordered-avro"
+            large.mkdir()
+            row, = avro(large, fixed_bounds_only=True)["rows"]
+            observed = row["record"]
+            if not (row["verdict"]=="verified" and row["sameRegisteredState"] and observed["classes"]==220 and
+                    observed["objects"]==1079 and observed["startupBoundary"]==extra["firstUseControls"]["cold"]["record"]["startupBoundary"]):
+                raise ValueError("the fixed Avro bounds claim did not reproduce its registered fresh four-root state")
+            extra["orderedAvroFirstUse"] = row
         tools, subject = work/"tools", work/"subject"
         compile_to(tools, sorted(OBSERVER.glob("*.java")))
         compile_to(subject, [HERE/"TableControls.java"], str(tools))
@@ -55,7 +71,7 @@ def main():
             cases = doc.get("rows", doc.get("cases"))
             rows.append({"case":case, "profiles":len(cases), "archive":result.name, "sha256":hashlib.sha256(data).hexdigest()})
         with ZipFile(args.output,"w",compression=ZIP_DEFLATED) as archive:
-            archive.writestr("scorecard.json", json.dumps({"producer":source,"rows":rows,"failedStartup":failure},indent=2)+"\n")
+            archive.writestr("scorecard.json", json.dumps({"producer":source,"rows":rows,"failedStartup":failure,**extra},indent=2)+"\n")
             for row in rows:
                 archive.write(work/row["archive"],row["archive"])
     print("all six original qualification matrices passed on the follow-up producer")

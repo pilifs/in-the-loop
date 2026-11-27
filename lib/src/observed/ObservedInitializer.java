@@ -359,8 +359,10 @@ public final class ObservedInitializer {
             args = Files.readAllLines(dir.resolve("startup.request"), StandardCharsets.UTF_8).toArray(String[]::new);
         }
         boolean charset = false, liveTable = false;
-        while (args[0].startsWith("--record-")) {
-            if (args[0].equals("--record-charset")) charset = true;
+        Path audit = null;
+        while (args[0].startsWith("--record-") || args[0].startsWith("--audit-init=")) {
+            if (args[0].startsWith("--audit-init=")) audit = Path.of(args[0].substring("--audit-init=".length()));
+            else if (args[0].equals("--record-charset")) charset = true;
             else if (args[0].equals("--record-methods")) methodOwners = new IdentityHashMap<>();
             else if (args[0].equals("--record-table")) liveTable = true;
             else throw new IllegalArgumentException("unknown recorder option");
@@ -390,7 +392,8 @@ public final class ObservedInitializer {
         String beforeTable = liveTable ? tableSnapshot(original) : null;
         Recording recording = new Recording();
         if (!liveTable) recording.putAll(original);
-        long mark = log == null ? 0 : Files.size(log);
+        Path evidenceLog = log == null ? audit : log;
+        long mark = evidenceLog == null ? 0 : Files.size(evidenceLog);
         Class<?> c;
         if (!liveTable) System.setProperties(recording);
         try {
@@ -405,8 +408,9 @@ public final class ObservedInitializer {
         if (!liveTable) System.setProperties(original);
         // Reflection and serialization can initialize additional classes. The boundary is
         // the return of Class.forName, before the observer inspects any subject fields.
-        byte[] logged = log == null ? null : Files.readAllBytes(log);
+        byte[] logged = evidenceLog == null ? null : Files.readAllBytes(evidenceLog);
         String profile = (charset ? ",\"charsetProfile\":" + charsetProfile() : "") + (methodOwners != null ? ",\"reflectiveMembers\":true" : "");
+        if (audit != null) profile += ",\"startupBoundary\":" + startupBoundary(c, app, logged, mark);
         if (liveTable) {
             if (original != System.getProperties() || !beforeTable.equals(tableSnapshot(original)))
                 throw new IllegalStateException("live system-properties table changed during startup");
@@ -466,7 +470,7 @@ public final class ObservedInitializer {
                     throw new IllegalStateException("cannot bind logged class " + internal, t);
                 continue;
             }
-            if (k == c || k.getClassLoader() != app || k.getName().startsWith(ObservedInitializer.class.getName())) {
+            if (k == c || k.getClassLoader() != app || recorderClass(k)) {
                 continue;
             }
             // An initializer may have caught another class's initialization failure.
@@ -532,6 +536,44 @@ public final class ObservedInitializer {
                 + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())
                 + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
                 + (recording.whole == null ? "null" : text(recording.whole)) + ",\"changed\":[" + changes + "],\"initialized\":[" + initialized + "]}}");
+    }
+
+    private static boolean recorderClass(Class<?> type) {
+        String name = type.getName();
+        String tool = ObservedInitializer.class.getName();
+        return type == ObservedInitializer.class || (name.startsWith(tool + "$") && type.getNestHost() == ObservedInitializer.class);
+    }
+
+    /** The VM log window is closed before inspecting either set of classes. */
+    private static String startupBoundary(Class<?> root, ClassLoader app, byte[] log, long mark) throws Exception {
+        if (mark < 0 || mark > log.length) throw new IllegalStateException("initialization log was truncated");
+        String name = root.getName().replace('.', '/');
+        int start = Math.toIntExact(mark);
+        Matcher before = INITIALIZING.matcher(new String(log,0,start,StandardCharsets.UTF_8));
+        java.util.Set<String> application = new java.util.LinkedHashSet<>();
+        boolean priorRoot = false, active = false;
+        while (before.find()) {
+            String n = before.group(1);
+            if (n.equals(name)) priorRoot = true;
+            // java.* is reserved to the VM. Other names, including javax.*, can
+            // belong to the application and have to be resolved by its loader.
+            if (n.startsWith("java/")) continue;
+            // HotSpot includes the hidden lambda's defining host and an address.
+            // Resolve the host without initializing it. Keep addresses out of receipts.
+            String owner = n.replaceFirst("\\$\\$Lambda(?:\\$[0-9]+)?(?:\\+|/)0x[0-9a-fA-F]+$", "");
+            try {
+                Class<?> type = Class.forName(owner.replace('/','.'),false,app);
+                ClassLoader loader = type.getClassLoader();
+                if (loader != null && loader != ClassLoader.getPlatformClassLoader() && !recorderClass(type)) application.add(owner);
+            } catch (ClassNotFoundException | LinkageError unresolved) {
+                // An original hidden or unbound class also prevents a cold-start admission.
+                application.add(n.replaceFirst("(?:\\+|/)0x[0-9a-fA-F]+$", ""));
+            }
+        }
+        Matcher during = INITIALIZING.matcher(new String(log,start,log.length-start,StandardCharsets.UTF_8));
+        while (during.find()) if (during.group(1).equals(name)) { active = true; break; }
+        return "{\"alreadyInitializedApplication\":[" + String.join(",",application.stream().map(ObservedInitializer::text).toList())
+                + "],\"rootPreviouslyInitialized\":" + priorRoot + ",\"rootInitializedDuring\":" + active + "}";
     }
 
     private static boolean emptyEnvironment() {

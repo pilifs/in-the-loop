@@ -210,6 +210,7 @@ pub struct On {
     pub(crate) table_read: bool,
     pub(crate) joint_receipt: Option<String>,
     pub(crate) loader: Option<serde_json::Value>,
+    pub(crate) startup_boundary: Option<serde_json::Value>,
     /// The sha256 of the class file the JVM's class loader read, and the location it came from.
     pub sha256: String,
     pub from: Option<String>,
@@ -449,6 +450,9 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         } else { None };
         let line = jvm.run(&binary, Some(&log), saved.is_none())?;
         let mut observed = parse(&binary, &line)?;
+        if let Some(binding) = &binding {
+            receipt::first_use(work, &binary, observed.on.startup_boundary.as_ref(), binding)?;
+        }
         if traced || runtime.record_joint_startup {
             let loader = observed.on.loader.as_ref().ok_or_else(|| Error::new("startup root has no defining loader evidence"))?;
             if loader["system"] != true || loader["defining"] != "jdk.internal.loader.ClassLoaders$AppClassLoader"
@@ -475,7 +479,8 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
             let raw: serde_json::Value = serde_json::from_str(&line).map_err(|e| Error::new(e.to_string()))?;
             let evidence = member::capture(&binary, &raw, &receipt::trace(&jvm, &binary, "")?, &tool)?;
             Some(serde_json::json!({"schema":"jvm-startup-member/v1", "binding":binding, "root":binary,
-                "rootSha256":observed.on.sha256, "rootOrigin":observed.on.from, "loader":observed.on.loader, "snapshotSha256":observed.state_sha256,
+                "rootSha256":observed.on.sha256, "rootOrigin":observed.on.from, "loader":observed.on.loader, "startupBoundary":observed.on.startup_boundary,
+                "snapshotSha256":observed.state_sha256,
                 "jdk":observed.jdk, "vendor":observed.on.vendor, "locale":raw["on"]["locale"], "zone":observed.on.zone,
                 "capture":evidence, "alone":[], "supportedOperations":["reference identity", "getDeclaringClass", "getName", "getReturnType", "getModifiers", "getParameterCount"]}))
         } else { None };
@@ -505,6 +510,10 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
             if !alone.contains_key(&other.name) {
                 let needs_trace = runtime.charset_locale.is_some() || member::has_methods(&other.state) || runtime.live_properties;
                 let line = jvm.run(&name, None, needs_trace)?;
+                if let Some(binding) = &binding {
+                    let raw: serde_json::Value = serde_json::from_str(&line).map_err(|e| Error::new(e.to_string()))?;
+                    receipt::first_use(work, &name, raw.get("startupBoundary"), binding)?;
+                }
                 if let Some(record) = &table_record { table::compare_alone(&jvm, &name, &line, record)?; }
                 if let Some(fact) = &observed.on.charset {
                     charset::compare_alone(&name, &line, &jvm, fact)?;
@@ -553,7 +562,8 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
                 return Err(Error::new("joint capture did not account for the application's actual initialization order"));
             }
             let mut record = serde_json::json!({"schema":"jvm-ordered-startup/v1","binding":binding,"requestedRoots":classes,
-                "actualApplicationOrder":order,"primaryRootSha256":observed.on.sha256,"loader":observed.on.loader,"additionalRoots":observed.additional_roots,
+                "actualApplicationOrder":order,"primaryRootSha256":observed.on.sha256,"loader":observed.on.loader,
+                "startupBoundary":observed.on.startup_boundary,"additionalRoots":observed.additional_roots,
                 "stateSha256":observed.state_sha256,"jdk":observed.jdk,"vendor":observed.on.vendor,"locale":raw["on"]["locale"],
                 "zone":observed.on.zone,"classes":1+observed.on.initialized.len(),"objects":observed.objects.len(),
                 "startupJvms":1,"observationBytes":line.len(),"rawSha256":crate::digest::sha256_hex(line.as_bytes()),
@@ -592,7 +602,10 @@ impl Jvm {
         command.args(["-Xmx256m", "-XX:+UseSerialGC", "-XX:TieredStopAtLevel=1", "-XX:-UsePerfData"]);
         // The observer reads a lambda's constant pool to say which method it calls (its Describe and Pool).
         command.args(["--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.reflect=ALL-UNNAMED"]);
-        if let Some(log) = log {
+        let audit = self.binding.as_ref().map(|_| {
+            log.map(Path::to_owned).unwrap_or_else(|| self.dir.join(format!("{binary}.alone.init.log")))
+        });
+        if let Some(log) = log.or(audit.as_deref()) {
             let _ = std::fs::remove_file(log);
             let decorators = if self.runtime.preinitialize_together { "tid" } else { "" };
             command.arg(format!("-Xlog:class+init=info:file={}:{decorators}:filecount=0", log.display()));
@@ -612,6 +625,7 @@ impl Jvm {
         command.arg(CLASS);
         if self.runtime.empty_environment { command.env_clear(); }
         let mut options = Vec::new();
+        if let Some(audit) = &audit { options.push(format!("--audit-init={}", audit.display())); }
         if let Some(locale) = self.runtime.charset_locale {
             locale.apply(&mut command);
             options.push("--record-charset".to_owned());
@@ -1140,6 +1154,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         table_read: false,
         joint_receipt: None,
         loader: on.get("loader").cloned(),
+        startup_boundary: on.get("startupBoundary").cloned(),
         sha256: text(on, "sha256")?,
         from: on.get("from").and_then(|f| f.as_str()).map(String::from),
         classpath: list("classpath")?.iter().map(|e| e.as_str().map(String::from).ok_or_else(|| bad("the class path"))).collect::<Result<_, _>>()?,
@@ -1299,6 +1314,22 @@ mod tests {
     fn an_observation_that_does_not_say_what_it_was_observed_on_is_not_taken() {
         let said = parse("p.C", r#"{"jdk":"25","fields":[],"objects":[]}"#).unwrap_err().to_string();
         assert!(said.contains("does not say what it was observed on"), "{said}");
+        let work = tempfile::tempdir().unwrap();
+        let binding = serde_json::json!({"orderedRoots":["p.C"]});
+        let mut boundary = serde_json::json!({"alreadyInitializedApplication":[], "rootPreviouslyInitialized":false, "rootInitializedDuring":true});
+        assert!(receipt::first_use(work.path(), "p.C", None, &binding).is_err());
+        receipt::first_use(work.path(), "p.C", Some(&boundary), &binding).unwrap();
+        boundary["alreadyInitializedApplication"] = serde_json::json!(["p/Earlier"]);
+        assert!(receipt::first_use(work.path(), "p.C", Some(&boundary), &binding).is_err());
+        boundary["alreadyInitializedApplication"] = serde_json::json!([]);
+        boundary["rootInitializedDuring"] = false.into();
+        assert!(receipt::first_use(work.path(), "p.C", Some(&boundary), &binding).is_err());
+        for result in std::fs::read_dir(work.path().join("startup-diagnostics")).unwrap() {
+            let record = receipt::read_json(&result.unwrap().path()).unwrap();
+            assert_eq!(record["usableAsPremise"], false);
+            assert_eq!(record["binding"], binding);
+        }
+        assert!(!work.path().join("startup-receipts").exists());
     }
 
     #[test]

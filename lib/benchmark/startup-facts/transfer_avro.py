@@ -8,13 +8,13 @@ from charset import CHECKER, JDK, ROOT, ENV
 from transfers import compile_java, digest, foundation
 
 
-def avro(work):
+def avro(work, *, fixed_bounds_only=False):
     folder=next((ROOT/"examples").glob("355-*"))
     spec=json.loads((folder/"target.json").read_bytes())
     rows=[]
     artifacts={}
     variants=[]
-    for side in ("parent","fix"):
+    for side in (("fix",) if fixed_bounds_only else ("parent","fix")):
         area=work/side;area.mkdir()
         jars,provenance=foundation.materialize(folder,side,area)
         assert len(jars)==124
@@ -22,7 +22,10 @@ def avro(work):
         classes=work/(side+"-adapter")
         compile_java(JDK,classes,[folder/"adapter/organic/WritableBuffer.java"],jars)
         selected=[t for t in spec["tasks"] if t["id"].endswith("-lookup-startup") and ("-"+side+"-") in t["id"]]
-        if side=="fix":selected+=[t for t in spec["tasks"] if t["id"]=="direct-limit-fix-writable-startup"]
+        if fixed_bounds_only:
+            selected = [t for t in selected if t["id"].startswith("bounds-")]
+        elif side=="fix":
+            selected += [t for t in spec["tasks"] if t["id"]=="direct-limit-fix-writable-startup"]
         def attempt(t,label,roots,profile,claim):
             run=work/(side+"-"+label);run.mkdir()
             cmd=[CHECKER,"prove",claim["adapter"]["entry"],"--classes",str(classes),"--classpath",os.pathsep.join(map(str,jars)),
@@ -40,7 +43,7 @@ def avro(work):
             return {"task":t["id"],"revision":provenance["revision"],"side":side,"requestedRoots":roots,
                     "verdict":obj.get("verdict","refused"),"remaining":obj.get("problem") if obj else proc.stderr.strip(),
                     "scope":"conditional on the registered startup and bounds","consumed":[a["id"] for a in (obj.get("stated") or {}).get("assumptions",[]) if a.get("id")],
-                    "record":({k:rec[k] for k in ["id","stateSha256","classes","objects","startupJvms","observationBytes","rawSha256","actualApplicationOrder","effectCoverage"]} if rec else None),
+                    "record":({k:rec[k] for k in ["id","stateSha256","classes","objects","startupJvms","observationBytes","rawSha256","actualApplicationOrder","effectCoverage","startupBoundary"] if k in rec} if rec else None),
                     "verdictReused":False,"captureReused":False}
         for t in selected:
             claim=json.loads((folder/t["claim"]).read_bytes())
@@ -52,7 +55,7 @@ def avro(work):
                        sameRegisteredState=row["record"] is not None and row["record"]["stateSha256"] in claim["observedInitializers"].values())
             rows.append(row)
             print(t["id"],row["verdict"],str(row.get("remaining"))[:175],flush=True)
-        if side=="fix":
+        if side=="fix" and not fixed_bounds_only:
             t=next(t for t in selected if t["id"].startswith("bounds-"))
             claim=json.loads((folder/t["claim"]).read_bytes());roots=list(claim["observedInitializers"])
             for label,order in [("repeat",roots),("reorder",[roots[1],roots[0],*roots[2:]]),("withhold",roots[:-1])]:

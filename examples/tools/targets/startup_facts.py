@@ -171,12 +171,19 @@ def recover(command, work, locale=None, *, resume=False, receipts=None, env=None
             report["remaining"] = report["initializerStop"]
     for path in (attempt / "retry" / "startup-diagnostics").glob("*.json"):
         failure = json.loads(path.read_bytes())
-        if failure.get("schema") == "jvm-startup-failure/v1":
+        schema = failure.get("schema")
+        if schema in ("jvm-startup-failure/v1", "jvm-startup-prestate-refusal/v1"):
             roots = [name.replace("/",".") for name in (failure.get("binding") or {}).get("orderedRoots",[])]
-            if root not in roots or failure.get("usableAsPremise") is not False or failure.get("normalReturn") is not False:
+            if root not in roots or failure.get("usableAsPremise") is not False or report["receiptId"] or report["consumed"]:
                 raise ValueError("failed startup recording has the wrong scope")
-            report.update(failure={"id":failure["id"],"root":failure["root"],"exceptions":failure["exceptions"],"partialEvents":failure["partialEvents"]},
-                          recording="failed startup observation")
+            if schema == "jvm-startup-prestate-refusal/v1":
+                report.update(diagnosticId=failure["id"], startupBoundary=failure["startupBoundary"],
+                              recording="first use or fresh application prestate refused")
+            else:
+                if failure.get("normalReturn") is not False:
+                    raise ValueError("exceptional startup recording reports a normal return")
+                report.update(failure={"id":failure["id"],"root":failure["root"],"exceptions":failure["exceptions"],"partialEvents":failure["partialEvents"]},
+                              recording="failed startup observation")
     write_report(attempt / "startup-report.json", report)
     # Keep the last resumable observation when a later attempt rejects a changed binding.
     if report["receiptId"] or not previous.exists():

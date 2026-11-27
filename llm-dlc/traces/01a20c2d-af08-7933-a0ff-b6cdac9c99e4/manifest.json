@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T02:13:27.623Z",
-  "duration_seconds": 244957,
+  "ended": "2026-11-27T02:41:25.508Z",
+  "duration_seconds": 246635,
   "stats": {
     "turns": 39,
-    "api_calls": 6465,
-    "tool_calls": 15856,
-    "tool_errors": 345,
-    "compactions": 26,
-    "peak_context_tokens": 550824,
+    "api_calls": 6522,
+    "tool_calls": 16042,
+    "tool_errors": 350,
+    "compactions": 27,
+    "peak_context_tokens": 550925,
     "usage": {
-      "input_tokens": 8118152,
-      "output_tokens": 3745383,
-      "cache_read_input_tokens": 1771663744,
+      "input_tokens": 8202810,
+      "output_tokens": 3786518,
+      "cache_read_input_tokens": 1785330432,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8650,
-    "exec": 6198,
-    "apply_patch": 804,
+    "Bash": 8772,
+    "exec": 6248,
+    "apply_patch": 813,
     "wait": 113,
-    "sleep": 84,
+    "sleep": 89,
     "send_message_to_user_async": 6,
     "request_user_input_async": 1
   },
@@ -309,14 +309,17 @@
     "lib/benchmark/organic-composition/log4j/update_replay.py",
     "lib/benchmark/organic-composition/log4j/upstream.json",
     "lib/benchmark/run.py",
+    "lib/benchmark/startup-facts/FirstUseControl.java",
     "lib/benchmark/startup-facts/TableControls.java",
     "lib/benchmark/startup-facts/controls.py",
+    "lib/benchmark/startup-facts/first_use.py",
     "lib/benchmark/startup-facts/freeze.py",
     "lib/benchmark/startup-facts/members.py",
     "lib/benchmark/startup-facts/postfreeze_originals.py",
     "lib/benchmark/startup-facts/postfreeze_transfer.py",
     "lib/benchmark/startup-facts/reuse_profiles.py",
     "lib/benchmark/startup-facts/tables.py",
+    "lib/benchmark/startup-facts/transfer_avro.py",
     "lib/benchmark/startup-facts/transfers.py",
     "lib/benchmark/test_run.py",
     "lib/src/bmc/byte_views.rs",
@@ -358,6 +361,7 @@
     "lib/tests/fixtures/observed-countermodels/app/oc/MemberStartup.java",
     "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md",
     "llm-dlc/loops/in-the-loop-generated-observers-and-callers-brief-results.md",
+    "llm-dlc/loops/in-the-loop-jvm-startup-facts-brief-results.md",
     "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md",
     "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-results.md",
     "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
@@ -955,24 +959,38 @@
     {
       "index": 26,
       "started": "2026-11-26T23:39:02.233Z",
-      "ended": "2026-11-27T02:13:27.623Z",
+      "ended": "2026-11-27T02:32:20.616Z",
       "turns": 2,
-      "api_calls": 448,
+      "api_calls": 468,
       "usage": {
-        "input_tokens": 266833,
-        "output_tokens": 281528,
-        "cache_read_input_tokens": 146519040,
+        "input_tokens": 272496,
+        "output_tokens": 304951,
+        "cache_read_input_tokens": 157264256,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 529003
+      "peak_context_tokens": 550925
+    },
+    {
+      "index": 27,
+      "started": "2026-11-27T02:32:20.624Z",
+      "ended": "2026-11-27T02:41:25.508Z",
+      "turns": 0,
+      "api_calls": 37,
+      "usage": {
+        "input_tokens": 78995,
+        "output_tokens": 17712,
+        "cache_read_input_tokens": 2921472,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 107249
     }
   ],
   "log": {
-    "sha256": "4b7cb21aa22d8b7fade4f226e1693521032ea5246dd2a0d5dab42bd597aa4e6c",
-    "bytes": 102001634,
-    "lines": 50814,
-    "gzip_bytes": 18564142,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/4b7cb21aa22d8b7fade4f226e1693521032ea5246dd2a0d5dab42bd597aa4e6c.jsonl.gz"
+    "sha256": "009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8",
+    "bytes": 103223263,
+    "lines": 51346,
+    "gzip_bytes": 18801201,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2993,23 +3011,37 @@
       "log_sha256": "bd7265a203eb649abb6fb5325fcf413de3e25105fc17f13eb0e32be924f10a1a"
     },
     {
-      "change_id": "psrppqvvlkuvskvqnnqxowxrolpvsyop",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "4b7cb21aa22d8b7fade4f226e1693521032ea5246dd2a0d5dab42bd597aa4e6c"
-    },
-    {
       "change_id": "lkluqquuzlnnsozqmsuutrmnyyyuylqq",
       "commit_id": null,
       "immutable": false,
       "summary": "Recover an initializer from its executed JDK read (verification pending)",
       "body": "A strict property may execute part of an initializer before reporting its unsupported JDK setting operation. Derive the recording request from that diagnostic when all its sites name the same initializer. An ordinary method site or ambiguous roots remain open. This lets the workflow keep a failed startup diagnostic without crediting its partial reads as proof premises.\n\nThe original fixture reported System.getProperties at TableControls.Failing's initializer. Its profiled JVM retained the real IllegalArgumentException and ExceptionInInitializerError and published no reusable receipt. The recipe checks a repeated root, an ordinary method and conflicting roots. All 55 selected suites passed. Job 20261127-020702-requalify-original-jvm-startup-from-dire repeats the final original matrices from the corrected workflow.",
       "log_sha256": "4b7cb21aa22d8b7fade4f226e1693521032ea5246dd2a0d5dab42bd597aa4e6c"
+    },
+    {
+      "change_id": "kspyvwskssnztyxkypytpkouwztwvxrv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8"
+    },
+    {
+      "change_id": "xvxkrsulxtquykptunxzvvtpqknlruzm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Require the JVM to witness first active use before importing startup state (verification pending)",
+      "body": "Read the original class-initialization log up to the observation boundary as well as inside it. Typed charset, member, live-table and ordered captures require a fresh application prestate and the selected root to initialize inside that window. Comparison JVMs use the same rule. A previously initialized class leaves a bound diagnostic with zero premises.\n\nThe changed-test selection passed all 56 groups, including 59 Rust binaries. Independent capped probes on the same reflective fixture verified arity zero on the cold launch and refused the already-initialized launch. Original Java returned the same String.trim member and arity in both. Job 20261127-023629-qualify-first-active-use-on-original-jvm repeats this control and the four-root Avro fix against all six original qualification matrices.",
+      "log_sha256": "009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8"
     }
   ],
   "logs": {
+    "009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8": {
+      "bytes": 103223263,
+      "lines": 51346,
+      "gzip_bytes": 18801201,
+      "url": null
+    },
     "037f9fba0986ea2a4f8a8af82d69f7fcb51a8b6b70cac5b934e67859dc68f97f": {
       "bytes": 30951433,
       "lines": 17084,
