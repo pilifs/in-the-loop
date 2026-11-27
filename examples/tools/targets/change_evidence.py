@@ -82,8 +82,16 @@ class SideCache:
         if (len(trials) != len(domain) or not payload["loadedDependencyClasses"]
                 or set(payload["loadedPerInput"]) != {str(i) for i in range(len(domain))}):
             return False
-        return all(t["input"] == i and outcome(t, entry, client, required_helper, require_projection) == case["expected"]
-                   and "return" in case["expected"] for i, (case, t) in enumerate(zip(domain, trials)))
+        for i, (case, trial) in enumerate(zip(domain, trials)):
+            measured = outcome(trial, entry, client, required_helper, require_projection)
+            if trial["input"] != i or measured is None or set(measured) != {"return"}:
+                return False
+            if "expected" in case:
+                if measured != case["expected"]:
+                    return False
+            elif set(case) != {"args"} or not require_projection:
+                return False
+        return True
 
     def domain(self, side, report):
         if side == "new" and self.new_expected:
@@ -124,6 +132,9 @@ class SideCache:
         self.pending.clear()
 
 
+PAIRED = {"different-on-any-input", "equal-on-all-inputs", "observe-only"}
+
+
 def compose(spec, report, intent="preserve"):
     """The finite parent requires every registered input. One admitted original witness suffices."""
     cases = spec["cases"]
@@ -142,6 +153,27 @@ def compose(spec, report, intent="preserve"):
     asserted = spec.get("assertedSides", ["old", "new"])
     if asserted not in (["old"], ["new"], ["old", "new"]):
         raise ValueError("invalid registered side scope")
+    paired = spec.get("pairedObservation")
+    if paired is not None:
+        if paired not in PAIRED or asserted != ["old","new"] or intent != {"pairedObservation":paired}:
+            raise ValueError("paired observations must retain their two-sided frozen predicate")
+        children = []
+        for index, case in enumerate(cases):
+            values = {}
+            for side in asserted:
+                binding = sides.get(side,{})
+                values[side] = outcome(indexed[side].get(index,{}), binding.get("resolvedEntry",spec["entry"]),
+                    entry_artifact(binding), binding.get("requiredHelperProof"), "generatedObserver" in spec) if binding.get("classpath") else None
+            state = "open" if None in values.values() else "equal" if values["old"] == values["new"] else "different"
+            children.append({"input":index,"arguments":case["args"],**values,"comparison":state})
+        missing = [c["input"] for c in children if c["comparison"] == "open"]
+        difference = next((c["input"] for c in children if c["comparison"] == "different"),None)
+        status = "open"
+        if paired != "observe-only" and (difference is not None or not missing):
+            status = "established" if (difference is not None) == (paired == "different-on-any-input") else "refuted"
+        return {"rule":paired,"status":status,"inputs":len(cases),"covered":len(cases)-len(missing),"children":children,
+                "firstOpenDependency":missing[0] if missing else "a registered prediction" if paired == "observe-only" else None,
+                "witness":difference}
     children = []
     changes = {c["input"]: c["expectedNew"] for c in intent["allowedChanges"]} if isinstance(intent, dict) else {}
     for i, case in enumerate(cases):

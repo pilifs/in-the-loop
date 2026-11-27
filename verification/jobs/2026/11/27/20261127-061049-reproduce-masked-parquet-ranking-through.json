@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-061049-reproduce-masked-parquet-ranking-through",
+  "title": "Reproduce masked Parquet ranking through ordinary Stage 2 discovery",
+  "description": "Bind the top five from original upstream JVM events on 113-entry deployments, then compare with both historical public histories. Retain representative dispatch stacks and same-receiver edges, the ambiguity decision and the class bytes selected on the reversed overlay.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:classes"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T06:10:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "python3 verification/blind-caller/stage2_histories.py",
+      "run": "python3 verification/blind-caller/stage2_histories.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/stage2-histories.zip"
+  ]
+}

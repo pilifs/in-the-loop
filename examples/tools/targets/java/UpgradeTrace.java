@@ -1,5 +1,6 @@
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.ClassObjectReference;
+import com.sun.jdi.ClassLoaderReference;
 import com.sun.jdi.Field;
 import com.sun.jdi.Location;
 import com.sun.jdi.Method;
@@ -7,6 +8,7 @@ import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.StringReference;
+import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.Value;
 import com.sun.jdi.VMDisconnectedException;
@@ -324,11 +326,115 @@ public final class UpgradeTrace {
         return Base64.getEncoder().encodeToString(bytes.array());
     }
 
+    /** Method exits directly observed by the generated caller, with identities shared across its history. */
+    private static final class PublicActions {
+        final Set<String> members = new LinkedHashSet<>();
+        final Map<Long,Integer> objects = new LinkedHashMap<>();
+        int count;
+
+        void watch(VirtualMachine vm, String selectors) {
+            Set<String> owners = new LinkedHashSet<>();
+            for (String selector : selectors.split("\\|")) {
+                members.add(selector);
+                owners.add(selector.substring(0, selector.indexOf('#')));
+            }
+            for (String owner : owners) {
+                MethodExitRequest exits = vm.eventRequestManager().createMethodExitRequest();
+                exits.addClassFilter(owner);
+                exits.putProperty("publicAction", true);
+                exits.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+                exits.enable();
+            }
+        }
+
+        int alias(ObjectReference value) {
+            return objects.computeIfAbsent(value.uniqueID(), key -> objects.size());
+        }
+
+        Value field(ObjectReference value, String name) {
+            Field field = value.referenceType().fieldByName(name);
+            if (field == null) throw new IllegalStateException("missing observed field " + name);
+            return value.getValue(field);
+        }
+
+        String atom(Value value) {
+            if (value == null) return "null";
+            if (value instanceof com.sun.jdi.CharValue) return "char\t" + (int)((com.sun.jdi.CharValue)value).value();
+            if (!(value instanceof ObjectReference)) return value.type().name() + "\t" + value;
+            ObjectReference ref = (ObjectReference)value;
+            String type = ref.referenceType().name();
+            String scalar = "";
+            if (value instanceof StringReference) scalar = textArgument(value);
+            else if (type.equals("java.lang.Integer") || type.equals("java.lang.Long")) scalar = field(ref, "value").toString();
+            else if (type.equals("java.util.Date")) scalar = field(ref, "fastTime").toString();
+            else if (type.equals("java.time.Duration")) scalar = field(ref,"seconds") + "/" + field(ref,"nanos");
+            else if (type.equals("org.apache.lucene.util.BytesRef")) {
+                com.sun.jdi.ArrayReference bytes = (com.sun.jdi.ArrayReference)field(ref, "bytes");
+                int start = ((com.sun.jdi.IntegerValue)field(ref, "offset")).value();
+                int size = ((com.sun.jdi.IntegerValue)field(ref, "length")).value();
+                if (size > 65536) throw new IllegalStateException("sort key exceeds the observation limit");
+                byte[] key = new byte[size];
+                int at = 0;
+                for (Value v : bytes.getValues(start,size)) key[at++] = ((com.sun.jdi.ByteValue)v).value();
+                scalar = Base64.getEncoder().encodeToString(key);
+            } else if (type.equals("org.apache.lucene.search.TopFieldDocs")) {
+                ObjectReference total = (ObjectReference)field(ref,"totalHits");
+                List<String> hits = new ArrayList<>();
+                hits.add(field(total,"value").toString());
+                com.sun.jdi.ArrayReference docs = (com.sun.jdi.ArrayReference)field(ref,"scoreDocs");
+                if (docs.length() > 100) throw new IllegalStateException("search exceeds the registered top 100");
+                for (Value hit : docs.getValues()) {
+                    ObjectReference doc = (ObjectReference)hit;
+                    com.sun.jdi.ArrayReference keys = (com.sun.jdi.ArrayReference)field(doc,"fields");
+                    hits.add(field(doc,"doc") + "\t" + atom(keys.getValue(0)));
+                }
+                scalar = encoded(String.join("\n",hits));
+            }
+            return "ref\t" + alias(ref) + "\t" + type + "\t" + scalar;
+        }
+
+        void observed(MethodExitEvent event, String observer) throws Exception {
+            String member = CheckedReplay.entry(event.location());
+            boolean callback = member.startsWith(observer + "#lambda$observe$")
+                    && members.contains(observer + "#lambda$observe$*");
+            if ((!members.contains(member) && !callback) || event.thread().frameCount() < 2) return;
+            StackFrame caller = event.thread().frame(1);
+            String outer = caller.location().declaringType().name();
+            if (!callback && !outer.equals(observer) && !outer.startsWith(observer + "$")) return;
+            boolean inside = false;
+            for (StackFrame f : event.thread().frames())
+                if (CheckedReplay.entry(f.location()).equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) {
+                    inside = true;
+                    break;
+                }
+            if (!inside) return;
+            if (event.virtualMachine().classesByName(event.location().declaringType().name()).size() != 1)
+                throw new IllegalStateException("ambiguous defining loader for " + member);
+            if (++count > 4096) throw new IllegalStateException("public history exceeds 4096 returned operations");
+            StackFrame frame = event.thread().frame(0);
+            ClassLoaderReference loader = event.location().declaringType().classLoader();
+            List<String> parts = new ArrayList<>(Arrays.asList("v2", member, CheckedReplay.entry(caller.location()),
+                    Long.toString(caller.location().codeIndex()), Integer.toString(alias(event.thread())),
+                    loader == null ? "bootstrap" : loader.referenceType().name() + "@" + alias(loader),
+                    atom(caller.thisObject()), atom(frame.thisObject()), atom(event.returnValue())));
+            for (Value argument : frame.getArgumentValues()) parts.add(atom(argument));
+            System.err.println("UPGRADE-ACTION " + encoded(String.join("\n",parts)));
+        }
+    }
+
     // Follow the JDK objects actually returned to or constructed by the caller. A formatter with the
     // same output can still have received a different pattern, locale or initial parsing mode.
     private static final class NumericInputs {
         final Map<Long,String> builders = new LinkedHashMap<>(), locales = new LinkedHashMap<>();
         final Map<Long,String> symbols = new LinkedHashMap<>(), formats = new LinkedHashMap<>();
+        final Map<Long,Integer> formatterAliases = new LinkedHashMap<>();
+        final Map<Long,Integer> threads = new LinkedHashMap<>();
+
+        String identity(ThreadReference thread, ObjectReference formatter) {
+            int caller = threads.computeIfAbsent(thread.uniqueID(), key -> threads.size());
+            int argument = formatter == null ? -1 : formatterAliases.computeIfAbsent(formatter.uniqueID(), key -> formatterAliases.size());
+            return caller + "\t" + argument;
+        }
 
         void watchFormats(VirtualMachine vm) {
             for (String type : Arrays.asList("java.util.Locale$Builder", "java.text.DecimalFormatSymbols", "java.text.DecimalFormat")) {
@@ -365,6 +471,12 @@ public final class UpgradeTrace {
                     break;
                 case "java.text.DecimalFormat#setParseBigDecimal(Z)V":
                     break; // Read the object's current flag at the public parser entry.
+                case "java.text.DecimalFormat#isParseBigDecimal()Z":
+                    if (CheckedReplay.entry(event.thread().frame(1).location()).equals(
+                            observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) {
+                        System.err.println("UPGRADE-FORMAT-READ " + identity(event.thread(), receiver) + "\t" + event.returnValue());
+                    }
+                    break;
                 default:
                     // Other direct configuration invalidates the recorded construction.
                     if (event.method().name().startsWith("set") || event.method().name().startsWith("apply")
@@ -381,6 +493,7 @@ public final class UpgradeTrace {
             String fields = textArgument(args.get(0)) + "\t" + ((ClassObjectReference)args.get(1)).reflectedType().name();
             if (args.size() == 2) return fields;
             ObjectReference format = (ObjectReference)args.get(2);
+            System.err.println("UPGRADE-FORMAT-ARG " + identity(frame.thread(), format));
             if (format == null) return fields + "\tnull";
             String fixture = formats.get(format.uniqueID());
             Field mode = format.referenceType().fieldByName("parseBigDecimal");
@@ -445,21 +558,28 @@ public final class UpgradeTrace {
         String entryInvocation = null;
         boolean history = Boolean.getBoolean("upgrade.observe.history");
         boolean numeric = Boolean.getBoolean("upgrade.observe.numeric");
+        boolean scalar = Boolean.getBoolean("upgrade.observe.scalar");
         NumericInputs numericInputs = new NumericInputs();
+        PublicActions publicActions = new PublicActions();
         String candidateHelper = System.getProperty("upgrade.observe.helper");
         String publicReader = System.getProperty("upgrade.observe.reader");
+        String optional = System.getProperty("upgrade.observe.optional");
         Map<Long,Integer> historyReceivers = new LinkedHashMap<>();
         Set<String> observedHistoryChanges = new HashSet<>();
         Map<Long, List<String>> constructors = new LinkedHashMap<>();
         boolean finished = false;
         Map<String, List<String>> thrown = new LinkedHashMap<>();
         try {
+            String actions = System.getProperty("upgrade.observe.actions");
+            if (actions != null) publicActions.watch(vm, actions);
             if (numeric) {
                 if (descriptor.contains("Ljava/text/NumberFormat;")) numericInputs.watchFormats(vm);
                 MethodExitRequest exits = vm.eventRequestManager().createMethodExitRequest();
                 exits.addClassFilter(owner);
                 exits.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
                 exits.enable();
+            }
+            if (numeric || scalar) {
                 ExceptionRequest errors = vm.eventRequestManager().createExceptionRequest(null, true, false);
                 errors.putProperty("projection", true);
                 errors.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
@@ -498,6 +618,10 @@ public final class UpgradeTrace {
                         if (checked != null) checked.bind(vm, type);
                     } else if (event instanceof MethodExitEvent) {
                         MethodExitEvent exit = (MethodExitEvent)event;
+                        if (Boolean.TRUE.equals(exit.request().getProperty("publicAction"))) {
+                            publicActions.observed(exit, observer);
+                            continue;
+                        }
                         if (Boolean.TRUE.equals(exit.request().getProperty("formatConstruction"))) {
                             numericInputs.observeConstruction(exit, observer);
                             continue;
@@ -520,7 +644,8 @@ public final class UpgradeTrace {
                                     && catcher.method().name().equals("observe") && invocation(raised, observer, sites) != null) {
                                 for (StackFrame frame : raised.thread().frames()) {
                                     if (CheckedReplay.entry(frame.location()).equals(entry)) {
-                                        System.err.println("UPGRADE-NUMBER throws\t" + raised.exception().referenceType().name());
+                                        String marker = scalar ? "UPGRADE-SCALAR-THROW " : "UPGRADE-NUMBER throws\t";
+                                        System.err.println(marker + raised.exception().referenceType().name());
                                         break;
                                     }
                                 }
@@ -605,7 +730,18 @@ public final class UpgradeTrace {
                             String site = invocation(point, observer, sites);
                             if (site != null) {
                                 entryInvocation = site;
+                                if (optional != null && optional.startsWith(owner + "#<init>(")) {
+                                    String signature = optional.substring(optional.indexOf('('));
+                                    boolean available = point.location().declaringType().methodsByName("<init>", signature)
+                                        .stream().anyMatch(Method::isPublic);
+                                    System.err.println("UPGRADE-OPTIONAL " + optional + "\t" + available);
+                                }
                                 ObjectReference instance = point.thread().frame(0).thisObject();
+                                if (scalar) {
+                                    List<String> actual = new ArrayList<>();
+                                    for (Value value : point.thread().frame(0).getArgumentValues()) actual.add(publicActions.atom(value));
+                                    System.err.println("UPGRADE-SCALAR-ENTRY " + encoded(String.join("\n", actual)));
+                                }
                                 if (numeric) System.err.println("UPGRADE-NUMERIC-INPUT " + numericInputs.atEntry(point.thread().frame(0)));
                                 if (history) {
                                     int alias = instance == null ? -1 : historyReceivers.computeIfAbsent(

@@ -13,7 +13,7 @@ import zipfile
 
 import campaign
 from controls import app
-from targets import change_inventory, observer_generation, runtime_jar, upgrade_claims, upgrade_replay
+from targets import change_inventory, observer_actions, observer_generation, runtime_jar, upgrade_claims, upgrade_replay
 import scaffold_example
 
 read, write = campaign.read, campaign.write
@@ -33,7 +33,7 @@ def dynamic(bundle, jdk, directory, source, question, index, side):
     subprocess.run([jdk / "bin/javac", "-g", "-proc:none", "-cp", os.pathsep.join(old),
                     "-d", directory, upgrade_replay.LAUNCHER, upgrade_replay.TRACER, candidate], check=True,
                    capture_output=True, timeout=35)
-    selector = recipe.get("invocationVia",reg["entry"])
+    selector = recipe.get("bindingEntry", recipe.get("invocationVia", reg["entry"]))
     owner, method, desc = runtime_jar.parse_target(selector)
     sites = [pc for member,pc,ref in upgrade_claims.invocation_sites(
              upgrade_claims.disassemble(jdk, [directory], "UpgradeProbe", 15), "UpgradeProbe")
@@ -42,7 +42,7 @@ def dynamic(bundle, jdk, directory, source, question, index, side):
         raise ValueError("planted caller has no static public call")
     inputs = question["inputs"][index]
     encoded = [base64.b64encode(s.encode("utf-16-be")).decode() for s in observer_generation.arguments(inputs)]
-    flags = ["-Dupgrade.observe.history=true"]
+    flags = ["-Dupgrade.observe.history=true", *observer_actions.flags(recipe)]
     if recipe["family"] == "typed numeric conversions":
         flags.append("-Dupgrade.observe.numeric=true")
     if "publicReader" in recipe:
@@ -54,7 +54,7 @@ def dynamic(bundle, jdk, directory, source, question, index, side):
         [], time.monotonic()+35, ".")
     value = upgrade_replay.typed_outcome(obs.splitlines())
     result = {"sourceSha256":upgrade_replay.sha(candidate),"staticSites":sites,"raw":value,
-              "marks":[m for m in marks if m.startswith(("UPGRADE-NUMBER ", "UPGRADE-NUMERIC-INPUT ", "UPGRADE-PUBLIC-"))]}
+              "marks":[m for m in marks if m.startswith(("UPGRADE-NUMBER ", "UPGRADE-NUMERIC-INPUT ", "UPGRADE-FORMAT-", "UPGRADE-PUBLIC-", "UPGRADE-ACTION ", "UPGRADE-OPTIONAL "))]}
     try:
         result["projection"] = observer_generation.correspondence(recipe, inputs, marks, value)
     except ValueError as e:

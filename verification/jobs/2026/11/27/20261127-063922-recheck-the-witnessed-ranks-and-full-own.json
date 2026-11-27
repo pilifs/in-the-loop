@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-063922-recheck-the-witnessed-ranks-and-full-own",
+  "title": "Recheck the witnessed ranks and full owner choice on the original Parquet tests",
+  "description": "Rerun normal Stage 2 after correcting a local display-position variable that shadowed the ranking function. The cheap no-fork control and the two original 113-root deployments must preserve static rank, both qualifying observed histories, and the exact owner question.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:classes"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T06:39:22+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/stage2_histories.py --qualified-choices",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/stage2-histories-reviewed.zip"
+  ]
+}

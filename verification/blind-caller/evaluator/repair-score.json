@@ -1,0 +1,246 @@
+{
+  "schema": "post-reveal-packaging-repair/v1",
+  "originalScoreSeal": "c917d2eaa364aa3082f344604cfd7b4a21379a8e",
+  "repairSeal": "93c80c65e7681ba47bc7914a1559710076b69336",
+  "case": "https://github.com/jgrapht/jgrapht/pull/1379",
+  "caseIndex": 12,
+  "countedInOriginalColdScore": false,
+  "attempted": 1,
+  "qualified": 0,
+  "originalCounts": {
+    "cold": {
+      "all": {
+        "qualified": 0,
+        "denominator": 20
+      },
+      "P": {
+        "qualified": 0,
+        "denominator": 5
+      },
+      "Q": {
+        "qualified": 0,
+        "denominator": 5
+      },
+      "R": {
+        "qualified": 0,
+        "denominator": 10
+      }
+    },
+    "test-assisted": {
+      "all": {
+        "qualified": 0,
+        "denominator": 20
+      },
+      "P": {
+        "qualified": 0,
+        "denominator": 5
+      },
+      "Q": {
+        "qualified": 0,
+        "denominator": 5
+      },
+      "R": {
+        "qualified": 0,
+        "denominator": 10
+      }
+    },
+    "reviewed": {
+      "all": {
+        "qualified": 0,
+        "denominator": 20
+      },
+      "P": {
+        "qualified": 0,
+        "denominator": 5
+      },
+      "Q": {
+        "qualified": 0,
+        "denominator": 5
+      },
+      "R": {
+        "qualified": 0,
+        "denominator": 10
+      }
+    }
+  },
+  "repair": {
+    "primaryQualified": false,
+    "rankAtThreeEquivalent": false,
+    "rankAtThreeQualified": false,
+    "deployment": true,
+    "candidate": true,
+    "boundPublicEntry": true,
+    "compiledAgainstOld": false,
+    "requiredSideReach": false,
+    "allFieldsObserved": false,
+    "candidateReviews": [
+      {
+        "rank": 1,
+        "entry": "org.jgrapht.alg.connectivity.ConnectivityInspector#edgeAdded(Lorg/jgrapht/event/GraphEdgeChangeEvent;)V",
+        "kind": "unresolved",
+        "equivalent": false,
+        "qualified": false,
+        "review": "No concrete public input or receiver history was nominated for this entry.",
+        "deployments": {
+          "pins": {
+            "bound": true,
+            "compiledAgainstOld": false,
+            "reached": false,
+            "allFieldsObserved": false,
+            "qualified": false,
+            "stoppedAt": "public caller inputs",
+            "reason": "Which public construction, inputs and readback expose org.jgrapht.alg.connectivity.ConnectivityInspector#edgeAdded(Lorg/jgrapht/event/GraphEdgeChangeEvent;)V?",
+            "actual": {},
+            "finiteDisposition": "open",
+            "evidence": {
+              "bindings": {
+                "path": "deployment-1/bindings.json",
+                "sha256": "7a158b39a1b8096c24795cf018db02b0f15ea0f18ae35f854494de4356f884d6"
+              }
+            }
+          }
+        },
+        "history": "Reach ConnectivityInspector.edgeAdded from a public caller and observe its result under the change described by Fix connectivity listener updates with an uninitialized cache.",
+        "inputs": [],
+        "fields": [
+          "public return or escaping exception"
+        ],
+        "prediction": {
+          "undecided": "public input and observation need registration"
+        },
+        "requiredSides": [
+          "old",
+          "new"
+        ],
+        "source": [
+          "changed declaration"
+        ],
+        "stoppedAt": "public caller inputs",
+        "reason": "Which public construction, inputs and readback expose org.jgrapht.alg.connectivity.ConnectivityInspector#edgeAdded(Lorg/jgrapht/event/GraphEdgeChangeEvent;)V?"
+      },
+      {
+        "rank": 2,
+        "entry": "org.jgrapht.alg.connectivity.ConnectivityInspector#vertexAdded(Lorg/jgrapht/event/GraphVertexChangeEvent;)V",
+        "kind": "unresolved",
+        "equivalent": false,
+        "qualified": false,
+        "review": "No concrete public input or receiver history was nominated for this entry.",
+        "deployments": {
+          "pins": {
+            "bound": true,
+            "compiledAgainstOld": false,
+            "reached": false,
+            "allFieldsObserved": false,
+            "qualified": false,
+            "stoppedAt": "public caller inputs",
+            "reason": "Which public construction, inputs and readback expose org.jgrapht.alg.connectivity.ConnectivityInspector#vertexAdded(Lorg/jgrapht/event/GraphVertexChangeEvent;)V?",
+            "actual": {},
+            "finiteDisposition": "open",
+            "evidence": {
+              "bindings": {
+                "path": "deployment-1/bindings.json",
+                "sha256": "7a158b39a1b8096c24795cf018db02b0f15ea0f18ae35f854494de4356f884d6"
+              }
+            }
+          }
+        },
+        "history": "Reach ConnectivityInspector.vertexAdded from a public caller and observe its result under the change described by Fix connectivity listener updates with an uninitialized cache.",
+        "inputs": [],
+        "fields": [
+          "public return or escaping exception"
+        ],
+        "prediction": {
+          "undecided": "public input and observation need registration"
+        },
+        "requiredSides": [
+          "old",
+          "new"
+        ],
+        "source": [
+          "changed declaration"
+        ],
+        "stoppedAt": "public caller inputs",
+        "reason": "Which public construction, inputs and readback expose org.jgrapht.alg.connectivity.ConnectivityInspector#vertexAdded(Lorg/jgrapht/event/GraphVertexChangeEvent;)V?"
+      }
+    ],
+    "stoppedAt": "public caller inputs",
+    "reason": "Which public construction, inputs and readback expose org.jgrapht.alg.connectivity.ConnectivityInspector#edgeAdded(Lorg/jgrapht/event/GraphEdgeChangeEvent;)V?",
+    "assistance": "Post-reveal evaluator production-origin repair. Frozen generator and original artifacts.",
+    "predictionReceipt": "verification/blind-caller/evaluator/arms/repaired/12/predict/attempt.json",
+    "measurementReceipt": "verification/blind-caller/evaluator/arms/repaired/12/measure/attempt.json",
+    "functionalDecisionSha256": "61f2dd9d22af9f049ec1236925dc88ff4e87c0a1f585ef43ab29555d72e943b4",
+    "secondaryQuestions": [
+      {
+        "id": "jgrapht/jgrapht#1379.2",
+        "role": "Control",
+        "newAttempt": "no independently qualified coverage",
+        "requiredSides": [
+          "old",
+          "new"
+        ],
+        "history": "Start with vertices a,b,c and edge a\u2013b. Register on that graph, call connectedSets(), then add b\u2013c.",
+        "historical": {
+          "pins": {
+            "status": "established",
+            "reason": "every required side matched",
+            "observed": {
+              "old": [
+                {
+                  "field": "return",
+                  "type": "str",
+                  "value": "[[a, b, c]]/true"
+                }
+              ],
+              "new": [
+                {
+                  "field": "return",
+                  "type": "str",
+                  "value": "[[a, b, c]]/true"
+                }
+              ]
+            },
+            "unpredictedSides": []
+          }
+        }
+      },
+      {
+        "id": "jgrapht/jgrapht#1379.3",
+        "role": "Challenge",
+        "newAttempt": "no independently qualified coverage",
+        "requiredSides": [
+          "new"
+        ],
+        "history": "With the same three initial vertices and a\u2013b, query only connectedSetOf(a), add b\u2013c, and query a again. Repeat with the edge directed from c to b on a directed graph.",
+        "historical": {
+          "pins": {
+            "status": "established",
+            "reason": "every required side matched",
+            "observed": {
+              "old": [
+                {
+                  "field": "throws",
+                  "type": "str",
+                  "value": "java.lang.NullPointerException"
+                }
+              ],
+              "new": [
+                {
+                  "field": "return",
+                  "type": "str",
+                  "value": "[a, b]->[a, b, c]/[a, b, c] / [a, b]->[a, b, c]/[a, b, c]"
+                }
+              ]
+            },
+            "unpredictedSides": [
+              "old"
+            ]
+          }
+        }
+      }
+    ],
+    "candidateInspections": 2,
+    "subjectLaunchesDuringPrediction": 0,
+    "testFilesInspected": 0,
+    "semanticGap": "missing public input or receiver"
+  }
+}

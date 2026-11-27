@@ -18,6 +18,9 @@ CANDIDATE_BUDGET = 64
 NUMBERS = {"Byte", "Short", "Integer", "Long", "Float", "Double", "BigInteger", "BigDecimal"}
 NUMBER_ENTRY = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Number;"
 FORMATTED_NUMBER_ENTRY = "(Ljava/lang/String;Ljava/lang/Class;Ljava/text/NumberFormat;)Ljava/lang/Number;"
+NUMBER_FIELDS = ["call.outcome", "return.type", "return.value"]
+FORMAT_FIELD = "argument.parseBigDecimalAfterReturn"
+FORMAT_GETTER = "java.text.DecimalFormat#isParseBigDecimal()Z"
 
 
 class Unsupported(ValueError):
@@ -109,18 +112,28 @@ def nonempty(value, meaning):
 
 
 def select(entry, fields, inputs, api):
+    from targets import observer_scalar
     owner, method, descriptor = runtime_jar.parse_target(entry)
     if not descriptor:
         raise Unsupported("supply the descriptor of the bound public entry")
-    if fields == ["call.outcome", "return.type", "return.value"]:
+    if fields in (NUMBER_FIELDS, [*NUMBER_FIELDS, FORMAT_FIELD]):
         if descriptor not in (NUMBER_ENTRY, FORMATTED_NUMBER_ENTRY):
             raise Unsupported("need a public conversion of text and a numeric class, optionally with NumberFormat")
         api.require(owner, method, descriptor, static=True)
         formatted = descriptor == FORMATTED_NUMBER_ENTRY
+        retained = FORMAT_FIELD in fields
+        has_read = False
         for item in inputs:
             keys(item, ["conversions"])
             for conv in nonempty(item["conversions"], "texts and requested numeric types"):
-                keys(conv, ["text", "type", "format"] if formatted else ["text", "type"])
+                required = ["text", "type", "format"] if formatted else ["text", "type"]
+                if retained and isinstance(conv, dict) and "readAfterReturn" in conv:
+                    if (not formatted or conv.get("format") is None
+                            or conv["readAfterReturn"] != "isParseBigDecimal"):
+                        raise Unsupported("the post-return getter needs the configured DecimalFormat passed to this call")
+                    required.append("readAfterReturn")
+                    has_read = True
+                keys(conv, required)
                 if not isinstance(conv["type"], str) or conv["type"] not in NUMBERS or not isinstance(conv["text"], str):
                     raise Unsupported("each conversion needs literal text and a supported numeric target type")
                 if formatted and conv["format"] is not None:
@@ -133,6 +146,12 @@ def select(entry, fields, inputs, api):
         recipe = {"family": "typed numeric conversions", "owner": owner, "method": method}
         if formatted:
             recipe["formatArgument"] = "java.text.DecimalFormat"
+        if retained:
+            if not has_read:
+                raise Unsupported("specify which conversion retains its formatter for the public getter")
+            recipe["argumentRead"] = FORMAT_GETTER
+    elif fields == observer_scalar.FIELDS:
+        recipe = observer_scalar.select(entry, inputs, api)
     elif fields == ["result.defined", "fallback.value", "fallback.calls"]:
         _, desc = api.select(owner, [method], r"\(Ljava/util/function/Predicate;\)L[\w/$]+;")
         result = desc.split(")L")[1][:-1].replace("/", ".")
@@ -167,6 +186,15 @@ def source(recipe):
     if p["family"] == "typed numeric conversions":
         formatted = "formatArgument" in p
         setup = '\n                java.text.NumberFormat format = numberFormat((Map<String,Object>)pair.get("format"));'
+        capture = '''if (value == null) observations.add(row("return", null, null));
+                    else observations.add(row("return", value.getClass().getName(), value.toString()));'''
+        if p.get("argumentRead") == FORMAT_GETTER:
+            capture = '''List<Object> sample = new ArrayList<>(value == null ? row("return", null, null)
+                            : row("return", value.getClass().getName(), value.toString()));
+                    if (pair.containsKey("readAfterReturn")) {
+                        sample.add(((java.text.DecimalFormat)format).isParseBigDecimal());
+                    }
+                    observations.add(sample);'''
         body = Template('''
             for (Map<String,$pairType> pair : (List<Map<String,$pairType>>)data.get("conversions")) {
                 String type = ${cast}pair.get("type");
@@ -175,14 +203,13 @@ def source(recipe):
                 String text = ${cast}pair.get("text");$setup
                 try {
                     Number value = $owner.$method(text, target$argument);
-                    if (value == null) observations.add(row("return", null, null));
-                    else observations.add(row("return", value.getClass().getName(), value.toString()));
+                    $capture
                 } catch (RuntimeException error) {
                     observations.add(row("throws", error.getClass().getName()));
                 }
             }''').substitute(owner=p["owner"], method=p["method"], pairType="Object" if formatted else "String",
                             cast="(String)" if formatted else "", setup=setup if formatted else "",
-                            argument=", format" if formatted else "")
+                            argument=", format" if formatted else "", capture=capture)
         support = ""
         if formatted:
             support = '''
@@ -194,6 +221,9 @@ def source(recipe):
                     format.setParseBigDecimal((Boolean)spec.get("parseBigDecimal"));
                     return format;
                 }'''
+    elif p["family"] == "public scalar method":
+        from targets import observer_scalar
+        body, support = observer_scalar.body(p)
     elif p["family"] == "selection and lazy default":
         body = '''
             for (Map<String,Object> selection : (List<Map<String,Object>>)data.get("selections")) {

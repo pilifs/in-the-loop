@@ -1,0 +1,17 @@
+{
+  "schema": "public-history-trace-policy/v1",
+  "subject": "original production graph, including its order and revision, with original upstream tests in a separate class loader provenance record",
+  "changedSelectors": "normalized effective method bodies that differ in the original source overlays",
+  "testSelection": "Run the landed changed test class in its original module. In each other module select the matching public-type test with the most distinct test methods that directly call an API with that type's simple name. Keep every tie at the cutoff, at most four test classes per module, with stable binary-name order. Exclude only the setup-recorded network tests. Report every selected and omitted class and the rule, including zero coverage.",
+  "publicCandidates": "Collect production method names and descriptors invoked in the selected original test bytecode, including helpers and nested classes. The tracer matches actual public implementations at live method entry. Original changed methods are always traced.",
+  "relationships": [
+    "nested when an original changed-body stack contains the public operation",
+    "later when an earlier public operation returned in this test invocation and the same non-null receiver occurs in an original production frame of the later changed-body stack",
+    "unattributed in the absence of either relationship"
+  ],
+  "ranking": "Prioritize coverage on both original sides. Alternate distinct upstream test modules on their highest-ranked candidate, then globally rank by number of distinct test methods with a witnessed nested edge, tests with either relationship, directly witnessed public declarations, and stable member descriptor. Report top five and the complete supporting table.",
+  "bounds": {"stackFrames": 96, "eventsPerFork": 262144, "display": 5},
+  "parity": "Compare the plain and traced original JUnit test identities, outcomes, and exception types. Bind each original method to its loader, actual class-load bytes and ordered winning provider. Truncation and nonrepeatable tests are recorded gaps.",
+  "visibility": "Upstream tests and production artifacts only during selection and ranking. The nominations, historical callers, historical scores and ten archived observations remain evaluator inputs.",
+  "diagnosticCoverage": "Child JVMs inherit the same local JVMTI coverage agent. Each fork writes a separate ordered trace. Thread and receiver identities are local to a single VM."
+}

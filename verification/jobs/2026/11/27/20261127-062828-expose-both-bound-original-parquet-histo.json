@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-062828-expose-both-bound-original-parquet-histo",
+  "title": "Expose both bound original Parquet history choices in Stage 2",
+  "description": "Repeat original upstream rank and initial class binding without selecting any entry. Check that both historically distinct public operations appear in the actual owner question, with their independent static and witnessed ranks and relation evidence.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:classes"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T06:28:28+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "python3 verification/blind-caller/stage2_histories.py --qual",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/stage2_histories.py --qualified-choices",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/stage2-histories-reviewed.zip"
+  ]
+}

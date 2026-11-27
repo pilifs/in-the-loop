@@ -108,6 +108,7 @@ pub use charset::CharsetLocale;
 mod member;
 mod receipt;
 mod table;
+pub(crate) mod zone;
 pub use member::MethodFact;
 const CLASS: &str = "ObservedInitializer";
 pub(crate) const ENUM: &str = "java/lang/Enum";
@@ -203,6 +204,7 @@ pub struct Observed {
 /// What an observation was observed on, as the observer's JVM said it ([`observe`] checks it against the check's).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct On {
+    pub(crate) fixed_zone: Option<zone::Fact>,
     pub(crate) charset: Option<charset::Fact>,
     pub reflective_members: bool,
     pub(crate) member_receipt: Option<String>,
@@ -268,6 +270,7 @@ pub(crate) fn startup_evidence(observations: &Observations) -> Vec<serde_json::V
         if let Some(id) = &o.on.member_receipt { add("reflective-members",id,"import observed state"); }
         if let Some(id) = &o.on.table_receipt { add("live-properties",id,"import observed state"); }
         if let Some(id) = &o.on.joint_receipt { add("ordered-startup",id,"import joint heap"); }
+        if let Some(f) = &o.on.fixed_zone { add("fixed-time-zone",&f.id,"initialize the per-path default offset"); }
     }
     rows
 }
@@ -276,6 +279,10 @@ pub(crate) fn startup_evidence(observations: &Observations) -> Vec<serde_json::V
 #[derive(Debug, Default, Clone, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 #[serde(default, rename_all = "camelCase", deny_unknown_fields)]
 pub struct Runtime {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fixed_zone: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expected_zone_receipt: Option<String>,
     pub processors: Option<std::num::NonZeroI32>,
     pub empty_environment: bool,
     pub preinitialize_together: bool,
@@ -308,11 +315,12 @@ impl std::str::FromStr for Runtime {
             return Err("captureObjects requires preinitializeTogether".into());
         }
         r.validate_charset()?;
+        zone::validate(&r).map_err(|e| e.to_string())?;
         table::validate(&r).map_err(|e| e.to_string())?;
         if r.startup_revision.as_ref().is_some_and(|s| s.is_empty() || s.len()>128 || !s.bytes().all(|b| b.is_ascii_alphanumeric() || b"._-".contains(&b))) {
             return Err("startupRevision requires a revision name of up to 128 letters, digits, periods, dashes or underscores".into());
         }
-        if r.startup_revision.is_some() && !(r.charset_locale.is_some() || r.reflective_members || r.live_properties || r.record_joint_startup) {
+        if r.startup_revision.is_some() && !(r.charset_locale.is_some() || r.reflective_members || r.live_properties || r.record_joint_startup || r.fixed_zone.is_some()) {
             return Err("startupRevision needs a typed or ordered startup recording".into());
         }
         if r.record_joint_startup && !r.preinitialize_together { return Err("recordJointStartup requires preinitializeTogether".into()); }
@@ -373,6 +381,8 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
 
 fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
     runtime.validate_charset().map_err(Error::new)?;
+    zone::validate(&runtime)?;
+    if runtime.fixed_zone.is_some() && classes.len() != 1 { return Err(Error::new("fixedZone requires one original first-use root")); }
     table::validate(&runtime)?;
     if runtime.record_joint_startup && !runtime.preinitialize_together { return Err(Error::new("recordJointStartup requires preinitializeTogether")); }
     if runtime.live_properties && classes.len() != 1 { return Err(Error::new("liveProperties requires one first-use root")); }
@@ -394,7 +404,8 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     // Absolute: the JVM runs in this folder, and is given the log's path in it (an option and an argument).
     let temp;
     let traced = runtime.charset_locale.is_some() || runtime.reflective_members || runtime.live_properties;
-    let dir = if traced || runtime.record_joint_startup {
+    let typed = traced || runtime.record_joint_startup || runtime.fixed_zone.is_some();
+    let dir = if typed {
         std::fs::create_dir_all(work)?;
         temp = tempfile::Builder::new().prefix("startup-capture-").tempdir_in(work)?;
         std::path::absolute(temp.path())?
@@ -438,7 +449,7 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         }
     }
     let additional: Vec<String> = if runtime.preinitialize_together { classes.iter().skip(1).map(|c| c.replace('/', ".")).collect() } else { vec![] };
-    let binding = (traced || runtime.record_joint_startup).then(|| receipt::bindings(&tool, &home, &entries[1..], classes, &runtime)).transpose()?;
+    let binding = typed.then(|| receipt::bindings(&tool, &home, &entries[1..], classes, &runtime)).transpose()?;
     let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime: runtime.clone(), additional, binding: binding.clone() };
     let mut alone: BTreeMap<String, serde_json::Value> = BTreeMap::new();
     for class in classes.iter().take(if runtime.preinitialize_together { 1 } else { classes.len() }) {
@@ -472,6 +483,11 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         }
         bind(&binary, &internal, &observed.on, &entries, &tool)?;
         bind_values(&binary, &observed, &tool)?;
+        if let Some(requested) = &runtime.fixed_zone {
+            if !tool.explicit_utc() { return Err(Error::new("fixedZone requires the qualified TimeZone classes and tzdb image")); }
+            observed.on.fixed_zone = Some(zone::qualify(&binary,&observed,requested,runtime.expected_zone_receipt.as_deref(),
+                                                        &line,binding.as_ref().expect("typed binding"),work)?);
+        }
         let table_record = if runtime.live_properties {
             Some(table::qualify(&jvm, &binary, Some(&log), &line, binding.as_ref().unwrap(), &observed)?)
         } else { None };
@@ -611,6 +627,7 @@ impl Jvm {
             command.arg(format!("-Xlog:class+init=info:file={}:{decorators}:filecount=0", log.display()));
         }
         command.arg("-cp").arg(&self.class_path);
+        if let Some(zone) = &self.runtime.fixed_zone { command.arg(format!("-Duser.timezone={zone}")); }
         if self.runtime.charset_locale.is_some() { command.arg("-Dfile.encoding=COMPAT"); }
         for (key, value) in &self.runtime.startup_properties { command.arg(format!("-D{key}={value}")); }
         if trace && (self.runtime.charset_locale.is_some() || self.runtime.reflective_members || self.runtime.live_properties) {
@@ -632,6 +649,7 @@ impl Jvm {
         }
         if self.runtime.reflective_members { options.push("--record-methods".into()); }
         if self.runtime.live_properties { options.push("--record-table".into()); }
+        if self.runtime.fixed_zone.is_some() { options.push("--record-fixed-zone".into()); }
         options.push(binary.to_owned());
         if let Some(log) = log {
             options.push(log.to_str().ok_or_else(|| Error::new("startup log path is not UTF-8"))?.to_owned());
@@ -1147,6 +1165,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         if !additional_roots.is_empty() { state["additionalRoots"] = roots.clone(); }
     }
     let on = On {
+        fixed_zone: None,
         charset: None,
         reflective_members: on.get("reflectiveMembers").map(|v| v.as_bool().ok_or_else(|| bad("reflectiveMembers"))).transpose()?.unwrap_or(false),
         member_receipt: None,

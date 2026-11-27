@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-052201-qualify-two-detached-spring-subscription",
+  "title": "Qualify two detached Spring subscriptions on both original releases",
+  "description": "Run a labelled local scheduler hop with two interleaved public subscriptions, cancellation and an unrelated task of the same class on one reused worker. Bind the registered source, actual queued Runnable, executing instance and changed original Spring body on each deployment. Compare plain JVM signals, remove one handoff from the trace and check that only its attribution disappears.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-history-trace",
+    "java:subscription-provenance"
+  ],
+  "links": {},
+  "expected": "Both releases qualify the two causal subscriptions, keep unrelated invocations unattributed and reproduce ordered completion, cancellation or the full terminal error.",
+  "submitted": {
+    "at": "2026-11-27T05:22:01+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "g++"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Original parent hop",
+      "run": "python3 verification/blind-caller/subscriptions.py old",
+      "cwd": "."
+    },
+    {
+      "name": "Original landing hop",
+      "run": "python3 verification/blind-caller/subscriptions.py new",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/subscriptions-old.zip",
+    "verification/blind-caller/subscriptions-new.zip"
+  ]
+}

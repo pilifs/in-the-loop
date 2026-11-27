@@ -1,0 +1,287 @@
+{
+  "schema": "url-only-upstream-intake/v1",
+  "inputListSha256": "6c1c27f4a60bea06e6cf9aa17d249290c548a97b265ddadf59244dfdd045837b",
+  "input": "public URLs only",
+  "rebuilds": 0,
+  "originalBuildCacheHits": 10,
+  "sources": [
+    "cached merged GitHub PR metadata",
+    "original Git commit headers and production source",
+    "Maven or Gradle production runtime classpath and SHA-256 build records",
+    "original JDBC deployment specified by the brief"
+  ],
+  "cases": [
+    {
+      "url": "https://github.com/apache/commons-cli/pull/450",
+      "landingFromMergedPublicMetadata": true,
+      "parentFromOriginalCommitHeader": true,
+      "pins": {
+        "parent": "d959de8fb66f8aee8964dd3080920dfb9cdfcdc3",
+        "fix": "e04b9bc29d1a2c3c203b7cd81235fcac9c4ec516"
+      },
+      "newBuilds": 0,
+      "stage": "original intact build cache",
+      "sides": {
+        "old": {
+          "buildJdkSpec": "17",
+          "upstreamSubjectSha256": "b1789f61dd9fe52f75e531b16382c0cfb406f5ff348c8df44758cc9818fa1db3",
+          "buildDigestRecordSha256": "9310c1499321a3e614578b9f08e81c00a28c1477a2ff4b6bfbe5d259bcf5cca4",
+          "upstreamClasspathExportSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "orderedClasspathSha256": [
+            "b1789f61dd9fe52f75e531b16382c0cfb406f5ff348c8df44758cc9818fa1db3"
+          ]
+        },
+        "new": {
+          "buildJdkSpec": "17",
+          "upstreamSubjectSha256": "7c9b397e5ec0c68fefbcdb961b8f9aed586d8c58923368e147446af4c8732377",
+          "buildDigestRecordSha256": "82b93fc543a136321a2958bd8f6629a00916f4c5f36721f3008a1242fe50f933",
+          "upstreamClasspathExportSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "orderedClasspathSha256": [
+            "7c9b397e5ec0c68fefbcdb961b8f9aed586d8c58923368e147446af4c8732377"
+          ]
+        }
+      },
+      "view": {
+        "changedFiles": 3,
+        "productionSources": 1,
+        "testFilesVisible": 0,
+        "productionListingsWithheld": 0,
+        "testFilesWithheld": 0,
+        "testSourcesOutsideSelection": 0
+      },
+      "jdkReleaseSha256": "9568390645661374febde48f3c7a019f21cb116d6e4c627de29c119aa7bd0efc",
+      "service": null,
+      "publicDescription": "If you reuse an `Options` instance and pass `Properties` to `DefaultParser.parse()`, the first parse leaves the property value behind in the `Option` registered in `Options`: `handleProperties()` called `processValue()` on that registered option rather than on the copy that goes into the `CommandLine`, and nothing ever clears it. From then on the same `Options` gives wrong answers:\n\nThe fix adds the value to the copy instead, the same way values from the command line are handled, so parsing no longer changes the values of the registered options. A value the option already has still wins over the property, as `testPropertiesPreserveExistingOptionValue()` expects, and the `parse(Options, Properties, NonOptionAction, String...)` Javadoc now says so. The three new tests in `DefaultParserTest` fail on master and pass with the change.\n\n\ud83e\udd16 Generated with Claude Code",
+      "packetSha256": "aa7966234d54b48bdd7e38259bddb8d4b572152513b9ea18fa257f75d9e3ef0b"
+    },
+    {
+      "url": "https://github.com/HdrHistogram/HdrHistogram/pull/145",
+      "landingFromMergedPublicMetadata": true,
+      "parentFromOriginalCommitHeader": true,
+      "pins": {
+        "parent": "89b0d5981bafb6b4b4ac624473a1771405d4da20",
+        "fix": "1b51671cf06062671af931f98a8af2a53d335a70"
+      },
+      "newBuilds": 0,
+      "stage": "original intact build cache",
+      "sides": {
+        "old": {
+          "buildJdkSpec": "1.8",
+          "upstreamSubjectSha256": "c86a8582057336385e2760439e47c7265ef8bc274792f2f2e1962f9cbd70662f",
+          "buildDigestRecordSha256": "fc331781d9f72a1edd7299e853aa8c26d7836e530c2db7a9d089e04a220699ce",
+          "upstreamClasspathExportSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "orderedClasspathSha256": [
+            "c86a8582057336385e2760439e47c7265ef8bc274792f2f2e1962f9cbd70662f"
+          ]
+        },
+        "new": {
+          "buildJdkSpec": "1.8",
+          "upstreamSubjectSha256": "c1ae2d8c5dbd117f37228762f4cefda831a6047d27f38fccce95639d7c35737a",
+          "buildDigestRecordSha256": "91f468712218be1a5cf71253e821302ce8de9696e40450ad87011e395f7d6029",
+          "upstreamClasspathExportSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "orderedClasspathSha256": [
+            "c1ae2d8c5dbd117f37228762f4cefda831a6047d27f38fccce95639d7c35737a"
+          ]
+        }
+      },
+      "view": {
+        "changedFiles": 2,
+        "productionSources": 1,
+        "testFilesVisible": 0,
+        "productionListingsWithheld": 0,
+        "testFilesWithheld": 0,
+        "testSourcesOutsideSelection": 0
+      },
+      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "service": null,
+      "publicDescription": "Fix #144",
+      "packetSha256": "37a41f4e9b10f8bac768ce204d64e35d6d3f320e5b070374789e248e4c093260"
+    },
+    {
+      "url": "https://github.com/ThreeTen/threeten-extra/pull/463",
+      "landingFromMergedPublicMetadata": true,
+      "parentFromOriginalCommitHeader": true,
+      "pins": {
+        "parent": "ded297257577f8dba1aa06f4ddd879a9b2d0d486",
+        "fix": "c5f44114d357c1dc25d0e6f00dec5a126cae5cc6"
+      },
+      "newBuilds": 0,
+      "stage": "original intact build cache",
+      "sides": {
+        "old": {
+          "buildJdkSpec": "17",
+          "upstreamSubjectSha256": "9be421dba6b1207cb0fae72f5848eacf5bc43ae72b1badd5e54fcaf651b10164",
+          "buildDigestRecordSha256": "55f208e03813f872086abdf31cb2cbac5714c1274a8a22090e2d8c033473cbbe",
+          "upstreamClasspathExportSha256": "a1b00a268743f0f8098f3eb4c606896ef15ad32540ec344f8a0ec33eba6c5270",
+          "orderedClasspathSha256": [
+            "9be421dba6b1207cb0fae72f5848eacf5bc43ae72b1badd5e54fcaf651b10164",
+            "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66",
+            "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373"
+          ]
+        },
+        "new": {
+          "buildJdkSpec": "17",
+          "upstreamSubjectSha256": "bbcc2df5cca863f2542a9dea5d4221772e9838f3430d28d201ca2a2773f93bf2",
+          "buildDigestRecordSha256": "e8e1da32fad3c6eeb8d1d0cefd5c2c5bac68bdd83e16345435d226c0f1b1a4d3",
+          "upstreamClasspathExportSha256": "a1b00a268743f0f8098f3eb4c606896ef15ad32540ec344f8a0ec33eba6c5270",
+          "orderedClasspathSha256": [
+            "bbcc2df5cca863f2542a9dea5d4221772e9838f3430d28d201ca2a2773f93bf2",
+            "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66",
+            "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373"
+          ]
+        }
+      },
+      "view": {
+        "changedFiles": 8,
+        "productionSources": 5,
+        "testFilesVisible": 0,
+        "productionListingsWithheld": 0,
+        "testFilesWithheld": 0,
+        "testSourcesOutsideSelection": 0
+      },
+      "jdkReleaseSha256": "9568390645661374febde48f3c7a019f21cb116d6e4c627de29c119aa7bd0efc",
+      "service": null,
+      "publicDescription": "* Apply and adjust design principles.\n* Adjust behaviour of with(DAY_OF_MONTH, int).\n* Adding months or years to BritishCutover now resolves a day in the cutover gap (3 to 13 September 1752) back to the previous valid day (2 September 1752), rather than forward.\n* Fix  prolepticYear(...) for large values.\n* Add tests.\n\n## Summary by CodeRabbit\n\n* **Bug Fixes**\n  * Corrected day-of-month adjustments and date arithmetic in the Julian and British cutover calendars, including dates around the September 1752 calendar gap.\n  * Fixed period calculations across the British cutover and improved handling of year-of-era values that exceed supported limits.\n* **Documentation**\n  * Clarified how calendar dates are validated and adjusted when a requested day is missing.",
+      "packetSha256": "31aa534296a56aace34adf872ae6a694fa270f6b2652f884f211754b430a2c22"
+    },
+    {
+      "url": "https://github.com/Esri/geometry-api-java/pull/329",
+      "landingFromMergedPublicMetadata": true,
+      "parentFromOriginalCommitHeader": true,
+      "pins": {
+        "parent": "0318320724ef2b94d4d11e056cd18c04eeb23661",
+        "fix": "1ac0c090047076329cb8c3906286086f313ac9de"
+      },
+      "newBuilds": 0,
+      "stage": "original intact build cache",
+      "sides": {
+        "old": {
+          "buildJdkSpec": "1.8",
+          "upstreamSubjectSha256": "fc8cc29ab53c691a7188ccf142b03f83669ab0194aa2bfedb68374c02c08e774",
+          "buildDigestRecordSha256": "37dab52337f9e4191489edf8de2500ec6a1bc92000c1b630143b3528772fab4b",
+          "upstreamClasspathExportSha256": "e758102ebf89c4bab0ca881fe2ebb8751b96c0ca6c4b47250b61d3bcb0244bab",
+          "orderedClasspathSha256": [
+            "fc8cc29ab53c691a7188ccf142b03f83669ab0194aa2bfedb68374c02c08e774",
+            "fab8746aedd6427788ee390ea04d438ec141bff7eb3476f8bdd5d9110fb2718a"
+          ]
+        },
+        "new": {
+          "buildJdkSpec": "1.8",
+          "upstreamSubjectSha256": "bf4180c492babbb86fbe28cf53a00ee1df0251c4117480885ff0a30ac2dd48fa",
+          "buildDigestRecordSha256": "b4000a51463c16259b45abd18a8ccc8b4be4ef4dd2020c1e5a59b2a0221a6c35",
+          "upstreamClasspathExportSha256": "e758102ebf89c4bab0ca881fe2ebb8751b96c0ca6c4b47250b61d3bcb0244bab",
+          "orderedClasspathSha256": [
+            "bf4180c492babbb86fbe28cf53a00ee1df0251c4117480885ff0a30ac2dd48fa",
+            "fab8746aedd6427788ee390ea04d438ec141bff7eb3476f8bdd5d9110fb2718a"
+          ]
+        }
+      },
+      "view": {
+        "changedFiles": 2,
+        "productionSources": 1,
+        "testFilesVisible": 0,
+        "productionListingsWithheld": 0,
+        "testFilesWithheld": 0,
+        "testSourcesOutsideSelection": 0
+      },
+      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "service": null,
+      "publicDescription": "A fix for\n\nFixes closed-polyline difference restoration when the subtractor shares an endpoint. The restoration logic now selects a valid start edge from the retained geometry and resets the saved edge state before each operation, preventing an internal error.",
+      "packetSha256": "c02c6e8d8522b4a90506ae8f68c7b53602ef2fec021629963b478a4660e043a0"
+    },
+    {
+      "url": "https://github.com/spring-projects/spring-framework/pull/37322",
+      "landingFromMergedPublicMetadata": true,
+      "parentFromOriginalCommitHeader": true,
+      "pins": {
+        "parent": "eb9928f993fc650ba92a833ecfd28194c28afd3e",
+        "fix": "f96403da2a821f9b8281161847e32a1c4e35e470"
+      },
+      "newBuilds": 0,
+      "stage": "original intact build cache",
+      "sides": {
+        "old": {
+          "buildJdkSpec": "25",
+          "upstreamSubjectSha256": "cf8f597b258ae68e0e898c44df0f2095edbd15e497c674f3f92aa4c220f7adb4",
+          "buildDigestRecordSha256": "686049da4925f69312e6b1c60fc3484a5cb1795d9fc44739e42a810f71478532",
+          "upstreamClasspathExportSha256": "6ef9c67042619cfdf5defd44cccac415b47c5a82646cde4cf9e800ee168ca732",
+          "orderedClasspathSha256": [
+            "cf8f597b258ae68e0e898c44df0f2095edbd15e497c674f3f92aa4c220f7adb4",
+            "b5413dd4d2490f3e21d73fbcb1c2113ad1c1bde563d95a135e0a48245f8e4406",
+            "367ff7947943f73452c34399bac30500f03c7d7e2309f1d50af445d6d37c544c",
+            "0ce2d2d008306c61bf665d40010b94e69ac134e5c50ceecd0fa1da8afe7970d7",
+            "52037fa238e705c81e6581774cf475024e7ff2e1624a3dc98553045d34d5a7e8",
+            "79544fbebdd8c00b4d4fcc5f774f7e2cd82bbbbce1bb474c33616f8811b60bb8",
+            "a2b1e4efba11de5116b4937783bfeda2574261c11947a03da65dc751d69f9905",
+            "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd",
+            "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3",
+            "50c0a7c760c13ae6c042acf182b28f0047413db95b4636fb8879bcffab5ba875",
+            "ede804cb04e871d7c52d2414e952ab939f9ef243abb7bd0ce7dbeb6e1e28bd0b",
+            "b7243184b1df01b946eaf89eb904ed724d1f7493eb7467e85f4c6ffb4a09142b",
+            "db052f92508e966ee8b0c5c9eca84cb11cbf0b0d78e608dc89340d4bb6c07314",
+            "29b70e427cc1c40cdc376283adbb0cc62853073797bb5fe5761f81fe73d57ce0",
+            "5fab2bb4384ac06b762638c8fa2740c944b8d080e4796c0c6c2af8b90dd4e5ad",
+            "44380abf37d245ce5c0f294f43512d1c39a59642bfa463922c74e96877cf49f8",
+            "6558a3d233da56a20934b32159f9db5f86ed5816ef098f78a2c223dc6abb79dd",
+            "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+            "74f9e4d51ef30c141de8a2409879282e572eef98665e033e8922c2fbee16862d",
+            "cd1ad64a94650a2ed3988a4ab48c9a7fad40c4986a81e328194dd757b5170273",
+            "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+            "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
+            "27d4be683a45f6c15940167277ce39bb7e26b9f6dc0bc05efbcf813cac5d2b8f",
+            "8776e2ebc46072c9a47ea59d98298c4273bd9f16a7b26b5dfa4744535aa26c62"
+          ]
+        },
+        "new": {
+          "buildJdkSpec": "25",
+          "upstreamSubjectSha256": "1dec37927a52af49674ff1c5d96322ae0efbc3c779371598bf7c821bd22ea96b",
+          "buildDigestRecordSha256": "e92d7e623c2a6f355420bbc988d836ebac82b0dcd03466f7d904f2f1693ca330",
+          "upstreamClasspathExportSha256": "acb1493c7349978828b983ae2318224a83468d8247c92cf0b690fec9b338cce2",
+          "orderedClasspathSha256": [
+            "1dec37927a52af49674ff1c5d96322ae0efbc3c779371598bf7c821bd22ea96b",
+            "b5413dd4d2490f3e21d73fbcb1c2113ad1c1bde563d95a135e0a48245f8e4406",
+            "367ff7947943f73452c34399bac30500f03c7d7e2309f1d50af445d6d37c544c",
+            "0ce2d2d008306c61bf665d40010b94e69ac134e5c50ceecd0fa1da8afe7970d7",
+            "52037fa238e705c81e6581774cf475024e7ff2e1624a3dc98553045d34d5a7e8",
+            "79544fbebdd8c00b4d4fcc5f774f7e2cd82bbbbce1bb474c33616f8811b60bb8",
+            "a2b1e4efba11de5116b4937783bfeda2574261c11947a03da65dc751d69f9905",
+            "44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd",
+            "066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3",
+            "50c0a7c760c13ae6c042acf182b28f0047413db95b4636fb8879bcffab5ba875",
+            "ede804cb04e871d7c52d2414e952ab939f9ef243abb7bd0ce7dbeb6e1e28bd0b",
+            "b7243184b1df01b946eaf89eb904ed724d1f7493eb7467e85f4c6ffb4a09142b",
+            "db052f92508e966ee8b0c5c9eca84cb11cbf0b0d78e608dc89340d4bb6c07314",
+            "29b70e427cc1c40cdc376283adbb0cc62853073797bb5fe5761f81fe73d57ce0",
+            "5fab2bb4384ac06b762638c8fa2740c944b8d080e4796c0c6c2af8b90dd4e5ad",
+            "44380abf37d245ce5c0f294f43512d1c39a59642bfa463922c74e96877cf49f8",
+            "6558a3d233da56a20934b32159f9db5f86ed5816ef098f78a2c223dc6abb79dd",
+            "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+            "74f9e4d51ef30c141de8a2409879282e572eef98665e033e8922c2fbee16862d",
+            "cd1ad64a94650a2ed3988a4ab48c9a7fad40c4986a81e328194dd757b5170273",
+            "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+            "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
+            "27d4be683a45f6c15940167277ce39bb7e26b9f6dc0bc05efbcf813cac5d2b8f",
+            "8776e2ebc46072c9a47ea59d98298c4273bd9f16a7b26b5dfa4744535aa26c62"
+          ]
+        }
+      },
+      "view": {
+        "changedFiles": 2,
+        "productionSources": 1,
+        "testFilesVisible": 0,
+        "productionListingsWithheld": 0,
+        "testFilesWithheld": 0,
+        "testSourcesOutsideSelection": 0
+      },
+      "jdkReleaseSha256": "9568390645661374febde48f3c7a019f21cb116d6e4c627de29c119aa7bd0efc",
+      "service": {
+        "kind": "mysql",
+        "image": "mysql@sha256:0255b469f0135a0236d672d60e3154ae2f4538b146744966d96440318cc822c6",
+        "driver": "com.mysql:mysql-connector-j:9.1.0",
+        "state": "requires a newly provisioned isolated service and independent connection"
+      },
+      "publicDescription": "# Description\nIn `MySQLMaxValueIncrementer`, if commit fails with `useNewConnection` set to `true` and `cacheSize` greater than 1, an ID range that was not reserved in the database can remain in the cache.\n\nEven if the sequence increment is rolled back, subsequent calls can still use the cached range. If the database allocates the same range again, duplicate IDs can result.\n\n## Normal ID allocation\n\nThe incrementer obtains IDs by increasing a value in a sequence table. With `cacheSize` greater than 1, it reserves a range at once and serves the remaining IDs without querying the database.\n\nFor example, with a sequence value of `98` and `cacheSize` set to 2, it updates the sequence to `100`. Once that update is committed, the range `99\u2013100` is reserved.\n\nThe first ID request returns `99`, and the next returns cached ID `100`. Since the database now stores `100`, the next range obtained from the database starts at `101`.\n\n## Failure flow\n\nWhen replenishing the cache, the current implementation performs these steps:\n\n1. Increase the sequence value in the database.\n2. Read the increased sequence value with `SELECT LAST_INSERT_ID()` and assign it to `maxId`.\n3. Set `nextId` to `maxId - getCacheSize() + 1`.\n4. Commit the sequence update.\n5. Return `nextId` to the caller.\n\nThe problem: **the cache fields are changed before commit succeeds.**\n\nIf commit throws an exception, ID generation fails without returning an ID, but the `nextId` and `maxId` values assigned before commit remain unchanged.\n\nThe next ID request only checks whether `maxId == nextId`. If the values are equal, it increases the sequence value in the database to obtain more IDs.\n\nIf the values differ, it increments `nextId` and returns it without accessing the database.\n\nFor the example above, suppose the connection is terminated before commit and the sequence increment is rolled back. The stored sequence value returns to `98`, while the fields remain `nextId=99` and `maxId=100`.\n\nThe INSERT using ID `100` from request 2 succeeds. The duplicate-key error occurs when request 4 returns `100` again and attempts another INSERT.\n\nA commit exception does not always mean that the sequence increment was rolled back. The example above describes a case where it was rolled back, as verified in the MySQL test below.\n\nThis issue does not occur with the default `cacheSize` of 1. Since `nextId` equals `maxId` when commit fails, the next ID request obtains IDs from the database again.\n\n## Fix\n\nSet `nextId` to `maxId` in the existing exception handler for commit and auto-commit restoration:",
+      "packetSha256": "b6836153b943466fd87fd4299f061e0c82436b4fb245ae1bfdc1c6f8ca87fa2b"
+    }
+  ]
+}

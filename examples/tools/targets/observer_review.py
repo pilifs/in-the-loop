@@ -18,6 +18,7 @@ JOIN = r"(?:\s+(?:and then|and|then)\s+|\s*,\s*(?:(?:and then|and|then)\s+)?)"
 CONVERSIONS = re.compile(rf"(?P<texts>{LITERAL}(?:{JOIN}{LITERAL})*)\s+(?:as|with|to)\s+"
                          rf"(?P<types>{NUMBER}(?:{JOIN}{NUMBER})*)")
 MISSING_FORMAT = "which NumberFormat should the numbered caller pass (explicit null or pattern, locale and parsing mode)?"
+FORMAT_READ = ", then read `isParseBigDecimal()` from that formatter"
 
 
 def numeric_history(history, defaults=None):
@@ -42,6 +43,11 @@ def numeric_history(history, defaults=None):
             if "numberFormat" not in defaults:
                 raise observer_recipes.Unsupported(MISSING_FORMAT)
             rest = rest[len(marker):]
+            if rest == FORMAT_READ:
+                if defaults["numberFormat"] is None:
+                    raise observer_recipes.Unsupported("which configured DecimalFormat should receive the post-return getter?")
+                conversions[-1]["readAfterReturn"] = "isParseBigDecimal"
+                rest = ""
             if rest:
                 raise observer_recipes.Unsupported("unresolved operation after the public conversion: " + rest.lstrip(", ")[:160])
         if not rest:
@@ -118,7 +124,11 @@ def prediction(family, expected):
     result = []
     if family == "number":
         for word in raw.split():
-            if "=" in word:
+            if word in ("parseBigDecimal=true", "parseBigDecimal=false"):
+                if not result or result[-1][0] != "return" or len(result[-1]) != 3:
+                    raise ValueError("the formatter predicate must follow one numeric return")
+                result[-1].append(word.endswith("=true"))
+            elif "=" in word:
                 kind, value = word.split("=",1)
                 if kind not in observer_recipes.NUMBERS:
                     raise ValueError("unknown registered numeric type")
@@ -182,7 +192,12 @@ def prepare(folder, options, work):
         questions.append({"id":q["id"],"history":q["history"],"sides":list(sides),"inputs":[item],
                           "cohort":"control" if q["role"]=="Control" else "registered"})
         expected[q["id"]] = {s:[prediction(family,value)] for s,value in sides.items()}
-    fields = ["call.outcome","return.type","return.value"] if family=="number" else ["result.defined","fallback.value","fallback.calls"]
+    if family == "number":
+        fields = list(observer_recipes.NUMBER_FIELDS)
+        if any("readAfterReturn" in conv for q in questions for item in q["inputs"] for conv in item["conversions"]):
+            fields.append(observer_recipes.FORMAT_FIELD)
+    else:
+        fields = ["result.defined","fallback.value","fallback.calls"]
     paths.update(registration=work/"registration.json",predictions=work/"predictions.json")
     write(paths["registration"],{"schema":"reviewed-public-observations/v1","change":spec["questions"][0]["id"].rsplit(".",1)[0],
           "entry":owner+"#"+method+desc,"changed":changed,"fields":fields,"questions":questions,

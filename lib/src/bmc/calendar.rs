@@ -10,6 +10,8 @@ const ZONE: &str = "sun/util/calendar/ZoneInfo";
 const DATE: &str = "java/util/Date";
 const MARK: &str = "<observed UTC calendar>";
 const EXPLICIT_ZONE: &str = "<JDK.tzdb.UTC>";
+const FIXED_OFFSET: &str = "<observed fixed zone offset>";
+const DEFAULT_OFFSET: &str = "<installed process zone offset>";
 const FIELDS: [&str; 7] = ["<year>", "<month>", "<day>", "<hour>", "<minute>", "<second>", "<millisecond>"];
 const ASSUMPTION: &str = "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup";
 
@@ -29,6 +31,62 @@ fn utc_millis([year, month_zero, day, hour, minute, second, millis]: [i64; 7]) -
 }
 
 impl Engine<'_> {
+    fn new_fixed_zone(&mut self, path: &mut Path, offset: Val) -> usize {
+        let zone = self.alloc(path, ZONE);
+        path.objects[zone].fields.insert(FIXED_OFFSET.into(), offset);
+        zone
+    }
+
+    /// A real default read clones the installed zone. setDefault clones its input
+    /// before installation, so later public mutation of either object stays local.
+    pub(super) fn fixed_zone_factory(&mut self, path: &mut Path, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
+        if self.gap_mode != GapMode::Strict || member.owner != "java/util/TimeZone" { return None }
+        let fact = self.observed.iter().find_map(|(name, record)| {
+            (path.classes.get(name) == Some(&ClassState::Done)).then_some(record.on.fixed_zone.as_ref()).flatten()
+        })?.clone();
+        let key = (member.owner.clone(), DEFAULT_OFFSET.to_owned());
+        let mut initial = false;
+        match (member.name.as_str(), member.descriptor.as_str(), args) {
+            ("getTimeZone", "(Ljava/lang/String;)Ljava/util/TimeZone;", [Val::R(Some(id))]) => {
+                let name = String::from_utf16(&self.constant_units(path,*id)?).ok()?;
+                let offset = crate::observed::zone::offset(&name)?;
+                let zone = self.new_fixed_zone(path, Val::I(self.b.constant(i64::from(offset),32)));
+                self.push(path, Val::R(Some(zone)));
+            }
+            ("getDefault", "()Ljava/util/TimeZone;", []) => {
+                if let Err(stop) = self.reads(path, || "reads the mutable process time zone".into()) { return Some(Err(stop)); }
+                let offset = path.statics.get(&key).cloned().unwrap_or_else(|| {
+                    initial = true;
+                    Val::I(self.b.constant(i64::from(fact.millis),32))
+                });
+                let zone = self.new_fixed_zone(path,offset);
+                self.push(path, Val::R(Some(zone)));
+            }
+            ("setDefault", "(Ljava/util/TimeZone;)V", [Val::R(Some(zone))]) => {
+                let Some(offset) = path.objects[*zone].fields.get(FIXED_OFFSET).cloned() else {
+                    return Some(unsupported("the new process default needs the original fixed-zone object and clone behavior"));
+                };
+                if let Err(stop) = self.keeps(path,None,"sets the default time zone") { return Some(Err(stop)); }
+                path.statics.insert(key,offset);
+            }
+            ("setDefault", "(Ljava/util/TimeZone;)V", _) => return Some(unsupported("resetting or selecting an unknown default zone needs another original JVM resolution")),
+            _ => return None,
+        }
+        let (kind, text) = if initial {
+            ("process-zone", format!("The first default zone read used the original fixed offset of {} milliseconds", fact.millis))
+        } else {
+            ("fixed-zone-operations", "Fixed-offset factories and replacement of the mutable process default use the qualified original JDK's clone behavior".to_string())
+        };
+        self.assumption_ids.insert(text.clone(),format!("{kind}:{}",fact.id));
+        self.assumed.insert(text);
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    pub(super) fn fixed_zone_object(path: &Path, object: usize) -> bool {
+        path.objects[object].fields.contains_key(FIXED_OFFSET)
+    }
+
     pub(super) fn utc_calendar_factory(&mut self, path: &mut Path, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
         let class = match (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str(), args) {
             ("java/util/TimeZone", "getTimeZone", "(Ljava/lang/String;)Ljava/util/TimeZone;", [Val::R(Some(id))])
@@ -40,7 +98,8 @@ impl Engine<'_> {
             _ => return None,
         };
         if self.gap_mode != GapMode::Strict { return None; }
-        let observed = !locale::has_override(path) && self.observed.iter().any(|(c, o)|
+        let observed = !locale::has_override(path) && !path.statics.contains_key(&("java/util/TimeZone".into(),DEFAULT_OFFSET.into()))
+            && self.observed.iter().any(|(c, o)|
             o.on.utc_gregorian && matches!(o.on.zone.as_str(), "UTC" | "Etc/UTC") && path.classes.get(c) == Some(&ClassState::Done));
         if !observed {
             let [id] = args else { return None };
@@ -69,6 +128,22 @@ impl Engine<'_> {
 
     pub(super) fn utc_calendar_method(&mut self, path: &mut Path, o: usize, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
         let object = &path.objects[o];
+        if let Some(offset) = object.fields.get(FIXED_OFFSET).cloned() {
+            match (member.name.as_str(),member.descriptor.as_str(),args) {
+                ("getRawOffset","()I",[]) => {
+                    if let Err(stop) = self.reads_field(path,o,ZONE,"rawOffset","I") { return Some(Err(stop)); }
+                    self.push(path,offset);
+                }
+                ("setRawOffset","(I)V",[new @ Val::I(_)]) => {
+                    if let Err(stop) = self.keeps(path,Some(o),"sets the raw offset of a returned time zone") { return Some(Err(stop)); }
+                    path.objects[o].fields.insert(FIXED_OFFSET.into(),new.clone());
+                }
+                ("useDaylightTime","()Z",[]) | ("getDSTSavings","()I",[]) => self.push(path,Val::I(self.b.constant(0,32))),
+                _ => return Some(unsupported(format!("the qualified fixed-offset zone does not establish {}{}",member.name,member.descriptor))),
+            }
+            self.advance(path);
+            return Some(Ok(None));
+        }
         if object.fields.contains_key(EXPLICIT_ZONE) && matches!((member.name.as_str(), member.descriptor.as_str()),
             ("getID", "()Ljava/lang/String;") | ("setID", "(Ljava/lang/String;)V") | ("getRawOffset" | "getDSTSavings", "()I")
             | ("setRawOffset", "(I)V") | ("useDaylightTime", "()Z")) {

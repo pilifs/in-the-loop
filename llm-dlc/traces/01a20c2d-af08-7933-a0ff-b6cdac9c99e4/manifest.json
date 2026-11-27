@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize q",
   "client": {
@@ -12,29 +12,31 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T03:08:09.433Z",
-  "duration_seconds": 248239,
+  "ended": "2026-11-27T06:53:03.317Z",
+  "duration_seconds": 261733,
   "stats": {
-    "turns": 40,
-    "api_calls": 6578,
-    "tool_calls": 16203,
-    "tool_errors": 351,
-    "compactions": 28,
-    "peak_context_tokens": 550925,
+    "turns": 41,
+    "api_calls": 7113,
+    "tool_calls": 17314,
+    "tool_errors": 370,
+    "compactions": 29,
+    "peak_context_tokens": 551391,
     "usage": {
-      "input_tokens": 8260814,
-      "output_tokens": 3811657,
-      "cache_read_input_tokens": 1791919488,
+      "input_tokens": 9239916,
+      "output_tokens": 4147811,
+      "cache_read_input_tokens": 1949336320,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8875,
-    "exec": 6294,
-    "apply_patch": 817,
-    "wait": 113,
-    "sleep": 97,
-    "send_message_to_user_async": 6,
+    "Bash": 9427,
+    "exec": 6732,
+    "apply_patch": 893,
+    "wait": 119,
+    "sleep": 98,
+    "send_message": 35,
+    "send_message_to_user_async": 7,
+    "spawn_agent": 2,
     "request_user_input_async": 1
   },
   "files_touched": [
@@ -165,15 +167,21 @@
     "examples/schema/target-claim.schema.json",
     "examples/tools/build.py",
     "examples/tools/scaffold_example.py",
+    "examples/tools/targets/approved_test_trace.py",
+    "examples/tools/targets/blind_measure.py",
+    "examples/tools/targets/blind_prediction.py",
     "examples/tools/targets/change_evidence.py",
     "examples/tools/targets/change_helpers.py",
     "examples/tools/targets/change_inventory.py",
     "examples/tools/targets/change_plan.py",
     "examples/tools/targets/deployment_graph.py",
     "examples/tools/targets/entry_discovery.py",
+    "examples/tools/targets/java/PublicHistoryAgent.cpp",
     "examples/tools/targets/java/ResourceObserver.java.template",
+    "examples/tools/targets/java/RuntimeHelperBytes.java",
     "examples/tools/targets/java/UpgradeClassLookup.java",
     "examples/tools/targets/java/UpgradeTrace.java",
+    "examples/tools/targets/observer_actions.py",
     "examples/tools/targets/observer_fields.py",
     "examples/tools/targets/observer_generation.py",
     "examples/tools/targets/observer_histories.py",
@@ -181,11 +189,14 @@
     "examples/tools/targets/observer_recipes.py",
     "examples/tools/targets/observer_rescore.py",
     "examples/tools/targets/observer_review.py",
+    "examples/tools/targets/observer_scalar.py",
     "examples/tools/targets/observer_state.py",
     "examples/tools/targets/observer_structures.py",
     "examples/tools/targets/property_reads.py",
     "examples/tools/targets/public_comparison.py",
+    "examples/tools/targets/public_histories.py",
     "examples/tools/targets/public_mysql.py",
+    "examples/tools/targets/public_observation.py",
     "examples/tools/targets/public_postgres.py",
     "examples/tools/targets/qualification.py",
     "examples/tools/targets/recipes.py",
@@ -324,6 +335,7 @@
     "lib/benchmark/test_run.py",
     "lib/src/bmc/byte_views.rs",
     "lib/src/bmc/bytes.rs",
+    "lib/src/bmc/calendar.rs",
     "lib/src/bmc/generic_interfaces.rs",
     "lib/src/bmc/jar_resources.rs",
     "lib/src/bmc/mod.rs",
@@ -347,12 +359,14 @@
     "lib/src/observed/member.rs",
     "lib/src/observed/receipt.rs",
     "lib/src/observed/table.rs",
+    "lib/src/observed/zone.rs",
     "lib/src/pairing.rs",
     "lib/src/pairing/replay.rs",
     "lib/src/proof_cache.rs",
     "lib/src/property.rs",
     "lib/src/relocate.rs",
     "lib/src/reuse.rs",
+    "lib/src/statement.rs",
     "lib/src/zip.rs",
     "lib/tests/claims.rs",
     "lib/tests/dependencies.rs",
@@ -360,6 +374,7 @@
     "lib/tests/fixtures/claims/claims/Tokens.java",
     "lib/tests/fixtures/observed-countermodels/app/oc/MemberStartup.java",
     "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md",
+    "llm-dlc/loops/in-the-loop-blind-caller-and-pr-verification-brief-results.md",
     "llm-dlc/loops/in-the-loop-generated-observers-and-callers-brief-results.md",
     "llm-dlc/loops/in-the-loop-jvm-startup-facts-brief-results.md",
     "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md",
@@ -380,6 +395,22 @@
     "verification/beyond-jbmc/resource-postconditions/RESULTS.md",
     "verification/beyond-jbmc/scaffold-first/RESULTS.md",
     "verification/beyond-jbmc/successor/RESULTS.md",
+    "verification/blind-caller/collector.py",
+    "verification/blind-caller/development.py",
+    "verification/blind-caller/formatter.py",
+    "verification/blind-caller/historical_adverse.py",
+    "verification/blind-caller/historical_pages.py",
+    "verification/blind-caller/nominate_histories.py",
+    "verification/blind-caller/parquet_trace.py",
+    "verification/blind-caller/producer_policy.py",
+    "verification/blind-caller/product_controls.py",
+    "verification/blind-caller/spring/SubscriptionHistory.java",
+    "verification/blind-caller/strict_helper.py",
+    "verification/blind-caller/subscriptions.py",
+    "verification/blind-caller/timezone/ProcessZone.java",
+    "verification/blind-caller/timezones.py",
+    "verification/blind-caller/trace-policy.json",
+    "verification/blind-caller/trace_control.py",
     "verification/findings.md",
     "verification/generated-observers/campaign.py",
     "verification/generated-observers/falsifiers.py",
@@ -988,24 +1019,38 @@
     {
       "index": 28,
       "started": "2026-11-27T03:04:15.564Z",
-      "ended": "2026-11-27T03:08:09.433Z",
-      "turns": 1,
-      "api_calls": 6,
+      "ended": "2026-11-27T06:06:51.109Z",
+      "turns": 2,
+      "api_calls": 367,
       "usage": {
-        "input_tokens": 38553,
-        "output_tokens": 8754,
-        "cache_read_input_tokens": 242048,
+        "input_tokens": 868488,
+        "output_tokens": 270117,
+        "cache_read_input_tokens": 130787200,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 57739
+      "peak_context_tokens": 551391
+    },
+    {
+      "index": 29,
+      "started": "2026-11-27T06:06:51.119Z",
+      "ended": "2026-11-27T06:53:03.317Z",
+      "turns": 0,
+      "api_calls": 174,
+      "usage": {
+        "input_tokens": 149167,
+        "output_tokens": 74791,
+        "cache_read_input_tokens": 26871680,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 224150
     }
   ],
   "log": {
-    "sha256": "cfc831204a2ecf8f2f8f127212d343e891c9ea70c6b75b63af7d352b9d92b662",
-    "bytes": 104524654,
-    "lines": 51814,
-    "gzip_bytes": 19047705,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/cfc831204a2ecf8f2f8f127212d343e891c9ea70c6b75b63af7d352b9d92b662.jsonl.gz"
+    "sha256": "42d154c53a14bdc960be7d37ee372fe82d8ae4af8a633ec251d7bfcadd11aff9",
+    "bytes": 112817271,
+    "lines": 55982,
+    "gzip_bytes": 20478538,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/42d154c53a14bdc960be7d37ee372fe82d8ae4af8a633ec251d7bfcadd11aff9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3056,6 +3101,446 @@
       "summary": "Record final JVM first-use qualification on the original deployments",
       "body": "The independent runner proved arity zero from the genuinely cold reflective member and refused the identical public result after prior initialization without consuming a premise. On the four-root Avro fix the checker recovered the registered 220 classes and 1,079 objects and proved the bounds claim. All six original release matrices passed in the same job, including the normal, resumed and empty-cache charset runs.\n\nVerified 21 collector results, SHA-256 digests and ZIP integrity for 18 archives, the nested original matrices, the archived and current producer identities, 29 report links, and the generated scorecard with 44 development rows, 47 frozen transfer rows and 30 post-freeze transfer groups. Both change-selected test groups passed. The earlier four failed attempts and one pre-execution source error are retained with their passing replacements.",
       "log_sha256": "5431e1d07b88185f8821b12c5ede73a2d5baea3f1128c98ac69262755baec366"
+    },
+    {
+      "change_id": "mvvprzszowrxpvyxquuurtktqyqurrup",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record setup for the blind-caller and PR-verification brief (verification pending)",
+      "body": "Mechanical setup for llm-dlc/loops/in-the-loop-blind-caller-and-pr-verification-brief.md. Every deployment file of the 120 numbered examples the brief names (the P/Q/R draw inventory 478-587, N01-N05, the M04/M06/M09 controls, 458, 466) matches its runtime.json digest, with a worktree at each pin; J08, J14, Log4j #1173 and Commons IO #520 match at their readers' paths. The registered observations of 458, 466, 484, J08, J14 and Commons IO were re-run on the original JVMs and equal their receipts. For part B, the setup prepared plain-JVM launches of the original upstream tests: Spring #37193's landed ServerSentEventHttpMessageReaderTests on the kept 202-entry test classpaths (fix 14/14, parent 13/13, fix-on-parent fails ignoreInvalidRetry, on JDKs 25 and 17), and Parquet #3638's parquet-column and parquet-hadoop test trees compiled at both pins over the original 113-entry graphs (landed TestDictionary fails twice on the parent, TestParquetWriter passes on both). Only test dependencies and JUnit console launchers were fetched, from Maven Central with strict checksums and signatures checked in a private keyring; one jar's signing key is unpublished. No claims, examples, adapters or library code were written.\n\nJobs 20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob (replay the P, Q, R, N and M campaign observations at this head and compare with the committed audits) and 20261127-032259-setup-run-parquet-3638-s-upstream-parque (Parquet's full upstream suites on the overlays) are pending.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "xxtputswxnxuzywzotkqloymuopkzzqx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose the OpenJDK fixture path finding for the allow list",
+      "body": "Finding 3c91fa1a (long-token, 114 chars, in three sessions including the blind-caller setup) is the cache path of the OpenJDK ClassPath.java fixture quoted from the classpath-entry-discovery setup record, not a secret. Proposed for a person to approve; checked with masked review output.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "uvvnxvqlooorowyvxktwltpnxnvqxnwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup jobs' results for the blind-caller and PR-verification brief",
+      "body": "Both setup jobs passed. 20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob replayed every P, Q, R, N and M historical observation in fresh JVMs at 5c57e715acb8 and found each audit byte-identical to its committed audit.json. 20261127-032259-setup-run-parquet-3638-s-upstream-parque ran Parquet #3638's whole parquet-column and parquet-hadoop suites (138 classes) on the original 113-entry graphs: fix-on-fix and parent-on-parent fail the same 24 tests, fix-on-parent adds exactly the two landed TestDictionary tests, and the record lists the shared failures and 24 aborts by cause (version skew against 1.18.2, the missing Brotli codec, default heap, no vectored IO in Hadoop 3.3.0).\n\nOne shared failure, TestParquetWriterError#testInSeparateProcess, came from the setup's launch: its child JVM inherited only the console launcher jar as java.class.path. The cache scripts now start the launcher from -cp; a capped probe shows the test passing on the fix graph and only the two landed tests failing on the parent. The record and its Setup Agent Notes are updated, with the results' commits (dc6fd6c8f17f, 2c45066adba0), which this line has not merged.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "ukklqnwxqwwumupszqrusutvolzkxzsz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose two setup-session findings for the allow list",
+      "body": "2780bea6 is the folder part of the OpenJDK fixture cache path already proposed as 3c91fa1a, and ba43dfcb is the 54-character upstream Parquet test method name testFloat16TypeDefinedNanOnlyDoesNotSetHasNonNullValue, which the setup printed from the J08 suite reports. Both were checked in masked review output; both are proposals awaiting a person's approval.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "kkoxrnmwlpmkzwwlzktyxlqkttwxmnlx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "ltvtumqnwryqnorkqszpyvxrvrkylzyv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob: passed: 10 passed step(s) in 4m32s, peak 295.6 MiB (estimated 15m00s, 1.0 GiB) Collected by the watcher of the blind-caller-and-pr-verification-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "lwzrzuwtowvvuvsxkvmzmskmwkvsuvpv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-032259-setup-run-parquet-3638-s-upstream-parque: passed: 3 passed step(s) in 11m19s, peak 3.0 GiB (estimated 45m00s, 4.0 GiB) Collected by the watcher of the blind-caller-and-pr-verification-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "wukwqvuopyyrywsvlmlsvvyxrwlwywul",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the brief preservation-and-unexamined-bytecode",
+      "body": "The brief ~/code/scripts/analysis/in-the-loop-preservation-and-unexamined-bytecode-brief.md is copied unchanged to llm-dlc/loops/in-the-loop-preservation-and-unexamined-bytecode-brief.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "tyyzqrkwvzuwkukxvuvpxzwvzmokmwon",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Exclude R examples 539 and 551 from the blind-caller brief's draw",
+      "body": "The user's decision (relayed by the advisor, 2026-11-27): the queued preservation and unexamined-bytecode brief (entry 27) reserves R examples 539 and 551 for a frozen-pattern transfer with their answer-bearing files unseen, and entry 25's blind draw takes 10 R cases from 538-587, whose diagnostics would expose a drawn case's answers. One sentence added to the Seal-the-inventory step, identical to the edit in the brief's source; the R pool goes from 50 to 48. Made before entry 25's domain run starts, while no loop runs on the brief.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "xmropqznpuwounulrrlpkrqwxkkuonzl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on blind-caller-and-pr-verification-setup",
+      "body": "The watcher's verdicts on the single-agent run blind-caller-and-pr-verification-setup (llm-dlc/decisions/single-blind-caller-and-pr-verification-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "rqomkysuwoyrpqxknlvkwowsqqsvtnxx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run blind-caller-and-pr-verification-setup into the line",
+      "body": "The single-agent run blind-caller-and-pr-verification-setup (session 2e72030d-e2c0-463f-80e4-1ad3a8d1675f) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "vluuquvyxrtzzrqqoquoxmknluzwrlnq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of blind-caller-and-pr-verification into its brief",
+      "body": "The setup run blind-caller-and-pr-verification-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/in-the-loop-blind-caller-and-pr-verification-brief.md and ~/code/scripts/analysis/in-the-loop-blind-caller-and-pr-verification-brief.md, for the domain agent.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "ktunposlnywkwvkosspzknstpztsvvvp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preregister the caller draw and its eligibility crosswalk",
+      "body": "Join all 110 P/Q/R PRs by repository, PR and alternate revisions against prior numbered cases, public behavior development, generator registrations, frozen transfers, shared qualification and numbered handoffs. The 98 eligible cases include 44 R PRs on 30 projects. The two reserved entries use only the URL roster and worktree HEADs. Commit the seed, stratified no-replacement selection and scoring rules before any draw or producer measurement.\n\nRebuilt the identity inventory twice, checked the two reserved rows and the disclosed overlaps, and tested stratum sizes, order independence and ten distinct R repositories on a synthetic roster. The changed-test selector identified no existing tests for the four evaluator files.",
+      "log_sha256": "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae"
+    },
+    {
+      "change_id": "pynsxpnxswkvtxvqpqvlxklvlxmmozko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify a retained argument after public return (verification pending)",
+      "body": "Numbered review and the old-API caller can retain a configured DecimalFormat and read its public flag after a normal numeric return. JDI binds the argument, its calling thread, the return and the actual getter. A separately constructed formatter or an earlier read loses qualification even if its value agrees. Existing return-only registrations keep their shape.\n\nAll 55 change-selected suites passed. The original Spring parent returned BigDecimal 1.5 and the pinned formatter false. The real JDK 17 tracer independently identified argument 2 and the subsequent getter on that object. Job 20261127-040057-qualify-retained-formatter-arguments-on exercises numbered scaffold and resume, two flag settings, both releases and eight planted histories.",
+      "log_sha256": "632b7580c6ce508105cbfd27a55a8dd29d2850e801aeff5c3d7e05c58a6d043e"
+    },
+    {
+      "change_id": "qumutvxoyzxymqxyllwlysyvvqnnouxn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Isolate caller predictions and measurements from evaluator data",
+      "body": "Build allow-listed views from original ordered JARs, pinned source and sanitized PR prose. Fresh Landlock and seccomp processes deny evaluator files and sockets in both phases. Prediction additionally denies subprocesses and new executable mappings. Test-assisted views identify the original test sources admitted by the selection. Capture historical predicates by question, deployment and side with baseline contradictions and unpredicted sides preserved.\n\nVerified both sentinel and socket denials with an original JDK 17 compiler and JVM measuring a synthetic public result. Checked removed test listings, a denied executable mapping, source export on a disclosed development example, and historical reference shape on every eligible row. No case from the evaluation population was drawn.",
+      "log_sha256": "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b"
+    },
+    {
+      "change_id": "lztnmumzurnypypmzrwlwzppznyprxkt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify object and action histories on original JVMs (verification pending)",
+      "body": "Bind the actual public actions of a generated history to JVM objects, order, defining loader, bytes and member. Reconstruct copied message samples, terminal signals and error causes, and sorted hits after reopening the same index from original method returns. Register distinct equal-value, missing action and incomplete projection challenges on both releases.\n\nAll 55 change-selected suites passed. Fresh unchanged original calls reproduced Lucene B/20 and A/30, the Spring response exception with its number-format cause, and the three aliasing date samples. All three had independent debugger evidence. Jobs 20261127-041323-qualify-reopened-lucene-blocks-and-order, 20261127-041323-qualify-spring-subscription-and-terminal, and 20261127-041323-qualify-retained-spring-message-and-copy repeat all nine disclosed questions and twelve planted histories.",
+      "log_sha256": "d9b4a7fc018dc1d9fefe33374a12214869a503cdb5b2896f99dcac33c1f0e11a"
+    },
+    {
+      "change_id": "qkyyvzoylqxsytzpwpylxuyyqsyolxsx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Enforce per-arm prediction seals and private JDI loopback",
+      "body": "Require a single committed reference set for the draw, twenty committed cold predictions before diagnostic assistance, and twenty committed predictions for an arm before measuring. Bind the re-exported view and the prediction bytes in each measurement. Grant the original checker only to measurement. Its isolated network permits the original JDI launch and child JVM on private loopback.\n\nA synthetic JDK 17 caller compiled and produced exactly the same public output in a plain JVM and a JDI child. The evaluator sentinel was inaccessible in both phases; the independent namespace check confirmed the only interface was loopback and an external route was unavailable. Synthetic incomplete-arm and displaced-primary controls were refused.",
+      "log_sha256": "904be2b72c64cfdeeccbe56611a3ab35f93bba3b57305b792ed6f4d0e522210e"
+    },
+    {
+      "change_id": "qppoqpkpyknyxowyswukuvqklomskrnr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Score frozen caller predictions against typed original observations",
+      "body": "Require an independent semantic review of each ranked route, ordered action, input, field and side. Check the old compilation and source, ordered original providers, checker and JVM class bytes, repeated public projections and finite disposition on every deployment. Keep partial measurements and retain every stop. A possible security case can preserve its denominator and role counts without publishing operational inputs.\n\nThe disclosed synthetic scalar qualified on four inputs and two sides. Eight separately altered claims were rejected, including a wrong class, different archive, missing return, swapped-side values with equal totals, wrong field type, missing action and changed conclusion. Checked the committed time-limit and phase barriers and compiled the evaluator modules.",
+      "log_sha256": "7861549c2ae219ac89cbb781d80f047a5ced16e731c1aca354cc16476c86da0e"
+    },
+    {
+      "change_id": "znyxyrnvqptunnmtnsuwmkqqvvoopkqp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Resolve five public URLs from original build provenance",
+      "body": "The URL broker pins each merged PR from public metadata and the first parent in its original Git commit header. It constructs ten ordered deployments from Maven and Gradle production outputs, verified subject jars and the stated JDBC deployment. The separate evaluator compares every role, side scope, history, public observation and finite disposition only after a committed producer seal. Cache restoration and actual deployment qualification have separate counts.\n\nExported the five fresh packets twice and reproduced every packet, original subject and ordered classpath digest. Confirmed no numbered registrations or tests enter those cold packets. A synthetic five-PR run with seventeen omitted questions retained all omissions and credited zero producer deployments while recognizing all five cached graphs.",
+      "log_sha256": "04e535a6163c3b0452b9735a4403919494cb8d6c66a09f001071585d42ad3065"
+    },
+    {
+      "change_id": "wykqktmwwmkxkrpolswttmpysrvtkpls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze original test selection and history ranking (verification pending)",
+      "body": "A local JVMTI collector observes upstream test processes and their child JVMs without replacing subject bytecode. Rank a changed body below the actual public boundary or after the return on the same retained receiver. Keep raw chronological events, method descriptors, original loaded bytes, JDK, test provenance and per-test plain-run parity. The ranking takes no historical candidate names.\n\nA JDK 21 parent and child each reported two actual nested calls and exactly one later event on the retained receiver. The equal-type different object earned no later-call credit. The original inventory selected one and four classes in the two Parquet modules. Jobs 20261127-044137-rank-original-parquet-old-test-histories, 20261127-044138-rank-original-parquet-new-test-histories and 20261127-044138-rank-original-parquet-new-reversed-overl preserve both original 113-entry graphs and the reversed overlay. All 55 change-selected suites passed.",
+      "log_sha256": "63603b53449dd99fe374b5cb8e38760e4bb91002d617e5d6bc3543b663c30a92"
+    },
+    {
+      "change_id": "mmnyunxslwxkqvkowxuvtmyvxrvmznto",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Attribute hidden caller histories before opening predictions",
+      "body": "Resolve original public Java member descriptors, selected input arms, conditional branches, typed literals and retained object handles with javac source attribution. The evaluator seals these with the complete original observation, named components and historical side scopes. The reviewed producer receives registered operations and input meanings while original outcomes stay in the evaluator. Equivalent routes can map independently witnessed public actions and representation encodings.\n\nOn the disclosed message-copy fixture the analyzer resolved twelve public calls and three distinct-handle obligations without executing the subject. Verified that the reviewed view has no original side results, the eight scalar scorer controls still reject their alterations, embedded Javadoc listings are removed, and all five previously sealed URL packets regenerate byte for byte.",
+      "log_sha256": "31d103b96850b759a127fd19e649be3dbeac4197482e03a4f4b5a0e2b89810c4"
+    },
+    {
+      "change_id": "xmssltlopqzwtmrwnqlxooukxmuxlyyy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze public PR predictions before JVM measurement (verification pending)",
+      "body": "The watcher and scaffold can derive ranked public candidates from a production-only view. The producer enumerates binary declarations, inspects at most 64 candidates and seals its selected history, arguments, predicate and side scopes before any launch. Stage 3 binds old and new independently, compiles one caller on the old API, checks its actual scalar arguments and return or exception, and writes content-pinned receipts. An explicit paired predicate measures changes without inventing a parent prediction. An incomplete run publishes each completed candidate. Original upstream test witnesses can refine ordinary entry ranking.\n\nAll 55 change-selected suites passed. A fresh synthetic PR produced the exact public entry, four qualified domain rows on each side, and opposite offline verdicts with identical evidence. The independent evaluator checked both the receipt and its isolated execution. Spring callback instances are now linked to the functions actually registered, with the original JVM-specific lambda addresses retained separately. Jobs 20261127-044119-requalify-spring-stream-subscriptions-an and 20261127-044829-qualify-a-sealed-pr-prediction-independe repeat the original reactive histories and challenge the side cache across a physical replacement.",
+      "log_sha256": "bb6e68d1ffcc6bcb3cc950c244928f38b2811d7b532077b585fa0ba857b9655d"
+    },
+    {
+      "change_id": "xotkuskoynwokmklxlsrxukrmkmtzrot",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the five sealed URL-run stops",
+      "body": "The actual ordinary Codex single-agent run used the unchanged request in a fresh allowlisted workspace with a private upstream JVM loopback. Codex stopped its first cycle during replay and published no producer commit. Record the five explicit stops, the private draft stages and original-test assistance, and keep the uncommitted work outside historical comparison. The receipt was checked against the five public URLs, the lifecycle record and the 17-question reference denominator. The focused test selector found no code tests for this record.",
+      "log_sha256": "9fceaceb606e26c97e4f704f47e79b6f15bac406c5cc1e8a90514117e6933d83"
+    },
+    {
+      "change_id": "wvloorpwrxmvuykruzrqovzypoqtpuxw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Account for five stopped URL runs against the independent audit",
+      "body": "Read only the committed watcher stop seal and the existing five-PR audit. All five producer runs stopped with no committed measurements. Preserve their unsealed stage accounting and mark all seventeen retrospective questions unscored. The archived audit still records thirty-four JVM observations, seven changed Intents, five unchanged controls and seventeen matching fixed predictions.\n\nVerified that the same five public URLs occur in both committed inputs and that their historical question denominator is seventeen. No producer drafts were inspected, no subject was executed, and the stopped runs received no new deployment or semantic parity credit.",
+      "log_sha256": "8cbdf23a8a7e98d2ba15097cad3efe1800c24b49f4f8b140d5302a928452a7b3"
+    },
+    {
+      "change_id": "orsmypoxwyssomkwounxrlnuwxpuszok",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal the first public history nominations and original receipts",
+      "body": "The 24 original column tests agreed with the plain runs on both releases. The combined Hadoop suite exhausted the event limit and failed plain parity, so its events earned no rank. Sealed 11 public entries from original events before comparing against the independent ten historical observations. Retained six original archives from eight independent jobs, including the two failed attempts, and the separately recorded five-link producer stop.\n\nVerified all archive checksums and ZIP integrity against the individual collector revisions. Recomputed the nominations from raw event order and receiver identities. Both retained formatter settings reproduced on both releases and all eight equal-output falsifiers were rejected. Lucene and Spring mail reproduced all six registered questions, including the filtered-sort refutation.",
+      "log_sha256": "4a5a37bfa7e03389f4aa7aeae279e60bdb235702b58ea40a9cd44c15020e2dab"
+    },
+    {
+      "change_id": "mvmvulnrwnqxsplpxvvnrxqqwvllvmpv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind strict helper summaries to actual runtime uses (verification pending)",
+      "body": "Resolve java.base helper bytes through the original bootstrap class resource on the selected JVM, cross-check the bound class, and give the same bytes to the native lemma query. Record a concrete consumption only inside the proved branch of a generated stub, at the original caller instruction and full tuple. A supplied but unused lemma cannot qualify the original application. Keep the closed finite certificate alongside the strict result.\n\nThe release build and all 56 selected Rust and Python groups passed. One capped original JDK 21 query verified CheckedHelperUse.check and recorded all six actual Math.min(int,int) tuples at six distinct bytecode sites. Using a different JDK retained the module-shadow refusal. Job 20261127-050122-verify-the-six-actual-math-min-tuples-us rechecks both Commons IO questions on both releases and the missing, incorrect and unused substitution controls.",
+      "log_sha256": "24bbf9f01cc6d517a7e3544bf04400634d29f202bf1a96de4257e57756071493"
+    },
+    {
+      "change_id": "klupltnzrsmrxolrtrntmwtqlrsrrvtl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Gate the blind draw on ordinary behavior and original unit traces",
+      "body": "Require an affirmative pre-attempt agreement between public PR material, changed production behavior and the registered public purpose. Security-sensitive and ambiguous slots remain in the denominator without a candidate packet. Admit only independently reviewed original test source and at most one zero-argument unit method per side on its complete, digest-bound applicable test graph. Keep source-only outcomes separate from a real test trace.\n\nThe three-arm evaluator now handles committed trace barriers, immutable archives and pipeline exports. It rechecks phase seals, raw debugger forks, original class bytes, compiled unit-test identity and plain-versus-traced parity. A source-only row cannot earn trace credit. All forty provisional producer files passed an isolated synthetic end-to-end run with one decided finite caller and two bound original test witnesses across four JVM executions. Eight deliberately altered scoring claims were rejected. No held-back PR was drawn.",
+      "log_sha256": "f6ad28555d35e512e681be5789711235e6623dcab16327d8be0f4565ab1d78c7"
+    },
+    {
+      "change_id": "vrottmykmptyytqwmrnqtpwlzswvzout",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind detached calls to the actual subscription (verification pending)",
+      "body": "Link observed registration, the submitted Runnable, its execution on a reused worker, and the actual Spring body and retained source. The same task class and payload without a dispatch edge receive no credit. After the first Parquet nominations, preserve the same test selection but separate each original class and its module files so independently running upstream tests cannot share target files. Replay the ten historical observations after the first nomination seal.\n\nBoth original Spring JVMs qualified three changed-body hits on two subscriptions, excluded the unrelated hit and preserved cancellation. The parent exposed the wrapper and number-format cause, while the fix emitted the last event and completed. Removing one queue edge removed only its attribution. An independently supplied terminal failure exposed the inner-only caller on the fix, where the registered invalid retry completes. All 55 selected suites passed, one timing test on rerun. Independent jobs 20261127-051405-check-the-original-outer-and-cause-on-bo, 20261127-052201-qualify-two-detached-spring-subscription, 20261127-052201-isolate-selected-parquet-old-upstream-te, 20261127-052201-isolate-selected-parquet-new-upstream-te, 20261127-052202-isolate-selected-parquet-new-reversed-up and 20261127-053029-compare-frozen-parquet-nominations-with retain the original release matrices.",
+      "log_sha256": "5a886e3a43be5d40944015de10b4e595505793250994e30e9f00d1631f46ce11"
+    },
+    {
+      "change_id": "vsprwvvwlznzowlwlnzzzxzurlppqzuu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze the blind public caller before the draw (verification pending)",
+      "body": "Seal 40 exact product file digests, the built checker, the candidate rule, the JDK and build policy, all three process budgets and the separate evaluator protocol. Unattended scalar execution requires closed data operations on both originals. Only a reviewed ordinary upstream unit method may run in the test diagnostic. The static producer incorporates a witnessed public member only after matching its original class and provider. A private receipt and denied sentinel keep registrations and audits out of its view.\n\nThe independent evaluator reproduced the entire exported closure on a labelled fixture. Four old and four new scalar rows qualified. Original JUnit classes compiled and ran on both sides, yielding two byte-bound witnesses with matching plain and traced outcomes. All 55 change-selected suites passed, a timing-sensitive test on rerun. Job 20261127-051405-repeat-original-and-changed-packet-contr repeats cache replacement using the recorded exact reuse action. No held-back case had been drawn or executed at freeze.",
+      "log_sha256": "8ac1065ffa780dfae5a2e615ad125df748550a5f86d10c88b1953a68a57ebb9e"
+    },
+    {
+      "change_id": "rstuqxqrwvnsxzmqkkqsupvpomzwruwy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal the twenty caller references and per-slot functional reviews",
+      "body": "Apply the committed seed and selection procedure to the frozen producer. The draw has five P, five Q and ten R pull requests, with ten different R repositories. Preserve a primary Intent for each slot before prediction. The functional review admits two ordinary cases and records eighteen scoped abstentions. Nine lacked sufficient affirmative agreement; nine contained a potentially sensitive or ambiguous boundary. These classifications do not assert that a vulnerability exists.\n\nVerified unique URLs and R projects, exclusion of both reservations, all twenty original pin and decision identities, the first Intent and the absence of original outcomes in reviewed producer inputs. No held-back prediction or original execution preceded these seals.",
+      "log_sha256": "f1435fdd5f6f5d23601af89851c385789bf80124ca42fe8244de046d1438e82e"
+    },
+    {
+      "change_id": "rkwysxonwtwyuxmsrkswmuulspkyokks",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal all twenty cold caller attempts before diagnostics",
+      "body": "Retain eighteen affirmative-scope abstentions, one approved deployment with an upstream test class in its original runtime, and one isolated cold nomination with three ranked candidates. Preserve every original slot. No subject JVM ran in prediction. Record the exact originally visible material and frozen candidate digests.\n\nVerified every slot, inspection count and sentinel, socket, process and executable-memory denial for the completed nomination. Corrected receipt publication across bind mounts after the first administrative write failed before an approved worker started. A synthetic cross-device test covers atomic publication and repeated collection.",
+      "log_sha256": "c93acef4ef30b115ff15b8f4bf1a4c11741577f10003195e91e6fafaf447434c"
+    },
+    {
+      "change_id": "mrtkkylstlsxytkstzqmvpvwzttuvqny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Register original adverse scope checks (verification pending)",
+      "body": "The disclosed ZIP preamble, Agrona entry hash and reused polygon questions each have a fixed-side contradiction. Only the polygon prediction was also registered on the parent. Retain the authored histories and the side scopes in an independent replay. The first Commons IO strict job stopped before execution because of a conflict outside the helper files. Its source tree was repaired while preserving the working tree, and the replacement pins the repaired commit.\n\nConfirmed the three original registrations and four refuted side predicates against the archived observations. The helper release and its six original substitution sites were already verified. Jobs 20261127-052308-replay-the-three-historical-finite-adver and 20261127-052728-qualify-original-commons-io-strict-helpe repeat both experiments.",
+      "log_sha256": "e486f5f1bf796a528ca76e9e3aa2d9e58605ec52561aa177f6be8b6c7c24d54a"
+    },
+    {
+      "change_id": "vvnkqnmzlvznnsnposzvnlotsvyokvnw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal reviewed hypotheses and queue original runs (verification pending)",
+      "body": "Open the reviewed diagnostic only after verifying the committed twenty-slot cold arm. Nineteen slots retain their original scope or deployment stop; one produced frozen choices from the semantic registration. Preserve the actual registration help and its exact digest in the new view. The queued original runs use only the previously reviewed ordinary scope.\n\nJobs 20261127-054056-measure-the-sealed-cold-caller-draw-on-a and 20261127-054106-trace-individually-approved-ordinary-ups measure the original cold hypotheses and capture original vetted unit traces or explicit source-only records. Validated both job inputs and their frozen reference and cold revisions.",
+      "log_sha256": "9ac8cb72748608b20bff267917c2b5dedec63ea0875a49e94270294b700f8754"
+    },
+    {
+      "change_id": "stkozzkpzrttkkypxqylzwqtvsurmkrt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the measured reviewed caller arm (verification pending)",
+      "body": "Run the sealed reviewed predictions against the same original working set and JDK, preserving all twenty slots and the exact cold and reviewed input revisions. The independent collector verifies each resulting receipt and the ordinary-behavior scope before a measurement can be scored.\n\nVerification pending: 20261127-054335-measure-the-reviewed-semantic-registrati. The reviewed prediction and cold barrier were both committed before submission.",
+      "log_sha256": "9bcceb2b40caafe83d32f0f40091c90c1ca45fba7646bbc2dd4c91d400611c9b"
+    },
+    {
+      "change_id": "uslvtvqstyntynpuurpylvxynuqmksln",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind stopped URL accounting to the reachable producer revision",
+      "body": "Use the post-repair Git ID of the same committed five-run stop record. Confirmed that both the stop-manifest bytes and the independent historical audit are identical across the ancestry repair. Regenerated only their existing stopped accounting; all seventeen questions remain unscored.",
+      "log_sha256": "3d817b353dda61c0a83792fdc78f87450f58007c9ce1b0e727da8393bc571524"
+    },
+    {
+      "change_id": "krxnxpxyromukplquxlwynmzpzzrzmut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Use the retained blinded-run checker (verification pending)",
+      "body": "The pipeline-specific jvmcontract requirement builds the current Rust tree, while the three sealed study jobs require the pre-draw binary already retained by content digest. Preserve the earlier administrative build errors and resubmit all three unchanged study steps with their exact executable dependency. The original jobs never reached a study subject.\n\nVerification pending: 20261127-054728-measure-sealed-cold-callers-with-the-ret, 20261127-054728-trace-approved-original-units-with-the-r and 20261127-054728-measure-reviewed-callers-with-the-retain. Verified identical frozen inputs, commands and output paths. All twelve repository-selected Python test files passed in a 1 GiB scope.",
+      "log_sha256": "e67061bc871dbe6f1c130a987b0b8129318255f3517efbff16cb20243009b38f"
+    },
+    {
+      "change_id": "uzmwmwrsptzmkutxklrsunywqnvskrnq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify mutable process timezone defaults (verification pending)",
+      "body": "Bind the initial fixed offset to the original class, first active use, JDK image, loader, launch profile and tzdb. The native checker keeps default replacement on the current execution path, copies the supplied value, and creates an independent object at every default read. A profile that reads its default only after replacement consumes no initial-offset premise. Raw JVM fields, arbitrary zone rules and host reset remain explicit gaps.\n\nFresh original Temurin 21 processes returned +36000000 and -36000000 milliseconds respectively and confirmed independent returned and supplied objects plus restoration. A capped native isolation-and-restoration claim verified with separate consumed profile and operation receipts. All 59 Rust test binaries and three selected Python suites passed. Job 20261127-055129-qualify-process-timezone-changes-on-orig repeats both original Log4j strict queries, adversarial profile controls and the eight original public histories.",
+      "log_sha256": "9b010077a893435b523c9975528482cb45b4afd729937bd9f48e47b07852df82"
+    },
+    {
+      "change_id": "wtzxmzyyxxtqqylznqkzxttmvwotwqym",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal cold and reviewed measures and all original trace attempts",
+      "body": "Verify and retain the immutable outputs of the three passed exact-checker jobs. Cold and reviewed each recorded one measured attempt and nineteen scope or view-construction stops. All twenty trace slots remain source-only. For the prepared PR, thirty-three reviewed source files yielded twenty-six possible unit methods over the two sides, but the stored dependency lists did not establish an unambiguous original launch graph. No test was recompiled or run.\n\nValidated every archive digest and all sixty slot records before copying them into the evaluator tree. The independent check also verified the three complete evaluator subtrees were byte-identical across the repaired unpublished ancestry. Earlier seals remain in the physical records and can be read at the verified reachable equivalents.",
+      "log_sha256": "11a3d39f9071659253d9e0d890f6c5ccf0b02d0755f76e581e5a5ab0613caccf"
+    },
+    {
+      "change_id": "tzzskurrvmslzrkvwnnplprzpvlzomum",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal the twenty test-assisted caller predictions",
+      "body": "Require the completed cold seal and a committed original trace or source-only record for every slot. The frozen predictor inspected thirty-two reviewed upstream source files in the prepared case and incorporated its explicit zero-trace receipt. Nineteen slots retained their existing scope or original-view stop. No subject JVM was launched to produce these predictions.\n\nChecked all twenty attempt identities, the matched per-case trace digest, the immutable prediction hash, the inspection cap and the denied execution boundary before measurement.",
+      "log_sha256": "96d4ddecafdca428cf23a7510dc9bca6dcfbc260f7d9b54daec50c3d2ab879d6"
+    },
+    {
+      "change_id": "vpmknyyqvynzmskqwxyuvvvrwpotnplx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the test-assisted caller measurements (verification pending)",
+      "body": "Run the same frozen producer and original deployments against the committed test-assisted choices. Each of the twenty slots is tied to its original cold and test-assistance records, including the explicit lack of a witnessed original unit trace. The runner uses the pre-draw checker identified by its digest.\n\nVerification pending: 20261127-055809-measure-the-frozen-test-assisted-public. Checked the complete diagnostic prediction and trace seals before submitting this final first-arm measurement.",
+      "log_sha256": "96ad815e211377ebef7befbfe88ea35f1ab0aea742a493cf67f227da4314f01a"
+    },
+    {
+      "change_id": "ktlqpxnmsksruqpqwvtpvmwmlqzxtkvu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Retain the final original caller diagnostic before unmasking",
+      "body": "Verify the passed test-assisted measurement job against its immutable archive. The original study now holds twenty prediction or stop records and twenty measurement or stop records for each of the three arms, together with all twenty original test-coverage records. No revealed-case repair ran before these physical results were preserved.\n\nChecked the collector digest, all twenty slot identities and the prior cold, test-assistance and prediction seals. The test-assisted arm had one measured candidate set and nineteen retained stops.",
+      "log_sha256": "96d31f68b2b6bbc3861f1f1f215d76ea627c70a2df0f88668f24a9aceda1e230"
+    },
+    {
+      "change_id": "nsmqrkmwxvnlrnwxpsswtyorszpqmpwq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Report the frozen twenty-PR caller evaluation before repair",
+      "body": "Cold, test-assisted and reviewed arms each qualified 0/20 primaries, including 0/10 in the R batch. No alternative in the top three was independently equivalent or provided a separately qualified useful claim. Every arm bound a public entry on one PR and compiled zero eligible old-API callers. The three choices in each arm lacked a concrete history or side-specific observation. The reviewed selection received a semantic registration but its selected entries did not match it. There were no finite refutations or paired gains.\n\nEighteen slots were precautionary scope abstentions, not established vulnerabilities. One approved slot stopped on the evaluator packaging classifier. Re-read the original commits and collection records, and reproduced the per-PR score and all nine semantic reviews byte for byte. The eight synthetic false qualifications remain rejected; the cold release gate was missed.",
+      "log_sha256": "7ae61068705d1dbe895c27e983a80eeef841f6f4d9ff30f3edddbada7535fdb3"
+    },
+    {
+      "change_id": "lwrvqpkyvkkrpsvxswovmlokvwrmytml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Count both original repetitions of native-checked Commons IO calls (verification pending)",
+      "body": "The original public trials repeat each input in two fresh JVMs. Count the checked Math.min applications in both receipts when comparing the rewinds and preservation totals with the historical 14/20 and 10/10. The six-site JVM binding and native lemma-consumption checks stay in the same qualification. The selected 64 test suites passed. Job 20261127-061038-count-both-commons-io-public-replays-for repeats the original histories and all five falsifiers.",
+      "log_sha256": "5c511b21c3e0c7caa9a15bc6c56fc560dd347602dc625b544b6ad64dd5966d8f"
+    },
+    {
+      "change_id": "vnkyuvlwovmyqruyxzmsxnyxxwmswwsy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind stock JBMC property decisions to the actual JVM-selected class files (verification pending)",
+      "body": "Add an opt-in stock property command for a closed integral subject and its direct static helpers. It compares the JVM-selected physical entries, defining loaders and digests with the exact private class files opened and read during the stock assertion command, preserving its assertion statuses and the original raw and paired guards. On JDK 21 the stock probe verified the versioned helper result of 5 and refuted 3. All 64 selected test suites passed. Job 20261127-061049-qualify-stock-jbmc-reads-on-original-ver checks sixteen properties, the earlier shadow and unqualified or damaged binding controls.",
+      "log_sha256": "3f6bd81102691b5a5c2c4dee47e82dbde4bdbec35a0bae7cd922e0de3db96286"
+    },
+    {
+      "change_id": "zmnnlsymytqwnwxrpnypmpnstvsrypwr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Publish the original caller evidence and verify masked ranking in Stage 2 (verification pending)",
+      "body": "Independent jobs reproduced the linked and unlinked Spring subscriptions, three merged-side historical contradictions, the process-timezone histories, clean and warm observation controls, and twenty original or reversed Parquet readbacks. Isolating the same five selected upstream test classes recovered the file history at rank four and the page history at rank five. The original combined launch remains recorded. All twenty collected job records passed digest and archive checks. The 64 selected test suites passed. Job 20261127-061049-reproduce-masked-parquet-ranking-through repeats these nominations through ordinary unhinted application discovery and binds the top five against both original deployments.",
+      "log_sha256": "3a819dfffeffa85156aac920de4b80759503d94f9d28df0cd05b9a1f776a9a1f"
+    },
+    {
+      "change_id": "qxsxvlnsyypkzwoxsoozxyzsymkrslom",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal a separate post-reveal production-origin repair",
+      "body": "The frozen packaging filter misclassified one ordinary production type with a test-like name. Match its unique production source, package, declaration, SourceFile attribute, physical class and original JAR digest on both revisions. Reject real test roots, annotated unit-test methods and unverified exemptions. The new, separately labelled prediction retained the pre-draw producer, original JAR bytes and ordinary-functionality scope; it received no tests or semantic registration.\n\nSealed the first predicted repair choices after all original study scores were committed and before its measurement. Verified the two original source and class identities, the separately generated view fingerprint, two ranked candidates and the actual process/measurement denials. The original cold, test and reviewed results still occupy their original columns.",
+      "log_sha256": "820af9b523043ea64b06d9c425b499e6c065ad56e05df0b6572ec7e0f28ed314"
+    },
+    {
+      "change_id": "xkqvynkrqtlwsuxmsozuqyxkozwrmwwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the separate packaging repair (verification pending)",
+      "body": "Measure only the repaired, previously approved production-origin case with its newly sealed hypothesis and exact original checker. The original twenty-case study and its release decision are already committed. Any further qualification will be reported separately as post-reveal.\n\nVerification pending: 20261127-062252-measure-the-separately-sealed-production. The job references the complete original score and separate repair prediction, and requires the content-pinned checker instead of rebuilding a different native tree.",
+      "log_sha256": "5773b505b37d2817fc52d7ddeaec1ee22188e8b20a0ae99f17c71df5e2142450"
+    },
+    {
+      "change_id": "tunrussyzvvvltlxtqnqvuystmppukqw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preserve the original-JVM packaging repair measurement",
+      "body": "Collect the passed single-slot job against its committed public prediction, original production-origin review and exact checker. The same immutable production view reached the measurement worker and both ranked choices were retained with their actual stops. The new result remains outside the original three arms.\n\nConfirmed the archive digest from the immutable collector twice, the same original source and deployment view at prediction and measurement, the prediction digest, and the sentinel and private-network boundary. Both nominated candidates remain open and neither generated an old-API compiled caller.",
+      "log_sha256": "17d0dbc6d2966f526fcb485c11e27dba91820259cefa3cda9647b7caa4d34b81"
+    },
+    {
+      "change_id": "ylmnprtrsuzxsyzsvvpqpkqkvomwkzrz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Report all caller stages and the separately scored repair",
+      "body": "Publish the twenty-PR summary with eligibility, familiar-project exposure, affirmative scope, stage-by-stage coverage, actual source and trace assistance, original side observations, unresolved alternatives and a distinct fourth column. All original arms remain 0/20, including 0/10 R. The repaired view reached a bound entry on its one approved case but neither nomination had a runnable public input. Its separate score is 0/1.\n\nRe-read the immutable source, hypothesis and measurement records to reproduce the repair score byte for byte, checked the reader table contains all twenty original URLs, and checked that none of the three original denominators or their results changed. The evaluator rejected all eight independently planted false qualifications.",
+      "log_sha256": "720638100b6cfac23c68e493183f917d1c0893bd2e61022c564047468b72b7b6"
+    },
+    {
+      "change_id": "yyymzvvlqvnpwzsmnkrnqtpvqxnmwnmr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep reviewed public members and original loader decisions in the watcher (verification pending)",
+      "body": "A supplied exact public member can belong to an unchanged class outside the production diff. Resolve it on the original artifacts and report an absent member explicitly. Preserve manifest providers, captured paths, loader scope and order through measurement and saved review. Show the owner the readbacks that qualify on their required sides. The original draw and its separate repair use their sealed producer. A synthetic unchanged member and the missing-mapping and partial-readback checks passed locally, as did the 58 selected suites. Jobs 20261127-062828-qualify-original-context-restoration-and and 20261127-062828-bind-an-unchanged-reviewed-api-outside-t exercise original context restoration, two real resource readbacks and the full reviewed caller path.",
+      "log_sha256": "817c97347352c50b35edd4cdaada3ebec6f6f1071c27b3ea8aca2ffe1bb7dac9"
+    },
+    {
+      "change_id": "rllxorzzqxzulzvvlxtkstwylvrsrosz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Read the stock equivalence refusal using its result envelope (verification pending)",
+      "body": "The first sixteen managed stock assertions and planted input controls completed, then the qualification script read an equivalence result as a property-result list. Use the same command-aware wire reader as the existing stock guards and retain both raw refusals in the receipt. The Python module compiled and 58 selected suites passed. Job 20261127-062828-check-stock-physical-input-reads-and-typ repeats the full property and refusal matrix.",
+      "log_sha256": "b4b9df396653d6e7fe6c8774ccd84248aea2966ce30cb68b86f12c5d6e953ebf"
+    },
+    {
+      "change_id": "moukxuvrqrsypoxwrwnlqpkmllyqzwuv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Show every bound original test history in the Stage 2 owner question (verification pending)",
+      "body": "Display witnessed ranks separately from their binary-only ranks and carry all bound alternatives from the selected top five through to the owner question. Archive the passing original Stage 2 and six-site strict native Commons IO qualifications. The Spring test coverage check separates the landed 14-test class and its actual original reader bytes from the six synchronous caller receipts on each revision and the labelled scheduler hop. The 58 selected suites passed. Jobs 20261127-062828-expose-both-bound-original-parquet-histo and 20261127-062828-trace-the-landed-spring-event-reader-tes verify both integrations.",
+      "log_sha256": "2dacc18452f189eb54d78c9ea1bfe1f88d2dd175112540e63ffdf09c4ac2c4eb"
+    },
+    {
+      "change_id": "olwxrwvwppxsytowstrmpvkvuxnklpuq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep the ranking function callable when assigning display positions (verification pending)",
+      "body": "The original Parquet owner-choice job exposed a local variable shadowing the ranking function before it could read any trace. Give the display position its own name. An in-process regression covers preserving static candidates when no original fork qualifies. All twelve focused tests and all 59 selected suites passed. The regenerated cost inventory adds one unit test and preserves every existing tier and opt-in. Job 20261127-063922-recheck-the-witnessed-ranks-and-full-own repeats the unhinted 113-root original discovery and checks both owner choices.",
+      "log_sha256": "f846aa0fc49aa20a01f5ec74edc2bae7893dcb02d3faca56389a956bf417a877"
+    },
+    {
+      "change_id": "qrswtzqkozxokzrxtqrvnwwzrouuwwtk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record stock byte selection, loader choices and original Spring test coverage",
+      "body": "All sixteen managed stock assertions and four refusal controls passed, meeting VF-071 for the stated subject and helper scope. Each of the three original loader revisions restored its outer context on 16 normal returns and on the exceptional second call. The 14 original Spring tests hit the original reader body 17 times on the parent and 22 on the fix, with zero WebClient bodyToFlux frames on those stacks. A reviewed stable API outside the diff produced the requested original readbacks. Validated 31 independent collector records and 59 affected test suites. Both the repaired attempts and their earlier stopping points are retained.",
+      "log_sha256": "525556710512620506de07524c254ed6771efaa19a2bc6a8ea11a08348011564"
+    },
+    {
+      "change_id": "pmzzonspwynqtuntrlnzkkusqqrzuuvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Publish the blind caller and PR verification campaign results",
+      "body": "The frozen cold, upstream-test and reviewed attempts each qualified 0/20 primaries and 0/10 R. The separate packaging repair bound another original entry and scored 0/1. The URL-only producer stopped before publishing measurements for its five deployments or seventeen questions. The before-reveal Parquet ranking found one of the two named histories; the isolated replay ranked the file and page fourth and fifth and ordinary Stage 2 offered both. The report preserves the original Spring suite, causal scheduler controls, strict helper applications, profiled timezone gap, sixteen stock properties and loader decisions.\n\nRecomputed the campaign scorecard from its receipts, checked all 33 report links and reconciled every one of the 37 submitted jobs with the independent collector. Twenty-seven passed, six failed and four errored before measurement, with passing follow-ups for all ten. The selector found no additional source suites for the final evidence-only change.",
+      "log_sha256": "42d154c53a14bdc960be7d37ee372fe82d8ae4af8a633ec251d7bfcadd11aff9"
     }
   ],
   "logs": {
@@ -3077,6 +3562,12 @@
       "gzip_bytes": 4212894,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/03e3b96520ce27fa1c600f619bcfb685bedcb70e81ccc3aa80711ed7feb1f06d.jsonl.gz"
     },
+    "04e535a6163c3b0452b9735a4403919494cb8d6c66a09f001071585d42ad3065": {
+      "bytes": 106884914,
+      "lines": 52699,
+      "gzip_bytes": 19535551,
+      "url": null
+    },
     "04ed16b33abc4cbaf3f7f3082768eab3e2a1c19ba14bdbfa19f7c8f2d063334a": {
       "bytes": 16362178,
       "lines": 8795,
@@ -3088,6 +3579,12 @@
       "lines": 20461,
       "gzip_bytes": 6745137,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/0760133b10628372d290b03a1daaa0b749f58f38af0946808e5222db3919b99f.jsonl.gz"
+    },
+    "11a3d39f9071659253d9e0d890f6c5ccf0b02d0755f76e581e5a5ab0613caccf": {
+      "bytes": 110041328,
+      "lines": 54555,
+      "gzip_bytes": 20014439,
+      "url": null
     },
     "11eae6dc29035247cce26201fb2c7a1724b9af52cc1ea609a00157c3ab674b65": {
       "bytes": 64419545,
@@ -3106,6 +3603,12 @@
       "lines": 10000,
       "gzip_bytes": 3437368,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/1794fc909be9a30ed3c12ff1283fb6dcc54b5ac1295040cc104d69569d26569e.jsonl.gz"
+    },
+    "17d0dbc6d2966f526fcb485c11e27dba91820259cefa3cda9647b7caa4d34b81": {
+      "bytes": 111984182,
+      "lines": 55303,
+      "gzip_bytes": 20363070,
+      "url": null
     },
     "18396ef8559e719c4e0294fc242334c444cfb2aa3b8a6f4f7974007c88fb12f8": {
       "bytes": 89581675,
@@ -3173,6 +3676,12 @@
       "gzip_bytes": 13770663,
       "url": null
     },
+    "24bbf9f01cc6d517a7e3544bf04400634d29f202bf1a96de4257e57756071493": {
+      "bytes": 108349914,
+      "lines": 53550,
+      "gzip_bytes": 19756209,
+      "url": null
+    },
     "284a5a61110f0337401222b206b8c28ba6773467436813bb9e9cd863c1b04a11": {
       "bytes": 61663981,
       "lines": 32852,
@@ -3197,6 +3706,12 @@
       "gzip_bytes": 676753,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7.jsonl.gz"
     },
+    "2dacc18452f189eb54d78c9ea1bfe1f88d2dd175112540e63ffdf09c4ac2c4eb": {
+      "bytes": 112309209,
+      "lines": 55538,
+      "gzip_bytes": 20408747,
+      "url": null
+    },
     "2f1306bd5f1fd6e716cab8f53c4afd8f3d1c2d0206e53f3a6ddcce75146fe5f5": {
       "bytes": 5869643,
       "lines": 2948,
@@ -3208,6 +3723,12 @@
       "lines": 13785,
       "gzip_bytes": 4369550,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/2f6834e6dac183c7187d3408c64115627bd9a3642a042144bee02fdcdfcd2730.jsonl.gz"
+    },
+    "31d103b96850b759a127fd19e649be3dbeac4197482e03a4f4b5a0e2b89810c4": {
+      "bytes": 107552512,
+      "lines": 53044,
+      "gzip_bytes": 19639203,
+      "url": null
     },
     "3336d0314194b56aca61b545218f3818d19859f6abec38f862f556944ced69ed": {
       "bytes": 22470243,
@@ -3239,6 +3760,12 @@
       "gzip_bytes": 18309417,
       "url": null
     },
+    "3a819dfffeffa85156aac920de4b80759503d94f9d28df0cd05b9a1f776a9a1f": {
+      "bytes": 111764372,
+      "lines": 55174,
+      "gzip_bytes": 20335111,
+      "url": null
+    },
     "3bc507a09631b939f4fe489071b311759715af10935873e4d74325e8903e8619": {
       "bytes": 90137148,
       "lines": 44657,
@@ -3263,10 +3790,28 @@
       "gzip_bytes": 18385835,
       "url": null
     },
+    "3d817b353dda61c0a83792fdc78f87450f58007c9ce1b0e727da8393bc571524": {
+      "bytes": 109689912,
+      "lines": 54330,
+      "gzip_bytes": 19957290,
+      "url": null
+    },
+    "3f6bd81102691b5a5c2c4dee47e82dbde4bdbec35a0bae7cd922e0de3db96286": {
+      "bytes": 111664711,
+      "lines": 55141,
+      "gzip_bytes": 20323707,
+      "url": null
+    },
     "3f734d16d432069a7ca570a059c779f912f08a286fe7dc4efe834abb3895fef2": {
       "bytes": 91454991,
       "lines": 45436,
       "gzip_bytes": 16787970,
+      "url": null
+    },
+    "42d154c53a14bdc960be7d37ee372fe82d8ae4af8a633ec251d7bfcadd11aff9": {
+      "bytes": 112817271,
+      "lines": 55982,
+      "gzip_bytes": 20478538,
       "url": null
     },
     "44ddc5a74b25e66cf97de34e4fee32a0d55e90cb68158384b21a2b4b08398a15": {
@@ -3317,6 +3862,12 @@
       "gzip_bytes": 13264142,
       "url": null
     },
+    "4a5a37bfa7e03389f4aa7aeae279e60bdb235702b58ea40a9cd44c15020e2dab": {
+      "bytes": 108157808,
+      "lines": 53432,
+      "gzip_bytes": 19728894,
+      "url": null
+    },
     "4a8a23689d0ffaba68b10b97c863b2a470e77fca2de1a26bc6bc00b953e9a195": {
       "bytes": 74925077,
       "lines": 38431,
@@ -3353,6 +3904,12 @@
       "gzip_bytes": 3607444,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/4ea4da407305466d00a99d2aa47dcb4810f9f494b3fb388967bb15022d610094.jsonl.gz"
     },
+    "525556710512620506de07524c254ed6771efaa19a2bc6a8ea11a08348011564": {
+      "bytes": 112671276,
+      "lines": 55827,
+      "gzip_bytes": 20461656,
+      "url": null
+    },
     "531ab1a411292828252f43563fc164bc8c3fb0b33eb594eab1b46eecb98454a6": {
       "bytes": 34117840,
       "lines": 18819,
@@ -3383,10 +3940,22 @@
       "gzip_bytes": 18121410,
       "url": null
     },
+    "5773b505b37d2817fc52d7ddeaec1ee22188e8b20a0ae99f17c71df5e2142450": {
+      "bytes": 111912128,
+      "lines": 55242,
+      "gzip_bytes": 20352310,
+      "url": null
+    },
     "5833b6c91596e7b85f8e2cd8ab90a1025b7d20b17d3213198ba31d02a9bf742c": {
       "bytes": 100984234,
       "lines": 50087,
       "gzip_bytes": 18430211,
+      "url": null
+    },
+    "5a886e3a43be5d40944015de10b4e595505793250994e30e9f00d1631f46ce11": {
+      "bytes": 109099880,
+      "lines": 54014,
+      "gzip_bytes": 19871602,
       "url": null
     },
     "5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0": {
@@ -3395,10 +3964,28 @@
       "gzip_bytes": 2727029,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0.jsonl.gz"
     },
+    "5c511b21c3e0c7caa9a15bc6c56fc560dd347602dc625b544b6ad64dd5966d8f": {
+      "bytes": 111572117,
+      "lines": 55123,
+      "gzip_bytes": 20313538,
+      "url": null
+    },
     "613b2e9accbd3aca332961458ecbb1f909e76b69316106ee31a78219926acef9": {
       "bytes": 67816393,
       "lines": 35827,
       "gzip_bytes": 12360775,
+      "url": null
+    },
+    "632b7580c6ce508105cbfd27a55a8dd29d2850e801aeff5c3d7e05c58a6d043e": {
+      "bytes": 105595484,
+      "lines": 52090,
+      "gzip_bytes": 19307179,
+      "url": null
+    },
+    "63603b53449dd99fe374b5cb8e38760e4bb91002d617e5d6bc3543b663c30a92": {
+      "bytes": 107193536,
+      "lines": 52931,
+      "gzip_bytes": 19584819,
       "url": null
     },
     "6440f50c2fd6772622566822f76b2c569a0653a99165770a6fb848e8a6b3ac54": {
@@ -3412,6 +3999,12 @@
       "lines": 17470,
       "gzip_bytes": 5576316,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/64b8f20159e2e9b10c47968a54940572c4910335e9a736d9fe002a861060db96.jsonl.gz"
+    },
+    "65ed480567338f06126f62d37ae74c6f733d938229f72cabf01db299421406ae": {
+      "bytes": 105536450,
+      "lines": 52051,
+      "gzip_bytes": 19300373,
+      "url": null
     },
     "68ff61f4ff7966d6f91506761ff8870245fbd6ba7eee84e6d89b926edf6389a0": {
       "bytes": 49998203,
@@ -3443,17 +4036,41 @@
       "gzip_bytes": 5068590,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/712de7148230e4d90f38f7fef825b7f852f355cc2babe647117ae63b169e3a86.jsonl.gz"
     },
+    "720638100b6cfac23c68e493183f917d1c0893bd2e61022c564047468b72b7b6": {
+      "bytes": 112066242,
+      "lines": 55350,
+      "gzip_bytes": 20374900,
+      "url": null
+    },
     "726ace1167c232f2be46f62e73daf6a44c8c05ef03205d861c67c022c5642cd4": {
       "bytes": 10127733,
       "lines": 5208,
       "gzip_bytes": 1787988,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/726ace1167c232f2be46f62e73daf6a44c8c05ef03205d861c67c022c5642cd4.jsonl.gz"
     },
+    "72c5ff19051a547881861bd8fea472b55247406dc10fd8ceadbfd1333726c33b": {
+      "bytes": 105994472,
+      "lines": 52254,
+      "gzip_bytes": 19370545,
+      "url": null
+    },
+    "7861549c2ae219ac89cbb781d80f047a5ced16e731c1aca354cc16476c86da0e": {
+      "bytes": 106711372,
+      "lines": 52588,
+      "gzip_bytes": 19504281,
+      "url": null
+    },
     "7a7a5cc8b3b1adcca15aa956c69bc6ad091e47a3c082f0291ba195ca8b22ea18": {
       "bytes": 12754012,
       "lines": 7042,
       "gzip_bytes": 2178450,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/7a7a5cc8b3b1adcca15aa956c69bc6ad091e47a3c082f0291ba195ca8b22ea18.jsonl.gz"
+    },
+    "7ae61068705d1dbe895c27e983a80eeef841f6f4d9ff30f3edddbada7535fdb3": {
+      "bytes": 110227517,
+      "lines": 54672,
+      "gzip_bytes": 20042253,
+      "url": null
     },
     "7b5a5273fc085b6bd1386398d12ff30cf6ce97cb3272e7080416810f6d4d3c4a": {
       "bytes": 10978923,
@@ -3485,6 +4102,18 @@
       "gzip_bytes": 5427551,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/815cdc145e9c97a2ff96e85f1a81b58f5e114cb858751c05000e26f3de9127fb.jsonl.gz"
     },
+    "817c97347352c50b35edd4cdaada3ebec6f6f1071c27b3ea8aca2ffe1bb7dac9": {
+      "bytes": 112294709,
+      "lines": 55522,
+      "gzip_bytes": 20407464,
+      "url": null
+    },
+    "820af9b523043ea64b06d9c425b499e6c065ad56e05df0b6572ec7e0f28ed314": {
+      "bytes": 111881797,
+      "lines": 55221,
+      "gzip_bytes": 20348626,
+      "url": null
+    },
     "829cba038409c1c63b70f9443b16b67954d1769ba6570d281e032892a24f88cd": {
       "bytes": 38483341,
       "lines": 20924,
@@ -3497,11 +4126,23 @@
       "gzip_bytes": 11095806,
       "url": null
     },
+    "8ac1065ffa780dfae5a2e615ad125df748550a5f86d10c88b1953a68a57ebb9e": {
+      "bytes": 109218515,
+      "lines": 54040,
+      "gzip_bytes": 19890292,
+      "url": null
+    },
     "8b677d26673de01eb4939859f7a54f32036ce9bb3a547fcc7c981257f9d8f693": {
       "bytes": 56288965,
       "lines": 30358,
       "gzip_bytes": 10166053,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/8b677d26673de01eb4939859f7a54f32036ce9bb3a547fcc7c981257f9d8f693.jsonl.gz"
+    },
+    "8cbdf23a8a7e98d2ba15097cad3efe1800c24b49f4f8b140d5302a928452a7b3": {
+      "bytes": 108118289,
+      "lines": 53420,
+      "gzip_bytes": 19722379,
+      "url": null
     },
     "8f60f5e8439a2ede058e291471774ca78e597bc1782674ae28269696a696c054": {
       "bytes": 78646995,
@@ -3515,6 +4156,12 @@
       "gzip_bytes": 10136707,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62.jsonl.gz"
     },
+    "904be2b72c64cfdeeccbe56611a3ab35f93bba3b57305b792ed6f4d0e522210e": {
+      "bytes": 106457348,
+      "lines": 52420,
+      "gzip_bytes": 19462583,
+      "url": null
+    },
     "9278a44e60ada940b28c2ac23607237bf4e34c925dc6c6b9a81364e73bff91ed": {
       "bytes": 31797440,
       "lines": 17876,
@@ -3526,6 +4173,24 @@
       "lines": 16914,
       "gzip_bytes": 5486475,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/93defd51f65229b730c32ecb567d3013692c656f0f1af7234e2394bdbdecceaf.jsonl.gz"
+    },
+    "96ad815e211377ebef7befbfe88ea35f1ab0aea742a493cf67f227da4314f01a": {
+      "bytes": 110114579,
+      "lines": 54595,
+      "gzip_bytes": 20024577,
+      "url": null
+    },
+    "96d31f68b2b6bbc3861f1f1f215d76ea627c70a2df0f88668f24a9aceda1e230": {
+      "bytes": 110206808,
+      "lines": 54667,
+      "gzip_bytes": 20039618,
+      "url": null
+    },
+    "96d4ddecafdca428cf23a7510dc9bca6dcfbc260f7d9b54daec50c3d2ab879d6": {
+      "bytes": 110101945,
+      "lines": 54578,
+      "gzip_bytes": 20022969,
+      "url": null
     },
     "97765db7baf12ac08d1236088fbfef77eceb44066f58dbbe251254dea489bfb1": {
       "bytes": 94382131,
@@ -3551,6 +4216,24 @@
       "gzip_bytes": 8297890,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/99fe0e2cdf3285edd3625adc9531fa1b3c7ffb2b9bf785e5ff05262a60062347.jsonl.gz"
     },
+    "9ac8cb72748608b20bff267917c2b5dedec63ea0875a49e94270294b700f8754": {
+      "bytes": 109604512,
+      "lines": 54247,
+      "gzip_bytes": 19943929,
+      "url": null
+    },
+    "9b010077a893435b523c9975528482cb45b4afd729937bd9f48e47b07852df82": {
+      "bytes": 109894471,
+      "lines": 54488,
+      "gzip_bytes": 19992932,
+      "url": null
+    },
+    "9bcceb2b40caafe83d32f0f40091c90c1ca45fba7646bbc2dd4c91d400611c9b": {
+      "bytes": 109626226,
+      "lines": 54267,
+      "gzip_bytes": 19947295,
+      "url": null
+    },
     "9e81406608dd906e5ea459311b2a2c72267e3cccf622f60c9807e057e50feebe": {
       "bytes": 38764538,
       "lines": 21072,
@@ -3568,6 +4251,12 @@
       "lines": 31375,
       "gzip_bytes": 10617295,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996.jsonl.gz"
+    },
+    "9fceaceb606e26c97e4f704f47e79b6f15bac406c5cc1e8a90514117e6933d83": {
+      "bytes": 108083795,
+      "lines": 53379,
+      "gzip_bytes": 19717240,
+      "url": null
     },
     "a0060fc631dee8b5f98679a27a930d3069b9fd73bc8869ebc830c2dd69a6d7c3": {
       "bytes": 78561820,
@@ -3623,6 +4312,12 @@
       "gzip_bytes": 18478755,
       "url": null
     },
+    "b4b9df396653d6e7fe6c8774ccd84248aea2966ce30cb68b86f12c5d6e953ebf": {
+      "bytes": 112301856,
+      "lines": 55529,
+      "gzip_bytes": 20408136,
+      "url": null
+    },
     "b6916ead65f9011b7ebb53e90e4b7a3d9d4467d7f3f3c0751ddb3935eccca615": {
       "bytes": 90868769,
       "lines": 45086,
@@ -3633,6 +4328,12 @@
       "bytes": 92095791,
       "lines": 45953,
       "gzip_bytes": 16876504,
+      "url": null
+    },
+    "bb6e68d1ffcc6bcb3cc950c244928f38b2811d7b532077b585fa0ba857b9655d": {
+      "bytes": 107725087,
+      "lines": 53174,
+      "gzip_bytes": 19665650,
       "url": null
     },
     "bbfe5dd03559c524489938699b780c5d11c004b17a905c3ecf5fd05e2cbb0b7b": {
@@ -3677,6 +4378,12 @@
       "gzip_bytes": 524033,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/c42e15b78c55f1fe9428d13c663e3d6bc046593f1a9f21394a46778c4c986752.jsonl.gz"
     },
+    "c93acef4ef30b115ff15b8f4bf1a4c11741577f10003195e91e6fafaf447434c": {
+      "bytes": 109419942,
+      "lines": 54151,
+      "gzip_bytes": 19919368,
+      "url": null
+    },
     "c946f7b89cb7e41e9ba663f2b123c9cc6844655b1a19459cab7fd48a429d6fa6": {
       "bytes": 22923082,
       "lines": 12226,
@@ -3695,12 +4402,6 @@
       "gzip_bytes": 7060049,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/cae5cd96503ca6c481daffb1e8badc47df103c1ddee0c3ee89382d2309b795f8.jsonl.gz"
     },
-    "cfc831204a2ecf8f2f8f127212d343e891c9ea70c6b75b63af7d352b9d92b662": {
-      "bytes": 104524654,
-      "lines": 51814,
-      "gzip_bytes": 19047705,
-      "url": null
-    },
     "d5477a83b3cf942b2d87aa9f4acf88b2fb00cec8de44af0ea65da617588161b4": {
       "bytes": 87586157,
       "lines": 43829,
@@ -3711,6 +4412,12 @@
       "bytes": 98447113,
       "lines": 48631,
       "gzip_bytes": 18064490,
+      "url": null
+    },
+    "d9b4a7fc018dc1d9fefe33374a12214869a503cdb5b2896f99dcac33c1f0e11a": {
+      "bytes": 106211866,
+      "lines": 52345,
+      "gzip_bytes": 19423053,
       "url": null
     },
     "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8": {
@@ -3743,6 +4450,12 @@
       "gzip_bytes": 3573788,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/e0d0f50264717a591f9aefc55161a8d16223fc4aca808388667c0df90efce9d2.jsonl.gz"
     },
+    "e486f5f1bf796a528ca76e9e3aa2d9e58605ec52561aa177f6be8b6c7c24d54a": {
+      "bytes": 109514840,
+      "lines": 54230,
+      "gzip_bytes": 19932753,
+      "url": null
+    },
     "e62ffc9a3ab2c091db172248bf916b692e2bcf44595b0a8da8bb803d3509a1ba": {
       "bytes": 82315399,
       "lines": 41581,
@@ -3754,6 +4467,12 @@
       "lines": 29053,
       "gzip_bytes": 9594494,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/e66fbef3ff6567e624d0dc68c4966ed8721578f558ffd4a49f4810d5e2e70aec.jsonl.gz"
+    },
+    "e67061bc871dbe6f1c130a987b0b8129318255f3517efbff16cb20243009b38f": {
+      "bytes": 109748926,
+      "lines": 54366,
+      "gzip_bytes": 19967787,
+      "url": null
     },
     "e8c0d66133dd6e87f006a7ac8e590704add4deda321d35cdf689626b100c3933": {
       "bytes": 47220528,
@@ -3809,6 +4528,12 @@
       "gzip_bytes": 4780123,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/f0cf2952c0704bccf052e05f634f31666f8f2833f190db77e2941bbcf284f7a6.jsonl.gz"
     },
+    "f1435fdd5f6f5d23601af89851c385789bf80124ca42fe8244de046d1438e82e": {
+      "bytes": 109351711,
+      "lines": 54105,
+      "gzip_bytes": 19908271,
+      "url": null
+    },
     "f1da6d7b0b22a4f599ec9325d1c26cd6e73db2f8f5d07f7056057de52b6ada88": {
       "bytes": 91746383,
       "lines": 45640,
@@ -3845,10 +4570,22 @@
       "gzip_bytes": 4319907,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/f5b9672c0e3ee1b1f028ef2dbd0032d033f9bdc6854e1b287fb83ae84e55c57c.jsonl.gz"
     },
+    "f6ad28555d35e512e681be5789711235e6623dcab16327d8be0f4565ab1d78c7": {
+      "bytes": 108804324,
+      "lines": 53796,
+      "gzip_bytes": 19828367,
+      "url": null
+    },
     "f74db1da5a52e88b57a8d60442d29310844bc71e3b328bafa79bc54ee2ceda91": {
       "bytes": 85829082,
       "lines": 42824,
       "gzip_bytes": 15837263,
+      "url": null
+    },
+    "f846aa0fc49aa20a01f5ec74edc2bae7893dcb02d3faca56389a956bf417a877": {
+      "bytes": 112663518,
+      "lines": 55816,
+      "gzip_bytes": 20460876,
       "url": null
     },
     "f8d05167bb08cb9d446781eb22b14323252adb4adcd7b6394f4ed7b47c8a6ce8": {

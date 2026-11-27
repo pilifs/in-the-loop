@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-062828-bind-an-unchanged-reviewed-api-outside-t",
+  "title": "Bind an unchanged reviewed API outside the public production diff",
+  "description": "On an ordinary scalar fixture, predict and bind the exact reviewed declaration in the original artifacts, generate against the old API, and assess its two pinned original returns. An absent reviewed declaration must identify the exact missing member without substituting another primary.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:classes"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T06:28:28+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "python3 verification/blind-caller/reviewed_entry.py",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop\" python3 verification/blind-caller/reviewed_entry.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/reviewed-entry.zip"
+  ]
+}

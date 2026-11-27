@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 import zipfile
 
-from targets import change_evidence, change_inventory, deployment_graph, observer_fields, observer_fixtures, observer_recipes, runtime_jdk, upgrade_replay
+from targets import change_evidence, change_inventory, deployment_graph, observer_actions, observer_fields, observer_fixtures, observer_recipes, runtime_jdk, upgrade_replay
 from targets.change_inventory import digest
 from targets.observer_recipes import Unsupported
 from targets.upgrade_replay import sha
@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 def identity():
     files = [Path(__file__), HERE / "observer_recipes.py", HERE / "observer_histories.py", HERE / "observer_state.py",
              HERE / "observer_io.py", HERE / "observer_public_data.py", HERE / "observer_structures.py",
-             HERE / "observer_fields.py", HERE / "observer_fixtures.py", observer_recipes.TEMPLATE]
+             HERE / "observer_fields.py", HERE / "observer_actions.py", HERE / "observer_scalar.py", HERE / "observer_fixtures.py", observer_recipes.TEMPLATE]
     return {p.name: sha(p) for p in files}
 
 
@@ -182,7 +182,14 @@ def workflows(reg, predictions, work):
     recipe = json.loads((work / "generation.json").read_bytes())["recipe"]
     rows = []
     for index, q in enumerate(reg["questions"]):
-        cases, changes = finite_domain(q, predictions[q["id"]])
+        answer = predictions[q["id"]]
+        paired = answer.get("pairedObservation") if isinstance(answer,dict) else None
+        if paired is not None:
+            if set(answer) != {"pairedObservation"} or paired not in change_evidence.PAIRED or q["sides"] != ["old","new"]:
+                raise ValueError("invalid paired predicate or one-sided public history")
+            cases, changes = [{"args":arguments(item)} for item in q["inputs"]], []
+        else:
+            cases, changes = finite_domain(q, answer)
         name = f"scope-{index + 1}.json"
         spec = {"entry": recipe.get("bindingEntry",reg["entry"]), "probeClass": "UpgradeProbe", "observer": ", ".join(reg["fields"]),
                 "basis": q["history"], "cases": cases, "assertedSides": q["sides"],
@@ -192,9 +199,13 @@ def workflows(reg, predictions, work):
         if "requiredDispatch" in recipe:
             spec["requiredDispatch"] = recipe["requiredDispatch"]
         spec["predictionEncoding"] = "typed-public-fields/v1"
+        if paired is not None:
+            spec["pairedObservation"] = paired
         change_evidence.write_json(work / name, spec)
         rows.append(change_plan.workflow_row(q["id"], name, "UpgradeProbe.java", reg["assumptions"], changes,
                                              cohort=q["cohort"]))
+        if paired is not None:
+            rows[-1]["intent"] = {"pairedObservation":paired}
     change_evidence.write_json(work / "workflows.json", {"schema": "caller-workflows/v1", "change": reg["change"], "workflows": rows})
 
 
@@ -305,6 +316,33 @@ def numeric_input(mark):
     return value
 
 
+def formatter_reads(conversions, marks, outcomes):
+    """Match each direct getter to this call's argument and normal exit on the original JVM."""
+    kinds = {"UPGRADE-FORMAT-ARG", "UPGRADE-NUMBER", "UPGRADE-FORMAT-READ"}
+    actions = iter((kind, payload) for line in marks for kind, _, payload in [line.partition(" ")] if kind in kinds)
+
+    def take(kind):
+        name, payload = next(actions, (None, None))
+        if name != kind:
+            raise ValueError("formatter readback is missing or out of order at " + kind)
+        return payload.split("\t")
+
+    records = []
+    for index, (call, outcome) in enumerate(zip(conversions, outcomes, strict=True)):
+        thread, alias = map(int, take("UPGRADE-FORMAT-ARG"))
+        take("UPGRADE-NUMBER")
+        if "readAfterReturn" in call and outcome[0] == "return":
+            reader, receiver, value = take("UPGRADE-FORMAT-READ")
+            if (thread != int(reader) or alias != int(receiver) or alias < 0 or value not in ("true", "false")):
+                raise ValueError("the getter must read the same retained argument on the calling thread")
+            outcome.append(value == "true")
+            records.append({"call": index, "argument": 2, "receiverAlias": alias, "threadAlias": thread,
+                            "member": observer_recipes.FORMAT_GETTER, "afterNormalReturn": True, "value": outcome[-1]})
+    if next(actions, None) is not None:
+        raise ValueError("unexpected formatter action after the registered history")
+    return records
+
+
 def correspondence(recipe, inputs, marks, observation):
     """Independent JVM call counts and receiver identities; the scalar projection also reads each return or throw."""
     aliases = [int(m.split()[1]) for m in marks if m.startswith("UPGRADE-PUBLIC-CALL ")]
@@ -317,7 +355,8 @@ def correspondence(recipe, inputs, marks, observation):
     result = {"entryCalls": len(aliases), "receiverAliases": aliases, "observationSha256": digest(values)}
     if family == "typed numeric conversions":
         actual_inputs = [numeric_input(m.partition(" ")[2]) for m in marks if m.startswith("UPGRADE-NUMERIC-INPUT ")]
-        if actual_inputs != inputs["conversions"]:
+        conversions = inputs["conversions"]
+        if actual_inputs != [{k:v for k,v in call.items() if k != "readAfterReturn"} for call in conversions]:
             raise ValueError("actual numeric arguments at public entry differ from the reviewed conversions")
         result["numericArguments"] = actual_inputs
         events = [m.partition(" ")[2] for m in marks if m.startswith("UPGRADE-NUMBER ")]
@@ -332,7 +371,9 @@ def correspondence(recipe, inputs, marks, observation):
                 reads.append(["return", *fields])
             else:
                 raise ValueError("unsupported live numeric representation: " + event)
-        if reads != values or len(aliases) != len(inputs["conversions"]) or len(reads) != len(aliases):
+        if recipe.get("argumentRead") == observer_recipes.FORMAT_GETTER:
+            result["argumentReads"] = formatter_reads(conversions, marks, reads)
+        if wire(reads) != wire(values) or len(aliases) != len(conversions) or len(reads) != len(aliases):
             raise ValueError("numeric projection disagrees with the returns or exceptions of the live public invocations")
     elif family == "selection and lazy default":
         if (len(aliases) != len(inputs["selections"]) or len(values) != len(aliases)
@@ -362,18 +403,11 @@ def correspondence(recipe, inputs, marks, observation):
         if len(values) != 2**(inputs["maximumSize"] + 1) - 1 or len(aliases) != 2*len(values) or any(
                 a != b for a,b in zip(aliases[::2], aliases[1::2])):
             raise ValueError("missing paired removal on a retained map")
-    elif family == "paired mutable-property samples":
-        arity = [2,2,2] if inputs["mode"] == "paired mutations" else [3]
-        if len(aliases) != 1 or [len(v) for v in values] != arity:
-            raise ValueError("missing public samples of the original, copy or recording target")
-    elif family == "consume an event-stream response":
-        if len(aliases) != len(inputs["streams"]) or len(values) != len(aliases) or any(
-                len(v) != 4 or not isinstance(v[0], list) or v[1] not in {"error","complete"} for v in values):
-            raise ValueError("missing a subscribed public stream or terminal signal")
-    elif family == "reopened block index and sorted hits":
-        if len(aliases) < 1 or not values or any(len(v) != 2 or type(v[0]) != int or len(v[1]) != v[0]
-                for v in values if v != ["overload-absent"]):
-            raise ValueError("missing sorted public hits or total after reopening the index")
+    elif family == "public scalar method":
+        from targets import observer_scalar
+        result.update(observer_scalar.qualify(recipe, inputs, marks, values))
+    elif observer_actions.selectors(recipe):
+        result["publicActions"] = observer_actions.qualify(recipe, inputs, marks, values)
     tuples = []
     for line in marks:
         if line.startswith("UPGRADE-HELPER-VALUE "):

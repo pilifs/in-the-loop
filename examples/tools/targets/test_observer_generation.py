@@ -39,6 +39,18 @@ class NumericInputsTest(unittest.TestCase):
             select(entry, {**call, "format": {**fmt, "parseBigDecimal": 1}})
         with self.assertRaisesRegex(observer_recipes.Unsupported, "exactly text, type"):
             select(owner + observer_recipes.NUMBER_ENTRY, {**call, "format": fmt})
+        retained = [{**call, "format": fmt, "readAfterReturn": "isParseBigDecimal"}]
+        marks = ["UPGRADE-FORMAT-ARG 0\t3", "UPGRADE-NUMBER java.math.BigDecimal\t1.5",
+                 "UPGRADE-FORMAT-READ 0\t3\ttrue"]
+        def observe(events):
+            rows = [["return", "java.math.BigDecimal", "1.5"]]
+            observer_generation.formatter_reads(retained, events, rows)
+            return rows[0][-1]
+        self.assertIs(observe(marks), True)
+        for changed in ([marks[0], marks[2], marks[1]], [*marks[:2], marks[2].replace("3", "4")],
+                        [*marks[:2], marks[2].replace("0", "1")], [*marks, marks[2]]):
+            with self.assertRaises(ValueError):
+                observe(changed)
 
 
 class RescoreTest(unittest.TestCase):

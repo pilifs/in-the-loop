@@ -1,0 +1,112 @@
+{
+  "arm": "cold",
+  "assistance": "public production changes",
+  "candidateBudget": 64,
+  "candidateCount": 2,
+  "candidates": [
+    {
+      "bindings": {
+        "new": {
+          "artifactSha256": "6c00ebfda532ab5bff639bb32cc820d0bd0386c491651a61d95b65b61391aa54",
+          "classSha256": "7037805aa54cbd8039003187d753bc7142607008acf1cbf4b5c784183506f305",
+          "flags": 1,
+          "provider": 0
+        },
+        "old": {
+          "artifactSha256": "1b86ba03a6b8edc39797b1e72c243d9b508105fbd4ca2a5f11b6d3bd9ce4e309",
+          "classSha256": "ecffbb8bddb584b8532a6d7564ad1bcc93528bdaa8c7851b21ae498e1b9a6c65",
+          "flags": 1,
+          "provider": 0
+        }
+      },
+      "entry": "org.jgrapht.alg.connectivity.ConnectivityInspector#edgeAdded(Lorg/jgrapht/event/GraphEdgeChangeEvent;)V",
+      "fields": [
+        "public return or escaping exception"
+      ],
+      "history": "Reach ConnectivityInspector.edgeAdded from a public caller and observe its result under the change described by Fix connectivity listener updates with an uninitialized cache.",
+      "inputs": [],
+      "literalTestInputs": 0,
+      "prediction": {
+        "undecided": "public input and observation need registration"
+      },
+      "publicChange": "Fix connectivity listener updates with an uninitialized cache",
+      "rank": 1,
+      "recipe": "reviewed public history",
+      "requiredSides": [
+        "old",
+        "new"
+      ],
+      "score": 21,
+      "source": [
+        "changed declaration"
+      ],
+      "sourceMethodSha256": {
+        "new": "23946948eca02616ea7286e3206b5a066ed6ab8577c58d8e0caa6335fd14c8a7",
+        "old": "f6b3483b27aa9d2d290d1f4aaac10e86dc581dd93d0792e06301f30bdfb6d94d"
+      },
+      "upstreamWitnesses": []
+    },
+    {
+      "bindings": {
+        "new": {
+          "artifactSha256": "6c00ebfda532ab5bff639bb32cc820d0bd0386c491651a61d95b65b61391aa54",
+          "classSha256": "7037805aa54cbd8039003187d753bc7142607008acf1cbf4b5c784183506f305",
+          "flags": 1,
+          "provider": 0
+        },
+        "old": {
+          "artifactSha256": "1b86ba03a6b8edc39797b1e72c243d9b508105fbd4ca2a5f11b6d3bd9ce4e309",
+          "classSha256": "ecffbb8bddb584b8532a6d7564ad1bcc93528bdaa8c7851b21ae498e1b9a6c65",
+          "flags": 1,
+          "provider": 0
+        }
+      },
+      "entry": "org.jgrapht.alg.connectivity.ConnectivityInspector#vertexAdded(Lorg/jgrapht/event/GraphVertexChangeEvent;)V",
+      "fields": [
+        "public return or escaping exception"
+      ],
+      "history": "Reach ConnectivityInspector.vertexAdded from a public caller and observe its result under the change described by Fix connectivity listener updates with an uninitialized cache.",
+      "inputs": [],
+      "literalTestInputs": 0,
+      "prediction": {
+        "undecided": "public input and observation need registration"
+      },
+      "publicChange": "Fix connectivity listener updates with an uninitialized cache",
+      "rank": 2,
+      "recipe": "reviewed public history",
+      "requiredSides": [
+        "old",
+        "new"
+      ],
+      "score": 21,
+      "source": [
+        "changed declaration"
+      ],
+      "sourceMethodSha256": {
+        "new": "cba954b76b34c41ac7510307605c37c4a7ec7d61d0869a63bfe1f26956a52c24",
+        "old": "eca1ef28f0d9e0f7ea3fbcf76a5d3821fbdb0f060a93e79b3557a65140e173bf"
+      },
+      "upstreamWitnesses": []
+    }
+  ],
+  "candidatesInspected": 2,
+  "firstOpenDependency": null,
+  "inspectedEntries": [
+    "org.jgrapht.alg.connectivity.ConnectivityInspector#edgeAdded(Lorg/jgrapht/event/GraphEdgeChangeEvent;)V",
+    "org.jgrapht.alg.connectivity.ConnectivityInspector#vertexAdded(Lorg/jgrapht/event/GraphVertexChangeEvent;)V"
+  ],
+  "packetSha256": "fe199835390516d1b77e3405ec185b841119c548e59f5412e20e918b73b25fa9",
+  "primary": 0,
+  "productionDiffSha256": "9216776d01c6f91282beea1e32b5f3ea3262780183641b3eef8eee16a7459f0e",
+  "schema": "blind-public-prediction/v1",
+  "sourceClasses": {
+    "new": 2,
+    "old": 2
+  },
+  "subjectLaunches": 0,
+  "testsInspected": 0,
+  "upstreamTrace": null,
+  "upstreamUnitRuns": 0,
+  "url": "https://github.com/jgrapht/jgrapht/pull/1379",
+  "visibleDescription": "## Summary\n\n- Keep vertex and edge additions safe before full connectivity computation and after cache invalidation.\n- Clear individually cached components on edge additions while retaining lazy computation and existing incremental updates for initialized caches.\n- Add directed and undirected regression tests for initial updates, removal/addition sequences, and partial component queries.\n- Prepared with Codex assistance.\n\n## Testing\n\nFixes #1162"
+}

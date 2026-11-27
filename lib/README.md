@@ -268,6 +268,8 @@ tasks.named("check") { dependsOn("verifyContracts") }
 
 A native target workflow binds multi-release class and resource lookup to the selected Java runtime. For a direct native CLI check, set `JVMCONTRACT_JAR_RELEASE` to the feature of the JDK in `JAVA_HOME`. The checker verifies the release identity and selects the highest eligible versioned entry in each JAR. An explicit JVM multi-release override leaves the class open. The proof cache records the selected release. [JAR file specification](https://docs.oracle.com/en/java/javase/21/docs/specs/jar/jar.html#multi-release-jar-files)
 
+For a public static integral property on an ordered application classpath, `examples/tools/build.py --stock-property` binds the subject and its static callees on the selected JDK. The command checks which private class files stock JBMC 6.11.0 opened and read during the deciding property invocation. Its receipt records the original physical JAR entries, digests, stock arguments and assertion results. This qualification covers closed primitive methods without external initialization. Raw stock and equivalence commands retain their active multi-release guard.
+
 **The selected class binding.** Which exact class file stands for a class name is said in one place, [`ClassPath::bind`](src/classpath.rs): the first class path entry that holds the class provides it, and in a multi-release JAR the bound release selects among its class files. The checker reads the bytes that binding names and no others. `jvmcontract class-bindings` prints it for a whole launch in one process ([`src/class_bindings.rs`](src/class_bindings.rs) has the request): the provider, the JAR entry and its SHA-256 for each class, whether the bound class file declares a method asked about, the entries that stand for a JAR's logical names, or a typed refusal with every candidate's digest and origin.
 
 - With no release bound, a class that has a versioned class file is refused (`unbound-release`), as before.
@@ -615,6 +617,8 @@ On that JDK the loader also supplies the lexical path of an unescaped, absolute 
 
 On supported Integer cache images the checker boxes arbitrary signed ints, including a hash computed from class identities. Repeated calls agree on cached identity throughout one execution, including the VM's optional cache above 127. Each uncached call allocates a distinct box. The native fixture checks two independent ints, and the JVM repeats the boundary cases under three cache limits. [Integer cache controls](tests/fixtures/claims/claims/L.java)
 
+
+For a strict property that reads the process time zone, `--observed-initializer CLASS --observed-runtime '{"fixedZone":"GMT+10:00"}'` launches the original JVM under the named fixed offset and witnesses the root's first active use. On the qualified Temurin 21 image, each default read produces a fresh copy. Installing a non-null fixed zone copies the supplied value into that execution path. A later raw-offset mutation of a returned or supplied object therefore has its own observable result. The statement identifies the initial-offset receipt when the claim consumes it. `expectedZoneReceipt` pins that receipt on a retry. Resetting to the host default or inspecting an unqualified zone field leaves a named gap.
 
 ## Library use
 

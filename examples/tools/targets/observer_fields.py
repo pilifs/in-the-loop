@@ -2,6 +2,9 @@
 def mapping(fields, recipe, entry):
     family = recipe["family"]
     fields_by_family = {
+        "public scalar method": [
+            ("[0][0]", entry, "normal return or escaping exception"),
+            ("[0][1:]", entry, "runtime class and complete scalar spelling, or the escaping exception type")],
         "typed numeric conversions": [
             ("[call][0]", entry, "return or throws at each public call"),
             ("[call][1]", "Object.getClass().getName()", "runtime class or exception type; null is distinct"),
@@ -68,6 +71,8 @@ def mapping(fields, recipe, entry):
             ("[0][3,4]","Date forwarded to recording target and subsequent original getter","nullable milliseconds")],
     }
     sources = fields_by_family[family]
+    if family == "typed numeric conversions" and "argumentRead" in recipe:
+        sources.append(("[call][3]", recipe["argumentRead"], "boolean returned on the retained formatter after normal return"))
     if family == "peek on a retained stack" and recipe.get("subsequentPop"):
         sources.append(("[1][1]", "subsequent pop on the same receiver", "retained top or exception type"))
     return [{"field":field,"position":position,"source":source,"type":kind}

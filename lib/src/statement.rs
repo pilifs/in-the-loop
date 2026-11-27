@@ -456,7 +456,15 @@ pub fn checker_assumptions(last: Option<&JbmcResult>) -> Vec<Assumption> {
     if let Some(native) = &last.native {
         out.push(Assumption { kind: AssumptionKind::Initialization, text: "every JDK class is initialized already, its static initializer having run and thrown nothing".into(), basis: Basis::Engine, id: None });
         // What a model of the own checker takes for granted about the JVM it stands for (a locale, a class loader).
-        out.extend(native.assumed.iter().map(|a| Assumption { kind: AssumptionKind::Library, text: a.clone(), basis: Basis::Engine, id: native.assumption_ids.get(a).cloned() }));
+        out.extend(native.assumed.iter().map(|a| {
+            let id = native.assumption_ids.get(a).cloned();
+            let (kind, basis) = if id.as_deref().is_some_and(|s| s.starts_with("summary-use:")) {
+                (AssumptionKind::Summary, Basis::Proved)
+            } else {
+                (AssumptionKind::Library, Basis::Engine)
+            };
+            Assumption { kind, text: a.clone(), basis, id }
+        }));
     } else {
         out.push(Assumption {
             kind: AssumptionKind::Library,

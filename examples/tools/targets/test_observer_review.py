@@ -23,6 +23,14 @@ class NumberedHistoryTest(unittest.TestCase):
         for extra in (" then clear the formatter", ", then read its old value", " and Widget"):
             with self.assertRaises(observer_recipes.Unsupported):
                 observer_review.numeric_history("Parse `2` as Byte" + extra)
+        retained = history[:-1] + observer_review.FORMAT_READ + "."
+        with self.assertRaisesRegex(observer_recipes.Unsupported, "configured DecimalFormat"):
+            observer_review.numeric_history(retained, {"numberFormat": None})
+        fixture = {"locale": "de-DE", "pattern": "0.0", "parseBigDecimal": False}
+        call, = observer_review.numeric_history(retained, {"numberFormat": fixture})["conversions"]
+        self.assertEqual(call["readAfterReturn"], "isParseBigDecimal")
+        self.assertEqual(observer_review.prediction("number", {"return": "BigDecimal=1.5 parseBigDecimal=false"}),
+                         [["return", "java.math.BigDecimal", "1.5", False]])
 
     def test_selection_predicates_follow_the_history_including_empty_sequences(self):
         history = "Use [] twice, first selecting odd values, then selecting values >5."

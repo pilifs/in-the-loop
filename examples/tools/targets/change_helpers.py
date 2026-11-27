@@ -14,6 +14,7 @@ from targets.change_inventory import digest, instructions
 TYPES = {"I": ("int", -(2**31), 2**31-1), "J": ("long", -(2**63), 2**63-1),
          "C": ("char", 0, 65535), "Z": ("boolean", 0, 1)}
 IDENT = r"[a-zA-Z_$][a-zA-Z_$0-9]*"
+RUNTIME_READER = Path(__file__).with_name("java")/"RuntimeHelperBytes.java"
 
 
 def literal(value, kind):
@@ -105,10 +106,25 @@ def prove(spec, files, jdk, image, checker, directory, cache):
         raise ValueError("actual helper class differs from the generated binding")
     contract, source, hashes = declaration(spec, data)
     rules = {path.name: sha(path) for path in
-             (Path(__file__), Path(change_inventory.__file__), Path(runtime_jar.__file__), Path(runtime_jdk.__file__))}
+             (Path(__file__), RUNTIME_READER, Path(change_inventory.__file__), Path(runtime_jar.__file__), Path(runtime_jdk.__file__))}
+    env = {**os.environ, "JAVA_HOME": str(jdk), "PATH": str(jdk/"bin")+os.pathsep+os.environ["PATH"]}
+    runtime_binding = None
+    roots = list(files)
+    if origin == "java.base":
+        reader, boot = directory/"reader", directory/"runtime-image"
+        reader.mkdir(parents=True,exist_ok=True)
+        subprocess.run([jdk/"bin/javac","-proc:none","-d",reader,RUNTIME_READER],env=env,check=True,capture_output=True,timeout=30)
+        launch = subprocess.run([jdk/"bin/java","-cp",reader,"RuntimeHelperBytes",owner,boot],env=env,check=True,
+                                capture_output=True,text=True,timeout=30)
+        logical = owner.replace(".","/")+".class"
+        if launch.stdout.strip() != "jrt:/java.base/"+logical or (boot/logical).read_bytes() != data:
+            raise ValueError("original bootstrap resource differs from the helper's bound class")
+        runtime_binding = {"resource":launch.stdout.strip(),"definingLoader":"bootstrap","classSha256":hashes["classSha256"],
+                           "jdkReleaseSha256":sha(jdk/"release"),"image":image}
+        roots.append(boot)
     key = digest({"spec": spec, "helper": hashes, "jdk": image, "checker": sha(checker),
                   "qualification": rules, "ordered": [(str(f), sha(f)) for f in files],
-                  "contract": contract, "consumer": source})
+                  "contract": contract, "consumer": source,"runtimeBinding":runtime_binding})
     stored = cache / (key+".json") if cache else None
     if stored and stored.is_file():
         try:
@@ -121,7 +137,8 @@ def prove(spec, files, jdk, image, checker, directory, cache):
                     and digest(record["proof"]) == record["proofDigest"]
                     and digest(record["finiteCertificate"]) == record["finiteDigest"]
                     and record["finiteCertificate"] and record["finiteCertificate"]["domain"] == spec["rows"]
-                    and record["finiteCertificate"]["body"] == hashes):
+                    and record["finiteCertificate"]["body"] == hashes and record.get("runtimeBinding") == runtime_binding
+                    and (record["basis"] != "strict native lemma" or accepted(record["proof"], spec))):
                 return {**record, "action": "exact reuse"}
         except (KeyError, TypeError, ValueError):
             pass
@@ -129,7 +146,9 @@ def prove(spec, files, jdk, image, checker, directory, cache):
     if any(runtime_jar.effective_class(f, name, feature) is not None
            for name in ("CheckedHelperUse", "CheckFinite") for f in files):
         raise ValueError("application class collides with the generated helper-proof harness")
-    directory.mkdir(parents=True)
+    directory.mkdir(parents=True,exist_ok=True)
+    classes = directory/"classes"
+    classes.mkdir(exist_ok=True)
     java = directory/"CheckedHelperUse.java"
     java.write_text(source)
     main = directory/"CheckFinite.java"
@@ -140,20 +159,20 @@ def prove(spec, files, jdk, image, checker, directory, cache):
     lemma = directory/"helper.contract"
     lemma.write_text(contract)
     cp = os.pathsep.join(str(f) for f in files)
-    subprocess.run([jdk/"bin/javac", "-g", "-parameters", "-proc:none", "-cp", cp, "-d", directory, java, main],
+    subprocess.run([jdk/"bin/javac", "-g", "-parameters", "-proc:none", "-cp", cp, "-d", classes, java, main],
                    check=True, capture_output=True, timeout=40)
-    argv = [str(checker), "prove", "--classes", str(directory), "--classpath", cp, "CheckedHelperUse#check",
+    argv = [str(checker), "prove", "--classes", str(classes), "--classpath", os.pathsep.join(map(str,roots)), "CheckedHelperUse#check",
             "--assume", f"choice >= 0 && choice < {len(spec['rows'])}", "--assert", "result == true",
             "--engine", "native", "--gaps", "strict", "--unwind", "16", "--timeout", "60", "--json",
             "--lemmas", str(lemma)]
-    env = {**os.environ, "JAVA_HOME": str(jdk), "PATH": str(jdk/"bin")+os.pathsep+os.environ["PATH"]}
     proc = subprocess.run(argv, capture_output=True, text=True, env=env, timeout=75)
     if not proc.stdout.strip():
         raise ValueError("checked helper produced no verifier report: " + proc.stderr[-500:])
     proof = json.loads(proc.stdout)
     record = {"key": key, "qualification": rules, "entry": spec["entry"], "provider": origin, **hashes, "rows": spec["rows"],
               "contract": contract, "consumer": source, "argv": argv, "exit": proc.returncode,
-              "proof": proof, "proofDigest": digest(proof)}
+              "proof": proof, "proofDigest": digest(proof), "runtimeBinding":runtime_binding,
+              "nativeSubstitutions":summary_uses(proof,spec["entry"])}
     # In an application trial the helper's JVM class is already initialized when its entry is reached.
     # Establish a second closed finite proof on that premise only for methods with no external operations.
     _, member, desc = runtime_jar.parse_target(spec["entry"])
@@ -161,7 +180,7 @@ def prove(spec, files, jdk, image, checker, directory, cache):
     _, code, handlers = declarations[member, desc]
     finite = None
     if handlers == 0 and local_integral_body(code, pool):
-        ref = subprocess.run([jdk/"bin/java", "-verbose:class", "-cp", str(directory)+os.pathsep+cp,
+        ref = subprocess.run([jdk/"bin/java", "-verbose:class", "-cp", str(classes)+os.pathsep+cp,
                               "CheckFinite", str(len(spec["rows"]))], env=env, capture_output=True, text=True, timeout=35)
         from targets.upgrade_replay import class_origins
         loaded = class_origins(ref.stdout)
@@ -169,9 +188,9 @@ def prove(spec, files, jdk, image, checker, directory, cache):
                 and (origin == "java.base" or loaded.get(owner) == {Path(origin)})):
             finite = {"domain": spec["rows"], "body": hashes, "afterSuccessfulInitialization": True,
                       "provider": origin, "closedInstructions": [op for _, op in instructions(code)],
-                      "normalReturns": len(spec["rows"]), "consumerClassSha256": sha(directory/"CheckedHelperUse.class")}
+                      "normalReturns": len(spec["rows"]), "consumerClassSha256": sha(classes/"CheckedHelperUse.class")}
     record.update(finiteCertificate=finite, finiteDigest=digest(finite))
-    native = proc.returncode == 0 and accepted(proof)
+    native = proc.returncode == 0 and accepted(proof, spec)
     refused = len(proof) == 1 and proof[0].get("verdict") == "unverifiable"
     if not finite or not (native or refused):
         return {**record, "action": "refused"}
@@ -181,13 +200,28 @@ def prove(spec, files, jdk, image, checker, directory, cache):
     return {**record, "action": "proved"}
 
 
-def accepted(proof):
+def summary_uses(proof, entry):
+    if not isinstance(proof,list) or len(proof) != 1:
+        return []
+    prefix = "summary-use:"+entry+":"
+    found = []
+    for assumption in (proof[0].get("stated") or {}).get("assumptions",[]):
+        identity = assumption.get("id") or ""
+        if assumption.get("kind") == "summary" and assumption.get("basis") == "proved" and identity.startswith(prefix):
+            site, words = identity[len(prefix):].rsplit(":",1)
+            caller, pc = site.rsplit("@",1)
+            found.append({"caller":caller,"bci":int(pc),"args":[int(v) for v in words.split(",") if v]})
+    return found
+
+
+def accepted(proof, spec):
     if not isinstance(proof, list) or len(proof) != 1:
         return False
     row = proof[0]
+    uses = summary_uses(proof,spec["entry"])
     return (row.get("verdict") == "verified" and row.get("target") == "CheckedHelperUse#check"
-            and any(a.get("kind") == "summary" and a.get("basis") == "proved"
-                    for a in row.get("stated", {}).get("assumptions", [])))
+            and uses and all(u["caller"] == "CheckedHelperUse#check" and u["bci"] >= 0 for u in uses)
+            and {tuple(u["args"]) for u in uses} == {tuple(r["args"]) for r in spec["rows"]})
 
 
 def trace_config(directory, spec, proof):
