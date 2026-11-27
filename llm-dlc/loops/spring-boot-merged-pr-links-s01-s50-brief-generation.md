@@ -47,10 +47,16 @@
 | spring-projects/spring-boot#52280 | written | Read the test that opens the hash-and-space resource and expects byte 42. Distinct readback of a literal percent-23 sibling from an executable jar remains open. |
 | spring-projects/spring-boot#52244 | written | The merged nested fixture asserts `1.2.3` without directory entries. A missing class still adds an undefinable-package entry. Paired real-class lookups after an optional miss remain unexecuted. |
 | spring-projects/spring-boot#52402 | written | Compared empty-name handling with the pinned one-root and two-root assertions and the reported executable-JAR pattern failure. Independent marker bytes at each library root remain open. |
-| spring-projects/spring-boot#51653 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52530 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51551 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51372 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#50433 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#51653 | written | Confirmed that the generator emits a single-layer subtree without recursing, and that launcher extraction resolves original entry names using getLayer. Acceptance and output of a hand-authored mixed prefix/exact overlap remain open. |
+| spring-projects/spring-boot#52530 | written | Checked owning selectors for overlapping include/exclude and the explicit layer-order requirement. Final jar index ownership and ZIP readback remain open. |
+| spring-projects/spring-boot#51551 | written | The Maven fixture supplies `{}` statically. The landed test reads both manifest attributes and finds the nested WAR entry. Reading its exact bytes with an earlier suffix-matching decoy remains open. |
+| spring-projects/spring-boot#51372 | written | Checked the manifest-driven provided root, extracted JAR and library paths, and duplicate-name error against the earlier hardcoded-root proposal. Launch readback and older WARs without the new metadata remain open. |
+| spring-projects/spring-boot#50433 | written | Read the forked, forced-native provider regression. It reads `select 1;` from the nested migration. Real native image discovery, history checksum, and database effects after relocation remain open. |
 
 Authoring evidence consists of the saved PR metadata and revision-pinned source reads. Runtime results attributed to the PR or issue are upstream observations. The proposed controls and challenges have not been executed here.
+
+## Final handoff check
+
+On 2026-11-27 the 50 input links, case sections and written rows matched in order. Each of the 150 claims has a concrete public observation and refutation. Historical failures are attributed to the upstream report, pinned tests or a stated source inference. The JVM, service and packaged-application outcomes proposed for verification remain open. In particular, #52904's indexed list still passes through comma tokenization, #51173's landed redirect default differs from the strict-mode account in the PR, and #51372's provided-library lookup depends on new WAR manifest metadata.
+
+All 49 two-parent merges have the submitted sequence based on the first parent and ending at the second parent. For #9558 the full comparison covers three consecutive rebased commits. All 257 file paths and their addition/deletion counts agree with the submitted file lists. The aggregate comparison for #50489 confirms two unchanged renames. Rehashing 591 Spring Boot file reads matched the upstream Git blob IDs and lengths (559 distinct blobs). The Spring Batch repository interface and two Spring Kafka files also matched their pinned blobs. All 223 revision-pinned file links in the brief resolve to the checked sources. The changed-file selector found no applicable repository tests for the two Markdown files.
