@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-132636-run-three-genuine-flyway-native-sql-layo",
+  "title": "Run three genuine Flyway native SQL layouts on the Spring Boot parent",
+  "description": "Build a separate GraalVM executable for each root, nested, and two-directory SQL resource using the original Spring Boot parent JAR. Start a fresh H2 database for every executable and read the applied version, checksum and durable marker through independent JDBC. Repeat the JVM and Spring AOT controls before each image.",
+  "kind": "real-world",
+  "capabilities": [
+    "native-image",
+    "public-api-comparison"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T13:26:36+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "/home/filip/.sdkman/candidates/java/25.5.5.0+3-graalce/bin/native-image"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "8G",
+    "duration": "18m",
+    "memoryLimit": "11G",
+    "timeout": "80m"
+  },
+  "steps": [
+    {
+      "name": "Build and launch all three original native images",
+      "run": "python3 verification/merged-pr-links/s01-s50/native-flyway/replay.py parent --output verification/merged-pr-links/s01-s50/native-flyway/parent.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/native-flyway/parent.json"
+  ]
+}
