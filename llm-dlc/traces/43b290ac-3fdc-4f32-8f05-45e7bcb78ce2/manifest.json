@@ -12,28 +12,31 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T19:20:29.000Z",
-  "duration_seconds": 14808,
+  "ended": "2026-11-27T19:27:42.527Z",
+  "duration_seconds": 15241,
   "stats": {
     "turns": 20,
-    "api_calls": 367,
-    "tool_calls": 414,
-    "tool_errors": 4,
+    "api_calls": 393,
+    "tool_calls": 440,
+    "tool_errors": 5,
     "compactions": 3,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 750,
-      "output_tokens": 583468,
-      "cache_read_input_tokens": 111162032,
-      "cache_creation_input_tokens": 1548215
+      "input_tokens": 802,
+      "output_tokens": 612009,
+      "cache_read_input_tokens": 117193424,
+      "cache_creation_input_tokens": 1592154
     }
   },
   "tools": {
-    "Bash": 328,
+    "Bash": 351,
     "Read": 55,
     "Edit": 15,
     "Write": 13,
-    "AskUserQuestion": 3
+    "AskUserQuestion": 3,
+    "ListAgents": 1,
+    "SendMessage": 1,
+    "ToolSearch": 1
   },
   "files_touched": [
     "README.md",
@@ -100,24 +103,24 @@
     {
       "index": 3,
       "started": "2026-11-27T18:53:05.659Z",
-      "ended": "2026-11-27T19:20:29.000Z",
+      "ended": "2026-11-27T19:27:42.527Z",
       "turns": 4,
-      "api_calls": 53,
+      "api_calls": 79,
       "usage": {
-        "input_tokens": 112,
-        "output_tokens": 53112,
-        "cache_read_input_tokens": 9085734,
-        "cache_creation_input_tokens": 198047
+        "input_tokens": 164,
+        "output_tokens": 81653,
+        "cache_read_input_tokens": 15117126,
+        "cache_creation_input_tokens": 241986
       },
-      "peak_context_tokens": 213393
+      "peak_context_tokens": 257332
     }
   ],
   "log": {
-    "sha256": "747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4",
-    "bytes": 11102876,
-    "lines": 3544,
-    "gzip_bytes": 2107303,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4.jsonl.gz"
+    "sha256": "50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388",
+    "bytes": 11459456,
+    "lines": 3734,
+    "gzip_bytes": 2164630,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -242,20 +245,28 @@
       "log_sha256": "689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406"
     },
     {
-      "change_id": "oxqtlxmxywtpqxmrvzuxrskysnsrwwvr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "614ccbcc12c9cad4d8afea1e10055b72ed6f5d49c68c49826f566292c8e214a4"
-    },
-    {
       "change_id": "mvxtlyouwnvpxqzvuyvoxtnpnmnqtzzu",
       "commit_id": null,
       "immutable": false,
       "summary": "VF-078: a run's reported spend is short, and a workspace's run is in no published record",
       "body": "Two gaps found while converging the run skills on /orchestrate-run, recorded for whoever next works on run records. Neither came with that work and it fixed neither.\n\nA run's reported spend counts a cycle when its question is put to the watcher, so a cycle that ends the run with no question, the last compact and the summary are left out: a rehearsal of the tools reported 0.19 dollars where the client's total for the session was 0.63. And the records of a run that worked in a workspace of its own are published nowhere, since only the default workspace's are and nothing copies them there since the streams workflow was retired: the workspace the queue's runs work in holds 91 such records, the default checkout none, and the loop statistics count no single run.\n\nThe entry is the rehearsal's only record: the run was made in a throwaway copy on Claude Opus 5.5 at low effort, and the copy and its transcript were deleted afterwards at the user's wish.\n\nVerified: retired.py check finds nothing in the new entry, and the changed-tests run passed 6 of 6 test files. The findings page is one no test of the default run reads, so the passed run recorded for the tree before this commit still covers it.",
       "log_sha256": "747808f298c0be46d49a0db09d32a617ed576ec08e357f2b87dac23d80a1f9c4"
+    },
+    {
+      "change_id": "oxqtlxmxywtpqxmrvzuxrskysnsrwwvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "17b988d0c4de462a8ba5feb26bf5c5fa7cb271f4c708e20ab6bae5f251062cdb"
+    },
+    {
+      "change_id": "zyqvwuqmntrulyswplppkplkwllvpqpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-079: a session's trace line lands on commits it did not make",
+      "body": "Recorded for the user's decision. sync.py takes a session to have made every mutable ancestor of @ dated while it ran, and @ itself while it is live, so a line can land on a commit another session or a person made. It was seen twice during the convergence on /orchestrate-run and came with neither.\n\nFirst, the convergence's first commit put its session's line on three unpublished commits under it, two allow-list proposals and the user's own approval; each now names three sessions. Second, a sync of this session run in another workspace, merge-fixes, by a session with an uncommitted change that renders a session from another workspace's transcript, gave that workspace's working-copy change this session's line and stored the log it names there alone. That failed the check of the commit before this one in this workspace (log 614ccbcc12c9 neither stored locally nor uploaded); sync.py adopt-logs brought the log over and the check is back at 0 errors.\n\nThe entry puts two readings of a trace line to the user and asks that, under either, a session rendered from another workspace's transcript is not given the rendering checkout's working copy. No trace line was edited.\n\nVerified: retired.py check finds nothing in the entry, and the changed-tests run passed 6 of 6 test files. The findings page is one no test of the default run reads, so the passed whole run recorded for the tree at qvsumqom still covers this commit.",
+      "log_sha256": "50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388"
     }
   ],
   "logs": {
@@ -271,6 +282,12 @@
       "gzip_bytes": 1728388,
       "url": null
     },
+    "17b988d0c4de462a8ba5feb26bf5c5fa7cb271f4c708e20ab6bae5f251062cdb": {
+      "bytes": null,
+      "lines": null,
+      "gzip_bytes": null,
+      "url": null
+    },
     "1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209": {
       "bytes": 5657533,
       "lines": 1807,
@@ -283,16 +300,16 @@
       "gzip_bytes": 949744,
       "url": null
     },
+    "50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388": {
+      "bytes": 11459456,
+      "lines": 3734,
+      "gzip_bytes": 2164630,
+      "url": null
+    },
     "5d29b8b2cac9dcb4ab2cfa4fcecd1140511c7b15bd1ccc01a824e5f119194d05": {
       "bytes": 8751465,
       "lines": 2585,
       "gzip_bytes": 1682024,
-      "url": null
-    },
-    "614ccbcc12c9cad4d8afea1e10055b72ed6f5d49c68c49826f566292c8e214a4": {
-      "bytes": null,
-      "lines": null,
-      "gzip_bytes": null,
       "url": null
     },
     "689723cabec1daa8652fb5b682b0fb10968d3feebc0ac4afc75205443b0a4406": {

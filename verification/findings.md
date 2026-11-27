@@ -18,6 +18,22 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-079: a session's trace line lands on commits it did not make
+
+- **Status**: open, for the user to decide whether the rule changes. It did not come with the convergence on one run skill; it was seen twice during it.
+- **Raised**: 2026-11-27 by the session that did the convergence on `/orchestrate-run` (`43b290ac…`).
+- **Found**:
+  - **The rule.** `sync.py` (`link_commits`) takes a session to have made every mutable ancestor of `@` whose author date falls while the session ran, and `@` itself while the session is live. Nothing ties a commit to the session whose command made it.
+  - **Other sessions' commits.** The convergence's first commit was made on a line with three unpublished commits of that afternoon under it, and its sync put its session's line on all three: `kpvkzxtv` and `roktuvru` (allow-list proposals) and `ulxlynun` (the user's own approval of them, made from their terminal). Each now names three sessions (`6c5c7798…`, `e61d882b…`, `43b290ac…`), of which at most one made it.
+  - **Another workspace's working copy.** At 19:20 UTC a sync of the session `43b290ac…` ran in the workspace `merge-fixes`, where another session has an uncommitted change that lets `sync.py sync SESSION` render a session whose transcript is another workspace's. The session was live, so that workspace's working-copy change (`oxqtlxmx`) was given its trace line, and the log the line names was stored in `merge-fixes` alone. From then on `check` failed in the session's own workspace with `log 614ccbcc12c9 is neither stored locally nor uploaded`, until `sync.py adopt-logs` brought the log over. A commit of that working copy would carry the line.
+- **Needs**: the user's decision between two readings of a trace line.
+  - **Leave the rule.** A line then means "a session that was running when this was made", a commit with several lines does not say which of them made it, and [`llm-dlc/specification.md`](../llm-dlc/specification.md) should say so.
+  - **Tie a commit to the session whose command made it:** the changes its own `sync.py commit` and its commit hook recorded, with the date window kept for a commit that has no line at all.
+  - Under either, a session rendered from another workspace's transcript should not be given the rendering checkout's `@`.
+  - The three commits keep their lines: trace lines are not edited by hand.
+- **Tracked in**: this entry.
+- **Closes when**: the rule is decided and written down, and a sync of a session from another workspace's transcript leaves that workspace's working copy as it found it.
+
 ### VF-078: a run's reported spend leaves out its last turns, and a run in a workspace of its own is in no published record
 
 - **Status**: open, minor. Neither came with the convergence on one run skill: both were there before it, and it fixed neither.
