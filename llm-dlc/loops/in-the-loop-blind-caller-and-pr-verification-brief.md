@@ -118,3 +118,116 @@ The watcher result should answer four questions. What behavior did the product p
 [helper-receipt]: https://github.com/pilifs/in-the-loop/blob/5f0b2389344879610f907ac9ee5b048dd59c9df8/verification/generated-observers/receipts/io-helper.zip
 [vf71]: https://github.com/pilifs/in-the-loop/blob/5f0b2389344879610f907ac9ee5b048dd59c9df8/verification/findings.md#vf-071-stock-jbmc-requires-qualification-for-an-active-versioned-application-class
 [loaders]: https://github.com/pilifs/in-the-loop/blob/5f0b2389344879610f907ac9ee5b048dd59c9df8/verification/classpath-entry-discovery/loaders.json
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **The whole draw inventory, P 478–507, Q 508–537 and R 538–587, is checked**: every deployment file matches its
+  `runtime.json` digest, the JDKs match, and there is a worktree at each pin
+  ([Examples: deployments and pins](#examples-deployments-and-pins); rows in
+  `~/.cache/in-the-loop/blind-caller-pr-verification/logs/examples.json`). The caches are
+  `~/.cache/in-the-loop/{spring-pr-links-p01-p30,spring-pr-links-q01-q30,merged-pr-links-r01-r50}`, with worktrees
+  `worktrees/P01-{parent,fix}` … `Q30-…`, `R01-<project>-{parent,fix}` … `R50-…`.
+- **N01–N05** (examples 453–457, `~/.cache/in-the-loop/merged-pr-links-n01-n05`) and the adverse controls **M04, M06,
+  M09** (examples 446, 448, 451, `~/.cache/in-the-loop/merged-pr-links-m01-m10`) are checked the same way. The MySQL
+  sidecar image `mysql@sha256:0255b469f0135a0236d672d60e3154ae2f4538b146744966d96440318cc822c6` and Connector/J 9.1.0
+  are in place ([N01–N05 setup notes](organic-java-merged-pr-links-n01-n05-brief-setup.md#setup-agent-notes)).
+- **Development cases**: 458, 466 and 484 read `runtime.json` against `~/.cache/in-the-loop/spring-pr-links-o01-o20`
+  (458, 466) and `~/.cache/in-the-loop/spring-pr-links-p01-p30` (484). J14 (Lucene #15727) reads
+  `verification/product-behaviour/cases/J14/bindings.json` under `~/.cache/in-the-loop/organic-pr-20`.
+- **Part B upstream test launches, in a plain JVM (no Gradle or Maven)**:
+  - Spring 466: `~/.cache/in-the-loop/blind-caller-pr-verification/scripts/o09_upstream_test.sh TESTROLE CLASSROLE JDK [OUT]`
+    compiles and runs `ServerSentEventHttpMessageReaderTests` on the kept 202-entry spring-web test classpath
+    `~/.cache/in-the-loop/spring-pr-links-o01-o20/artifacts/O09-{fix,parent}/spring-web.testRuntimeClasspath.txt`,
+    with the JUnit console 6.1.2 at `~/.cache/in-the-loop/blind-caller-pr-verification/releases/junit6-console/lib/junit-platform-console-standalone-6.1.2.jar`.
+  - Parquet J08: `~/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_upstream_tests.sh {compile ROLE | classpath ROLE GRAPH | run ROLE GRAPH [selectors]}`.
+    The compiled `parquet-column` and `parquet-hadoop` test trees of both pins are in
+    `~/.cache/in-the-loop/blind-caller-pr-verification/upstream-tests/J08/{fix,parent}/`, and run over the original
+    113-entry graphs of `verification/product-behaviour/cases/J08/bindings.json`. Commands and digests are in
+    [the J08 section](#parquet-3638-j08-the-upstream-test-trees-over-the-original-113-entry-graphs).
+- Log4j #1173 and Commons IO #520 read `lib/benchmark/organic-composition/{log4j,io}/{old,new}/prepared.json`.
+  Jar digests are in [Other inputs](#other-inputs-j08-j14-log4j-1173-commons-io-520).
+- JDKs 8, 11, 17, 21.0.13 and 25.0.5 are in `~/.sdkman/candidates/java/`; the default `java` is 25.0.5. JBMC 6.11.0
+  is at `/usr/bin/jbmc`. `lib/target/release/jvmcontract` is current at `524b1fbd9277032681921afbeac09d218d156147`
+  (sha256 `aa6a6e26a770316bd80bd3c2c9d1f67ed55e1f7b3fa77a90fe3854ad7e7e69c6`). Identities are in [Tools](#tools).
+
+### What was verified on a JVM
+
+- The registered observations of 458, 466, 484, J08, J14 and Commons IO, re-run in fresh JVMs on the original
+  deployments, equal the committed receipts ([What was run](#what-was-run-on-a-jvm)).
+- Spring 466's landed test, on JDKs 25 and 17: the fix's test passes on the fix (14/14) and fails on the parent only in
+  `ignoreInvalidRetry`, with `NumberFormatException: For input string: "none"`. The parent's test passes on both (13/13).
+- Parquet J08: the landed `TestDictionary` passes on the fix graph (24) and fails on the parent graph in
+  `testDictionaryWriterReusableAfterFirstPageFallBack` and `testDictionaryWriterReusableAfterFallBack`. Upstream
+  `TestParquetWriter` (31 tests, the public file path) passes on both graphs.
+- Example 333 validates.
+- **Job `20261127-032247-setup-replay-the-p-q-r-n-and-m-public-ob` passed.** Every historical P, Q, R, N and M
+  observation was replayed in fresh JVMs on the original deployments at `5c57e715acb8e32f1ed7fc1dc2f7ba684882837c`,
+  including the MySQL 9.1.0 and Postgres 17 sidecars. Each audit equals its committed `audit.json` byte for byte. The
+  110-case draw inventory, N01–N05 and the M controls are re-run, not only digest-checked.
+- **Job `20261127-032259-setup-run-parquet-3638-s-upstream-parque` passed.** Parquet's whole `parquet-column` and
+  `parquet-hadoop` suites (138 classes) ran on the original 113-entry graphs, fix on fix, parent on parent, and fix on
+  parent. The fix-on-fix and parent-on-parent failure lists are identical. Fix-on-parent adds exactly the two landed
+  `TestDictionary` tests. The 24 failures and 24 aborts common to both pins are causes of the deployment, listed in
+  [the whole suites](#the-whole-suites-job-2-passed).
+- One of those shared failures was this setup's own: `TestParquetWriterError#testInSeparateProcess`, whose child JVM
+  got only the launcher jar as its classpath. The launch now uses `-cp`, and a probe shows the test passing on the fix
+  graph (57/57 with `TestDictionary` and `TestParquetWriter`). On the parent graph, only the two landed tests fail.
+- Both results are in commits that this line has not merged: `dc6fd6c8f17f` and `2c45066adba0` (the latter also
+  holds the first). `pipeline.py status` lists both jobs as "in commit 2c45066adba0 … merge it".
+
+### What to know before starting
+
+- **Producer-view hygiene.** These all hold historical callers, receipts or actual outcomes:
+  - the examples' `caller/`, `observations.json` and `comparison.json`;
+  - `verification/merged-pr-links/*/audit.json` and `repeated-audit.json`;
+  - `verification/product-behaviour/cases/J*/{case,physical}.json` and `UpgradeProbe.java`;
+  - this setup's `~/.cache/in-the-loop/blind-caller-pr-verification/probes/` and `logs/replay-*`, `physical-*`, `io-observe.txt`.
+
+  The worktrees hold the upstream tests and test diffs, which the brief keeps out of the first blind view. The compiled
+  test trees under `upstream-tests/` are upstream tests too: they belong to the test-assisted diagnostic and part B,
+  not to the headline attempt.
+- **J08's test launch is over overlays, not a pin build.** The pins' build needs a `thrift` 0.23.0 binary. The graph is
+  the pin's two changed `parquet-column` classes (8 overlay classes) over released Parquet 1.18.2, Hadoop 3.3.0 and an
+  unshaded fastutil 8.5.19. The upstream `parquet-hadoop` tests run against 1.18.2's `parquet-hadoop`, not the pin's.
+  Label trace evidence from it that way. `brotli-codec` 0.1.1 (runtime-only, not on Central) is absent. The six
+  network `InterOpTester` classes are left out of the job.
+- **Which upstream tests run usefully on J08's graphs.** 24 tests fail on both pins for reasons of the deployment, not
+  #3638: 20 from version skew against 1.18.2 (NaN counts, float16, column orders), one from the missing Brotli codec,
+  two from heap at the default `-Xmx`, and `TestParquetWriterError#testInSeparateProcess` from the old launch, now
+  fixed. A further 24 abort because Hadoop 3.3.0 has no vectored IO. A selection policy should treat these as
+  coverage gaps of the overlay, and they are listed by name in each run's `summary.txt`.
+- Launch J08 tests with `j08_upstream_tests.sh run` or `j08_suite.sh`. Both now start the console launcher from
+  `-cp`, so a child test JVM inherits the whole classpath. A tracer that must follow a child JVM needs the same
+  `java.class.path`.
+- **Spring 466's classpath has snapshot dependencies**: `reactor-core` and `reactor-test` `3.9.0-SNAPSHOT`, and
+  micrometer `1.18.0-SNAPSHOT` on the P cases. They are fixed bytes, digest-checked, from the O, P and Q setups'
+  Gradle homes. Do not re-resolve them. Gradle's test JVM for O09 was JDK 25 with `--release 17`; example 466's
+  runtime is JDK 17. The landed test behaves the same on both.
+- `$R/worktrees/R47-picocli-parent` (example 584) reports 18 `docs/*.html` files as modified. They differ only in line
+  endings, and no source differs ([details](#examples-deployments-and-pins)).
+- R05 (542) and R09 (546) have two deployments each (`jre`, `android`). R39 (576) and R42 (579) are overlays: R42's
+  pinned build cannot be configured from public sources
+  ([R setup](organic-java-merged-pr-links-r01-r50-brief-setup.md)). Examples 518 and 457 start Docker services.
+- `zero-allocation-hashing-0.27ea1.jar`'s signature could not be checked; only its sha1 matched Central.
+- Brief 24 (JVM startup facts) has landed at this head, so part D can reuse it. Job
+  `20261126-200411-replay-log4j-public-entry-bindings-and-s` failed and is not setup's to fix.
+- Run `public_comparison` as `PYTHONPATH=examples/tools python3 -m targets.public_comparison NNN`: the plain script
+  path fails on its import. `validate_example.py 333` takes about 3 minutes. pytest is not installed; use `unittest`
+  or `lib/tools/test_costs.py`.
+
+### What is left for the domain work on purpose
+
+- Everything the brief builds or measures:
+  - the retained-argument operation on 458 and its planted callers;
+  - the three development exercises;
+  - the sealed inventory, the exclusions, the freeze, the seed and the draw;
+  - the blind, test-assisted and reviewed attempts, and scoring;
+  - trace-guided ranking and the scheduler-hop exercise;
+  - the N01–N05 fresh-workspace run;
+  - every part D qualification.
+- Choosing which upstream test classes the trace launch uses (the policy to freeze), attaching the tracer
+  (`examples/tools/targets/java/UpgradeTrace.java`), and the plain-JVM comparison runs.
+- What goes into each producer view, and what stays with the evaluator.
+- Any example ids, registrations, scaffolds or claims.
