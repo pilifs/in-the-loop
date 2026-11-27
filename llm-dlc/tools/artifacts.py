@@ -617,12 +617,32 @@ class Archive:
                               "ORDER BY attempt DESC, captured_at DESC LIMIT 1", (job,)).fetchone()
         return bool(row) and row[0] == "remote_verified"
 
-    def begin_attempt(self, job: str) -> int:
-        """The number of a job's new attempt: one more than its last, whoever ran it on this machine."""
+    def begin_attempt(self, job: str, at_least: int = 0) -> int:
+        """The number of a job's new attempt: one more than its last, whoever ran it on this machine, and no less
+        than `at_least` (the pipeline numbers an attempt itself while this journal cannot be asked, and the next
+        number given here must not fall behind it)."""
         with self.transaction():
             n = self.db.execute("SELECT COALESCE(MAX(attempt), 0) + 1 FROM attempts WHERE job=?", (job,)).fetchone()[0]
+            n = max(n, int(at_least or 0))
             self.db.execute("INSERT INTO attempts VALUES (?,?,?)", (job, n, iso()))
         return n
+
+    def record_attempt(self, job: str, number: int) -> None:
+        """Take an attempt the pipeline numbered while this journal could not be asked (jobs/attempts.py): its
+        originals are sealed later, under the number its folder and its receipt already carry."""
+        with self.transaction():
+            self.db.execute("INSERT OR IGNORE INTO attempts VALUES (?,?,?)", (job, int(number), iso()))
+
+    def occurrence_states(self, ids) -> dict[str, dict]:
+        """For each of these occurrence ids the journal knows: its custody state, kind, job and attempt. What a
+        producer checks before it releases its own copy of exactly these bytes."""
+        found = {}
+        for occurrence in dict.fromkeys(ids):
+            row = self.db.execute("SELECT state, kind, job, attempt, status FROM occurrences WHERE id=?", (occurrence,)).fetchone()
+            if row:
+                found[occurrence] = {"state": row["state"], "kind": row["kind"], "job": row["job"], "attempt": row["attempt"],
+                                     "status": row["status"]}
+        return found
 
     def _seal_file(self, access: str, path: Path, pack: list, objects: list, limit: int | None = None,
                    skip: int = 0, hasher=None) -> tuple[str, int, list[dict]]:

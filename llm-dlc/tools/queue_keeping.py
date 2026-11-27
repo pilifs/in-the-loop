@@ -73,6 +73,8 @@ def collect(run: Run) -> dict | None:
         if r.returncode != 0:
             raise Problem(f"pipeline.py collect failed: {(r.stderr or r.stdout).strip()[-600:]}")
         ids = re.findall(r"^(\S+): \w+: applied \d+", r.stdout, re.M)
+        if "For the commit message" not in r.stdout:
+            return None  # every result here was collected before (a collect that was stopped): nothing new to commit
         said = r.stdout.split("For the commit message", 1)[-1].splitlines()[1:]
         said = [line.strip() for line in said if line.strip()]
         title = said[0] if said else f"Record verification results for {len(ids)} job(s)"

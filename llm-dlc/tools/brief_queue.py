@@ -67,7 +67,6 @@ import io
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 import time
@@ -224,44 +223,28 @@ def checkpoint(root: Path) -> dict:
     return {"checkpoint": (r.stdout.strip().splitlines() or ["done"])[-1]}
 
 
-def artifact_states(root: Path, job: str) -> list[str]:
-    """The custody states of a job's sealed originals (artifacts.py), or none when they can't be read."""
-    r = subprocess.run([sys.executable, str(root / "llm-dlc/tools/artifacts.py"), "list", "--job", job, "--json"],
+def pruned(root: Path) -> dict | None:
+    """What the pipeline's own prune removed and what it kept, with the reason for each (`pipeline.py prune --json`),
+    or None when it could not be asked."""
+    r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "prune", "--json"],
                        cwd=root, capture_output=True, text=True)
     try:
-        rows = json.loads(r.stdout) if r.returncode == 0 else []
+        return json.loads(r.stdout) if r.returncode == 0 else None
     except ValueError:
-        return []
-    rows = rows.get("occurrences", rows) if isinstance(rows, dict) else rows
-    return [row.get("state") for row in rows if isinstance(row, dict)]
+        return None
 
 
 def cleanup(root: Path) -> dict:
-    """What is safe to clear between two briefs: the work folders the runner keeps for failed jobs (keep_workdirs =
-    "failed"), once every original of the job is remote_verified in the archive. Nothing else is touched."""
-    freed, cleared, kept = 0, [], 0
-    home = (Path.home() / ".cache" / "in-the-loop").resolve()
-    for result in sorted((root / "verification" / "results").glob("**/result.json")):
-        try:
-            data = json.loads(result.read_text())
-        except (OSError, ValueError):
-            continue
-        work = Path(data.get("workdir") or "")
-        if not data.get("workdir") or not work.is_dir():
-            continue
-        try:
-            work.resolve().relative_to(home)
-        except ValueError:
-            kept += 1  # not where the runner keeps its folders: not this tool's to delete
-            continue
-        states = artifact_states(root, result.parent.name)
-        if not states or any(s != "remote_verified" for s in states):
-            kept += 1
-            continue
-        freed += sum(f.stat().st_size for f in work.rglob("*") if f.is_file() and not f.is_symlink())
-        shutil.rmtree(work, ignore_errors=True)
-        cleared.append(result.parent.name)
-    return {"cleared": len(cleared), "freedGB": round(freed / 2**30, 2), "keptNotYetSealed": kept}
+    """What is safe to clear between two briefs: the work folders the runner keeps for jobs that did not pass. The
+    pipeline decides which, by one rule (`pipeline.py prune`): the job's result is collected, and the original
+    sealed from that very attempt's work folder is verified in the archive. Until 2026-11-27 this function had a
+    rule of its own, that every original of the *job* was verified, which says nothing of a later attempt whose
+    capture failed. Nothing else is touched."""
+    report = pruned(root)
+    if report is None:
+        return {"cleared": 0, "freedGB": 0.0, "keptNotYetSealed": 0, "problem": "the pipeline's prune could not be asked"}
+    return {"cleared": len(report["removed"]), "freedGB": round(report["bytes"] / 2**30, 2),
+            "keptNotYetSealed": len(report["kept"])}
 
 
 def front_matter(text: str) -> dict:

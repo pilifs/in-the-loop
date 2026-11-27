@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T22:24:51.112Z",
-  "duration_seconds": 25870,
+  "ended": "2026-11-27T22:46:56.093Z",
+  "duration_seconds": 27195,
   "stats": {
     "turns": 31,
-    "api_calls": 524,
-    "tool_calls": 580,
-    "tool_errors": 9,
+    "api_calls": 569,
+    "tool_calls": 625,
+    "tool_errors": 10,
     "compactions": 4,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1074,
-      "output_tokens": 827263,
-      "cache_read_input_tokens": 156531062,
-      "cache_creation_input_tokens": 2099657
+      "input_tokens": 1164,
+      "output_tokens": 916081,
+      "cache_read_input_tokens": 176679838,
+      "cache_creation_input_tokens": 2210433
     }
   },
   "tools": {
-    "Bash": 450,
+    "Bash": 491,
     "Read": 76,
-    "Write": 21,
+    "Write": 25,
     "Edit": 19,
     "AskUserQuestion": 3,
     "mcp__chrome-devtools__take_screenshot": 3,
@@ -48,8 +48,12 @@
     "examples/tools/observe.py",
     "examples/tools/preflight.py",
     "jobs/README.md",
+    "jobs/attempts.py",
     "jobs/audit.py",
     "jobs/records.py",
+    "jobs/sandbox.py",
+    "jobs/schema/job.schema.json",
+    "jobs/test_attempts.py",
     "jobs/test_audit.py",
     "llm-dlc/loops/brief-generation-template.md",
     "llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md",
@@ -129,24 +133,24 @@
     {
       "index": 4,
       "started": "2026-11-27T21:27:46.543Z",
-      "ended": "2026-11-27T22:24:51.112Z",
+      "ended": "2026-11-27T22:46:56.093Z",
       "turns": 4,
-      "api_calls": 64,
+      "api_calls": 109,
       "usage": {
-        "input_tokens": 128,
-        "output_tokens": 118764,
-        "cache_read_input_tokens": 16770353,
-        "cache_creation_input_tokens": 368820
+        "input_tokens": 218,
+        "output_tokens": 207582,
+        "cache_read_input_tokens": 36919129,
+        "cache_creation_input_tokens": 479596
       },
-      "peak_context_tokens": 380659
+      "peak_context_tokens": 491435
     }
   ],
   "log": {
-    "sha256": "2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010",
-    "bytes": 15920935,
-    "lines": 5043,
-    "gzip_bytes": 3327223,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010.jsonl.gz"
+    "sha256": "085632357f1b4a287fe236b3482e4a13b2194987ae32dd966e774b2b3f5fcc97",
+    "bytes": 16894341,
+    "lines": 5492,
+    "gzip_bytes": 3445212,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/085632357f1b4a287fe236b3482e4a13b2194987ae32dd966e774b2b3f5fcc97.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -357,6 +361,22 @@
       "summary": "Add a read-only audit of the job records, with the pinned corpus as its fixture",
       "body": "First slice of the brief for one jobs pipeline (llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief.md), its gate 'protect and measure'. jobs/records.py reads the committed specifications and receipts by job id, from a git revision (git objects alone) or from a working copy, and computes the result indexes from the receipts. jobs/audit.py joins specifications, receipts, what each receipt names in its own folder, the indexes and, for a working copy, the runner's claims and staged results. It reports a discrepancy where two records of one job cannot both be right (exit 1), a gap where a record names something the revision does not hold, and a note for a fact of the layout. It can write and verify a manifest of the paths and git ids of every specification, receipt and result folder. verification/pipeline.py now writes the indexes with the function the audit recomputes them with. The retirement check reads the new jobs/ folder as live code and pages.\n\nThe corpus at b52a084f5d11 is frozen as jobs/fixtures/census-b52a084f5d11.json and manifest-b52a084f5d11.jsonl.gz (1,906 rows, 32,071 files). It has 1,906 job ids with a specification, a receipt and an index row each, 1,469 passed, 420 failed and 17 error, three flat specifications of 2026-11-22 with a result under their day, no discrepancy, and seven index files that the receipts give back to the byte. The audit also found 947 kept outputs of 19 jobs that receipts name and no commit holds, 945 under an ignored path and 2 over the commit limit, none sealed as an original; 944 are still on disk in the default checkout. That is recorded as VF-080.\n\nVerified: jobs/test_audit.py, 16 tests (a made-up corpus with one fault at a time, the pinned corpus against its census and its manifest at the pinned revision and at this commit); verification/test_pipeline.py, 48 tests; the tests of what changed, 30 of 30 files; retired.py check finds nothing; the cost lint agrees.",
       "log_sha256": "2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010"
+    },
+    {
+      "change_id": "nxywpskkxrpwkwotpttkzsltllsmmymt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "085632357f1b4a287fe236b3482e4a13b2194987ae32dd966e774b2b3f5fcc97"
+    },
+    {
+      "change_id": "wzyqzummrztmknuqqqtykqyvktrlkyyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Give every execution of a job its own attempt folders, and prune by exact attempt",
+      "body": "Second slice of the brief for one jobs pipeline, the rest of its gate 'protect and measure': the two evidence-retention risks it names. Until now every run of a job wrote into the same run and work directories, and a rerun cleared them after asking the private archive to keep the earlier attempt; when the archive could not, the bytes went with the folder. And prune asked whether the job's latest captured work directory was verified, which is an earlier attempt's when a later capture failed. The brief queue's cleanup had the same fault with a rule of its own.\n\nNow each execution is an attempt with a durable record and folders of its own (jobs/attempts.py, .state/attempts/ID/NNN-TOKEN/), made before its first output whether or not the archive answers. A rerun clears nothing, and the result names its attempt and the ones before it. pipeline.py recover seals what nothing sealed, where it is: an attempt whose runner died, one whose capture failed, a result set aside, a run directory of the old layout; a runner does it when it starts, and recover --kept-outputs seals VF-080's files. pipeline.py prune removes a work directory only when the job's result is collected, the receipt is of that attempt or a later one, the original sealed from that very attempt is verified in the store, and the folder is still what was sealed; prune --why says why each other stays. brief_queue.py's cleanup calls that prune. A collect that was stopped after it wrote a result, or after that result was committed, is finished by the next one without writing the receipt again. The audit lists unsealed attempts as gaps. artifacts.py takes an attempt number the pipeline gave and answers for exact occurrences.\n\nVerified: verification/test_capture.py, 12 tests on a real spool and a store on disk (a runner killed mid-step and a rerun with a full spool keep the killed attempt's bytes, recover seals them and the store gives the same bytes back; an earlier attempt's verified original does not release a later attempt whose capture failed; a changed work directory stays; a collect stopped after a commit publishes nothing twice); verification/test_pipeline.py, 52 tests; jobs/test_attempts.py, 6; the tests of what changed, 39 of 39 files after one fixture was put right; the cost lint agrees. The default checkout's capture log holds one failure since capture began and no line of a failed rescue; whether an earlier prune removed a later attempt's folder cannot be shown, since nothing recorded which attempt a folder belonged to.",
+      "log_sha256": "085632357f1b4a287fe236b3482e4a13b2194987ae32dd966e774b2b3f5fcc97"
     }
   ],
   "logs": {
@@ -364,6 +384,12 @@
       "bytes": 8801727,
       "lines": 2615,
       "gzip_bytes": 1688305,
+      "url": null
+    },
+    "085632357f1b4a287fe236b3482e4a13b2194987ae32dd966e774b2b3f5fcc97": {
+      "bytes": 16894341,
+      "lines": 5492,
+      "gzip_bytes": 3445212,
       "url": null
     },
     "16d5467e7a474e758f7f2044ee030512d17307fa535dacb021db10da2b3ce5bd": {

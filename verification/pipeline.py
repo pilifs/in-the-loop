@@ -82,6 +82,8 @@ _layout.loader.exec_module(layout)
 _records = importlib.util.spec_from_file_location("jobs_records", Path(__file__).resolve().parents[1] / "jobs" / "records.py")
 records = importlib.util.module_from_spec(_records)
 _records.loader.exec_module(records)
+# Every execution of a job is an attempt with folders of its own (jobs/attempts.py): nothing is cleared for a rerun.
+attempts = records.load("jobs_attempts", Path(__file__).resolve().parents[1] / "jobs" / "attempts.py")
 PRIORITIES = f"{HERE}/priorities.json"
 SCHEMAS = ROOT / HERE / "schema"
 JOB_SCHEMA = "verification-job/v1"
@@ -895,7 +897,7 @@ class Runner:
         self.config, self.runner = config, config["runner"]
         self.isolation = isolation
         self.state = self.runner["state_dir"]
-        for d in ["claims", "results", "runs", "work", "tools"]:
+        for d in ["claims", "results", "attempts", "tools"]:
             (self.state / d).mkdir(parents=True, exist_ok=True)
         self.lock = threading.Lock()
         self.running = {}      # id -> {"plan", "thread", "steps": [Step]}
@@ -1048,13 +1050,17 @@ class Runner:
     def execute(self, job, path, source, job_plan, entry):
         job_id = job["id"]
         started = now()
-        run_dir = self.state / "runs" / job_id
-        work = self.state / "work" / job_id
         capture = originals()
-        attempt = capture.begin(ROOT, self.state, job, source, run_dir, work) if capture else None
-        if run_dir.exists():
-            shutil.rmtree(run_dir)
-        (run_dir / "logs").mkdir(parents=True)
+        capturing = bool(capture and capture.available(ROOT))
+        # The attempt has its number, its record and its folders before it writes anything, whether or not the
+        # archive answers: its number is the archive's when that can be asked, else its own record's. A run
+        # directory of before attempts had their own (STATE/runs/ID) is left as it is, for `recover` and `prune`.
+        floor = max(attempts.next_number(self.state, job_id), legacy_attempt(self.state, job_id) + 1)
+        number = capture.begin(ROOT, self.state, job_id, floor) if capturing else None
+        attempt = attempts.begin(self.state, job_id, source, self.runner["machine_name"], at_least=number or floor)
+        attempt.save(spec=job, path=path)
+        entry["attempt"] = attempt
+        run_dir, work = attempt.run_dir, attempt.work_dir
         result = {
             "$schema": "../../schema/result.schema.json",
             "schema": RESULT_SCHEMA,
@@ -1082,6 +1088,8 @@ class Runner:
             "steps": [],
             "outputs": [],
             "collected": None,
+            "attempt": {"id": attempt.id, "number": attempt.number, "folder": str(attempt.folder),
+                        "previous": [a.id for a in attempts.of(self.state, job_id) if a.id != attempt.id]},
         }
         try:
             self.prepare(job, source, work, result, entry)
@@ -1098,10 +1106,17 @@ class Runner:
         result["wallSeconds"] = round((finished - started).total_seconds(), 1)
         self.finish(job, result, job_plan)
         # Sealed whole, before anything below cuts a log or removes the work directory; the result names what was.
-        sealed = capture.sealed_run(ROOT, self.state, job, attempt, source, run_dir, work, result) if capture else None
+        errors = []
+        sealed = capture.sealed_run(ROOT, self.state, job, attempt.number, source, run_dir, work, result,
+                                    attempt_id=attempt.id, errors=errors) if capturing else None
         if sealed:
             result["originals"] = sealed
-        # The run directory keeps the whole logs on this machine; the result gets them whole if short, else cut.
+            attempt.captured("sealed", sealed["occurrences"], number=sealed["attempt"])
+        elif capturing:  # kept, and said: `recover` seals it when the archive answers again
+            attempt.captured("failed", error=errors[-1] if errors else "see capture.log")
+        else:
+            attempt.captured("off")
+        # The attempt's run folder keeps the whole logs on this machine; the result gets them whole if short, else cut.
         out = self.state / "results" / job_id
         if out.exists():
             shutil.rmtree(out)
@@ -1114,15 +1129,24 @@ class Runner:
             shutil.copytree(run_dir / "outputs", out / "outputs")
         if (run_dir / "changes.diff").exists():
             shutil.copy2(run_dir / "changes.diff", out / "changes.diff")
-        write_json(out / "result.json", result)
+        # A work directory goes when the job ends only by a rule that makes it nobody's last copy: a passed job's
+        # is not an original, and another's goes with `keep_workdirs = "never"` once what it held beyond the commit
+        # is sealed (or nothing captures here). Any other stays in the attempt's folder, for `prune`.
         keep = self.runner["keep_workdirs"]
-        if keep == "never" or (keep == "failed" and result["status"] == "passed"):
-            shutil.rmtree(work, ignore_errors=True)
+        if not work.exists():
+            pass
+        elif result["status"] == "passed" and keep != "always":
+            attempt.release("work", "the job passed, and a passed job's work directory is not an original")
+        elif keep == "never" and (not capturing or (sealed and "workdir" in sealed["occurrences"])):
+            attempt.release("work", "keep_workdirs is never" + (", and what it held beyond the commit is sealed" if sealed else
+                                                                ", and nothing captures originals here"))
         else:
             result["workdir"] = str(work)
-            write_json(out / "result.json", result)
-        if capture:
-            capture.sealed_result(ROOT, self.state, job, attempt, source, out / "result.json")
+        write_json(out / "result.json", result)
+        shutil.copy2(out / "result.json", attempt.folder / "result.json")  # the attempt's own, whatever is staged next
+        attempt.finished(result["status"])
+        if capturing:
+            capture.sealed_result(ROOT, self.state, job, attempt.number, source, out / "result.json")
         with self.lock:
             self.running.pop(job_id, None)
             self.finished.append(job_id)
@@ -1130,9 +1154,8 @@ class Runner:
         print(f"{job_id}: {result['summary']}", flush=True)
 
     def prepare(self, job, source, work, result, entry):
-        if work.exists():
-            shutil.rmtree(work)
-        work.mkdir(parents=True)
+        work.mkdir(parents=True)  # the attempt's own: nothing was here
+        entry["attempt"].save(prepared=True)
         if conflicted(source):
             # jj writes a conflicted commit to git as its conflict layout: the README and a whole-tree copy of the
             # base and of each side. A job exported from one ran on that, three or four trees at once (VF-060).
@@ -1177,7 +1200,7 @@ class Runner:
             cargo = shutil.which("cargo") or str(Path.home() / ".cargo/bin/cargo")
             run = f"{cargo} build --release --manifest-path lib/Cargo.toml"
             env = dict(os.environ, CARGO_TARGET_DIR=str(self.state / "cargo-target"))
-            log = self.state / "runs" / result["id"] / "logs" / "0-build-jvmcontract.log"
+            log = entry["attempt"].run_dir / "logs" / "0-build-jvmcontract.log"
             step = Step(f"vjob-{scope_id(result['id'])}-build", self.isolation, max(entry["cpus"], 1),
                         max(entry["memory"], self.runner["build_memory"]), self.runner["stall_window"],
                         self.runner["max_timeout"], self.runner["job_oom_score_adj"])
@@ -1569,6 +1592,12 @@ def cmd_run(args):
     lock.write(f"{os.getpid()}\n")  # for runner_pid: who is at work here
     lock.flush()
     runner.clear_stale_claims()
+    try:  # what an earlier runner left unsealed (it was killed, or its capture failed) is sealed now, where it is
+        for row in recover(runner.state):
+            print(f"note  {row['what']} {row['id']}: nothing had sealed it; " + ("sealed now" if row["sealed"] else
+                  f"still only on this machine ({row.get('error') or 'see capture.log'}): `pipeline.py recover` tries again"), flush=True)
+    except Exception as e:  # never keeps a runner from starting
+        print(f"note  recover: {type(e).__name__}: {e}", file=sys.stderr, flush=True)
 
     def interrupted(signum, _frame):
         print(f"stopping on {signal.Signals(signum).name}: running steps are cancelled, their jobs recorded", flush=True)
@@ -1757,28 +1786,162 @@ def cmd_commit_paths(args):
     return 0
 
 
-def prune_workdirs(state_dir: Path, archive=None, dry_run: bool = False) -> list[tuple[str, int]]:
-    """Remove the work directories kept for failed jobs once they are of no more use here: the job's result is
-    collected (its folder in verification/results), and its work directory's original is remote_verified in the
-    archive, so `artifacts.py fetch` restores it. (job id, bytes) for each, removed unless DRY_RUN. Without an archive
-    nothing is removed. A failed setup batch kept ~2 GB a job (about 80 GB for one 49-job batch on 2026-11-27), and
-    the watcher cleared them by hand by this same rule."""
-    work = state_dir / "work"
-    if archive is None:
-        capture = originals()
-        arts = capture.tool(ROOT) if capture else None
+def legacy_attempt(state_dir: Path, job_id: str) -> int:
+    """The attempt that a run directory of before 2026-11-27 (STATE/runs/ID, shared by every run of a job) was
+    sealed as, by the marker its sealing left; 0 when it has none."""
+    try:
+        return int(json.loads((Path(state_dir) / "runs" / job_id / ".captured").read_text()).get("attempt") or 0)
+    except (OSError, ValueError, TypeError):
+        return 0
+
+
+def open_archive():
+    """The archive's journal on this machine (llm-dlc/tools/artifacts.py), or None where nothing captures."""
+    capture = originals()
+    arts = capture.tool(ROOT) if capture else None
+    try:
+        return arts.Archive() if arts else None
+    except Exception:
+        return None
+
+
+def collected_receipt(job_id: str) -> dict | None:
+    folder = layout.find_result(ROOT, job_id)
+    try:
+        return json.loads((folder / "result.json").read_text()) if folder else None
+    except (OSError, ValueError):
+        return None
+
+
+def staged_attempt(state_dir: Path, job_id: str):
+    """The attempt whose result is staged and not collected: its id, or its number for a runner of before attempts
+    had ids, or None when nothing is staged."""
+    try:
+        staged = json.loads((Path(state_dir) / "results" / job_id / "result.json").read_text())
+    except (OSError, ValueError):
+        return None
+    return (staged.get("attempt") or {}).get("id") or (staged.get("originals") or {}).get("attempt") or "unnumbered"
+
+
+def verified(states: dict, occurrences: dict, job_id: str, number: int | None) -> str | None:
+    """Why these sealed originals do not let their source go, or None when every one is this job's, this attempt's
+    and read back from the store."""
+    for name, occurrence in sorted(occurrences.items()):
+        known = states.get(occurrence)
+        if known is None:
+            return f"the archive here does not know its {name} original ({occurrence})"
+        if known["job"] != job_id or (known["attempt"] is not None and number is not None and known["attempt"] != number):
+            return f"its {name} original ({occurrence}) is recorded for another job or attempt"
+        if known["state"] != "remote_verified":
+            return f"its {name} original is {known['state'] if known['state'] != 'locally_sealed' else 'sealed here'}, not yet verified in the store"
+    return None
+
+
+def attempt_refusal(attempt, receipt, staged, states, unarchived=False) -> str | None:
+    """Why an attempt's work directory stays, or None when `prune` may remove it: the job's result is collected,
+    the collected receipt is of this attempt or of a later one, the original sealed from *this* attempt's work
+    directory is verified in the store with the attempt's other originals, and the folder is still what was
+    sealed. The latest original of the job's work directory being verified says nothing of a later attempt whose
+    capture failed, which is what was asked until 2026-11-27."""
+    record = attempt.record
+    if attempt.state() == "running":
+        return "its runner is at work"
+    if receipt is None:
+        return "its job's result is not collected"
+    if staged is not None and staged in (attempt.id, attempt.number):
+        return "its result is staged and not collected yet"
+    of_receipt = receipt.get("attempt") or {}
+    number = of_receipt.get("number") or (receipt.get("originals") or {}).get("attempt")
+    if of_receipt.get("id") != attempt.id and (number is None or attempt.number >= number):
+        return "the collected receipt is of another attempt, and not of a later one"
+    capture = record.get("capture") or {}
+    if record.get("status") == "passed":
+        return None  # not an original: the logs, the outputs and the diff are what a passed job's attempt keeps
+    if capture.get("state") == "off":
+        return None if unarchived else "nothing captured originals when it ran: `prune --unarchived` removes it all the same"
+    if capture.get("state") not in ("sealed", "recovered"):
+        return f"its originals are not sealed ({capture.get('state') or 'no record'}): `recover` seals them"
+    occurrences = capture.get("occurrences") or {}
+    if "workdir" not in occurrences:
+        return "no original of its work directory was sealed"
+    if of_receipt.get("id") == attempt.id and ((receipt.get("originals") or {}).get("occurrences") or {}).get("workdir") not in (None, occurrences["workdir"]):
+        return "the collected receipt names another original of the work directory"
+    refused = verified(states, occurrences, attempt.job, attempt.number)
+    if refused:
+        return refused
+    was = (capture.get("fingerprints") or {}).get("work")
+    now_ = attempts.fingerprint(attempt.work_dir)
+    if not was or not now_ or was["sha256"] != now_["sha256"]:
+        return "its work directory is not what was sealed: it changed since"
+    return None
+
+
+def legacy_refusal(state_dir: Path, job_id: str, receipt, staged, states) -> str | None:
+    """The same for a work directory of before attempts had folders (STATE/work/ID, reused by every run of its job):
+    the bytes on disk are tied to the collected receipt's attempt by the marker its sealing left in the job's run
+    directory, which a later run would have cleared."""
+    if (state_dir / "claims" / job_id).exists():
+        return "a runner holds its job"
+    if receipt is None:
+        return "its job's result is not collected"
+    if staged is not None:
+        return "a result of its job is staged and not collected yet"
+    originals_ = receipt.get("originals") or {}
+    occurrence = (originals_.get("occurrences") or {}).get("workdir")
+    if not occurrence:
+        return "the collected receipt names no original of the work directory"
+    if legacy_attempt(state_dir, job_id) != originals_.get("attempt"):
+        return "nothing ties the folder to the attempt the receipt names (its run directory's seal is of another attempt, or gone)"
+    return verified(states, {"workdir": occurrence}, job_id, originals_.get("attempt"))
+
+
+def prune_workdirs(state_dir: Path, archive=None, dry_run: bool = False, unarchived: bool = False, kept: list | None = None) -> list[tuple[str, int]]:
+    """Remove the work directories kept for jobs that did not pass once they are of no more use here. One goes only
+    when the job's result is collected and the original sealed from that very attempt's work directory is verified
+    in the store, so that `artifacts.py fetch` restores it (`attempt_refusal`, `legacy_refusal`). (attempt or job
+    id, bytes) for each, removed unless DRY_RUN; `kept` takes (id, why) for each that stays. Without an archive
+    nothing sealed is known to be verified, and only what was never an original goes. A failed setup batch kept
+    ~2 GB a job (about 80 GB for one 49-job batch on 2026-11-27)."""
+    state_dir = Path(state_dir)
+    archive = archive if archive is not None else open_archive()
+    gone, receipts = [], {}
+
+    def receipt_of(job_id):
+        if job_id not in receipts:
+            receipts[job_id] = collected_receipt(job_id)
+        return receipts[job_id]
+
+    def states_of(occurrences):
         try:
-            archive = arts.Archive() if arts else None
+            return archive.occurrence_states(list(occurrences)) if archive is not None and occurrences else {}
         except Exception:
-            archive = None
-    if archive is None or not work.is_dir():
-        return []
-    gone = []
-    for folder in sorted(p for p in work.iterdir() if p.is_dir()):
+            return {}
+
+    for attempt in attempts.every(state_dir):
+        if not attempt.work_dir.is_dir():
+            continue
+        receipt = receipt_of(attempt.job)
+        occurrences = ((attempt.record.get("capture") or {}).get("occurrences") or {}).values()
+        why = attempt_refusal(attempt, receipt, staged_attempt(state_dir, attempt.job), states_of(occurrences), unarchived)
+        if why:
+            if kept is not None:
+                kept.append((attempt.id, why))
+            continue
+        size = (attempts.fingerprint(attempt.work_dir) or {}).get("bytes", 0)
+        if not dry_run:
+            attempt.release("work", "pruned: its job's result is collected, and "
+                            + ("its originals are verified in the store" if attempt.record.get("status") != "passed"
+                               and (attempt.record.get("capture") or {}).get("state") != "off" else "it holds no original"))
+        gone.append((attempt.id, size))
+    work = state_dir / "work"
+    for folder in sorted(p for p in work.iterdir() if p.is_dir()) if work.is_dir() else []:
         job_id = folder.name
-        if (state_dir / "results" / job_id / "result.json").exists():
-            continue  # finished and not yet collected
-        if layout.find_result(ROOT, job_id) is None or not archive.workdir_verified(job_id):
+        receipt = receipt_of(job_id)
+        occurrence = (((receipt or {}).get("originals") or {}).get("occurrences") or {}).get("workdir")
+        why = legacy_refusal(state_dir, job_id, receipt, staged_attempt(state_dir, job_id), states_of([occurrence] if occurrence else []))
+        if why:
+            if kept is not None:
+                kept.append((job_id, why))
             continue
         size = sum(f.stat().st_size for f in folder.rglob("*") if f.is_file() and not f.is_symlink())
         if not dry_run:
@@ -1789,14 +1952,146 @@ def prune_workdirs(state_dir: Path, archive=None, dry_run: bool = False) -> list
 
 def cmd_prune(args):
     config = load_config(args)
-    gone = prune_workdirs(config["runner"]["state_dir"], dry_run=args.dry_run)
+    kept = []
+    gone = prune_workdirs(config["runner"]["state_dir"], dry_run=args.dry_run, unarchived=args.unarchived, kept=kept)
     total = sum(n for _, n in gone)
-    for job_id, n in gone:
-        print(f"{'would remove' if args.dry_run else 'removed'} {job_id}: {n / 2**30:.1f} GiB")
+    if args.json:
+        print(json.dumps({"schema": "itl-job-prune/v1", "dryRun": args.dry_run, "bytes": total,
+                          "removed": [{"id": name, "bytes": n} for name, n in gone],
+                          "kept": [{"id": name, "why": why} for name, why in kept]}, indent=2))
+        return 0
+    for name, n in gone:
+        print(f"{'would remove' if args.dry_run else 'removed'} {name}: {n / 2**30:.1f} GiB")
+    if args.why:
+        for name, why in kept:
+            print(f"kept {name}: {why}")
     print(f"{len(gone)} kept work director{'y' if len(gone) == 1 else 'ies'}, {total / 2**30:.1f} GiB"
           + (" (dry run)" if args.dry_run else " freed")
-          + ("" if gone else ": none is both collected and remote_verified yet"))
+          + (f"; {len(kept)} stay" + ("" if args.why else " (--why says why each)") if kept else "")
+          + ("" if gone else ": none is both collected and verified in the store yet"))
     return 0
+
+
+def recover(state_dir: Path, dry_run: bool = False) -> list[dict]:
+    """Seal what an attempt left that nothing sealed: an attempt whose runner died, one whose capture failed, a run
+    directory of before attempts had folders, a staged result that a collect set aside. Each is sealed where it is
+    and stays there (`prune` releases it later, by its own rule). One row for each thing looked at that needed it:
+    what, and whether it is sealed now. Does nothing where nothing captures originals."""
+    capture, state_dir = originals(), Path(state_dir)
+    if not capture or not capture.available(ROOT):
+        return []
+    done = []
+    for attempt in attempts.every(state_dir):
+        state, held = attempt.state(), (attempt.record.get("capture") or {}).get("state")
+        if state not in ("interrupted", "finished") or held not in ("pending", "failed"):
+            continue
+        row = {"what": "attempt", "id": attempt.id, "job": attempt.job, "state": state, "sealed": False}
+        done.append(row)
+        if dry_run:
+            continue
+        try:
+            result = json.loads((attempt.folder / "result.json").read_text())
+        except (OSError, ValueError):
+            result = None
+        errors = []
+        sealed = capture.sealed_run(
+            ROOT, state_dir, attempt.record.get("spec") or {"id": attempt.job}, attempt.number, attempt.record.get("source"),
+            attempt.run_dir, attempt.work_dir if attempt.work_dir.is_dir() else None, result, attempt_id=attempt.id, errors=errors,
+            status="complete" if state == "finished" else "partial",
+            why="sealed by recover: " + ("its capture failed when it ran" if state == "finished" else
+                                         "the attempt did not finish, and its runner sealed nothing"))
+        if state == "interrupted" and attempt.record.get("state") == "running":
+            attempt.save(state="interrupted", interruptedSeenAt=attempts.now())
+        if sealed:
+            attempt.captured("recovered", sealed["occurrences"], number=sealed["attempt"])
+            row.update(sealed=True, occurrences=sealed["occurrences"])
+        else:
+            attempt.captured("failed", error=errors[-1] if errors else "see capture.log")
+            row["error"] = errors[-1] if errors else None
+    runs = state_dir / "runs"
+    for run_dir in sorted(p for p in runs.iterdir() if p.is_dir()) if runs.is_dir() else []:
+        job_id = run_dir.name
+        if (state_dir / "claims" / job_id).exists() or (run_dir / ".captured").exists() or not any(run_dir.iterdir()):
+            continue
+        row = {"what": "run directory", "id": job_id, "job": job_id, "sealed": False}
+        done.append(row)
+        if dry_run:
+            continue
+        source = (collected_receipt(job_id) or {}).get("sourceCommit")
+        work, errors = state_dir / "work" / job_id, []
+        made = capture.rescue_legacy(ROOT, state_dir, job_id, source, run_dir, work if work.is_dir() else None, errors)
+        row.update(sealed=made is not None, occurrences=made or {}, **({"error": errors[-1]} if errors else {}))
+    aside = state_dir / "uncaptured"
+    for folder in sorted(p for p in aside.iterdir() if p.is_dir()) if aside.is_dir() else []:
+        if (folder / ".captured").exists():
+            continue
+        job_id = folder.name.rsplit("-", 1)[0]
+        row = {"what": "result set aside", "id": folder.name, "job": job_id, "sealed": False}
+        done.append(row)
+        if dry_run:
+            continue
+        errors = []
+        occurrence = capture.set_aside(ROOT, state_dir, folder, job_id, errors)
+        row.update(sealed=occurrence is not None, occurrences={"result": occurrence} if occurrence else {},
+                   **({"error": errors[-1]} if errors else {}))
+    return done
+
+
+def recover_kept_outputs(state_dir: Path, dry_run: bool = False) -> list[dict]:
+    """Seal the outputs that receipts say were kept and that this working copy holds while no commit does (their
+    paths are ignored, or they are over the commit's limit: VF-080). One row a job."""
+    capture = originals()
+    if not capture or not capture.available(ROOT):
+        return []
+    audit = records.load("jobs_audit", Path(__file__).resolve().parents[1] / "jobs" / "audit.py")
+    check = audit.Audit(ROOT, default_rev())
+    check.read_specs()
+    check.read_receipts()
+    check.check_artifacts()
+    jobs, done = {}, []
+    for gap in check.gaps:
+        if gap["kind"] == "artifact-not-committed" and gap["what"] == "kept output" and not gap.get("occurrence") \
+                and (ROOT / gap["path"]).is_file():
+            jobs.setdefault(gap["id"], []).append(gap["path"])
+    for job_id, paths in sorted(jobs.items()):
+        folder = layout.find_result(ROOT, job_id)
+        marker = Path(state_dir) / "recovered-outputs" / job_id
+        if folder is None or marker.exists():
+            continue
+        row = {"what": "kept outputs", "id": job_id, "job": job_id, "files": len(paths), "sealed": False}
+        done.append(row)
+        if dry_run:
+            continue
+        receipt, errors = check.receipts[job_id][1], []
+        occurrence = capture.kept_outputs(ROOT, state_dir, job_id, folder, receipt.get("sourceCommit"),
+                                          (receipt.get("originals") or {}).get("attempt"), errors)
+        if occurrence:
+            marker.parent.mkdir(parents=True, exist_ok=True)
+            marker.write_text(json.dumps({"occurrence": occurrence, "files": len(paths), "at": iso(now())}) + "\n")
+        row.update(sealed=bool(occurrence), occurrences={"outputs": occurrence} if occurrence else {},
+                   **({"error": errors[-1]} if errors else {}))
+    return done
+
+
+def cmd_recover(args):
+    config = load_config(args)
+    state = config["runner"]["state_dir"]
+    capture = originals()
+    if not capture or not capture.available(ROOT):
+        print("nothing captures originals here (no archive tool, or ITL_ORIGINALS_OFF): nothing to recover into")
+        return 0
+    done = recover(state, args.dry_run) + (recover_kept_outputs(state, args.dry_run) if args.kept_outputs else [])
+    if args.json:
+        print(json.dumps({"schema": "itl-job-recovery/v1", "dryRun": args.dry_run, "recovered": done}, indent=2))
+        return 0 if args.dry_run or all(r["sealed"] for r in done) else 1
+    for row in done:
+        said = "would seal" if args.dry_run else "sealed" if row["sealed"] else "NOT sealed"
+        print(f"{said}: {row['what']} {row['id']}" + (f" ({row['files']} file(s))" if row.get("files") else "")
+              + (f": {row['error']}" if row.get("error") else ""))
+    left = [r for r in done if not r["sealed"]] if not args.dry_run else []
+    print(f"{len(done)} thing(s) that nothing had sealed" + (" (dry run)" if args.dry_run else
+          f"; {len(done) - len(left)} sealed now" + (f", {len(left)} still only on this machine (the state directory's capture.log says why)" if left else "")))
+    return 1 if left else 0
 
 
 def cmd_collect(args):
@@ -1810,14 +2105,28 @@ def cmd_collect(args):
     if not ids:
         print("nothing to collect")
         return 0
-    applied_any, lines = False, []
+    applied_any, lines, fresh = False, [], []
     tally = {"applied": 0, "none": 0, "kept": 0, "conflicts": 0}
     for job_id in ids:
         src = state / job_id
         result = json.loads((src / "result.json").read_text())
         dest = layout.new_result(ROOT, job_id)  # beside its job: flat for a flat job, in the day's shard for a sharded one
         capture = originals()
-        sealed = capture.before_collect(ROOT, config["runner"]["state_dir"], job_id, src, dest, result) if capture else True
+        staged_digest = sha256((src / "result.json").read_bytes())
+        if already_collected(dest, staged_digest):
+            # An earlier collect wrote this very result and was stopped before it released the staged one (after
+            # its files were written, or after they were committed). The tree keeps what it has, to the byte, so
+            # nothing is published a second time; only the release is left to do.
+            kept_result = json.loads((dest / "result.json").read_text())
+            if capture and not (src / COLLECTED_MARK).exists():  # stopped between writing the result and sealing it
+                capture.after_collect(ROOT, config["runner"]["state_dir"], job_id, dest, kept_result)
+            if release_staged(capture, config, job_id, src, dest, kept_result, result):
+                print(f"{job_id}: {kept_result['status']}: was collected before; its staged result is released now")
+            else:
+                print(f"{job_id}: {kept_result['status']}: was collected before; its staged result is set aside, not sealed")
+            continue
+        run_dir = Path(result["attempt"]["folder"]) / "run" if (result.get("attempt") or {}).get("folder") else None
+        sealed = capture.before_collect(ROOT, config["runner"]["state_dir"], job_id, src, dest, result, run_dir) if capture else True
         if dest.exists():
             shutil.rmtree(dest)
         dest.mkdir(parents=True)
@@ -1850,7 +2159,10 @@ def cmd_collect(args):
                 keep.parent.mkdir(parents=True, exist_ok=True)
                 keep.write_bytes(new)
         result["collected"] = {"at": iso(now()), "applied": applied, "conflicts": conflicts, "kept": kept,
-                               "why": None if apply else f"not applied: the job {result['status']}"}
+                               "why": None if apply else f"not applied: the job {result['status']}",
+                               # The staged result this was collected from: a collect run again on the same
+                               # bytes finds its work done (already_collected).
+                               "staged": staged_digest}
         if diff_kept:
             result["collected"]["changesDiff"] = diff_kept
         if conflicts:
@@ -1861,12 +2173,9 @@ def cmd_collect(args):
         write_json(dest / "result.json", result)
         if capture:
             capture.after_collect(ROOT, config["runner"]["state_dir"], job_id, dest, result)
-        if sealed:
-            shutil.rmtree(src)
-        else:  # nothing sealed it and it could not be sealed now: out of collect's way, and kept
-            aside = config["runner"]["state_dir"] / "uncaptured" / f"{job_id}-{now().strftime('%Y%m%dT%H%M%SZ')}"
-            aside.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(src, aside)
+        (src / COLLECTED_MARK).write_text(iso(now()) + "\n")  # written and sealed: only the release is left
+        release_staged(None, config, job_id, src, dest, result, result, sealed)
+        fresh.append(job_id)
         applied_any = applied_any or bool(applied)
         tally["applied"] += bool(applied)
         tally["none"] += not result["outputs"]
@@ -1882,9 +2191,13 @@ def cmd_collect(args):
             print(f"after collect: {command}: exit {proc.returncode}")
             if proc.returncode:
                 print((proc.stdout + proc.stderr)[-2000:])
-    print("\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
-    print(f"  Record verification results for {len(ids)} job(s)")
-    print("  " + collect_totals(tally, len(ids)) + " " + " ".join(lines))
+    if fresh:
+        print("\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
+        print(f"  Record verification results for {len(fresh)} job(s)")
+        print("  " + collect_totals(tally, len(fresh)) + " " + " ".join(lines))
+    else:
+        print("\nNo result is new: every one here was collected before, by a collect that was stopped before it "
+              "released them. What it wrote is in the working copy as it left it.")
     try:  # earlier failures' kept work directories whose originals have since been read back from the store
         pruned = prune_workdirs(config["runner"]["state_dir"])
     except Exception as e:  # never fails a collect
@@ -1894,6 +2207,36 @@ def cmd_collect(args):
         print(f"\nremoved {len(pruned)} kept work director{'y' if len(pruned) == 1 else 'ies'} of failed jobs, "
               f"{sum(n for _, n in pruned) / 2**30:.1f} GiB: collected, and their originals remote_verified")
     return 0
+
+
+COLLECTED_MARK = ".collected"  # in a staged result: its collected form is written and sealed, and it only waits to go
+
+
+def already_collected(dest: Path, staged_digest: str) -> bool:
+    """Whether the result folder in the tree is the collected form of exactly this staged result."""
+    try:
+        kept = json.loads((dest / "result.json").read_text())
+    except (OSError, ValueError):
+        return False
+    return ((kept.get("collected") or {}).get("staged")) == staged_digest
+
+
+def release_staged(capture, config, job_id, src, dest, collected, staged, sealed=None) -> bool:
+    """The last step of a collect: the staged result goes once it is sealed, and is set aside when it could not
+    be. With `capture`, it is sealed here first (a collect that was stopped before this step). Whether it went."""
+    state_dir = config["runner"]["state_dir"]
+    if sealed is None:
+        run_dir = Path(staged["attempt"]["folder"]) / "run" if (staged.get("attempt") or {}).get("folder") else None
+        sealed = True
+        if capture and not staged.get("originals"):  # nothing sealed it when it ran: what before_collect would do
+            sealed = capture.before_collect(ROOT, state_dir, job_id, src, state_dir / "none", staged, run_dir)
+    if sealed:
+        shutil.rmtree(src)
+        return True
+    aside = state_dir / "uncaptured" / f"{job_id}-{now().strftime('%Y%m%dT%H%M%SZ')}"
+    aside.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(src, aside)
+    return False
 
 
 def collect_totals(tally, jobs):
@@ -2332,7 +2675,20 @@ def main(argv=None):
                                      "are remote_verified (collect does this too)")
     p.add_argument("--state-dir")
     p.add_argument("--dry-run", action="store_true", help="name them and their sizes, remove nothing")
+    p.add_argument("--why", action="store_true", help="say why each work directory that stays does")
+    p.add_argument("--json", action="store_true", help="what was removed and what stays with its reason, as JSON")
+    p.add_argument("--unarchived", action="store_true", help="also remove collected attempts' work directories that "
+                   "ran while nothing captured originals (they are in no archive)")
     p.set_defaults(func=cmd_prune)
+
+    p = sub.add_parser("recover", help="seal into the archive what an attempt left that nothing sealed: a killed runner's "
+                                       "attempt, a capture that failed, a result set aside (the runner does this when it starts)")
+    p.add_argument("--state-dir")
+    p.add_argument("--dry-run", action="store_true", help="name them, seal nothing")
+    p.add_argument("--kept-outputs", action="store_true", help="also seal the outputs receipts say were kept and that this "
+                   "working copy holds while no commit does (VF-080)")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_recover)
 
     p = sub.add_parser("commit-paths", help="the paths a commit of collected results holds, for sync.py commit --only")
     p.set_defaults(func=cmd_commit_paths)

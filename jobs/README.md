@@ -14,7 +14,16 @@ is read in. What is intended and not built is in [`ARCHITECTURE.md`](../ARCHITEC
 | [`records.py`](records.py) | reads the committed records by id, from a git revision or from a working copy; computes the result indexes from the receipts, for `collect` to write and for the audit to compare |
 | [`audit.py`](audit.py) | the reconciliation: a read-only join of specifications, receipts, indexes and the runner's state |
 | [`test_audit.py`](test_audit.py) | tests both, on a made-up corpus with one fault at a time and on the corpus of the pinned revision |
+| [`attempts.py`](attempts.py) | the record and the folders every execution of a job gets before its first byte; [`test_attempts.py`](test_attempts.py) tests it, and [`verification/test_capture.py`](../verification/test_capture.py) what the runner, `prune` and `recover` do with it |
 | [`fixtures/`](fixtures) | the census and the manifest of the corpus at `b52a084f5d11`, the revision the migration started from |
+
+## Attempts
+
+Every execution of a job is an attempt: a record and folders of its own under `.state/attempts/ID/NNN-TOKEN/`,
+made before the attempt writes anything, whether or not the private archive answers. A rerun clears nothing, a
+work directory is removed only by a rule its record then names, and what a capture missed is sealed later, where
+it is. [`verification/README.md`](../verification/README.md#attempts-what-a-rerun-keeps-and-what-may-be-removed)
+has the rules of `prune` and `recover`.
 
 ## Reconciling the records
 

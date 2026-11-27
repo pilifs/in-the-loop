@@ -179,7 +179,18 @@
       }
     },
     "changesDiff": {"description": "The file that holds the outputs' changes against the job's commit: changes.diff, a unified diff; or, once collected, changes.diff.gz (that diff gzipped) or changes.stat (a summary of the files it changes) when the diff was over the 1 MiB a commit takes (collected.changesDiff).", "type": "string"},
-    "workdir": {"description": "The work directory, kept on the runner (for a job that did not pass, by default).", "type": "string"},
+    "workdir": {"description": "The work directory, kept on the runner (for a job that did not pass, by default): the attempt's own, which stays until `prune` releases it.", "type": "string"},
+    "attempt": {
+      "description": "Which execution of the job this result is of (jobs/attempts.py): every run of a job is an attempt with a record and folders of its own on the machine that ran it, made before it writes anything. Results of before 2026-11-27 have none: `originals.attempt` is then all that numbers them.",
+      "type": "object",
+      "properties": {
+        "id": {"description": "The job's id, the attempt's number and a token: unique where two checkouts of one machine number apart.", "type": "string"},
+        "number": {"description": "From 1 for each job on a machine; the archive's number for the attempt when the archive could be asked.", "type": "integer"},
+        "folder": {"description": "The attempt's folder on the runner: attempt.json, result.json, run/ (the whole logs, the outputs, the diff) and work/.", "type": "string"},
+        "previous": {"description": "The ids of the job's earlier attempts on that machine, oldest first.", "type": "array", "items": {"type": "string"}}
+      },
+      "required": ["id", "number"]
+    },
     "originals": {
       "description": "Set when the run's original outputs were sealed into the private archive before the logs were cut and the work directory removed (verification/capture.py; llm-dlc/specification.md, Original outputs): the number of this attempt of the job, and the occurrence id of each part that was sealed. `python3 llm-dlc/tools/artifacts.py show ID` says whether an occurrence is pending or verified, and `fetch ID --to DIR` restores it.",
       "type": "object",
@@ -202,6 +213,7 @@
         "conflicts": {"type": "array", "items": {"type": "string"}},
         "kept": {"type": "array", "items": {"type": "string"}},
         "why": {"type": ["string", "null"]},
+        "staged": {"description": "The SHA-256 of the staged result this was collected from. A collect that finds it in the tree for the staged result it holds was stopped before it released that one, and writes nothing again.", "type": "string"},
         "changesDiff": {
           "description": "Set when changes.diff was over the 1 MiB a commit takes (jj's snapshot.max-new-file-size): its size, the file kept in its place, and how.",
           "type": "object",

@@ -269,15 +269,22 @@ class Audit:
             live["setAside"].append(folder.name)
             self.found(self.gaps, "result-set-aside-unsealed", folder.name.rsplit("-", 1)[0],
                        f"{folder} holds a staged result that no capture sealed: kept, and in no archive", path=str(folder))
+        claimed = {c["id"] for c in live["claims"]}
+        for run_dir in sorted((state / "runs").iterdir()) if (state / "runs").is_dir() else []:
+            # A run directory of before attempts had folders of their own: sealed ones carry a marker.
+            if run_dir.is_dir() and run_dir.name not in claimed and not (run_dir / ".captured").exists() and any(run_dir.iterdir()):
+                live["recovery"].append({"job": run_dir.name, "kind": "run-directory-unsealed"})
+                self.found(self.gaps, "run-directory-unsealed", run_dir.name,
+                           f"{run_dir} holds an attempt of before attempts had folders that nothing sealed; `recover` seals it", path=str(run_dir))
         attempts = HERE / "attempts.py"
         if attempts.exists() and (state / "attempts").is_dir():
             ledger = records.load("jobs_attempts", attempts)
-            for record in ledger.every(state):
+            for attempt in ledger.every(state):
                 live["attempts"] += 1
-                for problem in ledger.problems(record):
-                    live["recovery"].append({"attempt": record.get("id"), "job": record.get("job"), **problem})
-                    self.found(self.gaps if problem.get("level") == "gap" else self.discrepancies, problem["kind"], record.get("job"),
-                               problem["detail"], attempt=record.get("id"))
+                for problem in ledger.problems(attempt):
+                    live["recovery"].append({"attempt": attempt.id, "job": attempt.job, **problem})
+                    self.found(self.gaps if problem.get("level") == "gap" else self.discrepancies, problem["kind"], attempt.job,
+                               problem["detail"], attempt=attempt.id)
         return live
 
     # ----- the whole of it

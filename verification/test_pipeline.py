@@ -788,27 +788,117 @@ class PipelineTest(unittest.TestCase):
 
 
 class PruneWorkdirsTest(unittest.TestCase):
-    """A failed job's kept work directory goes once it is collected and its original is remote_verified, not before."""
+    """A kept work directory goes once its job is collected and the original sealed from that very attempt is
+    verified in the store, not before; verification/test_capture.py runs the rule on a real spool and store."""
 
-    def test_only_collected_and_verified_work_directories_are_removed(self):
-        with tempfile.TemporaryDirectory() as d:
-            root, state = Path(d) / "repo", Path(d) / "state"
-            for job in ("j-done", "j-unverified", "j-uncollected", "j-pending"):
-                (state / "work" / job).mkdir(parents=True)
-                (state / "work" / job / "big.bin").write_bytes(b"x" * 1000)
-            (state / "results" / "j-pending").mkdir(parents=True)
-            (state / "results" / "j-pending" / "result.json").write_text("{}")  # finished, not collected yet
-            collected = {"j-done", "j-unverified", "j-pending"}
-            verified = {"j-done", "j-uncollected", "j-pending"}
-            archive = mock.Mock(workdir_verified=lambda job: job in verified)
-            with mock.patch.object(pipeline, "ROOT", root), \
-                    mock.patch.object(pipeline.layout, "find_result", side_effect=lambda r, job: Path(d) if job in collected else None):
-                self.assertEqual(pipeline.prune_workdirs(state, archive, dry_run=True), [("j-done", 1000)])
-                self.assertTrue((state / "work" / "j-done").exists())
-                self.assertEqual(pipeline.prune_workdirs(state, archive), [("j-done", 1000)])
-            self.assertEqual(sorted(p.name for p in (state / "work").iterdir()), ["j-pending", "j-uncollected", "j-unverified"])
-            nothing_verified = mock.Mock(workdir_verified=lambda job: False)
-            self.assertEqual(pipeline.prune_workdirs(state, nothing_verified), [])
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.state = Path(self.tmp.name) / "state"
+        self.receipts, self.states = {}, {}
+        patch = mock.patch.object(pipeline, "collected_receipt", lambda job_id: self.receipts.get(job_id))
+        patch.start()
+        self.addCleanup(patch.stop)
+        self.archive = mock.Mock(occurrence_states=lambda ids: {i: self.states[i] for i in ids if i in self.states})
+
+    def attempt(self, job_id, status="failed", capture="sealed", custody="remote_verified", collected=True, number=None):
+        """An attempt as the runner leaves one: a work directory, its record, and (by default) a sealed original
+        that the store has read back and a collected receipt that names it."""
+        attempt = pipeline.attempts.begin(self.state, job_id, "0" * 40, "made-up", at_least=number or 0)
+        attempt.work_dir.mkdir()
+        (attempt.work_dir / "big.bin").write_bytes(b"x" * 1000)
+        attempt.save(prepared=True)
+        occurrence = f"occ-{attempt.id}"
+        if capture in ("sealed", "recovered"):
+            attempt.captured(capture, {"workdir": occurrence}, number=attempt.number)
+            self.states[occurrence] = {"state": custody, "kind": "job-workdir", "job": job_id, "attempt": attempt.number, "status": "complete"}
+        else:
+            attempt.captured(capture)
+        attempt.finished(status)
+        if collected:
+            self.receipts[job_id] = {"attempt": {"id": attempt.id, "number": attempt.number},
+                                     "originals": {"attempt": attempt.number, "occurrences": {"workdir": occurrence}}}
+        return attempt
+
+    def pruned(self, **kw):
+        kept = []
+        gone = pipeline.prune_workdirs(self.state, self.archive, kept=kept, **kw)
+        return [name for name, _ in gone], dict(kept)
+
+    def test_only_a_collected_attempt_whose_own_original_is_verified_is_removed(self):
+        done = self.attempt("j-done")
+        unverified = self.attempt("j-unverified", custody="locally_sealed")
+        uncollected = self.attempt("j-uncollected", collected=False)
+        staged = self.attempt("j-staged")
+        (self.state / "results/j-staged").mkdir(parents=True)
+        (self.state / "results/j-staged/result.json").write_text(json.dumps({"attempt": {"id": staged.id}}))
+        failed_capture = self.attempt("j-capture-failed", capture="failed")
+        self.assertEqual(pipeline.prune_workdirs(self.state, self.archive, dry_run=True), [(done.id, 1000)])
+        self.assertTrue(done.work_dir.exists())
+        gone, kept = self.pruned()
+        self.assertEqual(gone, [done.id])
+        self.assertFalse(done.work_dir.exists())
+        self.assertEqual(kept, {unverified.id: "its workdir original is sealed here, not yet verified in the store",
+                                uncollected.id: "its job's result is not collected",
+                                staged.id: "its result is staged and not collected yet",
+                                failed_capture.id: "its originals are not sealed (failed): `recover` seals them"})
+        self.assertTrue(all(a.work_dir.exists() for a in (unverified, uncollected, staged, failed_capture)))
+        self.assertEqual(pipeline.prune_workdirs(self.state, None), [])        # no archive to ask: nothing sealed is known verified
+
+    def test_an_older_attempts_verified_original_does_not_release_a_later_attempt(self):
+        """The rule until 2026-11-27 asked whether the job's latest *captured* work directory was verified."""
+        first = self.attempt("j", status="cancelled", collected=False)
+        second = self.attempt("j", capture="failed")                       # collected, and never sealed
+        gone, kept = self.pruned()
+        self.assertEqual((gone, kept), ([first.id], {second.id: "its originals are not sealed (failed): `recover` seals them"}))
+        # And the other way round: an attempt that ran after the collected one is not the collected one's to release.
+        earlier = self.attempt("k")
+        later = self.attempt("k", collected=False)
+        gone, kept = self.pruned()
+        self.assertEqual(gone, [earlier.id])
+        self.assertEqual(kept[later.id], "the collected receipt is of another attempt, and not of a later one")
+
+    def test_an_original_recorded_for_another_attempt_or_unknown_to_the_archive_releases_nothing(self):
+        other = self.attempt("j-other")
+        self.states[f"occ-{other.id}"]["attempt"] = other.number + 1
+        unknown = self.attempt("j-unknown")
+        del self.states[f"occ-{unknown.id}"]
+        named_otherwise = self.attempt("j-receipt")
+        self.receipts["j-receipt"]["originals"]["occurrences"]["workdir"] = "occ-of-something-else"
+        gone, kept = self.pruned()
+        self.assertEqual(gone, [])
+        self.assertIn("recorded for another job or attempt", kept[other.id])
+        self.assertIn("does not know", kept[unknown.id])
+        self.assertEqual(kept[named_otherwise.id], "the collected receipt names another original of the work directory")
+
+    def test_what_was_never_an_original_goes_once_collected_and_an_uncaptured_one_only_when_asked(self):
+        passed = self.attempt("j-passed", status="passed", capture="sealed")       # keep_workdirs = "always" kept it
+        del self.states[f"occ-{passed.id}"]                                         # a passed job's work directory is not sealed
+        off = self.attempt("j-off", capture="off")
+        gone, kept = self.pruned()
+        self.assertEqual(gone, [passed.id])
+        self.assertIn("prune --unarchived", kept[off.id])
+        self.assertEqual(self.pruned(unarchived=True)[0], [off.id])
+        self.assertEqual(pipeline.attempts.find(self.state, off.id).record["released"][0]["why"],
+                         "pruned: its job's result is collected, and it holds no original")
+
+    def test_a_work_directory_of_before_attempts_had_folders_goes_only_by_the_seal_of_the_receipts_attempt(self):
+        for job in ("old-done", "old-rerun", "old-unsealed", "old-unverified"):
+            (self.state / "work" / job).mkdir(parents=True)
+            (self.state / "work" / job / "big.bin").write_bytes(b"x" * 1000)
+            (self.state / "runs" / job).mkdir(parents=True)
+            self.receipts[job] = {"originals": {"attempt": 2, "occurrences": {"workdir": f"occ-{job}"}}}
+            self.states[f"occ-{job}"] = {"state": "remote_verified", "kind": "job-workdir", "job": job, "attempt": 2, "status": "complete"}
+        (self.state / "runs/old-done/.captured").write_text('{"attempt": 2}')
+        (self.state / "runs/old-rerun/.captured").write_text('{"attempt": 3}')       # a later run sealed over it
+        (self.state / "runs/old-unverified/.captured").write_text('{"attempt": 2}')
+        self.states["occ-old-unverified"]["state"] = "transferring"
+        gone, kept = self.pruned()
+        self.assertEqual(gone, ["old-done"])
+        self.assertEqual(sorted(p.name for p in (self.state / "work").iterdir()), ["old-rerun", "old-unsealed", "old-unverified"])
+        self.assertIn("nothing ties the folder to the attempt the receipt names", kept["old-rerun"])
+        self.assertIn("nothing ties the folder to the attempt the receipt names", kept["old-unsealed"])
+        self.assertIn("transferring", kept["old-unverified"])
 
 
 class OneRunnerPerRepositoryTest(unittest.TestCase):

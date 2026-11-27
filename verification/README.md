@@ -26,6 +26,9 @@ python3 verification/pipeline.py collect         # bring finished results into t
 python3 verification/pipeline.py report          # Markdown digest; --format json for agents
 python3 verification/pipeline.py resubmit ID --memory 8G
 python3 verification/pipeline.py validate        # check job and result files against their schemas
+python3 verification/pipeline.py prune --why     # remove kept work directories whose originals are verified, and say why the rest stay
+python3 verification/pipeline.py recover         # seal what a killed runner or a failed capture left unsealed
+python3 jobs/audit.py                            # reconcile specifications, receipts, indexes and the runner's state (read-only)
 ```
 
 Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests run where `systemd-run --user` works).
@@ -50,7 +53,8 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | [`findings.md`](findings.md) | what the runs found that needs a person, and the decisions taken, open first, each with what closes it | the managing agent, by hand |
 | `priorities.json` | the queue's priorities by job id, each with its reason, over the jobs' own | `prioritize`, committed |
 | [`pipeline.toml`](pipeline.toml) | the runner's defaults; `~/.config/in-the-loop/pipeline.local.toml` overrides them for the machine, and `pipeline.local.toml` (not committed) for one checkout | |
-| `.state/` (not committed) | the runner's claims, work directories, whole logs, results not yet collected, the jvmcontract cache | `run` |
+| `.state/` (not committed) | the runner's claims, each attempt's record and folders (`attempts/ID/NNN-TOKEN/`: the whole logs, the outputs, the work directory), results not yet collected, the jvmcontract cache | `run` |
+| [`../jobs/`](../jobs/README.md) | the pipeline's shared code: the attempt records ([`attempts.py`](../jobs/attempts.py)), the record readers and the reconciliation ([`audit.py`](../jobs/audit.py)) | |
 
 A job is *pending* while it is committed and has no result, *running* while a runner holds its claim, *finished* when
 its result is in `.state/results/`, and *collected* once its result is in `results/`. A job file that is not
@@ -245,7 +249,6 @@ happens, [`capture.py`](capture.py) seals the originals into the private archive
 
 | When | What is sealed | Kind |
 |---|---|---|
-| a job starts and its run directory holds an attempt nobody sealed (its runner was killed) | that attempt's logs, outputs, diff and work directory, as `partial` | as below |
 | the steps have ended, before the logs are cut | every step's whole log | `job-logs` |
 | | the outputs the job produced or changed, with the declared ones that never materialized and the ones it deleted | `job-outputs` |
 | | the whole `changes.diff` | `job-diff` |
@@ -254,6 +257,8 @@ happens, [`capture.py`](capture.py) seals the originals into the private archive
 | `collect` is about to replace a result collected earlier | the earlier one | `job-result` |
 | `collect` meets a result staged by a runner that sealed nothing | the staged files, and the whole logs if its run directory is still there | `job-result` and the above |
 | `collect` has written the collected `result.json` | that file, with its conflicts | `job-result` |
+| a runner starts, or `recover` is run, and an attempt is on record that never finished (its runner was killed) or whose capture failed | that attempt's logs, outputs, diff and work directory, where they are; `partial` for one that never finished | as above |
+| the same, and a staged result was set aside unsealed, or a run directory of before 2026-11-27 holds an attempt nobody sealed | the folder as it is, as `partial` | `job-result`, and the above |
 
 Each run of a job is an *attempt*, numbered from 1 on this machine, and `result.json` names the attempt and the
 occurrences under `originals`. To read them: `python3 llm-dlc/tools/artifacts.py list --job ID --include-attempts`,
@@ -264,6 +269,48 @@ This is a shadow of the pipeline, not a step of it: `results/` holds what it hel
 (a full disk, a damaged journal) fails no job and no collect. It is said on stderr and in `.state/capture.log`, the
 result then has no `originals`, and `collect` moves a staged result that nothing sealed to `.state/uncaptured/`
 instead of deleting it. `ITL_ORIGINALS_OFF=1` switches capture off; the test runner sets it for every test.
+
+### Attempts: what a rerun keeps, and what may be removed
+
+Every execution of a job is an attempt with a record and folders of its own, made before its first byte is
+written, whether or not the archive answers ([`jobs/attempts.py`](../jobs/attempts.py)):
+
+```
+.state/attempts/ID/NNN-TOKEN/
+    attempt.json    who ran it, when, at which commit; how it ended; where its originals stand; what was released
+    result.json     the result as the runner wrote it
+    run/            the whole logs, the outputs it produced, the diff
+    work/           the export of the commit that its steps ran in
+```
+
+- **A rerun clears nothing.** Until 2026-11-27 every run of a job wrote into `.state/runs/ID` and `.state/work/ID`,
+  and a rerun cleared them after asking the archive to keep what was there. When the archive could not (a full
+  spool), the earlier attempt's bytes went with the folder. The result names its attempt (`attempt.id`,
+  `attempt.number`, and the attempts before it under `attempt.previous`).
+- **`capture` in the record** says where the attempt's originals stand: `sealed`, `off` (nothing captures here),
+  `failed` with the reason, or `recovered`. An attempt whose runner died is `interrupted`.
+- **`recover`** seals what nothing sealed: an interrupted attempt, one whose capture failed, a staged result set
+  aside, a run directory of before attempts had folders. It seals each where it is and removes nothing. A runner
+  does it when it starts. `recover --kept-outputs` also seals the outputs that receipts say were kept and that
+  this working copy holds while no commit does (VF-080). Until it succeeds, `python3 jobs/audit.py` lists each
+  such attempt as a gap.
+- **`prune`** removes a work directory only when all of this holds, and `prune --why` says which did not:
+  1. the job's result is collected, and the collected receipt is of this attempt or of a later one;
+  2. the original sealed from *this* attempt's work directory, and the attempt's other originals, are
+     `remote_verified` in the store, recorded for this job and this attempt;
+  3. the folder is still what was sealed: its entries' names, sizes and times are the ones recorded then.
+
+  A passed job's work directory is not an original (the logs, the outputs and the diff are what is kept of it) and
+  goes when the job ends, unless `keep_workdirs = "always"`. An attempt that ran while nothing captured originals
+  is in no archive, and goes only with `prune --unarchived`. `collect` prunes when it is done, and the brief
+  queue's cleanup between two briefs is this same command. Before 2026-11-27 the question was whether the job's
+  *latest captured* work directory was verified, which is an earlier attempt's when a later one's capture failed.
+- **A work directory of before attempts had folders** (`.state/work/ID`) goes by the same rule, tied to the
+  receipt's attempt by the seal its run directory carries (`.state/runs/ID/.captured`): without that seal, or with
+  another attempt's, it stays.
+- **A collect that was stopped** is finished by the next one. A result whose collected form is already in the
+  tree, from the same staged bytes (`collected.staged`), is not written again: the tree keeps what it has, so a
+  result that was committed meanwhile is published once.
 
 ## Reading results
 
@@ -377,5 +424,5 @@ directory. To run jobs elsewhere:
 
 - A job runs at the commit that committed it, not at the tip. If its outputs changed in the working copy since,
   `collect` does not overwrite them: it keeps them under `outputs/` and says to rerun the job on the newer commit.
-- The whole logs stay on the runner, in `.state/runs/`, which nothing cleans up yet. The result says where.
+- The whole logs stay on the runner, in each attempt's `run/` folder, which nothing cleans up yet. The result says where.
 - Claims are local files. Two runners on different machines need disjoint jobs until there is a shared claim store.
