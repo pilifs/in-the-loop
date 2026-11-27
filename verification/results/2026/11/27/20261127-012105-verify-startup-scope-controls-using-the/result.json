@@ -1,0 +1,173 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-012105-verify-startup-scope-controls-using-the",
+  "title": "Verify startup scope controls using the compiled selector parameter",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 32.7s, peak 131.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-012105-verify-startup-scope-controls-using-the.json",
+    "sha256": "627c837b06fdc10f01a8e109235c8c0bf72002a9c2ea328303455457e5fd45bb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-012105-verify-startup-scope-controls-using-the",
+      "title": "Verify startup scope controls using the compiled selector parameter",
+      "description": "Read the Boolean parameter name from the class that the verifier will actually inspect. Repeat explicit and defaulted profile selection, all six setting refusals, scoped evidence matching, the two joint orders, an opaque read, concurrent initialization and interruption followed by a fresh run.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T01:21:05+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Qualified choices and startup failure controls",
+          "run": "python3 lib/benchmark/startup-facts/controls.py --output verification/startup-facts/startup-controls.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/startup-controls.zip"
+      ]
+    }
+  },
+  "sourceCommit": "bee0f0951c4d6fe5e0a842a119e50f80281f8117",
+  "startedAt": "2026-11-27T01:29:16+00:00",
+  "finishedAt": "2026-11-27T01:33:25+00:00",
+  "wallSeconds": 249.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1517451,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 137420800,
+    "wallSeconds": 32.7,
+    "cpuSeconds": 52.7,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualified choices and startup failure controls",
+      "run": "python3 lib/benchmark/startup-facts/controls.py --output verification/startup-facts/startup-controls.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 32.706,
+      "cpuSeconds": 52.698,
+      "cpuThrottledSeconds": 8.271,
+      "peakMemoryBytes": 137420800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualified-choices-and-startup.log",
+        "lines": 1,
+        "bytes": 114,
+        "sha256": "b32d3810ee9e60b33e288bb4e3a450bddd326702709f29ccb14c184f62bd7795",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "two quantified profile checks, six setting countermodels, both orders, opaque, concurrent and interrupted startup"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/startup-controls.zip",
+      "change": "added",
+      "bytes": 1432,
+      "sha256": "9b8fbb336def96f4424c63bcbbcc5f4d3140bf4acd84a83986542db4eb6f2b70",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T01:33:48+00:00",
+    "applied": [
+      "verification/startup-facts/startup-controls.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1e79687d0003ac2885354f7d71ef9b21b729a59c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1e79687d0003ac2885354f7d71ef9b21b729a59c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T013325Z-62120909f2905c06",
+      "outputs": "20261127T013325Z-6518370d962dd7db",
+      "diff": "20261127T013325Z-67365234ee11f022"
+    }
+  }
+}

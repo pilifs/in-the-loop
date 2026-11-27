@@ -1,0 +1,210 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-012007-reject-crossed-startup-evidence-by-revis",
+  "title": "Reject crossed startup evidence by revision and defining loader",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.5s, peak 129.1 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-012007-reject-crossed-startup-evidence-by-revis.json",
+    "sha256": "85a185634fcec3c7bfd70c39ebac559af1436df7ac9fab8a6d14a5a2aa0f7a76",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-012007-reject-crossed-startup-evidence-by-revis",
+      "title": "Reject crossed startup evidence by revision and defining loader",
+      "description": "Bind the subject VM's actual defining loader and its parent. Reject the other side's receipt for the original Commons IO graph and a different revision name even when its compiled input bytes are identical.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T01:20:07+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Two original releases and an identical-byte revision control",
+          "run": "python3 lib/benchmark/startup-facts/bindings.py --output verification/startup-facts/deployment-bindings.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/startup-facts/deployment-bindings.zip"
+      ]
+    }
+  },
+  "sourceCommit": "bee0f0951c4d6fe5e0a842a119e50f80281f8117",
+  "startedAt": "2026-11-27T01:29:16+00:00",
+  "finishedAt": "2026-11-27T01:33:12+00:00",
+  "wallSeconds": 236.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1517451,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 135331840,
+    "wallSeconds": 19.5,
+    "cpuSeconds": 30.9,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.32
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 206.836,
+      "cpuSeconds": 207.102,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2407944192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "317e1005ea0dfe5949b0815e744433805fea4fd2b75b99f7ed873b2ed3850d7d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261127-012007-reject-crossed-startup-evidence-by-revis/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 26s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Two original releases and an identical-byte revision control",
+      "run": "python3 lib/benchmark/startup-facts/bindings.py --output verification/startup-facts/deployment-bindings.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 19.471,
+      "cpuSeconds": 30.855,
+      "cpuThrottledSeconds": 4.878,
+      "peakMemoryBytes": 135331840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-two-original-releases-and-an-i.log",
+        "lines": 3,
+        "bytes": 306,
+        "sha256": "2e7f4497495c66ad57884e4b8b898e9ceb707cb5eebd2ccd0a264782cdd032b2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261127-012007-reject-crossed-startup-evidence-by-revis/lib/benchmark/organic-composition/io/UpgradeProbe.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "both crossed revision receipts were rejected"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/startup-facts/deployment-bindings.zip",
+      "change": "added",
+      "bytes": 4822,
+      "sha256": "1750b44aaae6e9aba82c58d9eb2ebcafb05c4bb9e4fb2ea81c6f06ff2d2460d3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T01:33:48+00:00",
+    "applied": [
+      "verification/startup-facts/deployment-bindings.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1e79687d0003ac2885354f7d71ef9b21b729a59c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1e79687d0003ac2885354f7d71ef9b21b729a59c/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T013312Z-354868ddfc49d900",
+      "outputs": "20261127T013312Z-3813949961d7c6eb",
+      "diff": "20261127T013312Z-4111488723a1712f"
+    }
+  }
+}
