@@ -615,14 +615,17 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 
 | Role | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|---|
-| the brief queue's watcher: runs and lands the queued briefs | 2026-11-15 17:27 UTC | [6c5c7798](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 1846 | 2171 | open |
-| the advisor: monitors the brief queue, relays the user, builds product fixes in its own workspaces | 2026-11-17 12:37 UTC | [e61d882b](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 331 | 1882 | open |
+| the brief queue's watcher: runs and lands the queued briefs | 2026-11-15 17:27 UTC | [6c5c7798](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 1852 | 2177 | open |
+| the advisor: monitors the brief queue, relays the user, builds product fixes in its own workspaces | 2026-11-17 12:37 UTC | [e61d882b](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 335 | 1888 | open |
 
 **Every other session:**
 
 | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|
-| 2026-11-27 14:52 UTC | [01a21d7e-6306-7782-a37b-5bc3bbc0810c](traces/01a21d7e-6306-7782-a37b-5bc3bbc0810c/summary.md) | 1 | 2 | open |
+| 2026-11-27 15:13 UTC | [43b290ac-3fdc-4f32-8f05-45e7bcb78ce2](traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/summary.md) | 1 | 1 | open |
+| 2026-11-27 15:06 UTC | [01a21d8b-87ea-7ae2-96de-27506c497f93](traces/01a21d8b-87ea-7ae2-96de-27506c497f93/summary.md) | 0 | 0 | ended |
+| 2026-11-27 15:05 UTC | [01a21d8a-4d9b-7e73-bcc9-a7f310640d08](traces/01a21d8a-4d9b-7e73-bcc9-a7f310640d08/summary.md) | 0 | 0 | ended |
+| 2026-11-27 14:52 UTC | [01a21d7e-6306-7782-a37b-5bc3bbc0810c](traces/01a21d7e-6306-7782-a37b-5bc3bbc0810c/summary.md) | 2 | 2 | ended |
 | 2026-11-27 12:53 UTC | [01a21d11-51ab-7b92-bffe-e414652574f7](traces/01a21d11-51ab-7b92-bffe-e414652574f7/summary.md) | 10 | 10 | ended |
 | 2026-11-27 07:33 UTC | [e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0](traces/e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0/summary.md) | 27 | 74 | ended |
 | 2026-11-27 07:30 UTC | [01a21be9-61e1-7580-bfe6-33d4db0acf8d](traces/01a21be9-61e1-7580-bfe6-33d4db0acf8d/summary.md) | 0 | 0 | ended |
@@ -809,7 +812,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-24 10:34 UTC | [01a20d1f-094d-7171-8837-1ea064d523a4](traces/01a20d1f-094d-7171-8837-1ea064d523a4/summary.md) | 0 | 2 | ended |
 | 2026-11-24 08:22 UTC | [01a20ca6-72d9-7331-a720-dabbddf86432](traces/01a20ca6-72d9-7331-a720-dabbddf86432/summary.md) | 30 | 6 | ended |
 | 2026-11-24 06:16 UTC | [01a20c2d-af27-7ac3-a159-e8ed09a26f91](traces/01a20c2d-af27-7ac3-a159-e8ed09a26f91/summary.md) | 28 | 8 | ended |
-| 2026-11-24 06:10 UTC | [01a20c2d-af08-7933-a0ff-b6cdac9c99e4](traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/summary.md) | 43 | 400 | open |
+| 2026-11-24 06:10 UTC | [01a20c2d-af08-7933-a0ff-b6cdac9c99e4](traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/summary.md) | 44 | 400 | ended |
 | 2026-11-24 05:11 UTC | [17d3bea3-46e9-48a2-bea4-44ade8be8216](traces/17d3bea3-46e9-48a2-bea4-44ade8be8216/summary.md) | 7 | 8 | ended |
 | 2026-11-24 05:03 UTC | [01a20bef-e864-7640-a530-a61dc7c1b5f6](traces/01a20bef-e864-7640-a530-a61dc7c1b5f6/summary.md) | 0 | 0 | ended |
 | 2026-11-24 04:16 UTC | [01a20bc4-66f9-76d2-853d-d34670100f76](traces/01a20bc4-66f9-76d2-853d-d34670100f76/summary.md) | 10 | 15 | ended |

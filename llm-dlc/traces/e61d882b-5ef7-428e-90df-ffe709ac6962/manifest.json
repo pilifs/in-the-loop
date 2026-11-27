@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-27T15:43:09.841Z",
-  "duration_seconds": 875126,
+  "ended": "2026-11-27T15:43:47.381Z",
+  "duration_seconds": 875164,
   "stats": {
     "turns": 335,
-    "api_calls": 3145,
-    "tool_calls": 2788,
+    "api_calls": 3149,
+    "tool_calls": 2792,
     "tool_errors": 29,
     "compactions": 11,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 106897,
-      "output_tokens": 2014765,
-      "cache_read_input_tokens": 1027652304,
-      "cache_creation_input_tokens": 7213332
+      "input_tokens": 106905,
+      "output_tokens": 2017380,
+      "cache_read_input_tokens": 1029015699,
+      "cache_creation_input_tokens": 7218418
     }
   },
   "tools": {
-    "Bash": 2449,
-    "SendMessage": 97,
+    "Bash": 2452,
+    "SendMessage": 98,
     "Edit": 83,
     "Read": 58,
     "Write": 41,
@@ -271,24 +271,24 @@
     {
       "index": 11,
       "started": "2026-11-27T14:06:55.934Z",
-      "ended": "2026-11-27T15:43:09.841Z",
+      "ended": "2026-11-27T15:43:47.381Z",
       "turns": 19,
-      "api_calls": 145,
+      "api_calls": 149,
       "usage": {
-        "input_tokens": 348,
-        "output_tokens": 96097,
-        "cache_read_input_tokens": 35434170,
-        "cache_creation_input_tokens": 308588
+        "input_tokens": 356,
+        "output_tokens": 98712,
+        "cache_read_input_tokens": 36797565,
+        "cache_creation_input_tokens": 313674
       },
-      "peak_context_tokens": 338512
+      "peak_context_tokens": 343598
     }
   ],
   "log": {
-    "sha256": "1960a755365398a4f4accd907d14eb379dddf7e7783d4dbcf62723fe10b75d27",
-    "bytes": 54386842,
-    "lines": 25875,
-    "gzip_bytes": 9212173,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/1960a755365398a4f4accd907d14eb379dddf7e7783d4dbcf62723fe10b75d27.jsonl.gz"
+    "sha256": "983ea6353fefc76c61e498751716bfea8fa546c18979c7763f36794d40a0631d",
+    "bytes": 54435807,
+    "lines": 25910,
+    "gzip_bytes": 9218776,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/983ea6353fefc76c61e498751716bfea8fa546c18979c7763f36794d40a0631d.jsonl.gz"
   },
   "subagents": [
     {
@@ -15585,6 +15585,22 @@
       "summary": "Record the watcher's decisions on brief-generation-quality",
       "body": "The watcher's verdicts on the single-agent run brief-generation-quality (llm-dlc/decisions/single-brief-generation-quality.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "1960a755365398a4f4accd907d14eb379dddf7e7783d4dbcf62723fe10b75d27"
+    },
+    {
+      "change_id": "ntuqprskyppsztouplnkuuunvvywtoqm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Give the brief author four rules for each case, and count what a brief shows of them",
+      "body": "The user compared six generated briefs (155 cases) with rationale files of their own, which stay private, and wrote the result up as llm-dlc/loops/brief-generation-quality-takeaway.md. The brief author misread and missed nothing, but in every batch it dropped or blurred the second observation that changes one input, three times accepted \"either order\" where the behaviour defines an order, and reached for a database, JMS or a child process where a public call would show the same. Its own predictions that the merged code is still wrong were a strength worth keeping. The rate did not vary with the size of the list, so the gap is in the instructions. This is now VF-075 in verification/findings.md, with the cause, what landed, the baseline and what the user's next comparison should count.\n\nllm-dlc/loops/brief-generation-template.md gives the author four rules for each case, in the first text in full and in the continue message in short (a later cycle starts after a compaction with the continue message alone): a claim row with the role Variation that repeats the main observation with exactly one input changed and says what each revision should do, the reversal where the behaviour depends on order; the order stated and checked wherever the code under change produces one; the cheapest observation that shows the change, with the reason in the technical notes when more than a public call is needed; and a claim row with the role Remaining defect wherever the landed code still looks wrong. The two are claim rows because the agent that verifies a brief decides every claim row. The author checks the rules before a cycle ends and gives its counts with \"The brief is complete\" and in its record. The user's handoff is unchanged, and single_run.py renders the template as before.\n\nbrief_queue.py counts what a written brief shows of the rules: the cases with a Variation row and those without, the Remaining defect rows, and the cases whose words leave an order open. The brief step of next gives the count when it queues a generated brief (caseRules, a line for the user, the queue's log) and refuses nothing; brief_queue.py rules FILE counts any brief. Over the nine generated briefs on the line (235 cases) it finds no such rows, as the roles did not exist, and 13 cases that leave an order open. The single-agent-run skill page describes the rules and the count for the watcher.\n\nVerified by tests of the texts an author is given, not of the template file: both texts as generate renders them hold each rule (they lacked all four before the change, in both); the text the Codex stand-in was started with and the run's continue message hold them; and so do the first and the continued prompt of an author the queue started, whose brief the brief step then counts. python3 lib/tools/test_costs.py run --changed passed 7 of 7 test files, and the lint of the test inventory agrees (two new unit rows). Nothing here runs a prover, so there is no verification job. Not shown yet: that an author follows the rules, which the user's comparison of the next generated list with a rationale file will show.",
+      "log_sha256": "983ea6353fefc76c61e498751716bfea8fa546c18979c7763f36794d40a0631d"
+    },
+    {
+      "change_id": "plvoytpsnrqsxruztwsyxtxoxprqlpql",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run brief-generation-quality into the line",
+      "body": "The single-agent run brief-generation-quality (session 43b290ac-3fdc-4f32-8f05-45e7bcb78ce2) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "983ea6353fefc76c61e498751716bfea8fa546c18979c7763f36794d40a0631d"
     }
   ],
   "logs": {
@@ -16937,6 +16953,12 @@
       "lines": 13517,
       "gzip_bytes": 5699080,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/97f58a1dcd1c6920612f28e9b7e9681ff9f349ec609a778fa93e28406e1c3ea8.jsonl.gz"
+    },
+    "983ea6353fefc76c61e498751716bfea8fa546c18979c7763f36794d40a0631d": {
+      "bytes": 54435807,
+      "lines": 25910,
+      "gzip_bytes": 9218776,
+      "url": null
     },
     "988027c410e0f65f10c89ed6dfd1b9a881dfad6e86d2f3d91146897dd8b9e465": {
       "bytes": 39630478,

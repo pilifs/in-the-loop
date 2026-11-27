@@ -18,6 +18,50 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-075: a brief author drops the second observation that changes one input, leaves orders open, and picks heavier observations than needed
+
+- **Status**: open, waiting to be observed. The rules are landed (change `ntuqprsk`, 2026-11-27); the next generated list that has a rationale file shows whether they worked.
+- **Raised**: 2026-11-27, by the user, from their comparison of six generated briefs (the lists L, N, O, P, Q and R, 155 cases) with rationale files they wrote. The brief is [`brief-generation-quality-takeaway.md`](../llm-dlc/loops/brief-generation-quality-takeaway.md), which has the counts. The rationale files and the comparisons are private and held out as controls for later briefs: no agent looks for them, and the counts in the brief are all this entry uses.
+- **Found**:
+  - **The actor and the phase.** The brief author (`single_run.py generate`, Codex Astra 6.2 at ultra effort), writing a brief from a list of pull requests, with the two texts of `llm-dlc/loops/brief-generation-template.md` around the user's handoff, as both stood from 2026-11-25.
+  - **What held.** It misread none of the 155 cases and missed none, and was sharper than the rationale in 99 of them. Quality and generation time were flat up to 50 pull requests, so the limit on a list's size lies in setup and verification.
+  - **What went wrong, the same way in every batch:**
+    1. **The second observation that changes one input** (a reversed order, the other direction, a mixed argument) was dropped or blurred. In P, Q and R, 33 of 110 were kept, 62 partly kept and 15 dropped. In O, 9 of 20 were dropped. Of the 21 order variations in P, Q and R, 13 were dropped.
+    2. **An order oracle was weakened** three times: "either order", or a check as sets, where the behaviour defines an order.
+    3. **Heavier observations than needed** (databases, JMS, child processes) where a smaller public call would show the same: in Q, and in three cases of R. That costs setup time, which is the bottleneck (VF-070).
+  - **What went right without being asked.** The author added 18 predictions of its own that the merged code is still wrong, and several were real upstream defects (VF-065).
+  - **The cause.** A gap in the instructions, not overload: the rate does not vary with the size of the list.
+    - The handoff asks for an intent, a control and a challenge, and its challenge varies "something the contract says should be irrelevant". Nothing asked for a second observation that changes one input that matters, so it was written only when the author thought of it, and often inside the challenge.
+    - Nothing said when an order may stay open, and nothing weighed what an observation costs to set up.
+    - The verification agents won some second observations back on their own, but not reliably: they decide the claim rows a brief has.
+    - Nothing on the queue or on another line treated it.
+- **Landed** (change `ntuqprsk`):
+  - **The owner.** `llm-dlc/loops/brief-generation-template.md`. The handoff is the user's and is unchanged. `single_run.py generate` renders the template as before, with no new placeholder.
+  - **Four rules for each case**, in the first text in full and in the continue message in short, since a later cycle starts after a compaction with the continue message alone:
+    1. a claim row with the role `Variation`, beside the handoff's control and challenge: it repeats the case's main observation with exactly one input changed, names that input, and says what each revision should do; where the behaviour depends on order, it is the reversal;
+    2. where the code under change produces an order, that order stated and checked, with no "either order" and no comparison as sets; an order stays open only where a contract the author names leaves it unspecified;
+    3. the cheapest observation that shows the change: a plain public call on the shipped API before a database, a message broker, a server or a child process, and a heavier one only when the change can't be seen without it, with the reason in the case's technical notes;
+    4. a claim row with the role `Remaining defect`, with an observation of its own, wherever the landed code still looks wrong to the author.
+  - **Why rows with a role.** The agent that verifies a brief decides every claim row, so a second observation that is a row is verified, and one that is prose is verified by luck. The two roles also make the rules countable.
+  - **The author's own check.** Its check before a cycle ends covers the four rules. With "The brief is complete" it gives its counts, and writes them into its record (`NAME-brief-generation.md`): the `Variation` rows and how many are reversals, the orders left open, the observations that need more than a public call, and the `Remaining defect` rows.
+  - **A count by the queue.** `brief_queue.py rules FILE` counts what a written brief shows of the rules: the cases with a `Variation` row and those without, the `Remaining defect` rows, and the cases whose words leave an order open. The `brief` step of `next` gives the same count for a generated brief when it queues it (`caseRules`, a line for the user, and the queue's log). It refuses nothing: whether a row keeps its rule takes reading the case.
+  - **The acceptance test.** The rules are tested in the texts an author is given, not in the template file:
+    - `test_single_run.py`, `TheGenerationPhase.test_both_texts_give_the_brief_author_the_four_rules_for_each_case`: both texts as `generate` renders them hold each rule, by the words that carry it (`CASE_RULES`);
+    - the generation test there reads the text the Codex stand-in was started with, and the run's continue message;
+    - `test_brief_queue.py` reads the first prompt and the continued prompt of an author the queue started, and the count the `brief` step gives.
+    - The failing fixture: the texts rendered from the template before the change lack all four rules, in both. The control: a text without the rules is told from one with them rule by rule, and a brief that keeps the rules has nothing named by the count.
+  - **The baseline**, by `brief_queue.py rules` over the nine generated briefs on the line (235 cases): no `Variation` row and no `Remaining defect` row, as neither role existed, and 13 cases with words that leave an order open (the first list 2, L 4, P 1, Q 2, R 4).
+  - **Not shown yet.** That an author follows the rules. The tests show what it is given, with stand-ins for the clients. The author's session is persistent, and the briefs it has written so far were written without the rules.
+- **Needs**:
+  - **The user:** on the next generated list that has a rationale file, repeat the comparison the same way. Count the second observations kept, the order reversals kept, the oracles weakened and the heavier-than-needed observations. The aim is most second observations kept, every reversal kept and no weakened oracle, with still nothing missed or misread. The places to look: the `Variation` and `Remaining defect` rows of each case, the technical notes for a heavier observation's reason, the author's counts in the generation record, and the queue's count.
+  - **The watcher:** pass the queue's line and the author's counts on to the user when a generated brief is queued.
+  - **To watch in the first brief written under the rules:**
+    - a case now has four claim rows or more, where it had three. The `Variation` row reuses the main observation's call and fixture, so setup should not grow, but the domain run decides more claims: compare its time for each case with the earlier batches;
+    - whether rule 3 costs sharpness: a public call that shows less than the database did is a weaker observation, not a cheaper one.
+  - **This session's log** (the user): the session that made this change read the advisor's memory notes at its start, before it had weighed what they were, and they describe the control files. Its transcript holds them, and nothing from them is in the change. A note the advisor left in that memory on 2026-11-27 says the user has ruled on both: the session may have that context, and its log is published as it stands. This entry has the ruling from that note alone.
+- **Tracked in**: this entry, and the note at the head of `llm-dlc/loops/brief-generation-template.md`.
+- **Closes when**: the user's comparison of the next generated list that has a rationale file meets the aim above. If one rule did not hold, the entry narrows to that rule.
+
 ### VF-073: VF-058's remainder, reopened (a placeholder)
 
 - **Status**: open, a placeholder (the user, 2026-11-27). The user asked for VF-058's strict-native remainder to be reopened. This entry holds the number so that it isn't taken for anything else. Its scope is written when the user takes it up.

@@ -34,6 +34,22 @@ from cost_tier import cost  # noqa: E402
 PARENT = "0f0f0f0f-1111-4222-8333-444455556666"
 PROMPT = "Make the made-up thing work, and say when it does."
 CONTINUE = "Go on with the made-up thing."
+# The four rules for each case that a brief author is given (VF-075), each by the words that carry it. Both texts of
+# the generation template hold all four: a later cycle starts after a compaction, with the continue message alone.
+CASE_RULES = {
+    "a second observation that changes one input": ("`Variation`", "exactly one input", "each revision", "the reversal"),
+    "the order, wherever the behaviour defines one": ("produces an order", '"either order"', "as sets"),
+    "the cheapest observation that shows the change": ("cheapest observation", "public call", "database",
+                                                       "child process", "technical notes"),
+    "a prediction for each defect that remains": ("`Remaining defect`", "still looks wrong", "observation of its own"),
+}
+
+
+def missing_case_rules(text: str) -> dict[str, list[str]]:
+    """The case rules a text handed to a brief author does not carry, each with the words of it that are missing."""
+    flat = " ".join(text.split())
+    lacking = {rule: [words for words in carried if words not in flat] for rule, carried in CASE_RULES.items()}
+    return {rule: words for rule, words in lacking.items() if words}
 
 # The stand-in: one invocation is one turn. It appends its arguments to $STANDIN_LOG and prints stream-json.
 STANDIN = r'''#!/usr/bin/env python3
@@ -659,7 +675,10 @@ class SingleRunTest(unittest.TestCase):
                       "`llm-dlc/loops/prs-brief-generation.md`", "The brief is complete"):
             self.assertIn(named, first)
         self.assertNotIn("{", first)
+        self.assertEqual(missing_case_rules(first), {}, "the text Codex was started with holds the four case rules (VF-075)")
         self.assertTrue((self.run_dir("gen") / "continue.md").read_text().startswith("Continue writing the brief `llm-dlc/loops/prs-brief.md`"))
+        self.assertEqual(missing_case_rules((self.run_dir("gen") / "continue.md").read_text()), {},
+                         "and so does the message every later cycle is given")
         status, _, err = self.tool("generate", "gen", "--input", "notes/prs.md", ok=False)  # continued, never re-generated
         self.assertIn("only continues it", err)
         status, _, err = self.tool("generate", "thing2", "--input", "notes/prs.md", "--output", "b.md", "--client", "claude", ok=False)
@@ -806,6 +825,24 @@ class TheGenerationPhase(unittest.TestCase):
         self.assertEqual(single_run.setup_texts("## First text\n\nFor {brief}, {record}.\n\n## Continue message\n\nOn {brief}.\n",
                                                 "b.md", "r.md"), ("For `b.md`, r.md.\n", "On `b.md`.\n"),
                          "the setup texts are filled as before")
+
+    def test_both_texts_give_the_brief_author_the_four_rules_for_each_case(self):
+        """VF-075. Six generated briefs misread and missed nothing, but dropped or blurred the second observation
+        that changes one input, accepted "either order" where the code defines one, and reached for heavier
+        observations than needed. The rules are tested in the texts as `generate` renders them, not in the file."""
+        fills = {"input": "`in.md`", "output": "`out.md`", "record": "`rec.md`", "handoff": f"`{single_run.GENERATE_HANDOFF}`"}
+        first, cont = single_run.template_texts(self.TEMPLATE, fills, single_run.GENERATE_TEMPLATE)
+        for name, text in (("first text", first), ("continue message", cont)):
+            self.assertEqual(missing_case_rules(text), {}, f"the {name} lacks a case rule, or the words that carry it")
+            self.assertIn("four rules", text, f"the {name}'s check before the cycle ends covers the rules")
+            for word in ("watcher", "single-agent", "multi-agent"):  # VF-072, item 4: the texts name no run skill
+                self.assertNotIn(word, text.lower(), name)
+        rules = first.split("four rules")[1].split("\n\n")[0]
+        self.assertEqual(sum(line.startswith("- **") for line in rules.splitlines()), 4, "the first text lists them, one each")
+        # The control: the helper tells a text without the rules from one with them, rule by rule.
+        self.assertEqual(set(missing_case_rules("Give one case section per distinct pull request, in input order.")), set(CASE_RULES))
+        without_reversal = first.replace("the reversal", "another order")
+        self.assertEqual(missing_case_rules(without_reversal), {"a second observation that changes one input": ["the reversal"]})
 
 
 class NestedStarts(unittest.TestCase):
