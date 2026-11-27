@@ -91,8 +91,9 @@ Commands:
   sync.py review accept ID... --reason TEXT
                                 record findings as false positives; a person at a terminal only
   sync.py allow                 the allow list: false positives by value, approved or proposed
-  sync.py allow propose ID... --reason TEXT
-                                propose open warn findings for the allow list (an agent may)
+  sync.py allow propose ID... --reason TEXT [--no-commit]
+                                propose open warn findings for the allow list (an agent may); commits
+                                the proposal (--no-commit leaves it in @)
   sync.py allow approve [ID...] approve proposals, all or those named; a person at a terminal only;
                                commits the decision (--no-commit leaves it in @)
   sync.py allow add VALUE --kind KIND --reason TEXT [--no-commit]
@@ -3592,9 +3593,15 @@ def cmd_allow(args: list[str]) -> int:
         return 0
     cmd, rest = args[0], args[1:]
     if cmd == "propose":
+        # A proposal is committed by the command that makes it, as an approval is (commit_allowlist). On 2026-11-27 a
+        # setup agent's separate `sync.py commit --only llm-dlc/allowlist.json` of its proposal was denied by its
+        # client's permission check, and the uncommitted file kept its run from landing until the user committed it.
+        # --no-commit leaves it in @, for a caller that commits it with other work.
+        commit = "--no-commit" not in rest
+        rest = [a for a in rest if a != "--no-commit"]
         ids, reason = _split_reason(rest)
         if not ids or not reason:
-            print("usage: sync.py allow propose ID... --reason TEXT", file=sys.stderr)
+            print("usage: sync.py allow propose ID... --reason TEXT [--no-commit]", file=sys.stderr)
             return 2
         cache = load_findings_cache()
         done, missing = _resolve(ids, cache)
@@ -3617,6 +3624,9 @@ def cmd_allow(args: list[str]) -> int:
         save_allowlist(entries)
         print(f"proposed {len(done)} entr{'y' if len(done) == 1 else 'ies'} in {ALLOWLIST.relative_to(REPO)}; "
               f"they stay open until a person runs: python3 llm-dlc/tools/sync.py allow approve")
+        if commit and has_jj():
+            return commit_allowlist({fid: entries[fid] for fid in done.values()}, _who(), "with sync.py allow propose",
+                                    verb="proposed")
         return 0
     if cmd == "drop":
         done, missing = _resolve(rest, entries)
@@ -3715,7 +3725,8 @@ def cmd_allow(args: list[str]) -> int:
     return commit_allowlist(chosen, who)
 
 
-def commit_allowlist(chosen: dict[str, dict], who: str, how: str = "at their terminal with sync.py allow") -> int:
+def commit_allowlist(chosen: dict[str, dict], who: str, how: str = "at their terminal with sync.py allow",
+                     verb: str = "approved") -> int:
     """Commit a decision just recorded in the allow list, so that it never waits in @ for someone to
     commit it (push refuses uncommitted work). With nothing else changed in @, as `sync.py commit`
     commits, with trace lines and the check after it. With other work in @, the allow list alone,
@@ -3726,10 +3737,11 @@ def commit_allowlist(chosen: dict[str, dict], who: str, how: str = "at their ter
     # A message is one argument to jj, which the OS caps (128 KiB on Linux): 511 values at once overflowed it on
     # 2026-11-21. Name the first few in the summary and list the first 50 lines; the allow list holds them all.
     ids = [fid[:8] for fid in chosen]
-    summary = f"Allow list: {who} approved {', '.join(ids[:8])}" + (f" and {len(ids) - 8} more" if len(ids) > 8 else "")
+    summary = f"Allow list: {who} {verb} {', '.join(ids[:8])}" + (f" and {len(ids) - 8} more" if len(ids) > 8 else "")
     shown = lines[:50] + ([f"... and {len(lines) - 50} more, each in {ALLOWLIST.name}"] if len(lines) > 50 else [])
-    body = (f"{who} approved {len(chosen)} value(s) {how}; the command committed "
-            "the decision itself.\n\n" + "\n".join(shown))
+    body = (f"{who} {verb} {len(chosen)} value(s) {how}; the command committed "
+            + ("the decision itself." if verb == "approved" else
+               "the proposal itself. A proposal waives nothing until a person approves it.") + "\n\n" + "\n".join(shown))
     others = [p for p in uncommitted_work() if p != path]
     if jj_commits("@")[0]["description"].strip():
         print("@ has a description of its own, so the decision is left there: commit it with `sync.py commit`")
