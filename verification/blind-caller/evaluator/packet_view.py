@@ -68,6 +68,23 @@ def clean_production(source):
     return cleaned
 
 
+def public_documentation(source):
+    prose = []
+    for match in CODE_OR_COMMENT.finditer(source):
+        if not match["comment"] or not match[0].startswith("/**"):
+            continue
+        body = re.sub(r"(?m)^\s*\* ?", "", match[0][3:-2])
+        body = re.sub(r"\{@(?:link|linkplain)\s+([^}\s]+)[^}]*\}", r"\1", body)
+        body = re.sub(r"\{@(?:code|literal)\s+([^}\n]{1,80})\}", r"\1", body)
+        # Javadoc preformatted blocks or snippets can carry upstream test listings.
+        if "@snippet" in body:
+            body = body.split("@snippet", 1)[0]
+        cleaned = clean_description(body)
+        if cleaned:
+            prose.append(cleaned)
+    return "\n\n".join(prose)
+
+
 def raw_git(tree, *args, optional=False):
     result = subprocess.run(["git", "-C", str(tree), *args], capture_output=True)
     if result.returncode and not optional:
@@ -85,7 +102,7 @@ def related_tests(path, stems, packages):
             or any(folder.endswith("/" + package) for package in packages))
 
 
-def source_material(row, destination, metadata, arm, *, tree=None):
+def source_material(row, destination, metadata, arm, *, tree=None, public_docs=True):
     if tree is None:
         tree = worktree(CACHE / BATCHES[row["batch"]][3], row["slot"], "fix")
     old, new = row["pins"]["parent"], row["pins"]["fix"]
@@ -93,7 +110,7 @@ def source_material(row, destination, metadata, arm, *, tree=None):
     changed = [p.decode("utf-8") for p in raw.split(b"\0") if p]
     counts = {"changedFiles": len(changed), "productionSources": 0, "testFilesVisible": 0,
               "productionListingsWithheld": 0, "testFilesWithheld": 0, "testSourcesOutsideSelection": 0}
-    patches, docs, tests = [], [], []
+    patches, docs, documentation, tests = [], [], [], []
     for path in changed:
         name = PurePosixPath(path)
         if name.is_absolute() or ".." in name.parts:
@@ -115,11 +132,22 @@ def source_material(row, destination, metadata, arm, *, tree=None):
                 export.write_text(source)
                 docs.append({"revision": revision, "side": side, "file": str(export.relative_to(destination)),
                              "upstreamSha256": hashlib.sha256(content).hexdigest(), "visibleSha256": digest(export)})
+                api_docs = public_documentation(content.decode("utf-8", "replace")) if public_docs else ""
+                if api_docs:
+                    doc = destination / "api-docs" / side / (path + ".txt")
+                    doc.parent.mkdir(parents=True, exist_ok=True)
+                    doc.write_text(api_docs)
+                    documentation.append({"revision": revision, "side": side, "file": str(doc.relative_to(destination)),
+                                          "sha256": digest(doc)})
         patches.extend(difflib.unified_diff(sources[0][3].splitlines(True), sources[1][3].splitlines(True), f"a/{path}", f"b/{path}"))
         counts["productionSources"] += 1
     (destination / "production.diff").write_text("".join(patches))
     visible = {"productionDiff": "production.diff", "productionSources": docs,
                "title": clean_description(metadata["title"]), "description": clean_description(metadata["body"] or "")}
+    if public_docs:
+        counts["publicDocumentationFiles"] = len(documentation)
+        counts["prDescriptionOriginalBytes"] = len((metadata["body"] or "").encode())
+        visible["publicDocumentation"] = documentation
     if arm == "test-assisted":
         production = [p for p in changed if is_production(p)]
         stems = [PurePosixPath(p).stem for p in production]

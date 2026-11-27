@@ -67,6 +67,7 @@ def validate_prediction(value, url, arm):
 def material_index(packet, counts):
     spec = read(packet / "packet.json")
     names = {"packet.json", spec["productionDiff"], *(p["file"] for p in spec["productionSources"]),
+             *(p["file"] for p in spec.get("publicDocumentation", [])),
              *(p["file"] for p in spec.get("upstreamTests", []))}
     return {"counts": counts, "publicTitle": spec["title"], "visiblePRDescription": spec["description"],
             "testScope": spec.get("testScope"), "reviewed": spec.get("reviewed"), "jdkReleaseSha256": spec["jdkReleaseSha256"],

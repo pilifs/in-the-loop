@@ -181,7 +181,7 @@ def required_actions(projection, sem):
         require(aliases.setdefault(label, identity) == identity, "a later action used a different retained object")
     for wanted in required:
         observed = next((event for event in stream if event["member"] == wanted["member"]
-                         and event.get("role") == wanted["role"]), None)
+                         and ("role" not in wanted or event.get("role") == wanted["role"])), None)
         require(observed is not None and observed["member"] in projection.get("actionBindings", {}),
                 "required ordered action lacks an original reached member binding")
         retain(wanted.get("receiverHandle"), observed.get("receiver"))

@@ -77,7 +77,7 @@ def export(url, destination):
     slot, tree, metadata, pins = resolve(url)
     target = Path(destination)
     target.mkdir()
-    fields, visibility = source_material({"pins": pins}, target, metadata, "cold", tree=tree)
+    fields, visibility = source_material({"pins": pins}, target, metadata, "cold", tree=tree, public_docs=False)
     test_classes = upstream_test_classes(tree, pins)
     exported = {}
     variants = {"name": "pins"}

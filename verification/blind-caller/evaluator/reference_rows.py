@@ -122,8 +122,10 @@ def check_semantics(record):
 def reviewed(record):
     sem = check_semantics(record)
     primary = record["questions"][record["primaryIndex"]]
-    return {k: sem[k] for k in ("entry", "history", "inputs", "actions", "bindings")} | {
+    return {k: sem[k] for k in ("entry", "history", "actions", "bindings")} | {
+        "inputs": sem.get("generatorInputs", sem["inputs"]), "inputTypes": sem["inputs"],
         "fields": [item["name"] for item in sem["fields"]], "fieldTypes": sem["fields"],
+        "orderedPublicActions": sem.get("actionWitnesses", []), "distinctHandles": sem.get("distinctHandles", []),
         "requiredSides": sorted(primary["requiredSides"], key=("old", "new").index)}
 
 
