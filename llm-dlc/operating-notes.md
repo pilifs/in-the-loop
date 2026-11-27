@@ -145,7 +145,7 @@ targeted requests at a low volume. This holds for every tool: `curl`, a script, 
 - **Few.** The requests the question needs, a few dozen at most for a task. No crawling, no following links
   beyond the question, no bulk downloads, no mirroring: where many files are needed, one archive (a git clone, a
   release JAR, a Zenodo record) rather than many pages. A page fetched once is read again from the saved copy.
-- **The streams of a run share the address**, with its watcher and helpers, so each keeps its research to what
+- **Runs that go on side by side share the address**, with their watchers, so each keeps its research to what
   its task needs.
 - **Checking links** (a page's sources, the research router) follows the same rules: one at a time, `HEAD` where
   the server takes it.

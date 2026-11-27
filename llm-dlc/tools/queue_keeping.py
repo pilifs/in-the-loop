@@ -11,18 +11,14 @@ watcher keeps the queue itself, at each look of `wait` (single_run.py wait, coll
   - `tend` does both, and returns only what the watcher has to hear of: results that came back, with the ones to
     triage, or a runner it started.
 
-A verification loop that is already running in the repository (verification-loop.sh, a Sonnet session for each run
-of the queue) keeps the queue as it did, and `tend` then only announces jobs to it (`tend_queue`). That loop is
-being retired (llm-dlc/retired.md), and those parts go with it.
-
-Until 2026-11-27 this was part of the two controllers that are being retired. It is here unchanged.
+Until 2026-11-27 this was part of the controllers of two retired workflows, and a verification loop (a Sonnet
+session for each run of the queue) could keep the queue in the watcher's place (llm-dlc/retired.md).
 
 Nothing in this file is a command. Standard library only.
 """
 from __future__ import annotations
 
 import json
-import os
 import re
 import subprocess
 import sys
@@ -30,7 +26,7 @@ from pathlib import Path
 
 import conductor
 from landing import writer
-from run_common import Problem, Run, alive, detached, head_change, nudge, store
+from run_common import Problem, Run, alive, detached, head_change, nudge
 
 
 QUEUE_LOOK = 30  # seconds between two looks of `wait` at the verification queue
@@ -137,8 +133,6 @@ def tend(run: Run) -> dict | None:
     did (it runs, collects and commits, in sessions of its own), and the watcher only announces jobs to it
     (tend_queue, below). Otherwise the watcher keeps it: it collects and commits what is back, and starts the
     runner when jobs wait. Returns what to tell the watcher, if anything."""
-    if verification_running(run.root):
-        return tend_queue(run)
     try:
         got = collect(run)
     except Problem as e:
@@ -158,61 +152,3 @@ def tend(run: Run) -> dict | None:
                         if got["attention"] else "say what came back in a line: every job passed"}
     status = queue(run.root)
     return start_runner(run, status) if status else None
-
-
-def verification_running(root: Path) -> int | None:
-    mine = store(root)
-    r = subprocess.run(["pgrep", "-u", str(os.getuid()), "-f", r"llm-dlc/tools/verification-loop\.sh"],
-                       capture_output=True, text=True)
-    for pid in r.stdout.split():
-        try:
-            words = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
-            theirs = store(os.readlink(f"/proc/{pid}/cwd"))
-        except OSError:
-            continue
-        # the script as a word of its own: a shell that only mentions it (`bash -lc "…loop.sh; read"`, the window a
-        # loop was started in, still open after the loop ended) is not the loop
-        if mine and theirs == mine and any(w.endswith(b"verification-loop.sh") for w in words):
-            return int(pid)
-    return None
-
-
-def start_verification(run: Run) -> int:
-    run.dir.mkdir(parents=True, exist_ok=True)
-    pid = detached([str(run.root / "llm-dlc/tools/verification-loop.sh")], run.root, run.dir / "verification.log")
-    run.update(verification={"pid": pid, "started": conductor.now()})
-    return pid
-
-
-def tend_queue(run: Run) -> dict | None:
-    """The watcher's part in the verification queue, at each look of `wait`: a job that is queued and can run here
-    is announced to the pipeline once (most are announced already, by the commit that queued them: this is for one
-    that came another way), and if no verification loop is running while jobs wait, one is started, unless the
-    watcher was the one to stop it. Returns what to tell the watcher, if anything."""
-    r = subprocess.run([sys.executable, str(run.root / "verification/pipeline.py"), "status", "--json"],
-                       capture_output=True, text=True, cwd=run.root)
-    try:
-        rows = json.loads(r.stdout).get("pending", [])
-    except ValueError:
-        return None
-    waiting = [m[0] for row in rows if "; cannot run here:" not in row and (m := conductor.JOB_ID.search(row))]
-    data = run.read()
-    known = [j for j in data.get("nudged") or [] if j in waiting]  # forgotten once it is no longer waiting
-    if not waiting:
-        if data.get("nudged"):
-            run.update(nudged=[])
-        return None
-    if [j for j in waiting if j not in known]:
-        nudge(run.root)
-        run.update(nudged=waiting)
-    verification = data.get("verification") or {}
-    # Outside a jj repository nothing says whose loop a process is, so none is started on a guess.
-    if store(run.root) and verification_running(run.root) is None and not verification.get("stopped"):
-        try:
-            pid = start_verification(run)
-        except OSError:
-            return None
-        return {"kind": "verification", "pid": pid,
-                "note": f"no verification loop was running while {len(waiting)} job(s) waited: started one "
-                        f"(its output: {run.dir / 'verification.log'}). Tell the user; nothing else to do."}
-    return None

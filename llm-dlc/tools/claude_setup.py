@@ -4,7 +4,7 @@ Claude Code setup in step 1 of the skill (llm-dlc/runtime.md#what-claude-code-ha
 
     claude_setup.py check [--json]    the warning, what the session running this has loaded, whether the proof
                                       loop's own sessions start without it, and the command that starts a clean one
-    claude_setup.py flags             the launch flags of a clean session, one per line (prove-loop.sh reads them)
+    claude_setup.py flags             the launch flags of a clean session, one per line (loop-common.sh reads them)
     claude_setup.py launch [ARG ...]  start Claude Code in this checkout with those flags, on Opus 5.5 at high effort
 
 A clean session loads this checkout (its CLAUDE.md, its settings and its skills) and nothing of the user's own
@@ -310,7 +310,7 @@ def report(found: dict) -> str:
     loop = found["loop"]
     if not loop["isolated"]:
         lines.append(f"The proof loop's sessions can't be started clean here: {loop['error']}. "
-                     f"Started with `prove-loop.sh --no-isolation`, they load what a plain `claude` loads.")
+                     f"Started with `LOOP_ISOLATION=0`, they load what a plain `claude` loads.")
     elif loop["remaining"]:
         lines.append("The proof loop's sessions start clean, except for what no flag turns off:")
         lines += [f"  {x['kind']:<13} {x['name']}" for x in loop["remaining"]]

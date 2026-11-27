@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
-"""The conductor's side of a moonshot loop: a session outside the loop judges what a rule can't
-(llm-dlc/runtime.md#the-conductor).
+"""How a run's loop and the session that watches it talk: the loop's questions and the watcher's verdicts.
 
-A moonshot has no acceptance criteria, so nothing but its context window measures it. feature-loop.sh compacts a
-moonshot's session at a fixed size, and an automatic compaction with no commit since the cycle began, or since the
-last one, is the point where the work is either hard and going well or stuck. The loop can't tell which: by itself
-it only logs the compaction, and a rule that stopped there stopped good work (FEATURE_LOOP_STOP_ON_COMPACT=1 still
-turns it on). With a conductor directory (LOOP_CONDUCTOR, which prove-loop.sh sets) it asks: it appends the event
-to DIR/events.jsonl, lets the turn go on, and waits for a verdict until the event's deadline. `stop` ends the turn
-and the loop. `continue` lets the turn run to the next compaction, and so does no verdict in time, noted in the
-run's record, unless the rule is on. The conductor never talks to the loop's session, whose instruction stays the
-one line.
+A run has no acceptance criteria of its own, so a session outside it, the conductor (the run's watcher), judges
+what a rule can't. feature-loop.sh is given a conductor directory (LOOP_CONDUCTOR, the run's directory:
+llm-dlc/loop-summaries/single-NAME, which single_run.py sets). It appends each question to DIR/events.jsonl and
+waits for a verdict until the question's deadline. The conductor never talks to the loop's session.
+
+The loop asks two questions, each an event with the answers it takes, and each with a default when no verdict
+comes before its deadline, so a conductor that has gone away never stops the work:
+
+    run         a cycle has ended, with a commit or without: `continue` with another cycle, which takes the run's
+                continue message as it stands then, or `stop` the run here. Without a verdict a cycle that committed
+                is followed by another and one that did not ends the run, and three in a row without one end it.
+    compaction  the session compacted itself with no commit since the cycle began, or since the last such
+                compaction, which is where the work is either hard and going well or stuck: `continue` (the
+                default) lets the turn run to the next compaction, `stop` ends the turn and the loop. The turn goes
+                on while the conductor judges (FEATURE_LOOP_STOP_ON_COMPACT=1 ends it when no verdict comes).
+
+An event of type `withdrawn` takes a question back: the turn ended by itself before a verdict came.
 
     conductor.py wait DIR [--timeout SECONDS]
         block until the loop asks for a verdict or ends, then print that event as JSON with what to read to
@@ -21,30 +28,10 @@ one line.
     conductor.py events DIR
         every event so far, with its verdict
     conductor.py command DIR LINE
-        a line for the loop, as if typed in its terminal (feature-loop.sh's HELP: +N, -N, =N, stop, inf, item),
-        applied before its next cycle and while it waits
+        a line for the loop, as if typed in its terminal (feature-loop.sh's HELP: +N, -N, =N, stop, inf),
+        applied before its next cycle
 
-An event of type `withdrawn` takes a question back: the turn ended by itself before a verdict came.
-
-The loop asks three questions, each an event with the answers it takes, and each with a default when no verdict
-comes before its deadline, so a conductor that has gone away never stops the work:
-
-    compaction  a compaction with no commit: `continue` (the default) or `stop`
-    cycle       a cycle of an item has committed: is the item `finished`, does it `continue` with another cycle,
-                or is it only `waiting` on queued verification jobs (the loop then takes another item and comes
-                back when they are in)? Without a verdict a judge of the loop's own answers (feature-loop.sh).
-    example     the loop is between two items: `continue` (the default), or `stop` here. It waits longer while
-                DIR/merge-queue names a workspace the conductor is to merge first.
-
-A single-agent run (feature-loop.sh's `single-agent`, llm-dlc/tools/single_run.py) asks one of its own in place of
-`cycle` and `example`:
-
-    run         a cycle has ended, with a commit or without: `continue` with another cycle, which takes the run's
-                continue message as it stands then, or `stop` the run here. Without a verdict a cycle that committed
-                is followed by another and one that did not ends the run, and three in a row without one end it.
-
-Until 2026-11-27 a brief's streams asked two more, `blocked` and `merge`; that workflow is retired
-(llm-dlc/retired.md), and a decision record written then still holds their answers.
+A watcher does not call these itself: single_run.py's `wait`, `answer`, `cycles` and `stop` do.
 
 A verdict given in time is also a decision, and goes into the decision record beside the verdict's own file:
 llm-dlc/decisions/NAME.jsonl (decisions.py), NAME the run directory's name (in a runtime checkout `local-NAME`, so a
@@ -59,18 +46,18 @@ The loop's side, for feature-loop.sh:
         append the question, wait for its verdict, and print `VERDICT<TAB>REASON`, or `none` after the deadline
     conductor.py note DIR TYPE [KEY=VALUE ...]
         append an event that asks nothing: where the loop is, for whoever watches
-    conductor.py unfinished ITEM ...
-        of these examples, the ones with verification jobs still queued, running or not collected, one per line;
-        when the queue can't be read, every one of them, with exit status 1: a job is never taken to be in
-        because its status could not be read
     conductor.py commands DIR
         print the lines `command` left and forget them
 
-The orchestrating session runs `wait` as a background task, so it is called back when there is something to judge,
-decides, and waits again. To judge: read what the session did since the cycle began or the last compaction (the
-transcript the event names, the commits and the working copy's diff, the test runs and jobs), and whether the same
-failure or file keeps coming back. Lean towards `continue` while the work is moving: an item left unfinished is
-fine, a later pass can return to it, and a stop costs a person's attention.
+To judge: read what the session did since the cycle began or the last compaction (the transcript the event names,
+the commits and the working copy's diff, the test runs and jobs), and whether the same failure or file keeps
+coming back. Lean towards `continue` while the work is moving, and a stop costs a person's attention.
+
+The protocol is not tied to those two questions: a question is any event that needs a verdict and names its
+answers, and one may name an `item` (an example's number), which its decision then cites. Until 2026-11-27 the
+proof loop over examples asked two more that way (`cycle`, `example`) and a brief's streams two (`blocked`,
+`merge`); both workflows are retired (llm-dlc/retired.md), and a decision record written then still holds their
+answers.
 
 Standard library only.
 """
@@ -90,20 +77,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 
 
-def _verification_layout():
-    """verification/layout.py: where a job and its result are kept, by id (flat, or under the day it was submitted)."""
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
 EVENTS = "events.jsonl"
 COMMANDS = "commands"
-MERGE_QUEUE = "merge-queue"
-# rerun, leave and merged answered the questions of a brief's streams (retired: llm-dlc/retired.md). They stay, so
-# that the verdicts in a run directory written then are still read; no question asked now takes them.
+# finished and waiting answered the proof loop's questions, and rerun, leave and merged those of a brief's streams
+# (both retired: llm-dlc/retired.md). They stay, so that the verdicts in a run directory written then are still
+# read; no question asked now takes them.
 VERDICTS = ("continue", "stop", "finished", "waiting", "rerun", "leave", "merged")
 DEFAULT_ANSWERS = ("continue", "stop")  # an event that names none: a compaction
 JOB_ID = re.compile(r"\d{8}-\d{6}-[a-z0-9-]+")
@@ -198,17 +176,7 @@ QUESTIONS = {
         "continue": ("let the turn run to the next compaction", "the session keeps working without a commit, and spends tokens if it is stuck",
                      "answer stop at the next compaction"),
         "stop": ("end the turn and the loop", "what the turn has not committed stays in the working copy, and the loop has to be started again",
-                 "start the loop again on the same examples: the session continues where it was")}),
-    "cycle": ("A cycle{of} has committed: is the example finished?", {
-        "finished": ("the example is done", "the loop takes the next example and does not return to this one in this run",
-                     "name the example in a later run of the loop"),
-        "continue": ("another cycle on the example", "a further cycle's time and tokens",
-                     "answer finished after the next cycle, or stop the loop after it"),
-        "waiting": ("leave it until its verification jobs are in", "the loop takes another example meanwhile and returns when the jobs are in",
-                    "nothing to undo: the loop returns to the example by itself")}),
-    "example": ("The loop is between two examples{after}: does it take the next one?", {
-        "continue": ("take the next example", "the run goes on", "stop the loop after the example under way"),
-        "stop": ("end the loop here", "the examples left are not started", "start the loop again on the examples left")}),
+                 "start the run again (single_run.py start NAME): the session continues where it was")}),
     "run": ("A cycle of a single-agent run has ended: does the agent get another?", {
         "continue": ("another cycle, with the run's continue message", "a further cycle's time and tokens",
                      "answer stop after the next cycle, or stop the run (single_run.py stop)"),
@@ -335,67 +303,6 @@ def cmd_commands(directory: Path) -> int:
     return 0
 
 
-class QueueUnreadable(RuntimeError):
-    """pipeline.py status gave nothing to read: the queue's state is unknown, which is not the same as empty."""
-
-
-def queue_status(root: Path, tries: int = 3) -> dict:
-    """pipeline.py status --json, read again a few times before giving up: under load, or while a commit or a runner
-    holds the queue, it has once printed nothing, and an empty answer read as "no jobs" sends a loop back to an
-    example whose proof is still running."""
-    for attempt in range(tries):
-        r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "status", "--json"],
-                           capture_output=True, text=True, cwd=root)
-        try:
-            status = json.loads(r.stdout)
-            if r.returncode == 0 and isinstance(status, dict):
-                return status
-        except ValueError:
-            pass
-        if attempt + 1 < tries:
-            time.sleep(2 * (attempt + 1))
-    raise QueueUnreadable(f"pipeline.py status gave nothing to read (exit {r.returncode}): {r.stderr.strip()[-200:]}")
-
-
-def unfinished_jobs(root: Path = REPO) -> dict[str, list[str]]:
-    """Example number -> its verification jobs that are queued, running or finished and not collected yet. A job is
-    an example's when one of its outputs is in that example's folder (or, for a job whose file is not in this
-    checkout, when its title names the example). A job this machine can't run never finishes here, so it does not
-    count. Raises QueueUnreadable when the queue can't be read."""
-    status = queue_status(root)
-    rows = [row for key in ("pending", "running", "finished, not collected") for row in status.get(key, [])
-            if "; cannot run here:" not in row]
-    found: dict[str, list[str]] = {}
-    layout = _verification_layout() if rows else None  # only this question needs it; the others must not depend on it
-    for row in rows:
-        m = JOB_ID.search(row)
-        if not m:
-            continue
-        try:
-            job = json.loads((layout.find_job(root, m[0]) or root / layout.job_rel(m[0])).read_text())
-            examples = {o.split("/")[1][:3] for o in job.get("outputs") or []
-                        if isinstance(o, str) and re.match(r"examples/\d{3}-", o)}
-        except (OSError, ValueError):
-            examples = set()  # a job committed in another workspace: its row's title has to do
-        for example in sorted(examples or set(re.findall(r"\bexample[ -](\d{3})\b", row, re.I))):
-            found.setdefault(example, []).append(m[0])
-    return found
-
-
-def cmd_unfinished(items: list[str]) -> int:
-    try:
-        jobs = unfinished_jobs(REPO)
-    except QueueUnreadable as e:
-        print(f"conductor.py unfinished: {e}; counting every example named as unfinished", file=sys.stderr)
-        for item in items:
-            print(item)
-        return 1
-    for item in items:
-        if jobs.get(item):
-            print(item)
-    return 0
-
-
 def cmd_events(directory: Path) -> int:
     for e in read_events(directory):
         v = read_verdict(directory, e["n"]) if e.get("needsVerdict") else None
@@ -404,7 +311,7 @@ def cmd_events(directory: Path) -> int:
 
 
 def main(argv: list[str]) -> int:
-    p = argparse.ArgumentParser(description="The conductor's side of a moonshot loop.")
+    p = argparse.ArgumentParser(description="How a run's loop and the session that watches it talk.")
     sub = p.add_subparsers(dest="command", required=True)
     w = sub.add_parser("wait", help="block until the loop asks for a verdict or ends")
     w.add_argument("directory", type=Path)
@@ -431,8 +338,6 @@ def main(argv: list[str]) -> int:
     n.add_argument("directory", type=Path)
     n.add_argument("type")
     n.add_argument("fields", nargs="*", metavar="KEY=VALUE")
-    u = sub.add_parser("unfinished", help="the examples, of those named, with verification jobs not in yet")
-    u.add_argument("items", nargs="*")
     t = sub.add_parser("commands", help="the loop's side: take the queued command lines")
     t.add_argument("directory", type=Path)
     args = p.parse_args(argv)
@@ -447,8 +352,6 @@ def main(argv: list[str]) -> int:
     if args.command == "note":
         append_event(args.directory, type=args.type, **fields(args.fields))
         return 0
-    if args.command == "unfinished":
-        return cmd_unfinished(args.items)
     if args.command == "commands":
         return cmd_commands(args.directory)
     return cmd_events(args.directory)

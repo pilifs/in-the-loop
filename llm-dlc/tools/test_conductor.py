@@ -143,38 +143,10 @@ class ConductorTest(unittest.TestCase):
         self.assertEqual(conductor.read_events(self.dir)[0]["type"], "cycle-start")
 
     def test_command_lines_are_handed_to_the_loop_once(self):
-        call("command", self.dir, "item")
+        call("command", self.dir, "stop")
         call("command", self.dir, "+", "2")
-        self.assertEqual(call("commands", self.dir)[1], "item\n+ 2\n")
+        self.assertEqual(call("commands", self.dir)[1], "stop\n+ 2\n")
         self.assertEqual(call("commands", self.dir)[1], "")
-
-    def test_unfinished_jobs_are_matched_to_examples_by_their_outputs_or_their_title(self):
-        root = self.dir.parent / "checkout"
-        (root / "verification/jobs").mkdir(parents=True)
-        (root / "verification/jobs/20260101-000000-a-made-up-proof.json").write_text(
-            json.dumps({"outputs": ["examples/901-a-made-up-change/receipts/prove"]}))
-        rows = {"pending": ["20260101-000000-a-made-up-proof  A made-up proof  (2 CPU)",
-                            "20260101-000001-example-902-elsewhere  Example 902, committed in another workspace",
-                            "20260101-000002-example-903-too-big  Example 903  (64 CPU; cannot run here: needs 64 CPUs)"],
-                "running": [], "finished, not collected": ["20260101-000003-example-904-done  Example 904  [passed]"],
-                "collected": ["20260101-000004-example-905-in  Example 905  [passed]"]}
-        (root / "verification/pipeline.py").write_text(f"print({json.dumps(json.dumps(rows))})\n")
-        self.assertEqual({k: len(v) for k, v in conductor.unfinished_jobs(root).items()}, {"901": 1, "902": 1, "904": 1})
-
-    def test_a_queue_that_cant_be_read_is_never_taken_for_no_jobs(self):
-        # Seen in the run of 2026-11-16: pipeline.py status printed nothing once, and the empty answer read as "every
-        # job in", which would send the loop back to an example whose proof was still running.
-        root = self.dir.parent / "checkout"
-        (root / "verification").mkdir(parents=True)
-        (root / "verification/pipeline.py").write_text("import sys\nsys.exit(1)\n")
-        with mock.patch.object(conductor.time, "sleep"):
-            with self.assertRaises(conductor.QueueUnreadable):
-                conductor.unfinished_jobs(root)
-            out, err = io.StringIO(), io.StringIO()
-            with mock.patch.object(conductor, "REPO", root), contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-                self.assertEqual(conductor.cmd_unfinished(["288", "289"]), 1)
-        self.assertEqual(out.getvalue().split(), ["288", "289"], "each one counts as unfinished")
-        self.assertIn("could not be read", err.getvalue().replace("gave nothing to read", "could not be read"))
 
 
 class DecisionRecordTest(unittest.TestCase):

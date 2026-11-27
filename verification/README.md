@@ -36,7 +36,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 |---|---|---|
 | [`README.md`](README.md) | this page: the lifecycle, [submitting a job](#for-agents-making-changes-submitting-a-job), [managing the pipeline](#for-the-agent-managing-the-pipeline), [reading results](#reading-results), [the runner's resources](#running-resources-isolation-configuration), [other backends](#backends-other-machines-and-the-cloud) | |
 | [`pipeline.py`](pipeline.py) | every command: `submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`; [`test_pipeline.py`](test_pipeline.py) tests it | |
-| [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill; [`llm-dlc/tools/verification-loop.sh`](../llm-dlc/tools/verification-loop.sh) runs it unattended | |
+| [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill, for a session with no run's watcher keeping the queue | |
 | [`capture.py`](capture.py) | hands each run's originals to the private archive before they are cut or removed (see [Originals](#originals-the-whole-logs-and-outputs)); [`test_capture.py`](test_capture.py) tests it | |
 | [`layout.py`](layout.py) | where a job and its result are kept, by id: flat, or under the day the job was submitted (see [Two layouts](#two-layouts-flat-and-by-day)); every reader goes through it; [`test_layout.py`](test_layout.py) tests it | |
 | [`schema/job.schema.json`](schema/job.schema.json) | the job format | |
@@ -214,7 +214,7 @@ results with `sync.py commit --only $(pipeline.py commit-paths)`, which takes it
 a submitter's error, a decision that changes what the results mean) goes into [`findings.md`](findings.md), which
 keeps it after the session ends; an entry is closed only by the check it names.
 
-To keep the queue empty unattended, run `llm-dlc/tools/verification-loop.sh`: it starts a fresh session on Sonnet running the skill whenever there is work this machine can do, and watches for new jobs in between (see [`llm-dlc/README.md`](../llm-dlc/README.md#unattended-loops)).
+While a run is under way its watcher keeps the queue itself: at each look `single_run.py wait` collects and commits what is back and starts the runner when jobs wait (see [`llm-dlc/README.md`](../llm-dlc/README.md#unattended-loops)). Until 2026-11-27 a loop of its own, `verification-loop.sh`, started a fresh session on Sonnet running the skill whenever there was work; it is retired ([`llm-dlc/retired.md`](../llm-dlc/retired.md#verification-loop)).
 
 **Who learns of a new job, and when.** Nobody waits out an interval for a job that was announced, and no job waits
 for a longer one to end:
@@ -226,13 +226,11 @@ for a longer one to end:
 - **A runner at work takes the job into its run.** `run` reads the queue at its start, at once after a nudge, and
   every `poll_seconds` (30) besides, and starts each new job beside the ones running, as the budget allows. It ends
   when nothing runs and nothing is queued, after one last look (`--watch` keeps it going).
-- **A verification loop waiting for work looks at once** after a nudge, and every `VERIFICATION_LOOP_POLL` seconds
-  (60) besides.
 - **Each result is collected as it comes.** The agent managing a run waits with `pipeline.py wait`, which returns
   when a job has finished, and collects, triages and commits that result while the others run. A short job's
   result is not held back behind a long one.
-- **The watcher of a proof loop** ([`watch.py`](../llm-dlc/tools/watch.py)) announces a job it sees queued that
-  nobody announced, and starts a verification loop if none is running while jobs wait.
+- **The watcher of a run** (`single_run.py wait`) announces a job that came while a runner was at work and that
+  nobody announced, and starts the runner if none is at work while jobs wait.
 
 The intervals are the backup, for a job that arrives some other way (a merge, a plain `jj commit`, another
 workspace). Reading the queue is one git call for all the job files, so a look costs a fraction of a second.

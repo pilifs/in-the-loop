@@ -28,7 +28,10 @@ outdated.
   - *Historical* pages are briefs, results pages and findings that agents still open. Their text is left as it
     was written. A page that names something retired gets one dated line at its top that points here.
   - *Records* are never edited: `llm-dlc/traces/`, `llm-dlc/index.json`, the decision records, verification
-    jobs and results, the queue's copies of the user's briefs, and the provenance an example carries.
+    jobs and results, the queue's copies of the user's briefs, and the provenance an example carries. Studies that
+    pinned the tools of the revision they ran on are records too, and still name retired files
+    (`lib/benchmark/external-upgrades/`, `lib/benchmark/startup-facts/freeze.py`, `verification/blind-caller/`):
+    they read those files from that revision, never from the working copy.
 - **Adding an entry:** give it a `###` heading and the same six lines as the entries below.
 
 ## Entries
@@ -71,7 +74,7 @@ outdated.
 
 ### proof-loop
 
-- **Status:** planned
+- **Status:** retired
 - **What it was:** the proof run behind `/prove-java-change` in a development checkout. A watcher started a
   session that evaluated the changes and designed their claims, a session that set the examples up, and a proof
   loop that took one example at a time ("Formally prove example NNN as elegantly and efficiently as possible"),
@@ -80,31 +83,34 @@ outdated.
   which takes the place of the claim design; a setup phase does the mechanical setup; a domain run proves. The
   checks an example needs before a run (`preflight`) and the two product commands the tool had gained
   (`startup-facts`, `public-observation`) are in `examples/tools/`.
+  `prove-plan.schema.json`, the plan's format, is kept: the scaffold and one study still write and read it. So
+  are `changes.py` (where each example stands) and `doctor.py` (whether the machine is enough, and a loop's
+  memory budget), which the surviving tools use.
 - **Names:** `watch.py`, `prove-loop.sh`, `watch-summary-template.md`, `prove-plan-template.md`
 - **Files:** `.claude/skills/prove-java-change`, `.agents/skills/prove-java-change`, `llm-dlc/tools/watch.py`,
   `llm-dlc/tools/prove-loop.sh`, `llm-dlc/watch-summary-template.md`, `llm-dlc/prove-plan-template.md`,
   `llm-dlc/tools/test_watch.py`, `llm-dlc/tools/test_prove_loop.py`
-- **Removed in:** not yet
+- **Removed in:** change `ykqmkpuomlqw` (2026-11-27)
 
 ### loops-by-hand
 
-- **Status:** planned
+- **Status:** retired
 - **What it was:** `feature-loop.sh` run by name or with a brief's file. The moonshots repeated one line every
   cycle (`features`, `tla`, `spring`, `relational`); the templated moonshots took one item of a list at a time
   (`prove-examples`, `prove-change`) with a judge outside the session saying when an item was finished; a brief
   ran by name (`engines`, `foundations`, `cleanup`, `application-core`, `example-targets`) or as `FILE.md`, with
   its own loop settings, a Progress section and a status line.
 - **Replaced by:** `/orchestrate-run`. `feature-loop.sh` is kept as the loop under a run and has one kind left,
-  `single-agent`, which `single_run.py` starts. The loop statistics still count every earlier loop
+  `single-agent`, which `single_run.py` starts; it refuses the other names with a pointer to this page. The loop statistics still count every earlier loop
   (`llm-dlc/traces/loops.md`).
 - **Names:** `feature-loop.sh features`, `feature-loop.sh tla`, `feature-loop.sh spring`,
   `feature-loop.sh relational`, `feature-loop.sh prove-examples`, `feature-loop.sh prove-change`
 - **Files:** none: the script is kept
-- **Removed in:** not yet
+- **Removed in:** change `ykqmkpuomlqw` (2026-11-27)
 
 ### verification-loop
 
-- **Status:** planned
+- **Status:** retired
 - **What it was:** a loop that started a fresh Sonnet 5.5 session running `/run-verification` whenever jobs were
   queued or results waited to be collected.
 - **Replaced by:** the watcher of a run keeps the queue itself: `single_run.py wait` collects and commits what is
@@ -112,7 +118,7 @@ outdated.
   `/run-verification`, which is kept.
 - **Names:** `verification-loop.sh`
 - **Files:** `llm-dlc/tools/verification-loop.sh`, `llm-dlc/tools/test_verification_loop.py`
-- **Removed in:** not yet
+- **Removed in:** change `ykqmkpuomlqw` (2026-11-27)
 
 ### plugin-and-runtime-mode
 

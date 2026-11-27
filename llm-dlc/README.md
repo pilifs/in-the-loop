@@ -5,8 +5,9 @@ Every change is published together with the LLM session that made it.
 For each commit you can read the message, a summary of the session, and the full transcript.
 
 The formal verification work itself is in [`examples/`](../examples/README.md). This folder is about how it was made.
-It also holds what [`/prove-java-change`](runtime.md) runs on apart from the verifier: the two modes of a checkout,
-the proof loop, and the release and contribution tools.
+It also holds how the work is run: [`/orchestrate-run`](#a-single-agents-run), one agent toward one outcome with a
+watcher outside it, and the tools under it. The workflows this folder had before that one are in
+[`retired.md`](retired.md).
 
 ## Layout
 
@@ -27,10 +28,8 @@ llm-dlc/
   reviewed-findings.json            false positives a person reviewed, by hash, which `check` no longer raises
   summary-template.md               the template for each summary.md
   traces-readme-template.md         the template for traces/README.md
-  watch-summary-template.md         the summary the watcher of a /prove-java-change run prints at intervals, filled in
-                                    by tools/watch.py
-  prove-plan-template.md            the plan stage 2 of /prove-java-change fills in and stage 3 turns into examples
-  prove-plan.schema.json            the same plan as data (plan.json), the handoff stage 3 and the proof loop read
+  prove-plan.schema.json            a plan of examples and their claims as data (plan.json): the format of the retired
+                                    proof run's handoff, which the scaffold and one study still write and read
   session-notes/<session-id>.md     optional hand-written note, shown at the top of that session's summary
   traces/README.md                  every session added up: tokens, tools, commits, logs (generated)
   traces/metrics.json               every session added up as data, for charts (generated)
@@ -56,16 +55,9 @@ llm-dlc/
   tools/changes.py                  the examples a checkout holds for /prove-java-change, each unprepared, prepared or
                                     decided from its own folder, and the ones still to prove, in order
                                     (runtime.md#many-changes-and-preparing-without-proving); test_changes.py tests it
-  tools/watch.py                    the watcher's tool: /prove-java-change is one session that starts the run's other
-                                    sessions, each on its model and effort, starts the verification loop and the proof
-                                    loop, prints a summary at intervals (watch-summary-template.md) and acts between
-                                    cycles and examples (runtime.md#the-watcher); test_watch.py tests it
-  tools/prove-loop.sh               proves examples in a moonshot loop that continues the session which evaluated
-                                    them: stage 4 of /prove-java-change (runtime.md#the-proof-loop); test_prove_loop.py
-                                    runs it, and the loop under it, against a stand-in claude
-  tools/conductor.py                how a moonshot loop and the session outside it talk: the loop's questions (a
-                                    compaction with no commit, a cycle's end, a change of example) and the verdicts
-                                    (runtime.md#the-conductor); test_conductor.py tests it
+  tools/conductor.py                how a run's loop and the session that watches it talk: the loop's questions (a
+                                    cycle's end, a compaction with no commit) and the verdicts; test_conductor.py
+                                    tests it
   tools/contribute.py               what of a runtime checkout's work can go upstream as a pull request, and a check of
                                     a prepared one (runtime.md#contributing-back); test_contribute.py tests it
   tools/checkpoint.py               `sync.py checkpoint`: one committed revision to origin's develop, forward only, after
@@ -116,18 +108,21 @@ llm-dlc/
                                     mailbox for messages between sessions of either client
   tools/codex_rollout.py            Codex sessions for sync.py: finds a checkout's rollouts and reads one as a
                                     Claude Code transcript; test_codex.py tests it
-  decisions/<name>.jsonl            a run's decision record: what its conductor decided (a parallel run's conductor, or the
-                                    watcher of a proof loop, whose record is prove-change), with the confidence, how hard it
+  decisions/<name>.jsonl            a run's decision record: what its conductor decided (the watcher of a run, whose record
+                                    is single-NAME; the records of earlier kinds of run are kept), with the confidence, how hard it
                                     is to undo and the user's review, and the questions queued for the user (schema.json)
   decisions/<name>.md               the review view of that record: flagged first, then open, then unreviewed (generated)
   tools/decisions.py                writes and reads the records: the conductor's `record` and `depend`, the user's `review` and
                                     `answer`, `list`, `show`, `counts`; `sync.py` renders the views and `check` validates the
                                     records; test_decisions.py tests it (loops/stream-conductor.md, Design 3 and 4)
-  loops/                            briefs for feature-loop.sh: markdown instructions a loop works through
+  loops/                            briefs: markdown instructions a run works through, the queue's copies of them, and
+                                    the pages of earlier loops
   loops/brief-template.md           the skeleton of a brief and the standing rules every brief starts with, the timebox included
-  tools/feature-loop.sh             runs a moonshot or a brief unattended: instruction, commit, compact, repeat, then a summary
-  tools/verification-loop.sh        keeps the verification queue empty: a fresh Sonnet session per run of /run-verification
-  tools/loop-common.sh              what the two loops share: log lines and the live display of a session
+  tools/feature-loop.sh             the loop under a run: a text, the agent's turn, the watcher's verdict, a compact,
+                                    repeated, then a summary; single_run.py starts it, and test_feature_loop.py and
+                                    test_single_run.py run it against a stand-in client
+  tools/loop-common.sh              what that loop sources: log lines, and the live display of a turn with its
+                                    compaction watch
   tools/prune_workspaces.py         lists jj workspaces no longer used and whether deleting each loses nothing (commits merged, every
                                     file, gitignored ones included, in history or the default workspace), and prints the --delete
                                     command for a person to run in their own terminal; test_prune_workspaces.py tests it
@@ -224,61 +219,51 @@ A session's last words cannot be in the log that a push from inside it publishes
 
 ## Unattended loops
 
-[`tools/feature-loop.sh`](tools/feature-loop.sh) resumes one Claude Code session and repeats the instruction you name, compacting the session after each commit. The simplest are moonshots, one-line instructions run by name, the loops of the repo's first days: `features` adds features and examples to jvmcontract, `tla` adds advanced TLA examples, `spring` makes jvmcontract more useful to expert Spring Boot developers (new models, solvers, examples or other features, built into the library itself where it can be), and `relational` makes relational verification more efficient and accurate, adding examples where appropriate. A templated moonshot goes through a list instead, putting one item at a time into its template: `prove-examples` gives each of examples 285 to 300 in turn to "Formally prove example {} as elegantly and efficiently as possible". An item keeps the next cycle, with the same instruction, until a judge outside the session finds it finished: after each commit a separate `claude -p` call (`FEATURE_LOOP_JUDGE_MODEL`, Sonnet 5.5 by default), with no tools and no session of its own, reads the cycle's final report and commit messages and answers `ITEM: finished` (the goal is met, or what is left needs a person), `ITEM: continue` (the session can still make real progress on it) or `ITEM: waiting` (all that is left waits on verification jobs still out: the loop leaves the item, starts the next, and returns to the earliest waiting one whose jobs are in whenever it changes item; `FEATURE_LOOP_CONTINUE_WHILE_PROVING=0` keeps the item instead), and the run's record keeps its reason under the commit. Nothing is added to the moonshot's own session. `FEATURE_LOOP_ITEM_CYCLES` caps the cycles an item may take in a run (no cap by default), and `FEATURE_LOOP_ITEM_JUDGE=0` gives each item exactly one cycle, as before 2026-11-16. Its session is its own, fixed in the script, on Fable 5.2 at high effort: the first run creates it and later runs resume it. An item counts as done once an earlier run's record lists a commit for it, unless the judge's last word on it there was that it continues, so a run starts at the first item not done and ends when the list does; a cycle that makes no commit stops the loop and leaves its item for the next run. `engines` is a name for the brief [`loops/engine-priorities.md`](loops/engine-priorities.md), run with that brief's own settings, and `engines-jbmc` and `engines-native` for its two streams, `loops/engine-priorities-jbmc.md` and `-native.md`. `foundations` is likewise [`loops/foundations.md`](loops/foundations.md), with `foundations-heap`, `-summaries`, `-observations` and `-alignment` for its four streams. `cleanup` is [`loops/cleanup.md`](loops/cleanup.md), which works through the open entries of `verification/findings.md`, with `cleanup-native`, `-jbmc` and `-examples` for its three streams. `application-core` is [`loops/application-core.md`](loops/application-core.md), which widens native change verification to ordinary service code (objects with state, bounded Strings and lists, dependency outcomes, proof reuse), with `application-core-objects`, `-values`, `-environment` and `-reuse` for its four streams and [`loops/application-core-acceptance.md`](loops/application-core-acceptance.md) as their acceptance contract. In place of a name you can give a markdown brief, such as [`loops/sync-performance.md`](loops/sync-performance.md) (make `sync.py` fast): every cycle tells the session to read the brief again in full and take the next piece of work it calls for, so the brief outlives each compact; a brief that changes while the loop runs stops it, and briefs live in `loops/`. A number after the name sets how many cycles to run; without one it runs until stopped. Instead of a number, or after it, you can give instructions for when the work is done, and the session decides when to stop: after each commit, before the compact, it gets one more turn to weigh them against what the run has done and ends its reply with `LOOP: continue` or `LOOP: stop`. A stop ends the loop like running out of cycles, summary included; a reply with neither stops it as needing attention, and the reasons it gave are in the run's record. A number given as well is still an upper limit. It also stops when a cycle makes no commit, because that may mean a person is needed, and it leaves that session uncompacted so its context is there to read. To continue a stopped loop, run the same command again: a brief's Loop settings fix the session, its Progress section says what is done, and each cycle first finishes and commits a change an interrupted cycle left in the working copy. Files another session left uncommitted there (the verification loop's results, say) are kept out of the loop's commits, as `/run-verification` keeps a feature session's out of its own.
+[`tools/feature-loop.sh`](tools/feature-loop.sh) is the loop under a run. It gives one session a text, lets its turn end, asks the run's watcher whether there is another, and compacts the session, cycle after cycle. It has one kind, `single-agent`, which [`tools/single_run.py`](tools/single_run.py) starts for [`/orchestrate-run`](#a-single-agents-run); nobody starts it by hand. Until 2026-11-27 the same script also ran loops by name or from a brief's file: the moonshots of the repo's first days (`features`, `tla`, `spring`, `relational`), templated moonshots over a list of examples (`prove-examples`, and `prove-change` under the proof run), and briefs with their own loop settings. Those kinds are retired, and the script refuses their names: [`retired.md`](retired.md#loops-by-hand) says what each was and where to read it as it was. The loop statistics still count every one of those loops.
 
-Each run keeps a record in `llm-dlc/loop-summaries/`: the instruction, a line for each commit as it lands, so it survives a restart, and how the run ended. The folder is gitignored, because a record holds local paths. `sync.py` publishes each record instead as a copy redacted by the transcripts' rules, at `llm-dlc/traces/<session-id>/runs/<record>.md` beside the session its header names, and lists the runs in that session's `summary.md` (start, end, cycles, how it ended). A record still being written is published as it stands and again as it grows, since a run that is killed never writes its end. `check` scans the copies as it scans an unpublished log. Only the default workspace publishes them. A run that worked in a workspace of its own keeps its records there until they are copied into the default one (`python3 llm-dlc/tools/run_records.py collect WORKSPACE_DIR DEFAULT_DIR`, which replaces a copy only with the record it is a start of); no command of a run does that today, so such a run's record is not published and the loop statistics do not count it. When the cycles run out, the loop asks the session for one more turn that only reports: a summary of the run's commits, the verification jobs still pending or failed, and the `sync.py check` warnings to judge before pushing. That summary goes at the end of the record.
+Each run keeps a record in `llm-dlc/loop-summaries/`: the instruction, a line for each commit as it lands, so it survives a restart, and how the run ended. The folder is gitignored, because a record holds local paths. `sync.py` publishes each record instead as a copy redacted by the transcripts' rules, at `llm-dlc/traces/<session-id>/runs/<record>.md` beside the session its header names, and lists the runs in that session's `summary.md` (start, end, cycles, how it ended). A record still being written is published as it stands and again as it grows, since a run that is killed never writes its end. `check` scans the copies as it scans an unpublished log. Only the default workspace publishes them. A run that worked in a workspace of its own keeps its records there until they are copied into the default one (`python3 llm-dlc/tools/run_records.py collect WORKSPACE_DIR DEFAULT_DIR`, which replaces a copy only with the record it is a start of); no command of a run does that today, so such a run's record is not published and the loop statistics do not count it. When the run ends, the loop asks the session for one more turn that only reports: a summary of the run's commits, the verification jobs still pending or failed, and the `sync.py check` warnings to judge before pushing. That summary goes at the end of the record.
 
 **Loop statistics.** [`traces/loops.md`](traces/loops.md) adds up every loop, and [`traces/loops.json`](traces/loops.json) holds the same rows as data: moonshots, briefs with their streams, and the verification loop, each by loop, run and cycle, with time, tokens, cost at list price, commits, and the verification jobs each cycle submitted with what they came to. A templated moonshot also gets a row per item: how many cycles took it, what they cost, its commit, and whether its proof passed. `sync.py` writes both on every commit from files in the repo (the sessions' `metrics.json`, the published run records, `verification/jobs/` and `verification/results/`), with [`tools/loop_stats.py`](tools/loop_stats.py), and `check` fails when either is out of date. A record tells which of its session's prompts were the run's, so a record's times are UTC, like a transcript's. The loops with no published record (every run before 2026-11-06: the first four moonshots, `sync-performance`, `build-orchestration` and `sound-verdicts`) are read from their sessions' prompts instead, and marked so. So is `examples-by-hand`, the loop a person ran by hand on 2026-10-31, the evening before the script existed: three typed instructions, each followed by a commit and a typed `/compact`. It is counted with the moonshots under a kind of its own, `moonshot by hand`, and the page says so where it appears. [`specification.md`](specification.md#metrics) defines the tables.
 
-A brief can carry its own instructions for when to stop under a `## Loop until` heading, which the loop uses when the command line gives none; a brief with neither runs until the session decides it is done. The loop resumes the session that has always run it, with Fable at high effort. A brief can name its own session, model, effort and memory cap under a `## Loop settings` heading (`- session: ID`, `- model: ID`, `- effort: LEVEL`, `- memory: SIZE`), and `FEATURE_LOOP_SESSION`, `FEATURE_LOOP_MODEL`, `FEATURE_LOOP_EFFORT` and `FEATURE_LOOP_MEMORY_MAX` override both. `FEATURE_LOOP_SESSION=new` starts a fresh session that the run's cycles share, and a session id with no transcript yet, such as one opened in Claude Code but never sent a message, is created by the loop's first turn.
-
-It runs in a systemd scope capped at 3.5 GB (a brief's `- memory:` or `FEATURE_LOOP_MEMORY_MAX` changes that), so a proof that exhausts memory is killed alone and the session sees it fail. The scope is named after the loop, `feature-loop-NAME.scope` (`feature-loop-engine-priorities-jbmc.scope` for the brief `engine-priorities-jbmc.md`), so different loops can run at once. A loop won't start if less memory than its cap is available, or if its own scope is still active.
+It runs in a systemd scope capped at 3.5 GB (`single_run.py start --memory SIZE` or `FEATURE_LOOP_MEMORY_MAX` changes that), so a proof that exhausts memory is killed alone and the session sees it fail. The scope is named after the run, `feature-loop-single-NAME.scope`, so different runs can go on at once. A loop won't start if less memory than its cap is available, or while a loop or an agent is at work in its own scope; what an ended loop left there (a build daemon, say) is stopped first.
 
 Runs can go on side by side on separate branches, each in its own [jj workspace](https://jj-vcs.github.io/jj/latest/working-copy/#workspaces): `jj workspace add --name NAME -r @- ../REPO-NAME` makes a directory with its own working copy, on a branch of its own from the latest commit, sharing the repository, and `single_run.py start NAME --workspace WS` makes one that is missing. Claude Code files a session under the directory it ran in, so each workspace's sessions and traces stay apart. The verification runner also runs jobs committed in other workspaces (see `verification/README.md`). A workspace's commits come to the default line by `single_run.py land NAME` ([`tools/landing.py`](tools/landing.py)): moved forward when the line has not moved, else by a merge whose generated trace files are written again (`sync.py regenerate`, which rewrites them from the session files and lists any conflict left); a merge that conflicts in real work is taken back ([operating-notes.md](operating-notes.md#a-landing-that-conflicts)). `check` reads the commits in the history of `@` only: a commit another workspace's line holds is checked there, by its own `commit`, and here once it is merged. Until 2026-11-27 one script also ran a brief as parallel streams, with an inbox for each, a rolling integration line and a transfer to another machine. That workflow is retired: [`retired.md`](retired.md#multi-agent-brief) says what replaced it and where to read it as it was.
 
-`prove-change` is the templated moonshot behind `/prove-java-change`: the same instruction as `prove-examples`, over whichever examples [`tools/prove-loop.sh`](tools/prove-loop.sh) gives it, continuing the session that evaluated them. The skill's session, the watcher, conducts it from outside ([`runtime.md`](runtime.md#the-watcher)): it, not the loop's own judge, says after each cycle whether the example is finished, continues, or waits on its proof, in which case the loop starts the next example and returns when the proof is in; it is asked before the loop changes example, which is where it merges a workspace the user queued or stops; and where another moonshot only logs a compaction with no commit (or stops there, with `FEATURE_LOOP_STOP_ON_COMPACT=1`), this one asks and stops on its word. From 2026-11-16 every moonshot over examples is run this way, `prove-examples`' list included: `/prove-java-change 288 289 ...` in this repository.
-
-```bash
-llm-dlc/tools/feature-loop.sh tla 5
-llm-dlc/tools/feature-loop.sh prove-examples 4
-llm-dlc/tools/feature-loop.sh spring 8 "Stop once the throws lines cover reactive handlers, or when the next idea would be minor."
-llm-dlc/tools/feature-loop.sh llm-dlc/loops/sync-performance.md
-```
-
-While it runs, it reads commands typed in its terminal, followed by Enter. It prints them when it starts and a reminder at each cycle:
+While it runs, the loop reads commands typed in its terminal, followed by Enter, and the watcher's reach it the same way (`single_run.py cycles NAME +N`, `stop NAME`):
 
 | Command | Effect |
 | --- | --- |
 | `+N`, `-N` | run N more or N fewer cycles after the current one (`+` and `-` alone mean 1) |
 | `=N`, `N` | run exactly N more cycles after the current one |
 | `0`, `stop` | end after the current cycle |
-| `item` | a templated moonshot: end once the item under way is finished, however many cycles that takes (a count typed after it replaces it) |
-| `add X Y` | a templated moonshot, from its conductor only (`watch.py add`): take items X and Y after the ones it has, as for an example a setup prepared in its own workspace while the loop ran |
 | `inf` | no limit |
 | `?`, `help` | where the loop stands, or the list of commands |
 
-A cycle under way always finishes, commit and compact included. When the count reaches 0 the loop exits 0. A turn that did not end well is not a cycle, whatever the count: when the client reports an error (a quota, an interruption, a failure of its own) or leaves no result at all, the loop stops there with status 1 and says in its record that the session needs attention, before any compaction or summary; so does a compaction that fails, after the summary when the run was ending anyway. A turn that ends well and commits nothing is judged as before (a loop on a brief stops; a single agent's run asks its watcher). Ctrl-C stops it at once, with exit status 130. Started without a terminal, it runs the number of cycles it was given.
+A cycle under way always finishes, compact included. When the count reaches 0 the loop exits 0. A turn that did not end well is not a cycle, whatever the count: when the client reports an error (a quota, an interruption, a failure of its own) or leaves no result at all, the loop stops there with status 1 and says in its record that the session needs attention, before any compaction or summary; so does a compaction that fails, after the summary when the run was ending anyway. A turn that ends well and commits nothing is the watcher's to judge. Ctrl-C stops it at once, with exit status 130. Started without a terminal, it runs the number of cycles it was given.
 
 It commits locally and pushes nothing. It has no spending limit.
 
-[`tools/verification-loop.sh`](tools/verification-loop.sh) does the same for the [verification queue](../verification/README.md). Whenever jobs are queued that this machine can run, or results wait to be collected, it starts a new Claude Code session on Sonnet 5.5 running [`/run-verification`](../.claude/skills/run-verification/SKILL.md), which runs, collects, triages, resubmits and commits until the queue is clear. Each run gets a fresh context, since the work is mechanical. When the queue is clear it starts again when a job appears: at once when the job is announced (`pipeline.py nudge`, which `sync.py commit` runs for a commit that queues one), and by checking every minute (`VERIFICATION_LOOP_POLL` sets the seconds) for one that was not. A job committed while a run is under way joins that run ([who learns of a new job, and when](../verification/README.md#for-the-agent-managing-the-pipeline)).
+**The verification queue** ([`../verification/README.md`](../verification/README.md)) is kept by the watcher of a run: at each look `single_run.py wait` collects and commits the results that are back and starts the runner (`pipeline.py run`, no model) when jobs wait and none is at work. A session with no watcher runs [`/run-verification`](../.claude/skills/run-verification/SKILL.md), which runs, collects, triages, resubmits and commits until the queue is clear. Until 2026-11-27 a loop of its own, `verification-loop.sh`, started a fresh Sonnet session for that whenever the queue had work; it is retired ([`retired.md`](retired.md#verification-loop)).
 
-```bash
-llm-dlc/tools/verification-loop.sh
-```
+### Retired loops
 
-A run that leaves work behind, such as jobs it resubmitted, is followed by another, up to 4 in a row (`VERIFICATION_LOOP_RUNS`). A run that leaves exactly what it found isn't repeated: the loop waits until the queue changes, since what is left needs a person. Jobs too big for this machine, and jobs another runner holds, don't start a run. While it runs it reads `stop` (end after the run under way, or at once while waiting), `now` (check the queue at once) and `?` (show the queue) from its terminal, and prints them when it starts. It runs alongside the feature loop, whose scope the skill leaves memory for. It commits locally and pushes nothing.
+Until 2026-11-27 this page described four more ways to run work unattended. The user retired them that day, when
+the project converged on one run skill. [`retired.md`](retired.md) says what replaced each and where to read its
+tools, and this page, as they were:
 
-### A brief's streams (retired)
+- **A brief's streams** ([`retired.md#multi-agent-brief`](retired.md#multi-agent-brief); `/multi-agent-brief`,
+  earlier `/run-brief`): a foundation session, a loop for each stream in a workspace of its own, each stream merged
+  the moment it was finished, an inbox for each, a rolling integration line and helper sessions. Work that should
+  go on side by side is now several runs, each in a workspace of its own and each landed when it is done.
+- **The proof loop** ([`retired.md#proof-loop`](retired.md#proof-loop); `watch.py`, `prove-loop.sh`): a watcher
+  that had changes evaluated, set up as examples and proved one example at a time. A list of pull requests is now
+  written into a brief by a generation phase, set up by a setup phase and proved by a domain run.
+- **Loops by hand** ([`retired.md#loops-by-hand`](retired.md#loops-by-hand)): `feature-loop.sh` run by name or
+  with a brief's file.
+- **The verification loop** ([`retired.md#verification-loop`](retired.md#verification-loop);
+  `verification-loop.sh`).
 
-Until 2026-11-27 a watcher could run a brief as parallel streams (`/multi-agent-brief`, earlier `/run-brief`): a
-foundation session, a loop for each stream in a workspace of its own, each stream merged the moment it was
-finished, an inbox for each stream, a rolling integration line and helper sessions. It is retired.
-[`retired.md`](retired.md#multi-agent-brief) says what replaced each part and where to read the tools and this
-section as they were. Work that should go on side by side is now several runs of the next section, each in a
-workspace of its own and each landed when it is done.
-
-Three things that section said hold for every run:
+Three things those sections said hold for every run:
 
 - **Two sessions in one working copy.** A watcher's landings and its collection of results both commit in the
   default workspace, where an agent may be at work too. `sync.py commit --only PATH ...` commits the named files
@@ -312,11 +297,10 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   watcher's verdict, a compact. The session is new (Fable 5.2 at high effort, under a loop's memory cap), or
   continues one (`--session`), or starts as a fork of one, such as the conversation that planned the work
   (`--fork`). Within a turn the session compacts itself at 600k tokens, and a compaction with no commit since the
-  cycle began is put to the watcher, as in a proof run.
+  cycle began is put to the watcher.
 - **After each cycle the watcher decides** (`single_run.py wait NAME`, then `answer NAME continue|stop --reason
   ...`): it is given the agent's report, the cycle's commits, what was left uncommitted and the queue, and
-  judges them against the outcome. A cycle with no commit does not stop the loop by rule, as it does every other
-  loop: it is the watcher's to read (the outcome reached, a question, or stuck). The loop waits 15 minutes for
+  judges them against the outcome. A cycle with no commit does not stop the loop by rule: it is the watcher's to read (the outcome reached, a question, or stuck). The loop waits 15 minutes for
   the verdict (`--verdict-wait`). Without one a cycle that committed is followed by another, a cycle that did
   not ends the run before its compact, and three cycles in a row without one end it: nothing else measures such
   a run. Each verdict is a decision in `llm-dlc/decisions/single-NAME.jsonl`.
@@ -370,9 +354,8 @@ record is in the default workspace (see the run records, above).
 ### Claude Code or Codex
 
 A loop's session can be carried by Codex instead of Claude Code, chosen when the run starts: `single_run.py start
-NAME --client codex` (`setup` and `generate` take it too), a brief's own `- client: codex` setting, or
-`FEATURE_LOOP_CLIENT=codex` for a loop run by hand. Everything else is the same: the briefs, the instruction of a
-cycle, the commit check, the decision, the conductor's questions, the verification queue, the record.
+NAME --client codex` (`setup` and `generate` take it too). Everything else is the same: the texts of a
+cycle, the watcher's verdict, the conductor's questions, the verification queue, the record.
 
 - **One boundary.** [`tools/agent_client.py`](tools/agent_client.py) is the only place that knows Codex. It starts
   a turn with `codex exec --json`, resumes with `codex exec resume THREAD`, and prints **the stream the loops
@@ -383,8 +366,7 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   Codex runs for it: Fable 5.2 is Astra 6.2 (`gpt-6.2-astra`), Opus 5.5 is Sol 6.2 (`gpt-6.2-sol`); a Codex model
   named outright is taken as it is. A model with no equivalent (Sonnet 5.5, Fable 5.1) is refused before a turn
   is spent, by the preflight and by the loop, which is how an unmapped role shows up. The effort is always passed
-  on: the machine's own Codex default may be another. The item judge of a templated moonshot and the standalone
-  verification loop stay on Claude Code.
+  on: the machine's own Codex default may be another.
 - **Session identity.** A loop names its session by a UUID; Codex names its thread itself. The binding is a file
   of the workspace the loop runs in (`llm-dlc/loop-summaries/agent-sessions/SESSION.json`), written whole when
   Codex reports the thread, and every later turn resumes that exact thread; a client that reports another ends
@@ -398,7 +380,7 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   `FEATURE_LOOP_AUTOCOMPACT` is a size for Claude Code's window and is not passed on). When Codex compacts by
   itself in the middle of a turn, `codex exec --json` prints nothing (probed 2026-11-19, CLI 0.170), but the
   thread's log gets a `compacted` line: `agent_client.py` reads the log as the turn goes and tells the loop of
-  each one as Claude Code would (`compact_boundary`, with the size of the context it replaced), so a moonshot's
+  each one as Claude Code would (`compact_boundary`, with the size of the context it replaced), so a run's
   compaction with no commit is put to its watcher under either client.
 - **Permissions.** A Codex turn runs in the workspace-write sandbox with requests to leave it reviewed
   automatically (`sandbox_mode`, `approval_policy = "on-request"`, `approvals_reviewer = "auto_review"`: what

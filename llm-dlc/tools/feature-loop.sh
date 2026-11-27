@@ -1,184 +1,69 @@
 #!/usr/bin/env bash
-# Repeat one instruction unattended: a moonshot, chosen by name, or a brief.
+# The loop under a run: one agent toward one outcome, watched from outside.
 #
-# Each cycle resumes one Claude Code session and runs: instruction, commit, compact.
-# A cycle that leaves no new commit stops the loop, before compacting, so the
-# session keeps its full context for the person who has to look at why.
+# llm-dlc/tools/single_run.py starts it for /orchestrate-run, names the run (FEATURE_LOOP_RECORD_AS) and keeps its
+# two texts in files. A cycle is one context window of one session:
 #
-# A moonshot's session compacts itself at 600k tokens (FEATURE_LOOP_AUTOCOMPACT,
-# 100k to 1M, or auto for Claude Code's default), and each compaction is logged.
-# The session stays chained across cycles, so later ones build on earlier ones.
-# A moonshot has no acceptance criteria, and a compaction during the instruction
-# with no commit since the cycle began, or since the last such compaction, is
-# where the work is either hard and going well or stuck. A compaction alone
-# doesn't say which, so by default nothing happens there and a person watching
-# the loop judges. Two settings change that:
-#   LOOP_CONDUCTOR=DIR  puts that compaction to a conductor, a session outside
-#     the loop (llm-dlc/tools/conductor.py; prove-loop.sh sets it): the turn goes
-#     on while it judges, for FEATURE_LOOP_CONDUCTOR_WAIT seconds (900). Its stop
-#     ends the turn and the loop; its continue, or its silence, lets the turn run.
-#   FEATURE_LOOP_STOP_ON_COMPACT=1  ends the turn there and stops the loop for a
-#     person to look at; with a conductor, when the conductor gives no verdict.
+#   the text, the agent's turn, the watcher's verdict, a compact
 #
-# The loop re-executes itself in a systemd scope with a memory cap, so a proof
-# that runs away is killed alone and cannot exhaust the machine. On a machine
-# without systemd user scopes it refuses to start, unless FEATURE_LOOP_UNCAPPED=1
-# says to run with no cap at all.
+# The first cycle of a run takes FEATURE_LOOP_FIRST's text, and every later one FEATURE_LOOP_CONTINUE's as it
+# stands when the cycle starts, so a person can change it between two cycles (never the watcher).
+# FEATURE_LOOP_BRIEF names a brief the session is pointed at each cycle, and FEATURE_LOOP_FORK a session to start
+# as a fork of. The session stays chained across cycles, so later ones build on earlier ones.
 #
-# Usage: [FEATURE_LOOP_MEMORY_MAX=3.5G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES] [UNTIL]
+# After each cycle, with a commit or without, the loop asks its conductor (LOOP_CONDUCTOR, the run's directory:
+# conductor.py's `run` question) whether there is another, and waits FEATURE_LOOP_JUDGE_WAIT seconds (300). `stop`
+# ends the run after the compact, with the closing summary. Without a verdict in time a cycle that committed is
+# followed by another, and a cycle that did not ends the run where it is, before compacting, so the session keeps
+# its full context for the person who has to look at why. FEATURE_LOOP_UNWATCHED cycles in a row without a verdict
+# (3) end it too, since nothing else measures the run and the watcher is gone.
 #
-# Each loop runs in a systemd scope of its own name, feature-loop-PROMPT.scope.
-# Moonshots, a one-line instruction repeated every cycle:
-#   features  add features and examples to jvmcontract
-#   tla       add advanced TLA examples
-#   spring    make jvmcontract more useful to expert Spring Boot developers
-#   relational  make relational verification more efficient and accurate, with examples
-# Templated moonshots, one item of a list at a time:
-#   prove-examples  formally prove examples 285 to 300, each for as many cycles as it takes, as elegantly and efficiently as possible
-#   prove-change    the same instruction, or FEATURE_LOOP_INSTRUCTION's, over the examples FEATURE_LOOP_ITEMS
-#                   names: the last stage of /prove-java-change, started by llm-dlc/tools/prove-loop.sh.
-#                   FEATURE_LOOP_RECORD_AS=NAME files the run under another loop's name (its record,
-#                   its scope and so its statistics), for a run that continues that loop's list.
-# One agent toward one outcome, watched from outside:
-#   single-agent    the loop of /orchestrate-run, started by llm-dlc/tools/single_run.py, which names the run
-#                   (FEATURE_LOOP_RECORD_AS) and keeps its two texts in files: the first cycle of a run takes
-#                   FEATURE_LOOP_FIRST's, and every later one FEATURE_LOOP_CONTINUE's as it stands when the cycle
-#                   starts, so a person can change it between two cycles (never the watcher). FEATURE_LOOP_BRIEF names a brief
-#                   the session is pointed at each cycle, and FEATURE_LOOP_FORK a session to start as a fork of.
-# Briefs, by name or file:
-#   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
-#   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
-#   foundations  work through llm-dlc/loops/foundations.md (relational heap, proof caching, observations, alignment)
-#   foundations-STREAM  one stream of it run in parallel: llm-dlc/loops/foundations-STREAM.md
-#   cleanup   work through llm-dlc/loops/cleanup.md (the open verification findings)
-#   cleanup-STREAM  one stream of it run in parallel: llm-dlc/loops/cleanup-STREAM.md
-#   application-core  work through llm-dlc/loops/application-core.md (objects, values, dependency outcomes, reuse)
-#   application-core-STREAM  one stream of it run in parallel: llm-dlc/loops/application-core-STREAM.md
-#   example-targets  work through llm-dlc/loops/example-targets.md (external targets: pinned artifacts, CVE and positive packets, receipts)
-#   example-targets-STREAM  one stream of it run in parallel: llm-dlc/loops/example-targets-STREAM.md
-#   FILE.md   work through the brief in a markdown file (see llm-dlc/loops/)
+# Within a turn the session compacts itself at 600k tokens (FEATURE_LOOP_AUTOCOMPACT, 100k to 1M, or auto for
+# Claude Code's default), and each compaction is logged. A compaction with no commit since the cycle began, or
+# since the last such compaction, is where the work is either hard and going well or stuck. A compaction alone
+# doesn't say which, so it is put to the conductor: the turn goes on while it judges, for
+# FEATURE_LOOP_CONDUCTOR_WAIT seconds (900). Its stop ends the turn and the loop; its continue, or its silence,
+# lets the turn run. FEATURE_LOOP_STOP_ON_COMPACT=1 ends the turn there when the conductor gives no verdict.
+#
+# The loop re-executes itself in a systemd scope with a memory cap, feature-loop-NAME.scope, so a proof that runs
+# away is killed alone and cannot exhaust the machine. On a machine without systemd user scopes it refuses to
+# start, unless FEATURE_LOOP_UNCAPPED=1 says to run with no cap at all.
+#
+# Usage: llm-dlc/tools/feature-loop.sh single-agent [CYCLES]
+#
 #   CYCLES    how many cycles to run at most; without it there is no limit
-#   UNTIL     instructions the session weighs after each commit to decide whether
-#             the loop goes on; a second argument that isn't a count is UNTIL
 #
-# A templated moonshot puts an item of its list into its template, at {}, and
-# keeps it there until the item is finished, for as many cycles as that takes.
-# It has a session of its own, fixed here: the first run creates it and every
-# later run resumes it. After each commit a judge outside the session decides
-# whether the item is finished: a separate claude -p call, with no tools and no
-# session of its own, reads the cycle's final report and commit messages and
-# answers "ITEM: finished" or "ITEM: continue". Nothing is added to the moonshot's
-# own session, so the instruction stays the only thing it is given. An item whose
-# goal is met, or whose remaining work needs a person, is finished; one the
-# session can still make real progress on gets the next cycle, with the same
-# instruction. An answer that is neither moves on, as before the judge.
-# FEATURE_LOOP_JUDGE_MODEL picks the judge's model (claude-sonnet-5-5 by default),
-# FEATURE_LOOP_ITEM_CYCLES caps the cycles one item may take in a run (no cap by default),
-# and FEATURE_LOOP_ITEM_JUDGE=0 gives each item exactly one cycle, with no judge.
+# The run is its caller's. The session is new unless FEATURE_LOOP_SESSION names one: a session id with no
+# transcript yet (one opened but never sent a message) is created by the first turn. FEATURE_LOOP_MODEL,
+# FEATURE_LOOP_EFFORT and FEATURE_LOOP_MEMORY_MAX set the model (Fable 5.2), the effort (high) and the cap (3.5G).
+# FEATURE_LOOP_CLIENT=codex has the session's turns carried by Codex instead of Claude Code: the instruction, the
+# cycle, the commit check, the verdict and the record are the same, and only the starting, resuming and compacting
+# of a turn go through llm-dlc/tools/agent_client.py, which prints the stream this script already reads. The run
+# keeps its model's name: the operator's equivalences give the Codex model for it (Fable 5.2: Astra 6.2, Opus 5.5:
+# Sol 6.2), and a model with none is refused before a turn is spent. The effort is passed on as it is. A Codex
+# session cannot start as a fork of a Claude Code conversation.
 #
-# With a conductor (LOOP_CONDUCTOR, a directory: llm-dlc/tools/conductor.py, which
-# prove-loop.sh sets for its watcher) the conductor is the judge: the loop asks it
-# after each commit and waits FEATURE_LOOP_JUDGE_WAIT seconds (300) before it falls
-# back on the judge above. The loop also tells it where it is (an event when a
-# cycle starts and when an item changes state), takes its command lines as if they
-# were typed in the terminal, and asks it between two items whether to stop there
-# (FEATURE_LOOP_EXAMPLE_WAIT seconds, 120; FEATURE_LOOP_MERGE_WAIT, 7200, while the
-# conductor has a workspace to merge first). No answer in time means go on.
+# While it runs, the number of cycles left can be changed by typing in its terminal (see HELP below): +N, -N, =N,
+# inf, or 0 or stop to end after the cycle under way. The watcher's commands reach it the same way, through the
+# conductor directory (single_run.py cycles, stop). A cycle always finishes, compact included.
 #
-# A single-agent run has no items and no judge of its own: after each cycle, with a commit or without, the loop
-# asks its conductor (LOOP_CONDUCTOR, the watcher: conductor.py's `run` question) whether there is another, and
-# waits FEATURE_LOOP_JUDGE_WAIT seconds. `stop` ends the run after the compact, with the closing summary.
-# Without a verdict in time a cycle that committed is followed by another, as in a loop nobody watches, and a
-# cycle that did not ends the run where it is, as in every loop; FEATURE_LOOP_UNWATCHED cycles in a row
-# without a verdict (3) end it too, since nothing else measures the run and the watcher is gone.
+# Each run keeps a record in llm-dlc/loop-summaries/ (gitignored, never pushed): a line per cycle as it ends, so
+# it survives a restart, and when the run ends the session's own summary of it, written for the person reading
+# it. Its times are UTC, whatever the machine's zone: sync.py publishes the record redacted and reads from it which
+# of the session's prompts were this run's, for the loop statistics (llm-dlc/traces/loops.md), and the session's
+# transcript keeps its times in UTC.
 #
-# A third answer, "ITEM: waiting", is for an item with nothing left to do but act
-# on the results of verification jobs it queued. The loop then leaves it and takes
-# the next item meanwhile. Whenever it leaves an item it first comes back to the
-# earliest waiting one whose jobs are in, and only then starts another; when
-# nothing but waiting items is left it waits for the first to come in
-# (FEATURE_LOOP_PROOF_WAIT seconds at most, a day). An answer of waiting with no
-# job outstanding is another cycle. FEATURE_LOOP_CONTINUE_WHILE_PROVING=0 turns
-# this off: the item keeps the loop while its jobs run.
+# Exits 0 when the cycles run out or the watcher ends the run, 1 when a turn or a compaction did not end well, a
+# cycle made no commit and no verdict came, or the scope cannot start, 2 for a bad argument, and 130 if interrupted.
 #
-# An item is done once an earlier run's record (llm-dlc/loop-summaries/*-NAME.md)
-# lists a commit for it, unless the last word on it there was "continues" or "waiting",
-# so a run starts at the first item not done, and ends when the list does; CYCLES
-# still caps it. A cycle that makes no commit stops the loop as usual, and leaves
-# its item for the next run. prove-change is the exception: it takes whichever
-# examples it is given, done before or not, since a later pass may return to one.
-#
-# A stopped loop is continued by running the same command again: the brief fixes
-# the session, its Progress section says what is done, and each cycle first
-# finishes a change an interrupted cycle left in the working copy, keeping any
-# other session's uncommitted files (the verification loop's, say) out of its commit.
-#
-# A brief is fixed for the run: each cycle tells the session to read it again in
-# full, so it outlives every compact, and a brief that changes while the loop
-# runs stops it. Its "## Progress" section is the exception: the session keeps it
-# current, in the commit that does the work, and edits there don't count as a
-# change. Without UNTIL, a brief's own "## Loop until" section is UNTIL,
-# and with neither, nor CYCLES, the loop runs until the session decides the
-# brief is done.
-#
-# A brief may also set the session, model and effort in a "## Loop settings"
-# section of "- session: ID", "- model: ID" and "- effort: LEVEL" lines, the
-# memory cap with "- memory: SIZE", and with "- workspace: NAME" the jj workspace
-# it must run in, so loops run in parallel each on their own branch (see
-# llm-dlc/README.md). "- fork: SESSION" starts the brief's session, when it has
-# no transcript yet, as a fork of that one, so parallel streams all begin from
-# the conversation that planned them. FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL,
-# FEATURE_LOOP_EFFORT and FEATURE_LOOP_MEMORY_MAX override both the brief and
-# the defaults. "- client: codex" (or FEATURE_LOOP_CLIENT=codex, which a run sets
-# for the streams it gives to Codex) has the session's turns carried by Codex
-# instead of Claude Code: the instruction, the cycle, the commit check, the
-# decision and the record are the same, and only the starting, resuming and
-# compacting of a turn go through llm-dlc/tools/agent_client.py, which prints
-# the stream this script already reads. The brief keeps its model's name: the
-# operator's equivalences give the Codex model for it (Fable 5.2: Astra 6.2,
-# Opus 5.5: Sol 6.2), and a model with none is refused before a turn is spent.
-# The effort is passed on as it is. A Codex session cannot start as a fork of a
-# Claude Code conversation. The item judge stays where it was (Claude Code).
-# FEATURE_LOOP_SESSION=new starts a fresh
-# session that the run's cycles share, and a session id with no transcript yet
-# (one opened but never sent a message) is created by the first turn.
-#
-# With UNTIL, each commit is followed by one more turn, before the compact, in
-# which the session applies UNTIL to what it has done and ends its reply with
-# "LOOP: continue" or "LOOP: stop". A stop ends the loop after that cycle like
-# running out of cycles does; a reply with neither stops it as needing attention.
-# A brief whose Progress ends with a "- Status:" line has the
-# cycle keep it current. If the session decides to stop while it still says
-# working, one more turn, before the compact, sets the status that says why
-# (waiting on jobs, done or blocked) and commits it; the decision turn itself
-# can't, since it only decides. A status still working after that turn ends the
-# loop as needing attention. (Until 2026-11-08 a stop left it working, and
-# three application-core streams were counted as done that were waiting on jobs
-# or blocked.)
-#
-# While it runs, the number of cycles left can be changed by typing in its
-# terminal (see HELP below): +N, -N, =N, inf, or 0 or stop to end after the
-# cycle under way. A templated moonshot also takes "item", to end once the item
-# under way is finished, however many cycles that takes; a count typed after it
-# replaces it. A cycle always finishes, commit and compact included.
-#
-# Each run keeps a log in llm-dlc/loop-summaries/ (gitignored, never pushed): a
-# line per commit as it lands, so it survives a restart, and when the cycles run
-# out the session's own summary of the run, written for the person reading it.
-# Its times are UTC, whatever the machine's zone: sync.py publishes the record
-# redacted and reads from it which of the session's prompts were this run's, for
-# the loop statistics (llm-dlc/traces/loops.md: time, tokens and cost by loop,
-# run, cycle and item), and the session's transcript keeps its times in UTC.
-#
-# Exits 0 when the cycles run out or the session decides to stop, 1 when a cycle
-# made no commit, the session's decision was unclear, a stop left the brief's
-# status working, the brief changed or the scope cannot start, 2 for a bad argument, and 130 if interrupted.
+# Until 2026-11-27 this script ran four kinds of loop: moonshots by name, templated moonshots over a list of
+# examples, briefs by name or file, and this one. The others are retired (llm-dlc/retired.md says where to read
+# the script as it was), and their names are refused below.
 
 set -uo pipefail
 
-# Run from a private copy. bash reads a script as it runs it, and between two items
-# a watcher may merge a workspace into this checkout (llm-dlc/runtime.md), which can
-# rewrite this file under the loop.
+# Run from a private copy. bash reads a script as it runs it, and between two cycles a watcher may land a
+# workspace into this checkout, which can rewrite this file under the loop.
 if [[ "${FEATURE_LOOP_COPY:-}" != "$0" ]]; then
   FEATURE_LOOP_SELF=$(realpath "${BASH_SOURCE[0]}") || exit 1
   FEATURE_LOOP_COPY=$(mktemp "${TMPDIR:-/tmp}/feature-loop.XXXXXX") || exit 1
@@ -188,164 +73,50 @@ if [[ "${FEATURE_LOOP_COPY:-}" != "$0" ]]; then
 fi
 trap 'rm -f "$FEATURE_LOOP_COPY"' EXIT
 
-SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
-MODEL=claude-fable-5-1
+SESSION_ID=new
+MODEL=claude-fable-5-2
 EFFORT=high
 MEMORY_MAX=3.5G
-WORKSPACE=
-FORK_FROM=
-CLIENT=
-TEMPLATE=
-ITEMS=()
-EVERY_ITEM=
-SINGLE=
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|relational|prove-examples|prove-change|single-agent|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|application-core|application-core-STREAM|example-targets|example-targets-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh single-agent [CYCLES]" >&2
   exit 2
 }
 
-(( $# >= 1 && $# <= 3 )) || usage
-PROMPT=$1
+(( $# >= 1 && $# <= 2 )) || usage
 CYCLES=inf
-UNTIL=
-is_count() { [[ "$1" == inf || "$1" =~ ^[1-9][0-9]*$ ]]; }
-if (( $# == 3 )); then
-  is_count "$2" && [[ -n "$3" ]] || usage
-  CYCLES=$2 UNTIL=$3
-elif (( $# == 2 )); then
-  if is_count "$2"; then CYCLES=$2; else UNTIL=$2; fi
+if (( $# == 2 )); then
+  [[ "$2" == inf || "$2" =~ ^[1-9][0-9]*$ ]] || usage
+  CYCLES=$2
 fi
-[[ -z "$UNTIL" || -n "${UNTIL//[[:space:]]/}" ]] || usage
+case "$1" in
+  single-agent) ;;  # single_run.py looks for this line before it starts a run in a folder
+  *)
+    echo "feature-loop.sh: '$1' is not a loop this script runs any more: the kind left is single-agent, which llm-dlc/tools/single_run.py starts (/orchestrate-run). llm-dlc/retired.md says what the others were and where to read them" >&2
+    exit 2 ;;
+esac
 ROOT=$(cd "$(dirname "$FEATURE_LOOP_SELF")/../.." && pwd) || exit 1
-BRIEF=
-# Names for briefs: the brief's own Loop settings (session, model, effort) and Loop until apply.
-case "$PROMPT" in
-  engines) PROMPT=llm-dlc/loops/engine-priorities.md ;;
-  engines-*) PROMPT=llm-dlc/loops/engine-priorities-${PROMPT#engines-}.md ;;
-  foundations) PROMPT=llm-dlc/loops/foundations.md ;;
-  foundations-*) PROMPT=llm-dlc/loops/foundations-${PROMPT#foundations-}.md ;;
-  cleanup) PROMPT=llm-dlc/loops/cleanup.md ;;
-  cleanup-*) PROMPT=llm-dlc/loops/cleanup-${PROMPT#cleanup-}.md ;;
-  application-core) PROMPT=llm-dlc/loops/application-core.md ;;
-  application-core-acceptance) usage ;; # the acceptance contract, not a brief
-  application-core-*) PROMPT=llm-dlc/loops/application-core-${PROMPT#application-core-}.md ;;
-  example-targets) PROMPT=llm-dlc/loops/example-targets.md ;;
-  example-targets-acceptance|example-targets-sources|example-targets-inputs) usage ;; # the contract, the sources and the inputs, not briefs
-  example-targets-*) PROMPT=llm-dlc/loops/example-targets-${PROMPT#example-targets-}.md ;;
-esac
-case "$PROMPT" in
-  *.md)
-    # Found in this script's repo first, then from the caller's directory, and
-    # named relative to the repo when it is inside it, which is where the loop
-    # runs. The repo comes first because a brief's streams were each started
-    # from the default workspace: found from there, a stream's brief was the
-    # default workspace's copy, whose Progress no stream edits, so the session was
-    # pointed at it and its status read from it (until 2026-11-08).
-    if [[ "$PROMPT" != /* && -f "$ROOT/$PROMPT" ]]; then
-      BRIEF=$(realpath "$ROOT/$PROMPT")
-    elif [[ -f "$PROMPT" ]]; then
-      BRIEF=$(realpath "$PROMPT")
-    else
-      echo "feature-loop.sh: no brief at $PROMPT" >&2
-      exit 2
-    fi
-    # Without UNTIL, the text under the brief's "## Loop until" heading, up to
-    # the next heading, on one line.
-    if [[ -z "$UNTIL" ]]; then
-      UNTIL=$(awk '/^## / { inside = ($0 ~ /^## +Loop until[[:space:]]*$/); next } inside' "$BRIEF" |
-        tr '\n' ' ' | sed 's/  */ /g; s/^ //; s/ $//')
-    fi
-    # "- key: value" lines under the brief's "## Loop settings" heading.
-    setting() {
-      awk -v key="$1" '
-        /^## / { inside = ($0 ~ /^## +Loop settings[[:space:]]*$/); next }
-        inside && match($0, "^[-*] +" key ": *") { v = substr($0, RLENGTH + 1); gsub(/[`[:space:]]/, "", v); print v; exit }
-      ' "$BRIEF"
-    }
-    v=$(setting session); [[ -n "$v" ]] && SESSION_ID=$v
-    v=$(setting model); [[ -n "$v" ]] && MODEL=$v
-    v=$(setting effort); [[ -n "$v" ]] && EFFORT=$v
-    CLIENT=$(setting client)
-    v=$(setting memory); [[ -n "$v" ]] && MEMORY_MAX=$v
-    WORKSPACE=$(setting workspace)
-    FORK_FROM=$(setting fork)
-    [[ "$BRIEF" == "$ROOT"/* ]] && BRIEF=${BRIEF#"$ROOT"/}
-    set -- "$BRIEF" "${@:2}"
-    PROMPT=$(basename "$BRIEF" .md)
-    if [[ -z "$UNTIL" && "$CYCLES" == inf ]]; then
-      UNTIL="Stop when everything the brief in $BRIEF asks for is done, or when what is left needs a person's decision first."
-    fi
-    ;;
-  features)
-    INSTRUCTION="Add more advanced features along with examples to the jvmcontract library."
-    ;;
-  tla)
-    INSTRUCTION="Add more advanced examples showcasing verification of TLA specs"
-    ;;
-  spring)
-    INSTRUCTION="Enhance the jvmcontract library to be more useful to expert Spring Boot developers. Think outside the box for this -- consider adding more base models, solvers, examples, or other features you feel may be very impactful that we haven't yet considered. Bias towards making enhancements a first-class citizen of the library itself, though feel free to look elsewhere for inspiration."
-    ;;
-  relational)
-    INSTRUCTION="Enhance relational verification capabilities to be more efficient and accurate, adding examples where appropriate"
-    ;;
-  prove-examples)
-    TEMPLATE="Formally prove example {} as elegantly and efficiently as possible"
-    ITEMS=($(seq 285 300))
-    SESSION_ID=a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31
-    MODEL=claude-fable-5-2
-    ;;
-  prove-change)
-    # The examples are the caller's: prove-loop.sh names them, and the session, a fork of the one that prepared them.
-    # So is the instruction, when it gives one (FEATURE_LOOP_INSTRUCTION): one line, with {} for the example's number.
-    TEMPLATE=${FEATURE_LOOP_INSTRUCTION:-"Formally prove example {} as elegantly and efficiently as possible"}
-    if [[ "$TEMPLATE" != *"{}"* || "$TEMPLATE" == *$'\n'* ]]; then
-      echo "feature-loop.sh: FEATURE_LOOP_INSTRUCTION is one line with {} where the example's number goes" >&2
-      exit 2
-    fi
-    read -r -a ITEMS <<<"${FEATURE_LOOP_ITEMS:-}"
-    if (( ${#ITEMS[@]} == 0 )); then
-      echo "feature-loop.sh: prove-change takes its examples from FEATURE_LOOP_ITEMS; start it with llm-dlc/tools/prove-loop.sh" >&2
-      exit 2
-    fi
-    EVERY_ITEM=1
-    SESSION_ID=new
-    MODEL=claude-fable-5-2
-    if [[ -n "${FEATURE_LOOP_RECORD_AS:-}" ]]; then
-      [[ "$FEATURE_LOOP_RECORD_AS" =~ ^[a-z0-9][a-z0-9-]*$ ]] || {
-        echo "feature-loop.sh: FEATURE_LOOP_RECORD_AS is a loop's name, as prove-examples: $FEATURE_LOOP_RECORD_AS" >&2
-        exit 2
-      }
-      PROMPT=$FEATURE_LOOP_RECORD_AS
-    fi
-    ;;
-  single-agent)
-    # The run is the caller's: single_run.py names it and keeps its texts, and the session is new unless it names one.
-    SINGLE=1
-    for v in FEATURE_LOOP_RECORD_AS FEATURE_LOOP_FIRST FEATURE_LOOP_CONTINUE LOOP_CONDUCTOR; do
-      [[ -n "${!v:-}" ]] || {
-        echo "feature-loop.sh: single-agent takes its run from $v; start it with llm-dlc/tools/single_run.py" >&2
-        exit 2
-      }
-    done
-    [[ "$FEATURE_LOOP_RECORD_AS" =~ ^[a-z0-9][a-z0-9-]*$ ]] || {
-      echo "feature-loop.sh: FEATURE_LOOP_RECORD_AS is a run's name, as single-NAME: $FEATURE_LOOP_RECORD_AS" >&2
-      exit 2
-    }
-    [[ -n "$(tr -d '[:space:]' <"$FEATURE_LOOP_FIRST" 2>/dev/null)" && -n "$(tr -d '[:space:]' <"$FEATURE_LOOP_CONTINUE" 2>/dev/null)" ]] || {
-      echo "feature-loop.sh: single-agent needs a text in both $FEATURE_LOOP_FIRST and $FEATURE_LOOP_CONTINUE" >&2
-      exit 2
-    }
-    PROMPT=$FEATURE_LOOP_RECORD_AS
-    SESSION_ID=new
-    MODEL=claude-fable-5-2
-    FORK_FROM=${FEATURE_LOOP_FORK:-}
-    ;;
-  *) usage ;;
-esac
 
-# A single-agent run's instruction for a cycle: the text, and when the run has a brief, one sentence more that
-# names it, since after a compact the session's memory of the brief is a summary.
+# The run is the caller's: single_run.py names it and keeps its texts, and the session is new unless it names one.
+for v in FEATURE_LOOP_RECORD_AS FEATURE_LOOP_FIRST FEATURE_LOOP_CONTINUE LOOP_CONDUCTOR; do
+  [[ -n "${!v:-}" ]] || {
+    echo "feature-loop.sh: single-agent takes its run from $v; start it with llm-dlc/tools/single_run.py" >&2
+    exit 2
+  }
+done
+[[ "$FEATURE_LOOP_RECORD_AS" =~ ^[a-z0-9][a-z0-9-]*$ ]] || {
+  echo "feature-loop.sh: FEATURE_LOOP_RECORD_AS is a run's name, as single-NAME: $FEATURE_LOOP_RECORD_AS" >&2
+  exit 2
+}
+[[ -n "$(tr -d '[:space:]' <"$FEATURE_LOOP_FIRST" 2>/dev/null)" && -n "$(tr -d '[:space:]' <"$FEATURE_LOOP_CONTINUE" 2>/dev/null)" ]] || {
+  echo "feature-loop.sh: single-agent needs a text in both $FEATURE_LOOP_FIRST and $FEATURE_LOOP_CONTINUE" >&2
+  exit 2
+}
+PROMPT=$FEATURE_LOOP_RECORD_AS
+FORK_FROM=${FEATURE_LOOP_FORK:-}
+
+# The run's instruction for a cycle: the text, and when the run has a brief, one sentence more that names it,
+# since after a compact the session's memory of the brief is a summary.
 single_text() {
   local text=$1
   if [[ -n "${FEATURE_LOOP_BRIEF:-}" ]]; then
@@ -355,29 +126,23 @@ single_text() {
 }
 # A text on one line, for the run's record.
 one_line() { printf '%s' "$1" | tr '\n' ' ' | sed 's/  */ /g; s/^ //; s/ $//'; }
-if [[ -n "$SINGLE" ]]; then
-  INSTRUCTION=$(single_text "$(<"$FEATURE_LOOP_FIRST")") || exit 1
-  single_continue=$(<"$FEATURE_LOOP_CONTINUE") || exit 1
-fi
+INSTRUCTION=$(single_text "$(<"$FEATURE_LOOP_FIRST")") || exit 1
+single_continue=$(<"$FEATURE_LOOP_CONTINUE") || exit 1
 UNWATCHED=${FEATURE_LOOP_UNWATCHED:-3}
 
 SESSION_ID=${FEATURE_LOOP_SESSION:-$SESSION_ID}
-# Moonshots only: a brief has its own Loop until.
-AUTOCOMPACT=
-[[ -z "$BRIEF" ]] && AUTOCOMPACT=${FEATURE_LOOP_AUTOCOMPACT:-600k}
-# A run's own compaction point (single_run.py --compact-at, the brief author's 600k): only the client's setting.
-# Unlike a moonshot's, a compaction with no commit is not put to anyone: the run's cycles are judged as usual.
+AUTOCOMPACT=${FEATURE_LOOP_AUTOCOMPACT:-600k}
+# A run's own compaction point (single_run.py --compact-at, the brief author's 600k): the size the client compacts
+# at, in place of AUTOCOMPACT's.
 COMPACT_AT=${FEATURE_LOOP_COMPACT_AT:-}
-# A compaction with no commit: stop by rule (opt-in), ask a conductor, or, with neither, only log it.
+# A compaction with no commit is put to the conductor; this ends the turn there by rule when no verdict comes.
 STOP_ON_COMPACT=
-[[ -n "$AUTOCOMPACT" && "${FEATURE_LOOP_STOP_ON_COMPACT:-}" == 1 ]] && STOP_ON_COMPACT=1
-WATCH_COMPACT=$STOP_ON_COMPACT
-[[ -n "$AUTOCOMPACT" && -n "${LOOP_CONDUCTOR:-}" ]] && WATCH_COMPACT=1
+[[ "${FEATURE_LOOP_STOP_ON_COMPACT:-}" == 1 ]] && STOP_ON_COMPACT=1
 MODEL=${FEATURE_LOOP_MODEL:-$MODEL}
 EFFORT=${FEATURE_LOOP_EFFORT:-$EFFORT}
-# The client that carries the session's turns (see the header): Claude Code unless the run or the brief says Codex.
+# The client that carries the session's turns (see the header): Claude Code unless the run says Codex.
 # The model is resolved once, here, and what was asked for is kept for the record.
-CLIENT=${FEATURE_LOOP_CLIENT:-${CLIENT:-claude}}
+CLIENT=${FEATURE_LOOP_CLIENT:-claude}
 MODEL_ASKED=$MODEL
 AGENT_CLIENT=$ROOT/llm-dlc/tools/agent_client.py
 case "$CLIENT" in
@@ -389,23 +154,7 @@ case "$CLIENT" in
   *) echo "feature-loop.sh: '$CLIENT' is not a client (claude, codex)" >&2; exit 2 ;;
 esac
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-$MEMORY_MAX}
-# Templated moonshots only: an item takes cycles until the judge finds it finished.
-JUDGE=
-[[ -n "$TEMPLATE" && "${FEATURE_LOOP_ITEM_JUDGE:-1}" != 0 ]] && JUDGE=1
-JUDGE_MODEL=${FEATURE_LOOP_JUDGE_MODEL:-claude-sonnet-5-5}
-ITEM_CYCLES=${FEATURE_LOOP_ITEM_CYCLES:-}
-# An item that only waits on queued verification jobs: the loop takes another meanwhile and comes back.
-CONTINUE_PROVING=
-[[ -n "$JUDGE" && "${FEATURE_LOOP_CONTINUE_WHILE_PROVING:-1}" != 0 ]] && CONTINUE_PROVING=1
 JUDGE_WAIT=${FEATURE_LOOP_JUDGE_WAIT:-300}
-EXAMPLE_WAIT=${FEATURE_LOOP_EXAMPLE_WAIT:-120}
-MERGE_WAIT=${FEATURE_LOOP_MERGE_WAIT:-7200}
-PROOF_WAIT=${FEATURE_LOOP_PROOF_WAIT:-86400}
-PROOF_POLL=${FEATURE_LOOP_PROOF_POLL:-30}
-[[ -z "$ITEM_CYCLES" || "$ITEM_CYCLES" =~ ^[1-9][0-9]*$ ]] || {
-  echo "feature-loop.sh: FEATURE_LOOP_ITEM_CYCLES is not a count: $ITEM_CYCLES" >&2
-  exit 2
-}
 SCOPE=feature-loop-$PROMPT
 [[ "$SESSION_ID" == new || "$SESSION_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]] || {
   echo "feature-loop.sh: not a session id: $SESSION_ID" >&2
@@ -419,24 +168,6 @@ cd "$ROOT" || exit 1
 # log and show_progress
 source llm-dlc/tools/loop-common.sh
 isolation || exit 1
-# The judge reads no settings of the repo, so that its hooks don't trace it: the user's only, or none of theirs.
-JUDGE_SOURCES=(--setting-sources user)
-(( ${#ISOLATION[@]} )) && JUDGE_SOURCES=("${ISOLATION[@]}")
-
-# A brief for a stream of parallel work names its jj workspace: run anywhere else,
-# its commits would land on another stream's branch. The script runs from the
-# workspace it is in, so this is the copy under that workspace's directory.
-if [[ -n "$WORKSPACE" ]]; then
-  wanted=$(jj workspace root --ignore-working-copy --name "$WORKSPACE" 2>/dev/null)
-  if [[ -z "$wanted" ]]; then
-    log "the brief $BRIEF runs in jj workspace $WORKSPACE, which doesn't exist; see llm-dlc/README.md for adding it"
-    exit 2
-  elif [[ "$(realpath "$wanted")" != "$ROOT" ]]; then
-    log "the brief $BRIEF runs in jj workspace $WORKSPACE, not in $ROOT"
-    log "run it as: $wanted/llm-dlc/tools/feature-loop.sh $1"
-    exit 2
-  fi
-fi
 
 # Shells on WSL sit in init.scope, where an out-of-memory kill can take the whole
 # instance down, so the loop moves to a scope of its own. Everything it starts
@@ -444,8 +175,9 @@ fi
 # matters: under the default, systemd stops the scope on the first kill, and
 # claude dies with the proof instead of seeing it fail. Without swap the cap is
 # exact, and a process over it is killed rather than left thrashing.
-# Stop this loop's scope when all it holds is what an ended loop left: fails, leaving the scope alone, when a feature loop (it runs from a private copy, feature-loop.XXXXXX) or
-# an agent client is among its processes, or when its processes can't be read.
+# Stop this loop's scope when all it holds is what an ended loop left: fails, leaving the scope alone, when a
+# feature loop (it runs from a private copy, feature-loop.XXXXXX) or an agent client is among its processes, or
+# when its processes can't be read.
 CGROUPS=${FEATURE_LOOP_CGROUP_ROOT:-/sys/fs/cgroup}
 clear_leftovers() {
   local group pid cmd left=0
@@ -466,8 +198,8 @@ clear_leftovers() {
 contain() {
   grep -q "/$SCOPE\.scope\$" /proc/self/cgroup && return
   # A loop started from inside another loop's scope is an agent starting a run: a new paid session nobody asked for
-  # (VF-045, 2026-11-27). Every loop passes here, single, stream and proof alike. The tests' made-up loops set
-  # IN_THE_LOOP_NESTED_RUN=allow (lib/tools/cost_tier.py).
+  # (VF-045, 2026-11-27). Every loop passes here. The tests' made-up loops set IN_THE_LOOP_NESTED_RUN=allow
+  # (lib/tools/cost_tier.py).
   local outer
   outer=$(grep -o -E '/feature-loop-[^/]+\.scope' "${FEATURE_LOOP_CGROUP_FILE:-/proc/self/cgroup}" 2>/dev/null | head -1)
   if [[ -n "$outer" && "${IN_THE_LOOP_NESTED_RUN:-}" != allow ]]; then
@@ -509,49 +241,12 @@ contain() {
 }
 contain "$@"
 
-# The run's record: what it was asked, a line per commit, and how it ended.
+# The run's record: what it was asked, a line per cycle, and how it ended.
 SUMMARIES=llm-dlc/loop-summaries
 mkdir -p "$SUMMARIES" || exit 1
 # The record's clock: UTC, as in the transcripts that loop_stats.py reads it against.
 stamp() { date -u '+%F %T'; }
 SUMMARY=$SUMMARIES/$(date -u +%F-%H%M%S)-$PROMPT.md
-
-# The items an earlier run committed, in the records' order (their names start
-# with the time): a commit marks its item done, and the judge's "continues" after
-# it opens the item again, until a later commit and verdict, or the cap, close it.
-done_items() {
-  cat "$SUMMARIES"/*-"$PROMPT".md 2>/dev/null | awk '
-    /^- cycle [0-9]+, item [^,]+,/ { line = $0; sub(/^- cycle [0-9]+, item /, "", line); sub(/,.*/, "", line); state[line] = 1; next }
-    /^  - item [^ ]+ (continues|waiting)/ { state[$3] = 0; next }
-    /^  - item [^ ]+ (finished|left after)/ { state[$3] = 1 }
-    END { for (i in state) if (state[i]) print i }'
-}
-
-# A templated moonshot: the items not done yet, in order. Without the judge a
-# run takes one per cycle, so it runs at most that many cycles.
-PENDING=()
-if [[ -n "$TEMPLATE" ]]; then
-  done_list=$(done_items)
-  for item in "${ITEMS[@]}"; do
-    [[ -z "$EVERY_ITEM" ]] && grep -qxF -- "$item" <<<"$done_list" && continue
-    PENDING+=("$item")
-  done
-  if (( ${#PENDING[@]} == 0 )); then
-    log "every item of $PROMPT is done (${ITEMS[*]}): nothing to do"
-    exit 0
-  fi
-  if [[ -z "$JUDGE" ]] && { [[ "$CYCLES" == inf ]] || (( CYCLES > ${#PENDING[@]} )); }; then
-    CYCLES=${#PENDING[@]}
-  fi
-  INSTRUCTION=$TEMPLATE
-  if [[ -n "$JUDGE" ]]; then
-    limit="no cycle limit"
-    [[ "$CYCLES" == inf ]] || limit="at most $CYCLES cycle(s) in this run"
-    log "$PROMPT: ${#PENDING[@]} of ${#ITEMS[@]} items left, from ${PENDING[0]}; each takes cycles until the judge ($JUDGE_MODEL) finds it finished${ITEM_CYCLES:+, at most $ITEM_CYCLES}; $limit"
-  else
-    log "$PROMPT: ${#PENDING[@]} of ${#ITEMS[@]} items left, from ${PENDING[0]}; this run takes $CYCLES"
-  fi
-fi
 START=$(jj log --no-graph -r @- -T change_id) || exit 1
 
 # A fresh session gets its id here, and it and a session with no transcript yet
@@ -574,19 +269,10 @@ elif [[ ! -e "$(project_dir "$ROOT")/$SESSION_ID.jsonl" ]]; then
   FRESH=1
 fi
 if [[ "$CLIENT" == codex && -n "$FORK_FROM" && -n "$FRESH" ]]; then
-  echo "feature-loop.sh: session $SESSION_ID is to start as a fork of $FORK_FROM, a Claude Code conversation, and Codex cannot continue one: a Codex worker starts from the written handoff (the brief and its inbox). Drop the fork, or run this loop with Claude Code" >&2
+  echo "feature-loop.sh: session $SESSION_ID is to start as a fork of $FORK_FROM, a Claude Code conversation, and Codex cannot continue one: a Codex worker starts from the written handoff (the run's texts and its brief). Drop the fork, or run this loop with Claude Code" >&2
   exit 2
 fi
 
-# The brief without its "## Progress" section, which the session updates as it goes.
-brief_hash() {
-  awk '/^## / { progress = ($0 ~ /^## +Progress[[:space:]]*$/) } !progress' "$BRIEF" |
-    sha256sum | cut -d' ' -f1
-}
-if [[ -n "$BRIEF" ]]; then
-  BRIEF_HASH=$(brief_hash) || exit 1
-  INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. First run \`jj status\` and judge what a change in the working copy is. Another session may be at work in this repository at the same time (the verification loop collects job results and commits them, for one), and its uncommitted files are not yours. A change that belongs to the brief's current work (the step its \`## Progress\` section or your own last turn left in progress) is a cycle that was interrupted: finish, verify and commit it first. Anything else is another session's: leave it alone, never finish, revert or discard it, and keep it out of your commit by naming what is yours: \`sync.py commit --only PATH ... -m ...\` takes those files and folders alone and leaves everything else uncommitted where it is. Finishing an interrupted step is this cycle's piece of work. Otherwise take the next piece of work the brief calls for that is not done yet, by its \`## Progress\` section if it has one (it carries over from earlier runs of this loop) and by the commits since (\`jj log -r '$START..@-'\` lists this run's), finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief outside its \`## Progress\` section; if it has one, update it in the same commit with what this piece did and what comes next, and if it ends with a \`- Status:\` line, keep that line current there too: \`working\` while a piece of work that needs only you is left, otherwise the status the brief's \`## Loop until\` gives for stopping (\`waiting on jobs ID ...\` with the job ids, \`done\`, or \`blocked: ...\` with what needs the user or another stream). If the rest of the brief is wrong or out of date, say so in the commit message."
-fi
 # A session carried by Codex is traced under Codex's own thread id, which the record has to name for the run's
 # statistics and its published copy to find the session (loop_stats.py, sync.py). A session that is continued has
 # its thread already; a new one has it once its first turn has started, and the line is added then.
@@ -607,32 +293,12 @@ fi
       echo
     fi
   fi
-  if [[ -n "$SINGLE" ]]; then
-    echo "> $(one_line "$INSTRUCTION")"
-    echo
-    echo "Every later cycle takes the run's continue message as it stands when the cycle starts, and after each cycle a watcher outside the session decides whether there is another. The message at the start:"
-    echo
-    echo "> $(one_line "$single_continue")"
-  else
-    echo "> $INSTRUCTION"
-  fi
+  echo "> $(one_line "$INSTRUCTION")"
   echo
-  if [[ -n "$JUDGE" ]]; then
-    echo "Each item stays in place of {} until a judge outside the session finds it finished: ${PENDING[*]} (the list: ${ITEMS[*]})."
-    echo
-    echo "The judge is $JUDGE_MODEL${ITEM_CYCLES:+, and an item takes at most $ITEM_CYCLES cycles}."
-    echo
-  elif [[ -n "$TEMPLATE" ]]; then
-    echo "Each cycle puts the next item in place of {}: ${PENDING[*]:0:$CYCLES} (the list: ${ITEMS[*]})."
-    echo
-  fi
-  [[ -n "$BRIEF" ]] && { echo "Brief \`$BRIEF\` at sha256 $BRIEF_HASH."; echo; }
-  if [[ -n "$UNTIL" ]]; then
-    echo "After each commit the session decides whether to go on:"
-    echo
-    echo "> $UNTIL"
-    echo
-  fi
+  echo "Every later cycle takes the run's continue message as it stands when the cycle starts, and after each cycle a watcher outside the session decides whether there is another. The message at the start:"
+  echo
+  echo "> $(one_line "$single_continue")"
+  echo
   echo "## Commits"
   echo
 } >"$SUMMARY"
@@ -642,13 +308,9 @@ log "keeping a record of this run in $SUMMARY"
 HELP='while it runs, type a command and Enter:
   +N / -N   run N more / N fewer cycles after this one (+ and - alone mean 1)
   =N or N   run exactly N more cycles after this one
-  0, stop   end after this cycle (it still commits and compacts)
+  0, stop   end after this cycle (it still compacts)
   inf       run until stopped
   ?         show where the loop stands'
-[[ -n "$TEMPLATE" ]] && HELP+='
-  item      end once the item under way is finished, however many cycles it takes
-  add X Y   take items X and Y after the ones the loop has (from the conductor:
-            watch.py add, for an example a setup prepared while the loop ran)'
 
 # The loop and the terminal reader share "cycle remaining" in a state file:
 # the cycle under way, and how many cycles start after it ("inf" for no limit).
@@ -682,58 +344,21 @@ standing() {
   else
     log "cycle $cycle of $total: $remaining more after this one"
   fi
-  [[ -e "$STATE.item-stop" && "$remaining" != 0 ]] && log "and the loop ends once the item under way is finished"
   return 0
 }
 
-# Items the loop takes after the ones it has: only where PENDING lives, the
-# loop's own shell (apply_commands), not the terminal reader's subshell.
-add_items() {
-  local item have
-  if [[ -z "$TEMPLATE" ]]; then log "this loop has no items to add to"; return; fi
-  if [[ "$BASHPID" != "$$" ]]; then
-    log "add reaches the loop through its conductor (watch.py add), not the terminal"; return
-  fi
-  for item in "$@"; do
-    have=
-    for i in "${PENDING[@]}" "${WAITING[@]}" "$current"; do [[ "$i" == "$item" ]] && have=1; done
-    if [[ -n "$have" ]] || grep -qxF -- "$item" <<<"$(done_items)"; then
-      log "item $item: the loop has it already"
-      continue
-    fi
-    PENDING+=("$item")
-    ITEMS+=("$item")
-    log "item $item added: it comes after ${PENDING[*]:0:${#PENDING[@]}-1}"
-    note "  - item $item added to the list"
-  done
-}
-
 apply() {
-  if [[ "${1,,}" =~ ^[[:space:]]*add[[:space:]]+(.+)$ ]]; then
-    # shellcheck disable=SC2086  # the items are words
-    add_items ${BASH_REMATCH[1]}
-    return
-  fi
   local line=${1,,} n
   line=${line// /}
   case "$line" in
     "" | "?" | status) standing; return ;;
     help | h) printf '%s\n' "$HELP"; return ;;
     stop | q | quit) line=0 ;;
-    inf | unlimited) rm -f "$STATE.item-stop"; remaining=inf; standing; return ;;
-    item | stopitem | afteritem)
-      if [[ -z "$TEMPLATE" ]]; then
-        log "this loop has no items: stop ends it after this cycle"
-      else
-        : >"$STATE.item-stop"
-        standing
-      fi
-      return ;;
+    inf | unlimited) remaining=inf; standing; return ;;
   esac
   if [[ "$line" =~ ^([-+=]?)([0-9]*)$ && -n "$line" ]]; then
     n=${BASH_REMATCH[2]:-1}
     n=$((10#$n))
-    rm -f "$STATE.item-stop"
     case "${BASH_REMATCH[1]}" in
       "" | =) remaining=$n ;;
       +) [[ "$remaining" == inf ]] && { log "no limit already; =N sets one"; return; }
@@ -765,7 +390,7 @@ fi
 
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
-  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes" "$STATE.turn" "$STATE.compact" "$STATE.item-stop" "$STATE.jj" "$FEATURE_LOOP_COPY"
+  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes" "$STATE.turn" "$STATE.compact" "$STATE.jj" "$FEATURE_LOOP_COPY"
   # Last, however the loop ended, so the session to resume or read is on screen.
   log "session: $SESSION_ID"
 }
@@ -789,7 +414,8 @@ run_claude() {
     [[ -n "${LOOP_WATCH_PID:-}" ]] && printf '%s\n' "$BASHPID" >"$LOOP_WATCH_PID"
     # The session is given the instruction and nothing of the run that started it: with the loop's and the run's
     # variables in its shell, a test it ran of these very scripts asked the real watcher its made-up questions
-    # (RUN_STREAMS_WATCHER, 2026-11-17).
+    # (2026-11-17). The first and the last prefix are those of two retired workflows, whose variables an old
+    # shell may still hold.
     unset "${!RUN_STREAMS_@}" "${!FEATURE_LOOP_@}" "${!LOOP_WATCH_@}" "${!PROVE_LOOP_@}" LOOP_CONDUCTOR
     if [[ "$CLIENT" == codex ]]; then
       # The same instruction, through the other client: agent_client.py prints the stream this pipe reads.
@@ -877,115 +503,9 @@ summarize() {
   rm -f "$stream"
 }
 
-# With UNTIL: ask the session whether the loop goes on after this cycle's commit,
-# while it still has the cycle in context. Sets $decision to continue, stop or
-# unclear, and records the answer.
-decide() {
-  local stream answer verdict
-  stream=$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/feature-loop-decide.XXXXXX") || { decision=unclear; return; }
-  log "cycle $cycle: asking whether to go on"
-  run_claude "Cycle $cycle of the feature loop is committed. Before the next cycle starts, decide whether the loop should go on, by these instructions from the user: $UNTIL
-
-Weigh them against what this run has done so far (\`jj log -r '$START..@-'\` lists its commits) and what is left. Reply with two or three sentences on why, then a last line that is exactly \`LOOP: continue\` or \`LOOP: stop\`. A status such as \`waiting on jobs ...\` or \`blocked: ...\` is never the last line: when one applies, the answer is \`LOOP: stop\`, and if the brief's status line doesn't say so yet, the loop gives you a turn to record it after this one. This turn only decides: don't edit files, commit, push or submit jobs." "$stream" ||
-    log "cycle $cycle: decision turn exited with status $?"
-  answer=$(result_text "$stream") || answer=
-  rm -f "$stream"
-  verdict=$(printf '%s\n' "$answer" | awk 'NF { last = $0 } END { print last }' | tr -d '`*_ \t\r' | tr '[:upper:]' '[:lower:]')
-  case "$verdict" in
-    loop:continue) decision=continue ;;
-    loop:stop) decision=stop ;;
-    *) decision=unclear ;;
-  esac
-  log "cycle $cycle: the session says $decision"
-  note "  - decided to $decision: $(printf '%s' "$answer" | sed '/^[[:space:]`*_]*LOOP:/Id' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//')"
-}
-
-# The last "- Status:" line under the brief's "## Progress", without the label,
-# and whether the brief has one at all.
-brief_status() {
-  awk '/^## / { inside = ($0 ~ /^## +Progress[[:space:]]*$/); next }
-       inside && /^[-*] +Status: */ { s = $0 }
-       END { sub(/^[-*] +Status: */, "", s); gsub(/`/, "", s); print s }' "$BRIEF"
-}
-has_status() {
-  [[ -n "$BRIEF" ]] && awk '/^## / { inside = ($0 ~ /^## +Progress[[:space:]]*$/); next }
-    inside && /^[-*] +Status: */ { found = 1 } END { exit !found }' "$BRIEF"
-}
-
-# After a decision to stop: a status that still says working tells whoever runs
-# the loop nothing about why, so the session, which still has the cycle in context, sets
-# and commits the one the brief's Loop until gives. Sets $closed to ok or failed.
-close_status() {
-  local before_close status
-  closed=ok
-  has_status || return 0
-  status=$(brief_status)
-  [[ "$status" == working* ]] || return 0
-  log "cycle $cycle: the session decided to stop, but the brief's status says working: asking it to record why"
-  before_close=$(last_change) || { closed=failed; return; }
-  run_claude "You decided that the loop stops after this cycle, but the status line at the end of the \`## Progress\` section of \`$BRIEF\` still says \`working\`. That tells whoever runs the loop nothing about why it stopped: a loop that waits on jobs is run again once they are back, and one that is done or blocked is finished. Set that line now to the status the brief's \`## Loop until\` gives for where the work stands: \`waiting on jobs ID ...\` with each job id, \`done\`, or \`blocked: ...\` with what needs the user or another stream. Make sure Progress records what the status depends on. Change nothing else in the brief or anywhere, then commit it as CLAUDE.md describes, with \`--only $BRIEF\` before the message so that no other session's uncommitted files come along." ||
-    log "cycle $cycle: the status turn exited with status $?"
-  status=$(brief_status)
-  if [[ "$(last_change)" == "$before_close" || "$status" == working* || -z "$status" ]]; then
-    closed=failed
-    log "cycle $cycle: the brief's status is still ${status:-missing}, or wasn't committed; session $SESSION_ID needs attention"
-    note "  - the stop left the brief's status ${status:-missing}, or uncommitted; session $SESSION_ID needs attention"
-    return
-  fi
-  log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
-  note "  - recorded the status \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $status"
-}
-
-# After a committed cycle of a templated moonshot: is the item finished, does it
-# take another cycle, or does it only wait on verification jobs it queued? A
-# conductor is asked first (LOOP_CONDUCTOR: conductor.py's `cycle` question).
-# Without one, or without its verdict in $JUDGE_WAIT seconds, a judge of the loop's
-# own answers: a claude -p with no tools, none of the repo's settings or hooks and
-# no transcript, which reads the cycle's final report and commit messages. Either
-# way nothing reaches the moonshot's session. Sets $item_verdict (finished,
-# continue or waiting) and $item_reason.
-judge_item() {
-  local report commits reply reason question asked answers=finished,continue
-  local outside="or only waits on something outside the session, such as queued verification jobs, whose results are collected without it"
-  local third="" ending="ITEM: finished or ITEM: continue"
-  if [[ -n "$CONTINUE_PROVING" ]]; then
-    answers=finished,continue,waiting
-    outside="or waits on something outside the session other than its own verification jobs"
-    third=" Answer waiting if all that is left for the session on this item is to act on the results of verification jobs it has queued and that are not in yet: the loop takes another item meanwhile, and gives this one a cycle again once they are in."
-    ending="ITEM: finished, ITEM: continue or ITEM: waiting"
-  fi
-  item_verdict=finished item_reason=
-  if [[ -n "${LOOP_CONDUCTOR:-}" ]]; then
-    asked=$(python3 llm-dlc/tools/conductor.py ask "$LOOP_CONDUCTOR" cycle --answers "$answers" --wait "$JUDGE_WAIT" \
-      "cycle=$cycle" "item=$item" "itemCycle=$item_turns" "session=$SESSION_ID" "turn=$STATE.turn" \
-      "commit=$(jj log --no-graph -r @- -T 'change_id.short()')") || asked=none
-    if [[ -n "$asked" && "$asked" != none ]]; then
-      item_verdict=${asked%%$'\t'*}
-      item_reason="the conductor: ${asked#*$'\t'}"
-      return
-    fi
-    log "cycle $cycle: no verdict from the conductor in ${JUDGE_WAIT}s: asking the judge ($JUDGE_MODEL)"
-  fi
-  report=$(result_text "$STATE.turn") || report="(The cycle's turn left no final report.)"
-  commits=$(jj log --no-graph -r "$before..@-" -T 'description ++ "\n"' | grep -v '^LLM-Trace' | head -c 20000)
-  question="You judge, from outside it, a loop that works through a list of items, giving a Claude Code session one instruction per item. For this item the instruction is: \"$INSTRUCTION\". The session has just finished cycle $item_turns on item $item. Its final report and the messages of the commits it made in this cycle are on standard input. Decide whether the loop moves on to the next item or gives this one another cycle, with the same instruction. Answer finished if the instruction's goal is met for this item, or if what is left can't be done by the session alone: it needs a person (a decision, credentials, access) $outside. Answer continue if the report shows work on this item that the session itself can still do and that another cycle would make real progress on. Polish, wider reuse, and follow-ups the report calls optional don't count.$third Say why in one or two sentences, then end with exactly one line: $ending."
-  reply=$(printf '## Final report\n\n%s\n\n## Commit messages\n\n%s\n' "${report:0:30000}" "$commits" |
-    claude -p "$question" --model "$JUDGE_MODEL" --effort low "${JUDGE_SOURCES[@]}" --tools "" \
-      --no-session-persistence --output-format text 2>/dev/null) || reply=
-  item_verdict=$(grep -oE 'ITEM: *(finished|continue|waiting)' <<<"$reply" | tail -n 1 | sed 's/.*: *//')
-  reason=$(grep -vE 'ITEM: *(finished|continue|waiting)' <<<"$reply" | tr -s '[:space:]' ' ' | sed 's/^ //; s/ $//')
-  (( ${#reason} > 400 )) && reason="${reason:0:400}..."
-  item_reason=$reason
-  [[ "$item_verdict" == waiting && -z "$CONTINUE_PROVING" ]] && item_verdict=
-  if [[ -z "$item_verdict" ]]; then
-    item_verdict=finished
-    item_reason="the judge gave no clear answer, so the loop moves on"
-  fi
-}
-
-# After a cycle of a single-agent run, committed or not: its watcher (the conductor's `run` question) decides
-# whether there is another. Sets $decision to continue or stop, $run_reason, and $run_unanswered when the run ends
-# for want of a verdict on a cycle with no commit, which is a session that needs attention, as in every loop.
+# After a cycle, committed or not: the run's watcher (the conductor's `run` question) decides whether there is
+# another. Sets $decision to continue or stop, $run_reason, and $run_unanswered when the run ends for want of a
+# verdict on a cycle with no commit, which is a session that needs attention.
 unwatched=0
 judge_run() {
   local asked committed=none
@@ -1016,7 +536,6 @@ judge_run() {
 
 # The conductor's command lines (conductor.py command), applied as if typed in the terminal.
 apply_commands() {
-  [[ -n "${LOOP_CONDUCTOR:-}" ]] || return 0
   local line
   while IFS= read -r line; do
     [[ -n "$line" ]] && with_state apply "$line"
@@ -1025,98 +544,8 @@ apply_commands() {
 
 # Tell whoever watches where the loop is (conductor.py note): an event that asks nothing.
 tell() {
-  [[ -n "${LOOP_CONDUCTOR:-}" ]] || return 0
   python3 llm-dlc/tools/conductor.py note "$LOOP_CONDUCTOR" "$@" 2>/dev/null
   return 0
-}
-
-# A templated moonshot's items. `current` is the one under way, next_idx the first
-# of PENDING not started, WAITING the ones that only wait on verification jobs, in
-# the order the loop left them, and TURNS the cycles each has had in this run.
-current=
-next_idx=0
-WAITING=()
-declare -A TURNS=()
-
-# The earliest item of WAITING whose verification jobs are all in: sets $ready and takes it off the list.
-proof_ready() {
-  (( ${#WAITING[@]} )) || return 1
-  local unfinished i
-  unfinished=$(python3 llm-dlc/tools/conductor.py unfinished "${WAITING[@]}") || return 1
-  for i in "${!WAITING[@]}"; do
-    if ! grep -qxF -- "${WAITING[i]}" <<<"$unfinished"; then
-      ready=${WAITING[i]}
-      unset 'WAITING[i]'
-      WAITING=("${WAITING[@]}")
-      return 0
-    fi
-  done
-  return 1
-}
-
-# Sets $item for the next cycle: the item under way; else the earliest that waited
-# on verification jobs now in; else the next not started; else, when only waiting
-# ones are left, the first whose jobs come in. Fails, with $no_item saying why,
-# when there is none.
-choose_item() {
-  local ready= until left first
-  no_item="no items left"
-  if [[ -n "$current" ]]; then item=$current; return 0; fi
-  if proof_ready; then
-    item=$ready
-  elif (( next_idx < ${#PENDING[@]} )); then
-    item=${PENDING[next_idx]}
-    next_idx=$(( next_idx + 1 ))
-    current=$item
-    return 0
-  elif (( ${#WAITING[@]} )); then
-    log "the items left only wait on verification jobs (${WAITING[*]}): waiting for the first to come in"
-    tell proofs "waiting=${WAITING[*]}"
-    until=$(( SECONDS + PROOF_WAIT ))
-    read -r _ first <"$STATE"
-    while ! proof_ready; do
-      apply_commands
-      read -r _ left <"$STATE"
-      if [[ -e "$STATE.item-stop" || ( "$left" == 0 && "$first" != 0 ) ]]; then
-        no_item="stopped, as asked, while waiting on the verification jobs of ${WAITING[*]}"
-        return 1
-      fi
-      if (( SECONDS >= until )); then
-        no_item="the verification jobs of ${WAITING[*]} did not come in within ${PROOF_WAIT}s"
-        return 1
-      fi
-      sleep "$PROOF_POLL"
-    done
-    item=$ready
-  else
-    return 1
-  fi
-  log "the verification jobs of item $item are in: back to it"
-  note "  - item $item taken up again: its verification jobs are in"
-  tell item "item=$item" state=resumed
-  current=$item
-}
-
-# Between two items, with a conductor: it may stop the loop here, and it merges
-# first whatever workspace it has been asked to (DIR/merge-queue, which makes the
-# loop wait longer). Sets $between to stop when the loop is to end here.
-between_items() {
-  between=
-  [[ -n "${LOOP_CONDUCTOR:-}" ]] || return 0
-  local wait=$EXAMPLE_WAIT asked
-  if [[ -s "$LOOP_CONDUCTOR/merge-queue" ]]; then
-    wait=$MERGE_WAIT
-    log "between items, with a workspace queued to merge: waiting up to ${wait}s for the conductor"
-  fi
-  asked=$(python3 llm-dlc/tools/conductor.py ask "$LOOP_CONDUCTOR" example --answers continue,stop --wait "$wait" \
-    "cycle=$cycle" "item=$item" "left=$item_verdict" "waiting=${WAITING[*]}") || asked=none
-  case "${asked%%$'\t'*}" in
-    stop)
-      between=stop
-      note "  - the conductor stops the loop after item $item: ${asked#*$'\t'}" ;;
-    continue)
-      note "  - between items, the conductor: ${asked#*$'\t'}" ;;
-  esac
 }
 
 # `sync.py commit` finishes @ and starts an empty change, so a commit moves @-.
@@ -1153,21 +582,15 @@ next_cycle() {
   [[ "$remaining" == inf ]] || remaining=$(( remaining - 1 ))
 }
 
-# With "- fork: SESSION", a session that has no transcript yet starts as a fork of
-# that one, in a turn of its own. Claude Code finds a session to resume under the
-# directory it runs in, and the parent belongs to the default workspace, so its
-# transcript is copied here for the fork and removed straight after. That turn
-# runs without the repo's hooks or any tool, so the copy is never synced: left
-# here, it would be published again as this workspace's.
+# With FEATURE_LOOP_FORK, a session that has no transcript yet starts as a fork of that one, in a turn of its
+# own. Claude Code finds a session to resume under the directory it runs in, and the parent may be a session of
+# any workspace of the repository (the watcher's own, say), so its newest transcript is copied here for the fork
+# and removed straight after. That turn runs without the repo's hooks or any tool, so the copy is never synced:
+# left here, it would be published again as this workspace's.
 fork_session() {
   local source here copied= words
-  source=$(project_dir "$(jj workspace root --ignore-working-copy --name default 2>/dev/null || echo "$ROOT")")/$FORK_FROM.jsonl
-  words="This conversation goes on as one of the parallel streams it planned: the loop of the brief \`$BRIEF\`, in the jj workspace at \`$ROOT\`, on a branch of its own, while other forks of this conversation work the other streams in their own workspaces. From now on, work only in this workspace and only on what that brief gives you. Tools are off for this one turn: reply in a few sentences with how you will approach the brief's phases, given what this conversation established. The loop's first cycle follows."
-  if [[ -n "$SINGLE" ]]; then
-    # The parent may be a session of any workspace of the repository (the watcher's own, say): the newest transcript of that id.
-    source=$(ls -t "$PROJECTS"/*/"$FORK_FROM.jsonl" 2>/dev/null | head -n 1)
-    words="This conversation goes on, from here, as an unattended run of one agent: you are now the session that does the work, alone, in the checkout at \`$ROOT\`, and no longer the one that planned it. The conversation you were forked from carries on separately and watches this run from outside; it will not talk to you, and you don't report to it. From now on work only in that checkout and follow its CLAUDE.md. Tools are off for this one turn: reply in a few sentences with what you know that the work will need. The run's first instruction follows."
-  fi
+  source=$(ls -t "$PROJECTS"/*/"$FORK_FROM.jsonl" 2>/dev/null | head -n 1)
+  words="This conversation goes on, from here, as an unattended run of one agent: you are now the session that does the work, alone, in the checkout at \`$ROOT\`, and no longer the one that planned it. The conversation you were forked from carries on separately and watches this run from outside; it will not talk to you, and you don't report to it. From now on work only in that checkout and follow its CLAUDE.md. Tools are off for this one turn: reply in a few sentences with what you know that the work will need. The run's first instruction follows."
   here=$(project_dir "$ROOT")
   if [[ -z "$source" || ! -f "$source" ]]; then
     log "no transcript of session $FORK_FROM to fork, at ${source:-$PROJECTS/*/$FORK_FROM.jsonl}"
@@ -1202,7 +625,6 @@ else
 fi
 with_state standing
 
-item_turns=0
 while :; do
   apply_commands
   # A stop that came before this cycle began (before the first, or between the last look and here) ends the loop
@@ -1217,61 +639,31 @@ while :; do
   fi
   with_state next_cycle
   before=$(last_change) || exit 1
-  if [[ -n "$BRIEF" && "$(brief_hash)" != "$BRIEF_HASH" ]]; then
-    log "the brief $BRIEF changed during the run, stopping before cycle $cycle"
-    note; note "Stopped $(stamp): the brief changed before cycle $cycle; restart the loop to work from the new one."
-    exit 1
-  fi
 
-  item=
-  if [[ -n "$TEMPLATE" ]]; then
-    # Without the judge, only a count raised while it runs (+N, inf) gets past the end of the list.
-    if ! choose_item; then
-      cycle=$(( cycle - 1 ))
-      log "$no_item: stopping after cycle $cycle"
-      summarize
-      note; note "Ended $(stamp) after $cycle cycle(s): $no_item.${WAITING[*]:+ Still waiting on verification jobs: ${WAITING[*]}.}"
-      log "record of the run: $SUMMARY"
-      exit 0
+  # The first cycle of a run takes its first text; every later one the continue message as it stands now.
+  if (( cycle > 1 )); then
+    # A file that can't be read, or is empty, changes nothing: the message stays the last one read.
+    text=$(cat -- "$FEATURE_LOOP_CONTINUE" 2>/dev/null) && [[ -n "${text//[[:space:]]/}" ]] || text=$single_continue
+    if [[ "$text" != "$single_continue" ]]; then
+      single_continue=$text
+      log "cycle $cycle: the continue message has changed"
+      note "  - from cycle $cycle the continue message is: $(one_line "$single_continue")"
     fi
-    TURNS[$item]=$(( ${TURNS[$item]:-0} + 1 ))
-    item_turns=${TURNS[$item]}
-    tell cycle-start "cycle=$cycle" "item=$item" "itemCycle=$item_turns" "turn=$STATE.turn"
-    INSTRUCTION=${TEMPLATE//\{\}/$item}
-    if (( item_turns > 1 )); then
-      log "cycle $cycle: $PROMPT, item $item, its cycle $item_turns"
-    else
-      log "cycle $cycle: $PROMPT, item $item"
-    fi
-  elif [[ -n "$SINGLE" ]]; then
-    # The first cycle of a run takes its first text; every later one the continue message as it stands now.
-    if (( cycle > 1 )); then
-      # A file that can't be read, or is empty, changes nothing: the message stays the last one read.
-      text=$(cat -- "$FEATURE_LOOP_CONTINUE" 2>/dev/null) && [[ -n "${text//[[:space:]]/}" ]] || text=$single_continue
-      if [[ "$text" != "$single_continue" ]]; then
-        single_continue=$text
-        log "cycle $cycle: the continue message has changed"
-        note "  - from cycle $cycle the continue message is: $(one_line "$single_continue")"
-      fi
-      INSTRUCTION=$(single_text "$single_continue")
-      log "cycle $cycle: $PROMPT, the continue message"
-    else
-      log "cycle $cycle: $PROMPT, the run's first text"
-    fi
-    tell cycle-start "cycle=$cycle" "turn=$STATE.turn" "base=$before"
+    INSTRUCTION=$(single_text "$single_continue")
+    log "cycle $cycle: $PROMPT, the continue message"
   else
-    log "cycle $cycle: $PROMPT instruction"
+    log "cycle $cycle: $PROMPT, the run's first text"
   fi
+  tell cycle-start "cycle=$cycle" "turn=$STATE.turn" "base=$before"
   with_state standing
-  [[ -n "$reader" ]] && log "type +N, -N, =N, 0 to stop${TEMPLATE:+, item to stop once this item is finished}, ? or help"
-  if [[ -n "$WATCH_COMPACT" ]]; then
-    rm -f "$STATE.compacted" "$STATE.notes"
-    export LOOP_WATCH_BASE=$before LOOP_WATCH_PID=$STATE.pid LOOP_WATCH_MARK=$STATE.compacted LOOP_WATCH_NOTES=$STATE.notes
-    export LOOP_WATCH_STOP=$STOP_ON_COMPACT
-    export LOOP_WATCH_CYCLE=$cycle LOOP_WATCH_ITEM=$item LOOP_WATCH_SESSION=$SESSION_ID
-    export LOOP_WATCH_TRANSCRIPT="$(project_dir "$ROOT")/$SESSION_ID.jsonl"
-    [[ "$CLIENT" == codex ]] && export LOOP_WATCH_TRANSCRIPT="$ROOT/llm-dlc/loop-summaries/agent-sessions/$SESSION_ID.json"
-  fi
+  [[ -n "$reader" ]] && log "type +N, -N, =N, 0 to stop, ? or help"
+  # The compaction watch of the turn (show_progress, loop-common.sh).
+  rm -f "$STATE.compacted" "$STATE.notes"
+  export LOOP_WATCH_BASE=$before LOOP_WATCH_PID=$STATE.pid LOOP_WATCH_MARK=$STATE.compacted LOOP_WATCH_NOTES=$STATE.notes
+  export LOOP_WATCH_STOP=$STOP_ON_COMPACT
+  export LOOP_WATCH_CYCLE=$cycle LOOP_WATCH_SESSION=$SESSION_ID
+  export LOOP_WATCH_TRANSCRIPT="$(project_dir "$ROOT")/$SESSION_ID.jsonl"
+  [[ "$CLIENT" == codex ]] && export LOOP_WATCH_TRANSCRIPT="$ROOT/llm-dlc/loop-summaries/agent-sessions/$SESSION_ID.json"
   # What the cycle is told, by digest: the same task given to another client shows the same one.
   log "cycle $cycle: the instruction is ${#INSTRUCTION} characters, sha256 $(printf '%s' "$INSTRUCTION" | sha256sum | cut -c1-16), carried by $CLIENT ($MODEL at $EFFORT effort)"
   run_claude "$INSTRUCTION" "$STATE.turn" || log "cycle $cycle: $CLIENT exited with status $?"
@@ -1282,11 +674,11 @@ while :; do
       note
     fi
   fi
-  unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK LOOP_WATCH_NOTES LOOP_WATCH_STOP LOOP_WATCH_CYCLE LOOP_WATCH_ITEM LOOP_WATCH_SESSION LOOP_WATCH_TRANSCRIPT
+  unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK LOOP_WATCH_NOTES LOOP_WATCH_STOP LOOP_WATCH_CYCLE LOOP_WATCH_SESSION LOOP_WATCH_TRANSCRIPT
   if [[ -s "$STATE.compacted" ]]; then
     compacted=$(<"$STATE.compacted")
     log "cycle $cycle: $compacted, stopping; session $SESSION_ID needs attention"
-    note; note "Stopped $(stamp): cycle $cycle${item:+ (item $item)} $compacted; session $SESSION_ID needs attention."
+    note; note "Stopped $(stamp): cycle $cycle $compacted; session $SESSION_ID needs attention."
     exit 1
   fi
 
@@ -1295,96 +687,41 @@ while :; do
   if [[ -n "$failure" ]]; then
     # Before any verdict and before the compact, whatever the count of cycles says: the session keeps what it
     # had for whoever looks at why, and the loop's status says that someone must. A turn that ended well and
-    # made no commit is another matter, and goes on below as it always did.
+    # made no commit is another matter, and goes on below.
     made=
     if [[ "$after" != "$before" ]]; then
       made=", after its commit $(jj log --no-graph -r @- -T 'change_id.short()')"
-      note "- cycle $cycle, ${item:+item $item, }$(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+      note "- cycle $cycle, $(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
     fi
     log "cycle $cycle: the turn did not end well ($failure)$made, stopping; session $SESSION_ID needs attention"
-    note; note "Stopped $(stamp): the turn of cycle $cycle${item:+ (item $item)} did not end well$made: $failure; session $SESSION_ID needs attention."
-    exit 1
-  fi
-  if [[ "$after" == "$before" && -z "$SINGLE" ]]; then
-    log "cycle $cycle: no commit, stopping; session $SESSION_ID needs attention"
-    note; note "Stopped $(stamp): cycle $cycle${item:+ (item $item)} made no commit; session $SESSION_ID needs attention."
+    note; note "Stopped $(stamp): the turn of cycle $cycle did not end well$made: $failure; session $SESSION_ID needs attention."
     exit 1
   fi
   if [[ "$after" == "$before" ]]; then
-    # A single-agent run: its watcher decides what a cycle with no commit means (the outcome reached, a question, or stuck).
+    # The watcher decides what a cycle with no commit means (the outcome reached, a question, or stuck).
     log "cycle $cycle: no commit"
     note "- cycle $cycle, $(stamp): no commit"
   else
     log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
-    note "- cycle $cycle, ${item:+item $item, }$(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+    note "- cycle $cycle, $(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
   fi
   # What a conductor let go on during the turn, under the cycle's line.
   if [[ -s "$STATE.notes" ]]; then
     while IFS= read -r line; do note "  - $line"; done <"$STATE.notes"
   fi
 
-  # A templated moonshot leaves its item once it is finished (at once without the
-  # judge), when it only waits on its verification jobs, or at its cap of cycles.
-  item_done=
-  item_verdict=
-  if [[ -n "$TEMPLATE" ]]; then
-    item_verdict=finished item_reason=
-    [[ -n "$JUDGE" ]] && judge_item
-    if [[ "$item_verdict" == waiting && -z "$(python3 llm-dlc/tools/conductor.py unfinished "$item")" ]]; then
-      item_verdict=continue
-      item_reason="$item_reason (its verification jobs are in already, so it takes its next cycle now)"
-    fi
-    if [[ "$item_verdict" == continue && -n "$ITEM_CYCLES" ]] && (( item_turns >= ITEM_CYCLES )); then
-      item_verdict=capped
-    fi
-    case "$item_verdict" in
-      continue)
-        log "cycle $cycle: item $item continues: $item_reason"
-        note "  - item $item continues: $item_reason" ;;
-      waiting)
-        log "cycle $cycle: item $item waits on its verification jobs, and the loop takes another meanwhile: $item_reason"
-        note "  - item $item waiting: $item_reason"
-        WAITING+=("$item") ;;
-      capped)
-        log "cycle $cycle: item $item has had its $ITEM_CYCLES cycles, so the loop moves on"
-        note "  - item $item left after $item_turns cycles, its cap (FEATURE_LOOP_ITEM_CYCLES)" ;;
-      *)
-        if [[ -n "$JUDGE" ]]; then
-          log "cycle $cycle: item $item is finished: $item_reason"
-          note "  - item $item finished: $item_reason"
-        fi ;;
-    esac
-    tell item "item=$item" "state=$item_verdict" "cycle=$cycle" "reason=$item_reason"
-    if [[ "$item_verdict" != continue ]]; then
-      item_done=1
-      current=
-    fi
-  fi
-
   decision=continue
+  run_unanswered=
+  apply_commands  # a stop left during the turn ends the run without a question
   # The last cycle of a count ends the loop anyway, so there is nothing to decide.
-  if [[ -n "$SINGLE" ]]; then
-    run_unanswered=
-    apply_commands  # a stop left during the turn ends the run without a question
-    read -r _ left <"$STATE"
-    [[ "$left" == 0 ]] || judge_run
-    if [[ -n "$run_unanswered" ]]; then
-      # Before the compact, so the session keeps its full context for the person who looks at why.
-      log "cycle $cycle: no commit and no verdict, stopping; session $SESSION_ID needs attention"
-      note; note "Stopped $(stamp): cycle $cycle made no commit, and no verdict came from the watcher; session $SESSION_ID needs attention."
-      exit 1
-    fi
-  elif [[ -n "$UNTIL" ]]; then
-    read -r _ left <"$STATE"
-    [[ "$left" == 0 ]] || decide
-  fi
-  if [[ "$decision" == unclear ]]; then
-    log "cycle $cycle: no clear decision, stopping; session $SESSION_ID needs attention"
-    note; note "Stopped $(stamp): after cycle $cycle the session gave no clear LOOP: continue or LOOP: stop; session $SESSION_ID needs attention."
+  read -r _ left <"$STATE"
+  [[ "$left" == 0 ]] || judge_run
+  if [[ -n "$run_unanswered" ]]; then
+    # Before the compact, so the session keeps its full context for the person who looks at why.
+    log "cycle $cycle: no commit and no verdict, stopping; session $SESSION_ID needs attention"
+    note; note "Stopped $(stamp): cycle $cycle made no commit, and no verdict came from the watcher; session $SESSION_ID needs attention."
     exit 1
   fi
-  closed=ok
-  [[ "$decision" == stop ]] && close_status
 
   log "cycle $cycle: compact"
   run_claude "/compact" "$STATE.compact" || log "cycle $cycle: compact exited with status $?"
@@ -1403,40 +740,10 @@ while :; do
 
   apply_commands
   read -r cycle remaining <"$STATE"
-  if [[ -n "$item_done" && "$decision" != stop ]]; then
-    between=
-    # Nothing to ask when the loop ends here anyway: the count is used up, or no item is left.
-    if [[ "$remaining" != 0 && ! -e "$STATE.item-stop" ]] && (( next_idx < ${#PENDING[@]} || ${#WAITING[@]} )); then
-      between_items
-    fi
-    if [[ -e "$STATE.item-stop" || "$between" == stop ]]; then
-      log "the loop has left item $item: stopping after cycle $cycle, as asked"
-      summarize
-      note; note "Ended $(stamp) after $cycle cycle(s): stopped once item $item was ${item_verdict/capped/left}, as asked.${WAITING[*]:+ Still waiting on verification jobs: ${WAITING[*]}.}"
-      log "record of the run: $SUMMARY"
-      exit 0
-    fi
-  fi
-  if [[ "$decision" == stop && -n "$SINGLE" ]]; then
+  if [[ "$decision" == stop ]]; then
     log "the run ends after cycle $cycle: $run_reason"
     summarize
     note; note "Ended $(stamp) after $cycle cycle(s): the run was ended there ($run_reason)."
-    log "record of the run: $SUMMARY"
-    exit 0
-  fi
-  if [[ "$decision" == stop ]]; then
-    log "the session decided to stop: stopping after cycle $cycle"
-    summarize
-    if [[ "$closed" == failed ]]; then
-      note; note "Stopped $(stamp) after $cycle cycle(s): the session decided to stop, but the brief's status still says $(brief_status); session $SESSION_ID needs attention."
-      log "record of the run: $SUMMARY"
-      exit 1
-    fi
-    if has_status; then
-      note; note "Ended $(stamp) after $cycle cycle(s): the session decided to stop; the brief says $(brief_status)."
-    else
-      note; note "Ended $(stamp) after $cycle cycle(s): the session decided the work was done."
-    fi
     log "record of the run: $SUMMARY"
     exit 0
   fi

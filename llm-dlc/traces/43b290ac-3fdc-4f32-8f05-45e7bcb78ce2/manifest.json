@@ -12,27 +12,27 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T17:49:11.847Z",
-  "duration_seconds": 9330,
+  "ended": "2026-11-27T18:08:15.935Z",
+  "duration_seconds": 10475,
   "stats": {
     "turns": 13,
-    "api_calls": 205,
-    "tool_calls": 255,
+    "api_calls": 241,
+    "tool_calls": 292,
     "tool_errors": 2,
     "compactions": 2,
     "peak_context_tokens": 564675,
     "usage": {
-      "input_tokens": 414,
-      "output_tokens": 347250,
-      "cache_read_input_tokens": 55561495,
-      "cache_creation_input_tokens": 1023751
+      "input_tokens": 486,
+      "output_tokens": 418757,
+      "cache_read_input_tokens": 67140877,
+      "cache_creation_input_tokens": 1168051
     }
   },
   "tools": {
-    "Bash": 183,
-    "Read": 49,
+    "Bash": 216,
+    "Read": 51,
+    "Write": 12,
     "Edit": 11,
-    "Write": 10,
     "AskUserQuestion": 2
   },
   "files_touched": [
@@ -41,7 +41,9 @@
     "llm-dlc/loops/brief-generation-template.md",
     "llm-dlc/retired.md",
     "llm-dlc/tools/brief_queue.py",
+    "llm-dlc/tools/feature-loop.sh",
     "llm-dlc/tools/retired.py",
+    "llm-dlc/tools/test_feature_loop.py",
     "llm-dlc/tools/test_landing.py",
     "llm-dlc/tools/test_retired.py",
     "llm-dlc/tools/test_single_run.py",
@@ -83,24 +85,24 @@
     {
       "index": 2,
       "started": "2026-11-27T17:39:27.601Z",
-      "ended": "2026-11-27T17:49:11.847Z",
+      "ended": "2026-11-27T18:08:15.935Z",
       "turns": 1,
-      "api_calls": 20,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 40,
-        "output_tokens": 37929,
-        "cache_read_input_tokens": 3747657,
-        "cache_creation_input_tokens": 228999
+        "input_tokens": 112,
+        "output_tokens": 109436,
+        "cache_read_input_tokens": 15327039,
+        "cache_creation_input_tokens": 373299
       },
-      "peak_context_tokens": 240906
+      "peak_context_tokens": 385206
     }
   ],
   "log": {
-    "sha256": "7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e",
-    "bytes": 7402345,
-    "lines": 2177,
-    "gzip_bytes": 1458851,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e.jsonl.gz"
+    "sha256": "86c2329ef2f407f1709389ded32e0fa0f819c66b4fc7ef33eee814c388760dc5",
+    "bytes": 8420168,
+    "lines": 2457,
+    "gzip_bytes": 1636325,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/86c2329ef2f407f1709389ded32e0fa0f819c66b4fc7ef33eee814c388760dc5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -167,6 +169,14 @@
       "summary": "Retire the streams workflow: /multi-agent-brief, brief_run.py and run-streams.sh",
       "body": "The user decided on 2026-11-27 that the project converges on one run skill, /orchestrate-run, and that every other proof workflow is outdated. This removes the workflow that ran a brief as parallel streams: the skill multi-agent-brief, its controller brief_run.py, run-streams.sh with its status bar (streams_status.py), the streams' inboxes (inbox.py), the rolling integration line (integration.py and the four briefs' integration scripts), transfer-session.sh, and the four test files of those tools. Nothing is removed from the history: llm-dlc/retired.md names the change that removed them, and its parent is the last commit that has them. The entry also says where the foundation session's prompt, the user's text, is to be read.\n\nWhat the surviving tools shared with that workflow was moved out two commits ago (run_common.py, landing.py, queue_keeping.py) and is unchanged here. The rest is wording: the conductor no longer describes the two questions only streams asked (their three answers are still read, so an old run directory's verdicts are), feature-loop.sh no longer ends a brief's instruction with the sentence that pointed at an inbox no tool writes, and llm-dlc/README.md's section on a brief's run is replaced by a short one that points at the register and keeps the three things it said that hold for every run. The operating notes keep the user's rule about sessions beside a run.\n\nOne thing the removal makes visible, and does not fix: only the default workspace publishes run records, and run-streams.sh was the one caller of run_records.py, which copies a workspace's records there. No command of a single run does that, so no single run's record is published and the loop statistics count none (llm-dlc/traces/loops.md names no single-NAME run). The pages now say so. Copying them at a landing would publish some dozens of records at once and is for the user to decide.\n\nVerified by the changed-tests run (32 of 32 test files, among them test_single_run 29, test_brief_queue 12, test_prove_loop 32, test_watch 42, test_conductor 23, test_agent_client 27, test_landing 14, test_queue_keeping 6) and by retired.py check, which finds no retired file still here and no live paragraph that names the streams' tools without pointing at the register. The cost inventory drops the 77 rows of the removed tests, and its lint agrees.",
       "log_sha256": "7eeffbe1c3b231138290293d3fe1f7fb0293e140d57208616fa4db47ab7a885e"
+    },
+    {
+      "change_id": "ykqmkpuomlqwxvwlywkqmspuzynnoxux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Retire the proof loop, the loops by hand and the verification loop",
+      "body": "The second removal of the convergence on /orchestrate-run (the user's decision of 2026-11-27; llm-dlc/retired.md). It removes the proof run of a development checkout (watch.py, prove-loop.sh, the watcher's summary template, the plan template, the links that offered /prove-java-change here) and the verification loop (verification-loop.sh), with their three test files. Nothing is removed from the history: the register names this change, and its parent is the last commit with those files.\n\nfeature-loop.sh is now the loop under a run and nothing else: 755 lines where it had 1,450. It ran four kinds of loop, and three are retired with this change (moonshots by name, templated moonshots over examples with their judge, items and waiting, and briefs by name or file with their settings, status line and decision turn). The single-agent kind is unchanged line for line, and the script refuses the other names with a pointer to the register. The conductor loses the two questions only the proof loop asked and its matching of jobs to examples; its answers are still read, so an old run directory's verdicts are. The watcher of a run no longer defers to a verification loop or to another kind of run for the queue: it keeps it whenever its run says so.\n\nThe compaction watch, the handling of a scope left by an ended loop, the refusal of a loop inside a loop and the private copy of the script were tested only through the proof loop. test_feature_loop.py now tests them on the single-agent loop (9 tests, the script run for real against a stand-in client), with one for the refusal of a retired kind.\n\nKept, though the proof run used them: prove-plan.schema.json (the scaffold and one study write and read the format), changes.py and doctor.py (the surviving tools call them). The published plugin's skill and llm-dlc/runtime.md still describe the proof run: they belong to the release the plugin pins, are exempt from the register's check by name, and go with the plugin in the next change. Three studies that pinned the tools of the revision they ran on still name retired files and are left as records; they read those files from that revision.\n\nVerified: the changed-tests run passed 29 of 32 test files, and the three that failed were fixed and pass alone (test_single_run 29 and test_brief_queue 12, which need the line single_run.py looks for in the script, now kept; test_claude_setup 21, an assertion on a message this change reworded). retired.py check finds nothing, and the cost lint agrees.",
+      "log_sha256": "86c2329ef2f407f1709389ded32e0fa0f819c66b4fc7ef33eee814c388760dc5"
     }
   ],
   "logs": {
@@ -186,6 +196,12 @@
       "bytes": 7402345,
       "lines": 2177,
       "gzip_bytes": 1458851,
+      "url": null
+    },
+    "86c2329ef2f407f1709389ded32e0fa0f819c66b4fc7ef33eee814c388760dc5": {
+      "bytes": 8420168,
+      "lines": 2457,
+      "gzip_bytes": 1636325,
       "url": null
     },
     "87055e7cc0abe270b09bcf7cf705929e21cc61b9dabc202a95b39d31fa590a0f": {

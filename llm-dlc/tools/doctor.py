@@ -200,7 +200,7 @@ def tools() -> list[dict]:
             pass
     flags = [f for f in ("--fork-session", "--session-id", "--autocompact", "--effort") if f not in helped]
     tool("claude", out("claude", "--version"), "Claude Code with --fork-session, --session-id, --autocompact and --effort",
-         "blocking", "the proof runs as a loop of headless sessions forked from this one (llm-dlc/tools/prove-loop.sh)",
+         "blocking", "a run is a loop of headless sessions, which may start as a fork of this one (llm-dlc/tools/feature-loop.sh)",
          "update Claude Code" + (f": this one lacks {', '.join(flags)}" if helped and flags else ""),
          ok=bool(helped) and not flags)
     systemd = None

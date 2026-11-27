@@ -2,8 +2,7 @@
 """The watcher's tools for a single agent's run (.claude/skills/orchestrate-run; llm-dlc/README.md, "A single
 agent's run").
 
-One agent works toward one outcome, and one watcher session stands outside it, as the watcher of a proof run or of
-a brief's run does, with far less to keep: no examples, no streams, no foundation, no merge loop. The agent is
+One agent works toward one outcome, and one watcher session stands outside it. The agent is
 given a first text. When its turn ends (a cycle: the loop compacts the session after each, so a cycle is one
 context window) the watcher is asked whether there is another, and every later cycle is given the run's continue
 message, as it stands when that cycle starts. That message is a person's: written for a long run, and changed
@@ -119,7 +118,6 @@ DEFAULT_CONTINUE = ("Continue the work toward the outcome you were given. Take t
                     "is left needs a decision from the user, don't start something new: say so plainly at the end "
                     "of your reply, with what is left.")
 REPORT_LIMIT = 8000  # characters of a cycle's report a question carries: the watcher's context is the run's memory
-OTHER_RUNS = ("prove-loop.sh",)  # runs whose own watcher keeps the verification queue
 # A setup phase (`setup`): the texts' template, the agent it runs by default, and the record's last section, which
 # `notes` puts into the brief for the domain agent. Opus 5.5 did the first one (2026-11-22, the Spring brief).
 SETUP_TEMPLATE = "llm-dlc/loops/setup-agent-template.md"
@@ -612,10 +610,10 @@ RESULTS_NOTE = ("say what came back in a line. Triage each one in `attention` as
 
 
 def keeps_queue(run: Run) -> bool:
-    """Whether this watcher keeps the verification queue: when the run says so, and no other run's watcher does."""
-    if run.read().get("verification") != "on":
-        return False
-    return not any(run_common.running(run.root, script) for script in OTHER_RUNS)
+    """Whether this watcher keeps the verification queue: when the run says so, which it does by default in the
+    default workspace (`--no-verification` leaves the queue alone). Two runs that both keep it take turns, by the
+    lock a collection holds."""
+    return run.read().get("verification") == "on"
 
 
 def next_thing(run: Run, interval: float) -> dict | None:

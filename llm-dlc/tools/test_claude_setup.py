@@ -239,7 +239,7 @@ class CheckTest(Made):
     def test_when_a_clean_launch_does_not_answer_the_loop_is_not_isolated_and_nothing_is_called_clean(self):
         found = self.check(STANDIN_FAIL="clean")
         self.assertEqual((found["loop"]["isolated"], found["loaded"], found["clean"]), (False, None, False))
-        self.assertIn("--no-isolation", claude_setup.report(found))
+        self.assertIn("LOOP_ISOLATION=0", claude_setup.report(found))
 
     def test_a_probe_falls_back_to_the_accounts_default_model(self):
         found = self.check(STANDIN_FAIL="haiku")

@@ -1,5 +1,5 @@
-# Shared by feature-loop.sh and verification-loop.sh, which source it from the
-# root of the repo.
+# What feature-loop.sh sources from the root of the repo: log lines, the launch flags of
+# a clean session, and the live display of a turn with its compaction watch.
 
 log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*"; }
 
@@ -33,7 +33,7 @@ import json, os, signal, subprocess, sys, threading, time
 def say(text):
     print(time.strftime("[%F %T]"), text, flush=True)
 
-# feature-loop.sh sets these during a moonshot instruction it watches: a compaction
+# feature-loop.sh sets these during a turn it watches: a compaction
 # with no commit since LOOP_WATCH_BASE (the change at @- when the cycle began, then
 # at the last compaction) is put to the conductor when there is one (LOOP_CONDUCTOR,
 # a directory, see llm-dlc/tools/conductor.py). The turn ends, with LOOP_WATCH_MARK
@@ -97,7 +97,7 @@ def ask_conductor(at, tokens, since):
     directory = Path(conductor_dir)
     asked = conductor.append_event(
         directory, type="compaction", needsVerdict=True, commitSince=False, tokens=tokens, since=since,
-        cycle=os.environ.get("LOOP_WATCH_CYCLE"), item=os.environ.get("LOOP_WATCH_ITEM") or None,
+        cycle=os.environ.get("LOOP_WATCH_CYCLE"),
         session=os.environ.get("LOOP_WATCH_SESSION"), transcript=os.environ.get("LOOP_WATCH_TRANSCRIPT"),
         deadline=time.time() + conductor_wait,
         question="The session compacted itself with no commit since change %s (where the cycle began, or the last "

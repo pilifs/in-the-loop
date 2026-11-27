@@ -4,7 +4,7 @@
 
     changes.py [NNN ...]             a table, and the numbers still to prove
     changes.py --json [NNN ...]      the same as data
-    changes.py --pending [NNN ...]   only the numbers still to prove, on one line, in order: prove-loop.sh's arguments
+    changes.py --pending [NNN ...]   only the numbers still to prove, on one line, in order
 
 Without numbers it lists a runtime checkout's own examples, 900 to 999, in the order of their numbers, which is the
 order their preparation decided to prove them in. With numbers it lists those, in the order given.
@@ -51,8 +51,8 @@ REPO = Path(__file__).resolve().parents[2]
 TOOLS = str(REPO / "examples" / "tools")  # targets/sidecar.py and targets/workflow.py: the code, whatever the root
 LOCAL_NUMBERS = range(900, 1000)  # a runtime checkout's own examples (llm-dlc/runtime.md)
 ANSWERS = ("established", "refuted")
-# What an unprepared example lacks, by kind, for whoever checks one before a proof loop takes it (watch.py
-# preflight): an artifact that is not there (a revision that does not materialize, no oracle run, no lock), the
+# What an unprepared example lacks, by kind, for whoever checks one before a run takes it
+# (examples/tools/preflight.py): an artifact that is not there (a revision that does not materialize, no oracle run, no lock), the
 # example's form (a file that does not load or validate, a claim not frozen, no proof task), or the example itself.
 ARTIFACTS, FORM, ABSENT, CATALOGUE = "artifacts", "form", "absent", "catalogue"
 FORM_MILESTONES = ("claimFrozen",)

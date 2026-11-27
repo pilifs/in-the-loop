@@ -95,32 +95,29 @@ class KeepingTheQueue(test_landing.Fixture):
 
     def test_a_look_at_the_queue_says_what_came_back_and_which_results_to_triage(self):
         self.back(self.JOB, "passed")
-        with mock.patch.object(queue_keeping, "verification_running", return_value=None):
-            thing = queue_keeping.tend(self.run)
-            self.assertEqual((thing["kind"], [r["id"] for r in thing["collected"]], thing["attention"]), ("results", [self.JOB], []))
-            self.assertIn("every job passed", thing["note"])
-            self.back(self.OTHER, "failed", ["JBMC gave no verdict"])
-            thing = queue_keeping.tend(self.run)
-            self.assertEqual([r["id"] for r in thing["attention"]], [self.OTHER])
-            self.assertIn("Triage each one in `attention`", thing["note"])
-            self.assertIsNone(queue_keeping.tend(self.run))  # a quiet queue is nothing to tell
+        thing = queue_keeping.tend(self.run)
+        self.assertEqual((thing["kind"], [r["id"] for r in thing["collected"]], thing["attention"]), ("results", [self.JOB], []))
+        self.assertIn("every job passed", thing["note"])
+        self.back(self.OTHER, "failed", ["JBMC gave no verdict"])
+        thing = queue_keeping.tend(self.run)
+        self.assertEqual([r["id"] for r in thing["attention"]], [self.OTHER])
+        self.assertIn("Triage each one in `attention`", thing["note"])
+        self.assertIsNone(queue_keeping.tend(self.run))  # a quiet queue is nothing to tell
 
     def test_results_that_cannot_be_collected_are_told_once_and_tried_again(self):
         self.back(self.JOB, "passed")
-        with mock.patch.object(queue_keeping, "verification_running", return_value=None):
-            with mock.patch.dict(os.environ, {"STANDIN_COLLECT_FAILS": "1"}):
-                thing = queue_keeping.tend(self.run)
-                self.assertEqual(thing["kind"], "attention")
-                self.assertIn("could not be collected", thing["what"])
-                self.assertIn("the collector could not read a result", thing["what"])
-                self.assertIsNone(queue_keeping.tend(self.run))  # said once
-            self.assertEqual(queue_keeping.tend(self.run)["kind"], "results")  # the next look collects it
+        with mock.patch.dict(os.environ, {"STANDIN_COLLECT_FAILS": "1"}):
+            thing = queue_keeping.tend(self.run)
+            self.assertEqual(thing["kind"], "attention")
+            self.assertIn("could not be collected", thing["what"])
+            self.assertIn("the collector could not read a result", thing["what"])
+            self.assertIsNone(queue_keeping.tend(self.run))  # said once
+        self.assertEqual(queue_keeping.tend(self.run)["kind"], "results")  # the next look collects it
         self.assertIsNone(self.run.read()["collectFailed"])
 
     def test_jobs_waiting_with_no_runner_start_one_and_a_job_that_comes_while_it_runs_is_announced_once(self):
         self.waiting(f"{self.JOB} made up, est. 1 min", "20260101-000009-too-big made up; cannot run here: needs 64G")
-        with mock.patch.object(queue_keeping, "verification_running", return_value=None):
-            thing = queue_keeping.tend(self.run)
+        thing = queue_keeping.tend(self.run)
         self.assertEqual((thing["kind"], thing["jobs"]), ("verification", [self.JOB]))  # not the one this machine cannot run
         self.assertIn("started the runner", thing["note"])
         end = time.time() + 20
@@ -137,14 +134,6 @@ class KeepingTheQueue(test_landing.Fixture):
         self.waiting()
         self.assertIsNone(queue_keeping.start_runner(self.run, queue_keeping.queue(self.root)))
         self.assertEqual(self.run.read()["nudged"], [])  # forgotten once nothing waits
-
-    def test_a_verification_loop_already_running_keeps_the_queue_as_it_did(self):
-        self.back(self.JOB, "passed")
-        with mock.patch.object(queue_keeping, "verification_running", return_value=4242), \
-                mock.patch.object(queue_keeping, "tend_queue", return_value=None) as tend_queue:
-            self.assertIsNone(queue_keeping.tend(self.run))
-        tend_queue.assert_called_once()
-        self.assertTrue((self.state / "results" / self.JOB).exists())  # left to that loop
 
     def test_the_queue_is_read_as_data_and_an_answer_that_is_not_json_is_no_queue(self):
         self.waiting(f"{self.JOB} made up")

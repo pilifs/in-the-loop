@@ -167,7 +167,7 @@ def running(root: Path, script: str) -> list[int]:
 
 def loops_in(root: Path) -> list[int]:
     """The feature loops at work in this folder: feature-loop.sh runs from a private copy of itself
-    (feature-loop.XXXXXX), whatever started it, a proof run's prove-loop.sh included."""
+    (feature-loop.XXXXXX), whatever started it."""
     out = []
     r = subprocess.run(["pgrep", "-u", str(os.getuid()), "-f", "feature-loop"], capture_output=True, text=True)
     for pid in r.stdout.split():
