@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-044137-rank-original-parquet-old-test-histories",
+  "title": "Rank original Parquet old test histories under frozen policy",
+  "description": "Select the pinned landed upstream tests using the preregistered source and bytecode policy. Run each selected original test suite both plainly and with the local JVMTI coverage agent. Preserve chronological events in every JVM, exact loaded bytes, initial and later calls and parity in the original ordered 113-entry deployment.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-history-trace",
+    "java:original-classpath"
+  ],
+  "links": {},
+  "expected": "The selected tests run to completion, with original per-test outcomes, raw events, physical class evidence and explicit coverage gaps available for independent ranking.",
+  "submitted": {
+    "at": "2026-11-27T04:41:37+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "g++"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "6m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "python3 verification/blind-caller/parquet_trace.py old",
+      "run": "python3 verification/blind-caller/parquet_trace.py old",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/parquet-old.zip"
+  ]
+}

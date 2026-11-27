@@ -198,6 +198,14 @@ def score_fields(judgment, candidate, ref, measurement, evidence, variant):
     sem = ref["semantics"]
     raw, projections, generation, native_status = qualified_observations(candidate, measurement, evidence, ref, variant)
     fields = {entry["field"] for entry in generation["fieldSources"]}
+    witness_scope = sem
+    if "equivalentActionWitnesses" in judgment:
+        alternate = judgment["equivalentActionWitnesses"]
+        require(len(alternate) == len(sem.get("actionWitnesses", [])) and
+                all(a.get("routeEvidence") and a.get("registeredMember") == b["member"]
+                    for a, b in zip(alternate, sem["actionWitnesses"], strict=True)),
+                "alternative route lacks an explicit correspondence for its historical public actions")
+        witness_scope = dict(sem, actionWitnesses=[a["measuredAction"] for a in alternate])
     for side, observations in raw.items():
         for name, mapping in judgment["fieldCorrespondence"].items():
             require(mapping["candidateField"] in fields and mapping["candidateField"] in candidate["fields"],
@@ -205,9 +213,14 @@ def score_fields(judgment, candidate, ref, measurement, evidence, variant):
             i = mapping["input"]
             require(type(i) is int and 0 <= i < len(observations), "required readback has no matching finite input")
             actual = member(observations[i], mapping["path"])
+            if mapping.get("encoding") == "Java scalar text":
+                require(actual is None or type(actual) in (int, bool, str), "not an encodable Java scalar")
+                actual = "null" if actual is None else str(actual).lower() if type(actual) is bool else str(actual)
+            else:
+                require(mapping.get("encoding") in (None, "identity"), "unknown public observation encoding")
             require(same_typed(actual, sem["observedFields"][variant][side][name]), "typed original readback differs from the reference")
             if sem.get("requiresActionWitness", False):
-                required_actions(projections[side][i], sem)
+                required_actions(projections[side][i], witness_scope)
     expected_status = ref["questions"][ref["primaryIndex"]]["variants"][variant]["finiteDisposition"]
     return native_status, native_status == expected_status == measurement.get("status")
 
