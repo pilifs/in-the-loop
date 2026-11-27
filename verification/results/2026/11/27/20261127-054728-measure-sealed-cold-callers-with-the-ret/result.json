@@ -1,0 +1,179 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-054728-measure-sealed-cold-callers-with-the-ret",
+  "title": "Measure sealed cold callers with the retained original checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.2s, peak 193.7 MiB (estimated 4m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-054728-measure-sealed-cold-callers-with-the-ret.json",
+    "sha256": "87b7c0a4bb198458e9c21f9c43fba35ad615c9fe3ea3eb6bd377e42528858a8d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-054728-measure-sealed-cold-callers-with-the-ret",
+      "title": "Measure sealed cold callers with the retained original checker",
+      "description": "Collect all twenty cold slots after the immutable hypotheses were committed. The independent evaluator retains functional-scope and deployment stops, runs only reviewed ordinary callers in a private JVM namespace, and stores original repeated observations and partial measurements under their sealed digests. The input checker is the content-addressed executable pinned before the draw. The earlier submission stopped in an unrelated native rebuild before this job phase began.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:blind-public-caller",
+        "java:original-jvm-evidence"
+      ],
+      "links": {
+        "jobs": [
+          "20261127-054056-measure-the-sealed-cold-caller-draw-on-a"
+        ]
+      },
+      "expected": "One immutable archive with all twenty audited slot records and their actual results or scoped stops.",
+      "submitted": {
+        "at": "2026-11-27T05:47:28+00:00",
+        "session": "01a21b25-ec86-7b41-b54d-c5febc54e1da"
+      },
+      "requires": [
+        "python3",
+        "git",
+        "java",
+        "javac",
+        "javap",
+        "/home/filip/.cache/in-the-loop/blind-caller-pr-verification/checkers/89e73def0524c7d1a7d56d43185c75e7c8e82853755ac7b646c05b541e59fe1e/jvmcontract",
+        "bwrap",
+        "setpriv"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Measure the twenty immutable cold slots",
+          "run": "python3 verification/blind-caller/evaluator/phase_job.py run measure cold --first 1 --last 20 --reference-seal a763f0988ff8dfe3879977379995cf4ad8639950 --prediction-seal e2d2a4d2e2be0b17574cbfcd5d50c9e44728de1c --output verification/blind-caller/evaluator/shards/cold-measure.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/evaluator/shards/cold-measure.zip"
+      ]
+    }
+  },
+  "sourceCommit": "536122e9cdc59753e0537a4f86ed4a57f4a6c9cc",
+  "startedAt": "2026-11-27T05:48:56+00:00",
+  "finishedAt": "2026-11-27T05:49:13+00:00",
+  "wallSeconds": 17.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 459277,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 203124736,
+    "wallSeconds": 3.2,
+    "cpuSeconds": 3.8,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure the twenty immutable cold slots",
+      "run": "python3 verification/blind-caller/evaluator/phase_job.py run measure cold --first 1 --last 20 --reference-seal a763f0988ff8dfe3879977379995cf4ad8639950 --prediction-seal e2d2a4d2e2be0b17574cbfcd5d50c9e44728de1c --output verification/blind-caller/evaluator/shards/cold-measure.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 3.21,
+      "cpuSeconds": 3.762,
+      "cpuThrottledSeconds": 0.192,
+      "peakMemoryBytes": 203124736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-twenty-immutable-c.log",
+        "lines": 1,
+        "bytes": 40,
+        "sha256": "f46cb30894290c80bf9039d473affb66d4d48bba582c299aa3727681c85bf90a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"preparation stop\": 19, \"measured\": 1}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/evaluator/shards/cold-measure.zip",
+      "change": "added",
+      "bytes": 27442,
+      "sha256": "a2e7185b8fc6a33fc7bb24a01412c855fd38fe2b1c3d0e4cb900919c52901845",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T05:49:43+00:00",
+    "applied": [
+      "verification/blind-caller/evaluator/shards/cold-measure.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T054913Z-823847e05771621f",
+      "outputs": "20261127T054913Z-859735de71e90aad",
+      "diff": "20261127T054913Z-886856e66a68d54d"
+    }
+  }
+}

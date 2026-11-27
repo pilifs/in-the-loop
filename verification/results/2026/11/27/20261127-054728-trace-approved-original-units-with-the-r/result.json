@@ -1,0 +1,180 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-054728-trace-approved-original-units-with-the-r",
+  "title": "Trace approved original units with the retained checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.4s, peak 39.4 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-054728-trace-approved-original-units-with-the-r.json",
+    "sha256": "93cf3911ebd6ee25d06810a3cca7855ae3e54000160211cc28bda306f58c78b7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-054728-trace-approved-original-units-with-the-r",
+      "title": "Trace approved original units with the retained checker",
+      "description": "After all twenty cold hypotheses or stops are sealed, test only independently reviewed zero-argument original unit methods for an affirmatively ordinary operation. Preserve source-only slots, missing original runtime inputs, plain-versus-traced parity and physically bound witnesses separately. Keep every original draw slot. The input checker is the content-addressed executable pinned before the draw. The earlier submission stopped in an unrelated native rebuild before this job phase began.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-unit-tracing",
+        "java:blind-public-caller"
+      ],
+      "links": {
+        "jobs": [
+          "20261127-054106-trace-individually-approved-ordinary-ups"
+        ]
+      },
+      "expected": "Twenty immutable trace-or-source-only records. Bound trace credit requires original class bytes, a raw fork witness and matching plain and traced outcomes.",
+      "submitted": {
+        "at": "2026-11-27T05:47:28+00:00",
+        "session": "01a21b25-ec86-7b41-b54d-c5febc54e1da"
+      },
+      "requires": [
+        "python3",
+        "git",
+        "java",
+        "javac",
+        "javap",
+        "g++",
+        "/home/filip/.cache/in-the-loop/blind-caller-pr-verification/checkers/89e73def0524c7d1a7d56d43185c75e7c8e82853755ac7b646c05b541e59fe1e/jvmcontract",
+        "bwrap",
+        "setpriv"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Capture reviewed original unit-trace inputs and results",
+          "run": "python3 verification/blind-caller/evaluator/phase_job.py run trace test-assisted --first 1 --last 20 --reference-seal a763f0988ff8dfe3879977379995cf4ad8639950 --cold-seal e2d2a4d2e2be0b17574cbfcd5d50c9e44728de1c --output verification/blind-caller/evaluator/shards/test-trace.zip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/blind-caller/evaluator/shards/test-trace.zip"
+      ]
+    }
+  },
+  "sourceCommit": "536122e9cdc59753e0537a4f86ed4a57f4a6c9cc",
+  "startedAt": "2026-11-27T05:48:56+00:00",
+  "finishedAt": "2026-11-27T05:49:13+00:00",
+  "wallSeconds": 17.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 459277,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 41312256,
+    "wallSeconds": 2.4,
+    "cpuSeconds": 2.3,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Capture reviewed original unit-trace inputs and results",
+      "run": "python3 verification/blind-caller/evaluator/phase_job.py run trace test-assisted --first 1 --last 20 --reference-seal a763f0988ff8dfe3879977379995cf4ad8639950 --cold-seal e2d2a4d2e2be0b17574cbfcd5d50c9e44728de1c --output verification/blind-caller/evaluator/shards/test-trace.zip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 2.407,
+      "cpuSeconds": 2.344,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 41312256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-capture-reviewed-original-unit.log",
+        "lines": 1,
+        "bytes": 20,
+        "sha256": "a41d23d92be7dc143df480ac63cbdba250c0d0abec9ff85681d8be89ff757127",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"source-only\": 20}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/blind-caller/evaluator/shards/test-trace.zip",
+      "change": "added",
+      "bytes": 22681,
+      "sha256": "eb210b87ec1c95e1e781133802da3a9dba379703cd8e24d4fb5b92f9304e5a7e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T05:49:43+00:00",
+    "applied": [
+      "verification/blind-caller/evaluator/shards/test-trace.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T054913Z-22960970dd70053c",
+      "outputs": "20261127T054913Z-28832422a745e5bf",
+      "diff": "20261127T054913Z-3127799be9482c42"
+    }
+  }
+}
