@@ -1,0 +1,351 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110823-setup-build-spring-boot-51156-s38-at-bot",
+  "title": "Setup: build Spring Boot #51156 (S38) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m21s, peak 3.9 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110823-setup-build-spring-boot-51156-s38-at-bot.json",
+    "sha256": "946812bf90bdfb52921624d94855805449a3108f80d2d3924e3e8d4fc28dd784",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110823-setup-build-spring-boot-51156-s38-at-bot",
+      "title": "Setup: build Spring Boot #51156 (S38) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S38 (spring-projects/spring-boot#51156: Recover the next JSON event after an interrupted encode). In the worktrees $P/worktrees/S38-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of core:spring-boot with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (AppendableByteArrayTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of core:spring-boot in $P/artifacts/S38-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S38",
+      "submitted": {
+        "at": "2026-11-27T11:08:23+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S38 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S38 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S38 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S38 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S38 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S38 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S38 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S38 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091105-setup-build-spring-boot-51156-s38-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:48:57+00:00",
+  "finishedAt": "2026-11-27T11:55:31+00:00",
+  "wallSeconds": 394.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 4205449216,
+    "wallSeconds": 381.7,
+    "cpuSeconds": 1046.6,
+    "memoryOfEstimate": 0.65,
+    "durationOfEstimate": 0.25
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S38 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S38 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 171.668,
+      "cpuSeconds": 464.044,
+      "cpuThrottledSeconds": 47.619,
+      "peakMemoryBytes": 4205449216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s38-fix-build-and-landed-tests.log",
+        "lines": 22,
+        "bytes": 2465,
+        "sha256": "a20b4fdcbb0e9e8318aa33157cd80a56e15d14c59e79fa3b50f19f99e072ded1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S38-fix gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=110 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/s",
+        "junit tests=5 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.json.AppendableByteArrayTests junit tests=5 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S38-fix/core_spring-boot.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S38-fix/core_spring-boot.testRuntimeClasspath.txt 147 entries",
+        "c11970f4170e8a4ada64035a438c92f2e92b7d1cc4a74cfeebc22235c335cd8a  jars/spring-boot-4.1.1-SNAPSHOT.jar",
+        "c11970f4170e8a4ada64035a438c92f2e92b7d1cc4a74cfeebc22235c335cd8a  tree/core/spring-boot/build/libs/spring-boot-4.1.1-SNAPSHOT.jar",
+        "f502ccb86489769145d3f1fd4e5cc4139bd6f2358f9af7cd1feef8b86a857a80  tree/core/spring-boot/build/libs/spring-boot-4.1.1-SNAPSHOT-test-fixtures.jar",
+        "98656347472e9537b009792bdac76e9c1ac30edf6d515cef6b0c2de5beafbabb  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.1.1-SNAPSHOT.jar",
+        "fec4defbe6b07608fa19f6e99cb128fffeb6b2b2aee3bcc729c4661c3055db2f  spring-boot-4.1.1-SNAPSHOT.jar!/org/springframework/boot/json/AppendableByteArray.class",
+        "752fb7f10894a0f0c298d04f6fa4298f4fc9bbc362439b256bf751f4ac4c4876  spring-boot-4.1.1-SNAPSHOT.jar!/org/springframework/boot/json/WritableJson$1.class",
+        "d1778c7ce8b15acbc6a75362ef37642b93961d25f18ab00d15529b071dff0d66  spring-boot-4.1.1-SNAPSHOT.jar!/org/springframework/boot/json/WritableJson.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S38 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S38 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 131.581,
+      "cpuSeconds": 361.264,
+      "cpuThrottledSeconds": 29.203,
+      "peakMemoryBytes": 3221979136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s38-parent-build-and-the-paren.log",
+        "lines": 22,
+        "bytes": 2473,
+        "sha256": "7c65f6e7230b611181b1cd9b245960c858abfdf50b837c30a73122e7cd9bddc0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S38-parent gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=68 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=4 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.json.AppendableByteArrayTests junit tests=4 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S38-parent/core_spring-boot.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S38-parent/core_spring-boot.testRuntimeClasspath.txt 147 entries",
+        "c969ba334a3db0ee7fbd136e557500a87cfb00df575a0a7bb26fe2322ebe559b  jars/spring-boot-4.1.1-SNAPSHOT.jar",
+        "c969ba334a3db0ee7fbd136e557500a87cfb00df575a0a7bb26fe2322ebe559b  tree/core/spring-boot/build/libs/spring-boot-4.1.1-SNAPSHOT.jar",
+        "f502ccb86489769145d3f1fd4e5cc4139bd6f2358f9af7cd1feef8b86a857a80  tree/core/spring-boot/build/libs/spring-boot-4.1.1-SNAPSHOT-test-fixtures.jar",
+        "98656347472e9537b009792bdac76e9c1ac30edf6d515cef6b0c2de5beafbabb  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.1.1-SNAPSHOT.jar",
+        "06216e1fe93f9a81c2c2c301db5736409255dfa02984787971b152c32bf6f6ec  spring-boot-4.1.1-SNAPSHOT.jar!/org/springframework/boot/json/AppendableByteArray.class",
+        "de3b1d5b2a110d62312037753a5a9bb304d3188dc6a647be62d289db2f9c307c  spring-boot-4.1.1-SNAPSHOT.jar!/org/springframework/boot/json/WritableJson$1.class",
+        "281db625ad75f38faef3ae3fb548c9cbd2b646f299831c12bab23177660cce21  spring-boot-4.1.1-SNAPSHOT.jar!/org/springframework/boot/json/WritableJson.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S38 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S38 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 76.862,
+      "cpuSeconds": 219.865,
+      "cpuThrottledSeconds": 28.343,
+      "peakMemoryBytes": 3514068992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s38-transplant-the-fix-s-tests.log",
+        "lines": 19,
+        "bytes": 2283,
+        "sha256": "c84f5142a3e74c118302133f7f6c6f0ff850d3d06760311fe64b1f5bf8246730",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted core/spring-boot/src/test/java/org/springframework/boot/json/AppendableByteArrayTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S38-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=76 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.json.AppendableByteArrayTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S38-parent-landed/core/spring-boot/src/test/java/org/springframework/boot/json/AppendableByteArrayTests.java:74: error: method toByteArray in class AppendableByteArray cannot be applied to given types;",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S38-parent-landed/core/spring-boot/src/test/java/org/springframework/boot/json/AppendableByteArrayTests.java:80: error: method toByteArray in class AppendableByteArray cannot be applied to given types;",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S38-parent-landed/core/spring-boot/src/test/java/org/springframework/boot/json/AppendableByteArrayTests.java:88: error: method toByteArray in class AppendableByteArray cannot be applied to given types;",
+        "  /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S38-parent-landed/core/spring-boot/src/test/java/org/springframework/boot/json/AppendableByteArrayTests.java:74: error: method toByteArray in class AppendableByteArray cannot be applied to given types;",
+        "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S38 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S38 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 1.604,
+      "cpuSeconds": 1.462,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 19918848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s38-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "ea8131a207db48fa9a9d1345eb00199dad3b01967530502d0f0c3bcf96ad35ae",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S38"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:56:16+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T115531Z-262109dc55843cfd"
+    }
+  }
+}
