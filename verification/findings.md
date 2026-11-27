@@ -21,12 +21,14 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 ### VF-077: the redaction review can't see what is already published, and values leave through encodings, wrapped lines and a person's pane
 
 - **Status**: open (the user, 2026-11-27). The open findings are settled: an outside review found nothing secret. What stays open is the process.
+  - **The 214, as of 2026-11-27:** all of them are now proposed and committed, by the queue's watcher.
+  - **The user** is approving them, and then promoting, in their own terminal.
 - **Raised**: 2026-11-27, by the user, from a review by an agent outside this checkout. Its session isn't under this repository's project folder, so it isn't published. It went through all 214 open findings:
   - it looked up each one's real value in the local finding-values file under `~/.local/state/llm-traces/`;
   - it read the redacted context, and decoded the encoded values;
   - it searched the 418 published logs.
 
-  It wrote nothing into the repository. The advisor wrote this entry from its report.
+  It wrote nothing into the repository. The advisor wrote this entry from its report, with the queue's watcher's own account of gaps 1, 6 and 7.
 - **Found**:
   - **No credential or secret among the 214.**
     - **The 66 proposals:** every one was checked against its real value, and all are false positives. `fde27a45`, for one, is Spring test code that builds a cookie, not a cookie header.
@@ -52,7 +54,8 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - **The process gaps, which matter more than any one value:**
     1. **A person's pane, captured into a published log.**
        - **What happened:** on 2026-11-23, session `6c5c7798` (the queue's watcher) read pane `main:1` with `tmux capture-pane` while the user was running `sync.py allow`. That command prints values unmasked, and `allow approve` prints every proposed value in full. The output is now in that session's published logs.
-       - **The exposure so far:** those values were harmless, and `main:1` holds no unmasked value today.
+       - **The exposure so far:** wrapped at the pane's width, the capture became 14 new long-token findings, each appearing 586 times. They are fragments of two encrypted Codex reasoning blobs, so harmless, and `main:1` holds no unmasked value today.
+       - **It happened again on 2026-11-27,** at a smaller scale. Tracing one of those findings, a masking step of the watcher's printed an unmasked 29-character fragment into its log. That is under the 40-character threshold, so no rule flagged it.
     2. **Nothing reviews what is already published.**
        - `check` fails only on errors, and it skips logs already uploaded, so a warning never blocks a push.
        - A finding that exists only in published logs never appears in `review`, so no person decides it.
@@ -61,6 +64,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     5. **Short session ids in `review` are ambiguous.**
        - The eight-character ids name several sessions each: `01a20c2d` matches 2 Codex sessions, `01a2134f` matches 7 and `01a212fe` matches 6.
        - The consequence: an agent that checks "one member of each family" can look in the wrong session.
+    6. **`review show` is too slow, and shows too little, for triage.**
+       - **Speed:** it takes about 4 minutes a finding (VF-070 item 6).
+       - **Context:** for several families (`nL1…`, `M19…`) it printed no surrounding context at all, so a masked check couldn't classify them.
+       - **The result:** on 2026-11-27, 214 open warnings stood before a promotion, about 150 of them unproposed. Settling them took an outside pass over the real values, because the masked path made judging each family impractical.
+    7. **No read-only way for an agent to see `allow`'s usage.** The classifier rightly denied `sync.py allow approve --help` from the watcher's session, because `sync.py push` ignores `--help`. That leaves reading the source as the only way.
 - **Needs**:
   - **The user's decisions** (only a person approves or accepts):
     - approve the 66 proposals, which the reviewer found all harmless;
@@ -75,10 +83,14 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     3. **Match values across a wrap.** When a rule matches a value at the end of a line, check the next line for its continuation, as a terminal wraps a long token.
     4. **Match encoded personal values.** Add rules for the home path base64-encoded at each of its three byte offsets, plus any other encoding a run is seen to print. Then rescan, with `sync.py stamp`.
     5. **Make the ids `review` prints unique,** and accept any unique prefix.
+    6. **Make triage practical:**
+       - `review show` gives the context of every occurrence in seconds, not minutes (with VF-070 item 6);
+       - `review` groups a family of findings by its pattern, so that one decision with a reason covers the family.
+    7. **Make every `sync.py` subcommand honour `--help`** and print its usage without acting (the hazard in the `sync-push-ignores-help` note).
 - **Tracked in**: this entry. Gap 4 is related to VF-070 item 5, which aims to treat run-made names as non-secret.
 - **Closes when**:
   - the user has decided `56b88bc7` and the 66 proposals;
-  - each of gaps 1 to 5 has a fix, with a test, or is dismissed by the user.
+  - each of gaps 1 to 7 has a fix, with a test, or is dismissed by the user.
 
 ### VF-076: a domain run meets offline gaps the setup never resolved, and only a job that fails finds each one
 
