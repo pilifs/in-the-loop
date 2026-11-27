@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-015602-repeat-quoted-configuration-and-failed-i",
+  "title": "Repeat quoted Configuration and failed initialization histories",
+  "description": "Use the same frozen Configuration and JavaParser/paper registrations. Check exact child argument code units, correlate the live reads preceding original startup exceptions, and compare every ordinary observation with the published first transfer. Failed boundaries must publish diagnostic-only evidence.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T01:56:02+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Quoted JSON, own/inherited table and exact argument identity",
+      "run": "python3 lib/benchmark/startup-facts/postfreeze_transfer.py configuration --output verification/startup-facts/postfreeze-configuration.zip",
+      "cwd": "."
+    },
+    {
+      "name": "Scoped failure sites on JavaParser and paper read timing",
+      "run": "python3 lib/benchmark/startup-facts/postfreeze_transfer.py timing --output verification/startup-facts/postfreeze-timing.zip",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/startup-facts/postfreeze-configuration.zip",
+    "verification/startup-facts/postfreeze-timing.zip"
+  ]
+}

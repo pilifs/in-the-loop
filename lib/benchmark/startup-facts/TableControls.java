@@ -41,4 +41,13 @@ public class TableControls {
         }
         public static boolean present() { return PRESENT; }
     }
+    public static class Failing {
+        static final int COUNT;
+        static {
+            int hash = System.getProperties().hashCode();
+            if (System.getProperty("startup.fixture.fail") != null) throw new IllegalArgumentException("controlled startup failure");
+            COUNT = hash;
+        }
+        public static int count() { return COUNT; }
+    }
 }

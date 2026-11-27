@@ -20,14 +20,21 @@ public final class StartupTrace {
     private final boolean members;
     private final LiveTableTrace table;
     private final PropertyLoadTrace properties;
-    private final Map<Long, Integer> aliases = new HashMap<>();
+    // Keep the JDI mirrors live through the observation. This preserves VM identity
+    // without disabling collection of any object in the subject.
+    private final Map<ObjectReference, Integer> aliases = new HashMap<>();
     private static final String LOOKUP = "getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;";
+    private static final String DECLARED = "getDeclaredMethods()[Ljava/lang/reflect/Method;";
     private static final String INVOKE = "invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;";
     private final List<EventRequest> active = new ArrayList<>();
     private final List<String> events = new ArrayList<>();
     private final Deque<Call> calls = new ArrayDeque<>();
     private ThreadReference thread;
     private boolean finished;
+    private boolean failed;
+    private Method boundaryMethod;
+    private int boundaryDepth;
+    private final List<String> escaping = new ArrayList<>();
 
     private static final class Call {
         final String operation, frames;
@@ -79,7 +86,14 @@ public final class StartupTrace {
     private void begin(BreakpointEvent at) throws Exception {
         if (thread != null || finished) throw new IllegalStateException("repeated or overlapping startup boundary");
         thread = at.thread();
+        boundaryMethod = at.location().method();
+        boundaryDepth = thread.frameCount();
         active.add(exitFor(at.location().declaringType(), thread));
+        ExceptionRequest failure = requests.createExceptionRequest(null, true, true);
+        failure.addThreadFilter(thread);
+        failure.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+        failure.enable();
+        active.add(failure);
         if (properties != null) properties.begin(thread);
         else if (table != null) table.begin(thread);
         else if (members) {
@@ -89,13 +103,9 @@ public final class StartupTrace {
             applications.setSuspendPolicy(EventRequest.SUSPEND_ALL);
             applications.enable();
             active.add(applications);
-            ExceptionRequest failure = requests.createExceptionRequest(null, true, true);
-            failure.addThreadFilter(thread);
-            failure.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
-            failure.enable();
-            active.add(failure);
             for (ReferenceType t : vm.allClasses()) if (t.isPrepared() && t.classLoader() != null) watchMethodFields(t);
             active.add(breakpoint(bootstrap("java.lang.Class"), LOOKUP));
+            active.add(breakpoint(bootstrap("java.lang.Class"), DECLARED));
             String type = "java.lang.reflect.Method";
             List<ReferenceType> loaded = vm.classesByName(type).stream().filter(t -> t.isPrepared() && t.classLoader() == null).toList();
             if (loaded.isEmpty()) {
@@ -161,6 +171,11 @@ public final class StartupTrace {
                     + ",\"name\":" + quote(((StringReference) f.getArgumentValues().get(0)).value())
                     + ",\"parameters\":" + quote(parameters((ArrayReference) f.getArgumentValues().get(1))) + "}";
         }
+        if (op.equals(DECLARED)) {
+            ReferenceType type = ((ClassObjectReference)thread.frame(0).thisObject()).reflectedType();
+            if (type.classLoader() == null) throw new IllegalStateException("bootstrap getDeclaredMethods enumeration is outside the supported application table");
+            call.lookup = "{\"class\":" + quote(type.name()) + ",\"loader\":" + quote(type.classLoader().referenceType().name()) + "}";
+        }
         calls.push(call);
     }
 
@@ -182,7 +197,7 @@ public final class StartupTrace {
                 + ",\"descriptor\":" + quote(descriptor) + ",\"modifiers\":" + ((IntegerValue) field(obj, "modifiers")).value()
                 + ",\"accessibleOverride\":" + ((BooleanValue) field(obj, "override")).value()
                 + ",\"loader\":" + quote(type.classLoader() == null ? "bootstrap" : type.classLoader().referenceType().name())
-                + ",\"alias\":" + aliases.computeIfAbsent(obj.uniqueID(), ignored -> aliases.size()) + "}";
+                + ",\"alias\":" + aliases.computeIfAbsent(obj, ignored -> aliases.size()) + "}";
     }
 
     private static String digest(byte[] bytes) throws Exception {
@@ -196,6 +211,7 @@ public final class StartupTrace {
             if (properties != null) properties.finish();
             requests.deleteEventRequests(active);
             thread = null;
+            escaping.clear();
             finished = true;
             return;
         }
@@ -205,7 +221,13 @@ public final class StartupTrace {
         calls.pop();
         requests.deleteEventRequest(call.exit);
         String result;
-        if (call.operation.equals(LOOKUP)) {
+        if (call.operation.equals(DECLARED)) {
+            ArrayReference array = (ArrayReference)at.returnValue();
+            if (array.length() > 4096) throw new IllegalStateException("reflection enumeration exceeds the capture bound");
+            List<String> values = new ArrayList<>();
+            for (Value value : array.getValues()) values.add(reflected((ObjectReference)value));
+            result = "\"requested\":" + call.lookup + ",\"members\":[" + String.join(",",values) + "]";
+        } else if (call.operation.equals(LOOKUP)) {
             result = "\"requested\":" + call.lookup + ",\"member\":" + reflected((ObjectReference) at.returnValue());
         } else if (call.operation.equals(DEFAULT)) {
             ObjectReference value = (ObjectReference) at.returnValue();
@@ -248,6 +270,41 @@ public final class StartupTrace {
                 + ",\"threw\":\"java.lang.NoSuchMethodException\"}");
     }
 
+    private static String site(Location location) {
+        return location.declaringType().name() + "#" + method(location.method()) + "@" + location.codeIndex();
+    }
+
+    private boolean stillInBoundary() throws IncompatibleThreadStateException {
+        if (thread.status() == ThreadReference.THREAD_STATUS_ZOMBIE) return false;
+        int index = thread.frameCount() - boundaryDepth;
+        return index >= 0 && thread.frame(index).location().method().equals(boundaryMethod);
+    }
+
+    private void exception(ExceptionEvent e) throws Exception {
+        if (thread == null || !e.thread().equals(thread) || !stillInBoundary()) return;
+        Location caught = e.catchLocation();
+        int index = thread.frameCount() - boundaryDepth;
+        // A null Java handler can still be caught in native code. Retain the candidate
+        // until a normal boundary return cancels it or the VM confirms an abrupt exit.
+        boolean inside = caught != null && thread.frames(0,index+1).stream()
+                .anyMatch(frame -> frame.location().method().equals(caught.method()));
+        if (!inside && escaping.size() < 32) {
+            escaping.add("{\"type\":" + quote(e.exception().referenceType().name()) + ",\"site\":" + quote(site(e.location()))
+                    + ",\"externalCatch\":" + (caught == null ? "null" : quote(site(caught))) + "}");
+        }
+        if (members) lookupFailed(e);
+    }
+
+    private void closeFailedBoundary() {
+        failed = true;
+        thread = null;
+        for (List<? extends EventRequest> group : List.of(requests.breakpointRequests(),requests.methodEntryRequests(),
+                requests.methodExitRequests(),requests.modificationWatchpointRequests(),requests.exceptionRequests(),
+                requests.classPrepareRequests(),requests.threadStartRequests())) {
+            for (EventRequest request : group) request.disable();
+        }
+    }
+
     private void record() throws Exception {
         if (!vm.canGetMethodReturnValues()) throw new IllegalStateException("JDI method return values unavailable");
         ClassPrepareRequest prepare = requests.createClassPrepareRequest();
@@ -260,6 +317,8 @@ public final class StartupTrace {
             EventSet set = vm.eventQueue().remove(60000);
             if (set == null) throw new IllegalStateException("startup trace timed out");
             for (Event event : set) {
+                if (event instanceof VMDisconnectEvent) { disconnected=true; continue; }
+                if (failed) continue;
                 if (table != null && table.handle(event)) continue;
                 if (properties != null && properties.handle(event)) continue;
                 if (event instanceof ClassPrepareEvent e) {
@@ -273,21 +332,36 @@ public final class StartupTrace {
                     if (e.location().declaringType().name().equals(owner) && method(e.location().method()).equals(selector)) begin(e);
                     else enter(e);
                 } else if (event instanceof ModificationWatchpointEvent e) assigned(e);
-                else if (event instanceof ExceptionEvent e) lookupFailed(e);
+                else if (event instanceof ExceptionEvent e) exception(e);
                 else if (event instanceof MethodExitEvent e) returned(e);
-                else if (event instanceof ThreadStartEvent && thread != null) throw new IllegalStateException("thread started inside observed startup boundary");
-                else if (event instanceof VMDisconnectEvent) disconnected = true;
+                else if (event instanceof ThreadStartEvent && thread != null) {
+                    if (!escaping.isEmpty() && !stillInBoundary()) closeFailedBoundary();
+                    else throw new IllegalStateException("thread started inside observed startup boundary");
+                }
             }
             if (!disconnected) set.resume();
         }
-        if (!finished) throw new IllegalStateException("startup boundary did not return normally");
+        if (!finished) {
+            if (escaping.isEmpty()) throw new IllegalStateException("startup boundary did not return normally");
+            failed = true;
+        }
     }
 
-    private static String launchArgs(List<String> args) {
+    private static char delimiter(List<String> args) {
+        BitSet used = new BitSet();
+        for (String arg : args) arg.chars().forEach(used::set);
+        System.getProperty("java.home").chars().forEach(used::set);
+        if (!used.get('"')) return '"';
+        if (!used.get('\'')) return '\'';
+        int available = used.nextClearBit(0xe000);
+        if (available > 0xf8ff) throw new IllegalArgumentException("JDI launch has no unused quote delimiter");
+        return (char)available;
+    }
+
+    private static String launchArgs(List<String> args, char delimiter) {
         var result = new ArrayList<String>();
         for (String arg : args) {
-            if (arg.indexOf('"') >= 0) throw new IllegalArgumentException("embedded JDI launch quote");
-            result.add("\"" + arg + "\"");
+            result.add(delimiter + arg + delimiter);
         }
         return String.join(" ", result);
     }
@@ -298,25 +372,45 @@ public final class StartupTrace {
         return worker;
     }
 
+    private static void publish(Path path, String document) throws IOException {
+        Path temp = Files.createTempFile(path.toAbsolutePath().getParent(),"startup-trace-",".partial");
+        try {
+            Files.writeString(temp, document, StandardCharsets.UTF_8);
+            Files.createLink(path, temp);
+        } finally {
+            Files.deleteIfExists(temp);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         List<String> all = Arrays.asList(args);
         int split = all.indexOf("--main");
         LaunchingConnector connector = Bootstrap.virtualMachineManager().defaultConnector();
         Map<String, Connector.Argument> launch = connector.defaultArguments();
         launch.get("home").setValue(System.getProperty("java.home"));
+        char delimiter = delimiter(all);
+        launch.get("quote").setValue(String.valueOf(delimiter));
         String mode = Set.of("--methods","--live-table","--properties").contains(args[2]) ? args[2] : "";
-        launch.get("options").setValue(launchArgs(all.subList(mode.isEmpty() ? 2 : 3, split)));
-        launch.get("main").setValue(launchArgs(all.subList(split + 1, all.size())));
+        launch.get("options").setValue(launchArgs(all.subList(mode.isEmpty() ? 2 : 3, split),delimiter));
+        launch.get("main").setValue(launchArgs(all.subList(split + 1, all.size()),delimiter));
         VirtualMachine vm = connector.launch(launch);
         Process child = vm.process();
         try {
             Thread out = copy(child.getInputStream(), System.out), err = copy(child.getErrorStream(), System.err);
             StartupTrace trace = new StartupTrace(vm, args[1], mode);
             trace.record();
-            if (child.waitFor() != 0) throw new IllegalStateException("subject JVM failed");
+            int exit = child.waitFor();
             out.join(); err.join();
-            Files.writeString(Path.of(args[0]), "{\"schema\":\"jvm-startup-trace/v1\",\"boundary\":" + quote(args[1])
-                    + ",\"events\":[" + String.join(",", trace.events) + "]}\n", StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW);
+            if (trace.failed) {
+                String diagnostic = "{\"schema\":\"jvm-startup-failure/v1\",\"boundary\":" + quote(args[1])
+                        + ",\"normalReturn\":false,\"subjectExit\":" + exit + ",\"exceptions\":[" + String.join(",",trace.escaping)
+                        + "],\"partialEvents\":[" + String.join(",",trace.events) + "]}\n";
+                publish(Path.of(args[0]+".failed.json"),diagnostic);
+                throw new IllegalStateException("startup boundary exited exceptionally: " + trace.escaping.get(trace.escaping.size()-1));
+            }
+            if (exit != 0) throw new IllegalStateException("subject JVM failed");
+            publish(Path.of(args[0]), "{\"schema\":\"jvm-startup-trace/v1\",\"boundary\":" + quote(args[1])
+                    + ",\"events\":[" + String.join(",", trace.events) + "]}\n");
         } finally {
             if (child.isAlive()) child.destroyForcibly().waitFor();
         }

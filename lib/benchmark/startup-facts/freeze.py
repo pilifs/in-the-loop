@@ -1,9 +1,11 @@
 """Seal the shared startup recorders and input policy before scoring the disclosed transfers."""
 import argparse
 import hashlib
+import io
 import json
 from pathlib import Path
 import subprocess
+import tarfile
 
 ROOT = Path(__file__).resolve().parents[3]
 RECORD = ROOT / "verification/startup-facts/freeze.json"
@@ -13,15 +15,31 @@ FILES = ["lib/src/observed.rs","lib/src/property.rs","lib/src/equivalence.rs","l
          "examples/tools/targets/qualification.py","examples/tools/targets/property_reads.py","examples/tools/targets/startup_facts.py",
          "examples/tools/targets/workflow.py","llm-dlc/tools/watch.py"]
 
-def files():
-    paths = [ROOT/name for name in FILES]+sorted((ROOT/"lib/src/observed").glob("*.java"))+sorted((ROOT/"lib/src/observed").glob("*.rs"))
-    result = {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}
+def files(archived=None):
+    if archived is None:
+        paths = {p.relative_to(ROOT).as_posix() for area in ("lib/src","examples/tools/targets")
+                 for p in (ROOT/area).rglob("*") if p.is_file() and p.suffix in (".rs",".java",".py",".c")}
+        def contents(name): return (ROOT/name).read_bytes()
+    else:
+        paths = {p for p in archived if Path(p).suffix in (".rs",".java",".py",".c")}
+        def contents(name): return archived[name]
+    names = set(FILES) | {p for p in paths if p.startswith("lib/src/observed/")}
+    result = {name:hashlib.sha256(contents(name)).hexdigest() for name in sorted(names)}
     for directory in ("lib/src","examples/tools/targets"):
-        tree = [(p.relative_to(ROOT).as_posix(),hashlib.sha256(p.read_bytes()).hexdigest())
-                for p in sorted((ROOT/directory).rglob("*")) if p.is_file() and p.suffix in (".rs",".java",".py",".c")]
+        tree = [(p,hashlib.sha256(contents(p)).hexdigest()) for p in sorted(paths,key=Path) if p.startswith(directory+"/")]
         result[directory+" (source tree)"] = hashlib.sha256(json.dumps(tree,separators=(",",":")).encode()).hexdigest()
-    result["lib/Cargo.lock"] = hashlib.sha256((ROOT/"lib/Cargo.lock").read_bytes()).hexdigest()
+    result["lib/Cargo.lock"] = hashlib.sha256(contents("lib/Cargo.lock")).hexdigest()
     return result
+
+def frozen_sources():
+    doc=json.loads(RECORD.read_bytes())
+    inputs=["lib/src","examples/tools/targets","lib/Cargo.lock","llm-dlc/tools/watch.py","examples/schema/target-claim.schema.json"]
+    data=subprocess.check_output(["git","archive",doc["producerRevision"],*inputs],cwd=ROOT)
+    with tarfile.open(fileobj=io.BytesIO(data)) as archive:
+        archived={m.name:archive.extractfile(m).read() for m in archive if m.isfile()}
+    if files(archived)!=doc["sharedSources"]:
+        raise ValueError("the archived original producer differs from its sealed digests")
+    return archived
 
 def check():
     doc=json.loads(RECORD.read_bytes())
@@ -30,7 +48,12 @@ def check():
     return hashlib.sha256(RECORD.read_bytes()).hexdigest()
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument("--seal",action="store_true");args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument("--seal",action="store_true")
+    ap.add_argument("--verify-original",action="store_true");args=ap.parse_args()
+    if args.verify_original:
+        frozen_sources()
+        print(hashlib.sha256(RECORD.read_bytes()).hexdigest())
+        return
     if args.seal:
         if RECORD.exists(): raise SystemExit("transfer producer already sealed")
         rev=subprocess.check_output(["jj","--ignore-working-copy","log","-r","@-","--no-graph","-T","commit_id"],cwd=ROOT,text=True).strip()

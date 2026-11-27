@@ -45,7 +45,13 @@ def paired(jdk,tools,work,label,cp,main,boundary,mode,flags=()):
     if traced.returncode:
         assert not path.exists(),"failed recording published evidence"
         reason=next((line for line in traced.stderr.decode(errors="replace").splitlines() if line.startswith("Exception in thread")),"trace failed")
-        return {"ordinary":plain.stdout.decode().splitlines(),"status":"refused","reason":reason,"reusable":False}
+        result={"ordinary":plain.stdout.decode().splitlines(),"status":"refused","reason":reason,"reusable":False}
+        failure=path.with_name(path.name+".failed.json")
+        if failure.exists():
+            diagnostic=json.loads(failure.read_bytes())
+            assert diagnostic["schema"]=="jvm-startup-failure/v1" and diagnostic["boundary"]==boundary and diagnostic["normalReturn"] is False
+            result.update(failure=diagnostic,ordinaryParity=traced.stdout==plain.stdout)
+        return result
     assert traced.stdout==plain.stdout,(label,"tracer changed the public history")
     doc=json.loads(path.read_bytes())
     assert doc["boundary"]==boundary
@@ -161,10 +167,13 @@ def spring(work):
         cmd=[CHECKER,"prove","CachedSpringMethod#count()I","--assert","result == 0","--classes",str(classes),"--classpath",os.pathsep.join(map(str,cp)),
              "--engine","native","--gaps","strict","--json"]
         _,native,why=startup_facts.run_step(cmd,["--observed-initializer","CachedSpringMethod","--observed-runtime",'{"reflectiveMembers":true}'],work/(side+"-retry"),dict(ENV,JAVA_HOME=str(jdk)))
+        receipts=list((work/(side+"-retry")/"startup-receipts").glob("*.json"))
+        capture=json.loads(receipts[0].read_bytes()) if len(receipts)==1 else None
         result.append({"revision":comparison["revisions"][side],"side":side,"public":outputs,"callerSha256":digest(changed),
                        "observedDeclaringClassSha256":digest(classes/"PublicCaller$Text.class"),"erasedDescriptor":"()Ljava/util/Collection;",
                        "metadataRetry":native["verdict"] if native else "refused","gap":native.get("problem") if native else why.strip(),
-                       "genericTypeSource":"original getGenericReturnType and GenericTypeResolver.resolveType"})
+                       "genericTypeSource":"original getGenericReturnType and GenericTypeResolver.resolveType",
+                       "memberCapture":capture,"consumed":[a["id"] for a in (native or {}).get("stated",{}).get("assumptions",[]) if a.get("id")]})
     return {"rows":result,"assistance":"explicit labelled cache of the non-bridge override in the registered caller"}
 
 

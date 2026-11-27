@@ -10,11 +10,12 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/"lib/benchmark/startup-facts"))
 from transfers import compile_java, digest, jvm
-from freeze import check
+from freeze import RECORD, frozen_sources
 
 
 def measure():
-    sealed = check()
+    sealed = digest(RECORD)
+    frozen = frozen_sources()
     base = ROOT/"examples/480-spring-nested-return-type"
     manifest = json.loads((base/"runtime.json").read_bytes())
     jdk = Path.home()/".sdkman/candidates/java"/manifest["jdk"]
@@ -22,7 +23,12 @@ def measure():
     with tempfile.TemporaryDirectory(dir=os.environ.get("TMPDIR") or Path.home()/".cache/in-the-loop/agent-tmp") as tmp:
         work = Path(tmp)
         tools = work/"tools"
-        compile_java(jdk, tools, sorted((ROOT/"lib/src/observed").glob("*.java")))
+        sources = work/"frozen-sources"
+        sources.mkdir()
+        for name, content in frozen.items():
+            if name.startswith("lib/src/observed/") and name.endswith(".java"):
+                (sources/Path(name).name).write_bytes(content)
+        compile_java(jdk, tools, sorted(sources.glob("*.java")))
         for side, entries in manifest["deployments"]["pins"]["classpath"].items():
             cache = Path.home()/".cache/in-the-loop"/manifest["cache"]
             jars = [cache/name for name in entries]

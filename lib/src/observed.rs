@@ -437,8 +437,8 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         }
     }
     let additional: Vec<String> = if runtime.preinitialize_together { classes.iter().skip(1).map(|c| c.replace('/', ".")).collect() } else { vec![] };
-    let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime: runtime.clone(), additional };
     let binding = (traced || runtime.record_joint_startup).then(|| receipt::bindings(&tool, &home, &entries[1..], classes, &runtime)).transpose()?;
+    let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime: runtime.clone(), additional, binding: binding.clone() };
     let mut alone: BTreeMap<String, serde_json::Value> = BTreeMap::new();
     for class in classes.iter().take(if runtime.preinitialize_together { 1 } else { classes.len() }) {
         let internal = class.replace('.', "/");
@@ -576,6 +576,7 @@ struct Jvm {
     dir: PathBuf,
     runtime: Runtime,
     additional: Vec<String>,
+    binding: Option<serde_json::Value>,
 }
 
 impl Jvm {
@@ -654,6 +655,19 @@ impl Jvm {
         match line {
             Some(line) => Ok(line.to_string()),
             None => {
+                let failed = self.dir.join(format!("{binary}{suffix}.trace.json.failed.json"));
+                if trace && failed.try_exists()? {
+                    let mut diagnostic = receipt::read_json(&failed)?;
+                    if diagnostic["schema"] != "jvm-startup-failure/v1" || diagnostic["normalReturn"] != false
+                        || diagnostic["boundary"] != receipt::BOUNDARY { return Err(Error::new("invalid failed startup trace")); }
+                    diagnostic["root"] = binary.into();
+                    diagnostic["binding"] = serde_json::json!(self.binding);
+                    diagnostic["usableAsPremise"] = false.into();
+                    let id = crate::digest::sha256_hex(diagnostic.to_string().as_bytes());
+                    diagnostic["id"] = id.clone().into();
+                    receipt::write(&self.dir.parent().unwrap().join("startup-diagnostics"), &diagnostic)?;
+                    return Err(Error::new(format!("--observed-initializer {binary}: startup exited exceptionally (diagnostic {id}): {}", diagnostic["exceptions"])));
+                }
                 let said = std::fs::read_to_string(&stderr).unwrap_or_default();
                 if let Some(reason) = said.lines().find(|l| l.starts_with("Exception in thread") || l.starts_with("Caused by:")) {
                     return Err(Error::new(format!("--observed-initializer {binary}: {reason}")));

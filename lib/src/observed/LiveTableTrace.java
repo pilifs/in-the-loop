@@ -12,7 +12,7 @@ final class LiveTableTrace {
     private final List<String> events;
     private ThreadReference thread;
     private ObjectReference table;
-    private Set<Long> before;
+    private Set<ObjectReference> before;
     private String projection;
     private ObjectReference callback;
     private BreakpointRequest visit;
@@ -36,9 +36,8 @@ final class LiveTableTrace {
         r.enable(); requests.add(r);
     }
 
-    private Set<Long> references() {
-        Set<Long> refs = new HashSet<>();
-        for (ObjectReference o : table.referringObjects(257)) refs.add(o.uniqueID());
+    private Set<ObjectReference> references() {
+        Set<ObjectReference> refs = new HashSet<>(table.referringObjects(257));
         if (refs.size() > 256) throw new IllegalStateException("system table alias bound exceeded");
         return refs;
     }
@@ -194,7 +193,7 @@ final class LiveTableTrace {
 
     void finish() throws Exception {
         if (operation != null || !keyed.isEmpty()) throw new IllegalStateException("live system-properties read did not finish");
-        Set<Long> after = references();
+        Set<ObjectReference> after = references();
         after.removeAll(before);
         if (!after.isEmpty()) throw new IllegalStateException("a new reference to the live system-properties table escaped the boundary");
         if (!projection.equals(projection())) throw new IllegalStateException("live system table changed inside observation");

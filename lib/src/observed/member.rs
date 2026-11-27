@@ -47,6 +47,33 @@ impl MethodFact {
     }
 }
 
+/// The JDK may return declared methods in any order. Check the complete original
+/// declaration set independently and keep the actual return sequence and identities
+/// for matching the object that was subsequently assigned.
+fn declared_methods<'a>(event: &'a Value, cp: &ClassPath) -> Result<Vec<(u64, &'a Value)>, Error> {
+    use std::collections::BTreeSet;
+    let problem = || Error::new("getDeclaredMethods did not return the complete bound application declaration table");
+    let request = &event["requested"];
+    let owner = request["class"].as_str().ok_or_else(problem)?.replace('.', "/");
+    if request["loader"] != "jdk.internal.loader.ClassLoaders$AppClassLoader" || crate::classpath::is_jdk_name(&owner) { return Err(problem()); }
+    let cf = cp.application(&owner)?.ok_or_else(problem)?;
+    if cf.name != owner { return Err(problem()); }
+    let mut remaining: BTreeSet<_> = cf.methods.iter().filter(|m| !m.name.starts_with('<'))
+        .map(|m| (m.name.as_str(), m.descriptor.as_str(), m.access)).collect();
+    let mut identities = BTreeSet::new();
+    let mut found = Vec::new();
+    for v in event["members"].as_array().ok_or_else(problem)? {
+        let id = v["alias"].as_u64().ok_or_else(problem)?;
+        let declaration = (v["name"].as_str().ok_or_else(problem)?, v["descriptor"].as_str().ok_or_else(problem)?,
+            v["modifiers"].as_u64().and_then(|n| u16::try_from(n).ok()).ok_or_else(problem)?);
+        if v["owner"] != owner || v["loader"] != request["loader"] || v["accessibleOverride"] != false
+            || !identities.insert(id) || !remaining.remove(&declaration) { return Err(problem()); }
+        found.push((id, v));
+    }
+    if !remaining.is_empty() { return Err(problem()); }
+    Ok(found)
+}
+
 /// Resolve each saved field back to a lookup return and the write of that same
 /// reflection object, both in this VM. Distinct copies of the same member keep
 /// distinct aliases. A separate JVM can compare the shape without comparing VM ids.
@@ -71,6 +98,12 @@ pub(super) fn capture(binary: &str, raw: &Value, trace: &Value, tool: &ClassPath
             }
             let id = found["alias"].as_u64().ok_or_else(|| Error::new("missing reflective lookup identity"))?;
             lookups.insert(id, found);
+        } else if op == "getDeclaredMethods()[Ljava/lang/reflect/Method;" {
+            for (id, method) in declared_methods(event, tool)? {
+                if lookups.insert(id, method).is_some_and(|old| old != method) {
+                    return Err(Error::new("reflective enumeration alias changed its declaration"));
+                }
+            }
         } else if op == "putstatic" {
             let field = event["field"].as_str().ok_or_else(|| Error::new("unbound reflective assignment"))?;
             writes.insert(field, &event["member"]);
@@ -153,6 +186,22 @@ mod tests {
             MethodFact { loader: "bootstrap".into(), ..valid.clone() }, MethodFact { accessible_override: true, ..valid.clone() },
             MethodFact { modifiers: flags::PRIVATE, ..valid.clone() }, MethodFact { declaring_sha256: "0".repeat(64), ..valid.clone() }] {
             assert!(wrong.bind(&cp).is_err());
+        }
+        let loader = "jdk.internal.loader.ClassLoaders$AppClassLoader";
+        let member = serde_json::json!({"owner":"Target","name":"value","descriptor":valid.descriptor,"modifiers":valid.modifiers,
+            "loader":loader,"alias":1,"accessibleOverride":false});
+        let event = serde_json::json!({"requested":{"class":"Target","loader":loader},"members":[member]});
+        assert_eq!(declared_methods(&event, &cp).unwrap().len(), 1);
+        for (key,bad) in [("descriptor",serde_json::json!("()I")),("owner",serde_json::json!("Other")),
+            ("loader",serde_json::json!("bootstrap")),("modifiers",serde_json::json!(0)),("accessibleOverride",serde_json::json!(true))] {
+            let mut changed = event.clone();
+            changed["members"][0][key] = bad;
+            assert!(declared_methods(&changed, &cp).is_err());
+        }
+        for table in [serde_json::json!([]),serde_json::json!([member,member])] {
+            let mut changed = event.clone();
+            changed["members"] = table;
+            assert!(declared_methods(&changed, &cp).is_err());
         }
     }
 }

@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-015603-prove-metadata-of-the-cached-spring-non",
+  "title": "Prove metadata of the cached Spring non-bridge method",
+  "description": "Recheck the two original Spring 480 releases and the identical labelled cached callers. Bind the complete declared-method array to the original declaring bytes and the assigned non-bridge object, require the native arity proof to consume its receipt, and compare generic public outputs with the frozen first attempt.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T01:56:03+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Native member arity and original generic histories",
+      "run": "python3 lib/benchmark/startup-facts/postfreeze_transfer.py spring --output verification/startup-facts/postfreeze-spring.zip",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/startup-facts/postfreeze-spring.zip"
+  ]
+}

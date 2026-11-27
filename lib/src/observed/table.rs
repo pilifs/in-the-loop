@@ -14,7 +14,7 @@ pub(super) fn validate(runtime: &Runtime) -> Result<(), Error> {
     if runtime.live_properties && (!runtime.empty_environment || runtime.preinitialize_together || runtime.reflective_members || runtime.charset_locale.is_some()) {
         return Err(Error::new("liveProperties requires an emptyEnvironment and one first-use root"));
     }
-    if runtime.startup_properties.iter().any(|(k,v)| k.is_empty() || k.contains(['=', '\0','"','\n','\r']) || v.contains(['\0','"'])) {
+    if runtime.startup_properties.iter().any(|(k,v)| k.is_empty() || k.contains(['=', '\0']) || v.contains('\0')) {
         return Err(Error::new("unsupported startup property launch argument"));
     }
     Ok(())

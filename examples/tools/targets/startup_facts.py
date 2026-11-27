@@ -113,7 +113,7 @@ def recover(command, work, locale=None, *, resume=False, receipts=None, env=None
             _, outcome, diagnostic = run_step(command, [*observed, "--observed-runtime", json.dumps(runtime)], attempt / "retry", env)
             retry_dir = attempt / "retry"
             full = list((retry_dir / "startup-receipts").glob("*.json"))
-            partial = list((retry_dir / "startup-diagnostics").glob("*.json"))
+            partial = [p for p in (retry_dir / "startup-diagnostics").glob("*.json") if json.loads(p.read_bytes()).get("schema") == "jvm-startup-table/v1"]
             found = full or partial
             if len(found) == 1:
                 capture = json.loads(found[0].read_bytes())
@@ -152,6 +152,14 @@ def recover(command, work, locale=None, *, resume=False, receipts=None, env=None
                 report["remaining"] = diagnostic.strip()
         else:
             report["remaining"] = report["initializerStop"]
+    for path in (attempt / "retry" / "startup-diagnostics").glob("*.json"):
+        failure = json.loads(path.read_bytes())
+        if failure.get("schema") == "jvm-startup-failure/v1":
+            roots = [name.replace("/",".") for name in (failure.get("binding") or {}).get("orderedRoots",[])]
+            if root not in roots or failure.get("usableAsPremise") is not False or failure.get("normalReturn") is not False:
+                raise ValueError("failed startup recording has the wrong scope")
+            report.update(failure={"id":failure["id"],"root":failure["root"],"exceptions":failure["exceptions"],"partialEvents":failure["partialEvents"]},
+                          recording="failed startup observation")
     write_report(attempt / "startup-report.json", report)
     # Keep the last resumable observation when a later attempt rejects a changed binding.
     if report["receiptId"] or not previous.exists():
@@ -163,9 +171,10 @@ def summary(report):
     first = (report.get("original") or {}).get("verdict", "open")
     profile = report.get("profile") or {}
     facts = ", ".join(report["consumed"]) or "none"
+    recording = report.get("receiptId") or report.get("diagnosticId") or (report.get("failure") or {}).get("id") or ""
     return "\n".join((f"Original property  {first}  {(report.get('original') or {}).get('target', '')}",
                       f"Startup  {report['root'] or 'no unique root'}  {report['locale'] or 'original launch'}  {profile.get('canonical', '')}".rstrip(),
-                      f"Recording  {report['recording']}  {report['receiptId'] or ''}",
+                      f"Recording  {report['recording']}  {recording}",
                       f"Conditional retry  {report['retry'] or 'open'}", f"Consumed assumptions  {facts}",
                       f"Remaining  {report['remaining'] or 'none'}"))
 

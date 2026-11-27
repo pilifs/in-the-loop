@@ -148,6 +148,32 @@ def build():
         if "variations" in doc: report["controls"].append({"case":case,"evidence":file+"#/variations","control":doc["variations"]})
     report["controls"].append({"case":"Batik source substitutions","evidence":"resource-controls.json",
                                "control":json.loads((HERE/"resource-controls.json").read_bytes())})
+    if (HERE/"postfreeze-originals.zip").exists():
+        followups = []
+        for name in ("configuration","timing","spring"):
+            file = "postfreeze-"+name+".zip"
+            supplement = load(file)
+            for i,r in enumerate(supplement["rows"]):
+                item = {"case":r.get("case",name),"revision":r["revision"],"evidence":f"{file}#/rows/{i}",
+                        "producer":supplement["currentSourceDigest"],"firstFrozenProducer":supplement["firstFrozenProducer"]}
+                if name=="configuration":
+                    item["profiles"]=[{"profile":p["launch"],"recording":p["startup"]["status"],"reason":p["startup"].get("reason"),
+                                       "failure":p["startup"].get("failure"),"ordinaryParity":p["startup"].get("ordinaryParity")}
+                                      for p in r["profiles"]]
+                elif name=="spring":
+                    item.update(metadataRetry=r["metadataRetry"],consumed=r["consumed"],public=r["public"],
+                                field=r["memberCapture"]["capture"]["fields"][0],receipt=r["memberCapture"]["id"])
+                else:
+                    item.update(profile=r.get("profile",r.get("input")),public=r.get("ordinary",r.get("actual")),
+                                failure=r.get("failure"),ordinaryParity=r.get("ordinaryParity",False))
+                followups.append(item)
+        report["postFreezeTransfers"] = followups
+        current = load("postfreeze-originals.zip")
+        with ZipFile(HERE/"postfreeze-originals.zip") as archive:
+            for item in current["rows"]:
+                if hashlib.sha256(archive.read(item["archive"])).hexdigest()!=item["sha256"]:
+                    raise ValueError("requalified original archive digest differs")
+        report["finalOriginals"] = current
     report["artifacts"]={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(HERE.glob("*.zip"))}
     manifest=json.loads((HERE/"collector.json").read_bytes())
     collected={Path(o["path"]).name:o["sha256"] for job in manifest["jobs"] if job["status"]=="passed" for o in job["outputs"]}

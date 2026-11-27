@@ -14,16 +14,16 @@ final class PropertyLoadTrace {
     private final List<String> events;
     private final List<EventRequest> installed = new ArrayList<>();
     private final Map<EventRequest, Pending> exits = new HashMap<>();
-    private final Map<Long,String> sources = new HashMap<>();
-    private final Map<Long,Properties> parsed = new HashMap<>();
-    private final Map<Long,Integer> loaders = new HashMap<>();
-    private final Set<Long> getters = new HashSet<>();
+    private final Map<ObjectReference,String> sources = new HashMap<>();
+    private final Map<ObjectReference,Properties> parsed = new HashMap<>();
+    private final Map<ClassLoaderReference,Integer> loaders = new HashMap<>();
+    private final Set<ObjectReference> getters = new HashSet<>();
     private ThreadReference root;
     private Pending lookup, load, opening;
     private static final class Pending {
         String kind, descriptor, caller, locator, archive, entry, decoder;
         int depth;
-        long receiver;
+        ObjectReference receiver;
         ObjectReference argument, zipStream;
         boolean eof;
         final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -105,7 +105,7 @@ final class PropertyLoadTrace {
                 && (root.frameCount()<3 || root.frame(2).location().declaringType().classLoader()==null)) return;
         Pending c=new Pending(); c.kind=kind;c.descriptor=e.location().method().signature();c.depth=root.frameCount();c.caller=site(caller);
         ObjectReference receiver=frame.thisObject();
-        c.receiver=receiver.uniqueID();
+        c.receiver=receiver;
         Value arg=frame.getArgumentValues().get(0);
         if (kind.equals("lookup")) {
             if (lookup!=null) throw new IllegalStateException("nested application resource lookup");
@@ -118,7 +118,7 @@ final class PropertyLoadTrace {
             ObjectReference parent=(ObjectReference)field(cl,"parent");
             c.locator="\"api\":\"Class.getResourceAsStream\",\"owner\":"+q(owner.name())+",\"name\":"+q(requested)
                     +",\"loaderClass\":"+q(cl.referenceType().name())+",\"delegatesTo\":"+(parent==null?"null":q(parent.referenceType().name()))
-                    +",\"loader\":"+loaders.computeIfAbsent(cl.uniqueID(),ignored->loaders.size());
+                    +",\"loader\":"+loaders.computeIfAbsent(cl,ignored->loaders.size());
         } else if (kind.equals("zip")) {
             c.archive=string(field(receiver,"name"));c.entry=string(field((ObjectReference)arg,"name"));
             if (!lookup.entry.equals(c.entry)) return;
@@ -139,7 +139,7 @@ final class PropertyLoadTrace {
                 c.decoder=string(field(charset,"name"));
                 stream=(ObjectReference)field(decoder,"in");
             }
-            c.locator=sources.get(stream.uniqueID());
+            c.locator=sources.get(stream);
             if (c.locator==null && stream.referenceType().name().equals("java.io.FileInputStream")) {
                 c.locator="\"api\":\"FileInputStream\",\"path\":"+q(string(field(stream,"path")));
             }
@@ -199,7 +199,7 @@ final class PropertyLoadTrace {
             if (result!=null) {
                 if (c.zipStream==null || !wraps(result,c.zipStream)) throw new IllegalStateException("lookup return does not wrap the selected JAR entry stream");
                 c.locator+=",\"archive\":"+q(c.archive)+",\"entry\":"+q(c.entry);
-                sources.put(result.uniqueID(),c.locator);
+                sources.put(result,c.locator);
             }
             events.add("{\"operation\":\"lookup\","+c.locator+",\"present\":"+(result!=null)+",\"caller\":"+q(c.caller)+"}");
             lookup=null;
