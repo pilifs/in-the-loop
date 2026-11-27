@@ -48,7 +48,7 @@ WITHIN = 3600  # seconds a passed run here stands for the merges after it
 KEPT = 200  # records kept, the newest
 MARK = "default run:"
 # Paths whose changes no test reads: a record still covers a commit that differs from its tree only here.
-UNTESTED = ("llm-dlc/traces/", "llm-dlc/index.json", "llm-dlc/decisions/", "verification/results/",
+UNTESTED = ("llm-dlc/traces/", "llm-dlc/index.json", "llm-dlc/standing-sessions.json", "llm-dlc/decisions/", "verification/results/",
             "verification/jobs/", "verification/findings.md", "llm-dlc/loop-summaries/", "llm-dlc/artifacts/")
 # One file is untested in part: the table of sessions sync.py writes into llm-dlc/README.md, between these two
 # lines. A promotion's publication record rewrites that table and nothing else in the file (sync.py promote), and
