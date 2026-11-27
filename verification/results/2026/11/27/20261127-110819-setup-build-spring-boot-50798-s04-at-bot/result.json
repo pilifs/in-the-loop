@@ -1,0 +1,346 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-110819-setup-build-spring-boot-50798-s04-at-bot",
+  "title": "Setup: build Spring Boot #50798 (S04) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 6m26s, peak 3.9 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-110819-setup-build-spring-boot-50798-s04-at-bot.json",
+    "sha256": "a440738e49361832198da152e6b080cc8a8c6b6e09b590bbc67f00fe4b331bad",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-110819-setup-build-spring-boot-50798-s04-at-bot",
+      "title": "Setup: build Spring Boot #50798 (S04) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S04 (spring-projects/spring-boot#50798: Binding a validated bean with wildcard map values). In the worktrees $P/worktrees/S04-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of core:spring-boot with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (ValidationBindHandlerTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of core:spring-boot in $P/artifacts/S04-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S04",
+      "submitted": {
+        "at": "2026-11-27T11:08:19+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+      },
+      "steps": [
+        {
+          "name": "S04 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S04 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S04 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S04 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S04 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S04 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S04 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S04 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-091101-setup-build-spring-boot-50798-s04-at-bot"
+    }
+  },
+  "sourceCommit": "dffd12231e6fecb7cefd696dc52cf90f3d1bddce",
+  "startedAt": "2026-11-27T11:11:39+00:00",
+  "finishedAt": "2026-11-27T11:18:27+00:00",
+  "wallSeconds": 408.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2733355,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "rerun after the second (project-closure) resolution pass; first run failed in about 5 min on offline misses or the generated-jar check"
+  },
+  "usage": {
+    "peakMemoryBytes": 4213342208,
+    "wallSeconds": 386.8,
+    "cpuSeconds": 1039.6,
+    "memoryOfEstimate": 0.65,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S04 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S04 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 169.019,
+      "cpuSeconds": 455.088,
+      "cpuThrottledSeconds": 39.536,
+      "peakMemoryBytes": 4213342208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s04-fix-build-and-landed-tests.log",
+        "lines": 21,
+        "bytes": 2456,
+        "sha256": "353d08c923507f7217aac213e2ec8ed0d1c8c23e756175cd80ba305aa3da409b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S04-fix gradle=9.5.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=110 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/s",
+        "junit tests=17 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:validatePlugins UP-TO-DATE",
+        "> Task :buildSrc:check",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "class org.springframework.boot.context.properties.bind.validation.ValidationBindHandlerTests junit tests=17 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S04-fix/core_spring-boot.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S04-fix/core_spring-boot.testRuntimeClasspath.txt 147 entries",
+        "0e110526273a0485ba90ee90b00a0ef0abdf316ba1f475afc2cfa69cf6fd660e  jars/spring-boot-4.0.8-SNAPSHOT.jar",
+        "0e110526273a0485ba90ee90b00a0ef0abdf316ba1f475afc2cfa69cf6fd660e  tree/core/spring-boot/build/libs/spring-boot-4.0.8-SNAPSHOT.jar",
+        "9ff2c2394fa9338f746a16f57d187417a9afd49faccadbffe67c1e4be5f7c8d7  tree/core/spring-boot/build/libs/spring-boot-4.0.8-SNAPSHOT-test-fixtures.jar",
+        "cac9c3c1b0c7f75b7df40c21d3e67a0e222ba8f5b19800c2d1bbf1836c82b837  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.8-SNAPSHOT.jar",
+        "ba5eea7dd146b46f1712f254194c588c15f3b1381bfac8420f78715b027ed34b  spring-boot-4.0.8-SNAPSHOT.jar!/org/springframework/boot/context/properties/bind/validation/ValidationBindHandler$ValidationResult.class",
+        "cead9c00c77d2c099c5fe5e89660a57c1e2d91e6f50b97792c2710e15c242938  spring-boot-4.0.8-SNAPSHOT.jar!/org/springframework/boot/context/properties/bind/validation/ValidationBindHandler.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S04 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S04 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 130.316,
+      "cpuSeconds": 349.449,
+      "cpuThrottledSeconds": 25.588,
+      "peakMemoryBytes": 3337961472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s04-parent-build-and-the-paren.log",
+        "lines": 21,
+        "bytes": 2464,
+        "sha256": "c5d1ad402f5c58e4d3e9b7876db7f24e0328b39bb8475c937312638c9dd53a01",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S04-parent gradle=9.5.0 launcher=25.0.5.0+8-tem gradle-exit=0 seconds=71 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=16 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:validatePlugins UP-TO-DATE",
+        "> Task :buildSrc:check",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "class org.springframework.boot.context.properties.bind.validation.ValidationBindHandlerTests junit tests=16 failures=0 errors=0 skipped=0 ",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S04-parent/core_spring-boot.runtimeClasspath.txt 33 entries",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S04-parent/core_spring-boot.testRuntimeClasspath.txt 147 entries",
+        "96867950a33284521a16435e5becb25b1ea37ac90b4eb3d1a283c809113e367b  jars/spring-boot-4.0.8-SNAPSHOT.jar",
+        "96867950a33284521a16435e5becb25b1ea37ac90b4eb3d1a283c809113e367b  tree/core/spring-boot/build/libs/spring-boot-4.0.8-SNAPSHOT.jar",
+        "9ff2c2394fa9338f746a16f57d187417a9afd49faccadbffe67c1e4be5f7c8d7  tree/core/spring-boot/build/libs/spring-boot-4.0.8-SNAPSHOT-test-fixtures.jar",
+        "cac9c3c1b0c7f75b7df40c21d3e67a0e222ba8f5b19800c2d1bbf1836c82b837  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.0.8-SNAPSHOT.jar",
+        "f7c8588927423238e5d2b0fd0af4d6f19bf059bf0b6c0e2cfe4fc57c6eb6a6d3  spring-boot-4.0.8-SNAPSHOT.jar!/org/springframework/boot/context/properties/bind/validation/ValidationBindHandler$ValidationResult.class",
+        "382affd4278dbdfe91f13c65eed7d8d327f3cf85caf0316b352d024c875ccce2  spring-boot-4.0.8-SNAPSHOT.jar!/org/springframework/boot/context/properties/bind/validation/ValidationBindHandler.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S04 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S04 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 83.669,
+      "cpuSeconds": 232.793,
+      "cpuThrottledSeconds": 20.911,
+      "peakMemoryBytes": 3755499520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s04-transplant-the-fix-s-tests.log",
+        "lines": 16,
+        "bytes": 1490,
+        "sha256": "c7058e251f75a849f4bb9859a598caf5a43f71564543631460648bce0216f762",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted core/spring-boot/src/test/java/org/springframework/boot/context/properties/bind/validation/ValidationBindHandlerTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S04-parent-landed gradle=9.5.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=83 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=17 failures=1 errors=0 skipped=0",
+        "junit failed ValidationBindHandlerTests#bindShouldValidateMapWithWildcardValue()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:validatePlugins",
+        "> Task :buildSrc:check",
+        "> Task :buildSrc:pluginDescriptors",
+        "class org.springframework.boot.context.properties.bind.validation.ValidationBindHandlerTests junit tests=17 failures=1 errors=0 skipped=0 junit failed ValidationBindHandlerTests#bindShouldValidateMapWithWildcardValue() ",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S04 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S04 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.82,
+      "cpuSeconds": 2.231,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 94851072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s04-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "54c66646f5a0da07872d86eaaa1806a78d886c13af7e5b118b3b4e81003db818",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S04"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T11:19:46+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T111827Z-82895144d191ddda"
+    }
+  }
+}
