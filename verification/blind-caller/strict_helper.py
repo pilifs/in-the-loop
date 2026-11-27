@@ -44,8 +44,8 @@ def run(work):
                         raise ValueError("the native query omitted a used helper row")
                 trials = receipt.get("sides",{}).get(side,{}).get("trials",[])
                 detail[side] = {"nativeUses":proof.get("nativeSubstitutions",[]),"binding":proof.get("runtimeBinding"),
-                                "basis":proof.get("basis"),"publicSubstitutions":sum(len(t["checkedApplications"][0]["applications"])
-                                  for t in trials if t.get("checkedApplications"))}
+                                "basis":proof.get("basis"),"publicSubstitutions":sum(
+                                    len(repeat["applications"]) for trial in trials for repeat in trial.get("checkedApplications", []))}
             rows[variant][claim["id"]] = {"status":claim["status"],"sides":detail,"reason":claim.get("reason")}
     for name, expected in (("rewinds",(14,20)),("preservation",(10,10))):
         measured = rows["complete"][name]["sides"]
