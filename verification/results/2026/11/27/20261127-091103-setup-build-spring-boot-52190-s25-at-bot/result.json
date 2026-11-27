@@ -1,0 +1,339 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-091103-setup-build-spring-boot-52190-s25-at-bot",
+  "title": "Setup: build Spring Boot #52190 (S25) at both pins and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 3 failed, 1 passed step(s) in 5m23s, peak 4.1 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S25 fix: build and landed tests) exited 1, expected 0",
+    "step 1 (S25 fix: build and landed tests) was held back 1m49s by its 4-CPU quota in 2m10s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S25 parent: build and the parent's tests) exited 1, expected 0",
+    "step 2 (S25 parent: build and the parent's tests) was held back 1m40s by its 4-CPU quota in 1m39s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S25 transplant: the fix's tests on the parent) exited 1, expected 0",
+    "step 3 (S25 transplant: the fix's tests on the parent) was held back 1m26s by its 4-CPU quota in 1m28s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-091103-setup-build-spring-boot-52190-s25-at-bot.json",
+    "sha256": "e8604f2e84111756beb0592bf2453ad75b397cdee509f1f4086dd790d0a30495",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-091103-setup-build-spring-boot-52190-s25-at-bot",
+      "title": "Setup: build Spring Boot #52190 (S25) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S25 (spring-projects/spring-boot#52190: Apply topology refresh to a Redis cluster supplied by a bean). In the worktrees $P/worktrees/S25-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-data-redis with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (DataRedisAutoConfigurationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-data-redis in $P/artifacts/S25-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S25",
+      "submitted": {
+        "at": "2026-11-27T09:11:03+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "steps": [
+        {
+          "name": "S25 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S25 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S25 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S25 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S25 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S25 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S25 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S25 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+  "startedAt": "2026-11-27T09:39:48+00:00",
+  "finishedAt": "2026-11-27T09:45:23+00:00",
+  "wallSeconds": 335.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2137390,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "usage": {
+    "peakMemoryBytes": 4408131584,
+    "wallSeconds": 323.8,
+    "cpuSeconds": 909.3,
+    "memoryOfEstimate": 0.68,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S25 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S25 fix",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 130.29,
+      "cpuSeconds": 368.354,
+      "cpuThrottledSeconds": 109.495,
+      "peakMemoryBytes": 4408131584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s25-fix-build-and-landed-tests.log",
+        "lines": 14,
+        "bytes": 1325,
+        "sha256": "9be2be2c0bbb34ea707c2cc9d632069ddb3efe55e3052bf8cc69171b1a16a59b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S25-fix gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=101 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/s",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests no-result",
+        "classpath module:spring-boot-data-redis runtimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S25 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S25 parent",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 99.024,
+      "cpuSeconds": 287.08,
+      "cpuThrottledSeconds": 100.556,
+      "peakMemoryBytes": 3228385280,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s25-parent-build-and-the-paren.log",
+        "lines": 14,
+        "bytes": 1327,
+        "sha256": "905dcdd597c6d64c74ca8838c4c7d48cdb3b9f9b07b3bb7979bb38fdbd317897",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S25-parent gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=64 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests no-result",
+        "classpath module:spring-boot-data-redis runtimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S25 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S25 transplant",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 88.678,
+      "cpuSeconds": 250.75,
+      "cpuThrottledSeconds": 86.628,
+      "peakMemoryBytes": 4240584704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s25-transplant-the-fix-s-tests.log",
+        "lines": 15,
+        "bytes": 1316,
+        "sha256": "9e7572872dcd08a38558af2c71c42b7eb6b823f9c1d262770a849608ee3a3159",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-data-redis/src/test/java/org/springframework/boot/data/redis/autoconfigure/DataRedisAutoConfigurationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S25-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=88 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests no-result",
+        "TRANSPLANT DID NOT FAIL (gradle-exit=1)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S25 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S25 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.813,
+      "cpuSeconds": 3.121,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 171868160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s25-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "7fc744b2d6325e5cdbaabde98d53d99dca271f480aff97a8b30b4c4b377abdc3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S25"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T09:46:17+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T094523Z-8502860b52d8551c",
+      "workdir": "20261127T094544Z-9089148246280dd7"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-091103-setup-build-spring-boot-52190-s25-at-bot"
+}
