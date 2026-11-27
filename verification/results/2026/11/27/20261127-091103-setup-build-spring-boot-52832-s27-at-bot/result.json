@@ -1,0 +1,352 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-091103-setup-build-spring-boot-52832-s27-at-bot",
+  "title": "Setup: build Spring Boot #52832 (S27) at both pins and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 3 failed, 1 passed step(s) in 6m15s, peak 3.4 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S27 fix: build and landed tests) exited 1, expected 0",
+    "step 1 (S27 fix: build and landed tests) was held back 1m34s by its 4-CPU quota in 2m39s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S27 parent: build and the parent's tests) exited 1, expected 0",
+    "step 3 (S27 transplant: the fix's tests on the parent) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-091103-setup-build-spring-boot-52832-s27-at-bot.json",
+    "sha256": "ccd83855896250eafd59f348cdf382cb816a69b975db41551e49b7e9522635f7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-091103-setup-build-spring-boot-52832-s27-at-bot",
+      "title": "Setup: build Spring Boot #52832 (S27) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S27 (spring-projects/spring-boot#52832: Redis connection details select the TCP port when UDP is also published). In the worktrees $P/worktrees/S27-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of core:spring-boot-docker-compose module:spring-boot-data-redis with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (DefaultConnectionPortsTests (test) DefaultRunningServiceTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of core:spring-boot-docker-compose module:spring-boot-data-redis in $P/artifacts/S27-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S27",
+      "submitted": {
+        "at": "2026-11-27T09:11:03+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "steps": [
+        {
+          "name": "S27 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S27 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S27 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S27 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S27 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S27 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S27 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S27 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+  "startedAt": "2026-11-27T09:42:02+00:00",
+  "finishedAt": "2026-11-27T09:48:30+00:00",
+  "wallSeconds": 388.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2137390,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "usage": {
+    "peakMemoryBytes": 3636043776,
+    "wallSeconds": 375.8,
+    "cpuSeconds": 982.1,
+    "memoryOfEstimate": 0.56,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S27 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S27 fix",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 159.782,
+      "cpuSeconds": 426.261,
+      "cpuThrottledSeconds": 94.602,
+      "peakMemoryBytes": 3636043776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s27-fix-build-and-landed-tests.log",
+        "lines": 16,
+        "bytes": 1661,
+        "sha256": "abb55e644f5e438f208c2ad9ba400454bb193a5595e1f7315bdf6c791a82afe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S27-fix gradle=9.9.2 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=93 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/sc",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.docker.compose.core.DefaultConnectionPortsTests no-result",
+        "class org.springframework.boot.docker.compose.core.DefaultRunningServiceTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S27-fix/core_spring-boot-docker-compose.runtimeClasspath.txt 14 entries",
+        "classpath core:spring-boot-docker-compose testRuntimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S27 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S27 parent",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 133.081,
+      "cpuSeconds": 351.694,
+      "cpuThrottledSeconds": 49.374,
+      "peakMemoryBytes": 3107262464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s27-parent-build-and-the-paren.log",
+        "lines": 16,
+        "bytes": 1667,
+        "sha256": "e9985fb0a3488bbb4814831ec11b6d21dfc8c110c672067b441f2bc86f617735",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S27-parent gradle=9.9.2 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=62 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.docker.compose.core.DefaultConnectionPortsTests no-result",
+        "class org.springframework.boot.docker.compose.core.DefaultRunningServiceTests no-result",
+        "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/artifacts/S27-parent/core_spring-boot-docker-compose.runtimeClasspath.txt 14 entries",
+        "classpath core:spring-boot-docker-compose testRuntimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S27 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S27 transplant",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 76.519,
+      "cpuSeconds": 201.202,
+      "cpuThrottledSeconds": 18.111,
+      "peakMemoryBytes": 3285221376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s27-transplant-the-fix-s-tests.log",
+        "lines": 26,
+        "bytes": 3030,
+        "sha256": "19ae7de24e847e56931fd9ec8ffeb2188cc652b76c45cd279b10b11941f22137",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted core/spring-boot-docker-compose/src/test/java/org/springframework/boot/docker/compose/core/DefaultConnectionPortsTests.java",
+        "transplanted core/spring-boot-docker-compose/src/test/java/org/springframework/boot/docker/compose/core/DefaultRunningServiceTests.java",
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/docker/compose/ClickHouseJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests.java",
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/docker/compose/JdbcUrlBuilderTests.java",
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/docker/compose/MySqlJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests.java",
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/docker/compose/PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests.java",
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/docker/compose/SqlServerJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests.java",
+        "transplanted module/spring-boot-ldap/src/test/java/org/springframework/boot/ldap/docker/compose/LLdapDockerComposeConnectionDetailsFactoryTests.java",
+        "transplanted module/spring-boot-mongodb/src/test/java/org/springframework/boot/mongodb/docker/compose/MongoDockerComposeConnectionDetailsFactoryTests.java",
+        "transplanted module/spring-boot-r2dbc/src/test/java/org/springframework/boot/r2dbc/docker/compose/ConnectionFactoryOptionsBuilderTests.java",
+        "transplanted module/spring-boot-r2dbc/src/test/java/org/springframework/boot/r2dbc/docker/compose/PostgresR2dbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S27-parent-landed gradle=9.9.2 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=76 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.docker.compose.core.DefaultConnectionPortsTests no-result",
+        "class org.springframework.boot.docker.compose.core.DefaultRunningServiceTests no-result",
+        "TRANSPLANT DID NOT FAIL (gradle-exit=1)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S27 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S27 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 6.43,
+      "cpuSeconds": 2.941,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 182190080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s27-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "1907a5681f066f6defbe0ebd136bb2cfc2a94875ca70ea73cc76c5a3501863f6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S27"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T09:52:25+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T094830Z-113991c739f8dabd",
+      "workdir": "20261127T094855Z-1475263c87a83953"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-091103-setup-build-spring-boot-52832-s27-at-bot"
+}
