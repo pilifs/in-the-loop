@@ -18,6 +18,20 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-073: VF-058's remainder, reopened (a placeholder)
+
+- **Status**: open, a placeholder (the user, 2026-11-27). The user asked for VF-058's strict-native remainder to be reopened. This entry holds the number so that it isn't taken for anything else. Its scope is written when the user takes it up.
+- **Raised**: 2026-11-27 by the advisor session, at the user's request. The user first asked on 2026-11-24, after the tk-recovery agent moved VF-058 to "Decided and closed".
+- **Found**: see VF-058. That campaign's decision left four frontiers open:
+  - the Commons Configuration startup question, at the `Properties` object `System.getProperties()` returns;
+  - 6 of JavaParser's 8 ordinary strict-native claims, with arbitrary separator values owned by the native JVM startup model;
+  - all 34 unrestricted paired overloads of the historical receiver cohort;
+  - native scheduling from the worker's `Thread` constructor, tracked in VF-056.
+
+  On 2026-11-24, strict native decided 4 of 46 sides and 2 of 23 pairs.
+- **Needs**: the user's scope: which of those frontiers to reopen, and in which brief or model.
+- **Closes when**: the user writes its scope here, or withdraws the reopening.
+
 ### VF-074: the README's table of sessions shows finished sessions as open, and long-running sessions under their first topic
 
 - **Status**: open (the user, 2026-11-27).
