@@ -690,19 +690,25 @@ def skills(root: Path, rendered: str, problems: list[str], sources: list[dict]) 
         link = root / ".agents" / "skills" / skill.name
         linked = link.is_symlink() and not os.path.isabs(os.readlink(link)) and link.resolve() == skill.resolve()
         try:
-            policy = re.search(r"^\s*allow_implicit_invocation:\s*false\s*$", (skill / "agents" / "openai.yaml").read_text(), re.M) is not None
+            yaml = (skill / "agents" / "openai.yaml").read_text()
         except OSError:
-            policy = False
+            yaml = ""
+        policy = re.search(r"^\s*allow_implicit_invocation:\s*false\s*$", yaml, re.M) is not None
+        # A skill may be the user's alone to start in Codex while Claude Code keeps model invocation, when it says so
+        # (`# person-only-for-codex: WHY`): the run skills, which Codex work turns picked up by themselves (VF-045),
+        # while a Claude Code watcher reloads the skill it was started with.
+        codex_only = policy and not user_only and re.search(r"^#\s*person-only-for-codex:\s*\S", yaml, re.M) is not None
         listed = f"/{skill.name}/SKILL.md" in rendered if listing else None
-        out[skill.name] = {"linked": linked, "userOnly": user_only, **({"listed": listed} if listing else {})}
+        out[skill.name] = {"linked": linked, "userOnly": user_only, **({"codexUserOnly": True} if codex_only else {}),
+                           **({"listed": listed} if listing else {})}
         if not linked:
             problems.append(f"the skill {skill.name} has no relative link at .agents/skills/{skill.name}: Codex does not find it")
-        if user_only != policy:
+        if user_only != policy and not codex_only:
             problems.append(f"the skill {skill.name} is {'for the user alone to start' if user_only else 'one a session may start'} "
                             f"in SKILL.md, and its agents/openai.yaml says otherwise: the two clients would differ")
-        if listing and linked and listed == user_only:
+        if listing and linked and listed == (user_only or codex_only):
             problems.append(f"the skill {skill.name} is {'offered to' if listed else 'not offered to'} Codex's work turns, "
-                            f"against what its SKILL.md says")
+                            f"against what its SKILL.md and agents/openai.yaml say")
     return out
 
 

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import signal
 import subprocess
 import sys
@@ -495,12 +496,35 @@ class TheInstructions(Fixture):
         self.assertEqual(code, 1)
         self.assertIn("the skill publish is offered to Codex's work turns", out["problems"][0])
 
+    def test_a_skill_may_be_the_users_alone_in_codex_only_when_it_says_so(self):
+        root = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, root, True)
+        skill = root / ".claude/skills/run"
+        (skill / "agents").mkdir(parents=True)
+        (skill / "SKILL.md").write_text("---\nname: run\n---\n\n# run\n")
+        (root / ".agents/skills").mkdir(parents=True)
+        os.symlink("../../.claude/skills/run", root / ".agents/skills/run")
+        (skill / "agents/openai.yaml").write_text("policy:\n  allow_implicit_invocation: false\n")
+        problems: list[str] = []
+        agent_client.skills(root, "", problems, [])
+        self.assertIn("the two clients would differ", " ".join(problems))  # an undeclared difference is a problem
+        (skill / "agents/openai.yaml").write_text("# person-only-for-codex: a watcher reloads it\npolicy:\n  allow_implicit_invocation: false\n")
+        problems = []
+        found = agent_client.skills(root, "- run: x (file: r1/run/SKILL.md)\n", problems, [])
+        self.assertEqual(found["run"].get("codexUserOnly"), True)
+        self.assertIn("the skill run is offered to Codex's work turns", " ".join(problems))  # listed: Codex would offer it
+        problems = []
+        agent_client.skills(root, "- other: x (file: r1/other/SKILL.md)\n", problems, [])
+        self.assertEqual(problems, [])
+
     def test_this_checkouts_own_skills_are_linked_and_its_user_only_skills_say_so_for_codex(self):
         root = TOOLS.parents[1]
         problems: list[str] = []
         found = agent_client.skills(root, "", problems, [])
         self.assertEqual(problems, [])
         self.assertEqual(sorted(name for name, s in found.items() if s["userOnly"]), ["publish", "review-findings"])
+        # The run skills are the user's alone to start in Codex (VF-045); Claude Code keeps model invocation.
+        self.assertEqual(sorted(name for name, s in found.items() if s.get("codexUserOnly")), ["multi-agent-brief", "prove-java-change", "single-agent-run"])
         self.assertTrue(all(s["linked"] for s in found.values()), found)
         self.assertFalse(any((root / name).exists() for name in agent_client.SHADOWS), "an AGENTS.md would shadow CLAUDE.md for Codex")
 

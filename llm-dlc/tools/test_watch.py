@@ -449,6 +449,30 @@ class PreflightTest(Checkout):
 
 
 @cost("tool")
+class NestedRunTest(unittest.TestCase):
+    """VF-045: a process inside a running loop's scope may not start a run; anywhere else, or in the tests, it may."""
+
+    def cgroup(self, text):
+        f = Path(tempfile.mkdtemp()) / "cgroup"
+        self.addCleanup(lambda: f.unlink(missing_ok=True))
+        f.write_text(text)
+        return str(f)
+
+    def test_a_run_started_from_inside_a_loop_is_refused_and_elsewhere_it_is_not(self):
+        inside = self.cgroup("0::/user.slice/user-1001.slice/user@1001.service/app.slice/"
+                             "feature-loop-single-made-up-brief.scope\n")
+        watcher = self.cgroup("0::/user.slice/user-1001.slice/user@1001.service/app.slice/tmux-spawn-1.scope\n")
+        self.assertEqual(watch.enclosing_loop(inside), "feature-loop-single-made-up-brief")
+        self.assertIsNone(watch.enclosing_loop(watcher))
+        with mock.patch.dict(os.environ, {watch.NESTED_RUN_OK: ""}):
+            refusal = watch.nested_run_refusal("single_run.py start other", inside)
+            self.assertIn("feature-loop-single-made-up-brief", refusal)
+            self.assertIn("VF-045", refusal)
+            self.assertIsNone(watch.nested_run_refusal("single_run.py start other", watcher))
+        with mock.patch.dict(os.environ, {watch.NESTED_RUN_OK: "allow"}):  # the tests' made-up loops
+            self.assertIsNone(watch.nested_run_refusal("single_run.py start other", inside))
+
+
 class DivergentBaseTest(unittest.TestCase):
     """VF-049: a run's base is a change id; once a rewrite gives it a new commit and a bookmark keeps the old one, the
     change is divergent, and its commits must still be listed."""

@@ -18,6 +18,38 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-072: run agents lack the direction and the tools for fan-out, sealed producers and model-driven workers, so they reach for the run skills
+
+- **Status**: open, a refactor (the user, 2026-11-27). VF-045's enforcement is done (see there); this is the cause it treated.
+- **Raised**: 2026-11-27 by the advisor session at the user's request, after two queued runs reached for the run skills in one day.
+- **Found**:
+  - **The incidents** (details in VF-045):
+    - two Codex workers read the run-brief skill on 2026-11-19;
+    - the R01-R50 setup (Claude Opus 5.5, 2026-11-26) split 50 cases across 4 subagent forks and ran 43 builds inline (VF-070 item 12);
+    - entry 25's agent started `blind-public-five-links`, a Codex `gpt-6.2-sol` run, itself on 2026-11-27, for its brief's part C;
+    - entry 27's agent began with "I'll use the multi-agent brief skill" the same day.
+  - **What each one wanted is real, and the product has no sanctioned way to give it:**
+    - **Fan-out and wait.** Batches have 30 to 50 cases. The pipeline runs jobs in parallel, but one job per case means one hand-written `pipeline.py submit` per case, and waiting is improvised: `xargs -P` lanes, subagent forks, hand-written waits that match themselves (VF-069), and builds run inline.
+    - **A sealed, independent producer.** Blind measurement needs a producer that cannot see the evaluator's files. Entry 23 built a filesystem allow list for it, and entry 25 built neutral packets, seals and `numbered_handoff.py --scaffold-only`. The pipeline's export of a commit into a fresh work folder is most of such a view, but nothing restricts what it can read.
+    - **A model-driven worker.** Intent recovery from a PR URL (VF-063) needs a fresh model session. That is a paid session, and a run's agent has no way to ask for one. So it starts one itself or goes looking in the run skills.
+  - **Wording points the agents at the run skills:**
+    - the queue's domain prompt says "Review and implement `X-brief.md`", which matches `multi-agent-brief`'s description;
+    - product briefs say "the watcher" and "the ordinary single-agent run" for the product's own Stage 2 and 3 workflow (entry 25's brief told its agent to "use the ordinary single-agent run");
+    - the 11-19 prompts said "written for multiple agents".
+  - **Related:**
+    - the S01-S50 setup's dry runs did not cover the test tasks, and 41 of 49 setup jobs failed offline;
+    - a setup job passed without running tests (VF-070 item 11);
+    - the URL producer's model calls stopped on the client's cybersecurity filter (VF-061).
+- **Needs** (product work, in order; the advisor's write-up `~/.cache/in-the-loop/advisor/agent-started-runs-writeup.md` has the evidence and acceptance tests for each):
+  1. **Fan-out from a manifest.** `pipeline.py submit --cases FILE` writes one job per case from a step template. The documented wait is that a run agent ends its turn naming the job ids, and the watcher's `single_run.py jobs` waits. Acceptance: a 49-case setup submits its builds with one command and builds nothing inline.
+  2. **Sealed producer jobs.** A job option that exports the commit with an allow list and a deny list of readable paths, runs a frozen producer, and records a digest of what was visible. Acceptance: a read of an evaluator-only marker fails inside the job.
+  3. **A worker request.** A run's agent records a request for a model-driven worker (purpose, client, model, budget, inputs) and starts nothing. The watcher puts it to the user, and on approval starts a linked child run with its own record and cost. Acceptance: part C's five-link producer runs this way, with no agent-started run.
+  4. **Wording.** Domain prompts say "the plan in X"; product briefs and the brief-generation template name the product workflow, never "watcher", "single-agent run" or "multi-agent"; `brief_queue.py add` warns on those phrases.
+  5. **Machine-wide run visibility.** `single_run.py list --all` and the doctor show every `feature-loop-*` scope, in every state, with its root.
+  6. **Setup hygiene.** Setup dry runs cover the test tasks, and a setup job fails when no test ran.
+- **Tracked in**: this entry; VF-045 for the enforcement; the write-up named above.
+- **Closes when**: a 30-to-50-case batch fans out, a blind producer runs sealed, and a model-driven worker runs at the user's word, all through these tools, with no agent reading a run skill to find them.
+
 ### VF-070: what stops or slows an unattended setup phase: a register from the organic PR queue of 2026-11-25 and 26
 
 - **Status**: open, a register to address later (the user, 2026-11-26). Each item says what happened, what it cost and a direction for a fix; none is chosen yet. Items with a finding of their own point to it.
@@ -757,6 +789,10 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
   - Done 2026-11-20, at the user's word: the skill is renamed `multi-agent-brief` (`.claude/skills/multi-agent-brief`,
     with its Codex link), so its name no longer reads as the way to run any brief. The invocation flags above are
     still open.
+  - Done 2026-11-27, at the user's word:
+    - **The run skills are the user's alone in Codex.** `multi-agent-brief`, `single-agent-run` and `prove-java-change` carry `agents/openai.yaml` with `allow_implicit_invocation: false` and a `# person-only-for-codex:` line. Claude Code keeps model invocation, since a watcher reloads the skill it was started with. `agent_client.py instructions --client codex` accepts the declared difference (`codexUserOnly`), and Codex no longer lists these skills. `run-verification` is left as it is for now (the user).
+    - **A run cannot start from inside a running loop.** `watch.nested_run_refusal` refuses `single_run.py start`, `setup` and `generate`, and `brief_run.py start`, `foundation` and `rerun`. `feature-loop.sh`, which every loop passes through, refuses inside another loop's scope too. Tests opt out in `lib/tools/cost_tier.py`.
+    - The cause these treat, agents without the tools they reached for, is VF-072.
 - **Tracked in**: this entry; the run's loop output above.
 - **Closes when**: a Codex work turn given a prompt like this one does not open or run the run-brief skill, and the
   skills' invocation policy agrees between the two clients.

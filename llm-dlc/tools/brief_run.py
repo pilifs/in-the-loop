@@ -523,6 +523,8 @@ def foundation_prompt(run: Run, text: str | None) -> str:
 
 def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str | None, prompt: str | None,
                    agent: str | None = None) -> int:
+    if refusal := watch.nested_run_refusal(f"brief_run.py foundation {run.name}"):
+        raise Problem(refusal)
     known = workspaces(run.root)
     ws = run.foundation_workspace
     folder = known.get(ws) or run.root.parent / f"{run.root.name}-{ws}"
@@ -1106,6 +1108,8 @@ def cmd_order(run: Run, streams: list[str], clear: bool) -> int:
 # -- a stream run again inside the run
 
 def cmd_rerun(run: Run, label: str) -> int:
+    if refusal := watch.nested_run_refusal(f"brief_run.py rerun {run.name}"):
+        raise Problem(refusal)
     s = stream_of(run, label)
     folder = Path(s["folder"])
     at_work = loops_in(folder)
@@ -1509,6 +1513,8 @@ def tend(run: Run) -> dict | None:
 # -- the run
 
 def cmd_start(run: Run, agent: str | None = None, stream_agents: list[str] | tuple = ()) -> int:
+    if refusal := watch.nested_run_refusal(f"brief_run.py start {run.name}"):
+        raise Problem(refusal)
     data = run.read()
     if watch.alive((data.get("run") or {}).get("pid")):
         print(f"the run is already under way (pid {data['run']['pid']})")
