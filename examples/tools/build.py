@@ -44,6 +44,7 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
        python3 examples/tools/build.py ID --task T         one attempt at that task (examples/tools/targets/route.py)
        python3 examples/tools/build.py ID --task T --certify-lrat   check every SAT/UNSAT call of a strict native verdict
        python3 examples/tools/build.py --upgrade-claims --help  find original consumer call sites for a changed dependency
+       python3 examples/tools/build.py --stock-property --help  qualify an integral property with stock JBMC on exact JVM-selected bytes
        python3 examples/tools/build.py --change-plan --help  plan and resume one application change across caller claims
        python3 examples/tools/build.py --discover-resource-workflows --help  generate resource lookup callers from two ordered deployments
        python3 examples/tools/build.py --discover-integer-codecs --help  generate signed integer coding questions from two ordered deployments
@@ -225,6 +226,9 @@ def main(argv):
     if argv and argv[0] == "--discover-resource-workflows":
         from targets import resource_workflows
         return resource_workflows.main(argv[1:])
+    if argv and argv[0] == "--stock-property":
+        from targets import stock_projection
+        return stock_projection.main(argv[1:])
     if argv and argv[0] == "--change-plan":
         from targets import change_plan
         return change_plan.main(argv[1:])

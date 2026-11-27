@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-061049-qualify-stock-jbmc-reads-on-original-ver",
+  "title": "Qualify stock JBMC reads on original versioned subjects and helpers",
+  "description": "Run sixteen stock checks over the original JDK 8, 17, 21 and earlier-shadow classpaths. Require the deciding assertion to read the exact JVM-selected private application classfiles. Retain refusals for changed input, unobserved reads and unqualified raw or paired launches.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T06:10:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "python3 verification/blind-caller/stock_profiles.py",
+      "run": "python3 verification/blind-caller/stock_profiles.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/blind-caller/stock-profiles.zip"
+  ]
+}
