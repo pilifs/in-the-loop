@@ -15307,42 +15307,50 @@
     },
     {
       "change_id": "xutponrwwuxlprlqzzlrwwxxskplrmtp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b422f8349e1a3944d6dd217425331b5c9ad4e8e3",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-134852-repeat-34-original-spring-boot-public-ap: passed: 1 passed step(s) in 3m01s, peak 500.0 MiB (estimated 6m00s, 1.0 GiB) removed 24 kept work directories of failed jobs, 39.5 GiB: collected, and their originals remote_verified Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "ff5d182e0a6d51cf17873d83a2d623f3939b3303ebd367e3f85f5293319d0907"
     },
     {
       "change_id": "ssyrutwovulukqnlwrxrrlvpryzvkvto",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b4f6a345fda4347d9c6e08577049bb8f3ef00865",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261127-141531-inspect-maven-repackaged-spring-boot-fix: failed: 1 failed step(s) in 1m14s, peak 3.7 GiB (estimated 7m00s, 5.0 GiB) 20261127-141531-inspect-maven-repackaged-spring-boot-par: failed: 1 failed step(s) in 1m14s, peak 3.3 GiB (estimated 7m00s, 5.0 GiB) removed 2 kept work directories of failed jobs, 3.6 GiB: collected, and their originals remote_verified Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "d2818c104cdd0b3e1a09aa2743a155bb81af3022fdaca7b4ed8b7173617b7c11"
     },
     {
       "change_id": "qsrstynywqpmostrtnwttrkommxvlkxy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "010bd012beee1ff2262c3f670f2b802ab8d5ba05",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-142145-resolve-the-pinned-maven-boms-from-the-r: failed: 1 failed step(s) in 1m11s, peak 3.5 GiB (estimated 5m00s, 5.0 GiB) removed 1 kept work directory of failed jobs, 1.8 GiB: collected, and their originals remote_verified Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "eb39fd49b7c779fc3c7cab1ffb8aa5761318f92b6a01562448db42b208938c51"
     },
     {
       "change_id": "lmykvszpoworqqxlmozoktppxtrswlky",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5ec55b36a78e3f7a517dd7b192ac3313544bb82e",
+      "immutable": true,
       "summary": "Hold and resume the brief queue",
       "body": "brief_queue.py had no way to pause between briefs: next --finished lands a run and starts the next entry in one step, so a watcher asked to pause after a run (the user, 2026-11-27, to change the code by hand before the next brief) had to land it by hand and avoid next altogether. brief_queue.py hold [--reason TEXT] records a hold in the queue; while it is on, next still does every landing, checkpoint, notes and cleanup step that is due, but takes no start step (generation, setup or domain run), reports where it waits and logs it. status shows the hold; resume ends it, and the next next starts what is due from develop as it is then. A second hold keeps the first. The single-agent-run skill tells the watcher to hold at the user's word and to leave resuming to the user. Verified: a unit test over a queue with an ended run and a waiting brief (held: the ended run's landing, checkpoint and cleanup happen, the waiting brief's setup start does not and is not marked done, a second next starts nothing; resumed: next starts it; the log records hold, held and resume); test_costs run --changed passes; lint agrees.",
       "log_sha256": "59e8155243346731e603c09e499f0eebfb38fe218a31f19e546582fc4c18900b"
     },
     {
       "change_id": "vmoqsyymqmvkzrypmvrlxprkrklmxwqx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "37d374582bfcddb21cdd9d64f9a45146b58abf8b",
+      "immutable": true,
       "summary": "Merge queue-hold: the brief queue can be held and resumed",
       "body": "Merges the workspace queue-hold (lmykvszp) into the line at the user's request. brief_queue.py hold [--reason TEXT] holds the queue: next still takes every due landing, checkpoint, notes and cleanup step but no start step (generation, setup or domain run), and says where it waits; status shows the hold and brief_queue.py resume ends it. The single-agent-run skill says a watcher holds at the user's word and only the user resumes. The merge had no conflicts; the generated trace files were regenerated. The workspace's changed tests passed.",
+      "log_sha256": "59e8155243346731e603c09e499f0eebfb38fe218a31f19e546582fc4c18900b"
+    },
+    {
+      "change_id": "zpywnmvznsxmrpprkspxwnqqvvxsyrpt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Hold the brief queue after entry 27, at the user's word",
+      "body": "brief_queue.py hold, with the reason 'the user, 2026-11-27: pause after entry 27 for architecture work'. next will land the Spring Boot S01-S50 domain run when it ends and start nothing until the user runs brief_queue.py resume.",
       "log_sha256": "59e8155243346731e603c09e499f0eebfb38fe218a31f19e546582fc4c18900b"
     }
   ],
