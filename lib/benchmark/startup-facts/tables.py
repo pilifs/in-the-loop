@@ -11,7 +11,7 @@ from charset import command, compile_to, ENV, IO, JDK, OBSERVER, ROOT, sha, star
 
 
 def run_java(args, *, success=True):
-    p = subprocess.run([JDK / "bin/java", *map(str, args)], env={}, capture_output=True, timeout=80, cwd="/")
+    p = subprocess.run([JDK / "bin/java", "-XX:-UsePerfData", *map(str, args)], env={}, capture_output=True, timeout=80, cwd="/")
     if success and p.returncode:
         raise ValueError(p.stderr.decode(errors="replace")[-1600:])
     return p
@@ -44,10 +44,10 @@ def poi(work, tools):
         for i, historic in enumerate(original[side]["physical"]):
             case_args=historic["input"]
             language,country=case_args[1].split("-")
-            opts=["-XX:ActiveProcessorCount=2","-Duser.timezone=UTC","-Duser.language="+language,"-Duser.country="+country,"-cp",cp]
+            opts=["-XX:-UsePerfData","-XX:ActiveProcessorCount=2","-Dstdout.encoding=UTF-8","-Duser.timezone=UTC","-Duser.language="+language,"-Duser.country="+country,"-cp",cp]
             main=["StartupHistory",*case_args]
             plain=run_java([*opts,*main]).stdout
-            assert plain.decode().strip() == "ORIGINAL-VALUE "+historic["actual"]
+            assert plain.decode().strip() == "ORIGINAL-VALUE "+historic["actual"], (side,case_args,plain.decode(),historic["actual"])
             projected=[]
             for label, extra in [("original",[]),("added",["-Dstartup.fixture.selected=present"]),("restored",[])] if i==0 else [("original",[])]:
                 bound=[*extra,*opts]
@@ -74,7 +74,7 @@ def controls(work, tools):
     classes=work/"controls"
     compile_to(classes,[Path(__file__).with_name("TableControls.java")],str(tools))
     cp=os.pathsep.join(map(str,[classes,tools]))
-    opts=["-Duser.timezone=UTC","-cp",cp]
+    opts=["-XX:-UsePerfData","-Duser.timezone=UTC","-cp",cp]
     boundary="TableControls#sample()I"
     rows=[]
     for mode, reason in [("defaults","inherited defaults"),("custom","custom live"),("nonstring","non-string"),("view","keySet"),

@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T01:00:08.321Z",
-  "duration_seconds": 240558,
+  "ended": "2026-11-27T01:08:44.682Z",
+  "duration_seconds": 241074,
   "stats": {
     "turns": 39,
-    "api_calls": 6239,
-    "tool_calls": 15420,
-    "tool_errors": 341,
+    "api_calls": 6277,
+    "tool_calls": 15495,
+    "tool_errors": 342,
     "compactions": 26,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 8051243,
-      "output_tokens": 3600505,
-      "cache_read_input_tokens": 1674368000,
+      "input_tokens": 8066231,
+      "output_tokens": 3617939,
+      "cache_read_input_tokens": 1687575296,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8478,
-    "exec": 5975,
-    "apply_patch": 766,
+    "Bash": 8507,
+    "exec": 6013,
+    "apply_patch": 774,
     "wait": 113,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -187,6 +187,7 @@
     "examples/tools/targets/public_comparison.py",
     "examples/tools/targets/public_mysql.py",
     "examples/tools/targets/public_postgres.py",
+    "examples/tools/targets/qualification.py",
     "examples/tools/targets/recipes.py",
     "examples/tools/targets/replay_candidate.py",
     "examples/tools/targets/resource_workflows.py",
@@ -307,7 +308,9 @@
     "lib/benchmark/organic-composition/log4j/update_replay.py",
     "lib/benchmark/organic-composition/log4j/upstream.json",
     "lib/benchmark/run.py",
+    "lib/benchmark/startup-facts/controls.py",
     "lib/benchmark/startup-facts/members.py",
+    "lib/benchmark/startup-facts/tables.py",
     "lib/benchmark/test_run.py",
     "lib/src/bmc/byte_views.rs",
     "lib/src/bmc/bytes.rs",
@@ -943,24 +946,24 @@
     {
       "index": 26,
       "started": "2026-11-26T23:39:02.233Z",
-      "ended": "2026-11-27T01:00:08.321Z",
+      "ended": "2026-11-27T01:08:44.682Z",
       "turns": 2,
-      "api_calls": 222,
+      "api_calls": 260,
       "usage": {
-        "input_tokens": 199924,
-        "output_tokens": 136650,
-        "cache_read_input_tokens": 49223296,
+        "input_tokens": 214912,
+        "output_tokens": 154084,
+        "cache_read_input_tokens": 62430592,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 333870
+      "peak_context_tokens": 363953
     }
   ],
   "log": {
-    "sha256": "45c0457107d382a9eb34f786a6579bd27dbc21e3cc1ead79066bce4dee6adca4",
-    "bytes": 99278737,
-    "lines": 49076,
-    "gzip_bytes": 18179642,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/45c0457107d382a9eb34f786a6579bd27dbc21e3cc1ead79066bce4dee6adca4.jsonl.gz"
+    "sha256": "1566d08aafeeae3dd6dd6aef16b7fa4679b618f4f75ac5ff18b16e4093507e0b",
+    "bytes": 99759338,
+    "lines": 49349,
+    "gzip_bytes": 18250910,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/1566d08aafeeae3dd6dd6aef16b7fa4679b618f4f75ac5ff18b16e4093507e0b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2925,20 +2928,28 @@
       "log_sha256": "56ee918cbd94629142b36eb3417197ef371bd6a5c1249be3a2b7beb051412719"
     },
     {
-      "change_id": "uyrvswrztwxntounxwvwvvstzlssutpz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "45c0457107d382a9eb34f786a6579bd27dbc21e3cc1ead79066bce4dee6adca4"
-    },
-    {
       "change_id": "mnuopxutlrlmpqvrqvmnptqztkuppokk",
       "commit_id": null,
       "immutable": false,
       "summary": "Bind lazy properties reads to consumed bytes (verification pending)",
       "body": "Trace the original class-relative resource, selected JAR stream, loader, Properties.load overload and actual LineReader refills. Compare the parser outcome and subsequent key reads with an independent JDK parse, and compare the entire public result with an ordinary JVM. File and reader receipts distinguish absence, partial parse failure, membership and decoder choice.\n\nTen Batik histories and ten ordinary file and Reader histories passed locally. The memoized loader kept the original parser, the new loader read the changed bytes at the same path and an explicit setter bypassed the read. Raw UTF-8 bytes produced different values through a byte stream and a UTF-8 Reader. The selected Rust suite and Python suite passed. Job 20261127-005516-qualify-batik-lazy-resources-and-origina repeats and archives the whole matrix.",
       "log_sha256": "45c0457107d382a9eb34f786a6579bd27dbc21e3cc1ead79066bce4dee6adca4"
+    },
+    {
+      "change_id": "sxplzlrwmmxwmylvrwttnxlztmtluzwz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "1566d08aafeeae3dd6dd6aef16b7fa4679b618f4f75ac5ff18b16e4093507e0b"
+    },
+    {
+      "change_id": "oposqykorzumtskkovrwkvkqpqunlnny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preserve POI currency text in the collector (verification pending)",
+      "body": "The controlled JVM selected an ASCII console and replaced the fixed Kazakh currency literal during transport. Request UTF-8 on stdout for both original JVMs and retain their full byte comparison. All twelve ordinary observations now equal the archived strings. The selected test run passed 56 suites. Job 20261127-010104-repeat-original-poi-properties-with-loss repeats the full table qualification.",
+      "log_sha256": "1566d08aafeeae3dd6dd6aef16b7fa4679b618f4f75ac5ff18b16e4093507e0b"
     }
   ],
   "logs": {
@@ -2970,6 +2981,12 @@
       "bytes": 64419545,
       "lines": 34002,
       "gzip_bytes": 11738950,
+      "url": null
+    },
+    "1566d08aafeeae3dd6dd6aef16b7fa4679b618f4f75ac5ff18b16e4093507e0b": {
+      "bytes": 99759338,
+      "lines": 49349,
+      "gzip_bytes": 18250910,
       "url": null
     },
     "1794fc909be9a30ed3c12ff1283fb6dcc54b5ac1295040cc104d69569d26569e": {
