@@ -1,0 +1,194 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-132243-reproduce-the-first-22-spring-boot-publi",
+  "title": "Reproduce the first 22 Spring Boot public callers on both pins",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m22s, peak 249.5 MiB (estimated 3m00s, 900.0 MiB)",
+  "attention": [
+    "step 1 (Recompile original callers and compare the complete recorded audit) was held back 3m21s by its 1-CPU quota in 3m22s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-132243-reproduce-the-first-22-spring-boot-publi.json",
+    "sha256": "bd3f3eea8ee3e2c33913c871ae822c9a7b5f5466e97f56a3817dd39b546c9fed",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-132243-reproduce-the-first-22-spring-boot-publi",
+      "title": "Reproduce the first 22 Spring Boot public callers on both pins",
+      "description": "Recompile the same caller on the parent, check original JVM class origins and reproduce the 131 observations covering configuration, lifecycle, JDBC, cache, structured JSON and archive reads. Reconcile the matched and refuted predicates and all 150 brief questions with the saved audit.",
+      "kind": "real-world",
+      "capabilities": [
+        "public-api-comparison"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T13:22:43+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "900M",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Recompile original callers and compare the complete recorded audit",
+          "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "e37ec3dc5d25a2c8c0003e262669fa4bb279ddf5",
+  "startedAt": "2026-11-27T13:29:47+00:00",
+  "finishedAt": "2026-11-27T13:33:20+00:00",
+  "wallSeconds": 213.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 15556,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1415577600,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 943718400,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 261652480,
+    "wallSeconds": 202.7,
+    "cpuSeconds": 199.3,
+    "memoryOfEstimate": 0.28,
+    "durationOfEstimate": 1.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recompile original callers and compare the complete recorded audit",
+      "run": "python3 verification/merged-pr-links/s01-s50/audit.py --replay",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 202.725,
+      "cpuSeconds": 199.289,
+      "cpuThrottledSeconds": 201.02,
+      "peakMemoryBytes": 261652480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recompile-original-callers-and.log",
+        "lines": 132,
+        "bytes": 11609,
+        "sha256": "87cee7fac60d1234941b53f0e3e676e03198e5e20690166e6c1e83746c2cc897",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins parent spring-projects/spring-boot#50271.3 {'throws': 'org.springframework.boot.jdbc.UnsupportedDataSourcePropertyException'}",
+        "pins fix spring-projects/spring-boot#50271.1 {'return': 'true:migration:fixture:true'}",
+        "pins fix spring-projects/spring-boot#50271.2 {'return': 'true:migration:fixture:true'}",
+        "pins fix spring-projects/spring-boot#50271.3 {'return': '73/73'}",
+        "pins parent spring-projects/spring-boot#51844.1 {'return': 'value:false:unavailable'}",
+        "pins parent spring-projects/spring-boot#51844.2 {'return': 'value:false'}",
+        "pins parent spring-projects/spring-boot#51844.3 {'throws': 'java.lang.IllegalStateException'}",
+        "pins fix spring-projects/spring-boot#51844.1 {'return': 'value:true:wrapped:value'}",
+        "pins fix spring-projects/spring-boot#51844.2 {'return': 'value:false'}",
+        "pins fix spring-projects/spring-boot#51844.3 {'return': 'value/value'}",
+        "pins parent spring-projects/spring-boot#50734.1 {'return': 'UP:complete:10:test,admin/UP:complete:10:test,admin'}",
+        "pins parent spring-projects/spring-boot#50734.2 {'return': 'UP:complete:10:test/UP:complete:10:test'}",
+        "pins parent spring-projects/spring-boot#50734.3 {'return': 'UP:complete:10:fixture0,fixture1,fixture2,fixture3,fixture4,fixture5,fixture6,fixture7,admin/UP:complete:10:fixture0,fixture1,fixture2,fixture3,fixture4,fixture5,fixture6,fixture7,admin;UP:complete:10:admin,fixture0,fixture1,fixture2,fixtur",
+        "pins fix spring-projects/spring-boot#50734.1 {'return': 'UP:complete:10:admin/UP:complete:10:admin'}",
+        "pins fix spring-projects/spring-boot#50734.2 {'return': 'UP:complete:10:test/UP:complete:10:test'}",
+        "pins fix spring-projects/spring-boot#50734.3 {'return': 'UP:complete:10:admin/UP:complete:10:admin;UP:complete:10:admin/UP:complete:10:admin'}",
+        "pins parent spring-projects/spring-boot#52477.1 {'return': 'invalid-json,invalid-json,invalid-json,invalid-json,invalid-json,invalid-json'}",
+        "pins parent spring-projects/spring-boot#52477.2 {'return': 'number:1.25,number:-2.5'}",
+        "pins parent spring-projects/spring-boot#52477.3 {'return': 'invalid-json'}",
+        "pins fix spring-projects/spring-boot#52477.1 {'return': 'string:NaN,string:Infinity,string:-Infinity,string:NaN,string:Infinity,string:-Infinity'}",
+        "pins fix spring-projects/spring-boot#52477.2 {'return': 'number:1.25,number:-2.5'}",
+        "pins fix spring-projects/spring-boot#52477.3 {'return': 'string:NaN/[number:1.0,string:NaN]'}",
+        "pins parent spring-projects/spring-boot#52522.1 {'return': 'invalid-json'}",
+        "pins parent spring-projects/spring-boot#52522.2 {'return': '{\"version\":1,\"a\":\"A\",\"b\":\"B\"}'}",
+        "pins parent spring-projects/spring-boot#52522.3 {'throws': 'java.lang.IllegalStateException'}",
+        "pins fix spring-projects/spring-boot#52522.1 {'return': '{\"version\":1,\"pairs\":{\"a\":\"A\",\"b\":\"B\"}}'}",
+        "pins fix spring-projects/spring-boot#52522.2 {'return': '{\"version\":1,\"a\":\"A\",\"b\":\"B\"}'}",
+        "pins fix spring-projects/spring-boot#52522.3 {'return': '{\"version\":1,\"pairs\":{\"version\":2}} / {\"version\":1,\"pairs\":{}}'}",
+        "pins parent spring-projects/spring-boot#52593.1 {'return': '-1:test'}",
+        "pins parent spring-projects/spring-boot#52593.2 {'return': '4:test'}",
+        "pins fix spring-projects/spring-boot#52593.1 {'return': '4:test'}",
+        "pins fix spring-projects/spring-boot#52593.2 {'return': '4:test'}",
+        "pins fix spring-projects/spring-boot#52593.3 {'return': '4102:true:marker:true:eof'}",
+        "pins parent spring-projects/spring-boot#52285.1 {'return': 'EOFException'}",
+        "pins parent spring-projects/spring-boot#52285.2 {'return': 'true:true/true:true'}",
+        "pins parent spring-projects/spring-boot#52285.3 {'return': 'EOFException/true:true'}",
+        "pins fix spring-projects/spring-boot#52285.1 {'return': 'true:true'}",
+        "pins fix spring-projects/spring-boot#52285.2 {'return': 'true:true/true:true'}",
+        "pins fix spring-projects/spring-boot#52285.3 {'return': 'true:true/true:true'}",
+        "{\"casesWithPublicCallers\": 22, \"fix matched\": 64, \"fix refuted\": 2, \"jvmObservations\": 131, \"parent matched\": 42, \"parent observed only\": 23, \"registeredClaims\": 150, \"twoSidedPublicClaims\": 65, \"unmeasuredClaims\": 84}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T13:33:44+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T133320Z-68487953f6e019a9"
+    }
+  }
+}

@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-27T13:27:19.235Z",
-  "duration_seconds": 1022393,
+  "ended": "2026-11-27T13:28:08.807Z",
+  "duration_seconds": 1022442,
   "stats": {
     "turns": 1819,
-    "api_calls": 7545,
-    "tool_calls": 6608,
+    "api_calls": 7548,
+    "tool_calls": 6612,
     "tool_errors": 73,
     "compactions": 18,
     "peak_context_tokens": 666881,
     "usage": {
-      "input_tokens": 18820,
-      "output_tokens": 3050865,
-      "cache_read_input_tokens": 2400866500,
-      "cache_creation_input_tokens": 9986652
+      "input_tokens": 18826,
+      "output_tokens": 3052495,
+      "cache_read_input_tokens": 2401657383,
+      "cache_creation_input_tokens": 9990017
     }
   },
   "tools": {
-    "Bash": 6347,
-    "SendMessage": 111,
+    "Bash": 6349,
+    "SendMessage": 112,
     "Edit": 41,
     "ToolSearch": 27,
-    "Write": 20,
+    "Write": 21,
     "TaskStop": 17,
     "AskUserQuestion": 14,
     "ListAgents": 9,
@@ -68,6 +68,7 @@
     "~/.cache/in-the-loop/r2-originals-setup.md",
     "~/.cache/in-the-loop/tmp/domain-foundations-continue-2.txt",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/brief-generation-flow.md",
+    "~/.claude/projects/-home-user-code-in-the-loop/memory/filter-stop-no-fallback.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/next-briefs-queue.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/resume-on-5xx.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/run-7-verdict-test.md",
@@ -335,24 +336,24 @@
     {
       "index": 18,
       "started": "2026-11-27T10:10:55.850Z",
-      "ended": "2026-11-27T13:27:19.235Z",
+      "ended": "2026-11-27T13:28:08.807Z",
       "turns": 44,
-      "api_calls": 157,
+      "api_calls": 160,
       "usage": {
-        "input_tokens": 412,
-        "output_tokens": 48438,
-        "cache_read_input_tokens": 32872476,
-        "cache_creation_input_tokens": 233670
+        "input_tokens": 418,
+        "output_tokens": 50068,
+        "cache_read_input_tokens": 33663359,
+        "cache_creation_input_tokens": 237035
       },
-      "peak_context_tokens": 262162
+      "peak_context_tokens": 265525
     }
   ],
   "log": {
-    "sha256": "e76b1efe4b8b3cf5b24bb90546e3c9239aa1323b11ed36a3a5c4b6a0808d33f4",
-    "bytes": 113822764,
-    "lines": 66488,
-    "gzip_bytes": 17481242,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/e76b1efe4b8b3cf5b24bb90546e3c9239aa1323b11ed36a3a5c4b6a0808d33f4.jsonl.gz"
+    "sha256": "84192ca9cc459e254c9da48114409534e66188b4f1dfbfc130e2295bf1df2be0",
+    "bytes": 113873762,
+    "lines": 66525,
+    "gzip_bytes": 17487200,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/84192ca9cc459e254c9da48114409534e66188b4f1dfbfc130e2295bf1df2be0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -17435,6 +17436,14 @@
       "summary": "VF-072: no fallback to another model on a filter stop; Astra keeps the judgment",
       "body": "The user's correction (2026-11-27, relayed by the advisor) to the producer's-client note under VF-072's worker request. The client question is decided: Astra keeps the judgment. There is no fallback to another model or client when the filter stops a case, because that goes around the filter and risks triggering it again. On a filter stop the run records a finding (the case, the step, the stop text; VF-061), leaves that case unfinished with no retry of the same material, carries on with the rest, and the harness is fixed afterwards.",
       "log_sha256": "e76b1efe4b8b3cf5b24bb90546e3c9239aa1323b11ed36a3a5c4b6a0808d33f4"
+    },
+    {
+      "change_id": "nnnloxvuotsmqslnlvulpryzporyzprx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-132243-reproduce-the-first-22-spring-boot-publi: passed: 1 passed step(s) in 3m22s, peak 249.5 MiB (estimated 3m00s, 900.0 MiB) Collected by the watcher of the spring-boot-merged-pr-links-s01-s50-brief run, which keeps the queue while the run is under way.",
+      "log_sha256": "84192ca9cc459e254c9da48114409534e66188b4f1dfbfc130e2295bf1df2be0"
     }
   ],
   "logs": {
@@ -20839,6 +20848,12 @@
       "lines": 33493,
       "gzip_bytes": 10205658,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/83e9d4416190165a9d2ee4a83e51733463ba50d5f3c633c6a60617e3a9a15dbb.jsonl.gz"
+    },
+    "84192ca9cc459e254c9da48114409534e66188b4f1dfbfc130e2295bf1df2be0": {
+      "bytes": 113873762,
+      "lines": 66525,
+      "gzip_bytes": 17487200,
+      "url": null
     },
     "8481d8912521b7e2d2d92138ef19bfb0b655c666c3b6556fbcd002c65d3f6896": {
       "bytes": 38633395,
