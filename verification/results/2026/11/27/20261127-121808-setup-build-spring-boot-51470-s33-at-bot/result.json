@@ -1,0 +1,407 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-121808-setup-build-spring-boot-51470-s33-at-bot",
+  "title": "Setup: build Spring Boot #51470 (S33) at both pins and run its landed tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 15m34s, peak 5.7 GiB (estimated 15m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S33 fix: build and landed tests) was held back 4m44s by its 4-CPU quota in 7m32s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S33 parent: build and the parent's tests) was held back 5m49s by its 4-CPU quota in 6m08s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S33 transplant: the fix's tests on the parent) was held back 5m01s by its 4-CPU quota in 1m51s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-121808-setup-build-spring-boot-51470-s33-at-bot.json",
+    "sha256": "422bbf2adfe0333d4d1daf4715a700292a17f43799d6f16eb9b437f9ebe96a17",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-121808-setup-build-spring-boot-51470-s33-at-bot",
+      "title": "Setup: build Spring Boot #51470 (S33) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S33 (spring-projects/spring-boot#51470: Reach a named health group through a multi-segment path). In the worktrees $P/worktrees/S33-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-health module:spring-boot-webmvc with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (AdditionalHealthEndpointPathTests (test) HealthEndpointSupportTests (test) WebMvcHealthEndpointAdditionalPathIntegrationTests (test) WebFluxHealthEndpointAdditionalPathIntegrationTests (test) JerseyHealthEndpointAdditionalPathIntegrationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-health module:spring-boot-webmvc module:spring-boot-webflux module:spring-boot-jersey in $P/artifacts/S33-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S33",
+      "submitted": {
+        "at": "2026-11-27T12:18:08+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "15m",
+        "memoryLimit": "9G",
+        "notes": "the reruns of 2026-11-27 took 5-7 minutes with a peak of 3.8-4.6 GiB"
+      },
+      "steps": [
+        {
+          "name": "S33 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S33 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S33 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S33 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S33 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S33 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S33 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S33 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [],
+      "supersedes": "20261127-110823-setup-build-spring-boot-51470-s33-at-bot"
+    }
+  },
+  "sourceCommit": "f71b269ca68832ef710001ba03a350d05e3b374e",
+  "startedAt": "2026-11-27T12:21:25+00:00",
+  "finishedAt": "2026-11-27T12:37:20+00:00",
+  "wallSeconds": 955.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3132296,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": "the reruns of 2026-11-27 took 5-7 minutes with a peak of 3.8-4.6 GiB"
+  },
+  "usage": {
+    "peakMemoryBytes": 6077362176,
+    "wallSeconds": 934.4,
+    "cpuSeconds": 2517.6,
+    "memoryOfEstimate": 0.94,
+    "durationOfEstimate": 1.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S33 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S33 fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 452.377,
+      "cpuSeconds": 1201.342,
+      "cpuThrottledSeconds": 284.053,
+      "peakMemoryBytes": 6077362176,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s33-fix-build-and-landed-tests.log",
+        "lines": 75,
+        "bytes": 12270,
+        "sha256": "3e5eefed386ee32814f3b4d2328503581e7f0ebf9428f5dbaefe9af75a742523",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d0e07fed611d7fa4189c5f76685191e2c8200c39e5f83a7991b5073a82a5aefb  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "0300087a3db7fbd75c1821fd7a0e198e660d316cd7e932c80fdcdaefa78824ce  tree/module/spring-boot-health/build/libs/spring-boot-health-4.2.0-SNAPSHOT.jar",
+        "da6041d735172517454279b9d8f65b19d08bac7b07a7f8b1d5b20af40f0cb7a2  tree/module/spring-boot-http-client/build/libs/spring-boot-http-client-4.2.0-SNAPSHOT.jar",
+        "dfb68346348a10809f1d345ca2bc52a2a3e6135ee2af5ca30f95cd9fe39fe48e  tree/module/spring-boot-http-codec/build/libs/spring-boot-http-codec-4.2.0-SNAPSHOT.jar",
+        "b59323dfd918d3ee3d50650fa948361024322864a0cfe72a6b90f6652da3f147  tree/module/spring-boot-http-converter/build/libs/spring-boot-http-converter-4.2.0-SNAPSHOT.jar",
+        "604d547557ce62b8417f095887f9510c761ed702e2b6d0ffbf7d67aa5c796af9  tree/module/spring-boot-jackson2/build/libs/spring-boot-jackson2-4.2.0-SNAPSHOT.jar",
+        "f963dbe85b65fdbf4e93cbc6458cd5b37cc5fd2298d2f8cc22ca63ac4dbfd951  tree/module/spring-boot-jackson/build/libs/spring-boot-jackson-4.2.0-SNAPSHOT.jar",
+        "639b8c5af94a49879ee82e769de94092f4bc881fe051fa326f6345575dce4563  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.2.0-SNAPSHOT.jar",
+        "d36713db46f9d41077defe12daf252e8b685845b51e1925307df2fa898bdf524  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "ec68bf5154fba8e56cad50b5477fd26ec2b140b79d52cb8a881e8f7241f0814f  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "c2ea7f57146d8670dd61f5bac490d5be4c731bfae0b70533c18b42d6295641f5  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "31641ebdbbe63a4054a82ecab87dbc9f550032f2e74930424d3e7032f33517d3  tree/module/spring-boot-netty/build/libs/spring-boot-netty-4.2.0-SNAPSHOT.jar",
+        "86d4c92d0c306525faf7a054493c8e140500b73b9fc4c70e3d5e3bc90f432cc7  tree/module/spring-boot-reactor-netty/build/libs/spring-boot-reactor-netty-4.2.0-SNAPSHOT.jar",
+        "ebec182527bdc0bd164e99e40835b7d0b7d236ec00efb328d4ab51c20d51cc8c  tree/module/spring-boot-restclient/build/libs/spring-boot-restclient-4.2.0-SNAPSHOT.jar",
+        "ffe3ff7ee68da360cb584f5ff0c4667680c96840792110a29e5087f087984951  tree/module/spring-boot-resttestclient/build/libs/spring-boot-resttestclient-4.2.0-SNAPSHOT.jar",
+        "5b621c58d05a3025e25b5e4861b13c62e4d3f26bf4998a54e4eca35ead653532  tree/module/spring-boot-servlet/build/libs/spring-boot-servlet-4.2.0-SNAPSHOT.jar",
+        "28d872836630b05795363adadfecb34bb421d298230d52c4f77b3c15c3986700  tree/module/spring-boot-tomcat/build/libs/spring-boot-tomcat-4.2.0-SNAPSHOT.jar",
+        "ed9aefe98121d20c372af6dd6bb6f53c18f256f61ec2952cbb8697dbd3a30986  tree/module/spring-boot-validation/build/libs/spring-boot-validation-4.2.0-SNAPSHOT.jar",
+        "4634d010e34e94bd04f944a759eeaa4215177ae6fd8f7461274e9f198cbbe7c6  tree/module/spring-boot-webflux/build/libs/spring-boot-webflux-4.2.0-SNAPSHOT.jar",
+        "6f2da2f502968ccfb3b3145e62fb7426d0333ca8043e44d0f42c523734c0db0e  tree/module/spring-boot-webflux/build/libs/spring-boot-webflux-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "4718f3abed88ac32eb40ae5d8c84c85a0b5e3edd1a7fbe8061d5263e639ef1d0  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT.jar",
+        "81bb9457a999c5fec6e206a3da06f3da79f0d4f78ee36d0cd72822dd511c1147  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "3fc2229e3df0b9feda795e06e107fbf3b9dfc5929bb50ef5ab7d9db2fd04a414  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT.jar",
+        "08cd6af1ccbd87f5aa3e984e795d85f7c00992d829d7bb62b6f9407fc8d4d042  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "08065334ae7b8ab40da99ac5059ebe16a0d65ca394d1412705c43850c9eaa8c7  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/actuate/endpoint/AdditionalHealthEndpointPath.class",
+        "90d007b67d307b8ba64fe7948b8a9947deb0024d618e61aec7210dfc2c0d5159  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/actuate/endpoint/HealthEndpointSupport$GroupMatch.class",
+        "5c726b30c3bfe91d3c998303ec80606d6ddf81d330fcfe1e013b5e423aa86513  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/actuate/endpoint/HealthEndpointSupport$Result.class",
+        "af752c1b5e7a78b2addf6985eb05c31aa942e335320360aabf8f306a4da9f789  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/actuate/endpoint/HealthEndpointSupport.class",
+        "22b4ce2faa22e57323c2f0aa2e12a1b80af2ccac2e74f61c290a1afd9891418b  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$AbstractWebMvcEndpointHandlerMappingRuntimeHints.class",
+        "e72670ff23b2ebcd130c65cec754271823d57d518efa2641a7a050a38610432f  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$CatchAllHandler.class",
+        "490f6464bacd414f06475f7e7f7be2a7bd23b1eb7f3282c5571453bec2b1a627  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$InvalidEndpointBadRequestException.class",
+        "15e66c9fcc4facc772c925d847c3e1a1238eb14e4cbf788145362fa17d70421a  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$LinksHandler.class",
+        "eaed203e1297545c7be1e4805e5b29dae5895db2428d40282b9e4e456bdc6083  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$OperationHandler.class",
+        "f4dbe817ab3ce440860e31c531a4abe6b5292b026605095246a6b474127d633e  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$ServletSecurityContext.class",
+        "ebcea73d0ad1583370cb2823e75fb4da27c7f91f72a122b72cbb1bb78e9be169  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$ServletWebOperation.class",
+        "ec79bdb00a23908d49867718fdbaf33c8e7fee08c7e40d1bd4df00b8977d1ded  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$ServletWebOperationAdapter$FluxBodyConverter.class",
+        "9f31a045ca856d3a2f22c91d46df65270f721f1defcf3418660034a963cac64c  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$ServletWebOperationAdapter.class",
+        "a047c1dd77d337c415957e0d1612d607c31412451d77c1379b49e3e9445532a2  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$WebMvcEndpointHandlerMethod.class",
+        "b4bff4570f711936bc9ce545c8ac7c353156203f52fe509a2af7b9eb3cdd94a4  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S33 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S33 parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 368.175,
+      "cpuSeconds": 1003.703,
+      "cpuThrottledSeconds": 349.733,
+      "peakMemoryBytes": 5057871872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s33-parent-build-and-the-paren.log",
+        "lines": 74,
+        "bytes": 12101,
+        "sha256": "340bd20b85568d0d2ad3d9f257be9c4f02b1ab6da8c52cc7103ffc26fc4ec63b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "5cd192dcf36825d4b499081b008654a620f2b0e66546d097c321aac0cf935ee0  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT.jar",
+        "d0e07fed611d7fa4189c5f76685191e2c8200c39e5f83a7991b5073a82a5aefb  tree/module/spring-boot-actuator/build/libs/spring-boot-actuator-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "f7c30d4acc7ac5cde36dae6fe84903e85199e33d5abe55b84cbff8b5a5dffb1d  tree/module/spring-boot-health/build/libs/spring-boot-health-4.2.0-SNAPSHOT.jar",
+        "da6041d735172517454279b9d8f65b19d08bac7b07a7f8b1d5b20af40f0cb7a2  tree/module/spring-boot-http-client/build/libs/spring-boot-http-client-4.2.0-SNAPSHOT.jar",
+        "dfb68346348a10809f1d345ca2bc52a2a3e6135ee2af5ca30f95cd9fe39fe48e  tree/module/spring-boot-http-codec/build/libs/spring-boot-http-codec-4.2.0-SNAPSHOT.jar",
+        "b59323dfd918d3ee3d50650fa948361024322864a0cfe72a6b90f6652da3f147  tree/module/spring-boot-http-converter/build/libs/spring-boot-http-converter-4.2.0-SNAPSHOT.jar",
+        "604d547557ce62b8417f095887f9510c761ed702e2b6d0ffbf7d67aa5c796af9  tree/module/spring-boot-jackson2/build/libs/spring-boot-jackson2-4.2.0-SNAPSHOT.jar",
+        "f963dbe85b65fdbf4e93cbc6458cd5b37cc5fd2298d2f8cc22ca63ac4dbfd951  tree/module/spring-boot-jackson/build/libs/spring-boot-jackson-4.2.0-SNAPSHOT.jar",
+        "639b8c5af94a49879ee82e769de94092f4bc881fe051fa326f6345575dce4563  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.2.0-SNAPSHOT.jar",
+        "d36713db46f9d41077defe12daf252e8b685845b51e1925307df2fa898bdf524  tree/module/spring-boot-jersey/build/libs/spring-boot-jersey-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "ec68bf5154fba8e56cad50b5477fd26ec2b140b79d52cb8a881e8f7241f0814f  tree/module/spring-boot-micrometer-metrics/build/libs/spring-boot-micrometer-metrics-4.2.0-SNAPSHOT.jar",
+        "c2ea7f57146d8670dd61f5bac490d5be4c731bfae0b70533c18b42d6295641f5  tree/module/spring-boot-micrometer-observation/build/libs/spring-boot-micrometer-observation-4.2.0-SNAPSHOT.jar",
+        "31641ebdbbe63a4054a82ecab87dbc9f550032f2e74930424d3e7032f33517d3  tree/module/spring-boot-netty/build/libs/spring-boot-netty-4.2.0-SNAPSHOT.jar",
+        "86d4c92d0c306525faf7a054493c8e140500b73b9fc4c70e3d5e3bc90f432cc7  tree/module/spring-boot-reactor-netty/build/libs/spring-boot-reactor-netty-4.2.0-SNAPSHOT.jar",
+        "ebec182527bdc0bd164e99e40835b7d0b7d236ec00efb328d4ab51c20d51cc8c  tree/module/spring-boot-restclient/build/libs/spring-boot-restclient-4.2.0-SNAPSHOT.jar",
+        "ffe3ff7ee68da360cb584f5ff0c4667680c96840792110a29e5087f087984951  tree/module/spring-boot-resttestclient/build/libs/spring-boot-resttestclient-4.2.0-SNAPSHOT.jar",
+        "5b621c58d05a3025e25b5e4861b13c62e4d3f26bf4998a54e4eca35ead653532  tree/module/spring-boot-servlet/build/libs/spring-boot-servlet-4.2.0-SNAPSHOT.jar",
+        "28d872836630b05795363adadfecb34bb421d298230d52c4f77b3c15c3986700  tree/module/spring-boot-tomcat/build/libs/spring-boot-tomcat-4.2.0-SNAPSHOT.jar",
+        "ed9aefe98121d20c372af6dd6bb6f53c18f256f61ec2952cbb8697dbd3a30986  tree/module/spring-boot-validation/build/libs/spring-boot-validation-4.2.0-SNAPSHOT.jar",
+        "4634d010e34e94bd04f944a759eeaa4215177ae6fd8f7461274e9f198cbbe7c6  tree/module/spring-boot-webflux/build/libs/spring-boot-webflux-4.2.0-SNAPSHOT.jar",
+        "6f2da2f502968ccfb3b3145e62fb7426d0333ca8043e44d0f42c523734c0db0e  tree/module/spring-boot-webflux/build/libs/spring-boot-webflux-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "5db2dd9f5fd11d8bd40529ec287b5ce450a7484f82043927871a4bd385654b47  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT.jar",
+        "81bb9457a999c5fec6e206a3da06f3da79f0d4f78ee36d0cd72822dd511c1147  tree/module/spring-boot-webmvc/build/libs/spring-boot-webmvc-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "3fc2229e3df0b9feda795e06e107fbf3b9dfc5929bb50ef5ab7d9db2fd04a414  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT.jar",
+        "08cd6af1ccbd87f5aa3e984e795d85f7c00992d829d7bb62b6f9407fc8d4d042  tree/module/spring-boot-web-server/build/libs/spring-boot-web-server-4.2.0-SNAPSHOT-test-fixtures.jar",
+        "426c4002dd5f8625fe88e1ffdde25d7700655f9b48e8a8f6c48035380260e8c8  tree/test-support/spring-boot-test-support/build/libs/spring-boot-test-support-4.2.0-SNAPSHOT.jar",
+        "ffcb647c378c8e6c1515684420c516eee0a2883748a20fd3532988602c643d3c  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/actuate/endpoint/AdditionalHealthEndpointPath.class",
+        "dfaaf4a70e34162dde49615098d18361ea887fee358f6cba4f14f31561e43234  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/actuate/endpoint/HealthEndpointSupport$Result.class",
+        "f5e8021ecd77aa8fb2ac5483bfe1b0607becc17fa0d2078fbe2e66bba9371cbc  spring-boot-health-4.2.0-SNAPSHOT.jar!/org/springframework/boot/health/actuate/endpoint/HealthEndpointSupport.class",
+        "7c10bc28e1984e5865294974021edbe0a024f1eed5d275669e2df29836ef3069  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$AbstractWebMvcEndpointHandlerMappingRuntimeHints.class",
+        "3b6e064ac2e723aa51bb81ae957984cb5a4b1333cdf3b2dc7c9abffe5748fc9d  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$CatchAllHandler.class",
+        "05bc995247d3cc4020e11455eea92ef2252b97133d04fdbfff1efe9b2cee6ffe  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$InvalidEndpointBadRequestException.class",
+        "15e66c9fcc4facc772c925d847c3e1a1238eb14e4cbf788145362fa17d70421a  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$LinksHandler.class",
+        "66cf114affbb10a8f5119a06fec23564fd44513f589150181dbf79dc13c11eed  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$OperationHandler.class",
+        "1825bc6a81c7e90d0d38581f6bd03078b21e541ce8ec4ef16f0152169f290853  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$ServletSecurityContext.class",
+        "ebcea73d0ad1583370cb2823e75fb4da27c7f91f72a122b72cbb1bb78e9be169  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$ServletWebOperation.class",
+        "91715c43728a6c1ab234cd9f8db27bbd4643bde8555447715ac64028f9f682fc  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$ServletWebOperationAdapter$FluxBodyConverter.class",
+        "85f1534ee32c77f09e7e628bd5d3c98f16f7fbebc16cc7080be92fe99c29f120  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$ServletWebOperationAdapter.class",
+        "33cebe768985cbfcae7b1380720e3a5453e341f50f90a067131a24592787ffe7  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping$WebMvcEndpointHandlerMethod.class",
+        "97097cd533dc52b3c24ad8e86e97bab9dd0c1db7d6fe959e8921d2c1408f2c08  spring-boot-webmvc-4.2.0-SNAPSHOT.jar!/org/springframework/boot/webmvc/actuate/endpoint/web/AbstractWebMvcEndpointHandlerMapping.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S33 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S33 transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 111.27,
+      "cpuSeconds": 310.916,
+      "cpuThrottledSeconds": 301.694,
+      "peakMemoryBytes": 5248753664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s33-transplant-the-fix-s-tests.log",
+        "lines": 35,
+        "bytes": 5991,
+        "sha256": "4b9fc9cfc16b523cffbe01ec5ac4d50ff5e27dd54779ec337c1b0347f19aec4c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-actuator-autoconfigure/src/testFixtures/java/org/springframework/boot/actuate/autoconfigure/integrationtest/AbstractHealthEndpointAdditionalPathIntegrationTests.java",
+        "transplanted module/spring-boot-health/src/test/java/org/springframework/boot/health/actuate/endpoint/AdditionalHealthEndpointPathTests.java",
+        "transplanted module/spring-boot-health/src/test/java/org/springframework/boot/health/actuate/endpoint/HealthEndpointSupportTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S33-parent-landed gradle=9.7.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=111 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01",
+        "junit tests=127 failures=12 errors=0 skipped=0",
+        "junit failed AdditionalHealthEndpointPathTests#fromPathWithMultipleSegmentsNotStartingWithSlashShouldCreatePath()",
+        "junit failed AdditionalHealthEndpointPathTests#ofWithMultipleSegmentValueShouldCreatePath()",
+        "junit failed AdditionalHealthEndpointPathTests#fromPathWithMultipleSegmentsShouldCreatePath()",
+        "junit failed HealthEndpointTests#getResultWhenGroupHasMultiSegmentAdditionalPath()",
+        "junit failed HealthEndpointWebExtensionTests#getResultWhenGroupHasMultiSegmentAdditionalPath()",
+        "junit failed ReactiveHealthEndpointWebExtensionTests#getResultWhenGroupHasMultiSegmentAdditionalPath()",
+        "junit failed JerseyHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()",
+        "junit failed JerseyHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()",
+        "junit failed WebFluxHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()",
+        "junit failed WebFluxHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()",
+        "junit failed WebMvcHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments()",
+        "junit failed WebMvcHealthEndpointAdditionalPathIntegrationTests#healthComponentIsAvailableWhenMultiSegmentAdditionalPathIsConfigured()",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.health.actuate.endpoint.AdditionalHealthEndpointPathTests junit tests=15 failures=3 errors=0 skipped=0 junit failed AdditionalHealthEndpointPathTests#fromPathWithMultipleSegmentsNotStartingWithSlashShouldCreatePath() junit failed AdditionalHealthEndpointPathTests#ofWit",
+        "class org.springframework.boot.health.actuate.endpoint.HealthEndpointTests junit tests=28 failures=1 errors=0 skipped=0 junit failed HealthEndpointTests#getResultWhenGroupHasMultiSegmentAdditionalPath() ",
+        "class org.springframework.boot.health.actuate.endpoint.HealthEndpointWebExtensionTests junit tests=27 failures=1 errors=0 skipped=0 junit failed HealthEndpointWebExtensionTests#getResultWhenGroupHasMultiSegmentAdditionalPath() ",
+        "class org.springframework.boot.health.actuate.endpoint.ReactiveHealthEndpointWebExtensionTests junit tests=27 failures=1 errors=0 skipped=0 junit failed ReactiveHealthEndpointWebExtensionTests#getResultWhenGroupHasMultiSegmentAdditionalPath() ",
+        "class org.springframework.boot.webmvc.autoconfigure.actuate.endpoint.web.WebMvcHealthEndpointAdditionalPathIntegrationTests junit tests=10 failures=2 errors=0 skipped=0 junit failed WebMvcHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments() junit failed",
+        "class org.springframework.boot.webflux.autoconfigure.actuate.endpoint.web.WebFluxHealthEndpointAdditionalPathIntegrationTests junit tests=10 failures=2 errors=0 skipped=0 junit failed WebFluxHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments() junit fai",
+        "class org.springframework.boot.jersey.autoconfigure.actuate.web.JerseyHealthEndpointAdditionalPathIntegrationTests junit tests=10 failures=2 errors=0 skipped=0 junit failed JerseyHealthEndpointAdditionalPathIntegrationTests#groupIsAvailableAtAdditionalPathWithMultipleSegments() junit failed JerseyHe",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S33 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S33 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 2.608,
+      "cpuSeconds": 1.618,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 70742016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s33-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "3cf79ccbed622abd8d7119f2f843b885ec75e7fecf4ad8ab26960e730f61ef3d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S33"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T12:37:29+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T123720Z-961739191cff89fe"
+    }
+  }
+}
