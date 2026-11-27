@@ -1,0 +1,344 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-091103-setup-build-spring-boot-50271-s22-at-bot",
+  "title": "Setup: build Spring Boot #50271 (S22) at both pins and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 3 failed, 1 passed step(s) in 3m51s, peak 2.7 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S22 fix: build and landed tests) exited 1, expected 0",
+    "step 2 (S22 parent: build and the parent's tests) exited 1, expected 0",
+    "step 3 (S22 transplant: the fix's tests on the parent) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-091103-setup-build-spring-boot-50271-s22-at-bot.json",
+    "sha256": "4d1bd41b902b26c72e635e9aef05061f6beee70d9b9f2a17075219186489ff4d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-091103-setup-build-spring-boot-50271-s22-at-bot",
+      "title": "Setup: build Spring Boot #50271 (S22) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S22 (spring-projects/spring-boot#50271: Derive a migration data source through a lazy connection proxy). In the worktrees $P/worktrees/S22-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-jdbc with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (DataSourceBuilderTests (test) DataSourceUnwrapperTests (test) LiquibaseAutoConfigurationTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-jdbc module:spring-boot-liquibase in $P/artifacts/S22-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S22",
+      "submitted": {
+        "at": "2026-11-27T09:11:03+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "steps": [
+        {
+          "name": "S22 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S22 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S22 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S22 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+  "startedAt": "2026-11-27T09:35:59+00:00",
+  "finishedAt": "2026-11-27T09:40:02+00:00",
+  "wallSeconds": 243.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2137390,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "usage": {
+    "peakMemoryBytes": 2891264000,
+    "wallSeconds": 231.7,
+    "cpuSeconds": 568.2,
+    "memoryOfEstimate": 0.45,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S22 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 fix",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 101.872,
+      "cpuSeconds": 251.141,
+      "cpuThrottledSeconds": 18.62,
+      "peakMemoryBytes": 2891264000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s22-fix-build-and-landed-tests.log",
+        "lines": 16,
+        "bytes": 1589,
+        "sha256": "ac95ed75265abbdc238cf10969c6e82ee3eebb3690ce345cb8cb87364797dc54",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S22-fix gradle=9.5.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=71 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/sc",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:validatePlugins UP-TO-DATE",
+        "> Task :buildSrc:check",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "class org.springframework.boot.jdbc.DataSourceBuilderTests no-result",
+        "class org.springframework.boot.jdbc.DataSourceUnwrapperTests no-result",
+        "class org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfigurationTests no-result",
+        "classpath module:spring-boot-jdbc runtimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S22 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 parent",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 69.411,
+      "cpuSeconds": 175.075,
+      "cpuThrottledSeconds": 6.03,
+      "peakMemoryBytes": 2006941696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s22-parent-build-and-the-paren.log",
+        "lines": 16,
+        "bytes": 1592,
+        "sha256": "6def1e24cab476e528c68a6f90d6a6a29a07811d38daa4b3f847804b700f7c71",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S22-parent gradle=9.5.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=36 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:validatePlugins UP-TO-DATE",
+        "> Task :buildSrc:check",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "class org.springframework.boot.jdbc.DataSourceBuilderTests no-result",
+        "class org.springframework.boot.jdbc.DataSourceUnwrapperTests no-result",
+        "class org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfigurationTests no-result",
+        "classpath module:spring-boot-jdbc runtimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S22 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 transplant",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 54.826,
+      "cpuSeconds": 139.023,
+      "cpuThrottledSeconds": 12.142,
+      "peakMemoryBytes": 2728534016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s22-transplant-the-fix-s-tests.log",
+        "lines": 19,
+        "bytes": 1822,
+        "sha256": "ea3d26079801c01fb30ca259ff75812a0ab928378fc34b5c0b3fb56f8bbbd37b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/DataSourceBuilderTests.java",
+        "transplanted module/spring-boot-jdbc/src/test/java/org/springframework/boot/jdbc/DataSourceUnwrapperTests.java",
+        "transplanted module/spring-boot-liquibase/src/test/java/org/springframework/boot/liquibase/autoconfigure/LiquibaseAutoConfigurationTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S22-parent-landed gradle=9.5.0 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=54 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:validatePlugins",
+        "> Task :buildSrc:check",
+        "> Task :buildSrc:pluginDescriptors",
+        "class org.springframework.boot.jdbc.DataSourceBuilderTests no-result",
+        "class org.springframework.boot.jdbc.DataSourceUnwrapperTests no-result",
+        "class org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfigurationTests no-result",
+        "TRANSPLANT DID NOT FAIL (gradle-exit=1)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S22 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S22 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.611,
+      "cpuSeconds": 2.938,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 210141184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s22-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "2a4fccbd71862c26f3d203c6c7c7d010a11b26e77eb2f6dd530a3860144eb7aa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S22"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T09:40:51+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T094002Z-6479419286060305",
+      "workdir": "20261127T094022Z-154861c0c24e14e0"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-091103-setup-build-spring-boot-50271-s22-at-bot"
+}
