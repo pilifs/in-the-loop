@@ -216,7 +216,7 @@ def upstream_test_classes(tree, pins):
     return test_classes
 
 
-def deployments(row, destination):
+def deployments(row, destination, *, production_origin=None):
     runtime = read(example(row["number"]) / "runtime.json")
     cache = CACHE / BATCHES[row["batch"]][3]
     if cache.name != runtime["cache"]:
@@ -226,6 +226,14 @@ def deployments(row, destination):
         raise PreparationStop("original JDK is unavailable or has changed")
     tree = worktree(cache, row["slot"], "fix")
     test_classes = upstream_test_classes(tree, row["pins"])
+    if production_origin:
+        from functional_scope import identity
+        from production_origin import inspect
+        if inspect(row) != production_origin:
+            raise PreparationStop("unverified production-origin exemption")
+        if production_origin["identitySha256"] != identity(row) or production_origin.get("jarBytesChanged") is not False:
+            raise PreparationStop("post-reveal source evidence belongs to another original deployment")
+        test_classes = test_classes - set(production_origin["classNames"])
     exported, variants = {}, []
     for variant, dep in runtime["deployments"].items():
         if dep.get("service") or dep.get("postgresImage") or dep.get("mysqlImage"):
@@ -258,7 +266,7 @@ def deployments(row, destination):
             "old": variants[0]["old"], "new": variants[0]["new"]}
 
 
-def export_packet(row, arm, destination, *, decision, registration=None):
+def export_packet(row, arm, destination, *, decision, registration=None, production_origin=None):
     if arm not in ARMS or row["number"] in RESERVED or not row["eligible"]:
         raise PreparationStop("row or arm outside the declared evaluation")
     if (arm == "reviewed") != (registration is not None):
@@ -272,7 +280,7 @@ def export_packet(row, arm, destination, *, decision, registration=None):
     contents, visibility = source_material(row, destination, metadata, arm, approved_tests=decision["approvedTests"])
     packet = {"schema": "blind-caller-packet/v1", "arm": arm, "url": row["url"],
               "oldRevision": row["pins"]["parent"], "newRevision": row["pins"]["fix"],
-              "functionalReview": functional_review, **contents, **deployments(row, destination)}
+              "functionalReview": functional_review, **contents, **deployments(row, destination, production_origin=production_origin)}
     if registration is not None:
         packet["reviewed"] = registration
     write(destination / "packet.json", packet)

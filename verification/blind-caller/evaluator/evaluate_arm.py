@@ -118,7 +118,7 @@ def store_new(stage, destination):
         raise ValueError("a different immutable attempt already occupies this slot")
 
 
-def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, seconds, trace_seal=None):
+def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, seconds, trace_seal=None, repair_after=None):
     if phase == "trace" and arm != "test-assisted":
         raise ValueError("upstream traces are exclusive to the test-assisted diagnostic")
     draw = at(reference_seal, HERE / "draw.json")
@@ -142,12 +142,28 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
             raise ValueError("per-slot functional review is missing or belongs to another PR")
     prior = None
     trace_input = None
+    storage_arm = "repaired" if repair_after else arm
+    if repair_after:
+        from adjudicate import require_all_arms
+        if arm != "cold" or phase not in ("predict", "measure"):
+            raise ValueError("the post-reveal packaging repair requires a fresh production-only view")
+        first_score = at(repair_after, HERE / "score.json")
+        require_all_arms(reference_seal, first_score["armSeals"], draw)
+        first = at(first_score["armSeals"]["cold"], filename("cold", index, "predict", "attempt.json"))
+        if (not decisions["cases"][index-1]["permitted"] or first["status"] != "preparation stop"
+                or first.get("reason") != "a deployment embeds an original upstream test class"):
+            raise ValueError("repair is restricted to the original approved classifier stop")
     if arm != "cold":
         verify_predictions(cold_seal, "cold", draw)
     if arm == "test-assisted" and phase != "trace":
         trace_input = verify_traces(trace_seal, cold_seal, reference_seal, draw)[index - 1]
     if phase == "measure":
-        prior = verify_predictions(prediction_seal, arm, draw)[index - 1]
+        if repair_after:
+            prior = at(prediction_seal, filename(storage_arm, index, "predict", "attempt.json"))
+            if prior["repairAfter"] != repair_after or prior["arm"] != storage_arm or prior["producerRevision"] != draw["producerRevision"]:
+                raise ValueError("repair measurement needs its own post-reveal prediction seal")
+        else:
+            prior = verify_predictions(prediction_seal, arm, draw)[index - 1]
     row = draw["cases"][index - 1]
     ref = refs["references"][index - 1]
     decision = decisions["cases"][index - 1]
@@ -162,22 +178,24 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
     limit = policy[{"predict": "predictionSeconds", "measure": "measurementSeconds", "trace": "traceSeconds"}[phase]]
     if seconds is not None and seconds != limit:
         raise ValueError("requested time budget differs from the frozen producer policy")
-    destination = filename(arm, index, phase, "attempt.json").parent
+    destination = filename(storage_arm, index, phase, "attempt.json").parent
     if (destination / "attempt.json").is_file():
         old = read(destination / "attempt.json")
         if (old["producerRevision"], old["referenceSeal"], old["arm"], old["phase"], old["url"],
-            old.get("predictionSeal"), old.get("coldSeal"), old.get("traceSeal")) != (draw["producerRevision"], reference_seal,
-                    arm, phase, row["url"], prediction_seal, cold_seal, trace_seal):
+            old.get("predictionSeal"), old.get("coldSeal"), old.get("traceSeal"), old.get("repairAfter")) != (draw["producerRevision"], reference_seal,
+                    storage_arm, phase, row["url"], prediction_seal, cold_seal, trace_seal, repair_after):
             raise ValueError("this slot already holds a different attempt")
         return old["status"]
     with tempfile.TemporaryDirectory(prefix="caller-sealed-view-") as tmp:
         work = Path(tmp)
         stage = work / "receipt"
         stage.mkdir()
-        attempt = {"schema": "blind-caller-attempt/v1", "index": index, "phase": phase, "arm": arm, "url": row["url"],
+        attempt = {"schema": "blind-caller-attempt/v1", "index": index, "phase": phase, "arm": storage_arm, "url": row["url"],
                    "producerRevision": draw["producerRevision"], "preregistration": draw["preregistration"],
                    "functionalDecisionSha256": decision_hash(decision),
                    "referenceSeal": reference_seal, "coldSeal": cold_seal, "predictionSeal": prediction_seal, "traceSeal": trace_seal}
+        if repair_after:
+            attempt["repairAfter"] = repair_after
         try:
             if not decision["permitted"] or ref["safetyAbstention"]:
                 raise PreparationStop("scoped abstention: ordinary functionality was not affirmatively established")
@@ -185,7 +203,15 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
                 raise PreparationStop("prediction stopped before a candidate was sealed")
             if prior is not None and prior["candidateCount"] == 0:
                 raise PreparationStop("frozen prediction abstained from nominating a candidate")
-            counts = export_packet(registered, arm, work / "view", decision=decision,
+            origin = None
+            if repair_after:
+                from production_origin import inspect
+                origin = inspect(registered)
+                write(stage / "production-origin.json", origin)
+                attempt["originSha256"] = digest(stage / "production-origin.json")
+                if prior and prior.get("originSha256") != attempt["originSha256"]:
+                    raise PreparationStop("original source or binary changed after the repair prediction")
+            counts = export_packet(registered, arm, work / "view", decision=decision, production_origin=origin,
                                    registration=reviewed(ref) if arm == "reviewed" else None)
             packet_file = work / "view/packet.json"
             packet = read(packet_file)
@@ -215,7 +241,10 @@ def run_one(index, phase, arm, reference_seal, cold_seal, prediction_seal, *, se
             if prior:
                 sealed = work / "sealed"
                 sealed.mkdir()
-                (sealed / "prediction.json").write_bytes(blob(prediction_seal, filename(arm, index, "predict", "prediction.json")))
+                data = blob(prediction_seal, filename(storage_arm, index, "predict", "prediction.json"))
+                if hashlib.sha256(data).hexdigest() != prior["predictionSha256"]:
+                    raise ValueError("frozen prediction bytes differ")
+                (sealed / "prediction.json").write_bytes(data)
                 attempt["predictionSha256"] = prior["predictionSha256"]
             jdk = Path(read(work / "view/packet.json")["jdk"])
             out, boundary = launch(phase, work / "product", work / "view", work / "scratch", jdk, sentinel,

@@ -78,9 +78,9 @@ def collect(args):
         with zipfile.ZipFile(io.BytesIO(raw)) as archive:
             for member in archive.infolist():
                 p = PurePosixPath(member.filename)
-                if (len(p.parts) != 5 or p.parts[0] != "arms" or p.parts[1] not in ARMS or not p.parts[2].isdigit()
+                if (len(p.parts) != 5 or p.parts[0] != "arms" or p.parts[1] not in (*ARMS, "repaired") or not p.parts[2].isdigit()
                         or not 1 <= int(p.parts[2]) <= 20 or p.parts[3] not in ("predict", "measure", "trace")
-                        or p.name not in ("attempt.json", "view.json", "prediction.json", "measurement.json", "trace.json", "artifacts.zip")):
+                        or p.name not in ("attempt.json", "view.json", "prediction.json", "measurement.json", "trace.json", "artifacts.zip", "production-origin.json")):
                     raise ValueError("unexpected file in collector shard")
                 interim = area / p
                 interim.parent.mkdir(parents=True, exist_ok=True)
