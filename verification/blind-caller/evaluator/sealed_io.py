@@ -1,6 +1,7 @@
 """Read immutable evaluator inputs in a workspace or in the verification runner's plain export."""
 from functools import lru_cache
 import io
+import json
 import os
 from pathlib import Path
 import re
@@ -8,7 +9,7 @@ import subprocess
 import tempfile
 import zipfile
 
-from eligibility_inventory import CACHE, ROOT, digest
+from eligibility_inventory import CACHE, HERE, ROOT, digest
 
 
 def committed_input(revision, name):
@@ -20,8 +21,25 @@ def committed_input(revision, name):
     # An exported runner checkout deliberately has no .git. Only the evaluator uses
     # the pipeline's documented repository handle; the worker sees materialized bytes.
     repository = ROOT if (ROOT / ".git").exists() else Path(os.environ["VERIFY_RUNNER_ROOT"])
-    return subprocess.check_output(["git", "-C", str(repository), "show", f"{revision}:{rel.as_posix()}"],
-                                   stderr=subprocess.PIPE)
+    git = ["git", "-C", str(repository)]
+    try:
+        return subprocess.check_output([*git, "show", f"{revision}:{rel.as_posix()}"], stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError:
+        aliases = HERE / "seal-aliases.json"
+        row = json.loads(aliases.read_bytes())["revisions"].get(revision) if aliases.is_file() else None
+        if not row:
+            raise
+        for subtree, recorded_tree in row["subtrees"].items():
+            if not rel.is_relative_to(subtree):
+                continue
+            reachable = row["reachable"]
+            if not re.fullmatch(r"[0-9a-f]{40}", reachable):
+                raise ValueError("invalid reachable evaluator revision")
+            tree = subprocess.check_output([*git, "rev-parse", "--verify", f"{reachable}:{subtree}"], text=True).strip()
+            if tree != recorded_tree:
+                raise ValueError("replacement revision has a different evaluator subtree")
+            return subprocess.check_output([*git, "show", f"{reachable}:{rel.as_posix()}"], stderr=subprocess.PIPE)
+        raise
 
 
 def pack_files(root, destination):
