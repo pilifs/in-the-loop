@@ -1003,3 +1003,86 @@ Determine what an application, HTTP or database client, or packaged-archive cons
 **Technical notes.** `module/spring-boot-flyway` supplies the provider. A native runtime must include the SQL resource, a supported JDBC driver and Flyway database support. The normal JVM scanner delegates differently; a JVM-only run establishes a control, not native integration.
 
 **Sources.** [Resource discovery and path conversion](https://github.com/spring-projects/spring-boot/blob/21cb821f9553c048566b9a1779729c78167439a0/module/spring-boot-flyway/src/main/java/org/springframework/boot/flyway/autoconfigure/NativeImageResourceProvider.java) · [Nested content readback](https://github.com/spring-projects/spring-boot/blob/21cb821f9553c048566b9a1779729c78167439a0/module/spring-boot-flyway/src/test/java/org/springframework/boot/flyway/autoconfigure/NativeImageResourceProviderTests.java) · [spring-boot-flyway build](https://github.com/spring-projects/spring-boot/blob/21cb821f9553c048566b9a1779729c78167439a0/module/spring-boot-flyway/build.gradle) · [Issue #50422](https://github.com/spring-projects/spring-boot/issues/50422)
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- `source ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/env.sh` (`$P`, `$W`, `$M`, `TMPDIR`, `GRADLE_USER_HOME`, JDKs
+  `$J8`…`$J25`, GraalVM `$JG25`). The default `java` is JDK 25; the Boot 4 builds need it.
+- **Every pin checked out**: `$W/CASE-parent` and `$W/CASE-fix` for S01–S50 (100 worktrees, full commit ids in the revision table of
+  [Upstream revisions](#upstream-revisions); `CASE` labels are this record's, not example ids). Mirror `$M/spring-boot.git`, refs
+  `refs/pins/s01-s50/*`. S16's intermediate commits and the two foreign commits (Spring Batch for S24, Spring Kafka's
+  `AwaitAsyncResultsOnStopTests` for S30) are in [Upstream revisions](#upstream-revisions) and [Other repositories](#other-repositories).
+- **Dependencies resolved** for every configuration of each case's projects (`cases.tsv` column 4) **and of every project they
+  reach through project dependencies**, at both pins, in `$P/gradle-home`; that resolution was repeated `--offline` and resolves
+  from the cache for all 98 worktrees ([Online resolution](#online-resolution)). Run Gradle with `$P/scripts/gradle_case.sh` (the
+  pins' own Gradle, verified) and `--offline`; the [Commands](#commands-for-a-rerun-by-hand) section has the forms for a task, a
+  classpath file, and resolving more.
+- **Built artifacts**: `$P/artifacts/CASE-ROLE/` with `jars/`, `SHA256SUMS`, and `PROJECT.runtimeClasspath.txt` /
+  `PROJECT.testRuntimeClasspath.txt` (`:`-joined, ready for `java -cp`; project outputs under `tree/`, Gradle's generated API
+  jars under `gradle-home/`). Complete for all 49 Gradle cases (S01–S50 except S16), and [Job results](#job-results) has their digests.
+- **Released versions the brief names** in `$P/releases/SET/` (`jars/`, `classpath.txt`): Boot 4.0.6, 4.0.7, 4.1.0, 4.1.1, 4.2.0-RC1,
+  3.5.14, Framework 7.0.9, Tomcat 11.0.24, datasource-decorator 2.0.1, maven-war-plugin 3.5.1, GraalVM build tools 0.11.5
+  ([Released artifacts](#released-artifacts) has the row per set).
+- **Docker images** for the service claims: `rabbitmq:4.2-management`, `redis:7.0.11`, `redis:8.6.2`, `mongo:5.0.17`,
+  `apache/kafka:3.7.0`, `postgres:17`, `testcontainers/ryuk:0.14.0` (digests in [Docker images](#docker-images)).
+- **S16** (2017): `bash $P/scripts/slice_s16.sh`, the parent's slice jar `$P/slices/S16-parent-boot-2.0.0.M2-s16/S16-parent-boot-2.0.0.M2-s16-slice.jar`,
+  and the sets `boot-2.0.0.M2-s16`, `boot-2.0.0.M2-fwRC3-s16`, `boot-2.0.0.M3-s16`, `tests-S16-m2`, `tests-S16`, `tests-S16-m3`.
+
+### What was verified on a JVM
+
+- **46 Gradle cases** (jobs, JDK 25, offline except S10 and S48): the landed tests pass at the fix, the parent's versions pass at
+  the parent, and the fix's tests fail on a copy of the parent (or do not compile there). The methods, or the task and first
+  error, are in [Job results](#job-results): S01–S10, S13–S15, S17–S45 and S47–S50. That is every Gradle case but S11, S12
+  and S46.
+- **S11, S12, S46**: the landed tests pass at the fix and the parent's at the parent, but the fix's tests **also pass on the
+  parent** (S11 23, S12 107 with the three landed runner tests, S46 9). No landed regression separates the two pins of these
+  three in this build; see [Job results](#job-results) for S12's snapshot caveat.
+- Of those 46, S24 and S30 ran with `-Werror` dropped from `:module:spring-boot-micrometer-metrics` only (each log shows the
+  arguments), and S30 against Spring Kafka 4.2.0-M2. S32 ran its abstract `HealthEndpointSupportTests` through the three
+  concrete subclasses.
+- S16 (slice route, JDK 8): the parent's `WebFluxAutoConfigurationTests` pass on the parent slice over Boot 2.0.0.M2 (15 tests); the
+  fix's three landed test classes do not compile on the parent slice (`CodecCustomizer`, `WebClientCustomizer` absent); on the
+  release Boot 2.0.0.M3 they run 21 tests with 1 failure (`WebClientAutoConfigurationTests#shouldGetPrototypeScopedBean`, RC3's
+  `WebClient` rejects the test's empty mocked response). The fix pin itself was not run (see below).
+
+### What to know before starting
+
+- **Snapshots are today's newest builds**, the same bytes for both pins of a case, mostly dated after the pins
+  ([Snapshot dependencies](#snapshot-dependencies), 222 jars, per-jar sha256 in `$P/logs/snapshots.txt`). Stay `--offline`, or a
+  build may fetch a newer one.
+- **A `--dry-run` proves nothing about offline resolution**; resolve what you add with `resolve_closure.sh` (online, then the
+  same with `RESOLVE_ARGS=--offline RESOLVE_TAG=…`). `repo.spring.io` had intermittent DNS failures on 2026-11-27: an online
+  run that prints `Could not HEAD 'https://repo.spring.io/…'` is to be rerun, not believed.
+- **S30 substitutes Spring Kafka 4.2.0-M2** for the pins' `4.2.0-SNAPSHOT` (`-I $P/scripts/subst-spring-kafka.init.gradle`, which
+  `case_job.sh` adds; add it yourself for any other S30 build). Label S30 evidence as built against 4.2.0-M2.
+- **S24 and S30 build `:module:spring-boot-micrometer-metrics` without `-Werror`**
+  (`-I $P/scripts/no-werror-micrometer-metrics.init.gradle`, which `case_job.sh` adds). The only Micrometer `1.18.0-SNAPSHOT`
+  still served deprecates the AppOptics registry, which that project uses. Add the script to any other build at these pins that
+  compiles that project.
+- **Name concrete test classes in `--tests`**: a filter on an abstract class (S32's `HealthEndpointSupportTests`) matches nothing,
+  and Gradle reports success with 0 tests. Gradle 9 also hashes the XML file name of a class whose `TEST-CLASS.xml` passes 120
+  bytes, so find results by `<testsuite name>` (`$P/scripts/class_counts.py RESULTDIR CLASS`), not by file name.
+- **S16's fix compiles against no released Framework**: its `CodecsAutoConfiguration` calls `jackson2Decoder/jackson2Encoder`, which
+  RC3 renamed `jackson2JsonDecoder/jackson2JsonEncoder`, and RC2 lacks `WebClient.Builder.clone()` and `codecs(...)`. Boot 2.0.0.M3
+  matches the fix apart from formatting, Javadoc and that rename (`$P/logs/s16-fix-vs-m3.diff`). Label any M3 evidence as the
+  nearest release, not the pin. M2 matches the parent's changed files except test-autoconfigure's `spring.factories`, which the
+  slice carries; release `spring.factories` files still load beside the slice's.
+- **S10 and S48's landed tests need the network** (TestKit downloads Gradle 9.0.0 and the current Gradle; the Maven integration test
+  fetches Maven plugins from Central). S29's `dockerTest` needs Docker.
+- Skip buildSrc's own checks on every Gradle run (`-x :buildSrc:test -x :buildSrc:checkstyleMain -x :buildSrc:checkstyleTest -x
+  :buildSrc:checkFormat`): they cost about 90 s a fresh worktree. At most two Gradle runs on `$P/gradle-home` at once, or give each
+  run its own home over the read-only cache as `case_job.sh` does (`SETUP_GRADLE_HOME=$P/gradle-homes/NAME`,
+  `GRADLE_RO_DEP_CACHE=$P/gradle-home/caches`).
+- `rabbitmq:4.2-management` and `postgres:17` are floating tags pulled on 2026-11-27, newer than the pins.
+- The three shared commits (S12 fix = S32 parent, S14 fix = S27 parent, S28 fix = S41 parent) each have two worktrees with the same
+  tree.
+
+### What is left for the domain work on purpose
+
+- Every claim: the fixtures, the before/after observations, controls and challenges, and examples, sidecars and adapters.
+- How to treat S16 (the parent's slice, M3 as a labelled stand-in, or neither) and whether the S30 substitution is acceptable evidence.
+- The service fixtures the claims describe (Compose files, a Redis cluster, a Kafka broker, a Mongo replica set, a native image for
+  S50) and the HTTP clients and parsers used to observe them.
+- Any build of a module this setup did not resolve (the other changed modules of S27, S19's other smoke tests, the docs build).
