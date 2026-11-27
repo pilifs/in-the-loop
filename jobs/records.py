@@ -36,6 +36,7 @@ def load(name: str, path: Path):
 
 layout = load("verification_layout", Path(__file__).resolve().parents[1] / RECORDS / "layout.py")
 JOBS, RESULTS = layout.JOBS, layout.RESULTS
+BATCHES = "verification/batches"   # the map of each batch's rows to jobs (jobs/batch.py)
 
 
 def head(root: Path) -> str:
@@ -139,6 +140,13 @@ class Snapshot:
             if inside and inside[1] == "result.json":
                 found.setdefault(inside[0], []).append(path)
         return {k: sorted(v, key=lambda p: p.count("/")) for k, v in sorted(found.items())}
+
+    def batches(self) -> list[str]:
+        """The path of every batch's map (verification/batches/NAME.json)."""
+        if self.rev is None:
+            folder = self.root / BATCHES
+            return sorted(p.relative_to(self.root).as_posix() for p in folder.glob("*.json")) if folder.is_dir() else []
+        return sorted(p for p in self._git("ls-tree", "--name-only", self.rev, "--", BATCHES + "/").splitlines() if p.endswith(".json"))
 
     def indexes(self) -> list[str]:
         """The result indexes: the one of the results kept flat, and one a day."""

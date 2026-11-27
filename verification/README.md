@@ -19,6 +19,8 @@ same command under the name it always had, and the commands below work with eith
 
 ```bash
 python3 verification/pipeline.py submit ...      # write verification/jobs/ID.json
+python3 verification/pipeline.py submit --manifest FILE   # a batch: one job a row, and the rows' map in verification/batches/
+python3 verification/pipeline.py batch NAME      # a batch row by row; wait --batch NAME blocks until every row is settled
 python3 verification/pipeline.py status          # the queue
 python3 verification/pipeline.py view            # every job's state and its reason, as data (itl-job-lifecycle/v1)
 python3 verification/pipeline.py run             # run what is pending and what is committed meanwhile, then stop
@@ -58,6 +60,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | `priorities.json` | the queue's priorities by job id, each with its reason, over the jobs' own | `prioritize`, committed |
 | [`pipeline.toml`](pipeline.toml) | the runner's defaults; `~/.config/in-the-loop/pipeline.local.toml` overrides them for the machine, and `pipeline.local.toml` (not committed) for one checkout | |
 | `.state/` (not committed) | the runner's claims, each attempt's record and folders (`attempts/ID/NNN-TOKEN/`: the whole logs, the outputs, the work directory), results not yet collected, the jvmcontract cache, what a runner at work decided about each job it has not started (`scheduling.json`), and what the last collect did (`last-collect.json`) | `run`, `collect` |
+| `batches/NAME.json` | a batch's map: each row of its manifest with the job it is now and the jobs it was ([`jobs/README.md`](../jobs/README.md#a-batch-from-a-manifest)), committed with the batch's jobs | `submit --manifest`, `resubmit` |
 | [`../jobs/`](../jobs/README.md) | the pipeline's shared code: the attempt records ([`attempts.py`](../jobs/attempts.py)), the record readers and the reconciliation ([`audit.py`](../jobs/audit.py)) | |
 
 A job is *pending* while it is committed and has no result, *running* while a runner holds its claim, *finished* when

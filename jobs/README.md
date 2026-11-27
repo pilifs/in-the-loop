@@ -17,6 +17,7 @@ is read in. What is intended and not built is in [`ARCHITECTURE.md`](../ARCHITEC
 | [`lifecycle.py`](lifecycle.py) | what became of a job, each question apart: what its processes did (`execution`), what it delivered (`fulfillment`), what it cost by scope (`timing`). One function each, for the runner that writes a result and for a reader of a result written before the blocks were kept; [`test_lifecycle.py`](test_lifecycle.py) |
 | [`evidence.py`](evidence.py) | what a step did besides exiting: which tests executed, read from JUnit XML reports or the log's summary lines; [`test_evidence.py`](test_evidence.py) |
 | [`scheduling.py`](scheduling.py) | whether a committed job may start, and why not: its prerequisites and its state, one decision for the runner and for every view; [`test_scheduling.py`](test_scheduling.py) |
+| [`batch.py`](batch.py) | a batch of jobs from one manifest: one ordinary job a row, ids the manifest alone decides, and the map from rows to jobs; [`test_batch.py`](test_batch.py) tests the map's rules in process, and [`test_fanout.py`](test_fanout.py) runs the 49 rows of [`fixtures/batch-49.json`](fixtures/batch-49.json) end to end |
 | [`test_view.py`](test_view.py) | the lifecycle view, the typed `wait` and `collect`, and a queue that could not be read, in throwaway repositories |
 | [`test_formats.py`](test_formats.py) | the second format end to end, through `jobs/pipeline.py`, in throwaway repositories: a non-Java job on a PATH with no checker, real tests counted, a missing required output, a refuted claim, a step with no network |
 | [`sandbox.py`](sandbox.py) | runs a command where the network is demonstrably off, and records how that was shown |
@@ -103,6 +104,46 @@ A result written before the blocks were kept (every one collected until 2026-11-
 them from what it does hold and marks them `derived`: the receipt of `20261127-054106` then says 41 seconds
 elapsed, measured, 41 seconds of preparation, derived, and requested steps that were `not-run`, where its index
 entry said 0 seconds and its receipt 41.
+
+## A batch from a manifest
+
+A batch of cases is said once, in a manifest: a template of a job and the rows that fill it in
+([`fixtures/batch-49.json`](fixtures/batch-49.json) is one).
+
+```sh
+python3 jobs/pipeline.py submit --manifest batch.json --dry-run   # the whole batch is checked, and nothing written
+python3 jobs/pipeline.py submit --manifest batch.json             # one job a row, and verification/batches/NAME.json
+python3 jobs/pipeline.py wait --batch NAME                        # until every row has a result or will not start
+python3 jobs/pipeline.py batch NAME                               # row by row: job, state, reason, result, earlier jobs
+```
+
+```json
+{"schema": "itl-job-batch/v1", "batch": "boot-s-setup", "title": "...", "created": "2026-11-28T09:00:00+00:00",
+ "submitted": {"by": "the watcher", "run": "single-boot-s"},
+ "template": {"title": "Build {row}", "description": "...", "purpose": "build", "resources": {"memory": "4G"},
+              "steps": [{"name": "build", "run": "tools/build_case.sh {row} {module}"}], "outputs": ["out/{row}"]},
+ "rows": [{"row": "S01", "vars": {"module": "core"}},
+          {"row": "S02", "vars": {"module": "web"}, "override": {"needs": [{"row": "S01"}], "priority": 5}}]}
+```
+
+`{name}` in any string of the template is the row's variable (`{row}` its own name, `{batch}` the batch's), a
+row's `override` replaces top-level keys of the job, and a prerequisite may name another row. Each row becomes an
+ordinary job of the second format: committed, scheduled, retried and collected like any other.
+
+| The rule | Why |
+|---|---|
+| The whole batch is checked before any of it is written: every row's job against the schema, duplicate rows, a variable no row gives, a prerequisite on a row that is not there, prerequisites in a circle | A batch half submitted because row 31 was wrong is two batches to reason about |
+| A job's id is the manifest's `created` time, the batch, the row and the first characters of the row's **work identity**: the digest of its steps, environment, outputs, requirements, prerequisites, source revision, purpose, workload and case | Submitting the same manifest again, from another session or workspace or after a submission was killed, writes the same files with the same bytes. There is no clock and no session in what a submission writes; who the batch is submitted for is said in the manifest |
+| A row whose work changed (another revision, another task, other inputs) gets a new job that `supersedes` the old one. A changed title, estimate or priority changes no id | Other work is another identity. The old job stays as it was committed |
+| A `resubmit` of a row's job (the same work, other resources) makes the row that job, and the map says so; a rerun of the same job is another attempt of it | The three stay apart in the row's history: one entry a job, with its work identity and why it came |
+| A row the manifest no longer has keeps its jobs and is listed as withdrawn | Nothing goes silently |
+
+`wait --batch NAME` blocks until every row is **settled**: it has a result, or it will not start as things are
+(blocked, unschedulable, invalid). It exits 0 then, 3 when `--timeout` came first, 4 when the queue could not be
+read; `--json` gives `itl-job-batch-wait/v1` with every row. The queue-wide `wait` works as before beside it.
+`batch NAME --json` is `itl-job-batch-view/v1`: totals in rows with what they are out of, and each row's current
+job with its state, reason, result and attempts, and the jobs it had before with theirs. A row whose job nobody
+can find is `missing`, and counted as that. The audit joins every map with the specifications both ways.
 
 ## The state of every job, and its reason
 

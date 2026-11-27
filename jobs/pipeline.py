@@ -96,6 +96,8 @@ sandbox = records.load("jobs_sandbox", Path(__file__).resolve().parent / "sandbo
 lifecycle = records.load("jobs_lifecycle", Path(__file__).resolve().parent / "lifecycle.py")
 # Whether a committed job may start, and why not: one decision, for the runner and for every view.
 scheduling = records.load("jobs_scheduling", Path(__file__).resolve().parent / "scheduling.py")
+# A manifest's rows as ordinary jobs, and the map from rows to jobs.
+batch = records.load("jobs_batch", Path(__file__).resolve().parent / "batch.py")
 PRIORITIES = f"{HERE}/priorities.json"
 SCHEMAS = ROOT / HERE / "schema"
 JOB_SCHEMA = "verification-job/v1"
@@ -1653,6 +1655,8 @@ def cmd_wait(args):
     (exit 0, naming them), or no runner is at work and nothing waits (exit 0). Exit 3 when neither happened in
     --timeout seconds: the caller waits again. With it, whoever manages a run collects each result as it comes,
     where waiting for the runner to end holds a short job's result back behind the longest one."""
+    if args.batch:
+        return wait_for_batch(args)
     state = load_config(args)["runner"]["state_dir"]
     start = time.monotonic()
     while True:
@@ -2126,6 +2130,58 @@ def cmd_status(args):
     for hook in hooks:
         print(f"the last collect's hook failed, and nothing has run it since: {hook['command']}: exit {hook['exitCode']}")
     return 0
+
+
+def batch_view(args, name):
+    """What became of every row of a batch: its map, with each job's state from the one view."""
+    document = batch.read_map(ROOT, name)
+    if document is None:
+        sys.exit(f"no batch {name!r} here ({batch.FOLDER}/{name}.json); the batches: {', '.join(batch.maps(ROOT)) or 'none'}")
+    view = view_of(args)
+    seen = batch.view(document, {job["id"]: job for job in view["jobs"]})
+    seen["snapshot"], seen["idle"], seen["runner"] = view["snapshot"], view["idle"], view["runner"]
+    return seen
+
+
+def cmd_batch(args):
+    """A batch, row by row (`itl-job-batch-view/v1` with --json): each row's current job, its state and reason, its
+    result, and the jobs the row had before. Without a name, the batches there are."""
+    if not args.name:
+        for name, document in batch.maps(ROOT).items():
+            print(f"{name}  {len(document['rows'])} row(s)  {document.get('title') or ''}")
+        return 0
+    seen = batch_view(args, args.name)
+    if args.json:
+        print(json.dumps(seen, indent=2, ensure_ascii=False))
+        return 0 if seen["idle"] is not None else 4
+    totals = seen["totals"]
+    print(f"batch {seen['batch']}: {totals['of']} row(s); " + ", ".join(f"{n} {s}" for s, n in totals["byState"].items()) +
+          (f"; results: " + ", ".join(f"{n} {s}" for s, n in totals["byStatus"].items()) if totals["byStatus"] else "") +
+          ("" if seen["settled"] else f"; {len(seen['unsettled'])} row(s) not settled"))
+    for row in seen["rows"]:
+        before = f"  (after {', '.join(h['job'] + ' ' + (h['status'] or h['state']) for h in row['history'][:-1])})" if len(row["history"]) > 1 else ""
+        print(f"  {row['row']:<12} {row['state']:<14} {row['status'] or '-':<14} {row['job']}{before}" + (f"  {row['why']}" if row["why"] else ""))
+    return 0
+
+
+def wait_for_batch(args):
+    """Block until every row of the batch is settled: it has a result, or it will not start as things are (blocked,
+    unschedulable, invalid). Exit 0 then; 3 when --timeout came first; 4 when the queue could not be read."""
+    start = time.monotonic()
+    while True:
+        seen = batch_view(args, args.batch)
+        outcome = "unknown" if seen["idle"] is None else "settled" if seen["settled"] else "timeout" if time.monotonic() - start >= args.timeout else None
+        if outcome:
+            if args.json:
+                print(json.dumps({"schema": "itl-job-batch-wait/v1", "outcome": outcome, "batch": seen["batch"], "totals": seen["totals"],
+                                  "unsettled": seen["unsettled"], "runner": seen["runner"],
+                                  "rows": [{k: row[k] for k in ("row", "job", "state", "status", "why")} for row in seen["rows"]]}))
+            else:
+                totals = seen["totals"]
+                print(f"batch {seen['batch']}: {outcome}: " + ", ".join(f"{n} {s}" for s, n in totals["byState"].items()) +
+                      (f"; not settled: {' '.join(seen['unsettled'][:20])}" if seen["unsettled"] else ""))
+            return {"settled": 0, "timeout": 3, "unknown": 4}[outcome]
+        time.sleep(min(5, max(1, args.timeout / 20)))
 
 
 def cmd_view(args):
@@ -2851,7 +2907,39 @@ def submitted_by(args, at, before=None):
     return submitted
 
 
+def cmd_submit_manifest(args):
+    """A batch: every row of the manifest as an ordinary job, and the map from rows to jobs (jobs/batch.py)."""
+    try:
+        manifest = json.loads(Path(args.manifest).read_text())
+    except (OSError, ValueError) as e:
+        sys.exit(f"{args.manifest}: not a manifest: {e}")
+    try:
+        said = batch.submit(manifest, sys.modules[__name__], dry_run=args.dry_run)
+    except batch.Problem as e:
+        sys.exit(f"not a valid batch, and nothing of it was written ({len(e.problems)} problem(s)):\n  " + "\n  ".join(e.problems))
+    if args.json:
+        print(json.dumps({"schema": "itl-job-batch-submit/v1", **said}, indent=2))
+        return 0
+    did = {}
+    for row in said["rows"]:
+        did[row["did"]] = did.get(row["did"], 0) + 1
+    words = {"written": "written", "there": "already there with the same work, left as they are",
+             "superseded": "new jobs for rows whose work changed, each naming the job it supersedes"}
+    print(f"batch {said['batch']}: {len(said['rows'])} row(s), {len(set(said['jobs']))} job(s)" + (" (dry run: nothing written)" if args.dry_run else ""))
+    for key in ("written", "there", "superseded"):
+        if did.get(key):
+            print(f"  {did[key]} {words[key]}")
+    if said["withdrawn"]:
+        print(f"  {len(said['withdrawn'])} row(s) the manifest no longer has keep their jobs: {', '.join(said['withdrawn'])}")
+    if not args.dry_run:
+        print(f"the rows' jobs are in {said['map']}. Commit {JOBS} and {batch.FOLDER} together, with (verification pending) "
+              f"at the end of the summary line; watch it with: python3 jobs/pipeline.py wait --batch {said['batch']}")
+    return 0
+
+
 def cmd_submit(args):
+    if args.manifest:
+        return cmd_submit_manifest(args)
     if args.from_file:
         job = json.loads(Path(args.from_file).read_text())
     else:
@@ -3035,7 +3123,11 @@ def cmd_resubmit(args):
     if "$schema" in job:
         job["$schema"] = schema_ref(path, "job.schema.json", is_v2(job))
     write_json(path, job)
-    print(f"wrote {path.relative_to(ROOT)}, superseding {args.id}. Commit it to queue it.")
+    old = json.loads(old_path.read_text())
+    followed = batch.follow(ROOT, sys.modules[__name__], old, job["id"], "resubmitted: the same work, with other resources or at another time")
+    print(f"wrote {path.relative_to(ROOT)}, superseding {args.id}. Commit it to queue it." +
+          (f" Row {old['batch']['row']} of batch {old['batch']['id']} is this job now ({batch.FOLDER}/{old['batch']['id']}.json: commit it too)."
+           if followed else ""))
     return 0
 
 
@@ -3100,7 +3192,17 @@ def main(argv=None):
     p.add_argument("--state-dir")
     p.add_argument("--timeout", type=float, default=540, help="seconds (default 540); exit 3 when nothing happened")
     p.add_argument("--json", action="store_true", help="say it as data (itl-job-wait/v1): outcome finished, no-runner or timeout")
+    p.add_argument("--batch", metavar="NAME", help="wait for this batch instead: until every row has a result or will not start as "
+                   "things are (exit 0), --timeout (exit 3), or the queue cannot be read (exit 4); with --json, itl-job-batch-wait/v1")
+    p.add_argument("--rev", help="with --batch: the commit whose queue to read")
     p.set_defaults(func=cmd_wait)
+
+    p = sub.add_parser("batch", help="a batch row by row: each row's job, state, reason and result; no name lists the batches")
+    p.add_argument("name", nargs="?")
+    p.add_argument("--state-dir")
+    p.add_argument("--rev")
+    p.add_argument("--json", action="store_true", help="as data (itl-job-batch-view/v1)")
+    p.set_defaults(func=cmd_batch)
 
     p = sub.add_parser("status", help="the queue")
     budget(p)
@@ -3188,6 +3290,9 @@ def main(argv=None):
     p.add_argument("--by", help="who submitted it: an agent or a person")
     p.add_argument("--stop-on-failure", choices=["yes", "no"], help="skip later steps after a failure (default yes)")
     p.add_argument("--from-file", help="start from this JSON file")
+    p.add_argument("--manifest", metavar="FILE", help="a batch (itl-job-batch/v1, jobs/batch.py): one ordinary job for each row, with ids "
+                   "the manifest alone decides, so that submitting it again writes nothing twice; the other flags do not apply")
+    p.add_argument("--json", action="store_true", help="with --manifest: what was done with each row, as data")
     second = p.add_argument_group("a job of the second format (itl-job/v2, jobs/schema/job.schema.json)",
                                   "Asked for by --purpose. Anything a job can say that has no flag here is said in a file (--from-file).")
     second.add_argument("--purpose", choices=PURPOSES, help="what kind of work it is; says how its result is read")

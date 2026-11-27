@@ -65,9 +65,7 @@ For whoever continues (this run's later cycles): each item is one commit, with i
 2. *Done (see Gate 2: states and the view, below).* Scheduling by prerequisites, and the states with their reasons.
 3. *Done (same section).* The lifecycle view, `status` rendered from it, the typed `wait` and `collect`, and the
    keepers on it and on `jobs/pipeline.py`. Left of it: the batch views, with fan-out (next).
-4. **Manifest fan-out** (`jobs/batch.py`): `submit --manifest`, deterministic ids from batch, row and work
-   identity, the published map under `verification/batches/`, convergence of a concurrent or interrupted
-   submission, `resubmit` following the map, `wait --batch`, the 49-row fixture.
+4. *Done (see Gate 2: fan-out, below).* Manifest fan-out, the map, the batch's wait and view, the 49-row fixture.
 5. **Old and new together**: the pinned old command and the new one from two workspaces on one lock; the old
    runner refusing a second-format job; a rollback with a job in flight.
 6. **Delayed setup** (gate 3): `jobs/readiness.py` (the operation's description and key, receipts, bundles
@@ -161,6 +159,39 @@ keepers read the view as data.
     state, names the first cause. `idle` does not wait for it.
 21. **A readiness prerequisite blocks until receipts are read** (gate 3): a job that asks for one is not run
     unprepared in the meantime.
+
+## Gate 2: fan-out
+
+**What is built.** `submit --manifest FILE` checks a whole batch and writes one ordinary job for each row, with
+the rows' map in `verification/batches/NAME.json`; `resubmit` moves a row to the job that replaces it;
+`wait --batch NAME` blocks until every row is settled; `batch NAME` is the batch row by row; the audit joins
+every map with the specifications both ways.
+
+**The 49-row fixture** (`jobs/fixtures/batch-49.json`; `jobs/test_fanout.py` runs it through `jobs/pipeline.py`
+in a throwaway repository, about 7 s; `jobs/test_batch.py` tests the map's rules in process):
+
+| The brief asks | What the tests show |
+|---|---|
+| A 49-row manifest interrupted and submitted twice gives exactly 49 ordinary job ids | After the first submission 29 of the jobs' files and the map are removed, as a submission killed after 20 leaves it. The second writes 29 and leaves 20, the third writes nothing, and the 49 ids are the first's. In process, a submission killed at its 21st write and run twice more ends with the same 49 files to the byte |
+| Concurrent submission converges | Four submissions at once end with the bytes one submission writes |
+| One blocked case | R14 needs R13, which fails: R14 is `blocked`, with no result and no attempt, and is in the batch's view with the reason |
+| One expected failure | R20's test fails by assertion and exits 1, as the row says it will: `passed`, `fulfilled`, with the report's evidence |
+| A resubmission | R13 is resubmitted with more memory and passes. The row's history has two jobs with one work identity, the first `failed` and the second `passed`, each with one attempt. R14 then runs, its own file unchanged. 50 job files in all, and submitting the manifest again changes none |
+| Independent rows finish and appear in the report | 47 rows pass in the first run beside the failed and the blocked one, and all 48 that ran are in `report`. The batch's wait says `settled` with 48 finished and 1 blocked |
+| A typed way to watch the batch, and the queue-wide wait still works | `wait --batch --json` gives the outcome and every row; `wait --json` beside it says `finished` |
+| Changed revisions or inputs get distinct work identities | Another input and another source revision each give a new job id that supersedes the old one; a changed title or estimate gives none |
+| A retry and a supersession stay distinguishable | A rerun is an attempt of one job; a resubmission is a second job with the same work; changed work is a second job with other work. The map's history has the work identity and the reason of each |
+
+**Decisions.**
+
+22. **A submission of a manifest writes no clock and no session.** The ids begin with the manifest's `created`
+    time, which a manifest must have, and a job's `submitted` block is the manifest's. Two workspaces that submit
+    the same manifest write the same bytes, so their lines merge without a conflict. Who ran a submission is in
+    that session's own record.
+23. **The estimate is not work.** A row's work identity leaves out the title, the resources and the priority: a
+    manifest whose estimate was corrected gives no new jobs. A row that needs other resources is resubmitted.
+24. **The audit's census does not count batches.** It is the corpus as frozen before there were any; the
+    batches' join is a block of its own in the report.
 
 ## Gate 1: the census
 

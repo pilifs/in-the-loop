@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T23:37:23.796Z",
-  "duration_seconds": 30222,
+  "ended": "2026-11-27T23:47:43.785Z",
+  "duration_seconds": 30842,
   "stats": {
     "turns": 32,
-    "api_calls": 690,
-    "tool_calls": 751,
+    "api_calls": 709,
+    "tool_calls": 771,
     "tool_errors": 11,
     "compactions": 5,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1406,
-      "output_tokens": 1166183,
-      "cache_read_input_tokens": 212417160,
-      "cache_creation_input_tokens": 2633052
+      "input_tokens": 1444,
+      "output_tokens": 1198187,
+      "cache_read_input_tokens": 219782664,
+      "cache_creation_input_tokens": 2683747
     }
   },
   "tools": {
-    "Bash": 605,
+    "Bash": 625,
     "Read": 82,
     "Write": 31,
     "Edit": 19,
@@ -152,24 +152,24 @@
     {
       "index": 5,
       "started": "2026-11-27T23:01:49.090Z",
-      "ended": "2026-11-27T23:37:23.796Z",
+      "ended": "2026-11-27T23:47:43.785Z",
       "turns": 1,
-      "api_calls": 95,
+      "api_calls": 114,
       "usage": {
-        "input_tokens": 190,
-        "output_tokens": 188407,
-        "cache_read_input_tokens": 22125196,
-        "cache_creation_input_tokens": 353460
+        "input_tokens": 228,
+        "output_tokens": 220411,
+        "cache_read_input_tokens": 29490700,
+        "cache_creation_input_tokens": 404155
       },
-      "peak_context_tokens": 368627
+      "peak_context_tokens": 419322
     }
   ],
   "log": {
-    "sha256": "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a",
-    "bytes": 20564279,
-    "lines": 6839,
-    "gzip_bytes": 4018844,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a.jsonl.gz"
+    "sha256": "bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d",
+    "bytes": 20949143,
+    "lines": 7039,
+    "gzip_bytes": 4065758,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -406,20 +406,28 @@
       "log_sha256": "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55"
     },
     {
-      "change_id": "wvyytnyuorxksyluqktyvxmowxkvvzvr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a"
-    },
-    {
       "change_id": "vywknlrlrttrxmtkxtpmqqooznwlrynx",
       "commit_id": null,
       "immutable": false,
       "summary": "Give every job one state with its reason, in one view the keepers read as data",
       "body": "A committed job that has not started is now in exactly one state, decided in one place (jobs/scheduling.py) for the runner and for every report: invalid (its file is not a job; the reason carries the path and the revision), unschedulable (this machine cannot run it as written), blocked (a prerequisite ended without passing, or nobody submitted it), waiting (a prerequisite has not finished), deferred (a runner at work holds it back: no room, a priority it leaves) or queued. The runner schedules by prerequisites: a job with needs starts once that job, or one that supersedes it, has passed; one whose prerequisite failed is blocked with nothing run and no attempt consumed, and resubmitting the prerequisite releases it with its own file unchanged. A runner whose remaining jobs all wait for something it is not running says so and ends.\n\npython3 jobs/pipeline.py view prints the one view of every job (itl-job-lifecycle/v1): the snapshot's revision and what could and could not be read, every job's state and reason, its prerequisites, claim, attempts and result (its questions apart, derived for a receipt that did not keep them), totals with their unit and denominator, and the last collect's hooks. status is that view as lines, and status --json keeps its shape of before. wait --json and collect --json say as data what their lines say; a hook that failed after a collect is kept and named until a later collect runs it.\n\nA queue that could not be read is unknown and never empty: view exits 4 with idle null, status begins with what was NOT READ, and the keepers return unknown instead of zero jobs (run_common.jobs returned an empty queue for any answer it could not parse). The keepers (queue_keeping.py, run_common.py, single_run.py, sync.py's nudge, the brief queue's prune) call jobs/pipeline.py and read the view and collect --json: the regular expressions over the pipeline's lines and the test for '; cannot run here:' are gone. The /run-verification skill names the same entry point and the states. The runner's word for a job it will never start is unschedulable, where it said deferred.\n\nVerified: jobs/test_scheduling.py (8 unit tests of the decision), jobs/test_formats.py Prerequisites (3, in throwaway repositories: a dependent after its prerequisite, a blocked one with no attempt folder that runs after the prerequisite is resubmitted, a runner that ends with a job left waiting), jobs/test_view.py (5: every state from uncommitted to collected with totals that add up, a corrupt spec with path and revision, deferred as a job's own step read it during a run with one worker, a derived receipt, a repository git cannot read giving exit 4 and idle null, the typed wait and collect with a hook that exits 3). The tests of what changed: 41 Python test files, 40 passed and llm-dlc/tools/test_single_run.py failed one assertion on the summary's old wording, which is updated with a case for the unknown queue and passes.",
       "log_sha256": "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a"
+    },
+    {
+      "change_id": "tuzzvyzmxxtmxquywzzyzknqlqwqwwrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d"
+    },
+    {
+      "change_id": "voyswovkusxkrvxtvsvmxzuksllkqkmm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Submit a batch from one manifest, as ordinary jobs with a published map from rows to jobs",
+      "body": "python3 jobs/pipeline.py submit --manifest FILE checks a whole batch before it writes any of it (each row's job against the schema, duplicate rows, a variable no row gives, a prerequisite on a row that is not there, prerequisites in a circle) and writes one ordinary job of the second format for each row, with the rows' map in verification/batches/NAME.json. A job's id is the manifest's created time, the batch, the row and the first characters of the row's work identity (the digest of its steps, environment, outputs, requirements, prerequisites, source revision, purpose, workload and case), and a submission writes no clock and no session: submitting the same manifest again, at the same time or after a submission was killed, writes the same files with the same bytes. A row whose work changed gets a new job that supersedes the old one; a changed title, estimate or priority changes no id. resubmit moves a row to the job that replaces it, so a rerun (another attempt), a resubmission (another job, the same work) and changed work (another job, other work) stay apart in the row's history. wait --batch NAME blocks until every row has a result or will not start as things are (exit 0; 3 on --timeout; 4 when the queue cannot be read), batch NAME gives the batch row by row (itl-job-batch-view/v1), and the audit joins every map with the specifications both ways.\n\nVerified: jobs/test_fanout.py runs the 49 rows of jobs/fixtures/batch-49.json through jobs/pipeline.py in a throwaway repository: submitted, 29 job files and the map removed as a killed submission leaves it, submitted twice more (exactly 49 ids, the first's), run (47 pass, R13 fails, R14 which needs it is blocked with no attempt, R20's test fails by assertion as its row says and the job is fulfilled), watched as a batch (settled: 48 finished, 1 blocked), collected and reported (all 48 that ran), R13 resubmitted with more memory (the map follows; two jobs with one work identity, failed then passed), R14 then run with its own file unchanged, 50 job files in all. jobs/test_batch.py (9, in process): a submission killed at its 21st write and run twice more ends with the same 49 files to the byte, four submissions at once write what one writes, other inputs or another revision give a new id and an estimate does not. jobs/test_audit.py: the batch join on a made-up corpus, one fault at a time; the pinned corpus still reconciles to its frozen census. The tests of what changed: 37 of 37 Python test files passed.",
+      "log_sha256": "bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d"
     }
   ],
   "logs": {
@@ -541,6 +549,12 @@
       "bytes": 12987280,
       "lines": 4221,
       "gzip_bytes": 2736434,
+      "url": null
+    },
+    "bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d": {
+      "bytes": 20949143,
+      "lines": 7039,
+      "gzip_bytes": 4065758,
       "url": null
     },
     "be9027345ccd6a31df540bd4265dd83d8a3bb4849634f45821823f82723e6a51": {

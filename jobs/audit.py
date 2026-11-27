@@ -221,6 +221,47 @@ class Audit:
                        + (f"; the run's originals hold it (occurrence {sealed})" if sealed else "; no original of it was sealed"),
                        path=path, what=what, reason=reason, occurrence=sealed)
 
+    def check_batches(self) -> dict:
+        """The batches' rows joined with the specifications, both ways: every job a row names is there and says it
+        is that row with that work, and every job that says it is a batch's row is in that batch's map. A row
+        whose job was replaced without the map (a `resubmit` whose map was not committed with it) shows here."""
+        maps = {}
+        for path, data in self.snapshot.read(self.snapshot.batches()).items():
+            document, why = parse(data)
+            if why or document.get("schema") != "itl-job-batch-map/v1" or not isinstance(document.get("rows"), dict):
+                self.found(self.discrepancies, "malformed-batch", None, f"{path} is {why or 'not a batch map'}", path=path)
+                continue
+            name = document.get("batch")
+            maps[name] = document
+            for row, entry in document["rows"].items():
+                history = entry.get("history") or []
+                if entry.get("current") not in [h.get("job") for h in history]:
+                    self.found(self.discrepancies, "batch-row-current-unlisted", entry.get("current"),
+                               f"row {row} of batch {name}: its current job is not in the row's history", batch=name, row=row)
+                for h in history:
+                    spec = self.specs.get(h.get("job"))
+                    if spec is None:
+                        self.found(self.discrepancies, "batch-row-without-spec", h.get("job"),
+                                   f"row {row} of batch {name} names it, and it has no specification", batch=name, row=row)
+                    elif spec.get("batch") != {"id": name, "row": row, "work": h.get("work")}:
+                        self.found(self.discrepancies, "batch-row-mismatch", h.get("job"),
+                                   f"row {row} of batch {name} names it with work {str(h.get('work'))[:8]}, and its specification "
+                                   f"says {json.dumps(spec.get('batch'))}", batch=name, row=row)
+        for job_id, spec in self.specs.items():
+            of = spec.get("batch")
+            if not isinstance(of, dict):
+                continue
+            document = maps.get(of.get("id"))
+            if document is None:
+                self.found(self.discrepancies, "batch-map-missing", job_id,
+                           f"it says it is row {of.get('row')} of batch {of.get('id')}, which has no map", batch=of.get("id"), row=of.get("row"))
+            elif job_id not in [h.get("job") for h in (document["rows"].get(of.get("row")) or {}).get("history") or []]:
+                self.found(self.discrepancies, "batch-job-unlisted", job_id,
+                           f"it says it is row {of.get('row')} of batch {of.get('id')}, and that row's history does not have it "
+                           f"(a resubmission whose map was not committed with it?)", batch=of.get("id"), row=of.get("row"))
+        return {name: {"rows": len(document["rows"]), "jobs": sum(len(e.get("history") or []) for e in document["rows"].values()),
+                       "withdrawn": len(document.get("withdrawn") or [])} for name, document in sorted(maps.items())}
+
     def ignored(self, paths: list[str]) -> set[str]:
         """Which of these paths the ignore rules of the checkout leave out (as the rules stand now)."""
         if not paths:
@@ -295,6 +336,7 @@ class Audit:
         self.check_indexes()
         self.check_artifacts()
         self.check_provenance()
+        batches = self.check_batches()
         live = self.check_live(state) if state is not None and self.snapshot.rev is None else None
         return {"schema": AUDIT_SCHEMA,
                 "snapshot": {"revision": self.snapshot.rev, "root": str(self.root),
@@ -303,6 +345,8 @@ class Audit:
                                                 **({"why": "a revision is read from git alone: what a runner holds is not part of it"} if live is None else {})},
                                        "archive": {"available": False, "why": "receipts name their sealed occurrences; the archive's own journal is read by artifacts.py"}}},
                 "census": self.census(), "live": live,
+                # Apart from the census, which is the corpus as it was frozen before there were batches.
+                "batches": batches,
                 # Why an artifact is not in the commit, by the ignore rules as they stand in this checkout: not part
                 # of the census, which a later change of those rules must not move.
                 "reasons": dict(sorted(collections.Counter(g["reason"] for g in self.gaps if g.get("reason")).items())),

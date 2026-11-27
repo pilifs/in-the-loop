@@ -189,6 +189,37 @@ class AMadeUpCorpus(unittest.TestCase):
         self.assertEqual(report["census"]["layouts"]["mixed"], ["20261122-151515-flat-job-dated-result"])
         self.assertEqual(report["census"]["ids"]["inEverySet"], 5)
 
+    def test_a_batchs_rows_are_joined_with_the_jobs_both_ways(self):
+        """Expected rows against committed specifications: a row whose job is gone, a job the map does not list (a
+        resubmission committed without its map), and a job of a batch that has no map are each a discrepancy."""
+        work = "ab" * 32
+        ids = {"R1": "20261124-101010-b-r1", "R2": "20261124-101011-b-r2", "R2b": "20261124-121212-b-r2-again", "R3": "20261124-101012-b-r3"}
+        for row, job_id in ids.items():
+            spec = {**self.corpus.spec(job_id), "schema": "itl-job/v2", "batch": {"id": "made-up", "row": row[:2], "work": work}}
+            self.corpus.write(self.corpus.dir / layout.job_rel(job_id, "shards"), spec)
+        entry = lambda *jobs: {"current": jobs[-1], "work": work, "history": [{"job": j, "work": work, "why": "submitted"} for j in jobs]}
+        document = {"schema": "itl-job-batch-map/v1", "batch": "made-up", "created": "2026-11-24T10:10:10+00:00",
+                    "rows": {"R1": entry(ids["R1"]), "R2": entry(ids["R2"], ids["R2b"]), "R3": entry(ids["R3"])}}
+        self.corpus.write(self.corpus.dir / "verification/batches/made-up.json", document)
+        self.corpus.commit("a batch of three rows, one resubmitted")
+        report = self.corpus.audit()
+        self.assertEqual([d for d in report["discrepancies"] if d["kind"].startswith(("batch", "malformed-batch"))], [])
+        self.assertEqual(report["batches"], {"made-up": {"rows": 3, "jobs": 4, "withdrawn": 0}})
+        # One fault at a time.
+        document["rows"]["R2"] = entry(ids["R2"])                       # the resubmission's map was not committed
+        self.corpus.write(self.corpus.dir / "verification/batches/made-up.json", document)
+        found = [d for d in self.corpus.audit(rev=None)["discrepancies"] if d["kind"].startswith("batch")]
+        self.assertEqual([(d["kind"], d["id"], d["row"]) for d in found], [("batch-job-unlisted", ids["R2b"], "R2")])
+        document["rows"]["R2"] = entry(ids["R2"], ids["R2b"])
+        document["rows"]["R4"] = entry("20261124-101013-b-r4")           # a row whose job nobody wrote
+        self.corpus.write(self.corpus.dir / "verification/batches/made-up.json", document)
+        found = [d for d in self.corpus.audit(rev=None)["discrepancies"] if d["kind"].startswith("batch")]
+        self.assertEqual([(d["kind"], d["id"], d["row"]) for d in found], [("batch-row-without-spec", "20261124-101013-b-r4", "R4")])
+        (self.corpus.dir / "verification/batches/made-up.json").unlink()
+        found = [d for d in self.corpus.audit(rev=None)["discrepancies"] if d["kind"].startswith("batch")]
+        self.assertEqual(sorted({d["kind"] for d in found}), ["batch-map-missing"])
+        self.assertEqual(len(found), 4)
+
     def test_an_output_called_result_json_is_not_a_receipt(self):
         """2,897 files of the real corpus are called result.json and 1,906 are receipts: the rest are kept outputs."""
         folder = self.corpus.dir / layout.result_rel("20261123-121212-day-one", "shards")
