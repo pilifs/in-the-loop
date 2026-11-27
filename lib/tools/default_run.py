@@ -218,11 +218,15 @@ class Started:
         if self.at is None:
             return
         now = tree_of("@", self.root)
-        if now is None or now[0] != self.at[0]:
+        # A change during the run in files no test reads (a finding, a job result, a trace) leaves what was tested as it
+        # was: the run still covers the tree it started on. On 2026-11-27 a passed 89-file run was thrown away because
+        # the watcher committed a finding while it ran.
+        if now is None or not covers(self.at[0], now[0], self.root):
             print(f"{MARK} not recorded: the working copy changed during the run", flush=True)
             return
         record(self.at[0], self.at[1], tally, self.root, path)
-        print(f"{MARK} recorded as passed for tree {self.at[0][:12]}", flush=True)
+        print(f"{MARK} recorded as passed for tree {self.at[0][:12]}"
+              + ("" if now[0] == self.at[0] else " (the working copy changed meanwhile in files no test reads)"), flush=True)
 
 
 def lock(root: Path = ROOT):

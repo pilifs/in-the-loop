@@ -81,11 +81,22 @@ class Records(unittest.TestCase):
     def test_a_run_is_recorded_only_when_the_tree_did_not_change_during_it(self):
         trees = iter([("t1", "c1"), ("t1", "c1"), ("t1", "c1"), ("t2", "c2")])
         with mock.patch.object(dr, "tree_of", side_effect=lambda rev, root: next(trees)), \
+                mock.patch.object(dr, "covers", side_effect=lambda a, b, root: a == b), \
                 contextlib.redirect_stdout(io.StringIO()) as out:
             dr.Started(self.root).passed("passed", self.path)
             dr.Started(self.root).passed("passed", self.path)
         self.assertEqual([r["tree"] for r in dr.records(self.path)], ["t1"])
         self.assertIn("not recorded: the working copy changed during the run", out.getvalue())
+
+    def test_a_change_during_the_run_in_files_no_test_reads_keeps_the_record(self):
+        # 2026-11-27: a finding committed while the run went on threw away a passed run.
+        trees = iter([("t1", "c1"), ("t1-plus-finding", "c2")])
+        with mock.patch.object(dr, "tree_of", side_effect=lambda rev, root: next(trees)), \
+                mock.patch.object(dr, "covers", side_effect=lambda a, b, root: (a, b) == ("t1", "t1-plus-finding")), \
+                contextlib.redirect_stdout(io.StringIO()) as out:
+            dr.Started(self.root).passed("passed", self.path)
+        self.assertEqual([(r["tree"], r["commit"]) for r in dr.records(self.path)], [("t1", "c1")])
+        self.assertIn("changed meanwhile in files no test reads", out.getvalue())
 
     def test_no_tree_outside_a_workspace_root(self):
         with mock.patch.object(dr, "_out") as out:
