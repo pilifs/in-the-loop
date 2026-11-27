@@ -22,11 +22,11 @@
 | spring-projects/spring-boot#52304 | written | Compared the JSON-B provider, API-only, and Kotlin-only fixtures. The first two reject `Map` in Kotlin; the last accepts it. Client and server ordered writes with a real provider remain open. |
 | spring-projects/spring-boot#51173 | written | Checked the PR’s strict-mode account against the merged literal true and raw-header tests. Strict-mode HTTP behavior at the landed pin remains open. |
 | spring-projects/spring-boot#52162 | written | Both landed server start methods reset graceful shutdown. Both shared regressions restart before one blocked request. The two-request drain and body check remain unexecuted. |
-| spring-projects/spring-boot#51410 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#50271 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52824 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#51725 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52190 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#51410 | written | Compared the wrapper and delegate branches with the downstream proxy report and two identity assertions. Copying configured URL and username through fresh derived pools remains open. |
+| spring-projects/spring-boot#50271 | written | Checked the Hikari URL/credential assertions and the Liquibase H2 fixture at the merge. SQL readback through a doubly wrapped source remains open. |
+| spring-projects/spring-boot#52824 | written | Checked both Hikari setting permutations in the builder tests and the author’s H2/PostgreSQL rollback reports. Fresh JDBC readback when varying only the unused primary pool remains open. |
+| spring-projects/spring-boot#51725 | written | The pinned regression checks the identity of a non-Mongo manager through a configuration getter. The pinned Batch interface declares instance creation, execution creation and ID lookup. Which manager handles that public write remains open. |
+| spring-projects/spring-boot#52190 | written | Checked both 30-second bean regressions and the author’s versioned live-cluster report. Periodic activity under isolated bean and property configurations has not been repeated. |
 | spring-projects/spring-boot#51844 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52832 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52625 | not yet | Awaiting source review and claims. |
