@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from eligibility_inventory import HERE, ROOT, pr_key, read, write
+from eligibility_inventory import HERE, PR, ROOT, pr_key, read, write
 from evaluate_arm import at, blob
 from paired_score import canonical, correspondence, get_evidence, require, score_fields, verified_bindings
 from reference_rows import check_semantics, reference
@@ -13,6 +13,34 @@ from url_intake import resolve, urls
 
 
 OUTPUT = HERE.parent / "url-run"
+
+
+def stopped(revision, output):
+    """Account for stopped sessions using two committed inputs, without opening any producer workspace."""
+    manifest = at(revision, OUTPUT / "producer-seal.json")
+    audit_path = ROOT / "verification/merged-pr-links/n01-n05/audit.json"
+    audit_bytes = blob(revision, audit_path)
+    audit = json.loads(audit_bytes)
+    prior = {r["case"].lower(): r for r in audit["cases"]}
+    rows = []
+    for item in manifest["cases"]:
+        m = PR.fullmatch(item["url"])
+        require(m and item.get("stop") and not item.get("measurement"), "stopped accounting requires explicit stops and no claimed measurement")
+        original = prior[pr_key(*m.groups())]
+        rows.append({"url": item["url"], "producerStop": item["stop"], "qualifiedNewMeasurement": False,
+                     "comparison": "No sealed producer measurement to compare.",
+                     "historicalOriginal": {"observationsSha256": original["observationsSha256"], "deployments": original["deployments"],
+                                            "allHistoriesPaired": original["allHistoriesPaired"], "fixedRefutations": original["fixedRefutations"]}})
+    require(len(rows) == len(prior) == len({r["url"] for r in rows}) == 5 and audit["totals"]["questions"] == 17,
+            "stopped accounting lost a PR or historical question")
+    value = {"schema": "url-only-stopped-comparison/v1", "producerSeal": revision, "workflow": manifest.get("workflow"),
+             "producerRevision": manifest.get("producerRevision"), "newQualifiedDeployments": 0, "newQualifiedQuestions": 0,
+             "unscoredQuestions": 17, "unscoredPRs": 5, "semanticParity": "unverified",
+             "source": "Only the committed stop manifest and existing independent batch audit were consulted.",
+             "historicalAudit": {"path": audit_path.relative_to(ROOT).as_posix(), "sha256": hashlib.sha256(audit_bytes).hexdigest(),
+                                 "totals": audit["totals"]}, "cases": rows}
+    write(output, value)
+    print("five committed producer stops, seventeen historical questions unscored")
 
 
 def sealed(revision, description):
@@ -144,7 +172,13 @@ def compare(revision, judgments, output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--producer-seal", required=True)
-    parser.add_argument("--judgments", required=True, type=Path)
+    parser.add_argument("--judgments", type=Path)
+    parser.add_argument("--stops-only", action="store_true", help="read the committed stops and existing independent audit only")
     parser.add_argument("--output", type=Path, default=OUTPUT / "parity.json")
     args = parser.parse_args()
-    compare(args.producer_seal, read(args.judgments), args.output)
+    if args.stops_only:
+        stopped(args.producer_seal, args.output)
+    elif args.judgments:
+        compare(args.producer_seal, read(args.judgments), args.output)
+    else:
+        parser.error("a measured comparison needs independent judgments")
