@@ -1,0 +1,330 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-032259-setup-run-parquet-3638-s-upstream-parque",
+  "title": "Setup: run Parquet #3638's upstream parquet-column and parquet-hadoop suites on the original 113-entry graphs",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 11m19s, peak 3.0 GiB (estimated 45m00s, 4.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-032259-setup-run-parquet-3638-s-upstream-parque.json",
+    "sha256": "3d8a1554d3d89491e697b425fac6ab1ae64be34260763865820d02babb9c6251",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-032259-setup-run-parquet-3638-s-upstream-parque",
+      "title": "Setup: run Parquet #3638's upstream parquet-column and parquet-hadoop suites on the original 113-entry graphs",
+      "description": "Setup for part B of llm-dlc/loops/in-the-loop-blind-caller-and-pr-verification-brief.md (trace-guided ranking on Parquet J08). The brief ranks public histories from the original upstream test launch. J08's deployments are pinned-source overlays over Parquet 1.18.2 with Hadoop 3.3.0 (113 entries, verification/product-behaviour/cases/J08/bindings.json); the pins' own build needs a thrift 0.23.0 binary and cannot run here. The setup compiled the pins' parquet-column and parquet-hadoop test trees (180 files each pin) against each pin's graph plus the POM's test dependencies (resolved from Maven Central, signatures checked), and the landed TestDictionary and TestParquetWriter behave as recorded. This job runs the whole suites, one JVM per module as surefire forks them, with the POM's argLine and properties, minus the six InterOpTester classes that download test files: fix tests on the fix graph, parent tests on the parent graph, and fix tests on the parent graph. It records which upstream tests pass on these overlays, so that the domain agent knows the coverage of the original test launch before freezing its test-selection policy. Test failures are results, not job failures; JUnit XML goes to ~/.cache/in-the-loop/blind-caller-pr-verification/upstream-tests/J08/reports/.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-test-run",
+        "java:original-classpath"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/in-the-loop-blind-caller-and-pr-verification-brief-setup.md",
+          "verification/product-behaviour/cases/J08"
+        ]
+      },
+      "expected": "Each step exits 0 (every module ran to completion). Fix-on-parent must show the two landed TestDictionary failures (testDictionaryWriterReusableAfterFirstPageFallBack, testDictionaryWriterReusableAfterFallBack); the other failures, if any, are listed in each summary.txt.",
+      "submitted": {
+        "at": "2026-11-27T03:22:59+00:00",
+        "session": "2e72030d-e2c0-463f-80e4-1ad3a8d1675f",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "45m",
+        "memoryLimit": "8G",
+        "notes": "144 test classes per run, three runs; the resource-intensive tests are enabled as in the POM (TestLargeColumnChunk and friends write large files). Two classes ran in 3-4 s inline; the full suites are a guess"
+      },
+      "steps": [
+        {
+          "name": "fix tests on the fix graph",
+          "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh fix fix",
+          "cwd": "."
+        },
+        {
+          "name": "parent tests on the parent graph",
+          "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh parent parent",
+          "cwd": "."
+        },
+        {
+          "name": "fix tests on the parent graph",
+          "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh fix parent",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "5c57e715acb8e32f1ed7fc1dc2f7ba684882837c",
+  "startedAt": "2026-11-27T03:30:23+00:00",
+  "finishedAt": "2026-11-27T03:41:52+00:00",
+  "wallSeconds": 689.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3131532,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8589934592,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 2700.0,
+    "notes": "144 test classes per run, three runs; the resource-intensive tests are enabled as in the POM (TestLargeColumnChunk and friends write large files). Two classes ran in 3-4 s inline; the full suites are a guess"
+  },
+  "usage": {
+    "peakMemoryBytes": 3240374272,
+    "wallSeconds": 679.5,
+    "cpuSeconds": 1059.3,
+    "memoryOfEstimate": 0.75,
+    "durationOfEstimate": 0.25
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "fix tests on the fix graph",
+      "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh fix fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 233.402,
+      "cpuSeconds": 362.702,
+      "cpuThrottledSeconds": 105.107,
+      "peakMemoryBytes": 3240374272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-fix-tests-on-the-fix-graph.log",
+        "lines": 28,
+        "bytes": 3289,
+        "sha256": "e364ee98ddf2babb34cb325a4abef9d1c24105943207ec6629d330ffb9f6db64",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fix tests on fix graph, parquet-column: launcher exit 1 in 23 s; 66 classes, 0 excluded (network):  664 tests found ; 0 tests skipped ; 0 tests aborted ; 649 tests successful ; 15 tests failed ;",
+        "fix tests on fix graph, parquet-hadoop: launcher exit 1 in 210 s; 72 classes, 7 excluded (network):  725 tests found ; 0 tests skipped ; 24 tests aborted ; 690 tests successful ; 9 tests failed ;",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilder#testBuildDoubleZeroNaN",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16NanCountMixedValues",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatistics#testSpecBuilderForFloat",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatistics#testSpecBuilderForDouble",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilder#testBuildFloatZeroNaN",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testDoubleTypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatBuilderTypeDefinedDropsNanMinMax",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testFloatTypeDefinedOrderNaN",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16NanCountNoNaN",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testFloat16TypeDefinedOrderNaN",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatTypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16TypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatNanCountAllNaN",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testDoubleTypeDefinedOrderNaN",
+        "parquet-column failure: org.apache.parquet.schema.TestMessageType#testMergeSchemaWithColumnOrder",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testBinaryStatsV2",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testBinaryStatsV1",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16ReadWriteRoundTrip#testFloat16NanColumnIndex",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestLargeColumnChunk#validateFiltering",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testNestedColumnOrdersUseLeafOrder",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16Statistics#testFloat16StatisticsMultipleCases",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16Statistics#testFloat16Statistics",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16ReadWriteRoundTrip#testFloat16ColumnIndex",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestLargeColumnChunk#validateAllData",
+        "parquet-hadoop failure: org.apache.parquet.hadoop.TestParquetWriterError#testInSeparateProcess",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestDirectCodecFactory#compressionCodecs"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "parent tests on the parent graph",
+      "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh parent parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 223.383,
+      "cpuSeconds": 351.782,
+      "cpuThrottledSeconds": 107.774,
+      "peakMemoryBytes": 3134791680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-parent-tests-on-the-parent-gra.log",
+        "lines": 28,
+        "bytes": 3301,
+        "sha256": "f129655e6c5799836085cfc30a18082009ba8f5ce26105e673ee620004fe8ddf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent tests on parent graph, parquet-column: launcher exit 1 in 22 s; 66 classes, 0 excluded (network):  662 tests found ; 0 tests skipped ; 0 tests aborted ; 647 tests successful ; 15 tests failed ;",
+        "parent tests on parent graph, parquet-hadoop: launcher exit 1 in 201 s; 72 classes, 7 excluded (network):  725 tests found ; 0 tests skipped ; 24 tests aborted ; 690 tests successful ; 9 tests failed ;",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilder#testBuildDoubleZeroNaN",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16NanCountMixedValues",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatistics#testSpecBuilderForFloat",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatistics#testSpecBuilderForDouble",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilder#testBuildFloatZeroNaN",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testDoubleTypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatBuilderTypeDefinedDropsNanMinMax",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testFloatTypeDefinedOrderNaN",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16NanCountNoNaN",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testFloat16TypeDefinedOrderNaN",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatTypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16TypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatNanCountAllNaN",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testDoubleTypeDefinedOrderNaN",
+        "parquet-column failure: org.apache.parquet.schema.TestMessageType#testMergeSchemaWithColumnOrder",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testBinaryStatsV2",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testBinaryStatsV1",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16ReadWriteRoundTrip#testFloat16NanColumnIndex",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestLargeColumnChunk#validateFiltering",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testNestedColumnOrdersUseLeafOrder",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16Statistics#testFloat16StatisticsMultipleCases",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16Statistics#testFloat16Statistics",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16ReadWriteRoundTrip#testFloat16ColumnIndex",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestLargeColumnChunk#validateAllData",
+        "parquet-hadoop failure: org.apache.parquet.hadoop.TestParquetWriterError#testInSeparateProcess",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestDirectCodecFactory#compressionCodecs"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "fix tests on the parent graph",
+      "run": "bash $HOME/.cache/in-the-loop/blind-caller-pr-verification/scripts/j08_suite.sh fix parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 222.735,
+      "cpuSeconds": 344.858,
+      "cpuThrottledSeconds": 102.518,
+      "peakMemoryBytes": 3128860672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-fix-tests-on-the-parent-graph.log",
+        "lines": 30,
+        "bytes": 3552,
+        "sha256": "37d431f19796081b2ff1be4ae142a418d316a8dd1c0e01a9961cadbb288d55e0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fix tests on parent graph, parquet-column: launcher exit 1 in 22 s; 66 classes, 0 excluded (network):  664 tests found ; 0 tests skipped ; 0 tests aborted ; 647 tests successful ; 17 tests failed ;",
+        "fix tests on parent graph, parquet-hadoop: launcher exit 1 in 201 s; 72 classes, 7 excluded (network):  725 tests found ; 0 tests skipped ; 24 tests aborted ; 690 tests successful ; 9 tests failed ;",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilder#testBuildDoubleZeroNaN",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16NanCountMixedValues",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatistics#testSpecBuilderForFloat",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatistics#testSpecBuilderForDouble",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilder#testBuildFloatZeroNaN",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testDoubleTypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatBuilderTypeDefinedDropsNanMinMax",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testFloatTypeDefinedOrderNaN",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16NanCountNoNaN",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testFloat16TypeDefinedOrderNaN",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatTypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column error: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloat16TypeDefinedNanOnlyDoesNotSetHasNonNullValue",
+        "parquet-column failure: org.apache.parquet.column.values.dictionary.TestDictionary#testDictionaryWriterReusableAfterFirstPageFallBack",
+        "parquet-column failure: org.apache.parquet.column.statistics.TestStatisticsNanCount#testFloatNanCountAllNaN",
+        "parquet-column failure: org.apache.parquet.internal.column.columnindex.TestColumnIndexBuilderNaN#testDoubleTypeDefinedOrderNaN",
+        "parquet-column error: org.apache.parquet.column.values.dictionary.TestDictionary#testDictionaryWriterReusableAfterFallBack",
+        "parquet-column failure: org.apache.parquet.schema.TestMessageType#testMergeSchemaWithColumnOrder",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testBinaryStatsV2",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testBinaryStatsV1",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16ReadWriteRoundTrip#testFloat16NanColumnIndex",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestLargeColumnChunk#validateFiltering",
+        "parquet-hadoop failure: org.apache.parquet.format.converter.TestParquetMetadataConverter#testNestedColumnOrdersUseLeafOrder",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16Statistics#testFloat16StatisticsMultipleCases",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16Statistics#testFloat16Statistics",
+        "parquet-hadoop failure: org.apache.parquet.statistics.TestFloat16ReadWriteRoundTrip#testFloat16ColumnIndex",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestLargeColumnChunk#validateAllData",
+        "parquet-hadoop failure: org.apache.parquet.hadoop.TestParquetWriterError#testInSeparateProcess",
+        "parquet-hadoop error: org.apache.parquet.hadoop.TestDirectCodecFactory#compressionCodecs"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T03:42:30+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T034152Z-397515fc7b4eab48"
+    }
+  }
+}
