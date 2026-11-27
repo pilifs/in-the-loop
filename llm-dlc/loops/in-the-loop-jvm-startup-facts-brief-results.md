@@ -40,4 +40,32 @@ The shared source and input policy were sealed at producer `bee0f0951c4d`. All f
 
 Replacing the fixed class at its existing path changed the public length from two to one. That side rejected its old receipt while the other side reused its qualified trace. Cold, warm and independently empty-cache runs agreed at baseline, after replacement and after restoration. Restoring the original bytes recovered the original recording. Every proof ran afresh, and JBMC refused the native startup premise. [Six side-and-state comparisons](../../verification/startup-facts/reuse-profiles.zip)
 
-The independent collector retained every job result, including the initial missing recorder dependency, lossy console encoding and wrong selector parameter name. Each has a passing replacement. The machine-readable archive manifest pins the results and outputs to the collector revision that contains them. [Collector manifest](../../verification/startup-facts/collector.json)
+The independent collector retained every job result. Four early jobs exposed a missing recorder dependency, lossy console encoding, a selector parameter name and a direct JDK read that the recovery workflow had failed to attribute to its initializer. Each has a passing replacement. A subsequent submission stopped before execution because its source revision contained a report-file conflict. The report was preserved and the same job was submitted against the repaired source `68c5c99dbad6`. The manifest pins each result and output to the collector revision that contains it. [Collector manifest](../../verification/startup-facts/collector.json)
+
+## Post-freeze recoveries
+
+The first transfer is reproducible from jj change `vrsknvsnrmwo`. On a later checkout, `python3 lib/benchmark/startup-facts/freeze.py --verify-original` verifies the original committed source against the sealed digests. The follow-up used the same registered inputs and compared its public results with those first archives.
+
+The debugger now chooses a launcher delimiter absent from every argument. Empty strings, quotes, embedded whitespace and literal Unicode survive the original launch. On the two JSON Configuration deployments this reached the real initializer. The ordinary table qualified. Under the invalid own setting the diagnostic kept the actual key reads and the exception in `DefaultPrefixLookupsHolder.parseLookups`. The inherited table retained its precise shape refusal. A failing boundary emits a separate diagnostic with zero reusable premises. [Configuration follow-up](../../verification/startup-facts/postfreeze-configuration.zip)
+
+On both JavaParser releases the recorder retained the absent `line.separator` reads and the null-pointer failure in the first initialization. The original JVM still produced `ExceptionInInitializerError` and then `NoClassDefFoundError`. The diagnostic identifies the original throw site before later VM thread events. [Timing follow-up](../../verification/startup-facts/postfreeze-timing.zip)
+
+Both original Spring releases returned an array containing the bridge and non-bridge declarations. The recorder verified the complete declaration set against the compiled class and identified the array element assigned to the cached field. The native checker consumed that method's receipt to prove arity zero on both revisions. The erased declaration and the original public generic results have separate evidence. [Spring follow-up](../../verification/startup-facts/postfreeze-spring.zip)
+
+When the native checker entered a class initializer and reached a directly refused JDK read, the workflow recovered the root from every reported bytecode site. It required those sites to identify a single initializer. A failing original then retained its partial reads and throw site with zero consumed premises. The independent job reran all six original matrices with this recovery enabled. [Original qualification after direct-read recovery](../../verification/startup-facts/postfreeze-originals.zip)
+
+The first-use control launched the same class twice. Both ordinary JVMs returned the cached public declaration `java.lang.String.trim()` and arity zero. In the cold launch the VM log showed an empty application prestate and the root initializing inside the window. The native checker consumed the matching member receipt and proved arity zero. In the primed launch both the launcher class and the requested root had already initialized. The checker issued a diagnostic and consumed zero premises.
+
+The archived charset qualification performs the following normal and resumed workflow from a clean checkout. It compiles the existing fixture and compares both watcher reports with fresh original JVMs. With the registered JDK selected through `JAVA_HOME`, these commands reproduce the ASCII witness. [Full reproduction driver](../../lib/benchmark/startup-facts/charset.py)
+
+```bash
+work="$TMPDIR/startup-encoded"
+mkdir -p "$work/classes"
+"$JAVA_HOME/bin/javac" -proc:none -g -encoding UTF-8 -d "$work/classes" lib/tests/fixtures/setting-countermodels/sc/*.java
+claim=(lib/target/release/jvmcontract prove 'sc.M#encoded()I' --classes "$work/classes" --assert 'result == 2' --engine native --gaps strict --json)
+python3 examples/tools/targets/startup_facts.py --work "$work/run" --revision fixture-v1 --locale C -- "${claim[@]}"
+python3 llm-dlc/tools/watch.py startup-facts "$work/run/startup-report.json"
+python3 examples/tools/targets/startup_facts.py --resume --work "$work/run" --revision fixture-v1 --locale C -- "${claim[@]}"
+python3 llm-dlc/tools/watch.py startup-facts "$work/run/startup-report.json"
+python3 verification/startup-facts/startup_scorecard.py --check
+```

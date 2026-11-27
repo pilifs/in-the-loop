@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T02:41:25.508Z",
-  "duration_seconds": 246635,
+  "ended": "2026-11-27T02:44:24.145Z",
+  "duration_seconds": 246813,
   "stats": {
     "turns": 39,
-    "api_calls": 6522,
-    "tool_calls": 16042,
+    "api_calls": 6536,
+    "tool_calls": 16100,
     "tool_errors": 350,
     "compactions": 27,
     "peak_context_tokens": 550925,
     "usage": {
-      "input_tokens": 8202810,
-      "output_tokens": 3786518,
-      "cache_read_input_tokens": 1785330432,
+      "input_tokens": 8214396,
+      "output_tokens": 3791559,
+      "cache_read_input_tokens": 1787051904,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8772,
-    "exec": 6248,
-    "apply_patch": 813,
+    "Bash": 8812,
+    "exec": 6263,
+    "apply_patch": 816,
     "wait": 113,
     "sleep": 89,
     "send_message_to_user_async": 6,
@@ -390,6 +390,7 @@
     "verification/generated-observers/rescoring.py",
     "verification/generated-observers/scorecard.py",
     "verification/jobs/2026/11/25/20261125-183811-replay-60-l-series-java-questions-on-23.json",
+    "verification/jobs/2026/11/27/20261127-024317-qualify-first-active-use-on-original-jvm.json",
     "verification/merged-pr-links/audit.py",
     "verification/merged-pr-links/l01-l20/upstream/README.md",
     "verification/merged-pr-links/l01-l20/upstream/inputs.json",
@@ -973,24 +974,24 @@
     {
       "index": 27,
       "started": "2026-11-27T02:32:20.624Z",
-      "ended": "2026-11-27T02:41:25.508Z",
+      "ended": "2026-11-27T02:44:24.145Z",
       "turns": 0,
-      "api_calls": 37,
+      "api_calls": 51,
       "usage": {
-        "input_tokens": 78995,
-        "output_tokens": 17712,
-        "cache_read_input_tokens": 2921472,
+        "input_tokens": 90581,
+        "output_tokens": 22753,
+        "cache_read_input_tokens": 4642944,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 107249
+      "peak_context_tokens": 122838
     }
   ],
   "log": {
-    "sha256": "009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8",
-    "bytes": 103223263,
-    "lines": 51346,
-    "gzip_bytes": 18801201,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8.jsonl.gz"
+    "sha256": "9ea853cdf068806a1e21e8bf35d9094dc13a98429925bec888e0bfa655ab147b",
+    "bytes": 103486475,
+    "lines": 51479,
+    "gzip_bytes": 18843470,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/9ea853cdf068806a1e21e8bf35d9094dc13a98429925bec888e0bfa655ab147b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3019,20 +3020,20 @@
       "log_sha256": "4b7cb21aa22d8b7fade4f226e1693521032ea5246dd2a0d5dab42bd597aa4e6c"
     },
     {
-      "change_id": "kspyvwskssnztyxkypytpkouwztwvxrv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8"
-    },
-    {
       "change_id": "xvxkrsulxtquykptunxzvvtpqknlruzm",
       "commit_id": null,
       "immutable": false,
       "summary": "Require the JVM to witness first active use before importing startup state (verification pending)",
       "body": "Read the original class-initialization log up to the observation boundary as well as inside it. Typed charset, member, live-table and ordered captures require a fresh application prestate and the selected root to initialize inside that window. Comparison JVMs use the same rule. A previously initialized class leaves a bound diagnostic with zero premises.\n\nThe changed-test selection passed all 56 groups, including 59 Rust binaries. Independent capped probes on the same reflective fixture verified arity zero on the cold launch and refused the already-initialized launch. Original Java returned the same String.trim member and arity in both. Job 20261127-023629-qualify-first-active-use-on-original-jvm repeats this control and the four-root Avro fix against all six original qualification matrices.",
       "log_sha256": "009f379db8a5a5cd9a1fd2addee020d62d5d5bc110443568504de340315497c8"
+    },
+    {
+      "change_id": "zqnuukmyowxnnyuxytssvuwxvqsonvrk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Archive post-freeze startup transfer evidence and pin the first-use rerun (verification pending)",
+      "body": "The independent collector reproduced all six motivating matrices after direct-read recovery. Across the Configuration, JavaParser and Spring transfers, the follow-up recorded failed startup reads at their original throw site and proved arity zero for the actual cached non-bridge method on both Spring releases. The report preserves the first frozen results alongside these later outcomes. Verified the archive digests, original freeze, declaration and resource controls, rendered scorecard, and both selected test groups.\n\nJob 20261127-023629-qualify-first-active-use-on-original-jvm was stopped before execution by a conflict in the report file of its source revision. The unpublished source was repaired with its working report preserved. Replacement 20261127-024317-qualify-first-active-use-on-original-jvm pins the exact repaired commit and repeats the same first-use control, Avro claim and six matrices.",
+      "log_sha256": "9ea853cdf068806a1e21e8bf35d9094dc13a98429925bec888e0bfa655ab147b"
     }
   ],
   "logs": {
@@ -3527,6 +3528,12 @@
       "lines": 21072,
       "gzip_bytes": 6941786,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/9e81406608dd906e5ea459311b2a2c72267e3cccf622f60c9807e057e50feebe.jsonl.gz"
+    },
+    "9ea853cdf068806a1e21e8bf35d9094dc13a98429925bec888e0bfa655ab147b": {
+      "bytes": 103486475,
+      "lines": 51479,
+      "gzip_bytes": 18843470,
+      "url": null
     },
     "9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996": {
       "bytes": 58503991,

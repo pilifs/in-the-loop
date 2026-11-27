@@ -168,12 +168,15 @@ def build():
                                 failure=r.get("failure"),ordinaryParity=r.get("ordinaryParity",False))
                 followups.append(item)
         report["postFreezeTransfers"] = followups
-        current = load("postfreeze-originals.zip")
-        with ZipFile(HERE/"postfreeze-originals.zip") as archive:
-            for item in current["rows"]:
-                if hashlib.sha256(archive.read(item["archive"])).hexdigest()!=item["sha256"]:
-                    raise ValueError("requalified original archive digest differs")
-        report["finalOriginals"] = current
+        for name, field in (("postfreeze-originals.zip","postFreezeOriginals"),("first-use-originals.zip","finalOriginals")):
+            if not (HERE/name).exists():
+                continue
+            current = load(name)
+            with ZipFile(HERE/name) as archive:
+                for item in current["rows"]:
+                    if hashlib.sha256(archive.read(item["archive"])).hexdigest()!=item["sha256"]:
+                        raise ValueError("requalified original archive digest differs: " + item["case"])
+            report[field] = current
     report["artifacts"]={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(HERE.glob("*.zip"))}
     manifest=json.loads((HERE/"collector.json").read_bytes())
     collected={Path(o["path"]).name:o["sha256"] for job in manifest["jobs"] if job["status"]=="passed" for o in job["outputs"]}
