@@ -380,7 +380,7 @@ class TheHandover(unittest.TestCase):
         # 3. The setup agent writes its record in the workspace; `next --finished` lands it, puts the notes into both
         #    copies of the brief, and starts the domain run from the line that has them.
         self.finish("made-up-thing-setup")
-        folder = test_single_run.single_run.brief_run.workspaces(self.root)["ws"]
+        folder = test_single_run.single_run.run_common.workspaces(self.root)["ws"]
         (folder / "llm-dlc/loops/made-up-thing-brief-setup.md").write_text("# Setup\n\nDetail.\n\n" + NOTES)
         subprocess.run(["jj", "--quiet", "commit", "-m", "The setup record"], cwd=folder, check=True, capture_output=True)
         out = self.data("next", "--finished")
@@ -439,7 +439,7 @@ class TheHandover(unittest.TestCase):
         # 2. A brief that leaves out a pull request is refused, and its landing is undone in the queue's record.
         self.tool("answer", "prs-generate", "stop", "--reason", "It says the brief is complete.")
         self.wait("prs-generate", kind="ended")
-        folder = test_single_run.single_run.brief_run.workspaces(self.root)["ws"]
+        folder = test_single_run.single_run.run_common.workspaces(self.root)["ws"]
         written = folder / "llm-dlc/loops/prs-brief.md"
         written.write_text("# Made-up behaviour\n\n" + KEPT)
         subprocess.run(["jj", "--quiet", "commit", "-m", "The brief, part of it"], cwd=folder, check=True, capture_output=True)

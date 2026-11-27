@@ -27,6 +27,7 @@ import brief_run
 import conductor
 import decisions
 import doctor
+import queue_keeping
 import watch
 
 TOOLS = Path(__file__).resolve().parent
@@ -529,7 +530,7 @@ class KeepingTheQueue(Fixture):
         (self.statuses / "pipeline").mkdir()
         (self.statuses / "pipeline" / "pending").write_text(f"{self.JOB} made up, est. 1 min\n")
         run = self.run_of()
-        with mock.patch.object(watch, "verification_running", return_value=None):
+        with mock.patch.object(queue_keeping, "verification_running", return_value=None):
             thing = brief_run.tend(run)
         self.assertEqual((thing["kind"], thing["jobs"]), ("verification", [self.JOB]))
         end = time.time() + 20
@@ -537,8 +538,8 @@ class KeepingTheQueue(Fixture):
             self.assertLess(time.time(), end, "the runner was not started")
             time.sleep(0.1)
         self.back(self.JOB, "passed")
-        with mock.patch.object(watch, "verification_running", return_value=4242), \
-                mock.patch.object(watch, "tend_queue", return_value=None) as tend_queue:
+        with mock.patch.object(queue_keeping, "verification_running", return_value=4242), \
+                mock.patch.object(queue_keeping, "tend_queue", return_value=None) as tend_queue:
             self.assertIsNone(brief_run.tend(run))
         tend_queue.assert_called_once()
         self.assertTrue((self.statuses / "pipeline" / "results" / self.JOB).exists())  # left to that loop

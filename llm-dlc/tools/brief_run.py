@@ -128,20 +128,18 @@ import inbox
 import integration
 import streams_status
 import watch
+import landing
+import queue_keeping
+import run_common
+from landing import (INDEX_BEGIN, INDEX_END, TABLE_README, TRACE_FILES, _land, adopt_logs, commit_id, generated,  # noqa: F401
+                     is_ancestor, land, merged_in, onto_line, outside_table, regenerable, sync_lock, sync_lock_path,
+                     trial_merge, writer)
+from queue_keeping import collect, layout, pipeline, queue, start_runner, tend  # noqa: F401
+from run_common import SESSION, Problem, codex_ready, jj, loops_in, running, workspaces  # noqa: F401
 
 REPO = Path(__file__).resolve().parents[2]
 
 
-def _verification_layout():
-    """verification/layout.py: where a job and its result are kept, by id (flat, or under the day it was submitted)."""
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-layout = _verification_layout()
 INTERVAL = 1800
 FOUNDATION = {"model": "claude-fable-5-2", "effort": "high"}
 # The user's words for the foundation stage (2026-11-17), after a sentence that names the brief.
@@ -149,10 +147,6 @@ FOUNDATION_PROMPT = ("This brief was designed for a group of agents, but I'd pre
                      "free to implement whatever foundation you see fit, maximizing benefits and efficiency, then update "
                      "the brief accordingly for other agents to take over after.")
 INTEGRATION_MEMORY, INTEGRATION_CPUS, LOOP_CPUS = 6, 2, 2  # verification/README.md: what a run's parts are given
-
-
-class Problem(Exception):
-    pass
 
 
 def setting(path: Path, key: str) -> str:
@@ -209,51 +203,6 @@ class Run(watch.Run):
         return self.root / "llm-dlc" / "loop-summaries" / f"{self.stem}-integration.md"
 
 
-def jj(where: Path, *args: str, snapshot: bool = True) -> subprocess.CompletedProcess:
-    return integration.jj(where, *args, snapshot=snapshot)
-
-
-def workspaces(root: Path) -> dict[str, Path | None]:
-    """Each jj workspace of the repository, with its folder when jj knows it."""
-    out = {}
-    for m in re.finditer(r"^([^\s:]+)(?: \(current\))?:", jj(root, "workspace", "list", snapshot=False).stdout, re.M):
-        r = jj(root, "workspace", "root", "--name", m[1], snapshot=False)
-        out[m[1]] = Path(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip() else None
-    return out
-
-
-def running(root: Path, script: str) -> list[int]:
-    """The processes running SCRIPT (a file name) for this repository, whichever workspace they run in."""
-    mine, out = watch.store(root), []
-    r = subprocess.run(["pgrep", "-u", str(os.getuid()), "-f", re.escape(script)], capture_output=True, text=True)
-    for pid in r.stdout.split():
-        try:
-            words = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
-            theirs = watch.store(os.readlink(f"/proc/{pid}/cwd"))
-        except OSError:
-            continue
-        if mine and theirs == mine and any(w.endswith(script.encode()) for w in words):
-            out.append(int(pid))
-    return out
-
-
-def loops_in(root: Path) -> list[int]:
-    """The feature loops at work in this folder: feature-loop.sh runs from a private copy of itself
-    (feature-loop.XXXXXX), whatever started it, a proof run's prove-loop.sh included."""
-    out = []
-    r = subprocess.run(["pgrep", "-u", str(os.getuid()), "-f", "feature-loop"], capture_output=True, text=True)
-    for pid in r.stdout.split():
-        try:
-            words = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
-            cwd = Path(os.readlink(f"/proc/{pid}/cwd"))
-        except OSError:
-            continue
-        if cwd == root.resolve() and any(Path(w.decode(errors="replace")).name.startswith("feature-loop.") for w in words[:3]):
-            out.append(int(pid))
-    return out
-
-
-SESSION = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 # What a run hands the loops it starts, to find its watcher: a session that carries one was started inside a run.
 RUN_VARIABLES = ("RUN_STREAMS_WATCHER", "LOOP_CONDUCTOR", "FEATURE_LOOP_RECORD_AS", "FEATURE_LOOP_FIRST", "FEATURE_LOOP_CONTINUE")
 
@@ -480,14 +429,6 @@ def client_of(run: Run, label: str, brief: Path | None = None) -> str:
             or (setting(brief, "client") if brief else "") or "claude")
 
 
-def codex_ready(root: Path) -> list[str]:
-    """What stands in the way of a Codex worker here: no client, or one that is not given this checkout's CLAUDE.md."""
-    import shutil
-    if not shutil.which(os.environ.get("AGENT_CLIENT_CODEX") or "codex"):
-        return ["a stream is Codex's, and there is no `codex` on the PATH"]
-    return [f"Codex would not be given this checkout's instructions: {p}" for p in agent_client.instructions(root)["problems"]]
-
-
 def set_agents(run: Run, agent: str | None, stream_agents: list[str]) -> None:
     chosen = agents(run)
     streams = dict(chosen.get("streams") or {})
@@ -598,212 +539,6 @@ def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str 
     return 0 if ok else 1
 
 
-def commit_id(where: Path, rev: str) -> str:
-    r = jj(where, "log", "--no-graph", "-r", rev, "-T", "commit_id", snapshot=False)
-    if r.returncode != 0 or not r.stdout.strip():
-        raise Problem(f"no revision {rev}: {r.stderr.strip()}")
-    return r.stdout.strip()
-
-
-def is_ancestor(where: Path, a: str, b: str) -> bool:
-    return bool(jj(where, "log", "--no-graph", "-r", f"{a} & ::{b}", "-T", "commit_id", snapshot=False).stdout.strip())
-
-
-# What sync.py regenerate writes from the per-session files, as sync.py commit does each time: the trace files, the
-# index, llm-dlc/README.md's session table and the decision records' views. Left uncommitted in the default working
-# copy (a sync.py run of any session there writes them), they are nobody's work: the next sync.py run writes them again.
-TRACE_FILES = ("llm-dlc/traces/", "llm-dlc/index.json")
-TABLE_README = "llm-dlc/README.md"
-INDEX_BEGIN, INDEX_END = "<!-- index:begin (generated by llm-dlc/tools/sync.py) -->", "<!-- index:end -->"  # sync.py's
-
-
-def generated(path: str) -> bool:
-    """Whether sync.py regenerate writes this path."""
-    return path.startswith(TRACE_FILES) or path == TABLE_README or (path.startswith("llm-dlc/decisions/") and path.endswith(".md"))
-
-
-def outside_table(text: str) -> str:
-    start, end = text.find(INDEX_BEGIN), text.rfind(INDEX_END)
-    return text[:start] + text[end:] if 0 <= start < end else text
-
-
-def regenerable(root: Path, path: str) -> bool:
-    """Whether an uncommitted change to PATH in the working copy is only what sync.py writes: a generated file, and
-    of llm-dlc/README.md, which people edit too, only its session table."""
-    if not generated(path):
-        return False
-    if path != TABLE_README:
-        return True
-    before = jj(root, "file", "show", "-r", "@-", path, snapshot=False)
-    try:
-        now = (root / path).read_text()
-    except OSError:
-        return False
-    return before.returncode == 0 and outside_table(before.stdout) == outside_table(now)
-
-
-def sync_lock_path(root: Path) -> Path:
-    """The lock sync.py takes on this repository for every command that writes (its Operation): keyed by the
-    repository's path, under the local state."""
-    state = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
-    return state / "locks" / (hashlib.sha256(str(root.resolve()).encode()).hexdigest()[:16] + ".lock")
-
-
-@contextlib.contextmanager
-def sync_lock(root: Path):
-    """Hold sync.py's lock on the repository across jj steps that rewrite the default working copy, so that no
-    sync.py commit (the watcher's own session's, a loop's) runs between them. Never across a call of sync.py,
-    which takes the lock itself and would wait for this one."""
-    path = sync_lock_path(root)
-    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_CLOEXEC, 0o600)
-    try:
-        fcntl.flock(fd, fcntl.LOCK_EX)
-        yield
-    finally:
-        os.close(fd)
-
-
-@contextlib.contextmanager
-def writer(root: Path):
-    """The watcher's own writes to the default working copy (a merge, a collection of results) one at a time,
-    whichever of its commands makes them."""
-    path = root / "llm-dlc" / "loop-summaries" / "default-workspace.lock"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_CLOEXEC, 0o644)
-    try:
-        fcntl.flock(fd, fcntl.LOCK_EX)
-        yield
-    finally:
-        os.close(fd)
-
-
-def adopt_logs(root: Path) -> None:
-    """Take the session logs the line now names and this workspace lacks, from the workspace storing them
-    (sync.py adopt-logs): else every later check here reports each as an error."""
-    sync = root / "llm-dlc" / "tools" / "sync.py"
-    if sync.exists():
-        subprocess.run([sys.executable, str(sync), "adopt-logs"], cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
-
-
-def onto_line(root: Path, workspace: str) -> str:
-    """The workspace, moved to the line's last commit so that a run starts from everything landed: refused while it
-    holds uncommitted work or commits the line lacks. A workspace that does not exist yet is made by `start`."""
-    known = workspaces(root)
-    if workspace not in known:
-        return "made by the run's start"
-    folder = known[workspace]
-    if folder is None or not folder.is_dir():
-        raise Problem(f"jj knows the workspace {workspace} but not its folder")
-    heads = jj(root, "log", "--no-graph", "-r", "@-", "-T", 'commit_id ++ "\n"').stdout.split()
-    if len(heads) != 1:
-        raise Problem("the default workspace is in the middle of a merge: commit it first")
-    if commit_id(root, f"{workspace}@-") == heads[0]:
-        return "on the line already"
-    dirty = [f for f in jj(folder, "diff", "-r", "@", "--name-only").stdout.splitlines() if f.strip()]
-    left = [f for f in dirty if not regenerable(folder, f)]
-    if left:
-        raise Problem(f"the workspace {workspace} has uncommitted files ({', '.join(left[:5])}): land or finish them first")
-    if not merged_in(root, workspace):
-        raise Problem(f"the workspace {workspace} has commits the line lacks: land its run first")
-    if dirty:
-        jj(folder, "restore", "--", *dirty)  # generated trace output only: sync.py writes it again
-    r = jj(folder, "new", heads[0])
-    if r.returncode != 0:
-        raise Problem(f"could not move the workspace {workspace} onto the line: {r.stderr.strip()}")
-    return f"moved onto {heads[0][:12]}"
-
-
-def land(run: Run, workspace: str, message: tuple[str, str] | None = None, at_work: bool = False) -> dict:
-    """Bring WORKSPACE's line to the default workspace's (see the header), and the session logs it names. AT_WORK:
-    its session is still working there, and what it has not committed stays there."""
-    out = _land(run, workspace, message, at_work)
-    adopt_logs(run.root)
-    return out
-
-
-def _land(run: Run, workspace: str, message: tuple[str, str] | None, at_work: bool = False) -> dict:
-    root = run.root
-    # Before anything moves: a line whose allow list or reviewed findings hold a decision no person is recorded as
-    # having taken is not landed. An agent's patch to either file waives nothing where it was made (sync.py leaves
-    # its finding raised), and it does not come onto this line by a merge either; a person settles it first.
-    tool = root / "llm-dlc" / "tools" / "sync.py"
-    if tool.exists():
-        asked = subprocess.run([sys.executable, str(tool), "decisions", "--at", f"{workspace}@-"], cwd=root,
-                               capture_output=True, text=True, stdin=subprocess.DEVNULL)
-        if asked.returncode != 0:
-            raise Problem(f"the workspace {workspace}'s line is not landed: it changes what only a person decides.\n"
-                          f"{(asked.stdout or asked.stderr).strip()[-1500:]}")
-    with sync_lock(root):
-        dirty = jj(root, "diff", "-r", "@", "--name-only").stdout.split()  # also snapshots the working copy
-        theirs, ours = commit_id(root, f"{workspace}@-"), commit_id(root, "@-")
-        left = jj(root, "diff", "-r", f"{workspace}@", "--name-only", snapshot=False).stdout.split()
-        if left and not at_work:
-            raise Problem(f"the workspace {workspace} has uncommitted changes ({', '.join(left[:5])}): its session commits them first")
-        if is_ancestor(root, theirs, ours):
-            return {"landed": "nothing to land: the line already has it", "commit": watch.head_change(root)}
-        # Uncommitted trace output is nobody's work, and the next sync.py run writes it again from the session
-        # files: it neither waits for a session's commit nor comes along onto the other line, where it would meet
-        # that line's own.
-        dropped = [f for f in dirty if regenerable(root, f)]
-        dirty = [f for f in dirty if f not in dropped]
-        forward = is_ancestor(root, ours, theirs)
-        if dirty and not forward:
-            raise Problem(f"the default workspace has uncommitted changes ({', '.join(dirty[:5])}), and the line has moved, so "
-                          f"landing takes a merge: wait for their session's commit, and land again")
-        if dropped:
-            jj(root, "restore", "--", *dropped)
-        before = jj(root, "log", "--no-graph", "-r", "@", "-T", "change_id", snapshot=False).stdout.strip()
-        if forward:
-            r = jj(root, "rebase", "-s", "@", "-d", theirs)  # what is uncommitted here, another session's, comes along
-            if r.returncode != 0:
-                raise Problem(f"could not move the line forward: {r.stderr.strip()}")
-            files = integration.conflicted(root)
-            if files:
-                jj(root, "rebase", "-s", "@", "-d", ours)
-                raise Problem(f"another session's uncommitted files here conflict with {workspace}'s line in "
-                              f"{', '.join(files[:8])}: the line is left where it was. Land again once that session has "
-                              f"committed them")
-            return {"landed": "moved forward: the line had not moved since the workspace was made",
-                    "commit": watch.head_change(root), **({"dropped": dropped} if dropped else {})}
-        r = jj(root, "new", ours, theirs)
-        if r.returncode != 0:
-            raise Problem(f"the merge could not be made: {r.stderr.strip()}")
-        if jj(root, "log", "--no-graph", "-r", f"{before} & empty() & ~@", "-T", "change_id", snapshot=False).stdout.strip():
-            jj(root, "abandon", before, snapshot=False)  # left empty, but described (sync.py's "Record session traces")
-        merge = jj(root, "log", "--no-graph", "-r", "@", "-T", "change_id").stdout.strip()
-    files = integration.conflicted(root)
-    sync = root / "llm-dlc" / "tools" / "sync.py"
-    if sync.exists():  # the generated trace files, which every line's commits rewrite
-        subprocess.run([sys.executable, str(sync), "regenerate"], cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
-        files = integration.conflicted(root)
-    if files:
-        with sync_lock(root):
-            jj(root, "new", ours)
-            jj(root, "abandon", merge)
-        raise Problem(f"the merge conflicts in {', '.join(files[:8])}: taken back. Resolve it by hand as llm-dlc/runtime.md's "
-                      f"merge of a queued workspace shows (a merge of @- and {workspace}@-), or have the session that "
-                      f"wrote it rebuild on the line as it is now")
-    message = message or (f"Merge the foundation of the {run.name} run into the line",
-                          f"The foundation stage of the brief {run.brief} ran in the workspace {workspace} while this line "
-                          f"moved on, so its commits come in by a merge. Nothing but the generated trace files met; they "
-                          f"were regenerated from the session files.")
-    r = subprocess.run([sys.executable, str(sync), "commit", "-m", message[0], "-m", message[1]],
-                       cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
-    if r.returncode != 0:
-        raise Problem(f"the merge is made but its commit reported: {(r.stderr or r.stdout).strip()[-600:]}")
-    # A clean merge changes nothing itself but the files regenerated from the session files. Anything else in it was
-    # written into this working copy by another session while the merge was being made (the result collector's
-    # results, say): it goes back to being uncommitted, on top, the files on disk as they are, for that session's
-    # own commit.
-    with sync_lock(root):
-        foreign = [f for f in jj(root, "diff", "-r", "@-", "--name-only").stdout.splitlines() if not generated(f)]
-        if foreign:
-            jj(root, "squash", "--from", "@-", "--into", "@", "-u", "--", *foreign)
-    return {"landed": "merged: the line had moved since the workspace was made", "commit": watch.head_change(root),
-            **({"leftUncommitted": foreign} if foreign else {}), **({"dropped": dropped} if dropped else {})}
-
-
 REPORT_LIMIT = 6000  # characters of the foundation's report an inbox item carries: an inbox is read every cycle
 
 
@@ -837,7 +572,11 @@ def hand_off(run: Run) -> list[str]:
 
 
 def cmd_land(run: Run) -> int:
-    out = land(run, run.foundation_workspace)
+    ws = run.foundation_workspace
+    out = land(run, ws, (f"Merge the foundation of the {run.name} run into the line",
+                         f"The foundation stage of the brief {run.brief} ran in the workspace {ws} while this line "
+                         f"moved on, so its commits come in by a merge. Nothing but the generated trace files met; they "
+                         f"were regenerated from the session files."))
     if run.read().get("foundation"):
         run.update(foundation={**run.read()["foundation"], "landed": out["commit"]})
         out["handedOff"] = hand_off(run)
@@ -855,10 +594,6 @@ def stream_of(run: Run, label: str) -> dict:
             return s
     raise Problem(f"{run.brief} names no stream {label}: its streams are "
                   f"{', '.join(s['label'] for s in run.plan['streams']) or 'none'}")
-
-
-def merged_in(root: Path, workspace: str) -> bool:
-    return is_ancestor(root, commit_id(root, f"{workspace}@-"), commit_id(root, "@-"))
 
 
 STATUS_LINE = re.compile(r"^[-*] +Status: *(.*)$")
@@ -1038,25 +773,6 @@ def merge(run: Run, label: str, early: bool = False, out_of_order: bool = False)
 
 
 # -- a trial merge, and the order it gives
-
-def trial_merge(root: Path, a: str, b: str) -> list[str]:
-    """The files a merge of commits A and B conflicts in. The merge is made beside every working copy (`jj new
-    --no-edit`), read and abandoned: no line and no workspace changes."""
-    mark = f"brief_run.py trial {uuid.uuid4()}"
-    r = jj(root, "new", "--no-edit", a, b, "-m", mark, snapshot=False)
-    if r.returncode != 0:
-        raise Problem(f"the trial merge could not be made: {r.stderr.strip()}")
-    made = jj(root, "log", "--no-graph", "-r", f'description(substring:"{mark}")', "-T", 'commit_id ++ "\n"', snapshot=False).stdout.split()
-    try:
-        if len(made) != 1:
-            raise Problem("the trial merge was not found again")
-        listed = jj(root, "resolve", "--list", "-r", made[0], snapshot=False)
-        if listed.returncode != 0 and "No conflicts" not in listed.stderr:
-            raise Problem(f"jj resolve --list: {listed.stderr.strip()}")
-        return [m[1] for m in re.finditer(r"^(.*?)\s{2,}\S.*$", listed.stdout, re.M)] if listed.returncode == 0 else []
-    finally:
-        for commit in made:
-            jj(root, "abandon", commit, snapshot=False)
 
 
 INVENTORY = "lib/tests/costs.json"  # rewritten by every stream that adds a test: it is regenerated, not resolved
@@ -1388,89 +1104,6 @@ def cmd_helper_list(run: Run) -> int:
 
 # -- the verification queue, which the watcher keeps itself
 
-def pipeline(root: Path, *args: str) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(root / "verification" / "pipeline.py"), *args], cwd=root,
-                          capture_output=True, text=True, stdin=subprocess.DEVNULL)
-
-
-def queue(root: Path) -> dict | None:
-    r = pipeline(root, "status", "--json")
-    try:
-        return json.loads(r.stdout) if r.returncode == 0 else None
-    except ValueError:
-        return None
-
-
-def collect(run: Run) -> dict | None:
-    """Collect the results that are back (verification/pipeline.py collect) and commit them with the paths a commit
-    of results holds and nothing else (`sync.py commit --only $(pipeline.py commit-paths)`), as the verification
-    loop's sessions did: the watcher is then the one session that commits in the default working copy while a
-    run is under way, its merges and its collections one after the other. None when nothing waited. What is in
-    `attention` (a job that did not pass, outputs not applied, anything a result flags) is for the watcher to
-    triage."""
-    root = run.root
-    with writer(root):
-        status = queue(root)
-        if not status or not status.get("finished, not collected"):
-            return None
-        r = pipeline(root, "collect")
-        if r.returncode != 0:
-            raise Problem(f"pipeline.py collect failed: {(r.stderr or r.stdout).strip()[-600:]}")
-        ids = re.findall(r"^(\S+): \w+: applied \d+", r.stdout, re.M)
-        said = r.stdout.split("For the commit message", 1)[-1].splitlines()[1:]
-        said = [line.strip() for line in said if line.strip()]
-        title = said[0] if said else f"Record verification results for {len(ids)} job(s)"
-        body = " ".join(said[1:]) or "Collected by the watcher."
-        paths = pipeline(root, "commit-paths").stdout.split()
-        c = subprocess.run([sys.executable, str(root / "llm-dlc" / "tools" / "sync.py"), "commit", "--only", *paths,
-                            "-m", title, "-m", f"{body} Collected by the watcher of the {run.name} run, which keeps the "
-                                               f"queue while the run is under way."],
-                           cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
-    results, attention = [], []
-    for job in ids:
-        try:
-            result = json.loads(((layout.find_result(root, job) or root / layout.result_rel(job)) / "result.json").read_text())
-        except (OSError, ValueError):
-            result = {}
-        row = {"id": job, "status": result.get("status", "?"), "summary": result.get("summary")}
-        flags = list(result.get("attention") or []) + [f"output not applied: {f}" for f in
-                                                       (result.get("collected") or {}).get("conflicts") or []]
-        if row["status"] != "passed" or flags:
-            attention.append({**row, "attention": flags})
-        results.append(row)
-    out = {"collected": results, "attention": attention, "commit": watch.head_change(root)}
-    if c.returncode != 0:
-        out["commitReported"] = (c.stderr or c.stdout).strip()[-600:]
-    return out
-
-
-def start_runner(run: Run, status: dict) -> dict | None:
-    """Start the runner (verification/pipeline.py run, no model) when jobs this machine can run wait and no runner
-    is at work. It takes the budget the runner's settings give (`budget --apply`), runs until the queue
-    is empty and ends; the next look starts it again when more jobs come. A job committed while it runs is
-    announced to it (nudge), once."""
-    root = run.root
-    waiting = [m[0] for row in status.get("pending", []) if "; cannot run here:" not in row
-               and (m := conductor.JOB_ID.search(row))]
-    data = run.read()
-    if not waiting:
-        if data.get("nudged"):
-            run.update(nudged=[])
-        return None
-    ours = (data.get("runner") or {}).get("pid")
-    at_work = (watch.alive(ours) or "no runner is at work" not in pipeline(root, "wait", "--timeout", "0").stdout)
-    if at_work:
-        if [j for j in waiting if j not in (data.get("nudged") or [])]:
-            watch.nudge(root)
-            run.update(nudged=waiting)
-        return None
-    run.dir.mkdir(parents=True, exist_ok=True)
-    pid = watch.detached([sys.executable, str(root / "verification" / "pipeline.py"), "run"], root, run.dir / "runner.log")
-    run.update(runner={"pid": pid, "started": conductor.now(), "jobs": waiting}, nudged=waiting)
-    return {"kind": "verification", "pid": pid, "jobs": waiting,
-            "note": f"{len(waiting)} job(s) waited and no runner was at work: started the runner (pipeline.py run, its "
-                    f"output in {run.dir / 'runner.log'}). Say so in a line; its results are collected as they come."}
-
 
 def collect_acknowledgements(run: Run) -> None:
     """Record the inbox items each stream's committed Progress acknowledges (inbox.py collect), so that what a
@@ -1480,34 +1113,6 @@ def collect_acknowledgements(run: Run) -> None:
             inbox.collect(Path(s["brief"]).stem, run.root / inbox.FOLDER, run.root)
         except (inbox.InboxError, OSError, Problem):
             pass
-
-
-def tend(run: Run) -> dict | None:
-    """The watcher's part in the queue, at each look of `wait`. A verification loop running here keeps it as it
-    did (it runs, collects and commits, in sessions of its own), and the watcher only announces jobs to it
-    (watch.py's tend_queue). Otherwise the watcher keeps it: it collects and commits what is back, and starts the
-    runner when jobs wait. Returns what to tell the watcher, if anything."""
-    if watch.verification_running(run.root):
-        return watch.tend_queue(run)
-    try:
-        got = collect(run)
-    except Problem as e:
-        if run.read().get("collectFailed") == str(e):
-            return None  # said once; the next look tries again
-        run.update(collectFailed=str(e))
-        return {"kind": "attention", "what": f"the results that are back could not be collected: {e}",
-                "note": "read why and put it right if it is small (the run-verification skill's step 3); else tell the user"}
-    run.update(collectFailed=None)
-    if got:
-        return {"kind": "results", **got,
-                "note": "say what came back in a line. Triage each one in `attention` as the run-verification skill's "
-                        "step 4 says, and record what needs a person in verification/findings.md (its step 5): a "
-                        "verdict goes to the stream it concerns too, through its inbox; a job out of time or memory "
-                        "is resubmitted (`pipeline.py resubmit ID ...`). Commit what you changed with `sync.py commit "
-                        "--only $(python3 verification/pipeline.py commit-paths)`"
-                        if got["attention"] else "say what came back in a line: every job passed"}
-    status = queue(run.root)
-    return start_runner(run, status) if status else None
 
 
 # -- the run

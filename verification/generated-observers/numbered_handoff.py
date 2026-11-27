@@ -56,7 +56,7 @@ def handoff(root, numbers, scaffold_only=False, *, reviewed=None, archive=None):
     jsonschema.Draft202012Validator(campaign.read(ROOT/"llm-dlc/prove-plan.schema.json")).validate(plan)
     for n in numbers:
         command([sys.executable,tools/"scaffold_example.py",n,"--plan",path])
-    pre=json.loads(command([sys.executable,ROOT/"llm-dlc/tools/watch.py","--root",root,"preflight","--after-setup",",".join(numbers),*numbers]))
+    pre=json.loads(command([sys.executable,tools/"preflight.py","--root",root,"--after-setup",",".join(numbers),*numbers]))
     if pre["toClassify"] or pre["toRepair"] or pre["leftOut"] or [e["state"] for e in pre["examples"]]!=["prepared"]*len(numbers):
         raise ValueError(str(pre))
     if scaffold_only:
@@ -82,7 +82,7 @@ def handoff(root, numbers, scaffold_only=False, *, reviewed=None, archive=None):
         packages.extend([p for p in records.rglob("*") if p.is_file() and "deployment-layouts" not in p.parts])
         if reviewed is not None:
             packages.extend(folder / name for name in ("example.json", "comparison.json", "runtime.json"))
-    after_run=json.loads(command([sys.executable,ROOT/"llm-dlc/tools/watch.py","--root",root,"preflight",*numbers]))
+    after_run=json.loads(command([sys.executable,tools/"preflight.py","--root",root,*numbers]))
     if after_run["decided"] != numbers:
         raise ValueError("the watcher did not recover the scoped finite results from their receipts")
     result["afterResume"]=after_run

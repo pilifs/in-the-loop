@@ -73,8 +73,9 @@ import sys
 import time
 from pathlib import Path
 
-import brief_run
 import conductor
+import landing
+import run_common
 import single_run
 
 REPO = Path(__file__).resolve().parents[2]
@@ -197,7 +198,7 @@ def log(root: Path, action: str, name: str | None, **fields) -> None:
 
 def changed(root: Path, paths: list[str]) -> list[str]:
     """Which of these files the working copy has changed."""
-    return [p for p in paths if brief_run.jj(root, "diff", "-r", "@", "--name-only", "--", p).stdout.strip()]
+    return [p for p in paths if run_common.jj(root, "diff", "-r", "@", "--name-only", "--", p).stdout.strip()]
 
 
 def commit(root: Path, paths: list[str], title: str, body: str) -> None:
@@ -208,7 +209,7 @@ def commit(root: Path, paths: list[str], title: str, body: str) -> None:
         return
     r = subprocess.run([sys.executable, str(root / "llm-dlc/tools/sync.py"), "commit", "--only", *paths, "-m", title,
                         "-m", body], cwd=root, capture_output=True, text=True)
-    left = brief_run.jj(root, "diff", "-r", "@", "--name-only", "--", *paths).stdout.split()
+    left = run_common.jj(root, "diff", "-r", "@", "--name-only", "--", *paths).stdout.split()
     if left:
         raise Problem(f"could not commit {', '.join(left)}: {(r.stderr or r.stdout).strip()[-600:]}")
 
@@ -529,10 +530,10 @@ def run_tool(root: Path, *args: str) -> dict:
 
 
 def onto_line(root: Path, workspace: str) -> str:
-    """brief_run.onto_line, with its refusal as this tool's."""
+    """landing.onto_line, with its refusal as this tool's."""
     try:
-        return brief_run.onto_line(root, workspace)
-    except brief_run.Problem as e:
+        return landing.onto_line(root, workspace)
+    except run_common.Problem as e:
         raise Problem(str(e))
 
 
@@ -929,7 +930,7 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
         elif args.command == "defaults":
             over = checked(settings(args.settings))
             for given in (args.last_session, args.last_generate_session):
-                if given and not brief_run.SESSION.fullmatch(given):
+                if given and not run_common.SESSION.fullmatch(given):
                     raise Problem(f"not a session id: {given}")
             if over or args.last_session or args.last_generate_session:
                 with locked(root) as data:

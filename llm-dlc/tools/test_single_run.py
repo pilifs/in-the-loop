@@ -149,7 +149,7 @@ class SingleRunTest(unittest.TestCase):
         """No loop outlives its test."""
         for path in (self.root / "llm-dlc/loop-summaries").glob("single-*/watch.json"):
             pid = (json.loads(path.read_text()).get("loop") or {}).get("pid")
-            if pid and single_run.watch.alive(pid):
+            if pid and single_run.run_common.alive(pid):
                 with contextlib.suppress(OSError):
                     os.killpg(int(pid), 9)
 
@@ -851,7 +851,7 @@ class NestedStarts(unittest.TestCase):
     def test_start_inside_a_running_loop_is_refused_before_anything_is_written(self):
         root = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, root, True)
-        with mock.patch.object(single_run.watch, "nested_run_refusal", return_value="refused: made-up loop"), \
+        with mock.patch.object(single_run.run_common, "nested_run_refusal", return_value="refused: made-up loop"), \
                 contextlib.redirect_stderr(io.StringIO()) as err:
             self.assertEqual(single_run.main(["--root", str(root), "start", "made-up", "--prompt", "work"]), 1)
         self.assertIn("refused: made-up loop", err.getvalue())

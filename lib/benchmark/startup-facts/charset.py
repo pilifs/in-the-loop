@@ -69,7 +69,7 @@ def small(work):
         assert warm["recording"].startswith("reused trace"), warm
         clean = startup_facts.recover(cmd, work / (locale + "-clean"), locale, env=ENV)
         assert clean["receiptId"] == first["receiptId"] and clean["retry"] == verdict, clean
-        watch = [sys.executable, ROOT / "llm-dlc/tools/watch.py", "startup-facts"]
+        watch = [sys.executable, ROOT / "examples/tools/observe.py", "startup-facts"]
         reports = {}
         for label, r in (("normal", first), ("resumed", warm)):
             reports[label] = subprocess.check_output([*watch, run / r["attempt"] / "startup-report.json"], text=True).strip()

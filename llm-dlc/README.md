@@ -103,6 +103,14 @@ llm-dlc/
   tools/single_run.py               the watcher's tools for a single agent's run (/single-agent-run): start, wait,
                                     answer, the continue message, stop, land, a brief's setup phase and its notes;
                                     test_single_run.py tests it and feature-loop.sh's `single-agent` loop
+  tools/run_common.py               what the tools of a run share: a run's state, the clock, what a turn cost, jj as they
+                                    call it, the commits a run made, and the refusal to start a run from inside one;
+                                    test_run_common.py tests it
+  tools/landing.py                  a workspace's commits brought to the default line (moved forward, or merged with the
+                                    generated files regenerated), an idle workspace moved onto the line, and a merge
+                                    tried without being made; test_landing.py tests it on real jj repositories
+  tools/queue_keeping.py            the verification queue as a run's watcher keeps it: collects and commits what is
+                                    back, starts the runner when jobs wait; test_queue_keeping.py tests it
   tools/agent_client.py             the client boundary of a loop's turn: starts, resumes and compacts a Codex turn and
                                     prints the stream the loops read from Claude Code; test_agent_client.py tests it
                                     over codex_standin.py, a stand-in for the client

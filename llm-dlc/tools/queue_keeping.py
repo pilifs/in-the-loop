@@ -1,0 +1,218 @@
+"""The verification queue, as the watcher of a run keeps it.
+
+Agents queue proofs and model checks as jobs and go on (verification/README.md). While a run is under way its
+watcher keeps the queue itself, at each look of `wait` (single_run.py wait, collect and jobs):
+
+  - `collect` collects the results that are back (verification/pipeline.py collect) and commits them with the paths
+    a commit of results holds and nothing else, so that the watcher is the one session that commits in the default
+    working copy;
+  - `start_runner` starts the runner (pipeline.py run, no model) when jobs this machine can run wait and none is at
+    work, and announces a job that came while one was;
+  - `tend` does both, and returns only what the watcher has to hear of: results that came back, with the ones to
+    triage, or a runner it started.
+
+A verification loop that is already running in the repository (verification-loop.sh, a Sonnet session for each run
+of the queue) keeps the queue as it did, and `tend` then only announces jobs to it (`tend_queue`). That loop is
+being retired (llm-dlc/retired.md), and those parts go with it.
+
+Until 2026-11-27 this was part of the two controllers that are being retired. It is here unchanged.
+
+Nothing in this file is a command. Standard library only.
+"""
+from __future__ import annotations
+
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import conductor
+from landing import writer
+from run_common import Problem, Run, alive, detached, head_change, nudge, store
+
+
+QUEUE_LOOK = 30  # seconds between two looks of `wait` at the verification queue
+
+
+def _verification_layout():
+    """verification/layout.py: where a job and its result are kept, by id (flat, or under the day it was submitted)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+layout = _verification_layout()
+
+
+def pipeline(root: Path, *args: str) -> subprocess.CompletedProcess:
+    return subprocess.run([sys.executable, str(root / "verification" / "pipeline.py"), *args], cwd=root,
+                          capture_output=True, text=True, stdin=subprocess.DEVNULL)
+
+
+def queue(root: Path) -> dict | None:
+    r = pipeline(root, "status", "--json")
+    try:
+        return json.loads(r.stdout) if r.returncode == 0 else None
+    except ValueError:
+        return None
+
+
+def collect(run: Run) -> dict | None:
+    """Collect the results that are back (verification/pipeline.py collect) and commit them with the paths a commit
+    of results holds and nothing else (`sync.py commit --only $(pipeline.py commit-paths)`), as the verification
+    loop's sessions did: the watcher is then the one session that commits in the default working copy while a
+    run is under way, its merges and its collections one after the other. None when nothing waited. What is in
+    `attention` (a job that did not pass, outputs not applied, anything a result flags) is for the watcher to
+    triage."""
+    root = run.root
+    with writer(root):
+        status = queue(root)
+        if not status or not status.get("finished, not collected"):
+            return None
+        r = pipeline(root, "collect")
+        if r.returncode != 0:
+            raise Problem(f"pipeline.py collect failed: {(r.stderr or r.stdout).strip()[-600:]}")
+        ids = re.findall(r"^(\S+): \w+: applied \d+", r.stdout, re.M)
+        said = r.stdout.split("For the commit message", 1)[-1].splitlines()[1:]
+        said = [line.strip() for line in said if line.strip()]
+        title = said[0] if said else f"Record verification results for {len(ids)} job(s)"
+        body = " ".join(said[1:]) or "Collected by the watcher."
+        paths = pipeline(root, "commit-paths").stdout.split()
+        c = subprocess.run([sys.executable, str(root / "llm-dlc" / "tools" / "sync.py"), "commit", "--only", *paths,
+                            "-m", title, "-m", f"{body} Collected by the watcher of the {run.name} run, which keeps the "
+                                               f"queue while the run is under way."],
+                           cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+    results, attention = [], []
+    for job in ids:
+        try:
+            result = json.loads(((layout.find_result(root, job) or root / layout.result_rel(job)) / "result.json").read_text())
+        except (OSError, ValueError):
+            result = {}
+        row = {"id": job, "status": result.get("status", "?"), "summary": result.get("summary")}
+        flags = list(result.get("attention") or []) + [f"output not applied: {f}" for f in
+                                                       (result.get("collected") or {}).get("conflicts") or []]
+        if row["status"] != "passed" or flags:
+            attention.append({**row, "attention": flags})
+        results.append(row)
+    out = {"collected": results, "attention": attention, "commit": head_change(root)}
+    if c.returncode != 0:
+        out["commitReported"] = (c.stderr or c.stdout).strip()[-600:]
+    return out
+
+
+def start_runner(run: Run, status: dict) -> dict | None:
+    """Start the runner (verification/pipeline.py run, no model) when jobs this machine can run wait and no runner
+    is at work. It takes the budget the runner's settings give (`budget --apply`), runs until the queue
+    is empty and ends; the next look starts it again when more jobs come. A job committed while it runs is
+    announced to it (nudge), once."""
+    root = run.root
+    waiting = [m[0] for row in status.get("pending", []) if "; cannot run here:" not in row
+               and (m := conductor.JOB_ID.search(row))]
+    data = run.read()
+    if not waiting:
+        if data.get("nudged"):
+            run.update(nudged=[])
+        return None
+    ours = (data.get("runner") or {}).get("pid")
+    at_work = (alive(ours) or "no runner is at work" not in pipeline(root, "wait", "--timeout", "0").stdout)
+    if at_work:
+        if [j for j in waiting if j not in (data.get("nudged") or [])]:
+            nudge(root)
+            run.update(nudged=waiting)
+        return None
+    run.dir.mkdir(parents=True, exist_ok=True)
+    pid = detached([sys.executable, str(root / "verification" / "pipeline.py"), "run"], root, run.dir / "runner.log")
+    run.update(runner={"pid": pid, "started": conductor.now(), "jobs": waiting}, nudged=waiting)
+    return {"kind": "verification", "pid": pid, "jobs": waiting,
+            "note": f"{len(waiting)} job(s) waited and no runner was at work: started the runner (pipeline.py run, its "
+                    f"output in {run.dir / 'runner.log'}). Say so in a line; its results are collected as they come."}
+
+
+def tend(run: Run) -> dict | None:
+    """The watcher's part in the queue, at each look of `wait`. A verification loop running here keeps it as it
+    did (it runs, collects and commits, in sessions of its own), and the watcher only announces jobs to it
+    (tend_queue, below). Otherwise the watcher keeps it: it collects and commits what is back, and starts the
+    runner when jobs wait. Returns what to tell the watcher, if anything."""
+    if verification_running(run.root):
+        return tend_queue(run)
+    try:
+        got = collect(run)
+    except Problem as e:
+        if run.read().get("collectFailed") == str(e):
+            return None  # said once; the next look tries again
+        run.update(collectFailed=str(e))
+        return {"kind": "attention", "what": f"the results that are back could not be collected: {e}",
+                "note": "read why and put it right if it is small (the run-verification skill's step 3); else tell the user"}
+    run.update(collectFailed=None)
+    if got:
+        return {"kind": "results", **got,
+                "note": "say what came back in a line. Triage each one in `attention` as the run-verification skill's "
+                        "step 4 says, and record what needs a person in verification/findings.md (its step 5): a "
+                        "verdict goes to the stream it concerns too, through its inbox; a job out of time or memory "
+                        "is resubmitted (`pipeline.py resubmit ID ...`). Commit what you changed with `sync.py commit "
+                        "--only $(python3 verification/pipeline.py commit-paths)`"
+                        if got["attention"] else "say what came back in a line: every job passed"}
+    status = queue(run.root)
+    return start_runner(run, status) if status else None
+
+
+def verification_running(root: Path) -> int | None:
+    mine = store(root)
+    r = subprocess.run(["pgrep", "-u", str(os.getuid()), "-f", r"llm-dlc/tools/verification-loop\.sh"],
+                       capture_output=True, text=True)
+    for pid in r.stdout.split():
+        try:
+            words = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
+            theirs = store(os.readlink(f"/proc/{pid}/cwd"))
+        except OSError:
+            continue
+        # the script as a word of its own: a shell that only mentions it (`bash -lc "…loop.sh; read"`, the window a
+        # loop was started in, still open after the loop ended) is not the loop
+        if mine and theirs == mine and any(w.endswith(b"verification-loop.sh") for w in words):
+            return int(pid)
+    return None
+
+
+def start_verification(run: Run) -> int:
+    run.dir.mkdir(parents=True, exist_ok=True)
+    pid = detached([str(run.root / "llm-dlc/tools/verification-loop.sh")], run.root, run.dir / "verification.log")
+    run.update(verification={"pid": pid, "started": conductor.now()})
+    return pid
+
+
+def tend_queue(run: Run) -> dict | None:
+    """The watcher's part in the verification queue, at each look of `wait`: a job that is queued and can run here
+    is announced to the pipeline once (most are announced already, by the commit that queued them: this is for one
+    that came another way), and if no verification loop is running while jobs wait, one is started, unless the
+    watcher was the one to stop it. Returns what to tell the watcher, if anything."""
+    r = subprocess.run([sys.executable, str(run.root / "verification/pipeline.py"), "status", "--json"],
+                       capture_output=True, text=True, cwd=run.root)
+    try:
+        rows = json.loads(r.stdout).get("pending", [])
+    except ValueError:
+        return None
+    waiting = [m[0] for row in rows if "; cannot run here:" not in row and (m := conductor.JOB_ID.search(row))]
+    data = run.read()
+    known = [j for j in data.get("nudged") or [] if j in waiting]  # forgotten once it is no longer waiting
+    if not waiting:
+        if data.get("nudged"):
+            run.update(nudged=[])
+        return None
+    if [j for j in waiting if j not in known]:
+        nudge(run.root)
+        run.update(nudged=waiting)
+    verification = data.get("verification") or {}
+    # Outside a jj repository nothing says whose loop a process is, so none is started on a guess.
+    if store(run.root) and verification_running(run.root) is None and not verification.get("stopped"):
+        try:
+            pid = start_verification(run)
+        except OSError:
+            return None
+        return {"kind": "verification", "pid": pid,
+                "note": f"no verification loop was running while {len(waiting)} job(s) waited: started one "
+                        f"(its output: {run.dir / 'verification.log'}). Tell the user; nothing else to do."}
+    return None

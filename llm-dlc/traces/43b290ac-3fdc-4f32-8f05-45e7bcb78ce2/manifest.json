@@ -12,34 +12,37 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-27T17:05:56.648Z",
-  "duration_seconds": 6735,
+  "ended": "2026-11-27T17:29:21.605Z",
+  "duration_seconds": 8140,
   "stats": {
     "turns": 12,
-    "api_calls": 136,
-    "tool_calls": 182,
+    "api_calls": 170,
+    "tool_calls": 219,
     "tool_errors": 2,
     "compactions": 1,
-    "peak_context_tokens": 400353,
+    "peak_context_tokens": 516976,
     "usage": {
-      "input_tokens": 276,
-      "output_tokens": 226791,
-      "cache_read_input_tokens": 28494467,
-      "cache_creation_input_tokens": 630430
+      "input_tokens": 344,
+      "output_tokens": 290125,
+      "cache_read_input_tokens": 43783221,
+      "cache_creation_input_tokens": 747053
     }
   },
   "tools": {
-    "Bash": 121,
-    "Read": 41,
+    "Bash": 151,
+    "Read": 45,
     "Edit": 11,
-    "Write": 7,
+    "Write": 10,
     "AskUserQuestion": 2
   },
   "files_touched": [
+    "examples/tools/observe.py",
+    "examples/tools/preflight.py",
     "llm-dlc/loops/brief-generation-template.md",
     "llm-dlc/retired.md",
     "llm-dlc/tools/brief_queue.py",
     "llm-dlc/tools/retired.py",
+    "llm-dlc/tools/test_landing.py",
     "llm-dlc/tools/test_retired.py",
     "llm-dlc/tools/test_single_run.py",
     "verification/findings.md",
@@ -66,24 +69,24 @@
     {
       "index": 1,
       "started": "2026-11-27T15:41:46.350Z",
-      "ended": "2026-11-27T17:05:56.648Z",
+      "ended": "2026-11-27T17:29:21.605Z",
       "turns": 11,
-      "api_calls": 63,
+      "api_calls": 97,
       "usage": {
-        "input_tokens": 130,
-        "output_tokens": 122928,
-        "cache_read_input_tokens": 15332717,
-        "cache_creation_input_tokens": 383214
+        "input_tokens": 198,
+        "output_tokens": 186262,
+        "cache_read_input_tokens": 30621471,
+        "cache_creation_input_tokens": 499837
       },
-      "peak_context_tokens": 400353
+      "peak_context_tokens": 516976
     }
   ],
   "log": {
-    "sha256": "40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3",
-    "bytes": 4850417,
-    "lines": 1517,
-    "gzip_bytes": 949744,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3.jsonl.gz"
+    "sha256": "1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209",
+    "bytes": 5657533,
+    "lines": 1807,
+    "gzip_bytes": 1059212,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -126,9 +129,23 @@
       "summary": "Add the register of what is retired, and a check that live files point at it",
       "body": "The user decided on 2026-11-27 that the project converges on one run skill, to be called orchestrate-run, and that every other proof workflow is outdated: multi-agent-brief, the proof loop behind prove-java-change, the loops started by hand, the Sonnet verification loop, and the published plugin with its runtime mode. Nothing is to leave the history of work, and whatever names a retired thing is to say where to find it.\n\nllm-dlc/retired.md is that place: one entry for each thing, with what it was, what replaced it, the names that should no longer turn up in live files, the files that go, and the change that removed it. Every entry is still planned: this change removes nothing. llm-dlc/tools/retired.py reads the entries and lists each paragraph of a live file (instructions, skills, tools and their tests) that names something retired without pointing at the register, and each retired file that is still here. test_retired.py runs it on the repository, so it starts to hold as entries turn retired. With --planned it shows the work ahead: 367 paragraphs in 72 live files and 39 files.\n\nVerified by test_retired.py (5 tests: an entry's form, a failing page and its control once it points at the register, names as whole words, a retired file still present, the generated table of sessions left unread) and by test_costs.py lint. The inventory also gains the rows of nine tests other sessions added without them.",
       "log_sha256": "40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3"
+    },
+    {
+      "change_id": "uzwlnmyysovnzpvsmuynwzupwpmkwyrq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Move what the run tools share out of the two controllers that are being retired",
+      "body": "single_run.py and brief_queue.py took landing, trial merges, queue keeping, the nested-run refusal and the clock from brief_run.py (the streams' controller) and watch.py (the proof run's), which are to be retired (llm-dlc/retired.md). Their text is moved, unchanged, into three modules: run_common.py (a run's state, the clock, what a turn cost, jj, the workspaces and loops of a folder, the commits a run made, the refusal to start a run from inside one), landing.py (land, onto_line, trial_merge and the locks they hold) and queue_keeping.py (collect, start_runner, tend). The two old controllers import them, so both still work as before; single_run.py and brief_queue.py no longer import either controller. One wording differs: a merge landed with no message of its own now names the workspace, and the foundation stage passes its own words.\n\nwatch.py had also become the home of checks on examples. They move to examples/tools: preflight.py (what each example named lacks before a run takes it; validate_example.py and the numbered handoff call it) and observe.py (the startup-facts and public-observation reports). watch.py's commands of those names call them. preflight.py no longer says which claims a person has reviewed: that record belongs to the proof run, and watch.py adds it for as long as it exists.\n\nVerified by the changed-tests run: 66 of 66 test files passed, among them the two old controllers' own (test_brief_run 54, test_watch 42, test_prove_loop 32), test_single_run (29) and test_brief_queue (12). The moved code has tests of its own that do not go through a retiring controller: test_landing.py (14, on real jj repositories: forward, merge, conflict taken back, another session's files, trace output, a person's decisions, onto_line, a trial merge), test_queue_keeping.py (6), test_run_common.py (9) and test_preflight.py (9). The cost lint agrees.",
+      "log_sha256": "1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209"
     }
   ],
   "logs": {
+    "1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209": {
+      "bytes": 5657533,
+      "lines": 1807,
+      "gzip_bytes": 1059212,
+      "url": null
+    },
     "40c04b2885dcf077ec2c3eda0b571f376b26c47697e891999096b559e6198fc3": {
       "bytes": 4850417,
       "lines": 1517,

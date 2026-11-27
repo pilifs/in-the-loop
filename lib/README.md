@@ -381,7 +381,7 @@ For example, with the setting countermodel classes compiled in `classes`, these 
 ```sh
 python3 examples/tools/targets/startup_facts.py --work "$TMPDIR/encoded" --locale C --revision fixture-v1 -- \
   lib/target/release/jvmcontract prove 'sc.M#encoded()I' --classes classes --assert 'result == 2' --engine native --gaps strict --json
-python3 llm-dlc/tools/watch.py startup-facts "$TMPDIR/encoded/startup-report.json"
+python3 examples/tools/observe.py startup-facts "$TMPDIR/encoded/startup-report.json"
 ```
 
 Run the first command again with `--resume` before the argument separator to revalidate the saved recording. A new JVM checks the effective charset and the captured field, and the native checker runs the property again. Typed startup receipts include the JVM's class-initialization window. A root initialized before that window or an earlier application initializer yields a separate diagnostic with its observed prestate. The ordinary proof cache continues to refuse observed initializers. For a joint startup, `recordJointStartup` records actual class order, heap size and the number of startup JVMs. A file or local-JAR read can be measured independently at lazy first use with `PYTHONPATH=examples/tools python3 -m targets.property_reads MANIFEST --output RECEIPT`. [Properties-read manifest and admission checks](../examples/tools/targets/property_reads.py)

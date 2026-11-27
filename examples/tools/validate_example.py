@@ -9,7 +9,7 @@ example is done, after a merge and before anything is published.
 
 In this order, so that nothing reads a file an earlier step rewrites:
 
-1. each example's form and artifacts, as `watch.py preflight` checks them: example.json against its schema, the
+1. each example's form and artifacts, as `preflight.py` checks them: example.json against its schema, the
    sidecar, each revision's lock, each claim frozen, a proof task among the tasks;
 2. each task's plan (`build.py --plan NNN`): every task plans offline, with its claim file loaded, of its kind and
    in step with the task's bounds;
@@ -21,7 +21,7 @@ In this order, so that nothing reads a file an earlier step rewrites:
    inventory. They take seconds, and they discover a prepared example by itself: adding one edits none of them.
 
 Exit 0 when every step passed, 1 otherwise. Standard library only (with jsonschema where it is installed, as
-`watch.py preflight`).
+`preflight.py`).
 """
 from __future__ import annotations
 
@@ -56,12 +56,12 @@ def tail(text: str, lines: int = 12) -> str:
 def form(number: str) -> tuple[bool, str]:
     sys.path.insert(0, str(TOOLS))
     import changes  # noqa: E402  llm-dlc/tools/changes.py
-    import watch    # noqa: E402  llm-dlc/tools/watch.py
+    import preflight  # noqa: E402  examples/tools/preflight.py
     rows = changes.listing(REPO, [number])["examples"]
     if not rows or not rows[0].get("path"):
         return False, f"no example {number}"
     row = rows[0]
-    gaps = list(row.get("gaps") or []) + watch.schema_gaps(REPO, row)
+    gaps = list(row.get("gaps") or []) + preflight.schema_gaps(REPO, row)
     if row["state"] == "catalogued":
         return False, "a catalog entry: nothing is set up yet"
     return not gaps, "; ".join(f"{g['kind']}: {g['what']}" for g in gaps) or f"{row['state']}"

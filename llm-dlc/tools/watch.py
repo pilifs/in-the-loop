@@ -84,6 +84,15 @@ import claude_setup   # llm-dlc/tools/claude_setup.py
 import conductor      # llm-dlc/tools/conductor.py
 import decisions      # llm-dlc/tools/decisions.py
 import mode           # llm-dlc/tools/mode.py
+import queue_keeping  # llm-dlc/tools/queue_keeping.py: the verification queue, as a watcher keeps it
+import run_common     # llm-dlc/tools/run_common.py: what the tools of a run share
+sys.path.append(str(Path(__file__).resolve().parents[2] / "examples" / "tools"))
+import observe                         # noqa: E402  examples/tools/observe.py
+import preflight as example_preflight  # noqa: E402  examples/tools/preflight.py
+from preflight import schema_gaps, uninvoked  # noqa: E402,F401
+from queue_keeping import QUEUE_LOOK, start_verification, tend_queue, verification_running  # noqa: F401
+from run_common import (NESTED_RUN_OK, alive, clock, commits, detached, enclosing_loop, head_change, jobs,  # noqa: F401
+                        nested_run_refusal, nudge, now, since_revset, span, stamp, store, transcript, turn, turn_cost)
 
 REPO = Path(__file__).resolve().parents[2]
 RUN = "llm-dlc/loop-summaries/prove-change"
@@ -98,72 +107,14 @@ LONG_COMMAND = 10 * 60  # a setup's command still running after this long is tol
 LEFT = ("finished", "capped")  # item states that end an example in this run
 
 
-def now() -> float:
-    return time.time()
-
-
-def clock(t: float) -> str:
-    return datetime.fromtimestamp(t, timezone.utc).strftime("%H:%M")
-
-
-def span(seconds: float) -> str:
-    minutes = int(seconds // 60)
-    return f"{minutes // 60} h {minutes % 60:02d} min" if minutes >= 60 else f"{minutes} min"
-
-
-def stamp(text: str | None) -> float | None:
-    try:
-        return datetime.fromisoformat(text.replace("Z", "+00:00")).timestamp()
-    except (AttributeError, ValueError):
-        return None
-
-
-class Run:
-    """A run's directory and the watcher's own state in it."""
+class Run(run_common.Run):
+    """The proof run's directory and the watcher's own state in it."""
 
     def __init__(self, root: Path = REPO):
-        self.root = root
-        self.dir = root / RUN
-        self.path = self.dir / "watch.json"
-
-    def read(self) -> dict:
-        try:
-            data = json.loads(self.path.read_text())
-        except (OSError, ValueError):
-            return {}
-        return data if isinstance(data, dict) else {}
-
-    def update(self, **fields) -> dict:
-        self.dir.mkdir(parents=True, exist_ok=True)
-        data = {**self.read(), **fields}
-        tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(data, indent=1) + "\n")
-        os.replace(tmp, self.path)
-        return data
-
-    def run_json(self) -> dict:
-        try:
-            return json.loads((self.dir / "run.json").read_text())
-        except (OSError, ValueError):
-            return {}
-
-
-def alive(pid) -> bool:
-    try:
-        os.kill(int(pid), 0)
-    except (TypeError, ValueError, ProcessLookupError):
-        return False
-    except PermissionError:
-        return True
-    return True
+        super().__init__(root, root / RUN)
 
 
 # -- the sessions the watcher starts
-
-def transcript(root: Path, session: str) -> Path:
-    """Where Claude Code keeps a session of this checkout (as feature-loop.sh's project_dir)."""
-    projects = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude") / "projects"
-    return projects / re.sub(r"[^A-Za-z0-9]", "-", str(root)) / f"{session}.jsonl"
 
 
 def fixed_session(run: Run, new: bool = False, use: str | None = None) -> str:
@@ -203,26 +154,6 @@ def workspace_root(run: Run, name: str) -> Path:
     subprocess.run(["jj", "--quiet", "workspace", "add", "--name", name, "-r", "@-", str(path)],
                    cwd=run.root, check=True, capture_output=True, text=True)
     return path
-
-
-def turn_cost(run: Run, session: str | None, total: float | None, fresh: bool) -> float | None:
-    """What one turn cost. A result's total_cost_usd is the session's running total, so a resumed session's turn is
-    its total less the total last seen for that session: None for the first turn seen of a session that was resumed,
-    whose earlier total is not known here."""
-    if session is None or total is None:
-        return None
-    totals = run.read().get("sessionTotals") or {}
-    before = totals.get(session)
-    run.update(sessionTotals={**totals, session: total})
-    if before is not None:
-        return max(0.0, total - before)
-    return total if fresh else None
-
-
-def head_change(where: Path) -> str | None:
-    r = subprocess.run(["jj", "--quiet", "log", "--no-graph", "-r", "@-", "-T", 'change_id.short(8) ++ " " ++ description.first_line()'],
-                       capture_output=True, text=True, cwd=where)
-    return r.stdout.strip() or None if r.returncode == 0 else None
 
 
 def cmd_stage(run: Run, name: str, prompt: str, model: str | None, effort: str | None, memory: str | None,
@@ -333,42 +264,6 @@ def setups_state(run: Run) -> dict:
 
 # -- examples that are already prepared
 
-def schema_gaps(root: Path, row: dict) -> list[dict]:
-    """example.json against its schema, which build.py checks only when it builds the example's page."""
-    try:
-        import jsonschema
-        schema = json.loads((root / "examples/schema/example.schema.json").read_text())
-        example = json.loads((root / row["path"] / "example.json").read_text())
-    except (ImportError, OSError, ValueError, KeyError):
-        return []  # nothing to check with, or a file changes.py has reported already
-    errors = sorted(jsonschema.Draft202012Validator(schema).iter_errors(example), key=lambda e: list(e.absolute_path))
-    return [changes.gap(changes.FORM, f"example.json, {'/'.join(map(str, e.absolute_path)) or 'the document'}: {e.message}"[:300])
-            for e in errors[:5]]
-
-
-INVOKED = ("route", "adapter", "gap")
-
-
-def uninvoked(root: Path, row: dict) -> list[dict]:
-    """The proof tasks of a set-up example whose sidecar doesn't say how the proof is invoked (`invocation`): through
-    the route, through a validated adapter, or not until a named gap of the verifier is closed, which an observed
-    blocker of the task records. It is the setup's deliverable (llm-dlc/runtime.md); one missing doesn't stop a run."""
-    try:
-        target = json.loads((root / row["path"] / "target.json").read_text())
-    except (OSError, ValueError, KeyError, TypeError):
-        return []
-    observed = {b.get("task") for b in (target.get("handoff") or {}).get("blockers") or [] if b.get("observed")}
-    out = []
-    for t in target.get("tasks") or []:
-        if t.get("kind") == "replay":
-            continue
-        how = (t.get("invocation") or {}).get("how")
-        if how not in INVOKED:
-            out.append({"task": t["id"], "what": "how its proof is invoked is not recorded (route, adapter or gap)"})
-        elif how == "gap" and t["id"] not in observed and None not in observed:
-            out.append({"task": t["id"], "what": "invoked only once a gap is closed, and no observed blocker names it"})
-    return out
-
 
 def claim_hashes(root: Path, row: dict) -> dict[str, str]:
     """The sha256 of each claim file the example's tasks name, by its path in the checkout."""
@@ -418,36 +313,15 @@ def review_state(run: Run, row: dict) -> str:
 
 
 def preflight(run: Run, numbers: list[str], set_up: list[str] | tuple = ()) -> dict:
-    """What each example named lacks. `set_up` names the catalog entries a setup session has been run for: one that
-    still lacks something is left out of the run, and the others go on without it."""
-    numbers = list(dict.fromkeys(numbers))
-    out = []
-    for row in changes.listing(run.root, numbers)["examples"]:
-        gaps = list(row.get("gaps") or [])
-        if not any(g["kind"] == changes.ABSENT for g in gaps) and row.get("path"):
-            gaps += schema_gaps(run.root, row)
-        entry = {"id": row["id"], "path": row.get("path"), "state": row["state"], "ok": not gaps,
-                 **{kind: [g for g in gaps if g["kind"] == kind] for kind in changes.KINDS}}
-        if row.get("path") and row["state"] not in ("catalogued", "unknown"):
-            entry["invocation"] = uninvoked(run.root, row)
-        if row.get("path"):
-            entry["review"] = review_state(run, row)
-        if row["state"] == "unknown":
-            entry["note"] = "no target sidecar: only its example.json was checked, and its claims are whatever its page states"
-        out.append(entry)
-    left_out = [e["id"] for e in out if not e["ok"] and e["id"] in set_up and not e[changes.ABSENT]]
-    counted = [e for e in out if e["id"] not in left_out]
-    return {"examples": out, "ok": all(e["ok"] for e in counted),
-            "absent": [e["id"] for e in out if e[changes.ABSENT]],
-            "toSetUp": [e["id"] for e in counted if e[changes.CATALOGUE]],
-            "toRepair": [e["id"] for e in counted if e[changes.ARTIFACTS] or e[changes.FORM]],
-            "leftOut": left_out,
-            "toProve": [e["id"] for e in out if e["ok"] and e["state"] != "decided"],
-            "decided": [e["id"] for e in out if e["ok"] and e["state"] == "decided"],
-            # Stage 2 runs on every run: it designs the claims of what is not reviewed and reuses the rest's review
+    """What each example named lacks (examples/tools/preflight.py), with this run's record of reviewed claims: stage 2
+    runs on every run, designs the claims of what is not reviewed and reuses the rest's review."""
+    found = example_preflight.preflight(run.root, numbers, set_up, review=lambda row: review_state(run, row))
+    counted = [e for e in found["examples"] if e["id"] not in found["leftOut"]]
+    to_classify = found.pop("toClassify")
+    return {**found,
             "toReview": [e["id"] for e in counted if e.get("review") in ("new", "changed", "catalogued")],
             "reviewed": [e["id"] for e in counted if e.get("review") == "reviewed"],
-            "toClassify": [e["id"] for e in counted if e.get("invocation")]}
+            "toClassify": to_classify}
 
 
 def cmd_preflight(run: Run, numbers: list[str], set_up: list[str] | tuple = ()) -> int:
@@ -634,90 +508,6 @@ def cmd_plan(run: Run, check: bool) -> int:
 
 # -- the verification loop and the proof loop
 
-def store(directory: str | Path) -> str | None:
-    """The jj repository a directory's workspace belongs to (as prove-loop.sh's store)."""
-    repo = Path(directory) / ".jj" / "repo"
-    try:
-        if repo.is_dir():
-            return str(repo.resolve())
-        return str((repo.parent / repo.read_text().strip()).resolve())
-    except OSError:
-        return None
-
-
-def verification_running(root: Path) -> int | None:
-    mine = store(root)
-    r = subprocess.run(["pgrep", "-u", str(os.getuid()), "-f", r"llm-dlc/tools/verification-loop\.sh"],
-                       capture_output=True, text=True)
-    for pid in r.stdout.split():
-        try:
-            words = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
-            theirs = store(os.readlink(f"/proc/{pid}/cwd"))
-        except OSError:
-            continue
-        # the script as a word of its own: a shell that only mentions it (`bash -lc "…loop.sh; read"`, the window a
-        # loop was started in, still open after the loop ended) is not the loop
-        if mine and theirs == mine and any(w.endswith(b"verification-loop.sh") for w in words):
-            return int(pid)
-    return None
-
-
-def detached(command: list[str], root: Path, log: Path) -> int:
-    with open(log, "a") as out:
-        p = subprocess.Popen(command, cwd=root, stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT,
-                             start_new_session=True)
-    return p.pid
-
-
-def start_verification(run: Run) -> int:
-    run.dir.mkdir(parents=True, exist_ok=True)
-    pid = detached([str(run.root / "llm-dlc/tools/verification-loop.sh")], run.root, run.dir / "verification.log")
-    run.update(verification={"pid": pid, "started": conductor.now()})
-    return pid
-
-
-def nudge(root: Path) -> str:
-    """Say to the pipeline that its queue changed (verification/pipeline.py nudge). What it answers, or why not."""
-    r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "nudge"], capture_output=True, text=True, cwd=root)
-    return r.stdout.strip() if r.returncode == 0 else f"the pipeline took no nudge: {(r.stderr or r.stdout).strip()[-200:]}"
-
-
-QUEUE_LOOK = 30  # seconds between two looks of `wait` at the verification queue
-
-
-def tend_queue(run: Run) -> dict | None:
-    """The watcher's part in the verification queue, at each look of `wait`: a job that is queued and can run here
-    is announced to the pipeline once (most are announced already, by the commit that queued them: this is for one
-    that came another way), and if no verification loop is running while jobs wait, one is started, unless the
-    watcher was the one to stop it. Returns what to tell the watcher, if anything."""
-    r = subprocess.run([sys.executable, str(run.root / "verification/pipeline.py"), "status", "--json"],
-                       capture_output=True, text=True, cwd=run.root)
-    try:
-        rows = json.loads(r.stdout).get("pending", [])
-    except ValueError:
-        return None
-    waiting = [m[0] for row in rows if "; cannot run here:" not in row and (m := conductor.JOB_ID.search(row))]
-    data = run.read()
-    known = [j for j in data.get("nudged") or [] if j in waiting]  # forgotten once it is no longer waiting
-    if not waiting:
-        if data.get("nudged"):
-            run.update(nudged=[])
-        return None
-    if [j for j in waiting if j not in known]:
-        nudge(run.root)
-        run.update(nudged=waiting)
-    verification = data.get("verification") or {}
-    # Outside a jj repository nothing says whose loop a process is, so none is started on a guess.
-    if store(run.root) and verification_running(run.root) is None and not verification.get("stopped"):
-        try:
-            pid = start_verification(run)
-        except OSError:
-            return None
-        return {"kind": "verification", "pid": pid,
-                "note": f"no verification loop was running while {len(waiting)} job(s) waited: started one "
-                        f"(its output: {run.dir / 'verification.log'}). Tell the user; nothing else to do."}
-    return None
-
 
 def cmd_verification(run: Run, action: str) -> int:
     running = verification_running(run.root)
@@ -758,77 +548,6 @@ def cmd_loop(run: Run, arguments: list[str]) -> int:
 
 
 # -- where the run stands
-
-def jobs(root: Path) -> dict:
-    r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "status", "--json"],
-                       capture_output=True, text=True, cwd=root)
-    try:
-        status = json.loads(r.stdout)
-    except ValueError:
-        return {"pending": [], "running": [], "finished": [], "collected": {}}
-    ids = lambda rows: [m[0] for row in rows if (m := conductor.JOB_ID.search(row))]
-    collected = {}
-    for row in status.get("collected", []):
-        if m := conductor.JOB_ID.search(row):
-            collected[m[0]] = (re.findall(r"\[([a-z -]+)\]\s*$", row) or ["?"])[0]
-    return {"pending": ids(status.get("pending", [])), "running": ids(status.get("running", [])),
-            "finished": ids(status.get("finished, not collected", [])), "collected": collected}
-
-
-NESTED_RUN_OK = "IN_THE_LOOP_NESTED_RUN"  # "allow": the tests' made-up loops, which start stand-in clients only
-
-
-def enclosing_loop(cgroup: str = "/proc/self/cgroup") -> str | None:
-    """The feature loop whose systemd scope this process runs in (feature-loop-NAME), or None. Every loop, single,
-    stream or proof, runs its agent in such a scope, and everything the agent starts inherits it."""
-    try:
-        text = Path(cgroup).read_text()
-    except OSError:
-        return None
-    m = re.search(r"/(feature-loop-[^/\s]+)\.scope(?:/|$)", text, re.M)
-    return m.group(1) if m else None
-
-
-def nested_run_refusal(what: str, cgroup: str = "/proc/self/cgroup") -> str | None:
-    """Why WHAT may not start here, or None. A run started from inside a running loop is a new paid agent session
-    that nobody asked for: on 2026-11-27 a queued run's agent started a single-agent run of its own for part of its
-    brief, and another read the multi-agent skill to run its brief (VF-045). Starting a run is a person's decision,
-    and a watcher's at a person's word, never a step of an agent's work."""
-    loop = enclosing_loop(cgroup)
-    if not loop or os.environ.get(NESTED_RUN_OK) == "allow":
-        return None
-    return (f"{what} refused: this process runs inside the loop {loop}, and a loop's agent does not start runs, which "
-            f"are new paid sessions (VF-045). Say in your report what the work needs (an independent producer, more "
-            f"parallel work) and the watcher puts it to the user. Parallel deterministic work goes to verification "
-            f"jobs: python3 verification/pipeline.py submit.")
-
-
-def since_revset(since: str) -> str:
-    """A revset for `since` that still names one commit when it is a change id that has turned divergent (VF-049: a
-    trace rewrite gave the base change a new commit, a bookmark kept the old one visible, and `BASE..@-` failed, so
-    the run's commit list went empty). A change id (jj writes them in the letters k to z) is read as its version on
-    this line; a commit id is taken as it is."""
-    return f"heads(change_id({since}) & ::@-)" if re.fullmatch(r"[k-z]+", since) else since
-
-
-def commits(root: Path, since: str | None) -> list[str]:
-    """The commits on the loop's line after change `since`, oldest first: `change summary`. All of the last five
-    without one."""
-    revset = f"{since_revset(since)}..@-" if since else "ancestors(@-, 5)"
-    r = subprocess.run(["jj", "--quiet", "log", "--no-graph", "--reversed", "-r", revset, "-T",
-                        'change_id.short(8) ++ " " ++ description.first_line() ++ "\n"'],
-                       capture_output=True, text=True, cwd=root)
-    return [line for line in r.stdout.splitlines() if line.strip()] if r.returncode == 0 else []
-
-
-def turn(path: str | None) -> dict:
-    """How far the session's turn has come: tool calls so far, and when it last wrote anything."""
-    try:
-        file = Path(path)
-        calls = sum(line.count('"type":"tool_use"') + line.count('"type": "tool_use"') for line in file.open())
-        return {"toolCalls": calls, "lastOutput": file.stat().st_mtime}
-    except (TypeError, OSError):
-        return {"toolCalls": None, "lastOutput": None}
 
 
 def decisions_state(run: Run) -> dict:
@@ -1293,19 +1012,8 @@ def main(argv: list[str] | None = None) -> int:
     at = 2 if argv[:1] == ["--root"] else 0
     loop_arguments = argv[at + 1:] if argv[at:at + 1] == ["loop"] else []
     args = ap.parse_args(argv[:at + 1] if argv[at:at + 1] == ["loop"] else argv)
-    if args.command == "public-observation":
-        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "examples" / "tools"))
-        from targets import public_observation
-        print(json.dumps(public_observation.watch(args.url,args.packet,args.work.resolve(),args.measure),indent=2))
-        return 0
-    if args.command == "startup-facts":
-        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "examples" / "tools"))
-        from targets.startup_facts import summary
-        report = json.loads(args.record.read_bytes())
-        if report.get("schema") != "startup-claim-report/v1":
-            ap.error("expected a startup claim report")
-        print(summary(report))
-        return 0
+    if args.command in ("public-observation", "startup-facts"):  # examples/tools/observe.py has them now
+        return observe.main(argv[at:])
     run = Run(args.root.resolve())
     if args.command == "session":
         print(fixed_session(run, args.new, args.use))

@@ -100,11 +100,12 @@ import uuid
 from pathlib import Path
 
 import agent_client
-import brief_run
 import conductor
 import doctor
+import landing
 import loop_stats
-import watch
+import queue_keeping
+import run_common
 
 REPO = Path(__file__).resolve().parents[2]
 INTERVAL = 1800
@@ -136,7 +137,7 @@ class Problem(Exception):
     pass
 
 
-class Run(watch.Run):
+class Run(run_common.Run):
     """A single agent's run: its directory in this checkout, and the watcher's state in it."""
 
     def __init__(self, root: Path, name: str):
@@ -157,7 +158,7 @@ class Run(watch.Run):
 
     def running(self) -> bool:
         loop = self.read().get("loop") or {}
-        return bool(loop.get("pid")) and not loop.get("ended") and watch.alive(loop["pid"])
+        return bool(loop.get("pid")) and not loop.get("ended") and run_common.alive(loop["pid"])
 
 
 def text_of(text: str | None, file: str | None, what: str) -> str | None:
@@ -206,12 +207,12 @@ def messages(run: Run) -> list[dict]:
 
 
 def is_default(root: Path) -> bool:
-    default = brief_run.workspaces(root).get("default")
+    default = run_common.workspaces(root).get("default")
     return default is not None and default.resolve() == root.resolve()
 
 
 def change_id(folder: Path) -> str | None:
-    r = brief_run.jj(folder, "log", "--no-graph", "-r", "@-", "-T", "change_id", snapshot=False)
+    r = run_common.jj(folder, "log", "--no-graph", "-r", "@-", "-T", "change_id", snapshot=False)
     return r.stdout.strip() or None if r.returncode == 0 else None
 
 
@@ -222,7 +223,7 @@ def workspace_folder(run: Run, name: str) -> tuple[Path, bool]:
     there is none. (the folder, whether it was made now)."""
     if not NAME.fullmatch(name):
         raise Problem(f"a workspace's name is lower-case letters, digits and dashes: {name!r}")
-    known = brief_run.workspaces(run.root)
+    known = run_common.workspaces(run.root)
     if name in known:
         if known[name] is None or not known[name].is_dir():
             raise Problem(f"jj knows the workspace {name} but not its folder: `jj workspace forget {name}`, or give another name")
@@ -231,12 +232,12 @@ def workspace_folder(run: Run, name: str) -> tuple[Path, bool]:
     folder = base.parent / f"{base.name}-{name}"
     if folder.exists():
         raise Problem(f"{folder} already exists, but no jj workspace is at it: delete it first, or give another name")
-    r = brief_run.jj(run.root, "workspace", "add", "--name", name, "-r", "@-", str(folder))
+    r = run_common.jj(run.root, "workspace", "add", "--name", name, "-r", "@-", str(folder))
     if r.returncode != 0:
         raise Problem(f"could not add the workspace {name}: {r.stderr.strip()}")
     # the session logs this checkout stores and has not uploaded: without them every commit's check in the new
     # workspace reports each as an error, which the agent would then try to fix
-    brief_run.adopt_logs(folder)
+    landing.adopt_logs(folder)
     return folder, True
 
 
@@ -254,20 +255,20 @@ def brief_named(run: Run, file: str, workspace: str | None) -> str:
     except ValueError:
         return str(path)
     if workspace:
-        known = brief_run.workspaces(run.root).get(workspace)
+        known = run_common.workspaces(run.root).get(workspace)
         if known is not None:
             if not (known / rel).is_file():
                 raise Problem(f"the brief {rel} is not in the workspace {workspace} ({known}): bring it there, or give a "
                               f"file outside the checkout")
-        elif (brief_run.jj(run.root, "file", "show", "-r", "@-", str(rel)).returncode != 0
-              or brief_run.jj(run.root, "diff", "-r", "@", "--name-only", "--", str(rel)).stdout.strip()):
+        elif (run_common.jj(run.root, "file", "show", "-r", "@-", str(rel)).returncode != 0
+              or run_common.jj(run.root, "diff", "-r", "@", "--name-only", "--", str(rel)).stdout.strip()):
             raise Problem(f"the brief {rel} is not committed as it stands, and the workspace {workspace} is made from this "
                           f"line's last commit: commit it first (`sync.py commit --only {rel} -m ...`)")
     return str(rel)
 
 
 def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int:
-    if refusal := watch.nested_run_refusal(f"single_run.py start {run.name}"):
+    if refusal := run_common.nested_run_refusal(f"single_run.py start {run.name}"):
         raise Problem(refusal)
     data = run.read()
     if run.running():
@@ -287,7 +288,7 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
     if a.session and a.fork:
         raise Problem("--session continues a session and --fork starts from a copy of one: give one of them")
     for flag, value in (("--session", a.session), ("--fork", a.fork)):
-        if value and not brief_run.SESSION.fullmatch(value):
+        if value and not run_common.SESSION.fullmatch(value):
             raise Problem(f"{flag}: not a session id: {value}")
     workspace = a.workspace or data.get("workspace")
     if not new and a.workspace and a.workspace != data.get("workspace"):
@@ -302,8 +303,8 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
     onto = None
     if not new and workspace and not made:
         try:
-            onto = brief_run.onto_line(run.root, workspace)
-        except brief_run.Problem as e:
+            onto = landing.onto_line(run.root, workspace)
+        except run_common.Problem as e:
             onto = (f"left where it is: {e}" + ("; `single_run.py land` and then `start` bring in what the line has since"
                                                  if "commits the line lacks" in str(e) else ""))
     script = folder / "llm-dlc" / "tools" / "feature-loop.sh"
@@ -313,7 +314,7 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
         knows = False
     if not knows:
         raise Problem(f"{script} has no single-agent loop: {folder} is on a line from before it was added")
-    at_work = brief_run.loops_in(folder)
+    at_work = run_common.loops_in(folder)
     if at_work:
         raise Problem(f"another loop is at work in {folder} (pid {at_work[0]}): two loops in one working copy commit over "
                       f"each other. --workspace NAME gives this run a folder of its own")
@@ -332,7 +333,7 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
     if client == "codex":
         # As a brief's run checks before a Codex stream starts: the client is there, and in the folder the agent
         # works in it is given this checkout's CLAUDE.md whole (nothing shadows it, nothing is cut off).
-        problems = brief_run.codex_ready(folder)
+        problems = run_common.codex_ready(folder)
         if problems:
             raise Problem("; ".join(problems))
         # A run that has had a thread continues that thread. With its binding gone, the loop would start a new
@@ -345,9 +346,9 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
     if new:
         if a.session and client == "codex" and not agent_client.binding(a.session, folder):
             raise Problem(f"no Codex session {a.session} of {folder} to continue (llm-dlc/loop-summaries/agent-sessions there)")
-        if a.session and client == "claude" and not watch.transcript(folder, a.session).exists():
-            raise Problem(f"no session {a.session} of {folder} to continue ({watch.transcript(folder, a.session).parent})")
-        projects = watch.transcript(folder, "x").parents[1]
+        if a.session and client == "claude" and not run_common.transcript(folder, a.session).exists():
+            raise Problem(f"no session {a.session} of {folder} to continue ({run_common.transcript(folder, a.session).parent})")
+        projects = run_common.transcript(folder, "x").parents[1]
         if a.fork and not list(projects.glob(f"*/{a.fork}.jsonl")):
             raise Problem(f"no transcript of session {a.fork} to fork, under {projects}")
     session = data.get("session") or a.session or str(uuid.uuid4())
@@ -387,7 +388,7 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
                base=data.get("base") or base, legs=legs, told=[], lastSummary=None, loop=None,
                **({"compactAt": compact_at} if compact_at else {}),
                **({"interval": a.summary_interval} if a.summary_interval else {}), **(extra or {}))
-    pid = watch.detached([sys.executable, str(Path(__file__).resolve()), "--root", str(run.root), "loop", run.name],
+    pid = run_common.detached([sys.executable, str(Path(__file__).resolve()), "--root", str(run.root), "loop", run.name],
                          run.root, run.dir / "loop.log")
     run.update(loop={"pid": pid, "started": legs[-1]["started"], "log": str(run.dir / "loop.log")})
     data = run.read()
@@ -446,7 +447,7 @@ def cmd_loop(run: Run) -> int:
         env["FEATURE_LOOP_BRIEF"] = data["brief"]
     if data.get("compactAt"):
         env["FEATURE_LOOP_COMPACT_AT"] = str(data["compactAt"])
-    if data.get("fork") and not watch.transcript(folder, data["session"]).exists():
+    if data.get("fork") and not run_common.transcript(folder, data["session"]).exists():
         env["FEATURE_LOOP_FORK"] = data["fork"]
     command = [str(folder / "llm-dlc" / "tools" / "feature-loop.sh"), "single-agent"] + ([str(data["cycles"])] if data.get("cycles") else [])
     # An interrupt (`stop --now`) goes to the whole group: the loop records it and ends, and this process outlives
@@ -491,12 +492,12 @@ def last_result(path: str | None) -> dict | None:
 
 def uncommitted(folder: Path) -> list[str]:
     """The files the folder's working copy holds beyond its last commit, without the ones sync.py writes."""
-    r = brief_run.jj(folder, "diff", "-r", "@", "--name-only")
-    return [f for f in r.stdout.splitlines() if f.strip() and not brief_run.generated(f)] if r.returncode == 0 else []
+    r = run_common.jj(folder, "diff", "-r", "@", "--name-only")
+    return [f for f in r.stdout.splitlines() if f.strip() and not landing.generated(f)] if r.returncode == 0 else []
 
 
 def queue_counts(root: Path) -> dict:
-    jobs = watch.jobs(root)
+    jobs = run_common.jobs(root)
     return {k: len(jobs.get(k) or []) for k in ("pending", "running", "finished")}
 
 
@@ -516,11 +517,11 @@ def assessment(run: Run, event: dict) -> dict:
     costs = dict(data.get("cycleCosts") or {})
     if key not in costs:
         fresh = key == "1.1" and not data.get("continued") and not data.get("fork")
-        cost = watch.turn_cost(run, result.get("session_id"), result.get("total_cost_usd"), fresh=fresh)
+        cost = run_common.turn_cost(run, result.get("session_id"), result.get("total_cost_usd"), fresh=fresh)
         if cost is not None:
             costs[key] = round(cost, 4)
             run.update(cycleCosts=costs)
-    committed = watch.commits(folder, event.get("before"))
+    committed = run_common.commits(folder, event.get("before"))
     left = uncommitted(folder)
     hint = ("Read the report against the outcome the run was given. `stop` when the outcome is reached, when what is "
             "left needs the user (a decision, credentials, a review), or when the cycle shows the agent going round "
@@ -532,7 +533,7 @@ def assessment(run: Run, event: dict) -> dict:
     return {"cycle": event.get("cycle"), "turn": {k: result.get(k) for k in ("subtype", "num_turns", "duration_ms")},
             "cost": costs.get(key), "commits": committed, "uncommitted": left[:20],
             "report": report[:REPORT_LIMIT] + (f"\n[... {len(report) - REPORT_LIMIT} more characters, in the session's "
-                                                f"transcript: {watch.transcript(folder, data['session'])}]"
+                                                f"transcript: {run_common.transcript(folder, data['session'])}]"
                                                 if len(report) > REPORT_LIMIT else ""),
             "jobs": queue_counts(run.root), "nextCycleTakes": run.message.read_text().strip() if run.message.exists() else None,
             "hint": hint.strip() + " The next cycle takes the continue message as it stands, which is a person's to "
@@ -552,12 +553,12 @@ def state(run: Run) -> dict:
     under_way = None
     if cycle:
         answered = any(e.get("type") == "run" and e.get("cycle") == cycle.get("cycle") for e in events)
-        t = watch.turn(cycle.get("turn"))
+        t = run_common.turn(cycle.get("turn"))
         under_way = {"cycle": cycle.get("cycle"), "began": cycle.get("time"),
                      "state": "running" if running and not answered else "ended",
                      "toolCalls": t["toolCalls"],
-                     "lastOutput": watch.span(watch.now() - t["lastOutput"]) + " ago" if t["lastOutput"] else None}
-    first = watch.stamp((data.get("legs") or [{}])[0].get("started"))
+                     "lastOutput": run_common.span(run_common.now() - t["lastOutput"]) + " ago" if t["lastOutput"] else None}
+    first = run_common.stamp((data.get("legs") or [{}])[0].get("started"))
     history = messages(run)
     return {"name": run.name, "running": running, "pid": loop.get("pid") if running else None,
             "session": data.get("session"), "folder": str(folder), "workspace": data.get("workspace"),
@@ -565,10 +566,10 @@ def state(run: Run) -> dict:
             **({"runs": data["runs"]} if data.get("runs") and data.get("runs") != data.get("model") else {}),
             "effort": data.get("effort"), "brief": data.get("brief"),
             "started": loop.get("started"), "ended": loop.get("ended"), "status": loop.get("status"),
-            "elapsed": watch.span(watch.now() - first) if first else None, "legs": len(data.get("legs") or []),
+            "elapsed": run_common.span(run_common.now() - first) if first else None, "legs": len(data.get("legs") or []),
             "cycle": under_way,
             "question": {k: asked.get(k) for k in ("n", "type", "cycle")} if asked and asked.get("needsVerdict") else None,
-            "commits": watch.commits(folder, data.get("base")) if data.get("base") else [],
+            "commits": run_common.commits(folder, data.get("base")) if data.get("base") else [],
             # dollars are known for the cycles a client reported them for: none yet, or a Codex run's, is not nought
             "spent": round(sum(data["cycleCosts"].values()), 2) if data.get("cycleCosts") else None,
             "cycleCosts": data.get("cycleCosts") or {},
@@ -584,8 +585,8 @@ def summary(s: dict) -> str:
     lines = [f"### {now} UTC · single-agent run {s['name']} · {s['elapsed'] or 'not started'}{'' if s['running'] else ' · not running'}"]
     c = s["cycle"]
     if c:
-        began = watch.stamp(c["began"])
-        took = f", {watch.span(watch.now() - began)} in" if began and c["state"] == "running" else ""
+        began = run_common.stamp(c["began"])
+        took = f", {run_common.span(run_common.now() - began)} in" if began and c["state"] == "running" else ""
         lines.append(f"- cycle {c['cycle']} {c['state']}{took}: {c['toolCalls'] if c['toolCalls'] is not None else '?'} tool calls"
                      + (f", last output {c['lastOutput']}" if c["lastOutput"] else ""))
     if s["question"]:
@@ -614,7 +615,7 @@ def keeps_queue(run: Run) -> bool:
     """Whether this watcher keeps the verification queue: when the run says so, and no other run's watcher does."""
     if run.read().get("verification") != "on":
         return False
-    return not any(brief_run.running(run.root, script) for script in OTHER_RUNS)
+    return not any(run_common.running(run.root, script) for script in OTHER_RUNS)
 
 
 def next_thing(run: Run, interval: float) -> dict | None:
@@ -650,8 +651,8 @@ def next_thing(run: Run, interval: float) -> dict | None:
                     "note": "the loop's process is gone and recorded no end: read the end of its output (`output`), "
                             "and `single_run.py start NAME` continues the run"}
         return {"kind": "not-running", "state": state(run), "note": "the run has ended: `start` continues it"}
-    last = (data.get("lastSummary") or {}).get("time") or watch.stamp(loop.get("started")) or 0
-    if watch.now() - last >= interval:
+    last = (data.get("lastSummary") or {}).get("time") or run_common.stamp(loop.get("started")) or 0
+    if run_common.now() - last >= interval:
         return {"kind": "summary"}
     return None
 
@@ -661,16 +662,16 @@ def cmd_wait(run: Run, interval: float | None, timeout: float) -> int:
     until, looked = time.monotonic() + timeout, None
     while True:
         thing = next_thing(run, interval)
-        if thing is None and (looked is None or time.monotonic() - looked >= watch.QUEUE_LOOK):
+        if thing is None and (looked is None or time.monotonic() - looked >= queue_keeping.QUEUE_LOOK):
             looked = time.monotonic()
             if keeps_queue(run):
-                thing = brief_run.tend(run)
+                thing = queue_keeping.tend(run)
         if thing is not None:
             if thing["kind"] == "results":
                 thing["note"] = RESULTS_NOTE if thing.get("attention") else "say what came back in a line: every job passed"
             if thing["kind"] == "summary":
                 print(summary(state(run)))
-                run.update(lastSummary={"time": watch.now()})
+                run.update(lastSummary={"time": run_common.now()})
                 return 0
             print(json.dumps(thing, indent=1))
             return 0
@@ -832,7 +833,7 @@ def cmd_unhang(run: Run, min_age_minutes: float, dry_run: bool) -> int:
         if found:
             with open(run.dir / "unhang.jsonl", "a") as out:
                 for f in found:
-                    out.write(json.dumps({"time": watch.now(), **f, "ended": f["pid"] in ended}) + "\n")
+                    out.write(json.dumps({"time": run_common.now(), **f, "ended": f["pid"] in ended}) + "\n")
     print(json.dumps({"run": run.name, "hung": found, "ended": ended,
                       "next": ("nothing hung" if not found else "named only (--dry-run)" if dry_run else
                                "ended; record each in VF-069's occurrences and the next report to the user")}, indent=1))
@@ -851,12 +852,12 @@ def cmd_land(run: Run) -> int:
         raise Problem(f"the workspace {workspace} has uncommitted files ({', '.join(left[:5])}): `single_run.py start "
                       f"{run.name}` gives the agent a cycle to finish and commit them")
     try:
-        out = brief_run.land(run, workspace, (
+        out = landing.land(run, workspace, (
             f"Merge the single-agent run {run.name} into the line",
             f"The single-agent run {run.name} (session {data.get('session')}) worked in the workspace {workspace} while "
             f"this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they "
             f"were regenerated from the session files."))
-    except brief_run.Problem as e:
+    except run_common.Problem as e:
         raise Problem(str(e))
     run.update(landed=out.get("commit"))
     out["next"] = ("run the default test run inline (`python3 lib/tools/test_costs.py run`), as CLAUDE.md asks after a merge"
@@ -868,8 +869,8 @@ def cmd_land(run: Run) -> int:
 
 def cmd_collect(run: Run) -> int:
     try:
-        got = brief_run.collect(run)
-    except brief_run.Problem as e:
+        got = queue_keeping.collect(run)
+    except run_common.Problem as e:
         raise Problem(str(e))
     print(json.dumps(got or {"collected": [], "note": "nothing is back"}, indent=1))
     return 0
@@ -881,10 +882,10 @@ def cmd_jobs(run: Run, timeout: float) -> int:
         raise Problem(f"no run {run.name} here ({run.dir})")
     until, came = time.monotonic() + timeout, []
     while True:
-        thing = brief_run.tend(run) if keeps_queue(run) else None
+        thing = queue_keeping.tend(run) if keeps_queue(run) else None
         if thing is not None and thing["kind"] in ("results", "attention"):
             came.append({k: v for k, v in thing.items() if k != "note"})
-        status = brief_run.queue(run.root)
+        status = queue_keeping.queue(run.root)
         left = None if status is None else sum(
             "; cannot run here:" not in row for key in ("pending", "running", "finished, not collected") for row in status.get(key, []))
         flagged = [c for c in came if c.get("attention") or c["kind"] == "attention"]
@@ -900,7 +901,7 @@ def cmd_jobs(run: Run, timeout: float) -> int:
         if time.monotonic() >= until:
             print(json.dumps({"kind": "nothing", "left": left, "came": came, "note": "jobs are still out: wait again"}))
             return 3
-        time.sleep(min(watch.QUEUE_LOOK, max(1, until - time.monotonic())))
+        time.sleep(min(queue_keeping.QUEUE_LOOK, max(1, until - time.monotonic())))
 
 
 def template_texts(template: str, fills: dict[str, str], name: str = SETUP_TEMPLATE) -> tuple[str, str]:
@@ -1172,13 +1173,13 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             return 0
         if args.command == "summary":
             print(summary(state(run)))
-            run.update(lastSummary={"time": watch.now()})
+            run.update(lastSummary={"time": run_common.now()})
             return 0
         if args.command == "interval":
             if not run.read():
                 raise Problem(f"no run {run.name} here ({run.dir})")
             run.update(interval=args.seconds)
-            print(f"`wait` gives a summary every {watch.span(args.seconds)} from now on")
+            print(f"`wait` gives a summary every {run_common.span(args.seconds)} from now on")
             return 0
         if args.command == "cycles":
             return cmd_cycles(run, args.line)
