@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-005516-qualify-batik-lazy-resources-and-origina",
+  "title": "Qualify Batik lazy resources and original JDK properties decoding",
+  "description": "On both ordered Batik deployments follow the actual Class.getResourceAsStream return into the original Properties.load, its LineReader refills and the first property read. Qualify fresh, memoized, same-path replaced and setter-first histories. On ordinary files distinguish Latin-1 and UTF-8 Reader input, escapes, continuations, duplicate precedence, partial failure and absence.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T00:55:16+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Ten Batik getter histories",
+      "run": "python3 lib/benchmark/startup-facts/files.py batik --output verification/startup-facts/batik-resource.zip",
+      "cwd": "."
+    },
+    {
+      "name": "Ten original file and reader histories",
+      "run": "python3 lib/benchmark/startup-facts/files.py file --output verification/startup-facts/properties-file.zip",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/startup-facts/batik-resource.zip",
+    "verification/startup-facts/properties-file.zip"
+  ]
+}

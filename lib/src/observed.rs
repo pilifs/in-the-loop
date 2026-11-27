@@ -384,6 +384,9 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         let table = dir.join("LiveTableTrace.java");
         std::fs::write(&table, table::SOURCE)?;
         compile.arg(table);
+        let properties = dir.join("PropertyLoadTrace.java");
+        std::fs::write(&properties, include_str!("observed/PropertyLoadTrace.java"))?;
+        compile.arg(properties);
     }
     let compiled = compile.output().map_err(|e| Error::new(format!("{}: {e}", javac.display())))?;
     if !compiled.status.success() {

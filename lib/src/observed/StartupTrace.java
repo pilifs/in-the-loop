@@ -19,6 +19,7 @@ public final class StartupTrace {
     private final String owner, selector;
     private final boolean members;
     private final LiveTableTrace table;
+    private final PropertyLoadTrace properties;
     private final Map<Long, Integer> aliases = new HashMap<>();
     private static final String LOOKUP = "getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;";
     private static final String INVOKE = "invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;";
@@ -46,6 +47,7 @@ public final class StartupTrace {
         selector = boundary.substring(hash + 1);
         this.members = mode.equals("--methods");
         this.table = mode.equals("--live-table") ? new LiveTableTrace(vm, events) : null;
+        this.properties = mode.equals("--properties") ? new PropertyLoadTrace(vm, events) : null;
     }
 
     private static String quote(String text) { return ObservedInitializer.text(text); }
@@ -78,7 +80,8 @@ public final class StartupTrace {
         if (thread != null || finished) throw new IllegalStateException("repeated or overlapping startup boundary");
         thread = at.thread();
         active.add(exitFor(at.location().declaringType(), thread));
-        if (table != null) table.begin(thread);
+        if (properties != null) properties.begin(thread);
+        else if (table != null) table.begin(thread);
         else if (members) {
             if (!vm.canWatchFieldModification()) throw new IllegalStateException("JDI field modification evidence unavailable");
             ClassPrepareRequest applications = requests.createClassPrepareRequest();
@@ -190,6 +193,7 @@ public final class StartupTrace {
         if (at.method().declaringType().name().equals(owner) && method(at.method()).equals(selector)) {
             if (!calls.isEmpty()) throw new IllegalStateException("charset operation did not return normally");
             if (table != null) table.finish();
+            if (properties != null) properties.finish();
             requests.deleteEventRequests(active);
             thread = null;
             finished = true;
@@ -257,6 +261,7 @@ public final class StartupTrace {
             if (set == null) throw new IllegalStateException("startup trace timed out");
             for (Event event : set) {
                 if (table != null && table.handle(event)) continue;
+                if (properties != null && properties.handle(event)) continue;
                 if (event instanceof ClassPrepareEvent e) {
                     if (e.referenceType().name().equals(owner)) breakpoint(e.referenceType(), selector);
                     if (members && thread != null) {
@@ -299,7 +304,7 @@ public final class StartupTrace {
         LaunchingConnector connector = Bootstrap.virtualMachineManager().defaultConnector();
         Map<String, Connector.Argument> launch = connector.defaultArguments();
         launch.get("home").setValue(System.getProperty("java.home"));
-        String mode = Set.of("--methods","--live-table").contains(args[2]) ? args[2] : "";
+        String mode = Set.of("--methods","--live-table","--properties").contains(args[2]) ? args[2] : "";
         launch.get("options").setValue(launchArgs(all.subList(mode.isEmpty() ? 2 : 3, split)));
         launch.get("main").setValue(launchArgs(all.subList(split + 1, all.size())));
         VirtualMachine vm = connector.launch(launch);
