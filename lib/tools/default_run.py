@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The default test run's record, and the gate a push and a release ask.
+"""The default test run's record, and the gate a push and a promotion ask.
 
 The default run (`python3 lib/tools/test_costs.py run`, the unit and tool tiers) runs inline, in the working copy
 (CLAUDE.md, Tests). When it passes, `test_costs.py run` writes the tree it tested to RECORD, outside the repository:
@@ -9,7 +9,7 @@ only in UNTESTED, files no test reads (traces, decisions, job results). The reco
 one machine: a run in one workspace covers the same tree in another.
 
     default_run.py last [--rev REV]          the latest passed run that covers REV (default @-)
-    default_run.py gate [--rev REV] [--run]  exit 0 when one does (sync.py push and release.py cut ask this); with
+    default_run.py gate [--rev REV] [--run]  exit 0 when one does (sync.py push and a promotion ask this); with
                                              --run, a default run is started here when none does, and asked again
 
     default_run.py after-merge [--final] [--within SECONDS] [--memory SIZE] [--rust-jobs N]

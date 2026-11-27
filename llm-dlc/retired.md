@@ -122,17 +122,21 @@ outdated.
 
 ### plugin-and-runtime-mode
 
-- **Status:** planned
+- **Status:** retired
 - **What it was:** the published product. The plugin `in-the-loop` installed the skill `/prove-java-change`,
   whose bootstrap cloned the repository onto a user's machine and stood it on a release pinned by the digest of
   its tree. Such a copy ran in *runtime* mode: commits were plain, and nothing was traced, redacted or pushed.
   The last release was 0.10.0, cut on 2026-11-16.
 - **Replaced by:** nothing yet. The repository has one mode, development. A product entry built on
-  `/orchestrate-run` is future work.
+  `/orchestrate-run` is future work. What is left of the mode: a commit contributed from such a copy carries an
+  `In-The-Loop-Runtime` trailer, which `sync.py` still reads so that it never stamps one, and example numbers
+  900 to 999, which were a user's own there, stay unused. The benchmark of external upgrades
+  (`lib/benchmark/external-upgrades/`) measured this product at pinned revisions: its operator harness names
+  the plugin's files and needs a new product entry before it can measure a later revision.
 - **Names:** `prove-java-change`, `bootstrap.py`, `release.py`, `claude_setup.py`, `contribute.py`, `runtime.md`,
   `mode.py`
 - **Files:** `plugins/`, `.claude-plugin/`, `llm-dlc/runtime.md`, `llm-dlc/tools/release.py`,
   `llm-dlc/tools/mode.py`, `llm-dlc/tools/claude_setup.py`, `llm-dlc/tools/contribute.py`,
   `llm-dlc/tools/test_release.py`, `llm-dlc/tools/test_mode.py`, `llm-dlc/tools/test_claude_setup.py`,
   `llm-dlc/tools/test_contribute.py`
-- **Removed in:** not yet
+- **Removed in:** change `vwytpwxyvmrr` (2026-11-27)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Can this machine prove a Java change with this repository? The quantitative assessment of step 1 of
-/prove-java-change (llm-dlc/runtime.md), and as useful in a development checkout.
+"""Can this machine prove a Java change with this repository? A quantitative assessment of the machine, and the
+memory budget a run's loop is given (single_run.py asks for it).
 
     python3 llm-dlc/tools/doctor.py           a table: each check, what was found, what is wanted
     python3 llm-dlc/tools/doctor.py --json    the same as data, with the budget it proposes for this machine

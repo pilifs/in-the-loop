@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""The changes a checkout holds as examples for /prove-java-change, and where each stands
-(llm-dlc/runtime.md#many-changes-and-preparing-without-proving).
+"""The changes a checkout holds as examples with a target sidecar, and where each stands.
 
     changes.py [NNN ...]             a table, and the numbers still to prove
     changes.py --json [NNN ...]      the same as data
     changes.py --pending [NNN ...]   only the numbers still to prove, on one line, in order
 
-Without numbers it lists a runtime checkout's own examples, 900 to 999, in the order of their numbers, which is the
-order their preparation decided to prove them in. With numbers it lists those, in the order given.
+With numbers it lists those examples, in the order given. Without any it lists the examples numbered 900 to 999,
+of which this repository has none: the range was a user's own, in a released copy of the repository on their
+machine (a mode retired on 2026-11-27: llm-dlc/retired.md), and it stays unused here.
 
 A row carries the example's `source` (the change on GitHub), its `revisions` (the commits its sidecar pins) and its
 `provenance`, which for an example the skill prepared is the request it was prepared from: together they say
@@ -18,11 +18,11 @@ examples/tools/targets/workflow.py) and from the verification results a sidecar 
 step by hand:
 
     catalogued   a catalog entry: its revisions are pinned, and its sidecar has no task, so nothing is built and
-                 nothing states a claim. Setting it up is stage 3's work (llm-dlc/runtime.md), not a repair.
+                 nothing states a claim. Setting it up is a setup's work, not a repair.
     unprepared   its scaffold is incomplete: a revision that does not materialize, no oracle run, a claim not
                  frozen, or tasks and no proof task among them. `why` says which. Not ready for a proof loop.
     prepared     the scaffold is complete and at least one claim has no answer yet (none, or left open). This is
-                 where `/prove-java-change --scaffold-only` leaves an example, and what a proof loop takes.
+                 where a setup leaves an example, and what a run takes to prove.
     decided      every claim is established or refuted. A proof loop has nothing to do.
     unknown      no target sidecar (a constructed example): its state is not derived, and it counts as still to
                  prove when it is named.
@@ -49,7 +49,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 TOOLS = str(REPO / "examples" / "tools")  # targets/sidecar.py and targets/workflow.py: the code, whatever the root
-LOCAL_NUMBERS = range(900, 1000)  # a runtime checkout's own examples (llm-dlc/runtime.md)
+LOCAL_NUMBERS = range(900, 1000)  # once a user's own examples in a released copy (llm-dlc/retired.md); unused here
 ANSWERS = ("established", "refuted")
 # What an unprepared example lacks, by kind, for whoever checks one before a run takes it
 # (examples/tools/preflight.py): an artifact that is not there (a revision that does not materialize, no oracle run, no lock), the

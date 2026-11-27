@@ -31,7 +31,7 @@ session's tests.
 The user's decision, 2026-11-18: the default test run (`python3 lib/tools/test_costs.py run`) was one of the
 biggest bottlenecks of a run with frequent merges, so after a merge it ran only when due
 (`python3 lib/tools/default_run.py after-merge`). Since the process-plumbing brief of 2026-11-21 it is owed only
-at a promotion to `main` and at a release, which run it themselves when no passed run covers the commit: not
+at a promotion to `main`, which runs it itself when no passed run covers the commit: not
 when an example is done, not when a stream or a run lands, not after a merge. A checkpoint to `develop`
 (`sync.py checkpoint`) runs none and confers no test status. Any agent may still run it when it answers a
 development question, with `after-merge` (in a memory cap of its own) rather than the bare run. And: tests are

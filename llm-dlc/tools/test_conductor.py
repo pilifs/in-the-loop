@@ -159,9 +159,6 @@ class DecisionRecordTest(unittest.TestCase):
         self.dir = self.checkout / "llm-dlc/loop-summaries/prove-change"
         self.records = self.checkout / "llm-dlc/decisions"
         (self.checkout / "examples/901-made-up").mkdir(parents=True)
-        patch = mock.patch.dict(os.environ, {"IN_THE_LOOP_MODE": "development"})
-        patch.start()
-        self.addCleanup(patch.stop)
         self.start = conductor.append_event(self.dir, type="cycle-start", cycle=1, item="901")
 
     def ask(self, seconds=600):
@@ -195,12 +192,6 @@ class DecisionRecordTest(unittest.TestCase):
     def test_a_late_verdict_decided_nothing_and_is_not_recorded(self):
         self.assertEqual(call("decide", self.dir, self.ask(seconds=-1), "finished", "--reason", "too late")[0], 0)
         self.assertEqual(decisions.record_names(self.records), [])
-
-    def test_a_runtime_checkout_keeps_a_record_of_its_own(self):
-        with mock.patch.dict(os.environ, {"IN_THE_LOOP_MODE": "runtime"}):
-            self.assertIn("recorded as local-prove-change-D001",
-                          call("decide", self.dir, self.ask(), "finished", "--reason", "done")[1])
-        self.assertEqual(decisions.record_names(self.records), ["local-prove-change"])
 
     def test_a_record_that_cant_be_written_does_not_hold_the_verdict_back(self):
         self.records.parent.mkdir(parents=True, exist_ok=True)

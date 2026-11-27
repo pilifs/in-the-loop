@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Tests for changes.py: the state it derives for each example a checkout holds for /prove-java-change, the order
-it lists them in, and what it leaves for a proof loop. Run: python3 llm-dlc/tools/test_changes.py
+"""Tests for changes.py: the state it derives for each example a checkout holds with a target sidecar, the order
+it lists them in, and what it leaves to prove. Run: python3 llm-dlc/tools/test_changes.py
 The examples are copies of the made-up target fixture (examples/tools/targets/fixtures), with receipts written by
 hand in the shape ingestion leaves; nothing is run and nothing of this checkout's own examples is read."""
 import contextlib
@@ -218,7 +218,7 @@ class StateTest(Checkout):
         self.assertIn("catalog entries, to set up first: 900", self.run_main()[1])
 
     def test_a_row_says_where_the_change_is_and_what_asked_for_it(self):
-        self.example("900", provenance="/prove-java-change on 2026-01-02: made-up/repo#12, the gate still denies")
+        self.example("900", provenance="a request on 2026-01-02: made-up/repo#12, the gate still denies")
         row = self.rows()["900"]
         self.assertEqual(row["repository"], "https://github.com/pilifs/in-the-loop")
         self.assertTrue(row["source"].startswith("https://github.com/"))

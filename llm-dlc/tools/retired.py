@@ -51,11 +51,6 @@ EXEMPT = {
     "llm-dlc/tools/test_loop_stats.py": "tests that, on records of retired loops",
     "llm-dlc/tools/tool_time.py": "says where the loops' time went from their logs, the retired kinds' commands included",
     "llm-dlc/tools/test_tool_time.py": "tests that, on commands of retired loops",
-    # Until the plugin and runtime mode are removed (the entry plugin-and-runtime-mode, still planned): these describe
-    # the proof run as the release they pin has it, and an installed plugin runs that release, not this tree.
-    "llm-dlc/runtime.md": "the page of the published release's proof run; removed with the plugin",
-    "plugins/in-the-loop/skills/prove-java-change/SKILL.md": "the published skill, which runs a pinned release; removed with the plugin",
-    "plugins/in-the-loop/skills/prove-java-change/release.json": "the pinned release's record; removed with the plugin",
 }
 # llm-dlc/README.md's table of sessions is generated from the sessions' own prompts (sync.py): a record.
 INDEX_BEGIN, INDEX_END = "<!-- index:begin", "<!-- index:end -->"

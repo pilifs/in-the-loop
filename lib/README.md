@@ -46,8 +46,9 @@ lib/
 ```
 
 The examples that exercise each contract kind are found by approach in the
-[examples router](../examples/README.md#find-an-example). How the verifier is run on a user's change is in
-[`llm-dlc/runtime.md`](../llm-dlc/runtime.md).
+[examples router](../examples/README.md#find-an-example). How the verifier is run on a change is in the
+[examples' approaches](../examples/approaches.md) and, for a whole run, in
+[`llm-dlc/README.md`](../llm-dlc/README.md#a-single-agents-run).
 
 ### Who owns which decision
 
@@ -893,7 +894,7 @@ python3 lib/tools/test_costs.py run --changed      # the tests of what changed i
 
 - **The default run** is `cargo test --manifest-path lib/Cargo.toml --profile test-fast` and every Python suite, with nothing skipped that ran before the tiers. `test-fast` ([`Cargo.toml`](Cargo.toml)) is the dev profile, its checks kept, at the first optimisation level: the tests that run the tool's own engine are several times faster in it, and a build after an edit takes about twice as long. Plain `cargo test` is still the dev profile, in its own folder of `target/`, so the two don't rebuild each other. The default run is much more expensive than the tests of one change, so it is not run for every commit:
   - **While iterating and before a commit**, run the tests of what you changed: `run --changed`, or `cargo test --test NAME`, `python3 FILE`, and `examples/tools/validate_example.py` for an example's files.
-  - **Required** before a release (a new version of the skill) and before anything is published: `sync.py push` and `release.py cut` look for a passed run covering the commit, and run it inline themselves when none is recorded ([`tools/default_run.py`](tools/default_run.py) `gate --run`).
+  - **Required** before anything is published on `main`: `sync.py push` and a promotion look for a passed run covering the commit, and run it inline themselves when none is recorded ([`tools/default_run.py`](tools/default_run.py) `gate --run`).
   - **Worth having** once an example is done, run inline, and after a merge when one is due: `python3 lib/tools/default_run.py after-merge` runs it when the last default run in this checkout failed or none has passed here within the hour, and says so in a line when it runs none, since merges are frequent and each run is minutes and gigabytes (`--within SECONDS` changes the hour). With `--final`, for the last merge of a run, it runs whenever no passed run covers `@-`. It runs in a memory cap of its own (`--memory`, 8G) with two Rust test binaries at a time (`--rust-jobs`), so it cannot fill the memory of the session that started it (VF-037).
 
   It always runs inline, never as a job. A whole default run that passes records the tree it tested (the working copy's, as jj snapshots it, and only when no file changed during the run) in `~/.cache/in-the-loop/default-runs.jsonl`; the record covers a commit of the same tree, or of one that differs from it only in files no test reads (the traces, the decisions, job files and results: `UNTESTED` in `default_run.py`), from any workspace of the machine. `default_run.py last` shows which record covers `@-`. Every `run` holds a lock in cargo's target directory (`test-run.lock`), so two in one workspace take turns rather than overwrite each other's work folders under `target/tmp`.

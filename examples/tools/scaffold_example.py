@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Write an example's designed claims and tasks from stage 2's plan, and check them before anything is built
-(llm-dlc/runtime.md, stage 3): the first step of a setup, so that the session spends its time on the artifacts and
-the evidence the plan asks for, not on the files' shapes.
+"""Write an example's designed claims and tasks from a plan (llm-dlc/prove-plan.schema.json), and check them
+before anything is built: the first step of a setup, so that the session spends its time on the artifacts and the
+evidence the plan asks for, not on the files' shapes. The plan was stage 2's in the proof run, which is retired
+(llm-dlc/retired.md); "stage 2" below is whoever designed the claims.
 
     python3 examples/tools/scaffold_example.py NNN                 from llm-dlc/loop-summaries/prove-change/plan.json
     python3 examples/tools/scaffold_example.py NNN --plan PATH     from another plan

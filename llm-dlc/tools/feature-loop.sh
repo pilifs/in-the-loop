@@ -167,7 +167,6 @@ cd "$ROOT" || exit 1
 
 # log and show_progress
 source llm-dlc/tools/loop-common.sh
-isolation || exit 1
 
 # Shells on WSL sit in init.scope, where an out-of-memory kill can take the whole
 # instance down, so the loop moves to a scope of its own. Everything it starts
@@ -427,7 +426,7 @@ run_claude() {
         --cwd "$ROOT" "${codex_compact[@]}" "$1"
     fi
     unset CODEX_THREAD_ID CODEX_SESSION_ID  # a Codex session that started this loop is not this session
-    exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" "${ISOLATION[@]}" \
+    exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" \
       --permission-mode auto --output-format stream-json --verbose </dev/null
   ) | tee ${2:+"$2"} | show_progress
 }

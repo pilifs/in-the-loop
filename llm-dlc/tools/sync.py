@@ -132,10 +132,9 @@ Commands:
                                 the Stop hook does at the end of each turn); --pending lists the sessions
                                 with turns to send, --all sends them (tools/langfuse-loop.sh waits for more)
 
-In a runtime checkout (llm-dlc/tools/mode.py, llm-dlc/runtime.md), a released copy on a user's machine,
-none of this applies: `commit` writes a plain message with the release's In-The-Loop-Runtime trailer and
-starts a new change, `check` passes with nothing to check, the hooks do nothing, and every other command
-refuses. Nothing is read from ~/.claude and nothing is written outside the checkout.
+A change whose message carries an In-The-Loop-Runtime trailer was contributed from a released copy on a
+user's machine, where nothing was traced (runtime mode, retired on 2026-11-27: llm-dlc/retired.md). No
+session of this repository made it, and it is never stamped.
 
 Standard library only. The hook never fails a session; errors go to
 ~/.local/state/llm-traces/hook.log.
@@ -171,7 +170,6 @@ import decisions  # llm-dlc/tools/decisions.py
 import codex_rollout  # llm-dlc/tools/codex_rollout.py: Codex sessions, read as Claude Code transcripts
 import loop_stats  # llm-dlc/tools/loop_stats.py
 import metrics  # llm-dlc/tools/metrics.py
-import mode  # llm-dlc/tools/mode.py: development or runtime
 import redaction_rules  # llm-dlc/tools/redaction_rules.py
 import redactor  # llm-dlc/tools/redactor.py: what decides a cached result
 from measure import perf  # llm-dlc/tools/measure.py
@@ -1065,7 +1063,7 @@ def link_commits(sid: str, m: dict, current: bool, publishing: bool = False) -> 
 
     A session "made" the mutable ancestors of @ created while it ran, plus @ itself if the
     session is the one running now (`current`), except a change that carries the runtime trailer,
-    which came from a runtime checkout (llm-dlc/runtime.md) and is never stamped. @ is re-stamped with the latest log on every
+    which came from a released copy on a user's machine (llm-dlc/retired.md) and is never stamped. @ is re-stamped with the latest log on every
     sync, together with the manifest in its tree, so the two always agree. Other changes are
     stamped once, if they have no trailer for this session yet, and then left alone;
     immutable ones are never touched. When publishing, every change below @ is about to be
@@ -1078,7 +1076,7 @@ def link_commits(sid: str, m: dict, current: bool, publishing: bool = False) -> 
             made = f"({made}) | @"
         for c in jj_commits(made):
             if runtime_made(c["description"]):
-                continue  # contributed from a runtime checkout: no session here made it, whenever it is dated
+                continue  # contributed from a released copy: no session here made it, whenever it is dated
             stamped = any(s_id == sid and sha for s_id, sha in session_trailers(c["description"]))
             if c["change_id"] != at and stamped:
                 continue
@@ -4723,73 +4721,21 @@ def log(msg: str) -> None:
         f.write(f"{datetime.now().isoformat(timespec='seconds')} {msg}\n")
 
 
-# --------------------------------------------------------------------------- runtime mode
+# --------------------------------------------------------------------------- changes contributed from a released copy
 
-RUNTIME_TRAILER_RE = re.compile(rf"^{mode.RUNTIME_TRAILER}: ", re.M)
-RUNTIME_REFUSAL = ("this is a runtime checkout (llm-dlc/runtime.md): nothing here is traced, redacted, uploaded or "
-                   "pushed, so `sync.py {cmd}` has nothing to do")
+# Until 2026-11-27 a release of this repository could be installed on a user's machine as a "runtime" checkout,
+# where `commit` wrote a plain message with this trailer and nothing was traced (llm-dlc/retired.md). The mode is
+# gone, and the commits it contributed are in the history: they are still told by the trailer.
+RUNTIME_TRAILER_RE = re.compile(r"^In-The-Loop-Runtime: ", re.M)
 
 
 def runtime_made(desc: str) -> bool:
-    """Whether a change was made in a runtime checkout, by its trailer."""
+    """Whether a change was made in a released copy on a user's machine, by its trailer."""
     return bool(RUNTIME_TRAILER_RE.search(desc))
-
-
-def set_runtime_trailer(desc: str) -> str:
-    """The message with this checkout's release as its In-The-Loop-Runtime trailer, in place of any it has: at
-    the end of its trailer block, or as one."""
-    lines = [ln for ln in desc.rstrip("\n").split("\n") if not RUNTIME_TRAILER_RE.match(ln)]
-    body = "\n".join(lines).rstrip("\n")
-    paras = body.split("\n\n")
-    block = len(paras) > 1 and all(re.match(r"^[A-Za-z][A-Za-z-]*: ", ln) for ln in paras[-1].split("\n"))
-    return f"{body}{chr(10) if block else chr(10) * 2}{mode.RUNTIME_TRAILER}: {mode.release(REPO)}"
-
-
-def runtime_check() -> int:
-    print(f"runtime checkout of release {mode.release(REPO).split()[0]}: no traces to check, 0 error(s)")
-    return 0
-
-
-def runtime_commit(args: list[str]) -> int:
-    """`commit` in a runtime checkout: the message with the release's trailer, and a new change. No session is
-    read, nothing is redacted or recorded, and nothing leaves the checkout."""
-    only, args = only_paths(args)
-    message = commit_message(args)
-    if message is None or only == []:
-        print("usage: sync.py commit [--only PATH ...] -m SUMMARY [-m PARAGRAPH ...]", file=sys.stderr)
-        return 2
-    other, theirs = set_aside(only) if only else (None, [])
-    if theirs:
-        print(f"left uncommitted, as outside --only: {listed(theirs)}")
-    if jj("describe", "-r", "@", "-m", set_runtime_trailer(message)).returncode:
-        print("jj describe failed", file=sys.stderr)
-        return 1
-    at = jj_commits("@")[0]
-    if jj("new").returncode:
-        print("jj new failed", file=sys.stderr)
-        return 1
-    put_back(other, at["change_id"])
-    print(f"committed {at['change_id'][:12]}")
-    nudge_queue()
-    return runtime_check()
-
-
-def runtime_run(cmd: str, args: list[str]) -> int:
-    """Every command in a runtime checkout. The hooks stay silent: they run after every tool call and turn."""
-    if cmd in ("hook", "hook-commit"):
-        return 0
-    if cmd == "commit":
-        return runtime_commit(args)
-    if cmd == "check":
-        return runtime_check()
-    print(RUNTIME_REFUSAL.format(cmd=cmd or "COMMAND"), file=sys.stderr)
-    return 2
 
 
 def main(argv: list[str]) -> int:
     cmd = argv[0] if argv else ""
-    if mode.mode(REPO) == "runtime":  # before the lock, the timings and anything else kept under STATE
-        return runtime_run(cmd, argv[1:])
     for sig in (signal.SIGTERM, signal.SIGHUP):
         signal.signal(sig, _terminated)
     try:

@@ -15,7 +15,6 @@ watcher outside it, and the tools under it. The workflows this folder had before
 llm-dlc/
   README.md                         this file: the procedure, and an index of sessions
   specification.md                  the specification: identifiers, invariants, storage, redaction
-  runtime.md                        runtime mode: a released copy on a user's machine, where none of the tracing applies
   operating-notes.md                rules of practice learned in earlier runs, each with its reason; CLAUDE.md points
                                     at it, so every agent reads it, whichever client runs it
   retired.md                        what the repository no longer has (skills, commands, scripts), what replaced each,
@@ -45,21 +44,15 @@ llm-dlc/
   tools/sync.py                     the hook and commands that capture, redact, publish and check traces;
                                     test_review.py, test_performance.py, test_runs.py and test_workspaces.py test it,
                                     `sync.py perf` times it
-  tools/mode.py                     which mode a checkout is in, development or runtime; test_mode.py tests it and what
-                                    sync.py does in a runtime one
   tools/doctor.py                   whether a machine can prove a change here: hardware, operating system and tools, what
-                                    blocks and what only limits, and a budget for it; test_doctor.py tests it
-  tools/claude_setup.py             what a user's Claude Code session has loaded besides the plugin, and the flags and
-                                    launch of a clean one, which the loops use in a runtime checkout
-                                    (runtime.md#what-claude-code-has-loaded); test_claude_setup.py tests it
-  tools/changes.py                  the examples a checkout holds for /prove-java-change, each unprepared, prepared or
-                                    decided from its own folder, and the ones still to prove, in order
-                                    (runtime.md#many-changes-and-preparing-without-proving); test_changes.py tests it
+                                    blocks and what only limits, and the memory budget a run's loop is given;
+                                    test_doctor.py tests it
+  tools/changes.py                  the examples a checkout holds with a target sidecar, each catalogued, unprepared,
+                                    prepared or decided from its own folder, and the ones still to prove, in order;
+                                    test_changes.py tests it
   tools/conductor.py                how a run's loop and the session that watches it talk: the loop's questions (a
                                     cycle's end, a compaction with no commit) and the verdicts; test_conductor.py
                                     tests it
-  tools/contribute.py               what of a runtime checkout's work can go upstream as a pull request, and a check of
-                                    a prepared one (runtime.md#contributing-back); test_contribute.py tests it
   tools/checkpoint.py               `sync.py checkpoint`: one committed revision to origin's develop, forward only, after
                                     reading every git object and message the push would expose (specification.md#checkpoints);
                                     test_checkpoint.py tests it on real jj repositories with a bare remote
@@ -70,8 +63,6 @@ llm-dlc/
   tools/vm_inventory.py             what this machine holds that no other place does: `measure` (numbers fit to publish),
                                     `pin` (a git ref for each local head origin lacks), `protect` (seals run directories,
                                     run records, transcripts and example records into the archive); test_vm_inventory.py
-  tools/release.py                  cuts a release for /prove-java-change: one commit, pinned by the digest of its tree
-                                    (runtime.md#releases); test_release.py tests it and the bootstrap that installs one
   tools/redaction_rules.py          what counts as sensitive, and the stamp that says which files have been checked
   tools/redactor.py                 the redactor and the local caches of its results, keyed on it and the rules alone
   tools/measure.py                  where a command's time goes, for `sync.py perf`
@@ -164,7 +155,7 @@ The `LLM-Trace` line is the identifier: the SHA-256 of the uncompressed log at t
 
 Claude Code runs this procedure in this repo. `CLAUDE.md` points here, and the hooks and permissions in `.claude/settings.json` let it run without prompts. Other agents should follow the same steps.
 
-It is the procedure of a development checkout. In a runtime one, a released copy on a user's machine, [`runtime.md`](runtime.md) replaces it: the same `sync.py commit` makes a plain commit with an `In-The-Loop-Runtime` trailer, and nothing below about traces, redaction or pushing applies. A commit that carries that trailer here was contributed from such a checkout: no session of this repository made it, and `sync.py` never stamps one on it.
+A commit that carries an `In-The-Loop-Runtime` trailer was contributed from a released copy of the repository on a user's machine, where nothing was traced (runtime mode, retired on 2026-11-27: [`retired.md`](retired.md#plugin-and-runtime-mode)). No session of this repository made it, and `sync.py` never stamps one on it.
 
 **What happens without you.** The repo changes only when something is committed or pushed, so it stays clean between commits. At the end of every turn, a hook only sends finished turns to Langfuse. If a commit is made with plain `jj commit` or `git commit`, a hook traces it straight after, as `sync.py commit` would have. Never edit the generated files or the trailer lines by hand.
 
@@ -457,8 +448,7 @@ cycle, the watcher's verdict, the conductor's questions, the verification queue,
   is still the working copy's parent; otherwise the next sync does), then `hook`. Neither does anything twice,
   and a failure is written beside the attempt (`*.hooks.log`) and stops nothing. `AGENT_CLIENT_HOOKS=off`
   turns this off.
-- **Not yet.** Subagent threads of a Codex session; the proof stages of `/prove-java-change` and the
-  standalone verification loop; runtime (released) checkouts.
+- **Not yet.** Subagent threads of a Codex session.
 
 ## Sessions
 

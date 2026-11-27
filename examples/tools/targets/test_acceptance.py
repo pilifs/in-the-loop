@@ -46,8 +46,8 @@ SHA256 = re.compile(r"^[0-9a-f]{64}$")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
 # The deep packets and the calibration: the examples whose receipts this file reads.
 PACKETS = ("105", "285", "286", "287", "305", "306", "307")
-# The catalog entries (288-300) a setup session of /prove-java-change has since set up (llm-dlc/runtime.md, a catalog
-# entry's brief): each brings its replays' receipts, and its proof tasks are the proof loop's, not this loop's jobs.
+# The catalog entries (288-300) a setup session has since set up: each brings its replays' receipts, and its proof
+# tasks were the proof run's, not this loop's jobs.
 CATALOG = range(288, 301)
 
 

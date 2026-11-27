@@ -1,54 +1,21 @@
-# in-the-loop: `/prove-java-change`
+# in-the-loop
 
-**Formally prove a change to Java code, in one command.**
+**Formal proofs of changes to Java code, made by models and checked by a model checker.**
 
-Point Claude Code at a pull request or a commit on GitHub. The skill works out what the change must keep and what it
-is meant to do, and states that as claims. A model checker then proves each claim from the compiled bytecode, or
-hands you the input where it breaks. Nobody writes a specification.
+Given a change to Java code (a pull request, a commit, a release), the work here states what the change must keep
+and what it is meant to do as claims, and a model checker then proves each claim from the compiled bytecode, or
+hands back the input where it breaks. Nobody writes a specification. The repository holds the verifier, the
+changes it has been run on, and the whole record of how models built both.
 
-```
-/in-the-loop:prove-java-change <a pull request, a commit or a range on GitHub, and what to prove about it>
-```
+The work is done in **runs**: one agent works toward one outcome while a watcher session outside it judges, after
+each of the agent's context windows, whether it gets another. A person starts a run in this repository with
+`/orchestrate-run` ([`.claude/skills/orchestrate-run`](.claude/skills/orchestrate-run/SKILL.md)), from a prompt, a
+brief, or a list of pull requests that is first written into a brief.
 
-It also takes a list of changes: it evaluates them all, orders them so that the most accessible is proved first,
-and proves them one after another. With `--scaffold-only` it prepares them and stops; the same request without the
-flag proves what was prepared. It takes examples by number too. One that is already prepared is
-checked: that it has what a proof needs and is formed correctly, with one try at putting right what is not, or
-nothing starts. Every run goes through stage 2, examples by number included: it orders them, designs the claims of a catalog entry
-and reviews those of a prepared example (keeping an earlier review while its claims are unchanged), and you confirm
-every claim it designed or remarked on before a proof starts. `--instruction "TEXT"` gives the proof loop your own line in place of the one in the table below.
-
-It runs on your machine, on a released copy of this repository that the skill installs and checks against a hash it
-carries. Nothing is traced or uploaded from that copy, and nothing leaves the machine unless you agree to it.
-
-## Try it
-
-```bash
-claude plugin marketplace add pilifs/in-the-loop
-claude plugin install in-the-loop@in-the-loop
-```
-
-Then, in Claude Code, run the command above. The session you run it in becomes the run's watcher, on Opus 5.5: it
-starts each stage in a session of its own, keeps a verification loop (Sonnet 5.5) running for the proofs they queue,
-and reports. You confirm the plan once, and the rest is unattended:
-
-| Stage | Session | What happens | You |
-|---|---|---|---|
-| 1. Set up and measure | Opus 5.5, high effort | It installs the release, checks its hash, and measures the machine: memory, CPUs, disk and tools. The watcher also checks what else Claude Code has loaded (other plugins, MCP servers, memory files), warns that this may lead to unexpected results, and offers a clean session without it | choose, if anything is loaded |
-| 2. Evaluate and order, and design the claims | Fable 5.2, high effort | It judges whether the machine is enough, pins each change to two exact commits, sizes it against the closest past examples, designs each claim in full (the property, the preservation boundary, the bounds, the controls, the entry point and the environment) or reviews the claims an example already has, and orders them | confirm the claims, the order and the estimate, in hours and tokens |
-| 3. Set the examples up | Opus 5.5, high effort | It writes the plan's claims into the example, builds each revision, loads its JARs, runs the change once on a JVM, and confirms how each proof will be invoked | |
-| 4. Prove them | Fable 5.2, high effort: the session of stage 2, continued | It runs unattended on one line: "Formally prove example NNN as elegantly and efficiently as possible". Where the verifier can't model your code yet, the loop extends the verifier. It may not change a claim to fit a result. While an example's last proof runs, the loop starts the next one and comes back when the proof is in | ask the watcher anything, any time |
-| Report | the watcher | Each claim comes back with one of three answers. If the proof added something to the verifier, it offers to send that upstream as a pull request | decide |
-
-While stage 4 runs, the watcher prints a summary every 30 minutes (`--summary-interval SECONDS` in the request, or ask it for another interval), with what changed
-since the last one first: the loop, the example under way and the verification jobs. Between two examples it merges
-whatever workspace you asked it to, and stops if you asked it to. It can also look into any part of the run for
-you, and fix what is small: a job that hangs, a loop that died.
-
-**It needs** Linux, at least 8 GB of memory, 2 CPUs and 10 GB of free disk, and Claude Code with Opus 5.5,
-Fable 5.2 and Sonnet 5.5. Stage 1 installs what it can of the rest (jj, a Java 25 JDK, Rust) and says what is missing and what limits the machine.
-
-**It takes** changes on GitHub only, with their dependencies from Maven Central and the other allowed hosts.
+Until 2026-11-27 this page offered a plugin, `/in-the-loop:prove-java-change`, which installed a released copy of
+the repository on a user's machine and proved a change there. It is retired, with its last release, 0.10.0:
+[`llm-dlc/retired.md`](llm-dlc/retired.md#plugin-and-runtime-mode) says what it was and where to read it. There is
+no installable product at the moment.
 
 ## Three answers, and none is the model's opinion
 
@@ -60,8 +27,8 @@ The model writes the claims and drives the tools. The answer to each claim comes
 | **Refuted** | A concrete input, shrunk to a small one and run on a real JVM. It is a finding about your change |
 | **Left open** | The tools could not decide, and the report says why. It never counts as a pass |
 
-[Example 285](examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) is the proof loop's
-first real target, a Spring Boot security fix (CVE-2023-34055, 2.7.17 → 2.7.18) proved on the released JARs:
+[Example 285](examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) is the first real
+target, a Spring Boot security fix (CVE-2023-34055, 2.7.17 → 2.7.18) proved on the released JARs:
 
 ```
 Does the fix bound the "method" metric label?
@@ -77,33 +44,26 @@ unchanged claims on the same JARs, and each came out as expected.
 
 ## What is in the repository
 
-The skill is a page of about 130 lines. What it stands on is the rest of the repository, and each part's page has its own
-layout that says where things are. The folders will be reorganized at some point, so follow the links from these
-pages instead of remembered paths.
+Each part's page has its own layout that says where things are. The folders will be reorganized at some point, so
+follow the links from these pages instead of remembered paths.
 
 | Where | What it is | Its layout |
 |---|---|---|
-| [`plugins/in-the-loop/`](plugins/in-the-loop/skills/prove-java-change/SKILL.md) | The plugin: the skill, the bootstrap that installs and checks a release, and the pin of the release it runs on | [`runtime.md`](llm-dlc/runtime.md#where-things-are) |
-| [`llm-dlc/runtime.md`](llm-dlc/runtime.md) | How the skill runs: the watcher and what each stage stands on, the released copy on your machine, the proof loop and how the watcher judges it, contributing back, and releases | [Where things are](llm-dlc/runtime.md#where-things-are) |
-| [`examples/`](examples/README.md) | 183 changes run through a formal verifier, each with its verdict and the input or trace behind it: 159 written for small systems built to be provable, 24 from published libraries. They are also what the skill sizes your change against | [Find an example](examples/README.md#find-an-example), [Layout](examples/README.md#layout) |
+| [`examples/`](examples/README.md) | 183 changes run through a formal verifier, each with its verdict and the input or trace behind it: 159 written for small systems built to be provable, 24 from published libraries. | [Find an example](examples/README.md#find-an-example), [Layout](examples/README.md#layout) |
 | [`lib/`](lib/README.md) | `jvmcontract`, the verifier, in Rust: a class-file reader, a bytecode interpreter and its own bounded model checker, with JBMC as a second engine. It derives contracts without a JVM and proves without `javac` | [Layout](lib/README.md#layout) |
 | [`verification/`](verification/README.md) | The pipeline: proofs are queued as jobs, not run inside a session, and run under memory and CPU caps, each with a recorded result | [Layout](verification/README.md#layout) |
-| [`llm-dlc/`](llm-dlc/README.md) | How the repository is built: the unattended loops, and every commit published with the redacted session that made it | [Layout](llm-dlc/README.md#layout) |
+| [`llm-dlc/`](llm-dlc/README.md) | How the repository is built: runs and the tools under them, every commit published with the redacted session that made it, and [what was retired](llm-dlc/retired.md) | [Layout](llm-dlc/README.md#layout) |
 
 ## For agents
 
-- [`CLAUDE.md`](CLAUDE.md) is the procedure. `python3 llm-dlc/tools/mode.py` says which of two modes a checkout is in:
-  *development*, this repository as its authors work in it, with every session traced and published, or *runtime*,
-  the released copy the skill installs, where nothing is traced. [`llm-dlc/runtime.md`](llm-dlc/runtime.md) is the
-  runtime side.
+- [`CLAUDE.md`](CLAUDE.md) is the procedure: every session is traced and published with the commits it made.
 - To find examples close to a task: `python3 examples/tools/find.py`
   ([`examples/README.md`](examples/README.md#find-an-example)).
 - Proofs and model checks are queued as jobs
   ([`verification/README.md`](verification/README.md#for-agents-making-changes-submitting-a-job)). `CLAUDE.md` says
   the little that may run inline.
-- In this repository the skill runs as `/prove-java-change NNN [NNN ...]` on existing examples, without the setup
-  stages. Every moonshot over examples is run this way: the watcher starts the loop, judges its cycles and reports
-  ([`llm-dlc/runtime.md`](llm-dlc/runtime.md#the-watcher)).
+- A run is started by a person, or by a watcher at a person's word, with `/orchestrate-run`; an agent never starts
+  one as a step of its own work. [`llm-dlc/retired.md`](llm-dlc/retired.md) lists the workflows that came before it.
 
 ## Background
 
@@ -112,7 +72,7 @@ which proved properties of compiled RISC-V binaries, not source code. This repos
 like for the JVM. It started as a set of demos, from source code down to bytecode and native code, with distributed
 protocols model-checked in TLA+; [`examples/approaches.md`](examples/approaches.md) has the approaches by level.
 
-It is written almost entirely by models working in unattended loops, and every session is public: each commit
+It is written almost entirely by models working in unattended runs, and every session is public: each commit
 message links the session that made it and carries the SHA-256 of its log
 ([`llm-dlc/README.md`](llm-dlc/README.md)).
 

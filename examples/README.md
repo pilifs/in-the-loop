@@ -1055,9 +1055,9 @@ python3 examples/tools/targets/local_pair.py before/ after/ "$TARGETS_LOCAL_GIT_
 
 Take the next free number; constructed and real-world examples share the sequence. Numbers 280–329 are reserved for
 [`example-targets.md`](../llm-dlc/loops/example-targets.md)'s streams (its [Streams](../llm-dlc/loops/example-targets.md#streams)
-section allocates them): skip them when you take the next free number. Numbers 900–999 are never used here: they are
-for the examples a user adds in a runtime checkout ([`llm-dlc/runtime.md`](../llm-dlc/runtime.md)), so that an update
-never brings one with the same number.
+section allocates them): skip them when you take the next free number. Numbers 900–999 are never used here: they were
+kept for the examples a user added in a released copy of the repository on their own machine (a mode retired on
+2026-11-27: [`llm-dlc/retired.md`](../llm-dlc/retired.md#plugin-and-runtime-mode)), and stay unused.
 
 **A constructed example:**
 
@@ -1114,8 +1114,8 @@ never brings one with the same number.
    project's source rather than copying it. Then run `python3 examples/tools/build.py --index-only`.
 4. Check it with `python3 examples/tools/validate_example.py NNN` (`--replay` to run the replays again): the
    router regenerated, the form, each task's plan, the oracle's self-test, and the tests that read every example,
-   which find a new one by themselves. A `/prove-java-change` run writes a designed example's claims and tasks
-   from its plan first, with `examples/tools/scaffold_example.py NNN`, and records how each proof task is invoked
+   which find a new one by themselves. A setup that works from a plan of designed claims writes an example's claims and tasks
+   from it first, with `examples/tools/scaffold_example.py NNN`, and records how each proof task is invoked
    (`invocation` on the task: route, adapter or gap).
 
 Good subjects for real-world examples have small Maven or Gradle builds, an active pull request flow, and static

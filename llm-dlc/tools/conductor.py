@@ -34,8 +34,7 @@ An event of type `withdrawn` takes a question back: the turn ended by itself bef
 A watcher does not call these itself: single_run.py's `wait`, `answer`, `cycles` and `stop` do.
 
 A verdict given in time is also a decision, and goes into the decision record beside the verdict's own file:
-llm-dlc/decisions/NAME.jsonl (decisions.py), NAME the run directory's name (in a runtime checkout `local-NAME`, so a
-user's record never meets the one a release carries). There the user reviews it afterwards with the rest
+llm-dlc/decisions/NAME.jsonl (decisions.py), NAME the run directory's name. There the user reviews it afterwards with the rest
 (`decisions.py list`, `review accept`, `review overturn --note`). The verdict's file stays what the loop reads, and
 a record that can't be written never holds a verdict back. `decide --confidence medium` flags the decision for the
 user's review; a verdict the conductor is not at least that sure of is not one to give: ask the user.
@@ -192,13 +191,7 @@ def decision_record(directory: Path) -> tuple[str, Path] | None:
     d = directory.resolve()
     if d.parent.name != "loop-summaries" or d.parent.parent.name != "llm-dlc" or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", d.name):
         return None
-    checkout = d.parents[2]
-    try:
-        import mode
-        local = mode.mode(checkout) == "runtime"
-    except (Exception, SystemExit):  # a marker that can't be read: mode.py's own callers say so
-        local = False
-    return (f"local-{d.name}" if local else d.name), checkout / "llm-dlc" / "decisions"
+    return d.name, d.parents[2] / "llm-dlc" / "decisions"
 
 
 def record_decision(directory: Path, event: dict, verdict: str, reason: str, confidence: str) -> str | None:
