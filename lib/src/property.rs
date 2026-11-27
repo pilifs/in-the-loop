@@ -1069,7 +1069,9 @@ fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::repla
     }
     // Record startup on the original deployment. The generated assertion harness is
     // specific to a claim and supplies no application classes to a charset capture.
-    let observation_entries = if options.observed_runtime.charset_locale.is_some() { &entries[1..] } else { &entries[..] };
+    let observation_entries = if options.observed_runtime.charset_locale.is_some() || options.observed_runtime.reflective_members {
+        &entries[1..]
+    } else { &entries[..] };
     let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, observation_entries, &work, options.observed_runtime.clone())?;
     if let Some((previous, classes)) = &options.previous {
         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime.clone())?);

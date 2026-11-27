@@ -47,7 +47,7 @@ def first_root(outcome):
     return None
 
 
-def recover(command, work, locale, *, resume=False, receipts=None, env=None):
+def recover(command, work, locale=None, *, resume=False, receipts=None, env=None):
     """Return the original verdict and the separately scoped retry. Never reuse a verdict."""
     command = list(map(str, command))
     if len(command) < 3 or command[1] != "prove" or "--json" not in command:
@@ -58,7 +58,7 @@ def recover(command, work, locale, *, resume=False, receipts=None, env=None):
     managed = {"--observed-initializer", "--observed-runtime", "--work", "--cache"}
     if any(word.split("=", 1)[0] in managed for word in command):
         raise ValueError("startup recovery manages the recording, work directory and fresh proof invocations")
-    if locale not in ("C", "C.UTF-8"):
+    if locale not in (None, "C", "C.UTF-8"):
         raise ValueError("unsupported startup locale")
     work = Path(work).resolve()
     work.mkdir(parents=True, exist_ok=True)
@@ -86,7 +86,24 @@ def recover(command, work, locale, *, resume=False, receipts=None, env=None):
         observed = ["--observed-initializer", root]
         _, initial, stop = run_step(command, observed, attempt / "initializer", env)
         report["initializerStop"] = (initial or {}).get("problem") or stop.strip()
-        if initial is None and re.search(r"reads the default charset \(.+\), which the observation cannot bind", stop):
+        if initial is None and "holds an object of java.lang.reflect.Method" in stop and "neither holds nor describes" in stop:
+            _, outcome, diagnostic = run_step(command, [*observed, "--observed-runtime", '{"reflectiveMembers":true}'], attempt / "retry", env)
+            captures = list((attempt / "retry" / "startup-receipts").glob("*.json"))
+            if len(captures) == 1 and outcome:
+                record = json.loads(captures[0].read_bytes())
+                if record.get("schema") != "jvm-startup-member/v1" or record.get("root") != root:
+                    raise ValueError("reflective recording does not bind the requested startup root")
+                if expected and record["id"] != expected:
+                    raise ValueError("fresh reflective capture differs from the saved binding")
+                receipts.mkdir(parents=True, exist_ok=True)
+                write_report(receipts / (record["id"] + ".json"), record)
+                report.update(receiptId=record["id"], recording="fresh reflective lookup and effect comparisons",
+                              executed=record["capture"]["events"], reflectiveFields=record["capture"]["fields"], retry=outcome["verdict"],
+                              consumed=[a["id"] for a in outcome["stated"]["assumptions"] if a.get("id")],
+                              remaining=outcome.get("problem"))
+            else:
+                report["remaining"] = diagnostic.strip()
+        elif locale and initial is None and re.search(r"reads the default charset \(.+\), which the observation cannot bind", stop):
             runtime = {"charsetLocale": locale, "charsetReceiptDirectory": str(receipts)}
             if expected:
                 runtime["expectedCharsetReceipt"] = expected
@@ -120,7 +137,7 @@ def summary(report):
     profile = report.get("profile") or {}
     facts = ", ".join(report["consumed"]) or "none"
     return "\n".join((f"Original property  {first}  {(report.get('original') or {}).get('target', '')}",
-                      f"Startup  {report['root'] or 'no unique root'}  {report['locale']}  {profile.get('canonical', 'unavailable')}",
+                      f"Startup  {report['root'] or 'no unique root'}  {report['locale'] or 'original launch'}  {profile.get('canonical', '')}".rstrip(),
                       f"Recording  {report['recording']}  {report['receiptId'] or ''}",
                       f"Conditional retry  {report['retry'] or 'open'}", f"Consumed assumptions  {facts}",
                       f"Remaining  {report['remaining'] or 'none'}"))
@@ -128,7 +145,7 @@ def summary(report):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--locale", required=True, choices=("C", "C.UTF-8"))
+    ap.add_argument("--locale", choices=("C", "C.UTF-8"), help="requested COMPAT charset profile when the diagnostic needs one")
     ap.add_argument("--work", type=Path, required=True)
     ap.add_argument("--receipts", type=Path)
     ap.add_argument("--resume", action="store_true")

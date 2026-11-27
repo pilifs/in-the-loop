@@ -312,8 +312,13 @@ public final class ObservedInitializer {
     }
 
     public static void main(String[] args) throws Exception {
-        boolean charset = args[0].equals("--record-charset");
-        if (charset) args = java.util.Arrays.copyOfRange(args, 1, args.length);
+        boolean charset = false;
+        while (args[0].startsWith("--record-")) {
+            if (args[0].equals("--record-charset")) charset = true;
+            else if (args[0].equals("--record-methods")) methodOwners = new IdentityHashMap<>();
+            else throw new IllegalArgumentException("unknown recorder option");
+            args = java.util.Arrays.copyOfRange(args, 1, args.length);
+        }
         ClassLoader app = ClassLoader.getSystemClassLoader();
         String jdk = System.getProperty("java.version");
         String vendor = System.getProperty("java.vendor");
@@ -353,7 +358,7 @@ public final class ObservedInitializer {
         // Reflection and serialization can initialize additional classes. The boundary is
         // the return of Class.forName, before the observer inspects any subject fields.
         byte[] logged = log == null ? null : Files.readAllBytes(log);
-        String profile = charset ? ",\"charsetProfile\":" + charsetProfile() : "";
+        String profile = (charset ? ",\"charsetProfile\":" + charsetProfile() : "") + (methodOwners != null ? ",\"reflectiveMembers\":true" : "");
         // The JDK's settings the initialization changed, read again after it: the check runs what follows under the
         // ones before it.
         List<String> changed = new ArrayList<>();
@@ -548,6 +553,30 @@ public final class ObservedInitializer {
      * One class's static state, with the objects it holds numbered from 0; where `describe`, each value not held is
      * described in full beside what it is said to be (Describe).
      */
+    private static IdentityHashMap<java.lang.reflect.Method, Dump> methodOwners;
+    private static final class MemberCaptureFailure extends RuntimeException {
+        MemberCaptureFailure(String reason, Throwable cause) { super(reason, cause); }
+    }
+
+    private static String methodRecord(java.lang.reflect.Method method) throws Exception {
+        Class<?> declaring = method.getDeclaringClass();
+        ClassLoader loader = declaring.getClassLoader();
+        if (loader != null && loader != ClassLoader.getSystemClassLoader())
+            throw new IllegalStateException("unsupported reflective declaring loader for " + declaring.getName());
+        String owner = declaring.getName().replace('.', '/');
+        String descriptor = java.lang.invoke.MethodType.methodType(method.getReturnType(), method.getParameterTypes()).descriptorString();
+        try (InputStream bytes = declaring.getResourceAsStream("/" + owner + ".class")) {
+            if (bytes == null) throw new IllegalStateException("no declaring bytes for " + owner);
+            String digest = java.util.HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes.readAllBytes()));
+            String module = declaring.getModule().getName();
+            // isAccessible reads the override bit. canAccess also depends on a caller and a receiver.
+            return "{\"k\":\"method\",\"owner\":" + text(owner) + ",\"name\":" + text(method.getName())
+                    + ",\"descriptor\":" + text(descriptor) + ",\"modifiers\":" + method.getModifiers()
+                    + ",\"accessibleOverride\":" + method.isAccessible() + ",\"loader\":" + text(loader == null ? "bootstrap" : "application")
+                    + ",\"module\":" + (module == null ? "null" : text(module)) + ",\"declaringSha256\":" + text(digest) + "}";
+        }
+    }
+
     private static final class Dump {
         private final IdentityHashMap<Object, Integer> ids = new IdentityHashMap<>();
         private final List<String> objects = new ArrayList<>();
@@ -583,6 +612,7 @@ public final class ObservedInitializer {
                     value = f.getType().isPrimitive() ? primitive(f.getType(), f.get(null)) : value(f.get(null));
                 }
                 catch (Throwable t) {
+                    if (t instanceof MemberCaptureFailure failure) throw failure;
                     value = unread("a field reflection does not read (" + t.getClass().getName() + ")");
                 }
                 if (fields.length() > 0) {
@@ -716,6 +746,18 @@ public final class ObservedInitializer {
                 return "{\"o\":" + known + "}";
             }
             Class<?> type = v.getClass();
+            if (methodOwners != null && v instanceof java.lang.reflect.Method method) {
+                Dump previous = methodOwners.putIfAbsent(method, this);
+                if (previous != null && previous != this)
+                    throw new MemberCaptureFailure("reflective object shared across separately captured classes; requires a joint heap", null);
+                try {
+                    String body = methodRecord(method);
+                    int id = objects.size();
+                    ids.put(v, id);
+                    objects.add(body);
+                    return "{\"o\":" + id + "}";
+                } catch (Exception e) { throw new MemberCaptureFailure("cannot bind reflective member", e); }
+            }
             boolean requested = captureObjects.contains(type.getName());
             boolean atomic = requested && type == java.util.concurrent.atomic.AtomicReference.class;
             List<Class<?>> captured = requested ? capturedHierarchy(type) : null;

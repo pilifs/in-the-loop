@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-27T00:28:04.269Z",
-  "duration_seconds": 238633,
+  "ended": "2026-11-27T00:37:55.406Z",
+  "duration_seconds": 239225,
   "stats": {
     "turns": 39,
-    "api_calls": 6136,
-    "tool_calls": 15226,
-    "tool_errors": 335,
+    "api_calls": 6173,
+    "tool_calls": 15297,
+    "tool_errors": 338,
     "compactions": 26,
     "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 8018025,
-      "output_tokens": 3529260,
-      "cache_read_input_tokens": 1645190016,
+      "input_tokens": 8031585,
+      "output_tokens": 3551208,
+      "cache_read_input_tokens": 1654525312,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8400,
-    "exec": 5872,
-    "apply_patch": 753,
+    "Bash": 8430,
+    "exec": 5909,
+    "apply_patch": 757,
     "wait": 113,
     "sleep": 81,
     "send_message_to_user_async": 6,
@@ -189,6 +189,7 @@
     "examples/tools/targets/recipes.py",
     "examples/tools/targets/replay_candidate.py",
     "examples/tools/targets/resource_workflows.py",
+    "examples/tools/targets/startup_facts.py",
     "examples/tools/targets/test_change_plan.py",
     "examples/tools/targets/test_observer_generation.py",
     "examples/tools/targets/test_observer_review.py",
@@ -305,6 +306,7 @@
     "lib/benchmark/organic-composition/log4j/update_replay.py",
     "lib/benchmark/organic-composition/log4j/upstream.json",
     "lib/benchmark/run.py",
+    "lib/benchmark/startup-facts/members.py",
     "lib/benchmark/test_run.py",
     "lib/src/bmc/byte_views.rs",
     "lib/src/bmc/bytes.rs",
@@ -338,6 +340,7 @@
     "lib/tests/dependencies.rs",
     "lib/tests/fixtures/claims/claims/Radix.java",
     "lib/tests/fixtures/claims/claims/Tokens.java",
+    "lib/tests/fixtures/observed-countermodels/app/oc/MemberStartup.java",
     "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md",
     "llm-dlc/loops/in-the-loop-generated-observers-and-callers-brief-results.md",
     "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md",
@@ -935,24 +938,24 @@
     {
       "index": 26,
       "started": "2026-11-26T23:39:02.233Z",
-      "ended": "2026-11-27T00:28:04.269Z",
+      "ended": "2026-11-27T00:37:55.406Z",
       "turns": 2,
-      "api_calls": 119,
+      "api_calls": 156,
       "usage": {
-        "input_tokens": 166706,
-        "output_tokens": 65405,
-        "cache_read_input_tokens": 20045312,
+        "input_tokens": 180266,
+        "output_tokens": 87353,
+        "cache_read_input_tokens": 29380608,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 236720
+      "peak_context_tokens": 269432
     }
   ],
   "log": {
-    "sha256": "bc17e4bdf8c05f797e933a7244a8e7c72f8c219130e12f0ea86ab61b0e03011c",
-    "bytes": 97829684,
-    "lines": 48304,
-    "gzip_bytes": 17976619,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/bc17e4bdf8c05f797e933a7244a8e7c72f8c219130e12f0ea86ab61b0e03011c.jsonl.gz"
+    "sha256": "3698b5106b31bbd78b788abc1e0b24ed0ce2a6821eef5506a7238eb398e33e78",
+    "bytes": 98310931,
+    "lines": 48572,
+    "gzip_bytes": 18046736,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/3698b5106b31bbd78b788abc1e0b24ed0ce2a6821eef5506a7238eb398e33e78.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2885,20 +2888,28 @@
       "log_sha256": "81309f623b199aa241ef1069c88019e1f0a15c1ffa1a12c3fba6ed4254017a42"
     },
     {
-      "change_id": "nqvtpvmponlntxvvurvwwtrsrnsykvpp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "bc17e4bdf8c05f797e933a7244a8e7c72f8c219130e12f0ea86ab61b0e03011c"
-    },
-    {
       "change_id": "msmxxxrpywluqpunkkknqmzrkytmkqkv",
       "commit_id": null,
       "immutable": false,
       "summary": "Preserve registered JVM startup root order in proof and replay",
       "body": "A joint startup claim may specify its exact ordered roots. Preparation freezes that order in the claim identity and passes it to both the native checker and the original JVM witness. Legacy mappings retain sorted-name behavior. Missing, duplicated and foreign roots are refused.\n\nAll 55 selected test suites passed. The recipe test checks both launch orders, different claim keys, replay source and three malformed orders. The native joint-startup test also passed in the preceding Rust run, including Root then Reader returning 7 and Reader then Root returning 0.",
       "log_sha256": "bc17e4bdf8c05f797e933a7244a8e7c72f8c219130e12f0ea86ab61b0e03011c"
+    },
+    {
+      "change_id": "suvvmqkqmtprzuwtookkrrlworxzkkxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "3698b5106b31bbd78b788abc1e0b24ed0ce2a6821eef5506a7238eb398e33e78"
+    },
+    {
+      "change_id": "tvstvvntnuywywylxmnqlkuuykoqpuls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind reflective startup members to original bytes (verification pending)",
+      "body": "Trace the actual public lookup, returned reflection object and static assignment. Verify declaring loader, modifiers, accessibility, full descriptor, class bytes and aliases, and compare transitive fields with a fresh JVM that initializes their owner alone. Native metadata calls use the actual arity. Reflective invocation and access changes retain named refusals.\n\nThe original ThreeTen parent advanced past Chronology.LOCALE_METHOD using the one-argument Locale.getUnicodeLocaleType(String) and stopped on the formatter state. The debugger tied the same lookup return to the field write. All six selected suites passed, including 59 Rust test binaries. The five invalid declaration and access controls and the cost lint passed. Job 20261127-003416-qualify-threeten-startup-method-on-both repeats both originals, twelve public histories and independent metadata, alias and fallback controls.",
+      "log_sha256": "3698b5106b31bbd78b788abc1e0b24ed0ce2a6821eef5506a7238eb398e33e78"
     }
   ],
   "logs": {
@@ -3051,6 +3062,12 @@
       "lines": 16723,
       "gzip_bytes": 5457938,
       "url": "https://terminalvalue.net/raw-traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/344ff7eceea840a27f215a1c2fc7c1f9d697ce24adabfd64430bfd28f43b0eef.jsonl.gz"
+    },
+    "3698b5106b31bbd78b788abc1e0b24ed0ce2a6821eef5506a7238eb398e33e78": {
+      "bytes": 98310931,
+      "lines": 48572,
+      "gzip_bytes": 18046736,
+      "url": null
     },
     "36d58481ab1962167756084410457abe57225531cf2b69bcf7f4426964490964": {
       "bytes": 27571162,

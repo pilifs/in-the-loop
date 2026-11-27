@@ -160,6 +160,7 @@ impl Engine<'_> {
             Object::Str { units, interned: true } => self.literal(path, Literal::Str(units.clone()), STRING),
             Object::Str { units, interned: false } => self.string(path, units),
             Object::Class(name) => self.literal(path, Literal::Class(name.clone()), "java/lang/Class"),
+            Object::Method(method) => self.captured_method(path, method, observed.on.member_receipt.as_deref().ok_or("unqualified reflective member capture")?)?,
             Object::Value(chain) | Object::Instance(chain) => {
                 let class = &chain.first().ok_or("an immutable value without a runtime class")?.name;
                 let o = self.alloc(path, class);

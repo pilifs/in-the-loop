@@ -105,6 +105,9 @@ use crate::Error;
 const SOURCE: &str = include_str!("observed/ObservedInitializer.java");
 pub(crate) mod charset;
 pub use charset::CharsetLocale;
+mod member;
+mod receipt;
+pub use member::MethodFact;
 const CLASS: &str = "ObservedInitializer";
 pub(crate) const ENUM: &str = "java/lang/Enum";
 /// The line of its output that holds the observation.
@@ -132,6 +135,8 @@ pub enum Object {
     /// A `Class`, by the internal name of a class (`java/lang/Boolean`), the descriptor of an array's (`[I`) or
     /// the name of a primitive type (`int`).
     Class(String),
+    /// One reflective copy with independently bound declaring bytes and erased metadata.
+    Method(MethodFact),
     /// A `java.util.HashMap`: its entries, in the order the JVM iterated them.
     Map(Vec<(Slot, Slot)>),
     /// An exact ConcurrentHashMap observed empty. Its references share the same object number.
@@ -155,6 +160,7 @@ impl Object {
         match self {
             Self::Str { .. } => "java/lang/String".into(),
             Self::Class(_) => "java/lang/Class".into(),
+            Self::Method(_) => "java/lang/reflect/Method".into(),
             Self::Map(_) | Self::LookupMap(_) => "java/util/HashMap".into(),
             Self::EmptyConcurrentMap => crate::models::CONCURRENT_MAP.into(),
             Self::NullValuedWeakMap => "java/util/WeakHashMap".into(),
@@ -197,6 +203,8 @@ pub struct Observed {
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct On {
     pub(crate) charset: Option<charset::Fact>,
+    pub reflective_members: bool,
+    pub(crate) member_receipt: Option<String>,
     /// The sha256 of the class file the JVM's class loader read, and the location it came from.
     pub sha256: String,
     pub from: Option<String>,
@@ -255,6 +263,7 @@ pub struct Runtime {
     pub charset_locale: Option<CharsetLocale>,
     pub expected_charset_receipt: Option<String>,
     pub charset_receipt_directory: Option<PathBuf>,
+    pub reflective_members: bool,
 }
 
 impl std::str::FromStr for Runtime {
@@ -328,6 +337,9 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
 
 fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
     runtime.validate_charset().map_err(Error::new)?;
+    if runtime.reflective_members && (classes.len() != 1 || runtime.preinitialize_together) {
+        return Err(Error::new("reflectiveMembers captures one first-use root and compares transitive reflective fields on independent JVMs"));
+    }
     if runtime.charset_locale.is_some() && classes.len() != 1 {
         return Err(Error::new("charsetLocale requires one first-use initializer per recording"));
     }
@@ -342,7 +354,8 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     let home = crate::jimage::JImage::find_java_home().ok_or_else(|| Error::new("--observed-initializer: no JDK to observe a class initializer on (set JAVA_HOME)"))?;
     // Absolute: the JVM runs in this folder, and is given the log's path in it (an option and an argument).
     let temp;
-    let dir = if runtime.charset_locale.is_some() {
+    let traced = runtime.charset_locale.is_some() || runtime.reflective_members;
+    let dir = if traced {
         std::fs::create_dir_all(work)?;
         temp = tempfile::Builder::new().prefix("startup-capture-").tempdir_in(work)?;
         std::path::absolute(temp.path())?
@@ -357,9 +370,9 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     let javac = home.join("bin").join("javac");
     let mut compile = Command::new(&javac);
     compile.args(["-proc:none", "-Xlint:none", "-nowarn", "-encoding", "UTF-8", "-d"]).arg(&dir).arg(&source);
-    if runtime.charset_locale.is_some() {
+    if traced {
         let tracer = dir.join("StartupTrace.java");
-        std::fs::write(&tracer, charset::TRACER)?;
+        std::fs::write(&tracer, receipt::TRACER)?;
         compile.arg(tracer);
     }
     let compiled = compile.output().map_err(|e| Error::new(format!("{}: {e}", javac.display())))?;
@@ -381,18 +394,19 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     }
     let additional: Vec<String> = if runtime.preinitialize_together { classes.iter().skip(1).map(|c| c.replace('/', ".")).collect() } else { vec![] };
     let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime: runtime.clone(), additional };
-    let binding = runtime.charset_locale.map(|_| charset::bindings(&tool, &home, &entries[1..], classes, &runtime)).transpose()?;
+    let binding = traced.then(|| receipt::bindings(&tool, &home, &entries[1..], classes, &runtime)).transpose()?;
     let mut alone: BTreeMap<String, serde_json::Value> = BTreeMap::new();
     for class in classes.iter().take(if runtime.preinitialize_together { 1 } else { classes.len() }) {
         let internal = class.replace('.', "/");
         let binary = internal.replace('/', ".");
         let log = dir.join(format!("{binary}.init.log"));
-        let saved = if let Some(binding) = &binding {
+        let saved = if let Some(binding) = binding.as_ref().filter(|_| runtime.charset_locale.is_some()) {
             charset::reusable(work, &tool, &internal, &runtime, binding)?
         } else { None };
         let line = jvm.run(&binary, Some(&log), saved.is_none())?;
         let mut observed = parse(&binary, &line)?;
         if runtime.preinitialize_together != observed.joint_fields.is_some()
+            || runtime.reflective_members != observed.on.reflective_members
             || runtime.weak_map_values != observed.on.weak_map_values
             || runtime.capture_objects != observed.on.capture_objects
             || !observed.additional_roots.iter().map(|(name, _)| name.replace('/', ".")).eq(jvm.additional.iter().cloned())
@@ -403,7 +417,15 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         }
         bind(&binary, &internal, &observed.on, &entries, &tool)?;
         bind_values(&binary, &observed, &tool)?;
-        let receipt = if let Some(binding) = &binding {
+        let mut member_record = if runtime.reflective_members {
+            let raw: serde_json::Value = serde_json::from_str(&line).map_err(|e| Error::new(e.to_string()))?;
+            let evidence = member::capture(&binary, &raw, &receipt::trace(&jvm, &binary, "")?, &tool)?;
+            Some(serde_json::json!({"schema":"jvm-startup-member/v1", "binding":binding, "root":binary,
+                "rootSha256":observed.on.sha256, "rootOrigin":observed.on.from, "snapshotSha256":observed.state_sha256,
+                "jdk":observed.jdk, "vendor":observed.on.vendor, "locale":raw["on"]["locale"], "zone":observed.on.zone,
+                "capture":evidence, "alone":[], "supportedOperations":["reference identity", "getDeclaringClass", "getName", "getReturnType", "getModifiers", "getParameterCount"]}))
+        } else { None };
+        let receipt = if let Some(binding) = binding.as_ref().filter(|_| runtime.charset_locale.is_some()) {
             let (fact, receipt) = charset::qualify(&binary, &line, &jvm, &tool, binding, &observed, saved.as_ref())?;
             observed.on.charset = Some(fact);
             Some(receipt)
@@ -416,16 +438,30 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
                 )));
             }
         }
-        for other in &observed.on.initialized {
+        // Independent comparison JVMs can run in either order. Retain the original
+        // ordered startup and qualify its requested members before unrelated gaps.
+        let mut comparisons: Vec<_> = observed.on.initialized.iter().collect();
+        if runtime.reflective_members { comparisons.sort_by_key(|i| !member::has_methods(&i.state)); }
+        for other in comparisons {
             let name = other.name.replace('/', ".");
             if tool_sha256(&tool, &other.name)?.as_deref() != Some(other.sha256.as_str()) {
                 return Err(Error::new(format!("--observed-initializer {binary}: its initialization initialized {name}, whose class file the JVM read is not the one the tool reads of it on this class path")));
             }
             if observed.joint_fields.is_some() { continue; }
             if !alone.contains_key(&other.name) {
-                let line = jvm.run(&name, None, true)?;
+                let needs_trace = runtime.charset_locale.is_some() || member::has_methods(&other.state);
+                let line = jvm.run(&name, None, needs_trace)?;
                 if let Some(fact) = &observed.on.charset {
                     charset::compare_alone(&name, &line, &jvm, fact)?;
+                }
+                if let Some(record) = member_record.as_mut().filter(|_| member::has_methods(&other.state)) {
+                    let raw: serde_json::Value = serde_json::from_str(&line).map_err(|e| Error::new(e.to_string()))?;
+                    let trace = receipt::trace(&jvm, &name, ".alone")?;
+                    let evidence = member::capture(&name, &raw, &trace, &tool)?;
+                    let state = state(&name, &line, &observed.on)?;
+                    if state != other.state { return Err(Error::new(format!("changed reflective state of {name} initialized together and alone"))); }
+                    record["alone"].as_array_mut().unwrap().push(serde_json::json!({"root":name, "stateSha256":crate::digest::sha256_hex(state.to_string().as_bytes()),"capture":evidence}));
+                    member::publish(work, record.clone(), false)?;
                 }
                 alone.insert(other.name.clone(), state(&name, &line, &observed.on)?);
             }
@@ -440,12 +476,15 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
                 )));
             }
         }
-        if let Some(receipt) = receipt {
-            if binding != Some(charset::bindings(&tool, &home, &entries[1..], classes, &runtime)?) {
+        if binding.is_some() {
+            if binding != Some(receipt::bindings(&tool, &home, &entries[1..], classes, &runtime)?) {
                 return Err(Error::new("startup capture inputs changed during observation"));
             }
+        }
+        if let Some(receipt) = receipt {
             charset::publish(work, &runtime, &receipt, saved.is_some())?;
         }
+        if let Some(record) = member_record { observed.on.member_receipt = Some(member::publish(work, record, true)?); }
         out.insert(internal, observed);
     }
     Ok(out)
@@ -463,7 +502,7 @@ struct Jvm {
 impl Jvm {
     /// Runs the observer on `binary`, with its class initializations logged to `log` where given, and returns the
     /// line of the observation.
-    fn run(&self, binary: &str, log: Option<&Path>, charset_trace: bool) -> Result<String, Error> {
+    fn run(&self, binary: &str, log: Option<&Path>, trace: bool) -> Result<String, Error> {
         let suffix = if log.is_some() { "" } else { ".alone" };
         let stdout = self.dir.join(format!("{binary}{suffix}.stdout"));
         let stderr = self.dir.join(format!("{binary}{suffix}.stderr"));
@@ -478,18 +517,21 @@ impl Jvm {
             command.arg(format!("-Xlog:class+init=info:file={}::filecount=0", log.display()));
         }
         command.arg("-cp").arg(&self.class_path);
-        if self.runtime.charset_locale.is_some() {
-            command.arg("-Dfile.encoding=COMPAT");
-            if charset_trace {
-                let mut traced = Command::new(&self.java);
-                traced.args(["-Xmx192m", "-cp"]).arg(&self.dir).arg("StartupTrace")
-                    .arg(self.dir.join(format!("{binary}{suffix}.trace.json"))).arg(charset::BOUNDARY)
-                    .args(command.get_args()).arg("--main");
-                command = traced;
-            }
-            command.args([CLASS, "--record-charset"]);
-            self.runtime.charset_locale.unwrap().apply(&mut command);
-        } else { command.arg(CLASS); }
+        if self.runtime.charset_locale.is_some() { command.arg("-Dfile.encoding=COMPAT"); }
+        if trace && (self.runtime.charset_locale.is_some() || self.runtime.reflective_members) {
+            let mut traced = Command::new(&self.java);
+            traced.args(["-Xmx192m", "-cp"]).arg(&self.dir).arg("StartupTrace")
+                .arg(self.dir.join(format!("{binary}{suffix}.trace.json"))).arg(receipt::BOUNDARY);
+            if self.runtime.reflective_members { traced.arg("--methods"); }
+            traced.args(command.get_args()).arg("--main");
+            command = traced;
+        }
+        command.arg(CLASS);
+        if let Some(locale) = self.runtime.charset_locale {
+            locale.apply(&mut command);
+            command.arg("--record-charset");
+        }
+        if self.runtime.reflective_members { command.arg("--record-methods"); }
         command.arg(binary);
         if let Some(log) = log {
             command.arg(log);
@@ -562,10 +604,17 @@ fn bind_enum_base(observed: &Observed, base: &ValueClass, tool: &crate::classpat
 /// Check every declaring class independently. The JVM's class-loader resource and
 /// the verifier's selected bytes must agree, and no inherited field may be omitted.
 fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::ClassPath) -> Result<(), Error> {
+    for member in &observed.on.initialized {
+        for object in member.state["objects"].as_array().into_iter().flatten().filter(|o| o["k"] == "method") {
+            if !observed.on.reflective_members { return Err(Error::new("unrequested reflective member")); }
+            MethodFact::read(object)?.bind(tool)?;
+        }
+    }
     for object in &observed.objects {
         let (chain, selected) = match object {
             Object::Value(chain) => (chain, false),
             Object::Instance(chain) => (chain, true),
+            Object::Method(method) => { method.bind(tool)?; continue; }
             _ => continue,
         };
         for (i, part) in chain.iter().enumerate() {
@@ -754,7 +803,8 @@ fn state(binary: &str, line: &str, on: &On) -> Result<serde_json::Value, Error> 
     if let Some(threw) = json.get("threw").and_then(|t| t.as_str()) {
         return Err(Error::new(format!("--observed-initializer {binary}: initialized alone on the JVM, the class threw {threw}")));
     }
-    if fixed_processors(&json)? != on.fixed_processors || empty_environment(&json)? != on.empty_environment
+    if json.get("reflectiveMembers").and_then(serde_json::Value::as_bool).unwrap_or(false) != on.reflective_members
+        || fixed_processors(&json)? != on.fixed_processors || empty_environment(&json)? != on.empty_environment
         || root_directory(&json)? != on.root_working_directory {
         return Err(Error::new(format!("--observed-initializer {binary}: initialized alone under different process settings")));
     }
@@ -826,6 +876,9 @@ pub(crate) fn observe_previous_on(classes: &[String], previous: &crate::relocate
             observed.joint_fields = Some(relocated);
         }
         for object in &mut observed.objects {
+            if let Object::Method(member) = object {
+                if member.loader != "bootstrap" { return Err(Error::new("relocation of a captured application Method requires separate declaring and parameter bindings")); }
+            }
             if let Object::Value(chain) | Object::Instance(chain) = object {
                 for part in chain.iter_mut().filter(|p| p.name != ENUM) {
                     let Found::Class(held) = previous.find(&part.name) else {
@@ -913,6 +966,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
                 else if captured.contains("java.util.HashMap") { Object::LookupMap(entries) }
                 else { return Err(bad("an unrequested lookup map")); }
             }
+            Some("method") if json["on"]["reflectiveMembers"] == true => Object::Method(MethodFact::read(o)?),
             Some("array") => Object::Array { element: o.get("element").and_then(|e| e.as_str()).ok_or_else(|| bad("an array"))?.to_string(), cells: slots(o.get("cells"))? },
             Some(kind @ ("value" | "instance")) => {
                 let string = |v: &serde_json::Value, k: &str| v.get(k).and_then(|t| t.as_str()).map(str::to_owned).ok_or_else(|| bad("an immutable value field or class"));
@@ -972,6 +1026,8 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
     }
     let on = On {
         charset: None,
+        reflective_members: on.get("reflectiveMembers").map(|v| v.as_bool().ok_or_else(|| bad("reflectiveMembers"))).transpose()?.unwrap_or(false),
+        member_receipt: None,
         sha256: text(on, "sha256")?,
         from: on.get("from").and_then(|f| f.as_str()).map(String::from),
         classpath: list("classpath")?.iter().map(|e| e.as_str().map(String::from).ok_or_else(|| bad("the class path"))).collect::<Result<_, _>>()?,
@@ -1002,6 +1058,12 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
     if let Some(n) = on.fixed_processors { state["fixedProcessors"] = n.into(); }
     if on.empty_environment { state["emptyEnvironment"] = true.into(); }
     if on.root_working_directory { state["rootWorkingDirectory"] = true.into(); }
+    if on.reflective_members {
+        state["reflectiveMembers"] = true.into();
+        state["memberComparisons"] = serde_json::Value::Array(on.initialized.iter().filter(|i|
+            i.state["objects"].as_array().into_iter().flatten().any(|o| o["k"] == "method"))
+            .map(|i| serde_json::json!({"name":i.name,"sha256":i.sha256,"state":i.state})).collect());
+    }
     if on.weak_map_values { state["weakMapValues"] = true.into(); }
     if !on.capture_objects.is_empty() { state["captureObjects"] = serde_json::json!(on.capture_objects); }
     let state_sha256 = crate::digest::sha256_hex(state.to_string().as_bytes());
