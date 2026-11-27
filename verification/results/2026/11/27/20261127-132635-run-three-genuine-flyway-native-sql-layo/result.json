@@ -1,0 +1,182 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-132635-run-three-genuine-flyway-native-sql-layo",
+  "title": "Run three genuine Flyway native SQL layouts on the Spring Boot fix",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7m25s, peak 3.5 GiB (estimated 18m00s, 8.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Build and launch all three original native images) was held back 4m57s by its 4-CPU quota in 7m25s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-132635-run-three-genuine-flyway-native-sql-layo.json",
+    "sha256": "13984c317c72f02f22864770fe76983d83932892575f5883df4933a30127fdca",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-132635-run-three-genuine-flyway-native-sql-layo",
+      "title": "Run three genuine Flyway native SQL layouts on the Spring Boot fix",
+      "description": "Build a separate GraalVM executable for each root, nested, and two-directory SQL resource using the original Spring Boot fix JAR. Start a fresh H2 database for every executable and read the applied version, checksum and durable marker through independent JDBC. Repeat the JVM and Spring AOT controls before each image.",
+      "kind": "real-world",
+      "capabilities": [
+        "native-image",
+        "public-api-comparison"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-27T13:26:35+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "/home/filip/.sdkman/candidates/java/25.5.5.0+3-graalce/bin/native-image"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "8G",
+        "duration": "18m",
+        "memoryLimit": "11G",
+        "timeout": "80m"
+      },
+      "steps": [
+        {
+          "name": "Build and launch all three original native images",
+          "run": "python3 verification/merged-pr-links/s01-s50/native-flyway/replay.py fix --output verification/merged-pr-links/s01-s50/native-flyway/fix.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/native-flyway/fix.json"
+      ]
+    }
+  },
+  "sourceCommit": "0cf40b8236db16a7b73b5b31dca8382b65b80f7d",
+  "startedAt": "2026-11-27T13:27:32+00:00",
+  "finishedAt": "2026-11-27T13:35:08+00:00",
+  "wallSeconds": 456.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 15556,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 11811160064,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 8589934592,
+    "durationSeconds": 1080.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3758817280,
+    "wallSeconds": 445.3,
+    "cpuSeconds": 1616.5,
+    "memoryOfEstimate": 0.44,
+    "durationOfEstimate": 0.41
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and launch all three original native images",
+      "run": "python3 verification/merged-pr-links/s01-s50/native-flyway/replay.py fix --output verification/merged-pr-links/s01-s50/native-flyway/fix.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 445.258,
+      "cpuSeconds": 1616.485,
+      "cpuThrottledSeconds": 297.188,
+      "peakMemoryBytes": 3758817280,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-launch-all-three-ori.log",
+        "lines": 10,
+        "bytes": 1546,
+        "sha256": "b83621bb09a3183d3e7eaa82670e4d05dc0b6a12b7afac36dfaeb5718a4d11b3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fix root: JVM application",
+        "fix root: native-image",
+        "{\"applied\": 1, \"checksum\": -391086276, \"row\": 73, \"runtime\": \"native\", \"version\": \"2\"}",
+        "fix nested: JVM application",
+        "fix nested: native-image",
+        "{\"applied\": 1, \"checksum\": -391086276, \"row\": 73, \"runtime\": \"native\", \"version\": \"2\"}",
+        "fix deep: JVM application",
+        "fix deep: native-image",
+        "{\"applied\": 1, \"checksum\": -391086276, \"row\": 73, \"runtime\": \"native\", \"version\": \"2\"}",
+        "{\"deep\": {\"AOT JVM\": {\"applied\": 1, \"checksum\": -391086276, \"row\": 73, \"runtime\": \"jvm\", \"version\": \"2\"}, \"JVM\": {\"applied\": 1, \"checksum\": -391086276, \"row\": 73, \"runtime\": \"jvm\", \"version\": \"2\"}, \"native\": {\"applied\": 1, \"checksum\": -391086276, \"row\": 73, \"runtime\": \"native\", \"version\": \"2\"}, \"sql"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/s01-s50/native-flyway/fix.json",
+      "change": "added",
+      "bytes": 1526,
+      "sha256": "df2cd14e1bc7b073491b2e35c8ac68e23fc16586c1168c7f7625b0021ba5b275",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-27T13:35:13+00:00",
+    "applied": [
+      "verification/merged-pr-links/s01-s50/native-flyway/fix.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T133508Z-2286107a84ada6bc",
+      "outputs": "20261127T133508Z-249042e92566deb1",
+      "diff": "20261127T133508Z-263289f3db0fcfe8"
+    }
+  }
+}
