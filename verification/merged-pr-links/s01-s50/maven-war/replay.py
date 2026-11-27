@@ -21,7 +21,7 @@ def local_mirror(cache, destination):
             out.symlink_to(src)
     modules = cache / "gradle-home/caches/modules-2/files-2.1"
     for src in modules.glob("*/*/*/*/*"):
-        if src.suffix not in (".jar", ".pom") or not src.is_file():
+        if src.suffix not in (".jar", ".pom", ".module", ".zip") or not src.is_file():
             continue
         group,artifact,version,_,filename = src.relative_to(modules).parts
         if "SNAPSHOT" in version:
@@ -60,6 +60,24 @@ def run(side, preflight):
         shutil.copyfile(HERE/"pom.xml",fixture/"pom.xml")
         local = work/"public-mirror"
         local_mirror(cache,local)
+        # Gradle's offline metadata is keyed by the repository that first supplied a file.
+        # The original BOM POMs are already cached, and a file repository can resolve them
+        # even when the earlier integration build fetched them from another repository.
+        gradle_init = work/"cached-boms.gradle"
+        gradle_init.write_text("""
+beforeProject { p ->
+    p.repositories.maven {
+        name = 'retainedReleaseBoms'
+        url = uri(System.getenv('BOOT_S48_MIRROR'))
+        mavenContent { releasesOnly() }
+        content {
+            includeModuleByRegex '.*', '.*(bom|BOM|dependencies|platform).*'
+            includeModule 'org.apache.maven', 'apache-maven'
+        }
+        metadataSources { mavenPom(); artifact() }
+    }
+}
+""")
         settings = tree/module/"src/intTest/projects/settings.xml"
         original = settings.read_text()
         if "<mirrors>" in original:
@@ -71,8 +89,9 @@ def run(side, preflight):
         jdks = Path.home()/".sdkman/candidates/java"
         names = ("8.0.512.0+9-tem","11.0.33.0+10-tem","17.0.21.0+9-tem","21.0.13.0+9-tem","25.0.5.0+8-tem")
         env = {**os.environ,"JAVA_HOME":str(jdks/names[-1]),"GRADLE_USER_HOME":str(work/"gradle"),
-               "GRADLE_RO_DEP_CACHE":str(cache/"gradle-home/caches"),"BOOT_S48_RECEIPTS":str(receipts)}
-        cmd = [gradle,"--offline","--console=plain","--no-daemon","--no-build-cache","--no-scan","--max-workers=3",
+               "GRADLE_RO_DEP_CACHE":str(cache/"gradle-home/caches"),"BOOT_S48_RECEIPTS":str(receipts),
+               "BOOT_S48_MIRROR":local.as_uri()}
+        cmd = [gradle,"--offline","-I",gradle_init,"--console=plain","--no-daemon","--no-build-cache","--no-scan","--max-workers=3",
                "-Dorg.gradle.jvmargs=-Xmx2g -XX:ActiveProcessorCount=3","-Pkotlin.compiler.execution.strategy=in-process",
                "-Porg.gradle.java.installations.auto-detect=false","-Porg.gradle.java.installations.auto-download=false",
                "-Porg.gradle.java.installations.paths=" + ",".join(str(jdks/n) for n in names),

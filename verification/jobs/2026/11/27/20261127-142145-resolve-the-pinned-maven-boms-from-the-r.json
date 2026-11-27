@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-142145-resolve-the-pinned-maven-boms-from-the-r",
+  "title": "Resolve the pinned Maven BOMs from the retained local mirror",
+  "description": "The first two S48 runs stopped before Maven at Gradle BOM resolution despite the exact published POM being in both machine caches. Give Gradle an offline, release-only file repository for retained BOMs, run the original fixed Maven WAR plugin and record the selected payload and entry order in both archives.",
+  "kind": "real-world",
+  "capabilities": [
+    "spring-boot-packaging"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-27T14:21:45+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "git"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "5G",
+    "duration": "5m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Resolve original BOMs locally and execute the Maven goal",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output verification/merged-pr-links/s01-s50/maven-war/fix.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/maven-war/fix.json"
+  ]
+}
