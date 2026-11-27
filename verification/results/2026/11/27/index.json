@@ -3,6 +3,41 @@
   "shard": "2026/11/27",
   "results": [
     {
+      "id": "20261127-091102-setup-build-spring-boot-52162-s20-at-bot",
+      "title": "Setup: build Spring Boot #52162 (S20) at both pins and run its landed tests",
+      "status": "failed",
+      "summary": "failed: 3 failed, 1 passed step(s) in 4m56s, peak 3.5 GiB (estimated 30m00s, 6.0 GiB)",
+      "attention": [
+        "step 1 (S20 fix: build and landed tests) exited 1, expected 0",
+        "step 1 (S20 fix: build and landed tests) was held back 1m15s by its 4-CPU quota in 1m59s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (S20 parent: build and the parent's tests) exited 1, expected 0",
+        "step 2 (S20 parent: build and the parent's tests) was held back 49.6s by its 4-CPU quota in 1m33s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 3 (S20 transplant: the fix's tests on the parent) exited 1, expected 0",
+        "step 3 (S20 transplant: the fix's tests on the parent) was held back 53.0s by its 4-CPU quota in 1m17s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+      "finishedAt": "2026-11-27T09:35:41+00:00",
+      "wallSeconds": 296.5,
+      "peakMemoryBytes": 3781607424,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 1800.0,
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "host": "vm-1",
+      "result": "2026/11/27/20261127-091102-setup-build-spring-boot-52162-s20-at-bot/result.json"
+    },
+    {
       "id": "20261127-091102-setup-build-spring-boot-51173-s19-at-bot",
       "title": "Setup: build Spring Boot #51173 (S19) at both pins and run its landed tests",
       "status": "failed",

@@ -1,0 +1,349 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261127-091102-setup-build-spring-boot-52162-s20-at-bot",
+  "title": "Setup: build Spring Boot #52162 (S20) at both pins and run its landed tests",
+  "status": "failed",
+  "summary": "failed: 3 failed, 1 passed step(s) in 4m56s, peak 3.5 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (S20 fix: build and landed tests) exited 1, expected 0",
+    "step 1 (S20 fix: build and landed tests) was held back 1m15s by its 4-CPU quota in 1m59s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (S20 parent: build and the parent's tests) exited 1, expected 0",
+    "step 2 (S20 parent: build and the parent's tests) was held back 49.6s by its 4-CPU quota in 1m33s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (S20 transplant: the fix's tests on the parent) exited 1, expected 0",
+    "step 3 (S20 transplant: the fix's tests on the parent) was held back 53.0s by its 4-CPU quota in 1m17s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/27/20261127-091102-setup-build-spring-boot-52162-s20-at-bot.json",
+    "sha256": "9d141569c99971fd9ee577faef01210c49db0260601059c9bc0aa0a6278ce14a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261127-091102-setup-build-spring-boot-52162-s20-at-bot",
+      "title": "Setup: build Spring Boot #52162 (S20) at both pins and run its landed tests",
+      "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S20 (spring-projects/spring-boot#52162: Graceful shutdown drains requests after a web server restarts). In the worktrees $P/worktrees/S20-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-jetty module:spring-boot-tomcat with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (TomcatServletWebServerFactoryTests.givenARestartedServer* (test) TomcatReactiveWebServerFactoryTests.givenARestartedServer* (test) JettyServletWebServerFactoryTests.givenARestartedServer* (test) JettyReactiveWebServerFactoryTests.givenARestartedServer* (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-jetty module:spring-boot-tomcat in $P/artifacts/S20-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S20",
+      "submitted": {
+        "at": "2026-11-27T09:11:02+00:00",
+        "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m",
+        "memoryLimit": "9G",
+        "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+      },
+      "steps": [
+        {
+          "name": "S20 fix: build and landed tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 fix",
+          "cwd": "."
+        },
+        {
+          "name": "S20 parent: build and the parent's tests",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 parent",
+          "cwd": "."
+        },
+        {
+          "name": "S20 transplant: the fix's tests on the parent",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 transplant",
+          "cwd": "."
+        },
+        {
+          "name": "S20 clean",
+          "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 clean",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "7c82030723afea1c8e01757e6c9d05ad9be134bc",
+  "startedAt": "2026-11-27T09:30:34+00:00",
+  "finishedAt": "2026-11-27T09:35:41+00:00",
+  "wallSeconds": 307.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2137390,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "usage": {
+    "peakMemoryBytes": 3781607424,
+    "wallSeconds": 296.5,
+    "cpuSeconds": 811.7,
+    "memoryOfEstimate": 0.59,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "S20 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 fix",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 119.723,
+      "cpuSeconds": 333.138,
+      "cpuThrottledSeconds": 75.685,
+      "peakMemoryBytes": 3498364928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-s20-fix-build-and-landed-tests.log",
+        "lines": 17,
+        "bytes": 2064,
+        "sha256": "aad52c1d3ea9234d8ecbf073bf836feeda1a1d7b614785e60445f5e944eeaf5a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S20-fix gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=87 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/sc",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.jetty.servlet.JettyServletWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactoryTests.givenARestartedServer* no-result",
+        "classpath module:spring-boot-jetty runtimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "S20 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 parent",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 93.948,
+      "cpuSeconds": 257.924,
+      "cpuThrottledSeconds": 49.583,
+      "peakMemoryBytes": 2935619584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-s20-parent-build-and-the-paren.log",
+        "lines": 17,
+        "bytes": 2067,
+        "sha256": "22e90e46952c7a447e8a8983ec60cb8271040b13ed7ee3a7dd0bb1b30ee96ac7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/worktrees/S20-parent gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=61 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:processResources UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:classes UP-TO-DATE",
+        "> Task :plugins:cycle-detection-plugin:jar UP-TO-DATE",
+        "> Task :buildSrc:compileJava UP-TO-DATE",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors UP-TO-DATE",
+        "> Task :buildSrc:processResources UP-TO-DATE",
+        "> Task :buildSrc:classes UP-TO-DATE",
+        "class org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.jetty.servlet.JettyServletWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactoryTests.givenARestartedServer* no-result",
+        "classpath module:spring-boot-jetty runtimeClasspath FAILED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "S20 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 transplant",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 77.818,
+      "cpuSeconds": 217.962,
+      "cpuThrottledSeconds": 52.979,
+      "peakMemoryBytes": 3781607424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-s20-transplant-the-fix-s-tests.log",
+        "lines": 19,
+        "bytes": 2195,
+        "sha256": "06ceded40eff7f39adab30691f9b4fa0d716c90de8110355c0348b1ab2480503",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted module/spring-boot-web-server/src/testFixtures/java/org/springframework/boot/web/server/reactive/AbstractReactiveWebServerFactoryTests.java",
+        "transplanted module/spring-boot-web-server/src/testFixtures/java/org/springframework/boot/web/server/servlet/AbstractServletWebServerFactoryTests.java",
+        "dir=/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50/build/S20-parent-landed gradle=9.8.1 launcher=25.0.5.0+8-tem gradle-exit=1 seconds=76 args=-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline -I /home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "> Task :plugins:cycle-detection-plugin:compileJava",
+        "> Task :plugins:cycle-detection-plugin:pluginDescriptors",
+        "> Task :plugins:cycle-detection-plugin:processResources",
+        "> Task :plugins:cycle-detection-plugin:classes",
+        "> Task :plugins:cycle-detection-plugin:jar",
+        "> Task :buildSrc:compileJava",
+        "> Task :buildSrc:compileGroovy NO-SOURCE",
+        "> Task :buildSrc:pluginDescriptors",
+        "> Task :buildSrc:processResources",
+        "> Task :buildSrc:classes",
+        "class org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.jetty.servlet.JettyServletWebServerFactoryTests.givenARestartedServer* no-result",
+        "class org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactoryTests.givenARestartedServer* no-result",
+        "TRANSPLANT DID NOT FAIL (gradle-exit=1)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "S20 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S20 clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.009,
+      "cpuSeconds": 2.66,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 168767488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-s20-clean.log",
+        "lines": 1,
+        "bytes": 12,
+        "sha256": "68cd029ddd76c23a34041979e1aa83b27f56ea5a0a2e9d33938d148c2ee6c21b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned S20"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-27T09:36:23+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261127T093541Z-235546571ea7d409",
+      "workdir": "20261127T093559Z-297856257dc35098"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261127-091102-setup-build-spring-boot-52162-s20-at-bot"
+}
