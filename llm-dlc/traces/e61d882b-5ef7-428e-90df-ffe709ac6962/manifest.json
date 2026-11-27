@@ -13512,312 +13512,312 @@
     },
     {
       "change_id": "xkrllwzlknszloxlmlqywmspqkkurqno",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "71bc58ed62e8b73a8387b6b7c28061b0438013ae",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587"
     },
     {
       "change_id": "rvorllrvzulmtwlvorvtnouxzqxowuzx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b5a5ebd0da1259fdb41a034f413fc17f171b8d25",
+      "immutable": true,
       "summary": "Record the watcher's decisions on jvm-startup-facts-setup",
       "body": "The watcher's verdicts on the single-agent run jvm-startup-facts-setup (llm-dlc/decisions/single-jvm-startup-facts-setup.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587"
     },
     {
       "change_id": "uwoturnskmuwnwoztpyylpyrrxvqxvyk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5b1c0292b913209cad111af175587329de1fd121",
+      "immutable": true,
       "summary": "Record the setup for the JVM startup facts brief",
       "body": "Mechanical setup for llm-dlc/loops/in-the-loop-jvm-startup-facts-brief.md, recorded in llm-dlc/loops/in-the-loop-jvm-startup-facts-brief-setup.md. Every case the brief names (Commons IO #520, ThreeTenBP #77, POI #1420 with log4j-api, Batik 1.17, Commons Configuration #565/#601, JavaParser #4538 / example 360, Avro #3878 / example 355, Spring example 480) was already prepared by earlier campaigns; a script checked every deployment against its recorded digest and every worktree against its pin and tree, and all match. The one new download is Batik's upstream source at tag 1_17 (3c83de345f21cae4f4a64dfe6244483f87885808, the commit the brief's batik-1_17 branch link points at), in a shallow bare mirror; its XMLResourceDescriptor source and properties have the same git blobs as the Debian .orig and the deployed jars.\n\nVerified on fresh JVMs, read-only: the registered public observations of Commons IO (8/8), ThreeTenBP (12/12), POI (12/12) and Spring 480 equal their receipts; the 16 historical Commons IO charset trials reproduce byte for byte; \"é\".getBytes().length is 2 under C.UTF-8 and 1 under C with -Dfile.encoding=COMPAT (whose file.encoding reads ANSI_X3.4-1968); Configuration's own invalid lookup name gives ExceptionInInitializerError then NoClassDefFoundError while the inherited one does not; JavaParser's cleared line.separator gives ExceptionInInitializerError with a NullPointerException cause. No claim, example, adapter or library code was written, no verifier or capture was run, and no verification job was needed.",
       "log_sha256": "fc8c2bbe13dcdc6ad1dd88b30e6da2d8e71bd8e695bc9c64da4bf88d164b58c9"
     },
     {
       "change_id": "rlyypupxyxpmwrukqvpkwozzkrtmprmk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "ca276286955e08635a6b857b021fdbc90c214cb0",
+      "immutable": true,
       "summary": "Merge the single-agent run jvm-startup-facts-setup into the line",
       "body": "The single-agent run jvm-startup-facts-setup (session 6fdab7f9-e790-4ce0-8e67-c4ad063e1f99) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
       "log_sha256": "a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587"
     },
     {
       "change_id": "uzvutpvvtxqwvxnplxtlpqqzqwmykzzo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b24fefbcd06702998a7c2ff66c98f270e4c91f65",
+      "immutable": true,
       "summary": "Put the setup notes of jvm-startup-facts into its brief",
       "body": "The setup run jvm-startup-facts-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/in-the-loop-jvm-startup-facts-brief.md and ~/code/scripts/analysis/in-the-loop-jvm-startup-facts-brief.md, for the domain agent.",
       "log_sha256": "a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587"
     },
     {
       "change_id": "llkwqzkvupzvyrtylvwqwqynlnztsnuu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "fca9bdeadc499a76f29a542aea2c79bc64205b38",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "a5c91f965d542fa9210b87ee21accd287c0dadc2b43a65ee0371798a0844a587"
     },
     {
       "change_id": "knvuozmxuzoyzqyvzlrrwnmxwypyqllk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "dab26aff0a5daa1f2ad45cffb07014e63a8cf410",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 2 of the 2 job(s). 20261127-001753-qualify-native-charset-receipts-on-the-o: passed: 1 passed step(s) in 30.9s, peak 126.5 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261127-001759-retry-both-commons-io-originals-with-obs: passed: 1 passed step(s) in 24.1s, peak 126.4 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "fc8c2bbe13dcdc6ad1dd88b30e6da2d8e71bd8e695bc9c64da4bf88d164b58c9"
     },
     {
       "change_id": "vzwknwzymvorpourmqplvtpomvllnrvr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "57fac75bf3e9385ec4f289d519eed68871776645",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-003416-qualify-threeten-startup-method-on-both: failed: 1 failed step(s) in 1.0s, peak 107.5 MiB (estimated 3m00s, 2.0 GiB) Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "603d5015e8e5bf4971c1ae4efeeaae6539d82343c6142915f8a90897cb1c0af6"
     },
     {
       "change_id": "pyxoqtkmwnksvxmrxloqnnkxuqwwrzqv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3abe3cd8bfd6b4da3a77959906686f35ca59cab3",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261127-003930-repeat-both-reflective-startup-histories: passed: 1 passed step(s) in 53.3s, peak 142.0 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "603d5015e8e5bf4971c1ae4efeeaae6539d82343c6142915f8a90897cb1c0af6"
     },
     {
       "change_id": "tutkknxvpvrwwvskwnrozzwlypwoqsyz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3d7257c451c2fcb6f0b9282e94e1134161367921",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-004741-qualify-poi-live-properties-and-table-id: failed: 1 failed step(s) in 4m10s, peak 142.4 MiB (estimated 7m00s, 2.0 GiB) Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "603d5015e8e5bf4971c1ae4efeeaae6539d82343c6142915f8a90897cb1c0af6"
     },
     {
       "change_id": "mkvwsvvtkpsunxxmsqnnppsrwuuuxxlt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "43f6be52297311da437d162835fff733c0825d03",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261127-005516-qualify-batik-lazy-resources-and-origina: passed: 2 passed step(s) in 20.3s, peak 103.8 MiB (estimated 2m00s, 1.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "603d5015e8e5bf4971c1ae4efeeaae6539d82343c6142915f8a90897cb1c0af6"
     },
     {
       "change_id": "wnkozvrxlswuonrqwmslkurlktlplqpm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "45ea96531357ece22b17cdccd8855a00290bf5fe",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-010332-quantify-charset-choices-and-challenge-o: failed: 1 failed step(s) in 1.2s, peak 89.7 MiB (estimated 3m00s, 2.0 GiB) Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "603d5015e8e5bf4971c1ae4efeeaae6539d82343c6142915f8a90897cb1c0af6"
     },
     {
       "change_id": "ypytlvrrumozzzoqvvolortsqnlonntn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "24463cd8fdb0620067190e2dcdbf76130a83cc14",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261127-010104-repeat-original-poi-properties-with-loss: passed: 1 passed step(s) in 6m47s, peak 138.0 MiB (estimated 5m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "603d5015e8e5bf4971c1ae4efeeaae6539d82343c6142915f8a90897cb1c0af6"
     },
     {
       "change_id": "vuxotvxlqrlzuvwlkposrxqzwwvsmsks",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7cfd2d534e404a71f2a5cf5935716356b3d80a2e",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 2 of the 2 job(s). 20261127-012007-reject-crossed-startup-evidence-by-revis: passed: 1 passed step(s) in 19.5s, peak 129.1 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261127-012105-verify-startup-scope-controls-using-the: passed: 1 passed step(s) in 32.7s, peak 131.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "b2b57fc1d277cfcecb82f3cc003f8d5a3a713d108606476d13f3ff61d4efe389"
     },
     {
       "change_id": "kqovkqwvmooooutmowkxuuuomprynkvp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5feecace2ac2589ec690800d6878c60b10875598",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261127-013123-score-frozen-spring-transfer-with-a-cach: passed: 1 passed step(s) in 9.6s, peak 177.9 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "b2b57fc1d277cfcecb82f3cc003f8d5a3a713d108606476d13f3ff61d4efe389"
     },
     {
       "change_id": "sultpxzvwltropyyupqzsxyptplrrrqv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "709125873c5fdad824f6bd57d8623670760c5673",
+      "immutable": true,
       "summary": "Record verification results for 3 job(s)",
       "body": "Outputs applied for 3 of the 3 job(s). 20261127-013122-score-frozen-setting-reads-at-first-use: passed: 1 passed step(s) in 36.9s, peak 126.1 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261127-013122-score-frozen-startup-transfer-for-common: passed: 1 passed step(s) in 1m04s, peak 163.8 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261127-013123-score-frozen-avro-startup-on-the-two-124: passed: 1 passed step(s) in 43.3s, peak 1.2 GiB (estimated 9m00s, 5.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "b2b57fc1d277cfcecb82f3cc003f8d5a3a713d108606476d13f3ff61d4efe389"
     },
     {
       "change_id": "nwyqpqlnonkorttzkumykvswzwtotrrq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "ad4f5d9ded32a5b1bda7d46548a639890fb992e7",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261127-013346-check-warm-and-clean-startup-proofs-acro: passed: 1 passed step(s) in 1m27s, peak 167.6 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "b2b57fc1d277cfcecb82f3cc003f8d5a3a713d108606476d13f3ff61d4efe389"
     },
     {
       "change_id": "ktprtvssvrzyrxxooxmwmpvnmwqsrwru",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0d1955c09d4166d567da38eb0668595f0ad9649a",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261127-015602-repeat-quoted-configuration-and-failed-i: passed: 2 passed step(s) in 1m58s, peak 151.7 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "8d0559abd21d84aca0ba2a34f482dcc44ac8e32beb2a95902282bd28c4ace000"
     },
     {
       "change_id": "roulktqtottpzrouyxkylqvrwnvvnrwl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c501d2e6ad50239ededa28c95e34f306da4b5778",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 1 of the 2 job(s); 1 declared or produced none. 20261127-015603-prove-metadata-of-the-cached-spring-non: passed: 1 passed step(s) in 12.7s, peak 190.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261127-015909-requalify-original-startup-matrices-afte: failed: 1 failed step(s) in 2.4s, peak 115.5 MiB (estimated 7m00s, 2.0 GiB) Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "8d0559abd21d84aca0ba2a34f482dcc44ac8e32beb2a95902282bd28c4ace000"
     },
     {
       "change_id": "ttpwtroqsqzplqrlrlywzptunusmmzym",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c8654d28594b8b58d374172952c8af7e64d794bc",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261127-020702-requalify-original-jvm-startup-from-dire: passed: 1 passed step(s) in 8m42s, peak 179.9 MiB (estimated 7m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "8d0559abd21d84aca0ba2a34f482dcc44ac8e32beb2a95902282bd28c4ace000"
     },
     {
       "change_id": "lprtzxmppxszuoqytustspuzolposmsn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "1a723b5bf0af0523de504c2659bab9a097381d8f",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261127-023629-qualify-first-active-use-on-original-jvm: error: Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "b6ea9d44d4ece9eac1ebd1a687909b9aa58f29fa5885b48eecdf1c0361d96617"
     },
     {
       "change_id": "vrkqmzzxvmqnvunspuwkxuxzrtsrwykk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7b07a453f0d9f432e00f8f197f802133c04a3ae6",
+      "immutable": true,
       "summary": "Queue the brief blind-caller-and-pr-verification",
       "body": "The brief ~/code/scripts/analysis/in-the-loop-blind-caller-and-pr-verification-brief.md is copied unchanged to llm-dlc/loops/in-the-loop-blind-caller-and-pr-verification-brief.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end.",
       "log_sha256": "b6ea9d44d4ece9eac1ebd1a687909b9aa58f29fa5885b48eecdf1c0361d96617"
     },
     {
       "change_id": "rvvzkkpxqxkutqlpwnskntwlntumyonx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5a798aa2e804123c9270648d7904dffe8a0849eb",
+      "immutable": true,
       "summary": "Queue a brief to be generated from 50 pull requests: spring-boot-merged-pr-links-s01-s50",
       "body": "The list of pull requests ~/code/scripts/analysis/spring-boot-merged-pr-links-s01-s50.md is copied unchanged to llm-dlc/loops/spring-boot-merged-pr-links-s01-s50.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, and that brief is then queued right after the list, with a setup phase and a domain run as any other.",
       "log_sha256": "c67da963332dd054c595bd162c2cb80c1b9a22ae5830c28c469073b801d03ffe"
     },
     {
       "change_id": "pusztsmntxwnwuxtzoyuyttzlwuukxup",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "2bd7ed6d2775c6bc74b79597321f93601f225d96",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261127-024317-qualify-first-active-use-on-original-jvm: passed: 1 passed step(s) in 8m56s, peak 334.4 MiB (estimated 9m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the jvm-startup-facts run, which keeps the queue while the run is under way.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "pvvxtrqqvxqkzlrxvvzrpvsywtvysqno",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "232f963784eb2784536124cc4a8079b5b76c6c9f",
+      "immutable": true,
       "summary": "Bind native default encoding to startup receipts (verification pending)",
       "body": "Derive the recording request from a strict initializer diagnostic. Trace actual calls and returns on the original JVM during first use and bind the profile, ordered deployments, JDK, code units, bytes and bytecode site. The native checker executes the literal encoder and field store. A pinned recording can be revalidated for another claim while each proof runs afresh. A watcher report retains the original and conditional results.\n\nThe selected Rust tests passed across 59 test binaries and all eight selected Python suites passed. A capped native check verified one byte under ASCII, and the unchanged two-byte expectation yielded a witness of one on the original JVM. Jobs 20261127-001753-qualify-native-charset-receipts-on-the-o and 20261127-001759-retry-both-commons-io-originals-with-obs qualify the two profiles, resume and invalidation controls, and both original Commons IO deployments.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "msmxxxrpywluqpunkkknqmzrkytmkqkv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6d60e0f11bf063d6120e2708d53dc8a608fcfd7f",
+      "immutable": true,
       "summary": "Preserve registered JVM startup root order in proof and replay",
       "body": "A joint startup claim may specify its exact ordered roots. Preparation freezes that order in the claim identity and passes it to both the native checker and the original JVM witness. Legacy mappings retain sorted-name behavior. Missing, duplicated and foreign roots are refused.\n\nAll 55 selected test suites passed. The recipe test checks both launch orders, different claim keys, replay source and three malformed orders. The native joint-startup test also passed in the preceding Rust run, including Root then Reader returning 7 and Reader then Root returning 0.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "tvstvvntnuywywylxmnqlkuuykoqpuls",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f6e5c17fa871c2dc8f918dfa93f3ffa49a618d23",
+      "immutable": true,
       "summary": "Bind reflective startup members to original bytes (verification pending)",
       "body": "Trace the actual public lookup, returned reflection object and static assignment. Verify declaring loader, modifiers, accessibility, full descriptor, class bytes and aliases, and compare transitive fields with a fresh JVM that initializes their owner alone. Native metadata calls use the actual arity. Reflective invocation and access changes retain named refusals.\n\nThe original ThreeTen parent advanced past Chronology.LOCALE_METHOD using the one-argument Locale.getUnicodeLocaleType(String) and stopped on the formatter state. The debugger tied the same lookup return to the field write. All six selected suites passed, including 59 Rust test binaries. The five invalid declaration and access controls and the cost lint passed. Job 20261127-003416-qualify-threeten-startup-method-on-both repeats both originals, twelve public histories and independent metadata, alias and fallback controls.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "plvnnvuywkvsznprrrpxuyzqupvwsksz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5a637a1bef81b0669869a8dd5586401f39b44bc9",
+      "immutable": true,
       "summary": "Keep reflective capture buildable alone (verification pending)",
       "body": "The preceding revision included a reference to an unfinished live-table recorder. Restore the standalone tracer that passed the selected tests. Compiling the two shipped sources on JDK 21 and tracing Chronology again produced matching one-argument lookup and static assignment events. Job 20261127-003930-repeat-both-reflective-startup-histories qualifies both deployments at the corrected source revision.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "uyxurtwnvoyzwlqkkqnuvlkznyswssnw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "61ffdb07f3ea5180c8aca833910022e3ccdf8127",
+      "immutable": true,
       "summary": "Trace original live system-property tables (verification pending)",
       "body": "Observe the actual System.props object on a controlled JVM, compare its own string entries, iteration sequence and hash with ordinary Java, and bind each forEach callback to the original receiver. Reject inherited defaults, custom tables, writes, replacements and escaped references. Record partial evidence independently of native admission and keep values out of public receipts.\n\nThe original POI parent reached Log4j normalizeProperties at bytecode 36. Its table observation passed ordinary initializer parity and exposed a multi-release StackLocator provider as the next dependency. A standalone hashCode observation matched the original table projection. All six selected suites passed, including 59 Rust test binaries. Job 20261127-004741-qualify-poi-live-properties-and-table-id compares twelve public observations, property perturbations and failure controls on both deployments.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "mnuopxutlrlmpqvrqvmnptqztkuppokk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e160c15af516aba7dbb81c93f63ea0438a9b548c",
+      "immutable": true,
       "summary": "Bind lazy properties reads to consumed bytes (verification pending)",
       "body": "Trace the original class-relative resource, selected JAR stream, loader, Properties.load overload and actual LineReader refills. Compare the parser outcome and subsequent key reads with an independent JDK parse, and compare the entire public result with an ordinary JVM. File and reader receipts distinguish absence, partial parse failure, membership and decoder choice.\n\nTen Batik histories and ten ordinary file and Reader histories passed locally. The memoized loader kept the original parser, the new loader read the changed bytes at the same path and an explicit setter bypassed the read. Raw UTF-8 bytes produced different values through a byte stream and a UTF-8 Reader. The selected Rust suite and Python suite passed. Job 20261127-005516-qualify-batik-lazy-resources-and-origina repeats and archives the whole matrix.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "oposqykorzumtskkovrwkvkqpqunlnny",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "15f995acb9b5db2dfaa6f6e66c1550eecefa631e",
+      "immutable": true,
       "summary": "Preserve POI currency text in the collector (verification pending)",
       "body": "The controlled JVM selected an ASCII console and replaced the fixed Kazakh currency literal during transport. Request UTF-8 on stdout for both original JVMs and retain their full byte comparison. All twelve ordinary observations now equal the archived strings. The selected test run passed 56 suites. Job 20261127-010104-repeat-original-poi-properties-with-loss repeats the full table qualification.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "okonnyprlxwnmpquxzktzqqprukozrop",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "ad98b6804a2ae36dd5aeaf02b56b82d35ae204af",
+      "immutable": true,
       "summary": "Qualify consumed startup premises and root order (verification pending)",
       "body": "Expose complete startup recordings separately from consumed proof assumptions. The registered workflow checks the exact premise, class bytes and state. Record the actual joint initialization order and refuse application initializers running on different JVM threads. Report a live named read with its observed value identity, absence or fallback and actual caller.\n\nThe native checker proved the two-charset selection for both Boolean inputs. Original JVMs recorded the two different root orders and refused a concurrent child initializer. A live named read matched its actual property value and caller. All 56 selected suites passed. Job 20261127-010332-quantify-charset-choices-and-challenge-o covers conditional proof scope, the six historical countermodels, both aliasing orders and a deliberately interrupted capture.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "xpkstyysrwosylvtxwszuvupoqkxwlqm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "85d2f30e20be895a7199726a0892b57e6608e679",
+      "immutable": true,
       "summary": "Bind startup receipts to revisions and loaders (verification pending)",
       "body": "Record and check the actual application loader and its platform parent in the subject. Bind both the requested and resolved ordered provider paths, plus the prepared revision when supplied. Document ordinary recovery, resume, ordered roots and frozen consumed premises. The symbolic control now discovers the parameter name from its compiled class.\n\nA JDK 21 subject reported the application loader, platform parent and ASCII singleton at the original initializer. The release build passed. All 56 selected suites passed; a JBMC deadline test passed on its isolated rerun. Jobs 20261127-012007-reject-crossed-startup-evidence-by-revis and 20261127-012105-verify-startup-scope-controls-using-the qualify crossed physical and logical revisions and repeat the full scope and interruption controls.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "vrsknvsnrmwoypuwzyvrtplzoqovotpr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d479889d556982c4d6c8d5158289ab015a69e814",
+      "immutable": true,
       "summary": "Freeze startup recording for four public transfers (verification pending)",
       "body": "Seal the shared implementation, input policy and transfer set after the seven development exercises. Preserve the eight independently verified development archives. The three motivating incidents passed their named blockers and both original Batik releases qualified the resource actually read. The cache controls include replacement and restoration at a single path while retaining an untouched side.\n\nVerified all eight collected archive digests and their ZIP contents, both crossed-revision refusals, all six historical setting countermodels, the two symbolic profile checks and both joint root orders. Interrupting after the first root left zero successful recordings. All 56 selected suites passed. Jobs 20261127-013122-score-frozen-startup-transfer-for-common, 20261127-013122-score-frozen-setting-reads-at-first-use, 20261127-013123-score-frozen-spring-transfer-with-a-cach, 20261127-013123-score-frozen-avro-startup-on-the-two-124 and 20261127-013346-check-warm-and-clean-startup-proofs-acro archive the transfer and cache measurements.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "prqlosknlokmnsstlpopnwnrtpvzrvnk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "41dd5bd0abdd04f3207feb1c8f66f699cff94ae4",
+      "immutable": true,
       "summary": "Record all first frozen JVM startup transfer outcomes",
       "body": "Publish 44 development profile rows and 47 first-transfer rows, including every recorded failure. Both 124-entry Avro deployments reproduced 220 classes and 1,079 objects. Seven scoped obligations held. Reordering the roots gave a distinct state and withholding Credentials reopened the bounds property. Spring's public generic outcomes held while the frozen native recorder stopped at the enumerated Method array. Retain the Commons Configuration JSON transport stop as measured.\n\nAll five independent transfer and reuse jobs passed. Verified all 15 job results and 13 archive digests at their collector revisions, every archive CRC, and 23 local report links. The scorecard reproduced byte for byte and eight wrong Batik source, loader, byte or decoder substitutions were rejected. Both selected evidence test suites passed.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "ywxvpqtsxtwkllpnmsutvlxqxqrmonxr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a6aafc37fad145faad9cd2e50b0da3d2e289d1ed",
+      "immutable": true,
       "summary": "Recover quoted inputs and cached Method arrays (verification pending)",
       "body": "After recording the first frozen transfer, preserve exact Java launcher arguments, qualify the complete returned declaration array against original application class bytes, and identify its assigned reflection object. An exceptional startup records its partial reads and actual throw and catch sites in a separate atomic diagnostic. Preserve original public output and exclude failed captures from reuse.\n\nThe original Spring parent proved the cached non-bridge member's arity using its startup-method premise. Configuration 565 reached the holder with its quoted JSON, JavaParser recorded the absent key and actual null-pointer failure, and seven difficult arguments survived unchanged. A native failing initializer published no successful recording. All 56 selected suites and the focused declaration controls passed. Jobs 20261127-015602-repeat-quoted-configuration-and-failed-i, 20261127-015603-prove-metadata-of-the-cached-spring-non and 20261127-015909-requalify-original-startup-matrices-afte qualify the follow-up and repeat the original matrices separately from the frozen evidence.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "lkluqquuzlnnsozqmsuutrmnyyyuylqq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d95b0753e02a70c91052d7fed8f9f060e601bf98",
+      "immutable": true,
       "summary": "Recover an initializer from its executed JDK read (verification pending)",
       "body": "A strict property may execute part of an initializer before reporting its unsupported JDK setting operation. Derive the recording request from that diagnostic when all its sites name the same initializer. An ordinary method site or ambiguous roots remain open. This lets the workflow keep a failed startup diagnostic without crediting its partial reads as proof premises.\n\nThe original fixture reported System.getProperties at TableControls.Failing's initializer. Its profiled JVM retained the real IllegalArgumentException and ExceptionInInitializerError and published no reusable receipt. The recipe checks a repeated root, an ordinary method and conflicting roots. All 55 selected suites passed. Job 20261127-020702-requalify-original-jvm-startup-from-dire repeats the final original matrices from the corrected workflow.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "xvxkrsulxtquykptunxzvvtpqknlruzm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b094f520884241b865966c93574c20cb283ba78d",
+      "immutable": true,
       "summary": "Require the JVM to witness first active use before importing startup state (verification pending)",
       "body": "Read the original class-initialization log up to the observation boundary as well as inside it. Typed charset, member, live-table and ordered captures require a fresh application prestate and the selected root to initialize inside that window. Comparison JVMs use the same rule. A previously initialized class leaves a bound diagnostic with zero premises.\n\nThe changed-test selection passed all 56 groups, including 59 Rust binaries. Independent capped probes on the same reflective fixture verified arity zero on the cold launch and refused the already-initialized launch. Original Java returned the same String.trim member and arity in both. Job 20261127-023629-qualify-first-active-use-on-original-jvm repeats this control and the four-root Avro fix against all six original qualification matrices.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
     },
     {
       "change_id": "zqnuukmyowxnnyuxytssvuwxvqsonvrk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "38d8ac54a61334b199589a2c016d8b1e73a4b424",
+      "immutable": true,
       "summary": "Archive post-freeze startup transfer evidence and pin the first-use rerun (verification pending)",
       "body": "The independent collector reproduced all six motivating matrices after direct-read recovery. Across the Configuration, JavaParser and Spring transfers, the follow-up recorded failed startup reads at their original throw site and proved arity zero for the actual cached non-bridge method on both Spring releases. The report preserves the first frozen results alongside these later outcomes. Verified the archive digests, original freeze, declaration and resource controls, rendered scorecard, and both selected test groups.\n\nJob 20261127-023629-qualify-first-active-use-on-original-jvm was stopped before execution by a conflict in the report file of its source revision. The unpublished source was repaired with its working report preserved. Replacement 20261127-024317-qualify-first-active-use-on-original-jvm pins the exact repaired commit and repeats the same first-use control, Avro claim and six matrices.",
       "log_sha256": "75f22066743df7688bc26e2274b89ad802783a16ff3111dede7b2f4b1a08a8f0"
