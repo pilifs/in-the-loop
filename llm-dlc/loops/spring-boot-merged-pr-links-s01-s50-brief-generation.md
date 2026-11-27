@@ -31,7 +31,7 @@
 | spring-projects/spring-boot#52832 | written | Compared the regression’s distinct TCP/UDP ports and deprecated lookup exception with the Redis factory’s getTcp call. Real Redis PING after reordering mappings remains open. |
 | spring-projects/spring-boot#52625 | written | The pinned driver-parser regression checks the database, timeout and application name together. The literal `%2B` versus `+` pair remains unexecuted. |
 | spring-projects/spring-boot#51940 | written | Checked virtual-host precedence and three protocol-specific integration fixtures. Combined ordinary AMQP and stream sessions against one vhost remain unobserved here. |
-| spring-projects/spring-boot#51774 | written | Read the factory regression with the opt-in enabled; it asserts the template flag. Propagation to a real container and the order of future completion and the stop callback remain open. |
+| spring-projects/spring-boot#51774 | written | Read the factory regression with the opt-in enabled; it asserts the template flag. Propagation to a real container and the order of future completion and the stop callback remain open. The pinned Spring Kafka suite asserts timely acknowledgement and timeout redelivery. |
 | spring-projects/spring-boot#50296 | written | Read livenessState membership and additional-path assertions on the configured group. Paired HTTP probes with a failing then healthy unrelated indicator remain open. |
 | spring-projects/spring-boot#52321 | written | The pinned test registers a composite `test/spring` and expects no result for `missing/spring`. HTTP readback for two suffixes below a missing child of the real composite remains open. |
 | spring-projects/spring-boot#51470 | written | Read the old validation, landed longest-prefix loop and shared HTTP fixture. Overlapping aliases with distinguishable markers and reversed group order remain open. |
@@ -42,11 +42,11 @@
 | spring-projects/spring-boot#51156 | written | Read the issue’s same-thread public output and the merged helper’s finally block and test. An IOException followed by independent healthy writer readback remains open. |
 | spring-projects/spring-boot#52477 | written | Read the finite-number branch and the test assertions for both widths and a double array. Strict parse and type checks on the full ECS event remain open. |
 | spring-projects/spring-boot#52522 | written | For named pairs following `version`, the landed regression asserts a nested object. Independent parse/readback of duplicate names across scopes and an empty group remains open. |
-| spring-projects/spring-boot#52593 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52285 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52280 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52244 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-boot#52402 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-boot#52593 | written | Read the reported −1 and 4,099 outcomes, checked range lengths against the 4,099-byte memory limit and traced the TAR consumer. Two-entry TAR readback remains open. The proposed 6 + 4,096 split crosses an extra TAR block under correct accounting. |
+| spring-projects/spring-boot#52285 | written | Read both constructors and the stored/deflated partial-read tests: the new regression uses the package-private outer-file constructor. The public nested-entry constructor, skip-based suffix reconstruction and repeated EOF reads remain open. |
+| spring-projects/spring-boot#52280 | written | Read the test that opens the hash-and-space resource and expects byte 42. Distinct readback of a literal percent-23 sibling from an executable jar remains open. |
+| spring-projects/spring-boot#52244 | written | The merged nested fixture asserts `1.2.3` without directory entries. A missing class still adds an undefinable-package entry. Paired real-class lookups after an optional miss remain unexecuted. |
+| spring-projects/spring-boot#52402 | written | Compared empty-name handling with the pinned one-root and two-root assertions and the reported executable-JAR pattern failure. Independent marker bytes at each library root remain open. |
 | spring-projects/spring-boot#51653 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#52530 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-boot#51551 | not yet | Awaiting source review and claims. |
