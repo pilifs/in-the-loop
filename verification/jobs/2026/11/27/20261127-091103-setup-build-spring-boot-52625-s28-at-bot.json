@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261127-091103-setup-build-spring-boot-52625-s28-at-bot",
+  "title": "Setup: build Spring Boot #52625 (S28) at both pins and run its landed tests",
+  "description": "Setup job for llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief.md, case S28 (spring-projects/spring-boot#52625: The PostgreSQL driver recovers a Compose database name exactly). In the worktrees $P/worktrees/S28-{fix,parent} (P = ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50), offline (dependencies resolved online beforehand), it builds the jars of module:spring-boot-jdbc with the Gradle each checkout's wrapper names on JDK 25, runs the landed test classes (PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests (test) ) at the fix and those of them that exist at the parent, keeps the jars, SHA256SUMS (jars and every class of the changed production sources) and the runtime and test runtime classpaths of module:spring-boot-jdbc in $P/artifacts/S28-ROLE, then runs the fix's changed test files on a copy of the parent, where they are expected to fail or not compile, and removes the build trees. Script: $P/scripts/case_job.sh. No claims, no verifier.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-boot-merged-pr-links-s01-s50-brief-setup.md"
+    ]
+  },
+  "expected": "every step exits 0: fix and parent BUILD SUCCESSFUL with failures=0 errors=0 for the landed classes; transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED; clean prints cleaned S28",
+  "submitted": {
+    "at": "2026-11-27T09:11:03+00:00",
+    "session": "e73cfdaf-cd18-4a3b-8d83-f5573c9f19c0",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "unzip"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "6G",
+    "duration": "25m",
+    "memoryLimit": "9G",
+    "notes": "Gradle daemon -Xmx3g with the Kotlin compiler in process, plus test JVMs; buildSrc and gradle/plugins compile once per worktree and once in the transplant copy (about 1 min each)"
+  },
+  "steps": [
+    {
+      "name": "S28 fix: build and landed tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S28 fix",
+      "cwd": "."
+    },
+    {
+      "name": "S28 parent: build and the parent's tests",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S28 parent",
+      "cwd": "."
+    },
+    {
+      "name": "S28 transplant: the fix's tests on the parent",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S28 transplant",
+      "cwd": "."
+    },
+    {
+      "name": "S28 clean",
+      "run": "bash $HOME/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/case_job.sh S28 clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

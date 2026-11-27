@@ -303,12 +303,7 @@ spring-boot-test M2 `bc6c5986c660bd0ff9a09b9a8118b661691ab77b5dc7b6686a07a9d33a2
 
 From Maven Central (or `repo.spring.io/milestone` for the 2017 milestones), resolved with Maven into `$P/m2`
 (`$P/scripts/release_set.sh SET "BOMS" "COORDS"`, a generated pom per set in `$P/releases/SET/pom.xml`, runtime scope); each set has
-its jars in `$P/releases/SET/jars/` and a `:`-joined `classpath.txt` of `$P/m2` paths. For the Central sets every jar's sha1 equals
-the repository's `.sha1` (134 of 134) and its `.asc` was checked in `$P/gnupg` with keys from keyserver.ubuntu.com / keys.openpgp.org
-(`$P/scripts/verify_releases.sh`, results with sha256 in `$P/logs/release-verify.txt`): 127 good, 5 good by an expired key
-(datasource-decorator 2.0.1 by Arthur Gavlyukovskiy `A2516E15D05E16DE`, maven-common-artifact-filters 3.4.0, maven-mapping 3.0.0,
-LatencyUtils 2.0.3), 1 good by a revoked key (plexus-build-api 0.0.7, Sonatype `0374CF2E8DD1BDFD`), 1 without `.asc` (javax.inject 1).
-Spring's jars are signed by "Spring Builds" `928FBF39003C0425`.
+its jars in `$P/releases/SET/jars/` and a `:`-joined `classpath.txt` of `$P/m2` paths. Every jar of every set has the sha1 of its repository's `.sha1` (277 of 277), and each `.asc` was checked in `$P/gnupg` with keys from keyserver.ubuntu.com / keys.openpgp.org (`$P/scripts/verify_releases.sh`, results with sha256 in `$P/logs/release-verify.txt`): 193 good signatures, 30 good by a key that has expired since (Jackson's Tatu Saloranta `C9FBAA83A8753994` ×14, Oracle Maven ×4, datasource-decorator 2.0.1 by Arthur Gavlyukovskiy `A2516E15D05E16DE`, and others), 3 good by a revoked key (byte-buddy and byte-buddy-agent 1.6.14 of the S16 test libraries, Rafael Winterhalter `BB2914C1FA0811C3`; plexus-build-api 0.0.7, Sonatype `0374CF2E8DD1BDFD`), 1 not checkable (openjson 1.0.13 of the GraalVM build tools set, key `CF776DADF519DEE3` not on either keyserver), and 50 with no `.asc` published (the 2017 milestones of `repo.spring.io/milestone`, and javax.inject 1, validation-api 1.1.0.Final, hibernate-validator 5.4.1.Final, jboss-logging 3.3.1.Final). Spring's jars are signed by "Spring Builds" `928FBF39003C0425`.
 
 | Set | Why (brief) | Main jars (sha256) |
 |---|---|---|
@@ -320,6 +315,7 @@ Spring's jars are signed by "Spring Builds" `928FBF39003C0425`.
 | `boot-3.5.14` | S15 (upgrade from 3.5.14) | spring-boot-actuator-autoconfigure 3.5.14 `97e8056deea80c96a0919e4910e474099761f272cf20e9759fc3bf3813381010`, spring-boot 3.5.14 `3f1d94101be1ad63fbd067432280e3ffd7fc6549cce43d11c87609843d46ed56` (Framework 6.2.18) |
 | `tomcat-11.0.24` | S19 (the PR's Tomcat 11.0.24 probe) | tomcat-embed-core 11.0.24 `e7b966dcaac8c5ffa4f10e44031ebf5b71f2123560c08ac8b7120028615aea08` |
 | `decorator-2.0.1` | S21 (spring-boot-data-source-decorator 2.0.1) | `com.github.gavlyukovskiy:datasource-proxy-spring-boot-starter:2.0.1` `ab0339863276b63955072b0c3b96354b937ef4800266c9eb8ff8f479cbf1668b`, datasource-decorator-spring-boot-autoconfigure 2.0.1 `a751fc919bfef81871d48fd6c5e189bf5e063945e6b565baeb23d9415a1e68ab` (it pulls Boot 4.0.6) |
+| `graalvm-buildtools-0.11.5` | S50 (native-image builds; the pins' `nativeBuildToolsVersion`) | `org.graalvm.buildtools:native-gradle-plugin:0.11.5`, `native-maven-plugin:0.11.5` (digests in `$P/logs/release-verify.txt`) |
 | `maven-war-plugin-3.5.1` | S49 (the report's Maven WAR Plugin 3.5.1) | maven-war-plugin 3.5.1 `0b5c90b3684df5aba537eb7e500b91c1381f2e0c6e6e403f16c925889ce0de3b` |
 
 ## Docker images
@@ -335,7 +331,271 @@ pins' `test-support/spring-boot-docker-test-support/.../TestImage.java` (S29's f
 | `mongo:5.0.17` | `sha256:ee514514754ffdb13597a894bdae90fdabbe4c0926bf96b40a84d1233782bcc1` | 2023-05-03 | S24 (`TestImage.MONGODB`; transactions need a replica set) |
 | `apache/kafka:3.7.0` | `sha256:41c20d65b0a2180b9deca056d47540771752e69fe9225d5748dd65a25a9675d7` | 2024-02-09 | S30 (`TestImage.APACHE_KAFKA`) |
 | `postgres:17` | `sha256:97fb53376be3e4fb1a8a61421daa69dcc3bf2fa39bda3259f5245f9a455af1a9` | 2026-11-24 | S28 (the brief's `postgres:17`; a floating tag: the pull replaced the machine's older `postgres:17`, image `0d938e975177`, which is still there by id) |
+| `testcontainers/ryuk:0.14.0` | `sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0` | 2025-09-26 | the reaper Testcontainers 2.0.5 (the pins' version) starts |
 
 ## Online resolution
 
-In progress at this commit; see the next revision of this record.
+`$P/scripts/resolve_case.sh CASE-ROLE` (inline, each Gradle run in a 6 GB scope): one online run per worktree that configures
+the whole build (buildSrc and `gradle/plugins` compile, their dependencies and plugins resolve) and resolves **every
+configuration of the case's classpath projects** (column 4 of `$P/scripts/cases.tsv`) through the init script
+`$P/scripts/resolve-all.init.gradle` (task `setupResolveAll -PsetupResolve=ALL`; no upstream file changes). Projects that those
+depend on are resolved through them. `GRADLE_USER_HOME` is `$P/gradle-home`, new for this work (11 GB after resolution); nothing was
+copied from another setup's cache. All 98 Gradle worktrees exited 0 (`$P/logs/resolve.summary.all.txt`, logs
+`$P/logs/CASE-ROLE.resolve.online.log`): 2,440 configurations, of which the only failures are the Kotlin plugin's IDE-only
+`*DependenciesMetadata` configurations (no compile or test task uses them) and, at first, S30's test classpaths
+([below](#s30-substitutes-spring-kafka-420-m2)). Four resolutions at once on the one home stalled for minutes on Gradle's
+cross-process cache locks; the pass then ran one at a time and in two lanes (`$P/scripts/resolve_lane.sh`).
+
+Then `case_job.sh CASE dryrun` (offline `--dry-run` of both pins' task graphs, the classpath-writing tasks included) configured
+for all 49 Gradle cases, 98 of 98 exit 0 (`$P/logs/dryrun.summary.txt`).
+
+## Snapshot dependencies
+
+Every Boot 4 pin but S02–S04 imports Spring snapshots (`$P/logs/snapshot-versions-by-case.txt`: Framework 7.0.9- to 7.1.0-SNAPSHOT,
+Micrometer, Reactor, Spring Data, Security, Kafka, AMQP, Batch, Integration and others). **Both pins of every case import the same
+snapshot versions**, so both read the same bytes. `repo.spring.io/snapshot` serves each snapshot only as its newest build, so that
+is what the cache holds: every one of the 107 cached snapshot jars has the sha1 of the newest build's `.sha1`
+(`$P/scripts/snapshots.sh`, sha256 per jar in `$P/logs/snapshots.txt`). Most of those builds are dated after the pins they serve
+(the pins are of 2026-05 to 2026-11, the builds mostly of 2026-10 to 2026-11); a snapshot version still served at all is one not yet
+released. Build `--offline` to keep these bytes: an online build may fetch a newer build.
+
+| Group | Version | Newest build (= the cached bytes) | Modules cached |
+|---|---|---|---|
+| `io.micrometer` | 1.16.8-SNAPSHOT | `1.16.8-20261015.224611-45`, `1.16.8-20261015.224611-46` | micrometer-commons, micrometer-core, micrometer-observation, micrometer-observation-test |
+| `io.micrometer` | 1.16.9-SNAPSHOT | `1.16.9-20261113.010950-9` | micrometer-commons, micrometer-core, micrometer-observation |
+| `io.micrometer` | 1.17.1-SNAPSHOT | `1.17.1-20260812.180937-42` | micrometer-commons, micrometer-observation |
+| `io.micrometer` | 1.17.2-SNAPSHOT | `1.17.2-20261015.224856-41` | micrometer-commons, micrometer-observation |
+| `io.micrometer` | 1.18.0-SNAPSHOT | `1.18.0-20261116.155816-313`, `1.18.0-20261116.155816-314`, `1.18.0-20261116.155816-315` | micrometer-commons, micrometer-core, micrometer-observation |
+| `io.projectreactor` | 3.8.7-SNAPSHOT | `3.8.7-20260807.084400-41`, `3.8.7-20260807.084400-42` | reactor-core, reactor-test |
+| `io.projectreactor` | 3.8.8-SNAPSHOT | `3.8.8-20261016.063046-44`, `3.8.8-20261016.063046-46` | reactor-core, reactor-test |
+| `io.projectreactor` | 3.8.9-SNAPSHOT | `3.8.9-20261110.081734-21` | reactor-core, reactor-test |
+| `io.projectreactor` | 3.9.0-SNAPSHOT | `3.9.0-20261110.081737-23`, `3.9.0-20261110.081737-24` | reactor-core, reactor-test |
+| `io.projectreactor.netty` | 1.3.7-SNAPSHOT | `1.3.7-20260810.152616-80` | reactor-netty-core, reactor-netty-http |
+| `io.projectreactor.netty` | 1.3.8-SNAPSHOT | `1.3.8-20261022.061939-75` | reactor-netty-core, reactor-netty-http |
+| `io.projectreactor.netty` | 1.3.9-SNAPSHOT | `1.3.9-20261113.130042-44` | reactor-netty-core, reactor-netty-http |
+| `io.projectreactor.netty` | 1.4.0-SNAPSHOT | `1.4.0-20261113.130354-169`, `1.4.0-20261113.130354-170` | reactor-netty-core, reactor-netty-http |
+| `org.springframework` | 7.0.10-SNAPSHOT | `7.0.10-20261016.104357-125` | spring-aop, spring-beans, spring-context, spring-context-support, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-oxm, spring-r2dbc, spring-test, spring-tx, spring-web, spring-webflux, spring-webmvc |
+| `org.springframework` | 7.0.11-SNAPSHOT | `7.0.11-20261112.162258-46` | spring-aop, spring-beans, spring-context, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-r2dbc, spring-test, spring-tx, spring-web |
+| `org.springframework` | 7.0.9-SNAPSHOT | `7.0.9-20260813.170400-53` | spring-aop, spring-beans, spring-context, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-r2dbc, spring-test, spring-tx, spring-web |
+| `org.springframework` | 7.1.0-SNAPSHOT | `7.1.0-20261113.124602-603` | spring-aop, spring-beans, spring-context, spring-core, spring-core-test, spring-expression, spring-jdbc, spring-messaging, spring-test, spring-tx, spring-web, spring-webflux, spring-webmvc |
+| `org.springframework.amqp` | 4.2.0-SNAPSHOT | `4.2.0-20261119.051643-219` | spring-amqp, spring-rabbit, spring-rabbit-stream, spring-rabbitmq-client |
+| `org.springframework.batch` | 6.1.0-SNAPSHOT | `6.1.0-20261119.172345-140` | spring-batch-core, spring-batch-infrastructure |
+| `org.springframework.data` | 4.0.8-SNAPSHOT | `4.0.8-20261014.082734-8`, `4.0.8-20261014.082740-8`, `4.0.8-20261015.080402-19`, `4.0.8-20261015.100000-21` | spring-data-commons, spring-data-keyvalue, spring-data-r2dbc, spring-data-redis, spring-data-relational |
+| `org.springframework.data` | 4.0.9-SNAPSHOT | `4.0.9-20261113.094844-11`, `4.0.9-20261113.101053-6` | spring-data-commons, spring-data-r2dbc, spring-data-relational |
+| `org.springframework.data` | 4.1.1-SNAPSHOT | `4.1.1-20260813.071929-12`, `4.1.1-20260813.071929-21` | spring-data-commons, spring-data-r2dbc, spring-data-relational |
+| `org.springframework.data` | 4.1.2-SNAPSHOT | `4.1.2-20261014.082734-18`, `4.1.2-20261015.080407-23` | spring-data-commons, spring-data-r2dbc, spring-data-relational |
+| `org.springframework.data` | 4.2.0-SNAPSHOT | `4.2.0-20261117.141558-53` | spring-data-commons |
+| `org.springframework.data` | 5.0.8-SNAPSHOT | `5.0.8-20261014.083944-9` | spring-data-rest-core, spring-data-rest-webmvc |
+| `org.springframework.data` | 5.2.0-SNAPSHOT | `5.2.0-20261113.094917-46` | spring-data-mongodb |
+| `org.springframework.hateoas` | 3.0.6-SNAPSHOT | `3.0.6-20261013.200322-9` | spring-hateoas |
+| `org.springframework.kafka` | 4.2.0-SNAPSHOT | `4.2.0-20261119.052259-227` | spring-kafka, spring-kafka-test |
+
+## S30 substitutes Spring Kafka 4.2.0-M2
+
+S30's pins (2026-09-16) manage Spring Kafka `4.2.0-SNAPSHOT` with Kafka `4.3.1`. The only build of that snapshot still served is of
+2026-11-19 (`4.2.0-20261119.052259-227`); its `spring-kafka-test` POM requires `org.apache.kafka:kafka-clients:4.4.0` with classifiers
+`test` and `test-fixtures`, and under the pins' Kafka 4.3.1 the `test-fixtures` jar does not exist (Maven Central publishes
+`kafka-clients-4.3.1-test.jar` only), so `:module:spring-boot-kafka:testCompileClasspath` and `testRuntimeClasspath` failed to
+resolve at both pins. Released Spring Kafka 4.2 versions (Maven Central): 4.2.0-M1 (2026-08-20, Kafka 4.3.1, **no**
+`ContainerProperties#setAwaitAsyncResultsOnStop`), **4.2.0-M2** (2026-09-24, Kafka 4.3.1, has it), 4.2.0-RC1 (2026-10-22) and 4.2.0
+(2026-11-19), both on Kafka 4.4.0. `$P/scripts/subst-spring-kafka.init.gradle` substitutes `spring-kafka` and `spring-kafka-test`
+4.2.0-M2 in every configuration; `case_job.sh` passes it for S30 only, and with it both pins resolve (`$P/logs/S30-ROLE.resolve.online.log`)
+and dry-run. The brief's technical note asks for "a compatible dependency exposing the method on both sides"; M2 is the first
+release that does, eight days after the pins. Jars (`$P/logs/subst-spring-kafka.txt`): spring-kafka-4.2.0-M2.jar sha256
+`808bd76ab42f49a11d1fc7e71b4ae21a9e089d12d57e47c116517e15b5f9704d`, spring-kafka-test-4.2.0-M2.jar
+`0be953f86673cdde861aba1d258a31393e41b19926ad0eb59e4decce1cad41a4`, sha1 = Central's, good signatures by Spring Builds
+`928FBF39003C0425`. No other case substitutes anything.
+
+## Jobs
+
+One job per Gradle case (49; S16 has none, it is on its slice route), each of four steps run by `$P/scripts/case_job.sh CASE STEP`
+(table of projects and test classes: `$P/scripts/cases.tsv`; submitted by `$P/scripts/submit_case.sh`):
+
+1. `fix`: in `$W/CASE-fix`: `:P:jar` for the jar projects and `:P:SOURCESET --tests CLASS` for each landed test class, with
+   `-Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx3g --offline --continue`, buildSrc's own checks skipped,
+   and `$P/scripts/setup-tests.init.gradle` (a `--tests` filter that matches nothing is not an error); then keeps
+   `$P/artifacts/CASE-fix/`: `jars/`, `SHA256SUMS` (jars, and every class compiled from a production source file the landing changed,
+   nested classes included) and, per classpath project P (`:` as `_` in the name), `P.runtimeClasspath.txt` and `P.testRuntimeClasspath.txt`
+   (`:`-joined; the project outputs they name are copied under `tree/`, the rest are paths into `$P/gradle-home`).
+2. `parent`: the same in `$W/CASE-parent`, with those landed classes that exist at the parent.
+3. `transplant`: `git archive` of the parent into `$P/build/CASE-parent-landed`, every changed file under `src/test`, `src/testFixtures`,
+   `src/intTest` or `src/dockerTest` (and a changed module `build.gradle`: S09, S37) taken from the fix, then the same test classes.
+   Passes when they fail (`TRANSPLANT-FAILS-AS-EXPECTED`) or do not compile (`TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED`).
+4. `clean`: `git clean -fdxq` in both worktrees, transplant copy and the case's Gradle home removed.
+
+Each case runs with a Gradle home of its own, `$P/gradle-homes/CASE`, and reads every dependency from `$P/gradle-home/caches` as
+Gradle's read-only dependency cache (`GRADLE_RO_DEP_CACHE`), so jobs side by side share no writable cache; checked with the S01 and
+S30 dry-runs. Choices in `cases.tsv`: the test classes are the landed `*Tests` files, except **S19** (the two Tomcat tests and the
+OAuth2 client smoke test the brief cites; the other seven changed smoke tests are not run), **S20** (only the landed fixture
+methods `givenARestartedServer*` of the four Tomcat and Jetty servlet and reactive factory test classes; the full classes are
+hundreds of server tests), **S27** (jars of `:core:spring-boot-docker-compose` and `:module:spring-boot-data-redis` and the two core
+tests; the other 16 changed modules are not built), **S33** (also the three consumers of the changed test fixture: the WebMvc,
+WebFlux and Jersey `*HealthEndpointAdditionalPathIntegrationTests`), **S48** (loader-tools' `RepackagerTests`, a concrete
+`AbstractPackagerTests`, and the Maven plugin's `WarIntegrationTests` from `intTest`).
+
+**Two jobs need the network at test time**, so their steps run without `--offline`: **S10** (`JavaPluginActionIntegrationTests` is a
+`@GradleCompatibility` TestKit test; on JDK 25 it runs Gradle 9.0.0 and the current version, which TestKit downloads from
+services.gradle.org into the build directory) and **S48** (`WarIntegrationTests` runs Maven builds whose local repository is
+`build/local-maven-repository` and whose plugins come from Maven Central). **S29** runs `dockerTest` and needs Docker (`docker compose`
+v5.7.0 is installed; images in [Docker images](#docker-images)).
+
+| Case | Job | Jar projects | Landed test classes (source set) | Network |
+|---|---|---|---|---|
+| S01 | `20261127-091100-setup-build-spring-boot-52125-s01-at-bot` | `:core:spring-boot-test` | `TestPropertyValuesTests` | offline |
+| S02 | `20261127-091100-setup-build-spring-boot-51661-s02-at-bot` | `:core:spring-boot` | `ValueObjectBinderTests`, `ConfigurationPropertiesTests` | offline |
+| S03 | `20261127-091101-setup-build-spring-boot-50773-s03-at-bot` | `:core:spring-boot` | `MapBinderTests` | offline |
+| S04 | `20261127-091101-setup-build-spring-boot-50798-s04-at-bot` | `:core:spring-boot` | `ValidationBindHandlerTests` | offline |
+| S05 | `20261127-091101-setup-build-spring-boot-52207-s05-at-bot` | `:core:spring-boot` | `OriginTrackedPropertiesLoaderTests` | offline |
+| S06 | `20261127-091101-setup-build-spring-boot-52277-s06-at-bot` | `:core:spring-boot` | `FileHintTests`, `StandardConfigDataLocationResolverTests` | offline |
+| S07 | `20261127-091101-setup-build-spring-boot-52666-s07-at-bot` | `:core:spring-boot` | `ConfigTreePropertySourceTests` | offline |
+| S08 | `20261127-091101-setup-build-spring-boot-52904-s08-at-bot` | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
+| S09 | `20261127-091101-setup-build-spring-boot-51855-s09-at-bot` | `:core:spring-boot-properties-migrator` | `PropertiesMigrationListenerTests` | offline |
+| S10 | `20261127-091101-setup-build-spring-boot-50489-s10-at-bot` | `:build-plugin:spring-boot-gradle-plugin`, `:configuration-metadata:spring-boot-configuration-processor` | `JavaPluginActionIntegrationTests`, `DescriptionCacheTests` | online |
+| S11 | `20261127-091101-setup-build-spring-boot-51867-s11-at-bot` | `:core:spring-boot-autoconfigure` | `AutoConfigurationSorterTests` | offline |
+| S12 | `20261127-091102-setup-build-spring-boot-52310-s12-at-bot` | `:core:spring-boot` | `SpringApplicationTests` | offline |
+| S13 | `20261127-091102-setup-build-spring-boot-52309-s13-at-bot` | `:core:spring-boot` | `SpringApplicationTests` | offline |
+| S14 | `20261127-091102-setup-build-spring-boot-52831-s14-at-bot` | `:core:spring-boot-autoconfigure` | `MessageSourceAutoConfigurationTests` | offline |
+| S15 | `20261127-091102-setup-build-spring-boot-50886-s15-at-bot` | `:module:spring-boot-micrometer-metrics` | `MeterRegistryCloserTests`, `MeterRegistryPostProcessorTests`, `MetricsAutoConfigurationTests` | offline |
+| S17 | `20261127-091102-setup-build-spring-boot-52251-s17-at-bot` | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
+| S18 | `20261127-091102-setup-build-spring-boot-52304-s18-at-bot` | `:module:spring-boot-http-converter` | `HttpMessageConvertersAutoConfigurationTests` | offline |
+| S19 | `20261127-091102-setup-build-spring-boot-51173-s19-at-bot` | `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryCustomizerTests`, `TomcatServerPropertiesTests`, `SampleOAuth2ClientApplicationTests` | offline |
+| S20 | `20261127-091102-setup-build-spring-boot-52162-s20-at-bot` | `:module:spring-boot-jetty`, `:module:spring-boot-tomcat` | `TomcatServletWebServerFactoryTests.givenARestartedServer*`, `TomcatReactiveWebServerFactoryTests.givenARestartedServer*`, `JettyServletWebServerFactoryTests.givenARestartedServer*`, `JettyReactiveWebServerFactoryTests.givenARestartedServer*` | offline |
+| S21 | `20261127-091103-setup-build-spring-boot-51410-s21-at-bot` | `:module:spring-boot-jdbc` | `DataSourceUnwrapperTests` | offline |
+| S22 | `20261127-091103-setup-build-spring-boot-50271-s22-at-bot` | `:module:spring-boot-jdbc` | `DataSourceBuilderTests`, `DataSourceUnwrapperTests`, `LiquibaseAutoConfigurationTests` | offline |
+| S23 | `20261127-091103-setup-build-spring-boot-52824-s23-at-bot` | `:module:spring-boot-hibernate` | `HibernateJpaAutoConfigurationTests` | offline |
+| S24 | `20261127-091103-setup-build-spring-boot-51725-s24-at-bot` | `:module:spring-boot-batch-data-mongodb` | `BatchDataMongoAutoConfigurationTests` | offline |
+| S25 | `20261127-091103-setup-build-spring-boot-52190-s25-at-bot` | `:module:spring-boot-data-redis` | `DataRedisAutoConfigurationTests` | offline |
+| S26 | `20261127-091103-setup-build-spring-boot-51844-s26-at-bot` | `:module:spring-boot-cache` | `CacheAutoConfigurationTests` | offline |
+| S27 | `20261127-091103-setup-build-spring-boot-52832-s27-at-bot` | `:core:spring-boot-docker-compose`, `:module:spring-boot-data-redis` | `DefaultConnectionPortsTests`, `DefaultRunningServiceTests` | offline |
+| S28 | `20261127-091103-setup-build-spring-boot-52625-s28-at-bot` | `:module:spring-boot-jdbc` | `PostgresJdbcDockerComposeConnectionDetailsFactoryConnectionDetailsTests` | offline |
+| S29 | `20261127-091103-setup-build-spring-boot-51940-s29-at-bot` | `:module:spring-boot-amqp-rabbitmq`, `:module:spring-boot-rabbitmq` | `AmqpRabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitEnvironmentTests`, `RabbitMqDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqStreamDockerComposeConnectionDetailsFactoryIntegrationTests` (dockerTest), `RabbitMqEnvironmentTests` | offline |
+| S30 | `20261127-091104-setup-build-spring-boot-51774-s30-at-bot` | `:module:spring-boot-kafka` | `KafkaAutoConfigurationTests` | offline |
+| S31 | `20261127-091104-setup-build-spring-boot-50296-s31-at-bot` | `:module:spring-boot-health` | `AvailabilityProbesHealthEndpointGroupsPostProcessorTests`, `AvailabilityProbesHealthEndpointGroupsTests`, `DelegatingAvailabilityProbesHealthEndpointGroupTests` | offline |
+| S32 | `20261127-091104-setup-build-spring-boot-52321-s32-at-bot` | `:module:spring-boot-health` | `HealthEndpointSupportTests` | offline |
+| S33 | `20261127-091104-setup-build-spring-boot-51470-s33-at-bot` | `:module:spring-boot-health`, `:module:spring-boot-webmvc` | `AdditionalHealthEndpointPathTests`, `HealthEndpointSupportTests`, `WebMvcHealthEndpointAdditionalPathIntegrationTests`, `WebFluxHealthEndpointAdditionalPathIntegrationTests`, `JerseyHealthEndpointAdditionalPathIntegrationTests` | offline |
+| S34 | `20261127-091104-setup-build-spring-boot-51937-s34-at-bot` | `:module:spring-boot-jersey` | `JerseyEndpointIntegrationTests` | offline |
+| S35 | `20261127-091104-setup-build-spring-boot-50734-s35-at-bot` | `:module:spring-boot-mongodb` | `MongoHealthIndicatorTests`, `MongoReactiveHealthIndicatorTests` | offline |
+| S36 | `20261127-091104-setup-build-spring-boot-50461-s36-at-bot` | `:module:spring-boot-micrometer-metrics`, `:module:spring-boot-micrometer-tracing-opentelemetry`, `:module:spring-boot-opentelemetry` | `OtlpMetricsExportAutoConfigurationTests`, `OtlpMetricsPropertiesConfigAdapterTests`, `OtlpMetricsPropertiesTests`, `OpenTelemetryTracingAutoConfigurationTests`, `OtlpTracingAutoConfigurationIntegrationTests`, `OpenTelemetryLoggingAutoConfigurationTests`, `OtlpLoggingAutoConfigurationIntegrationTests`, `OtlpLoggingAutoConfigurationTests` | offline |
+| S37 | `20261127-091104-setup-build-spring-boot-51959-s37-at-bot` | `:core:spring-boot` | `LoggingApplicationListenerWithContextPausingTests` | offline |
+| S38 | `20261127-091105-setup-build-spring-boot-51156-s38-at-bot` | `:core:spring-boot` | `AppendableByteArrayTests` | offline |
+| S39 | `20261127-091105-setup-build-spring-boot-52477-s39-at-bot` | `:core:spring-boot` | `JsonValueWriterTests` | offline |
+| S40 | `20261127-091105-setup-build-spring-boot-52522-s40-at-bot` | `:core:spring-boot` | `JsonWriterTests` | offline |
+| S41 | `20261127-091105-setup-build-spring-boot-52593-s41-at-bot` | `:buildpack:spring-boot-buildpack-platform` | `InspectedContentTests` | offline |
+| S42 | `20261127-091105-setup-build-spring-boot-52285-s42-at-bot` | `:loader:spring-boot-loader` | `NestedJarFileTests` | offline |
+| S43 | `20261127-091105-setup-build-spring-boot-52280-s43-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests`, `UrlEncoderTests` | offline |
+| S44 | `20261127-091105-setup-build-spring-boot-52244-s44-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
+| S45 | `20261127-091105-setup-build-spring-boot-52402-s45-at-bot` | `:loader:spring-boot-loader` | `JarUrlClassLoaderTests` | offline |
+| S46 | `20261127-091105-setup-build-spring-boot-51653-s46-at-bot` | `:loader:spring-boot-jarmode-tools` | `IndexedLayersTests` | offline |
+| S47 | `20261127-091106-setup-build-spring-boot-52530-s47-at-bot` | `:build-plugin:spring-boot-gradle-plugin` | `LayeredSpecTests` | offline |
+| S48 | `20261127-091106-setup-build-spring-boot-51551-s48-at-bot` | `:loader:spring-boot-loader-tools` | `RepackagerTests`, `WarIntegrationTests` (intTest) | online |
+| S49 | `20261127-091106-setup-build-spring-boot-51372-s49-at-bot` | `:build-plugin:spring-boot-gradle-plugin`, `:loader:spring-boot-jarmode-tools`, `:loader:spring-boot-loader-tools` | `BootJarTests`, `BootWarTests`, `ExtractCommandTests`, `IndexedJarStructureTests` | offline |
+| S50 | `20261127-091106-setup-build-spring-boot-50433-s50-at-bot` | `:module:spring-boot-flyway` | `NativeImageResourceProviderTests` | offline |
+
+## Commands for a rerun by hand
+
+```bash
+source ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/env.sh
+# one case's job steps (CASE in S01-S50 but S16; STEP fix | parent | transplant | dryrun | clean); builds over a minute are jobs
+bash $P/scripts/case_job.sh CASE STEP
+# any task in a worktree, with the Gradle its wrapper names, on JDK 25 (log $P/logs/TAG.log; JUnit summary of RESULTDIRS in $P/logs/TAG.junit.txt)
+$P/scripts/gradle_case.sh $W/CASE-ROLE TAG "RESULTDIRS" --offline -x :buildSrc:test -x :buildSrc:checkstyleMain -x :buildSrc:checkstyleTest -x :buildSrc:checkFormat :core:spring-boot:test --tests 'org.springframework.boot.json.JsonWriterTests'
+# a classpath of any project and configuration, offline (one path per line)
+$P/scripts/gradle_case.sh $W/CASE-ROLE TAG "" --offline -x :buildSrc:test -x :buildSrc:checkstyleMain -x :buildSrc:checkstyleTest -x :buildSrc:checkFormat -I $P/scripts/resolve-all.init.gradle :PROJECT:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=FILE
+# more of a project's configurations into the cache: online once (resolve_case.sh resolves column 4 of cases.tsv), then offline
+RESOLVE_PAT=ALL $P/scripts/resolve_case.sh CASE-ROLE
+# a detached configuration of given coordinates, with their transitive dependencies (online once, then --offline)
+$P/scripts/gradle_case.sh $W/CASE-ROLE TAG "" -I $P/scripts/resolve-all.init.gradle :PROJECT:setupResolveCoords -PsetupCoords=G:A:V,G:A:V -x :buildSrc:test -x :buildSrc:checkstyleMain -x :buildSrc:checkstyleTest -x :buildSrc:checkFormat
+# S16's slice route (seconds, JDK 8)
+bash $P/scripts/slice_s16.sh
+# a released set (':'-joined jar paths in $P/m2)
+cat $P/releases/SET/classpath.txt
+# more released coordinates into $P/m2 (Maven Central and repo.spring.io/milestone), then check them
+$P/scripts/release_set.sh SET "BOM-G:A:V ..." "G:A:V ..."; $P/scripts/verify_releases.sh
+```
+
+`gradle_case.sh` runs under `choom -n 500` and a `timeout` of 50 minutes (`GRADLE_TIMEOUT`); wrap inline runs in
+`systemd-run --user --scope -q -p MemoryMax=6G -p MemorySwapMax=0`. Two Gradle runs at once share `$P/gradle-home` fine; four at
+once stalled for minutes on its cross-process locks during the first resolution pass, so the resolution ran in two lanes.
+
+## What failed or was not done
+
+- **S16's fix cannot be built as pinned.** Its Framework (5.0.0 snapshots of July 2017) is not served any more, and its changed
+  files compile against neither 5.0.0.RC2 nor RC3 ([S16](#s16-the-2017-maven-build-and-its-slice-route)). Nothing was edited to make
+  them compile. The parent is on its slice; Boot 2.0.0.M3 is the nearest release with the feature, which is not the pin.
+- **Snapshot inputs are the newest builds**, not those of the pins' dates ([Snapshot dependencies](#snapshot-dependencies)); S30's
+  Spring Kafka snapshot no longer resolves at all and is substituted ([S30](#s30-substitutes-spring-kafka-420-m2)).
+- **Not built**: the other 16 changed modules of S27, the other seven changed smoke tests of S19, S09's changed buildSrc file
+  (`DocumentConfigurationProperties`, a docs task), and the documentation builds named in the brief's sources (`spring-boot-docs`).
+  Their configurations were not resolved either.
+- **Not prepared**: a Redis cluster (S25.3), a Kafka broker (S30.3), a transaction-capable Mongo replica set (S24), a RabbitMQ stream
+  setup (S29.3) and a native image (S50): only their images, GraalVM and the build tools are here.
+- The pull of `postgres:17` moved the machine's tag to the current image ([Docker images](#docker-images)).
+- No verifier, no claims, no examples.
+
+## Job results
+
+Pending at this revision: the 49 jobs in [Jobs](#jobs) are queued. This section and the notes below are completed when their
+results come back.
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- `source ~/.cache/in-the-loop/spring-boot-pr-links-s01-s50/scripts/env.sh` (`$P`, `$W`, `$M`, `TMPDIR`, `GRADLE_USER_HOME`, JDKs
+  `$J8`…`$J25`, GraalVM `$JG25`). The default `java` is JDK 25; the Boot 4 builds need it.
+- **Every pin checked out**: `$W/CASE-parent` and `$W/CASE-fix` for S01–S50 (100 worktrees, full commit ids in the revision table of
+  [Upstream revisions](#upstream-revisions); `CASE` labels are this record's, not example ids). Mirror `$M/spring-boot.git`, refs
+  `refs/pins/s01-s50/*`. S16's intermediate commits and the two foreign commits (Spring Batch for S24, Spring Kafka's
+  `AwaitAsyncResultsOnStopTests` for S30) are in [Upstream revisions](#upstream-revisions) and [Other repositories](#other-repositories).
+- **Dependencies resolved** for every configuration of each case's projects (`cases.tsv` column 4) at both pins, in
+  `$P/gradle-home`; the offline task graphs of all 49 Gradle cases configure. Run Gradle with `$P/scripts/gradle_case.sh` (the
+  pins' own Gradle, verified) and `--offline`; the [Commands](#commands-for-a-rerun-by-hand) section has the forms for a task, a
+  classpath file, and resolving more.
+- **Built artifacts** (when the jobs have run): `$P/artifacts/CASE-ROLE/` with `jars/`, `SHA256SUMS`, and
+  `PROJECT.runtimeClasspath.txt` / `PROJECT.testRuntimeClasspath.txt` (`:`-joined, ready for `java -cp`).
+- **Released versions the brief names** in `$P/releases/SET/` (`jars/`, `classpath.txt`): Boot 4.0.6, 4.0.7, 4.1.0, 4.1.1, 4.2.0-RC1,
+  3.5.14, Framework 7.0.9, Tomcat 11.0.24, datasource-decorator 2.0.1, maven-war-plugin 3.5.1, GraalVM build tools 0.11.5
+  ([Released artifacts](#released-artifacts) has the row per set).
+- **Docker images** for the service claims: `rabbitmq:4.2-management`, `redis:7.0.11`, `redis:8.6.2`, `mongo:5.0.17`,
+  `apache/kafka:3.7.0`, `postgres:17`, `testcontainers/ryuk:0.14.0` (digests in [Docker images](#docker-images)).
+- **S16** (2017): `bash $P/scripts/slice_s16.sh`, the parent's slice jar `$P/slices/S16-parent-boot-2.0.0.M2-s16/S16-parent-boot-2.0.0.M2-s16-slice.jar`,
+  and the sets `boot-2.0.0.M2-s16`, `boot-2.0.0.M2-fwRC3-s16`, `boot-2.0.0.M3-s16`, `tests-S16-m2`, `tests-S16`, `tests-S16-m3`.
+
+### What was verified on a JVM
+
+- Pending for the 49 Gradle cases: the jobs run each case's landed tests at the fix, the parent's versions at the parent, and the
+  fix's tests on the parent ([Job results](#job-results)).
+- S16 (slice route, JDK 8): the parent's `WebFluxAutoConfigurationTests` pass on the parent slice over Boot 2.0.0.M2 (15 tests); the
+  fix's three landed test classes do not compile on the parent slice (`CodecCustomizer`, `WebClientCustomizer` absent); on the
+  release Boot 2.0.0.M3 they run 21 tests with 1 failure (`WebClientAutoConfigurationTests#shouldGetPrototypeScopedBean`, RC3's
+  `WebClient` rejects the test's empty mocked response). The fix pin itself was not run (see below).
+
+### What to know before starting
+
+- **Snapshots are today's newest builds**, the same bytes for both pins of a case, mostly dated after the pins
+  ([Snapshot dependencies](#snapshot-dependencies), per-jar sha256 in `$P/logs/snapshots.txt`). Stay `--offline`, or a build may
+  fetch a newer one.
+- **S30 substitutes Spring Kafka 4.2.0-M2** for the pins' `4.2.0-SNAPSHOT` (`-I $P/scripts/subst-spring-kafka.init.gradle`, which
+  `case_job.sh` adds; add it yourself for any other S30 build). Label S30 evidence as built against 4.2.0-M2.
+- **S16's fix compiles against no released Framework**: its `CodecsAutoConfiguration` calls `jackson2Decoder/jackson2Encoder`, which
+  RC3 renamed `jackson2JsonDecoder/jackson2JsonEncoder`, and RC2 lacks `WebClient.Builder.clone()` and `codecs(...)`. Boot 2.0.0.M3
+  matches the fix apart from formatting, Javadoc and that rename (`$P/logs/s16-fix-vs-m3.diff`). Label any M3 evidence as the
+  nearest release, not the pin. M2 matches the parent's changed files except test-autoconfigure's `spring.factories`, which the
+  slice carries; release `spring.factories` files still load beside the slice's.
+- **S10 and S48's landed tests need the network** (TestKit downloads Gradle 9.0.0 and the current Gradle; the Maven integration test
+  fetches Maven plugins from Central). S29's `dockerTest` needs Docker.
+- Skip buildSrc's own checks on every Gradle run (`-x :buildSrc:test -x :buildSrc:checkstyleMain -x :buildSrc:checkstyleTest -x
+  :buildSrc:checkFormat`): they cost about 90 s a fresh worktree. At most two Gradle runs on `$P/gradle-home` at once, or give each
+  run its own home over the read-only cache as `case_job.sh` does (`SETUP_GRADLE_HOME=$P/gradle-homes/NAME`,
+  `GRADLE_RO_DEP_CACHE=$P/gradle-home/caches`).
+- `rabbitmq:4.2-management` and `postgres:17` are floating tags pulled on 2026-11-27, newer than the pins.
+- The three shared commits (S12 fix = S32 parent, S14 fix = S27 parent, S28 fix = S41 parent) each have two worktrees with the same
+  tree.
+
+### What is left for the domain work on purpose
+
+- Every claim: the fixtures, the before/after observations, controls and challenges, and examples, sidecars and adapters.
+- How to treat S16 (the parent's slice, M3 as a labelled stand-in, or neither) and whether the S30 substitution is acceptable evidence.
+- The service fixtures the claims describe (Compose files, a Redis cluster, a Kafka broker, a Mongo replica set, a native image for
+  S50) and the HTTP clients and parsers used to observe them.
+- Any build of a module this setup did not resolve (the other changed modules of S27, S19's other smoke tests, the docs build).
