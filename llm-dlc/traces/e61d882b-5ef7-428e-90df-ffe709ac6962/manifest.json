@@ -15617,6 +15617,14 @@
       "summary": "VF-075: record the user's decision on the Fable session's log",
       "body": "The bullet on the Fable brief-generation-quality session's log (43b290ac) now states the user's decision of 2026-11-27 directly instead of citing the advisor's memory note: the session read the advisor's memory notes at its start, including those on the control files, and its transcript holds them; nothing from them is in the change; the log is published as it stands. The session runs no jobs, and the user would rather it had the context.",
       "log_sha256": "983ea6353fefc76c61e498751716bfea8fa546c18979c7763f36794d40a0631d"
+    },
+    {
+      "change_id": "ksqkqznwsytyyutzqmzvqomomnswukkl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-076: a domain run meets offline gaps the setup never resolved",
+      "body": "At the user's request after the Spring Boot S01-S50 domain run. The setup resolves what it builds itself; the domain's Maven WAR check reached the Boot Maven plugin's integration harness, whose BOM and Maven binaries were never cached, and offline jobs found the gaps one at a time: five jobs, the fifth passing with a replay that fetches the published Maven 3.9.13 archive. Directions, none chosen: an ad hoc setup agent during runs (the user's suggestion, fitting VF-072's worker request), a resolution job with network access to the dependency repositories only, wider setup resolution, and offline failures that list every missing artifact.",
+      "log_sha256": "983ea6353fefc76c61e498751716bfea8fa546c18979c7763f36794d40a0631d"
     }
   ],
   "logs": {

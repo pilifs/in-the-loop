@@ -18,6 +18,28 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-076: a domain run meets offline gaps the setup never resolved, and only a job that fails finds each one
+
+- **Status**: open, product work (the user, 2026-11-27). The user let the run retry, because each try was cheap and the work underneath valuable, and asked for this finding afterwards.
+- **Raised**: 2026-11-27 by the watcher, at the user's request, after the Spring Boot S01-S50 domain run (entry 27, Codex Astra, session `c3caedf3`).
+- **Found**:
+  - **What the setup resolves:** the setup phase resolves online, and checks offline, what the setup itself builds: each case's modules and their transitive closure, at both pins (98 checkouts, after a second pass). That is what its 49 build jobs needed.
+  - **What the domain run needed beyond it:** the domain work reached tasks the setup never ran. Its Maven WAR check ran the Spring Boot Maven plugin's own integration harness, which builds the dependency BOM and prepares Maven binaries. Verification jobs run offline, so each missing artifact failed a job:
+    1. `20261127-141531-inspect-maven-repackaged-spring-boot-{fix,par}`: `createResolvedBom` needed `org.apache.activemq:activemq-bom:6.1.8`, not cached.
+    2. `20261127-142145-resolve-the-pinned-maven-boms-from-the-r`: the same goal, with the BOMs resolved locally, still failed.
+    3. `20261127-142917-read-retained-pom-bytes-at-the-original`: the retained POM route failed in 3 s.
+    4. `20261127-143502-run-both-original-maven-war-builds-with`: past the BOMs, `prepareMavenBinaries` needed `org.apache.maven:apache-maven:3.9.13`, not cached.
+    5. `20261127-145103-read-both-original-maven-wars-with-a-pin`: passed, with a replay script that fetches the published Maven 3.9.13 archive itself and builds a local mirror from the setup's caches.
+  - **The cost:** five jobs of 1 to 5 minutes and about 45 minutes of the run's time, each finding only the next gap. Setup phases had the same pattern: S's first 41 builds failed on modules outside each case's own (VF-070, items 11 and 12).
+- **Why it happens:** the setup can't know which tasks the domain work will reach, and a domain agent can't resolve anything online inside a job. So the only way it finds a gap is to fail a job, one artifact at a time.
+- **Needs** (directions, none chosen):
+  1. **An ad hoc setup agent during runs** (the user's suggestion): a domain run records a request to resolve named tasks or artifacts online, and a setup-role session (or a tool run by the watcher) resolves them, verifies them offline and returns, while the domain run waits or works on other cases. It fits VF-072's worker request.
+  2. **A resolution job:** a job kind allowed network access only to the dependency repositories, which resolves a named Gradle task's or Maven goal's dependencies into the shared offline cache and verifies them offline. A domain agent submits it like any other job.
+  3. **Wider setup resolution:** the setup also resolves the build-plugin integration paths a brief's claims name (here the Maven plugin's harness), at a cost in setup time.
+  4. **A first failure that names everything:** a job's offline failure lists every missing artifact of the task, not the first one, so one resolution pass covers it.
+- **Tracked in**: this entry; VF-070 for setup phases; VF-072 for the worker request.
+- **Closes when**: a domain run that needs an unresolved task gets it resolved by one request or job, verified offline, with no chain of failing jobs.
+
 ### VF-075: a brief author drops the second observation that changes one input, leaves orders open, and picks heavier observations than needed
 
 - **Status**: open, waiting to be observed. The rules are landed (change `ntuqprsk`, 2026-11-27); the next generated list that has a rationale file shows whether they worked.
