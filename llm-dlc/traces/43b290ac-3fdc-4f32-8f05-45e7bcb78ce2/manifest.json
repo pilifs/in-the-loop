@@ -12,30 +12,30 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T00:36:23.837Z",
-  "duration_seconds": 33762,
+  "ended": "2026-11-28T00:40:19.161Z",
+  "duration_seconds": 33998,
   "stats": {
     "turns": 33,
-    "api_calls": 813,
-    "tool_calls": 877,
+    "api_calls": 831,
+    "tool_calls": 895,
     "tool_errors": 11,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1652,
-      "output_tokens": 1408506,
-      "cache_read_input_tokens": 249636322,
-      "cache_creation_input_tokens": 3007835
+      "input_tokens": 1688,
+      "output_tokens": 1424481,
+      "cache_read_input_tokens": 253418507,
+      "cache_creation_input_tokens": 3040952
     }
   },
   "tools": {
-    "Bash": 726,
+    "Bash": 743,
     "Read": 82,
     "Write": 36,
     "Edit": 19,
     "AskUserQuestion": 3,
+    "ToolSearch": 3,
     "mcp__chrome-devtools__take_screenshot": 3,
-    "ToolSearch": 2,
     "mcp__chrome-devtools__evaluate_script": 2,
     "ListAgents": 1,
     "SendMessage": 1,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T00:36:23.837Z",
+      "ended": "2026-11-28T00:40:19.161Z",
       "turns": 1,
-      "api_calls": 59,
+      "api_calls": 77,
       "usage": {
-        "input_tokens": 118,
-        "output_tokens": 83471,
-        "cache_read_input_tokens": 7349899,
-        "cache_creation_input_tokens": 178878
+        "input_tokens": 154,
+        "output_tokens": 99446,
+        "cache_read_input_tokens": 11132084,
+        "cache_creation_input_tokens": 211995
       },
-      "peak_context_tokens": 194045
+      "peak_context_tokens": 227162
     }
   ],
   "log": {
-    "sha256": "513ded32f5425f2bb5aa387257be146204f910580d5414ec526644877ab83fef",
-    "bytes": 23722822,
-    "lines": 8183,
-    "gzip_bytes": 4482605,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/513ded32f5425f2bb5aa387257be146204f910580d5414ec526644877ab83fef.jsonl.gz"
+    "sha256": "1ad100017e05b26554f8cd322f96a9e9cedf63e52252e9bed6d788c7a633b82d",
+    "bytes": 24039507,
+    "lines": 8355,
+    "gzip_bytes": 4538440,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/1ad100017e05b26554f8cd322f96a9e9cedf63e52252e9bed6d788c7a633b82d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -478,6 +478,14 @@
       "summary": "Leave Gradle's record of the withheld BOM out of S48's base, and run the gate again (verification pending)",
       "body": "The S48 gate's first run (job 20261128-000950-replay-s48-s-delayed-setup-as-one-reques) passed 10 of 13 checks and failed where it matters: the resolution job stopped in its second round at no-progress and published nothing, so the consumer never ran. This commit corrects the cause, which was in the gate's own base, and queues the second run as job 20261128-003144-replay-s48-s-delayed-setup-as-one-reques, which supersedes the first and has not run yet.\n\nWhat happened. Round 1 fetched the pinned Maven distribution and ran the task offline until createResolvedBom lacked org.apache.activemq:activemq-bom:6.1.8. Round 2 fetched the BOM's POM from Maven Central, laid it in Maven's layout, and the task went past that stage and a hundred compile tasks before another task asked for the same POM. The base had left out the BOM's file in Gradle's store and kept Gradle's descriptor of the module. Maven Central comes before the replay's file mirror in each subproject's repositories, and Gradle takes the first repository with a record of a module, so it asked Central, offline, for a file that was gone and never read the mirror. readiness-operation.json now leaves the descriptor out too, and says in base.why what its state is: stricter than the one VF-076's rounds began in, where the files' dates show the BOM present since the setup phase and only the Maven distribution absent.\n\nWhat changed in the mechanism. The no-progress reason quotes the line that asked again and says where the files were laid, since the usual cause is a second tool reading another place. A receipt repeats the operation's base.why beside its list of what was left out, and claims nothing itself about whether that state ever existed. The gate's check and the pages no longer call the base a reconstruction of an earlier state.\n\nThe results page has the first run's thirteen checks one by one, the correction, the limit it showed (the resolver lays a module in Maven's layout only, so a build that can read a module from nowhere but Gradle's own cache is beyond it), and the table of where each gate stands brought up to date.\n\nVerified: the tests of what changed, 9 of 9 Python test files (python3 lib/tools/test_costs.py run --changed), jobs/test_readiness.py with the new wording among them; the gate's logic again passes 16 of 16 checks on the made-up nested build; the corrected view is laid in 0.14 s with the BOM absent in all three places. S48 itself is verified only when the second job's result is read.",
       "log_sha256": "513ded32f5425f2bb5aa387257be146204f910580d5414ec526644877ab83fef"
+    },
+    {
+      "change_id": "monoqxrmzsoktsqqlopkxpyzupmwlmsr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Tell agents of the queue's general jobs, batches and the view of every job's state",
+      "body": "CLAUDE.md's section on jobs named only the proof path: submit, commit, report. An agent reading it could not know that the same queue now takes a build, a test run or a setup step, that many jobs of one shape are one manifest, or where to read why a job has not started.\n\nThree additions, each with its link into jobs/README.md. A job given a --purpose is of the second format and is held to what it declares: every step ran, every required output is there, and a step declared with --tests shows tests that ran, so a step that exits 0 is not yet a result. A batch is one manifest (submit --manifest, wait --batch, batch NAME), not a loop of submissions. And python3 jobs/pipeline.py view gives every job one state with its reason, including a job that cannot start and one whose result is on another line, to be read before waiting, resubmitting or concluding a job was lost. The command is named jobs/pipeline.py, the code that implements it, and the page says that verification/pipeline.py, its name before 2026-11-27, runs the same.\n\nThe flag for setup a running case asks for (--needs-readiness) is not in the page yet: it goes in when the S48 gate has passed (job 20261128-003144, running).\n\nVerified: the tests that name CLAUDE.md, 18 of 18 Python test files (python3 lib/tools/test_costs.py run --changed), the check that both clients are given the same instructions among them.",
+      "log_sha256": "1ad100017e05b26554f8cd322f96a9e9cedf63e52252e9bed6d788c7a633b82d"
     }
   ],
   "logs": {
@@ -503,6 +511,12 @@
       "bytes": 9101338,
       "lines": 2756,
       "gzip_bytes": 1728388,
+      "url": null
+    },
+    "1ad100017e05b26554f8cd322f96a9e9cedf63e52252e9bed6d788c7a633b82d": {
+      "bytes": 24039507,
+      "lines": 8355,
+      "gzip_bytes": 4538440,
       "url": null
     },
     "1e20cd4d30a48ec86f513fab3ce51793e4f2aeee97ece5be8b0374703cf9f209": {
