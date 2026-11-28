@@ -1,0 +1,715 @@
+--- a/verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json
++++ b/verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json
+@@ -1,13 +1,19 @@
+ {
+   "schema": "itl-s48-readiness-gate/v1",
+-  "startedAt": "2026-11-28T00:36:55+00:00",
++  "startedAt": "2026-11-28T13:49:17+00:00",
+   "operation": "readiness-operation.json",
+-  "work": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T003655Z",
++  "work": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z",
++  "homeMavenRepository": {
++    "copiedTo": "~/.cache/in-the-loop/readiness-gates/s48-home-m2",
++    "files": 770,
++    "treeSha256": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38",
++    "note": "declared under the operation's reads with this digest, and read against it before the task runs and before a job is handed the bundle: it is verified to be the copy made on 2026-11-28, which the setup never recorded and no resolution fetched from a source"
++  },
+   "request": {
+-    "key": "8caa7a3513741c433a7d91ebfae9bc9a31d637bc21d1bb9546a1ff1b8007416b",
+-    "consumer": "20261128-003656-read-the-task-s-outputs-offline-on-the-p",
+-    "resolver": "20261128-003659-resolve-8caa7a351374-build-and-read-the",
+-    "unrelated": "20261128-003656-an-unrelated-job-to-finish-while-the-con",
++    "key": "d5c1aecac463f07b6da89b3461eefcafe9e553a46f82f6d6e7c4c4beb3ff1763",
++    "consumer": "20261128-134918-read-the-task-s-outputs-offline-on-the-p",
++    "resolver": "20261128-134922-resolve-d5c1aecac463-build-and-read-the",
++    "unrelated": "20261128-134918-an-unrelated-job-to-finish-while-the-con",
+     "receipt": {
+       "state": "ready",
+       "stage": null,
+@@ -23,14 +29,14 @@
+               "source": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz",
+               "bytes": 9620438,
+               "verifiedBy": "the operation's sha512",
+-              "seconds": 0.514
++              "seconds": 0.76
+             }
+           ],
+           "missing": [
+             "org.apache.activemq:activemq-bom:6.1.8"
+           ],
+           "result": "failed",
+-          "offlineSeconds": 72.5
++          "offlineSeconds": 61.3
+         },
+         {
+           "n": 2,
+@@ -40,18 +46,20 @@
+               "source": "https://repo.maven.apache.org/maven2/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom",
+               "bytes": 7881,
+               "verifiedBy": "the repository's sha1",
+-              "seconds": 0.244
++              "seconds": 0.163
+             }
+           ],
+           "missing": [],
+           "result": "passed",
+-          "offlineSeconds": 289.2
++          "offlineSeconds": 262.0
+         }
+       ],
+       "fetch": {
+         "files": 2,
+         "bytes": 9628319,
+-        "seconds": 0.758
++        "seconds": 0.923,
++        "reused": 0,
++        "reusedBytes": 0
+       },
+       "base": {
+         "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+@@ -63,8 +71,25 @@
+           "tmp/"
+         ],
+         "reconstructed": true,
+-        "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress."
++        "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress. The task also reads a Maven local repository in the home directory: the Spring Boot build runs Maven for its plugin's descriptor, with Maven's default local repository, and the setup's online runs of 2026-11-27 left maven-plugin-plugin 3.6.1 and what it needs there (~/.m2/repository, 17 MB). The first runs of this gate read it from the home without saying so, and passed. It is now declared, with its digest: the gate copied it once (2026-11-28, 770 files) to the folder named under `reads`, the operation names the digest of that copy, the resolution and every job handed its bundle read the folder in full against it before they run, and each step lays it into the empty home it is given. So it is verified to be that copy. It is still an input the setup never recorded and no resolution fetched: what a repository would serve for those 770 files is not what the digest vouches for."
+       },
++      "reads": [
++        {
++          "path": "~/.sdkman/candidates/java",
++          "verified": false
++        },
++        {
++          "path": "~/.cache/in-the-loop/git-mirrors/spring-boot.git",
++          "verified": false
++        },
++        {
++          "path": "~/.cache/in-the-loop/readiness-gates/s48-home-m2",
++          "verified": true,
++          "sha256": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38",
++          "files": 770,
++          "bytes": 13147789
++        }
++      ],
+       "offline": {
+         "network": {
+           "mode": "none",
+@@ -76,40 +101,51 @@
+             ],
+             "connect": "OSError: Network is unreachable",
+             "lookup": "gaierror: Temporary failure in name resolution"
++          },
++          "alone": {
++            "home": "empty, of this run",
++            "tmp": "empty, of this run",
++            "reads": [
++              "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++              "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/store/staging/d5c1aecac463f07b-404de41f",
++              "/home/filip/.sdkman/candidates/java",
++              "/home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git",
++              "/home/filip/.cache/in-the-loop/readiness-gates/s48-home-m2"
++            ]
+           }
+         },
+         "steps": [
+           {
+             "name": "parent",
+-            "run": "mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output \"$ITL_READINESS_OUT/parent.json\"",
++            "run": "mkdir -p \"$HOME/.m2\" && cp -a ~/.cache/in-the-loop/readiness-gates/s48-home-m2/repository \"$HOME/.m2/repository\" && mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output \"$ITL_READINESS_OUT/parent.json\"",
+             "exitCode": 0,
+-            "seconds": 156.1
++            "seconds": 130.1
+           },
+           {
+             "name": "fix",
+-            "run": "mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output \"$ITL_READINESS_OUT/fix.json\"",
++            "run": "mkdir -p \"$HOME/.m2\" && cp -a ~/.cache/in-the-loop/readiness-gates/s48-home-m2/repository \"$HOME/.m2/repository\" && mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output \"$ITL_READINESS_OUT/fix.json\"",
+             "exitCode": 0,
+-            "seconds": 133.1
++            "seconds": 131.9
+           }
+         ],
+         "round": 2,
+-        "log": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T003655Z/store/work/8caa7a3513741c43-d334fac7/consumer-2.log",
++        "log": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/store/work/d5c1aecac463f07b-4df559fb/consumer-2.log",
+         "outputs": [
+           {
+             "path": "parent.json",
+-            "sha256": "2d27d6948c6cc39e8a9241d4a1f5b1a3398bcc0ed63ee7148246f9d0cbd74725",
++            "sha256": "9277cc663ebc5d6c0c11dcfc795ef0ccb7230b2df784b01f483f4fa68ab0cd6d",
+             "equalsJson": "verification/merged-pr-links/s01-s50/maven-war/parent.json",
+             "matches": true
+           },
+           {
+             "path": "fix.json",
+-            "sha256": "baeeb394b37ceead6a3bec823ef81a516f66dd0fc93136b88c5ba2bb176dd934",
++            "sha256": "ab8467fb7ee2650f4762cd97538e950d215b8d5206bae959743456a1e527e9c0",
+             "equalsJson": "verification/merged-pr-links/s01-s50/maven-war/fix.json",
+             "matches": true
+           }
+         ]
+       },
+-      "at": "2026-11-28T00:43:03+00:00",
++      "at": "2026-11-28T13:54:47+00:00",
+       "bundle": {
+         "digest": "104d9842d7203c1501850d95ea93108b643cfd15d72891777ea9181c93257b9b",
+         "files": [
+@@ -137,49 +173,71 @@
+     },
+     "consumerResult": {
+       "status": "passed",
+-      "summary": "passed: 2 passed step(s) in 4m59s, peak 135.8 MiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed",
++      "summary": "passed: 2 passed step(s) in 4m58s, peak 125.3 MiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed",
+       "attention": [],
+       "readiness": [
+         {
+-          "key": "8caa7a3513741c433a7d91ebfae9bc9a31d637bc21d1bb9546a1ff1b8007416b",
+-          "view": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T003655Z/repository/verification/.state/attempts/20261128-003656-read-the-task-s-outputs-offline-on-the-p/001-e77cfc/readiness/8caa7a3513741c43",
++          "key": "d5c1aecac463f07b6da89b3461eefcafe9e553a46f82f6d6e7c4c4beb3ff1763",
++          "view": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state/attempts/20261128-134918-read-the-task-s-outputs-offline-on-the-p/001-23d3c9/readiness/d5c1aecac463f07b",
+           "env": "SPRING_BOOT_S_CACHE",
++          "tools": {
++            "ITL_READINESS_M2": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state/attempts/20261128-134918-read-the-task-s-outputs-offline-on-the-p/001-23d3c9/readiness/d5c1aecac463f07b/m2",
++            "ITL_READINESS_FETCHED_M2": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state/attempts/20261128-134918-read-the-task-s-outputs-offline-on-the-p/001-23d3c9/readiness/d5c1aecac463f07b/itl-readiness-fetched",
++            "ITL_READINESS_GRADLE_INIT": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state/attempts/20261128-134918-read-the-task-s-outputs-offline-on-the-p/001-23d3c9/readiness/d5c1aecac463f07b/itl-readiness.init.gradle"
++          },
+           "bundleDigest": "104d9842d7203c1501850d95ea93108b643cfd15d72891777ea9181c93257b9b",
+-          "receiptAt": "2026-11-28T00:43:03+00:00",
++          "receiptAt": "2026-11-28T13:54:47+00:00",
+           "level": "readable",
++          "reads": [
++            {
++              "path": "~/.sdkman/candidates/java",
++              "verified": false
++            },
++            {
++              "path": "~/.cache/in-the-loop/git-mirrors/spring-boot.git",
++              "verified": false
++            },
++            {
++              "path": "~/.cache/in-the-loop/readiness-gates/s48-home-m2",
++              "verified": true,
++              "sha256": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38",
++              "files": 770,
++              "bytes": 13147789
++            }
++          ],
+           "resolvedBy": {
+-            "job": "20261128-003659-resolve-8caa7a351374-build-and-read-the",
++            "job": "20261128-134922-resolve-d5c1aecac463-build-and-read-the",
+             "host": "claude-vm"
+           }
+         }
+       ],
+       "timing": {
+         "queueWait": {
+-          "seconds": 368.0,
++          "seconds": 329.0,
+           "state": "measured"
+         },
+         "elapsed": {
+-          "seconds": 300.0,
++          "seconds": 299.0,
+           "state": "measured"
+         },
+         "preparation": {
+-          "seconds": 0.2,
++          "seconds": 0.3,
+           "state": "measured"
+         },
+         "requestedSteps": {
+-          "seconds": 299.6,
++          "seconds": 298.1,
+           "state": "measured",
+           "ran": 2,
+           "planned": 2
+         },
+-        "cpuSeconds": 22.5,
++        "cpuSeconds": 21.9,
+         "source": "the runner's clock; CPU and peak memory from each step's process, as the kernel accounts it",
+         "byPhase": {
+-          "test": 299.7
++          "test": 298.1
+         }
+       },
+-      "startedAt": "2026-11-28T00:43:04+00:00",
+-      "finishedAt": "2026-11-28T00:48:04+00:00"
++      "startedAt": "2026-11-28T13:54:47+00:00",
++      "finishedAt": "2026-11-28T13:59:46+00:00"
+     },
+     "readbacks": {
+       "readbacks/parent.json": {
+@@ -205,19 +263,19 @@
+       "readbacks/fix.json": {
+         "revision": "69ad59c413ec8dfbd884ba0e712e8ada89513d29",
+         "observations": {
++          "challenge": {
++            "format": "CycloneDX",
++            "location": "WEB-INF/classes/META-INF/sbom/application.cdx.json",
++            "payload": "{\"fixture\":\"original\"}",
++            "inputDecoyBeforeSbom": "true",
++            "outputDecoyBeforeSbom": "true"
++          },
+           "intent": {
+             "format": "CycloneDX",
+             "location": "WEB-INF/classes/META-INF/sbom/application.cdx.json",
+             "payload": "{\"fixture\":\"original\"}",
+             "inputDecoyBeforeSbom": "single",
+             "outputDecoyBeforeSbom": "single"
+-          },
+-          "challenge": {
+-            "format": "CycloneDX",
+-            "location": "WEB-INF/classes/META-INF/sbom/application.cdx.json",
+-            "payload": "{\"fixture\":\"original\"}",
+-            "inputDecoyBeforeSbom": "true",
+-            "outputDecoyBeforeSbom": "true"
+           }
+         },
+         "mavenBuilds": 2
+@@ -227,7 +285,7 @@
+   "controls": [
+     {
+       "control": "withheld-bom",
+-      "key": "063172828ea0d3a6f69573855bce064f970246c8b9a59931d7508d3747763faf",
++      "key": "9d5e67e260e3c6a577ef4bc5465b8f725bef7e108ebae605bb773a0c801caf6f",
+       "exit": 1,
+       "state": "failed",
+       "stage": "fetch",
+@@ -240,7 +298,7 @@
+             "org.apache.activemq:activemq-bom:6.1.8"
+           ],
+           "result": "failed",
+-          "offlineSeconds": 64.3
++          "offlineSeconds": 65.9
+         },
+         {
+           "n": 2,
+@@ -249,11 +307,11 @@
+           "offlineSeconds": null
+         }
+       ],
+-      "said": "readiness 063172828ea0: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (absent): org.apache.activemq:activemq-bom:6.1.8: https://repo.maven.apache.org/maven2/withheld-by-the-readiness-gate/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: HTTP 404"
++      "said": "readiness 9d5e67e260e3: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (absent): org.apache.activemq:activemq-bom:6.1.8: https://repo.maven.apache.org/maven2/withheld-by-the-readiness-gate/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: HTTP 404"
+     },
+     {
+       "control": "wrong-maven-digest",
+-      "key": "7fa71b5b8c05df5d5fa0df5f03067011894090f23e20604e51fe7e30cde60bae",
++      "key": "49bb9443adc0634697057a4c08b8eda03073b412bee09ef331f0ac1b3c51140e",
+       "exit": 1,
+       "state": "failed",
+       "stage": "fetch",
+@@ -267,11 +325,11 @@
+           "offlineSeconds": null
+         }
+       ],
+-      "said": "readiness 7fa71b5b8c05: failed after 1 round(s), 0 file(s) fetched; withheld at the fetch stage (digest-mismatch): https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz"
++      "said": "readiness 49bb9443adc0: failed after 1 round(s), 0 file(s) fetched; withheld at the fetch stage (digest-mismatch): https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz"
+     },
+     {
+       "control": "unavailable-repository",
+-      "key": "3241d9519f5a3f7853c660ac11e8addbc36c942b1e0302d2e5c2b710645655ec",
++      "key": "7a86d6e9b9b698adb55ded045142f19f464998ef6c60b66ca912859913565881",
+       "exit": 1,
+       "state": "failed",
+       "stage": "fetch",
+@@ -284,7 +342,7 @@
+             "org.apache.activemq:activemq-bom:6.1.8"
+           ],
+           "result": "failed",
+-          "offlineSeconds": 63.0
++          "offlineSeconds": 63.9
+         },
+         {
+           "n": 2,
+@@ -293,23 +351,34 @@
+           "offlineSeconds": null
+         }
+       ],
+-      "said": "readiness 3241d9519f5a: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (repository-unavailable): org.apache.activemq:activemq-bom:6.1.8: http://127.0.0.1:9/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: [Errno 111] Connection refused"
++      "said": "readiness 7a86d6e9b9b6: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (repository-unavailable): org.apache.activemq:activemq-bom:6.1.8: http://127.0.0.1:9/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: [Errno 111] Connection refused"
++    },
++    {
++      "control": "another-home-repository",
++      "key": "35895195a39b8860102ba2c9e6d708e145f0edda6be2722470da4b6a46ff6095",
++      "exit": 1,
++      "state": "failed",
++      "stage": "base",
++      "outcome": "digest-mismatch",
++      "why": "~/.cache/in-the-loop/readiness-gates/s48-home-m2 is not what the operation says its task reads: its digest is 6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38 (770 file(s), 13147789 bytes), and the operation names 0000000000000000000000000000000000000000000000000000000000000000",
++      "rounds": [],
++      "said": "readiness 35895195a39b: failed after 0 round(s), 0 file(s) fetched; withheld at the base stage (digest-mismatch): ~/.cache/in-the-loop/readiness-gates/s48-home-m2 is not what the operation says its task reads: its digest is 6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38 (770 file(s), 13147789 bytes), and the operation names 0000000000000000000000000000000000000000000000000000000000000000"
+     }
+   ],
+-  "finishedAt": "2026-11-28T00:50:17+00:00",
++  "finishedAt": "2026-11-28T14:02:02+00:00",
+   "checks": [
+     {
+       "check": "the request is one file, the operation under its key",
+       "passed": true,
+       "detail": [
+-        "8caa7a3513741c433a7d91ebfae9bc9a31d637bc21d1bb9546a1ff1b8007416b.json"
++        "d5c1aecac463f07b6da89b3461eefcafe9e553a46f82f6d6e7c4c4beb3ff1763.json"
+       ]
+     },
+     {
+       "check": "the unrelated job finished during the wait",
+       "passed": true,
+       "detail": {
+-        "job": "20261128-003656-an-unrelated-job-to-finish-while-the-con"
++        "job": "20261128-134918-an-unrelated-job-to-finish-while-the-con"
+       }
+     },
+     {
+@@ -317,14 +386,14 @@
+       "passed": true,
+       "detail": {
+         "state": "waiting",
+-        "why": "readiness 8caa7a351374 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++        "why": "readiness d5c1aecac463 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
+         "request": {
+-          "key": "8caa7a3513741c433a7d91ebfae9bc9a31d637bc21d1bb9546a1ff1b8007416b",
++          "key": "d5c1aecac463f07b6da89b3461eefcafe9e553a46f82f6d6e7c4c4beb3ff1763",
+           "state": "waiting",
+-          "why": "readiness 8caa7a351374 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
+-          "operation": "verification/readiness/8caa7a3513741c433a7d91ebfae9bc9a31d637bc21d1bb9546a1ff1b8007416b.json",
++          "why": "readiness d5c1aecac463 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++          "operation": "verification/readiness/d5c1aecac463f07b6da89b3461eefcafe9e553a46f82f6d6e7c4c4beb3ff1763.json",
+           "wantedBy": [
+-            "20261128-003656-read-the-task-s-outputs-offline-on-the-p"
++            "20261128-134918-read-the-task-s-outputs-offline-on-the-p"
+           ],
+           "resolvers": [],
+           "unanswered": true
+@@ -343,11 +412,11 @@
+         "schema": "itl-job-resolve/v1",
+         "written": [
+           {
+-            "key": "8caa7a3513741c433a7d91ebfae9bc9a31d637bc21d1bb9546a1ff1b8007416b",
+-            "job": "20261128-003659-resolve-8caa7a351374-build-and-read-the",
+-            "path": "verification/jobs/2026/11/28/20261128-003659-resolve-8caa7a351374-build-and-read-the.json",
++            "key": "d5c1aecac463f07b6da89b3461eefcafe9e553a46f82f6d6e7c4c4beb3ff1763",
++            "job": "20261128-134922-resolve-d5c1aecac463-build-and-read-the",
++            "path": "verification/jobs/2026/11/28/20261128-134922-resolve-d5c1aecac463-build-and-read-the.json",
+             "wantedBy": [
+-              "20261128-003656-read-the-task-s-outputs-offline-on-the-p"
++              "20261128-134918-read-the-task-s-outputs-offline-on-the-p"
+             ]
+           }
+         ],
+@@ -359,9 +428,9 @@
+       "passed": true,
+       "detail": {
+         "status": "passed",
+-        "summary": "passed: 1 passed step(s) in 6m03s, peak 1.8 GiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed",
++        "summary": "passed: 1 passed step(s) in 5m25s, peak 2.0 GiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed",
+         "conclusion": {
+-          "key": "8caa7a3513741c433a7d91ebfae9bc9a31d637bc21d1bb9546a1ff1b8007416b",
++          "key": "d5c1aecac463f07b6da89b3461eefcafe9e553a46f82f6d6e7c4c4beb3ff1763",
+           "verdict": "ready",
+           "stage": null,
+           "outcome": "ready",
+@@ -371,13 +440,15 @@
+           "fetch": {
+             "files": 2,
+             "bytes": 9628319,
+-            "seconds": 0.758
++            "seconds": 0.923,
++            "reused": 0,
++            "reusedBytes": 0
+           },
+           "reused": false,
+           "bundleDigest": "104d9842d7203c1501850d95ea93108b643cfd15d72891777ea9181c93257b9b"
+         },
+         "tail": [
+-          "readiness 8caa7a351374: ready after 2 round(s), 2 file(s) fetched"
++          "readiness d5c1aecac463: ready after 2 round(s), 2 file(s) fetched"
+         ]
+       }
+     },
+@@ -394,6 +465,17 @@
+           ],
+           "connect": "OSError: Network is unreachable",
+           "lookup": "gaierror: Temporary failure in name resolution"
++        },
++        "alone": {
++          "home": "empty, of this run",
++          "tmp": "empty, of this run",
++          "reads": [
++            "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++            "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/store/staging/d5c1aecac463f07b-404de41f",
++            "/home/filip/.sdkman/candidates/java",
++            "/home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git",
++            "/home/filip/.cache/in-the-loop/readiness-gates/s48-home-m2"
++          ]
+         }
+       }
+     },
+@@ -434,7 +516,7 @@
+           "tmp/"
+         ],
+         "reconstructed": true,
+-        "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress."
++        "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress. The task also reads a Maven local repository in the home directory: the Spring Boot build runs Maven for its plugin's descriptor, with Maven's default local repository, and the setup's online runs of 2026-11-27 left maven-plugin-plugin 3.6.1 and what it needs there (~/.m2/repository, 17 MB). The first runs of this gate read it from the home without saying so, and passed. It is now declared, with its digest: the gate copied it once (2026-11-28, 770 files) to the folder named under `reads`, the operation names the digest of that copy, the resolution and every job handed its bundle read the folder in full against it before they run, and each step lays it into the empty home it is given. So it is verified to be that copy. It is still an input the setup never recorded and no resolution fetched: what a repository would serve for those 770 files is not what the digest vouches for."
+       }
+     },
+     {
+@@ -442,7 +524,7 @@
+       "passed": true,
+       "detail": {
+         "status": "passed",
+-        "summary": "passed: 2 passed step(s) in 4m59s, peak 135.8 MiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed",
++        "summary": "passed: 2 passed step(s) in 4m58s, peak 125.3 MiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed",
+         "attention": [],
+         "previous": [],
+         "tail": [
+@@ -466,6 +548,10 @@
+               ],
+               "connect": "OSError: Network is unreachable",
+               "lookup": "gaierror: Temporary failure in name resolution"
++            },
++            "alone": {
++              "home": "empty, of this step",
++              "tmp": "empty, of this step"
+             }
+           }
+         ],
+@@ -481,6 +567,10 @@
+               ],
+               "connect": "OSError: Network is unreachable",
+               "lookup": "gaierror: Temporary failure in name resolution"
++            },
++            "alone": {
++              "home": "empty, of this step",
++              "tmp": "empty, of this step"
+             }
+           }
+         ]
+@@ -491,14 +581,36 @@
+       "passed": true,
+       "detail": [
+         {
+-          "key": "8caa7a3513741c433a7d91ebfae9bc9a31d637bc21d1bb9546a1ff1b8007416b",
+-          "view": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T003655Z/repository/verification/.state/attempts/20261128-003656-read-the-task-s-outputs-offline-on-the-p/001-e77cfc/readiness/8caa7a3513741c43",
++          "key": "d5c1aecac463f07b6da89b3461eefcafe9e553a46f82f6d6e7c4c4beb3ff1763",
++          "view": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state/attempts/20261128-134918-read-the-task-s-outputs-offline-on-the-p/001-23d3c9/readiness/d5c1aecac463f07b",
+           "env": "SPRING_BOOT_S_CACHE",
++          "tools": {
++            "ITL_READINESS_M2": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state/attempts/20261128-134918-read-the-task-s-outputs-offline-on-the-p/001-23d3c9/readiness/d5c1aecac463f07b/m2",
++            "ITL_READINESS_FETCHED_M2": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state/attempts/20261128-134918-read-the-task-s-outputs-offline-on-the-p/001-23d3c9/readiness/d5c1aecac463f07b/itl-readiness-fetched",
++            "ITL_READINESS_GRADLE_INIT": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state/attempts/20261128-134918-read-the-task-s-outputs-offline-on-the-p/001-23d3c9/readiness/d5c1aecac463f07b/itl-readiness.init.gradle"
++          },
+           "bundleDigest": "104d9842d7203c1501850d95ea93108b643cfd15d72891777ea9181c93257b9b",
+-          "receiptAt": "2026-11-28T00:43:03+00:00",
++          "receiptAt": "2026-11-28T13:54:47+00:00",
+           "level": "readable",
++          "reads": [
++            {
++              "path": "~/.sdkman/candidates/java",
++              "verified": false
++            },
++            {
++              "path": "~/.cache/in-the-loop/git-mirrors/spring-boot.git",
++              "verified": false
++            },
++            {
++              "path": "~/.cache/in-the-loop/readiness-gates/s48-home-m2",
++              "verified": true,
++              "sha256": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38",
++              "files": 770,
++              "bytes": 13147789
++            }
++          ],
+           "resolvedBy": {
+-            "job": "20261128-003659-resolve-8caa7a351374-build-and-read-the",
++            "job": "20261128-134922-resolve-d5c1aecac463-build-and-read-the",
+             "host": "claude-vm"
+           }
+         }
+@@ -534,23 +646,63 @@
+       "detail": {
+         "revision": "69ad59c413ec8dfbd884ba0e712e8ada89513d29",
+         "observations": {
++          "challenge": {
++            "format": "CycloneDX",
++            "location": "WEB-INF/classes/META-INF/sbom/application.cdx.json",
++            "payload": "{\"fixture\":\"original\"}",
++            "inputDecoyBeforeSbom": "true",
++            "outputDecoyBeforeSbom": "true"
++          },
+           "intent": {
+             "format": "CycloneDX",
+             "location": "WEB-INF/classes/META-INF/sbom/application.cdx.json",
+             "payload": "{\"fixture\":\"original\"}",
+             "inputDecoyBeforeSbom": "single",
+             "outputDecoyBeforeSbom": "single"
+-          },
+-          "challenge": {
+-            "format": "CycloneDX",
+-            "location": "WEB-INF/classes/META-INF/sbom/application.cdx.json",
+-            "payload": "{\"fixture\":\"original\"}",
+-            "inputDecoyBeforeSbom": "true",
+-            "outputDecoyBeforeSbom": "true"
+           }
+         },
+         "mavenBuilds": 2
+       }
++    },
++    {
++      "check": "the operation names the home's Maven repository by the digest of the copy that is here",
++      "passed": true,
++      "detail": {
++        "operation": [
++          {
++            "path": "~/.cache/in-the-loop/readiness-gates/s48-home-m2",
++            "sha256": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38"
++          }
++        ],
++        "snapshot": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38",
++        "files": 770
++      }
++    },
++    {
++      "check": "the resolution read the home's Maven repository in full against that digest before it ran",
++      "passed": true,
++      "detail": [
++        {
++          "path": "~/.cache/in-the-loop/readiness-gates/s48-home-m2",
++          "verified": true,
++          "sha256": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38",
++          "files": 770,
++          "bytes": 13147789
++        }
++      ]
++    },
++    {
++      "check": "the consumer's job read the home's Maven repository in full against that digest before it ran",
++      "passed": true,
++      "detail": [
++        {
++          "path": "~/.cache/in-the-loop/readiness-gates/s48-home-m2",
++          "verified": true,
++          "sha256": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38",
++          "files": 770,
++          "bytes": 13147789
++        }
++      ]
+     },
+     {
+       "check": "control withheld-bom: readiness is withheld at the fetch stage (absent), and nothing is published",
+@@ -568,7 +720,7 @@
+               "org.apache.activemq:activemq-bom:6.1.8"
+             ],
+             "result": "failed",
+-            "offlineSeconds": 64.3
++            "offlineSeconds": 65.9
+           },
+           {
+             "n": 2,
+@@ -577,7 +729,7 @@
+             "offlineSeconds": null
+           }
+         ],
+-        "said": "readiness 063172828ea0: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (absent): org.apache.activemq:activemq-bom:6.1.8: https://repo.maven.apache.org/maven2/withheld-by-the-readiness-gate/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: HTTP 404"
++        "said": "readiness 9d5e67e260e3: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (absent): org.apache.activemq:activemq-bom:6.1.8: https://repo.maven.apache.org/maven2/withheld-by-the-readiness-gate/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: HTTP 404"
+       }
+     },
+     {
+@@ -597,7 +749,7 @@
+             "offlineSeconds": null
+           }
+         ],
+-        "said": "readiness 7fa71b5b8c05: failed after 1 round(s), 0 file(s) fetched; withheld at the fetch stage (digest-mismatch): https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz"
++        "said": "readiness 49bb9443adc0: failed after 1 round(s), 0 file(s) fetched; withheld at the fetch stage (digest-mismatch): https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz"
+       }
+     },
+     {
+@@ -616,7 +768,7 @@
+               "org.apache.activemq:activemq-bom:6.1.8"
+             ],
+             "result": "failed",
+-            "offlineSeconds": 63.0
++            "offlineSeconds": 63.9
+           },
+           {
+             "n": 2,
+@@ -625,44 +777,61 @@
+             "offlineSeconds": null
+           }
+         ],
+-        "said": "readiness 3241d9519f5a: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (repository-unavailable): org.apache.activemq:activemq-bom:6.1.8: http://127.0.0.1:9/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: [Errno 111] Connection refused"
++        "said": "readiness 7a86d6e9b9b6: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (repository-unavailable): org.apache.activemq:activemq-bom:6.1.8: http://127.0.0.1:9/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: [Errno 111] Connection refused"
++      }
++    },
++    {
++      "check": "control another-home-repository: readiness is withheld at the base stage (digest-mismatch), and nothing is published",
++      "passed": true,
++      "detail": {
++        "exit": 1,
++        "state": "failed",
++        "stage": "base",
++        "outcome": "digest-mismatch",
++        "why": "~/.cache/in-the-loop/readiness-gates/s48-home-m2 is not what the operation says its task reads: its digest is 6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38 (770 file(s), 13147789 bytes), and the operation names 0000000000000000000000000000000000000000000000000000000000000000",
++        "rounds": [],
++        "said": "readiness 35895195a39b: failed after 0 round(s), 0 file(s) fetched; withheld at the base stage (digest-mismatch): ~/.cache/in-the-loop/readiness-gates/s48-home-m2 is not what the operation says its task reads: its digest is 6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38 (770 file(s), 13147789 bytes), and the operation names 0000000000000000000000000000000000000000000000000000000000000000"
+       }
+     }
+   ],
+   "timeline": [
+     {
+-      "at": "2026-11-28T00:36:56+00:00",
++      "at": "2026-11-28T13:49:18+00:00",
+       "what": "the runner is at work; the consumer needs a readiness nobody has resolved"
+     },
+     {
+-      "at": "2026-11-28T00:37:00+00:00",
+-      "what": "admitted 20261128-003659-resolve-8caa7a351374-build-and-read-the"
+-    },
+-    {
+-      "at": "2026-11-28T00:48:07+00:00",
++      "at": "2026-11-28T13:49:22+00:00",
++      "what": "admitted 20261128-134922-resolve-d5c1aecac463-build-and-read-the"
++    },
++    {
++      "at": "2026-11-28T13:59:50+00:00",
+       "what": "control withheld-bom: a resolution that must be withheld (absent)"
+     },
+     {
+-      "at": "2026-11-28T00:49:12+00:00",
++      "at": "2026-11-28T14:00:56+00:00",
+       "what": "control wrong-maven-digest: a resolution that must be withheld (digest-mismatch)"
+     },
+     {
+-      "at": "2026-11-28T00:49:13+00:00",
++      "at": "2026-11-28T14:00:57+00:00",
+       "what": "control unavailable-repository: a resolution that must be withheld (repository-unavailable)"
++    },
++    {
++      "at": "2026-11-28T14:02:01+00:00",
++      "what": "control another-home-repository: a resolution that must be withheld (digest-mismatch)"
+     }
+   ],
+   "passed": true,
+   "runnerLog": [
+-    "runner: 2 worker(s), 4 CPUs, 9.0 GiB (at most 8.0 GiB a job), isolation none, keeping 0 B of the machine free, jobs at oom_score_adj 1000, state /home/filip/.cache/in-the-loop/readiness-gates/20261128T003655Z/repository/verification/.state",
+-    "20261128-003656-an-unrelated-job-to-finish-while-the-con: started at 1a713c811b9f (1 CPU, limit 384.0 MiB, timeout 5m00s)",
+-    "20261128-003656-read-the-task-s-outputs-offline-on-the-p: waiting: readiness 8caa7a351374 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
+-    "20261128-003656-an-unrelated-job-to-finish-while-the-con: passed: 1 passed step(s) in 0.2s, peak 43.3 MiB (estimated 1m00s, 256.0 MiB)",
+-    "20261128-003659-resolve-8caa7a351374-build-and-read-the: started at b42cdd57de40 (3 CPU, limit 8.0 GiB, timeout 1h20m)",
+-    "20261128-003656-read-the-task-s-outputs-offline-on-the-p: waiting: resolution job 20261128-003659-resolve-8caa7a351374-build-and-read-the for readiness 8caa7a351374 has not finished",
+-    "20261128-003659-resolve-8caa7a351374-build-and-read-the: passed: 1 passed step(s) in 6m03s, peak 1.8 GiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed",
+-    "20261128-003656-read-the-task-s-outputs-offline-on-the-p: started at 1a713c811b9f (3 CPU, limit 8.0 GiB, timeout 1h20m)",
+-    "20261128-003656-read-the-task-s-outputs-offline-on-the-p: passed: 2 passed step(s) in 4m59s, peak 135.8 MiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed",
++    "runner: 2 worker(s), 4 CPUs, 9.0 GiB (at most 8.0 GiB a job), isolation none, keeping 0 B of the machine free, jobs at oom_score_adj 1000, state /home/filip/.cache/in-the-loop/readiness-gates/20261128T134917Z/repository/verification/.state",
++    "20261128-134918-an-unrelated-job-to-finish-while-the-con: started at 763934929d4d (1 CPU, limit 384.0 MiB, timeout 5m00s)",
++    "20261128-134918-read-the-task-s-outputs-offline-on-the-p: waiting: readiness d5c1aecac463 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++    "20261128-134918-an-unrelated-job-to-finish-while-the-con: passed: 1 passed step(s) in 0.2s, peak 44.4 MiB (estimated 1m00s, 256.0 MiB)",
++    "20261128-134922-resolve-d5c1aecac463-build-and-read-the: started at 5b7f292be131 (3 CPU, limit 8.0 GiB, timeout 1h20m)",
++    "20261128-134918-read-the-task-s-outputs-offline-on-the-p: waiting: resolution job 20261128-134922-resolve-d5c1aecac463-build-and-read-the for readiness d5c1aecac463 has not finished",
++    "20261128-134922-resolve-d5c1aecac463-build-and-read-the: passed: 1 passed step(s) in 5m25s, peak 2.0 GiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed",
++    "20261128-134918-read-the-task-s-outputs-offline-on-the-p: started at 763934929d4d (3 CPU, limit 8.0 GiB, timeout 1h20m)",
++    "20261128-134918-read-the-task-s-outputs-offline-on-the-p: passed: 2 passed step(s) in 4m58s, peak 125.3 MiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed",
+     "stopping on SIGTERM: running steps are cancelled, their jobs recorded",
+-    "finished 3 job(s): 20261128-003656-an-unrelated-job-to-finish-while-the-con, 20261128-003659-resolve-8caa7a351374-build-and-read-the, 20261128-003656-read-the-task-s-outputs-offline-on-the-p; collect them with: python3 verification/pipeline.py collect"
++    "finished 3 job(s): 20261128-134918-an-unrelated-job-to-finish-while-the-con, 20261128-134922-resolve-d5c1aecac463-build-and-read-the, 20261128-134918-read-the-task-s-outputs-offline-on-the-p; collect them with: python3 verification/pipeline.py collect"
+   ]
+ }
