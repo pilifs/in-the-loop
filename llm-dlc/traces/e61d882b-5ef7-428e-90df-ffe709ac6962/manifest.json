@@ -12,33 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-28T14:42:05.959Z",
-  "duration_seconds": 957862,
+  "ended": "2026-11-28T15:36:30.483Z",
+  "duration_seconds": 961127,
   "stats": {
-    "turns": 357,
-    "api_calls": 3396,
-    "tool_calls": 2979,
-    "tool_errors": 29,
+    "turns": 359,
+    "api_calls": 3499,
+    "tool_calls": 3083,
+    "tool_errors": 30,
     "compactions": 12,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 107543,
-      "output_tokens": 2166246,
-      "cache_read_input_tokens": 1146669212,
-      "cache_creation_input_tokens": 7476611
+      "input_tokens": 107759,
+      "output_tokens": 2227843,
+      "cache_read_input_tokens": 1165271987,
+      "cache_creation_input_tokens": 7694404
     }
   },
   "tools": {
-    "Bash": 2626,
-    "SendMessage": 109,
+    "Bash": 2723,
+    "SendMessage": 111,
     "Edit": 83,
     "Read": 59,
-    "Write": 42,
-    "ToolSearch": 20,
+    "Write": 43,
+    "ToolSearch": 21,
     "ListAgents": 9,
     "Agent": 7,
+    "AskUserQuestion": 7,
     "CronCreate": 5,
-    "AskUserQuestion": 4,
     "Monitor": 4,
     "CronDelete": 3,
     "TaskStop": 3,
@@ -110,6 +110,7 @@
     "~/code/in-the-loop-browser-notes/llm-dlc/research-router.md",
     "~/code/in-the-loop-codex-apps/.codex/config.toml",
     "~/code/in-the-loop-codex-apps/llm-dlc/tools/agent_client.py",
+    "~/code/in-the-loop-project-structure/examples/tools/targets/README.md",
     "~/code/in-the-loop-setup-phase/llm-dlc/loops/setup-agent-template.md",
     "~/code/scripts/analysis/in-the-loop-setup-as-a-tool-brief.md",
     "~/code/scripts/analysis/organic-java-pr-capability-composition-fast-follow.md"
@@ -286,24 +287,24 @@
     {
       "index": 12,
       "started": "2026-11-28T14:42:05.996Z",
-      "ended": "2026-11-28T14:42:05.959Z",
-      "turns": 3,
-      "api_calls": 0,
+      "ended": "2026-11-28T15:36:30.483Z",
+      "turns": 5,
+      "api_calls": 103,
       "usage": {
-        "input_tokens": 0,
-        "output_tokens": 0,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 0
+        "input_tokens": 216,
+        "output_tokens": 61597,
+        "cache_read_input_tokens": 18602775,
+        "cache_creation_input_tokens": 217793
       },
-      "peak_context_tokens": 0
+      "peak_context_tokens": 246189
     }
   ],
   "log": {
-    "sha256": "a629a62c19b702bab104c9eb1c1cbed9151c2ea324d58571679f5ef35fa122ec",
-    "bytes": 58196171,
-    "lines": 28078,
-    "gzip_bytes": 9752868,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/a629a62c19b702bab104c9eb1c1cbed9151c2ea324d58571679f5ef35fa122ec.jsonl.gz"
+    "sha256": "ac4dc94681bc4a41807dfe0e4c91bbe1f241edf8545f031fc9413326428ab0d1",
+    "bytes": 60220582,
+    "lines": 28892,
+    "gzip_bytes": 10134119,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/ac4dc94681bc4a41807dfe0e4c91bbe1f241edf8545f031fc9413326428ab0d1.jsonl.gz"
   },
   "subagents": [
     {
@@ -16147,11 +16148,27 @@
     },
     {
       "change_id": "xmqnsyunxpxvpszvpwvwnnrywmxnukmt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3556fdc29e7251de8e88fb71d8df391469d4d541",
+      "immutable": true,
       "summary": "Send every fetch to an outside repository through one queue for the machine, and warn above a ceiling without stopping",
       "body": "The user's decisions of 2026-11-28, taken in a review of how delayed setup may ask repositories now that this machine's runner has sources it may fetch from. A build's dependency fetches get a rule of their own, apart from the note on agents reading the web. The user said what that note was for: many sockets open at once strain a constrained WiFi network, and with a queue in which a new request begins as an old one ends, the number of requests stops mattering. So the rule limits how many requests are open, not how many files a build needs.\n\nWhat is built, in the resolver as it stands (jobs/readiness.py). Every request to a repository outside the machine takes its turn in one queue for the whole machine: one lock file under the user's own home as the system knows it, so that every resolution, checkout and store shares it. Until now each resolution job fetched one file at a time, and up to ten such jobs could run at once. Two requests to one host are 0.2 seconds apart (fetch_gap); a folder and the machine's loopback take no turn (fetch_local). A repository that answers 429 or 503 is asked once more, after its Retry-After, and never a third time. A receipt says what left the machine (fetch.outside). A resolution that asks outside for more than 1,000 files or 1 GiB (fetch_warn_files, fetch_warn_bytes) is not stopped, as the user asked: its receipt has a line under warnings, the resolution workload's conclusion carries it, and the job's result has it in attention, where whoever triages results reads it.\n\nllm-dlc/operating-notes.md has the rule as a section of its own, 'Fetches of a build's inputs go through one queue', with the user's words, and the note on web requests has a dated addition saying what it was for; its rule for an agent reading the web is unchanged. The new section also records the user's preference as a rule for the pipeline's soft limits in general (say it where it is triaged, and let the work finish), and that a permission is different and waits for its person. jobs/README.md and ARCHITECTURE.md describe the queue and its settings. A build tool an agent starts online by hand in a setup phase is outside the queue, and the note says so.\n\nVerified: jobs/test_readiness.py, 28 tests (three new: four requests from four threads never overlap and keep the gap to one host; a repository that says not now is asked twice and no more; a resolution over the ceiling is ready and warns), and the first test now asserts that a loopback repository counts as nothing outside. jobs/test_delayed_setup.py, 5, with the loopback repository counted as outside and a ceiling of two files: the resolution job passes and its result's attention has the warning. The tests of what changed, 37 of 37 Python test files. The new tests are in the cost inventory and its lint agrees. Not shown: the queue against a real repository, since no test asks one.",
       "log_sha256": "a629a62c19b702bab104c9eb1c1cbed9151c2ea324d58571679f5ef35fa122ec"
+    },
+    {
+      "change_id": "utvnvwzvpuoolvlpnqzytspvykmkkznr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "ac4dc94681bc4a41807dfe0e4c91bbe1f241edf8545f031fc9413326428ab0d1"
+    },
+    {
+      "change_id": "pnkoxnsxyxpkluuyvqrzrpvnkxpzosps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-080: the 944 surviving kept outputs are sealed and verified; 3 stay lost",
+      "body": "At the user's request, the watcher checked the recovery of VF-080's kept outputs in the default checkout. jobs/pipeline.py recover --kept-outputs had already sealed them at 13:36Z (17 jobs, 944 files; no commit records who ran it): a dry run now finds nothing left, every occurrence is remote_verified, and one restored with every byte verified. The 3 files of 2026-11-06 that no checkout holds remain the audit's only artifact-not-committed gaps; the finding stays open for the user's word on them.",
+      "log_sha256": "ac4dc94681bc4a41807dfe0e4c91bbe1f241edf8545f031fc9413326428ab0d1"
     }
   ],
   "logs": {
@@ -17732,6 +17749,12 @@
       "lines": 4354,
       "gzip_bytes": 2146587,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/aa378f1fa1dce62a3afbec3c54386fd0a9a25cb5178c4aca505d86960450e289.jsonl.gz"
+    },
+    "ac4dc94681bc4a41807dfe0e4c91bbe1f241edf8545f031fc9413326428ab0d1": {
+      "bytes": 60220582,
+      "lines": 28892,
+      "gzip_bytes": 10134119,
+      "url": null
     },
     "ad9fd20b077bf02fe6b0ce9781304c40b9ec97c1bd3e5c5acb1848ecff84c9bb": {
       "bytes": 47973346,

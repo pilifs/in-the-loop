@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "ended",
+  "status": "open",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-28T14:27:17.729Z",
-  "duration_seconds": 1112391,
+  "ended": "2026-11-28T15:41:03.604Z",
+  "duration_seconds": 1116817,
   "stats": {
     "turns": 1907,
-    "api_calls": 7957,
-    "tool_calls": 6944,
+    "api_calls": 7976,
+    "tool_calls": 6962,
     "tool_errors": 75,
     "compactions": 19,
     "peak_context_tokens": 666881,
     "usage": {
-      "input_tokens": 19854,
-      "output_tokens": 3190846,
-      "cache_read_input_tokens": 2512882273,
-      "cache_creation_input_tokens": 10482257
+      "input_tokens": 19896,
+      "output_tokens": 3199690,
+      "cache_read_input_tokens": 2516232383,
+      "cache_creation_input_tokens": 10647766
     }
   },
   "tools": {
-    "Bash": 6656,
-    "SendMessage": 129,
+    "Bash": 6673,
+    "SendMessage": 130,
     "Edit": 42,
     "ToolSearch": 28,
     "Write": 24,
@@ -352,24 +352,24 @@
     {
       "index": 19,
       "started": "2026-11-27T20:35:39.144Z",
-      "ended": "2026-11-28T14:27:17.729Z",
+      "ended": "2026-11-28T15:41:03.604Z",
       "turns": 36,
-      "api_calls": 151,
+      "api_calls": 170,
       "usage": {
-        "input_tokens": 380,
-        "output_tokens": 37783,
-        "cache_read_input_tokens": 18868260,
-        "cache_creation_input_tokens": 293123
+        "input_tokens": 422,
+        "output_tokens": 46627,
+        "cache_read_input_tokens": 22218370,
+        "cache_creation_input_tokens": 458632
       },
-      "peak_context_tokens": 175054
+      "peak_context_tokens": 192295
     }
   ],
   "log": {
-    "sha256": "51434c2c3476d4a477c5dc71b5c4c99d0b21c7c8f6d6c7919706836e4c9a32fc",
-    "bytes": 119838352,
-    "lines": 70169,
-    "gzip_bytes": 18433787,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/51434c2c3476d4a477c5dc71b5c4c99d0b21c7c8f6d6c7919706836e4c9a32fc.jsonl.gz"
+    "sha256": "d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3",
+    "bytes": 120145405,
+    "lines": 70352,
+    "gzip_bytes": 18488080,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -18284,6 +18284,22 @@
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "06f0677def8241bf60d31f007641eeb0cc9e75b3624fc2a63ddaa9f3db4ce642"
+    },
+    {
+      "change_id": "utvnvwzvpuoolvlpnqzytspvykmkkznr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3"
+    },
+    {
+      "change_id": "pnkoxnsxyxpkluuyvqrzrpvnkxpzosps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-080: the 944 surviving kept outputs are sealed and verified; 3 stay lost",
+      "body": "At the user's request, the watcher checked the recovery of VF-080's kept outputs in the default checkout. jobs/pipeline.py recover --kept-outputs had already sealed them at 13:36Z (17 jobs, 944 files; no commit records who ran it): a dry run now finds nothing left, every occurrence is remote_verified, and one restored with every byte verified. The 3 files of 2026-11-06 that no checkout holds remain the audit's only artifact-not-committed gaps; the finding stays open for the user's word on them.",
+      "log_sha256": "d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3"
     }
   ],
   "logs": {
@@ -20488,12 +20504,6 @@
       "lines": 38975,
       "gzip_bytes": 11552173,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/513700dcdc6f3b7ecdfd1f5faca5bc00166d012b6f321a39ae477fec1795367a.jsonl.gz"
-    },
-    "51434c2c3476d4a477c5dc71b5c4c99d0b21c7c8f6d6c7919706836e4c9a32fc": {
-      "bytes": 119838352,
-      "lines": 70169,
-      "gzip_bytes": 18433787,
-      "url": null
     },
     "517cf455d92655d6c8ba580ebb2178320971330d4e1a953ab3919a6e4c3b8e7b": {
       "bytes": 74992508,
@@ -24040,6 +24050,12 @@
       "lines": 11144,
       "gzip_bytes": 4355654,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/d916f23162493445f3381df80d76ade8084ccb6e1d9ffd8f2fe1925d0b97ccad.jsonl.gz"
+    },
+    "d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3": {
+      "bytes": 120145405,
+      "lines": 70352,
+      "gzip_bytes": 18488080,
+      "url": null
     },
     "d9a25537b6ddf6ce78abf5f3c75e089c660afa9fa0718ecb203811a4214ae3d1": {
       "bytes": 36050455,

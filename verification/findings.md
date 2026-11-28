@@ -53,7 +53,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-080: 947 kept outputs that receipts name are in no commit and no archive; 944 survive in one working copy
 
-- **Status**: open. Nothing is lost that was not already out of the commit; what is still on disk has one copy.
+- **Status**: open, for the user's word on the 3 lost files. The 944 that survived are sealed and verified off the machine (update of 2026-11-28, 15:45, below).
 - **Raised**: 2026-11-27, by the run on the generic jobs pipeline (`llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief.md`), from the first run of its reconciliation, `python3 jobs/audit.py --rev b52a084f5d11`. Machine `vm-1`; no job ran for it.
 - **Found**:
   - **What the receipts say.** A job that did not pass keeps its outputs under `results/ID/outputs/`, and its receipt lists them in `collected.kept`. 19 receipts of 2026-11-06 to 2026-11-20 list 947 such files that the pinned revision does not hold.
@@ -65,6 +65,13 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - **The pipeline** (this run): a collect that keeps an output says so when the commit will not take its path, and the audit keeps counting what is still outside.
 - **Tracked in**: this entry; [`jobs/README.md`](../jobs/README.md#the-baseline) for the baseline; the run's [results page](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md).
 - **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): the tool to seal them exists and has not been run where the files are: `python3 jobs/pipeline.py recover --kept-outputs`, for the watcher or the user to run in the default checkout once this line lands (a run's agent changes nothing there). The audit goes on listing them as a gap until then.
+- **Update 2026-11-28, 15:45** (the watcher, at the user's request): the 944 are sealed.
+  - **When:** `python3 jobs/pipeline.py recover --kept-outputs` had already run in the default checkout, at 13:36Z. No commit records the session that ran it. It left a marker for each of 17 jobs under `verification/.state/recovered-outputs/`, holding 944 files in all.
+  - **What I checked:** a dry run now finds nothing left to seal. Each of the 17 occurrences (`job-outputs`, `20261128T133637Z-...`) is `remote_verified` in `artifacts.py list --job`, and `artifacts.py status` says no sealed original is exposed to the loss of the machine. A restore of one occurrence (`20261128T133637Z-50377252ffed5630`, 2 files) gave back its files with every byte verified.
+  - **What cannot be recovered:** 3 files of 2 jobs of 2026-11-06 are in no checkout and no archive. The audit (`python3 jobs/audit.py --json`) still lists them as the only `artifact-not-committed` gaps:
+    - `20261106-073804-jbmc-read-through-json-ui-agrees-with-th`: `lib/target/jobs/4b-differential/differential.jsonl` and `build.txt`;
+    - `20261106-082917-jbmc-s-own-approximations-as-gaps-every`: `lib/target/jobs/4c-jbmc-gaps/build.txt`.
+  - **What closes it:** the user deciding these 3 are not worth keeping.
 - **Closes when**: the audit of the default checkout lists no `artifact-not-committed` gap without a sealed original, or the user decides the 947 are not worth keeping.
 
 ### VF-079: a session's trace line lands on commits it did not make
