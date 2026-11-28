@@ -1500,7 +1500,9 @@ class Runner:
             promise = (spec.get("promises") or {}).get("tests")
             if promise is not None and record["status"] == "passed":
                 # The exit code went as expected; what the step promised besides is read from its reports or its log.
-                tests = evidence.tests(promise, work, log)
+                # Reports written since the step began, and no older: an earlier step's, or ones committed with the
+                # source, are not tests this step ran.
+                tests = evidence.tests(promise, work, log, since=time.time() - (outcome.get("wallSeconds") or 0) - 2)
                 record["evidence"] = [tests]
                 if tests["unmet"]:
                     record["status"] = "failed"
@@ -1550,9 +1552,10 @@ class Runner:
                     result["outputs"].append({"path": rel, "change": "deleted", "bytes": 0, "sha256": None,
                                               "sourceSha256": sha256(show(source, rel) or b"")})
                     changes["deleted"] += 1
-            if not files and not base.exists():
+            if not files and not committed and not changes["deleted"]:
+                # Nothing there, and nothing committed there: a folder a step made and wrote nothing into is not an output.
                 state = "missing" if reached else "never-reached"
-                result["attention"].append(f"declared output {spec} was not produced")
+                result["attention"].append(f"declared output {spec} was not produced" + (": the folder is there and holds no file" if base.is_dir() else ""))
             else:
                 state = next((k for k in ("added", "modified", "deleted") if changes[k]), "unchanged")
                 if sum(1 for k in ("added", "modified", "deleted") if changes[k]) > 1:
@@ -2347,7 +2350,11 @@ def lifecycle_view(config, revs, full=()):
         "runner": {"pid": pid, "atWork": bool(pid), "elsewhere": runner_away},
         "idle": idle,
         "totals": {"unit": "jobs", "of": len(rows), "byState": {s: counts[s] for s in lifecycle.STATES if s in counts},
-                   "drillDown": "jobs[].state; `view --state STATE` lists the rows"},
+                   # Preparation apart from what was asked: a resolve job answers no question of a case's.
+                   "byPurpose": {p: {s: sum(1 for r in rows if (r.get("purpose") or "verify") == p and r["state"] == s)
+                                     for s in lifecycle.STATES if any((r.get("purpose") or "verify") == p and r["state"] == s for r in rows)}
+                                 for p in sorted({r.get("purpose") or "verify" for r in rows})},
+                   "drillDown": "jobs[].state and jobs[].purpose (a job of the first format is a verify job); `view --state STATE` lists the rows"},
         "priorities": {"uncommittedChanges": available["queue"] == "available" and load_priorities() != priorities},
         # The last collect on this machine: what it collected, and how each hook after it ended. A hook that
         # failed stays here until the next collect, whatever became of the jobs.

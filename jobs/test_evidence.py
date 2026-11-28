@@ -45,6 +45,13 @@ class WhichTestsExecuted(unittest.TestCase):
         self.assertEqual(record["failing"], ["org.example.SbomTest.findsPayload"])
         self.assertEqual(record["unmet"], ["1 test(s) failed and 0 ended in an error"])
 
+    def test_a_report_that_was_there_before_the_step_began_is_not_tests_the_step_ran(self):
+        self.report()
+        written = (self.work / "build/test-results").rglob("*.xml").__next__().stat().st_mtime
+        stale = evidence.tests({"reports": ["build/test-results/**/*.xml"]}, self.work, self.log, since=written + 60)
+        self.assertEqual((stale["source"], stale["executed"]), ("none", 0))          # an earlier step's, or one committed with the source
+        self.assertEqual(evidence.tests({"reports": ["build/test-results/**/*.xml"]}, self.work, self.log, since=written - 60)["executed"], 3)
+
     def test_a_step_that_ran_no_test_has_not_kept_its_promise_whatever_it_exited_with(self):
         """VF-070, item 11: the build stopped at the test compile and the script around it exited 0."""
         self.log.write_text("> Task :compileTestGroovy FAILED\nBUILD FAILED in 9s\n")

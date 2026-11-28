@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261128-024257-replay-s48-s-delayed-setup-as-one-reques",
+  "title": "Replay S48's delayed setup as one request through the jobs pipeline",
+  "description": "The third gate of the generic-jobs-pipeline brief, on the real case. VF-076: Spring Boot S48 (example 635, PR #51551) needed the Maven plugin's integration harness, which setup had never exercised, and it took five rounds and six jobs. readiness_gate.py replays it as one request: in a throwaway repository with this checkout's pipeline (jobs/), a consumer job needs the operation in readiness-operation.json, whose base is the S cache made insufficient: without the Maven 3.9.13 distribution, as when those rounds began, and without the ActiveMQ BOM 6.1.8 wherever it is recorded (Maven's local repository, Gradle's file store and Gradle's descriptor of the module), which is stricter than that state and is said in the operation (base.why). The consumer must wait while an unrelated job finishes; one resolution job, admitted by a commit, must fetch what the task asks for from Maven Central (the distribution, by its pinned SHA-512, and the BOM's POM, by the repository's SHA-1), prove the task offline in a network namespace with loopback alone, and publish a bundle with a receipt; the receipt must wake the consumer, which reads the four WARs offline on the prepared view, and its readbacks must equal parent.json and fix.json. Three controls must each be withheld at the fetch stage with nothing published: the BOM withheld from every authorised source, a wrong digest for the Maven distribution, and a repository that does not answer. It runs as one job of the first format because the default checkout's runner is the pipeline of before this line; the scheduler under test is the one in the throwaway repository, run without isolation inside this job's limits. It fetches about 9 MB from Maven Central three times and one POM once. This is the gate's second run. The first (20261128-000950) passed 10 of 13 checks: the request, the wait, the unrelated job, the admission, the offline sandbox and the three controls held, and the resolution stopped in its second round at no-progress, because the view had left Gradle's descriptor of the BOM in place: Gradle held that Maven Central had supplied a file that was gone, and asked for it again after it was laid in Maven's layout. The operation now leaves the descriptor out as well.",
+  "kind": "real-world",
+  "capabilities": [
+    "jobs:readiness",
+    "jobs:resolution"
+  ],
+  "links": {
+    "examples": [
+      "635"
+    ],
+    "paths": [
+      "verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py",
+      "verification/merged-pr-links/s01-s50/maven-war/readiness-operation.json",
+      "jobs/readiness.py"
+    ]
+  },
+  "expected": "exit 0: every check of the gate passed (readiness-gate.json lists each with what was seen): one request, the consumer alone waiting, the unrelated job finished meanwhile, one resolution job, four WAR readbacks equal to parent.json and fix.json read offline, and three controls withheld at the fetch stage",
+  "submitted": {
+    "at": "2026-11-28T02:42:57+00:00",
+    "session": "43b290ac-3fdc-4f32-8f05-45e7bcb78ce2",
+    "run": "single-generic-jobs-pipeline"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "9G",
+    "duration": "20m",
+    "timeout": "100m",
+    "notes": "The run before this one (20261128-023123) took 6m28s and 3.3 GiB and failed 10 of 13: with an empty home the build's own Maven run could not read maven-plugin-plugin, which the earlier, passing runs had read from ~/.m2 unsaid. This run declares that repository as a read and lays a copy into each step's home; a run that goes through took 13m21s and 5.5 GiB before."
+  },
+  "steps": [
+    {
+      "name": "the gate",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py --output verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json"
+  ],
+  "supersedes": "20261128-023123-replay-s48-s-delayed-setup-as-one-reques"
+}

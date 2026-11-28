@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T02:38:30.788Z",
-  "duration_seconds": 41089,
+  "ended": "2026-11-28T02:42:57.763Z",
+  "duration_seconds": 41356,
   "stats": {
     "turns": 37,
-    "api_calls": 1030,
-    "tool_calls": 1101,
+    "api_calls": 1043,
+    "tool_calls": 1114,
     "tool_errors": 15,
     "compactions": 7,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 2086,
-      "output_tokens": 1769255,
-      "cache_read_input_tokens": 314638645,
-      "cache_creation_input_tokens": 3657902
+      "input_tokens": 2112,
+      "output_tokens": 1785258,
+      "cache_read_input_tokens": 320434190,
+      "cache_creation_input_tokens": 3681994
     }
   },
   "tools": {
-    "Bash": 935,
+    "Bash": 948,
     "Read": 88,
     "Write": 41,
     "Edit": 19,
@@ -190,24 +190,24 @@
     {
       "index": 7,
       "started": "2026-11-28T01:45:40.450Z",
-      "ended": "2026-11-28T02:38:30.788Z",
+      "ended": "2026-11-28T02:42:57.763Z",
       "turns": 4,
-      "api_calls": 102,
+      "api_calls": 115,
       "usage": {
-        "input_tokens": 204,
-        "output_tokens": 217666,
-        "cache_read_input_tokens": 30035684,
-        "cache_creation_input_tokens": 424151
+        "input_tokens": 230,
+        "output_tokens": 233669,
+        "cache_read_input_tokens": 35831229,
+        "cache_creation_input_tokens": 448243
       },
-      "peak_context_tokens": 435990
+      "peak_context_tokens": 460082
     }
   ],
   "log": {
-    "sha256": "341640bcb5ac328c29e5875bace6ecaab4003bf3c4492f7672ca0db964e7ba45",
-    "bytes": 29151006,
-    "lines": 10652,
-    "gzip_bytes": 5301626,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/341640bcb5ac328c29e5875bace6ecaab4003bf3c4492f7672ca0db964e7ba45.jsonl.gz"
+    "sha256": "b3ffc578839379ac12831f7c9d0a5722081ee86ace0bbfa89b97de5fd14bf8cf",
+    "bytes": 29352737,
+    "lines": 10774,
+    "gzip_bytes": 5323869,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/b3ffc578839379ac12831f7c9d0a5722081ee86ace0bbfa89b97de5fd14bf8cf.jsonl.gz"
   },
   "subagents": [
     {
@@ -668,6 +668,14 @@
       "summary": "Keep the first pass's snapshots in the control's earlier state, tell the operator about setup jobs wait for, and run the control on eight cases (verification pending)",
       "body": "The control's first real run (job 20261128-023123-replay-five-of-the-s-batch-s-first-setup, still running when this was committed) withheld three of five cases as absent on a Spring Framework BOM snapshot that the setup's first pass had: the gate left out every descriptor Gradle's cache wrote after 09:00 UTC, and the second pass had written the descriptors of the first pass's snapshot modules again. The gate now leaves out the descriptor of a module version only when every file of it is of the second pass (1,392 of them), and the files by their own times as before. S46, whose first job had not failed on a module, came ready in one round with nothing fetched, and its job then failed on the transplant alone, as it did on 2026-11-27. Job 20261128-0?????-replay-eight-of-the-s-batch-s-first-setup (the newest of that name in verification/jobs/2026/11/28) runs eight cases with the corrected state.\n\nThe Gradle gate passed again under the clean sandbox: job 20261128-023123-a-gradle-build-reads-offline-a-library-t, 14 of 14 checks in 4m14s, on the collector's line (jj change zvzrpyxwvwrz).\n\nFor the operator: the /run-verification skill says what a job waiting for setup is, that admitting a resolution job is a commit of what resolve writes, that such a job starts only where fetch_allow names sources (the user's to decide), and how a batch is watched; its stale word for a job this machine cannot run is corrected. ARCHITECTURE.md's row on the job pipeline says what is built and what has not run, and points at the review's table. The results page marks which findings the commit before this one fixed.\n\nVerified: the 47 test files that this cycle's first two commits select all passed (test_costs.py run --changed --from mozxsuwtuqzn); this commit changes a gate script and pages, and the tests it selects passed.",
       "log_sha256": "341640bcb5ac328c29e5875bace6ecaab4003bf3c4492f7672ca0db964e7ba45"
+    },
+    {
+      "change_id": "qupyszptnvvkupvymqvmqqywlzwnoxyx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Declare the home's Maven repository that S48's task reads, and run its gate again (verification pending)",
+      "body": "S48's gate ran again under the clean sandbox (job 20261128-023123-replay-s48-s-delayed-setup-as-one-reques) and failed, 10 of 13 checks: with an empty home directory, the Spring Boot build's own Maven run (for the Maven plugin's descriptor) could not read org.apache.maven.plugins:maven-plugin-plugin:3.6.1. The earlier runs of this gate, the one recorded as 17 of 17 among them, had read it from ~/.m2/repository: 770 files that the S setup's online job for S48 left in the home on 2026-11-27 at 10:05 UTC, in neither the base nor the bundle, and recorded nowhere. So that pass did not show the task ready on prepared inputs alone, and the record of it is corrected in the commit that follows this run.\n\nThe input is now said: the gate copies that repository once to a folder the operation declares under reads, records the digest of its tree, and each step lays it into the empty home it is given. Nothing verified those 770 files when Maven fetched them, and the operation says so. Job 20261128-0?????-replay-s48-s-delayed-setup-as-one-reques (the newest of that name) runs it; whether the task needs anything else of the home is what it will show.\n\nAlso here, from the review's list: a test report written before its step began is no longer counted as tests the step ran (with a test); a folder a step made and wrote nothing into is a missing output, not an unchanged one; the view's totals give the states by purpose, so resolve jobs are counted apart from the work that was asked.\n\nVerified: jobs/test_evidence.py (6, one new), test_formats.py, test_view.py and test_fanout.py pass; the S48 gate is the job.",
+      "log_sha256": "b3ffc578839379ac12831f7c9d0a5722081ee86ace0bbfa89b97de5fd14bf8cf"
     }
   ],
   "logs": {
@@ -879,6 +887,12 @@
       "bytes": 12987280,
       "lines": 4221,
       "gzip_bytes": 2736434,
+      "url": null
+    },
+    "b3ffc578839379ac12831f7c9d0a5722081ee86ace0bbfa89b97de5fd14bf8cf": {
+      "bytes": 29352737,
+      "lines": 10774,
+      "gzip_bytes": 5323869,
       "url": null
     },
     "b76a3d6285137e6cf0a8f2559769284f56b237fed8cd0b9065009d0ee501ef1d": {

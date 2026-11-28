@@ -39,10 +39,13 @@ def _count(text: str, word: str) -> int:
     return int(m[1]) if m else 0
 
 
-def from_reports(root: Path, patterns: list[str]) -> dict | None:
+def from_reports(root: Path, patterns: list[str], since: float | None = None) -> dict | None:
     """The tests that JUnit XML reports record, or None when no file matches. A report that cannot be read is
-    counted as one, and named: a damaged report is not evidence of nothing."""
+    counted as one, and named: a damaged report is not evidence of nothing. With `since`, only reports written
+    from that time on: what was there before the step began is not what it ran."""
     files = sorted({p for pattern in patterns for p in glob.glob(str(Path(root) / pattern), recursive=True)})
+    older = [p for p in files if since is not None and Path(p).stat().st_mtime < since]
+    files = [p for p in files if p not in older]
     if not files:
         return None
     record = {"source": "junit-xml", "reports": len(files), "suites": [], "executed": 0, "failed": 0, "errors": 0,
@@ -114,10 +117,10 @@ def from_log(log: Path) -> dict | None:
     return None
 
 
-def tests(promise: dict, work: Path, log: Path) -> dict:
+def tests(promise: dict, work: Path, log: Path, since: float | None = None) -> dict:
     """The record of a step that promised tests: what executed, by the best source there is, or that nothing says
     any did (`source: none`, executed 0), which is a fact of its own and not a count of zero from a report."""
-    record = from_reports(work, promise["reports"]) if promise.get("reports") else None
+    record = from_reports(work, promise["reports"], since) if promise.get("reports") else None
     if record is None:
         record = from_log(log)
     if record is None:

@@ -42,6 +42,7 @@ ROOT = HERE.parents[3]
 REL = HERE.relative_to(ROOT).as_posix()
 CENTRAL = "https://repo.maven.apache.org/maven2/"
 NOWHERE = "http://127.0.0.1:9/"          # the discard port: nothing listens there
+HOME_M2 = "~/.cache/in-the-loop/readiness-gates/s48-home-m2"
 
 
 def now():
@@ -285,10 +286,20 @@ def main(argv=None) -> int:
                 "memory_floor": "0", "keep_workdirs": "never", "poll_seconds": 2, "link": [], "after_collect": [],
                 "fetch_allow": [CENTRAL], "fetch_slots": 10}
     replay = f"python3 {REL}/replay.py"
+    # The Maven local repository the setup's online runs left in the home, which the build reads: copied once, with the
+    # digest of its tree, to a folder the operation declares under `reads`; every step lays it into its empty home.
+    snapshot = Path(HOME_M2).expanduser()
+    if not (snapshot / "repository").is_dir():
+        shutil.copytree(Path.home() / ".m2/repository", snapshot / "repository", symlinks=True)
+    files = sorted(p for p in (snapshot / "repository").rglob("*") if p.is_file())
+    digest = hashlib.sha256(json.dumps([[p.relative_to(snapshot).as_posix(), hashlib.sha256(p.read_bytes()).hexdigest()] for p in files]).encode()).hexdigest()
+    lay = f'mkdir -p "$HOME/.m2" && cp -a {HOME_M2}/repository "$HOME/.m2/repository" && '
     gate = Gate(work, operation,
-                consumer_steps=[(side, f'mkdir -p readbacks tmp && TMPDIR="$PWD/tmp" {replay} {side} --output readbacks/{side}.json') for side in ("parent", "fix")],
+                consumer_steps=[(side, f'{lay}mkdir -p readbacks tmp && TMPDIR="$PWD/tmp" {replay} {side} --output readbacks/{side}.json') for side in ("parent", "fix")],
                 expected={"readbacks/parent.json": f"{REL}/parent.json", "readbacks/fix.json": f"{REL}/fix.json"}, settings=settings)
-    record = {"schema": "itl-s48-readiness-gate/v1", "startedAt": now(), "operation": args.operation.name, "work": str(work)}
+    record = {"schema": "itl-s48-readiness-gate/v1", "startedAt": now(), "operation": args.operation.name, "work": str(work),
+              "homeMavenRepository": {"copiedTo": HOME_M2, "files": len(files), "treeSha256": digest,
+                                      "note": "declared under the operation's reads; the setup never recorded it and nothing verified it"}}
     try:
         gate.build_repository([REL])
         record["request"] = gate.one_request(args.wait)
