@@ -124,10 +124,11 @@ python3 jobs/pipeline.py submit --purpose test --case S48 --title "..." --descri
 | It binds | With |
 |---|---|
 | which task this is | `describes`: the project, revisions, module, task or goal, profiles, wrapper, toolchain, platform, configuration. Anything that would make it another operation |
-| how far "ready" goes | `level`: `configures`, `resolves`, `builds`, `tests-run` or `readable`. A task graph that configures is not dependencies that resolve, and neither is a packaged result that was read |
-| the prepared inputs it starts from | `base.path`, on the runner. `base.without` leaves paths out, for a gate that needs a state with less in it; the receipt then says `reconstructed` (not the base as it stands) and repeats `base.why`, where the operation says whether that state is one the base was ever in |
+| how far "ready" goes | `level`: `configures`, `resolves`, `builds`, `tests-run` or `readable`. A task graph that configures is not dependencies that resolve, and neither is a packaged result that was read. `tests-run` is shown, not said: the offline run must leave evidence of tests that executed (`task.tests`: `reports`, JUnit XML under `$ITL_READINESS_OUT`, and `min`; with no reports the log's summary lines are read), and a task that ran through with none is withheld as `tests-not-shown` |
+| the prepared inputs it starts from | `base.path`, on the runner. `base.without` leaves paths out, and `base.asOf` (`time`, and the folders `under` which it holds) leaves out every file written after a time, by the files' own times: an earlier state of a cache in one line. The receipt then says `reconstructed` (not the base as it stands), how many paths `asOf` left out, and repeats `base.why`, where the operation says whether that state is one the base was ever in |
+| what else on the runner the task reads | `reads`: whole paths beside the base, bound read-only (a JDK under `~/.sdkman`). Nothing else under the runner's home is there (below) |
 | how the view is laid | `view.env`, the variable the task finds it by; `view.walk`, the folders a tool walks |
-| the task itself | `task.steps`: the commands the consumer will run, run here the same way |
+| the task itself | `task.steps`: the commands the consumer will run, run here the same way; `task.env` for variables they need. `task.independent` says the steps do not depend on each other (one a pin): then each runs though another failed, and one round learns what all of them lack |
 | what it must leave | `outputs`: files under `$ITL_READINESS_OUT`, optionally equal to a committed JSON file or a digest |
 | where a discovered input may come from | `repositories` (Maven layout) and `pinned` inputs with their digests (a tool distribution) |
 | how the consumer finds the result | `view.env`: the variable that names the prepared view |
@@ -165,6 +166,24 @@ The resolution is **rounds**: lay the base and what is staged so far into a view
 (a network namespace with loopback alone, the base bound read-only) and read its log for what it could not find;
 fetch exactly that, verified (a repository's own checksum for a coordinate, the operation's digest for a pinned
 input), into staging; go again. A second stage that asks for a prerequisite nobody knew of is one more round.
+A module is fetched as its POM, its Gradle module metadata when the POM names it, and its main JAR, with the
+parent POMs its POM names, as far up as a repository has them (no tool reads a POM without them); a file a tool
+names beside those (a classifier's JAR: `Could not find a-1.0-linux.jar (g:a:1.0)`) is fetched by its name.
+
+**The task runs on prepared inputs alone** ([`sandbox.py`](sandbox.py), `alone`), in a resolution's rounds and
+in every step of a job that needs a readiness (such a job's steps all have no network; `submit` sets it, and a
+job that says otherwise is not valid). Its home directory is an empty folder of that run's own and so is `/tmp`;
+it can write in its work, and read the view, the base, the bundle and what the operation `reads`. So no
+`~/.m2`, no `~/.gradle`, no settings of the user's: a build that passes read its inputs from the base and the
+bundle, or it did not pass. The variables that point a build tool at a cache or a home of its own
+(`GRADLE_USER_HOME`, `MAVEN_OPTS` and the like, `sandbox.CACHE_VARIABLES`) are not handed down, and the task sets
+its own. A resolution's task also gets `ITL_READINESS_SCRATCH`, a folder that lasts from round to round, for a
+build's compiled scripts. The rest of the machine (`/usr`, `/etc`) is as it is.
+
+**A file fetched once is not asked for again.** What a resolution fetched and verified is kept in the store's
+pool by the address it came from. Another resolution that needs it (another case with the same dependencies)
+copies it from there, after checking its bytes against what was recorded, and its receipt counts it under
+`fetch.reused`. A source the runner does not authorise is not served from the pool either.
 It ends `ready` when the task ran through offline and left its outputs, and then the staged files are published
 as a read-only **bundle** by one rename, with a **receipt**: the operation, every round with what it lacked and
 what was fetched from where, the probe of the offline run, the outputs' digests, the bundle's digest. Otherwise
@@ -180,13 +199,14 @@ readiness is withheld, with the stage and a named outcome, and nothing is publis
 | `no-progress` | consumer | it asks again for what it was given: a second tool of the task reads another place than the files were laid in. The reason quotes its line |
 | `round-limit` | rounds | the operation's rounds were not enough |
 | `output-mismatch` | outputs | the task ran, and an output is missing or is not what was declared |
+| `tests-not-shown`, `tests-not-as-declared` | level | the task ran through at the level `tests-run`, and nothing shows a test that executed, or tests failed that the operation did not say would |
 | `offline-unenforceable` | consumer | this runner cannot take the network away, so nothing was proved |
 
 **The handover.** A ready receipt wakes the job that asked. Before its steps, the runner reads the bundle in
 full against the receipt (one that changed since is handed to nobody, and the job is `blocked` until it is
 resolved again), lays it over the base as a view of that attempt's own, and gives the steps the variable the
-operation names. A step with `--network none` runs with the base and the bundle bound read-only: no cache the
-task can change is inherited. The job's result records the bundle it ran on (`readiness`), and the resolution
+operation names. Its steps run on prepared inputs alone, as above: the base and the bundle read-only, an empty
+home, and each step's record says so (`network.alone`). The job's result records the bundle it ran on (`readiness`), and the resolution
 job's result carries the receipt as its `conclusion`, `ready` or `withheld`, apart from the count of anything
 the case itself was asked. A withheld readiness blocks its consumer with the outcome's name; once the cause is
 put right, `python3 jobs/pipeline.py resolve KEY --again` resolves the same request again, and the receipt keeps
@@ -195,8 +215,16 @@ the earlier attempts.
 What it does not do: it restricts fetching to the operation's repositories under the runner's `fetch_allow` by
 its own fetcher, not by a firewall around the resolution job, whose step has the host's network. It discovers
 Maven coordinates from the lines Gradle and Maven print for a module they could not find or do not have cached
-for offline mode (`readiness.MISSING`), and nothing else: a task that fails offline for another kind of missing
-input ends `undiagnosed`, which is a legitimate outcome and names the log to read.
+for offline mode (`readiness.MISSING`, and `MISSING_FILE` for a file of a module), and nothing else: a task that
+fails offline for another kind of missing input (a Gradle plugin asked for by its id, a wrapper's distribution
+that the operation did not pin) ends `undiagnosed`, which is a legitimate outcome and names the log to read. A
+snapshot is fetched by its plain name, which a repository of releases and a folder have and a snapshot
+repository does not: there it ends `absent`.
+
+**For the runner's operator.** `fetch_allow` is empty until the machine's settings name sources
+(`[runner] fetch_allow = ["https://repo.maven.apache.org/maven2/"]` in the machine's `pipeline.toml`), and with
+none a resolution job is `unschedulable` and says so: which sources a machine fetches from is its owner's to
+say. `fetch_slots` (ten) is how many fetching jobs run at once.
 
 A view over a large base is cheap: a folder on the way to something laid over or left out is made, and every
 other folder is one link (the S cache of 34 GB is laid in 0.2 s, as 4,700 links). `view.walk` names the folders

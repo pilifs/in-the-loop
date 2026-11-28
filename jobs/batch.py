@@ -201,7 +201,9 @@ def maps(root: Path) -> dict[str, dict]:
 def _locked(root: Path, batch: str):
     folder = Path(root) / FOLDER
     folder.mkdir(parents=True, exist_ok=True)
-    lock = open(folder / f".{batch}.lock", "w")
+    held = root / "verification/.state"       # not beside the maps: a lock file there would be committed with them
+    held.mkdir(parents=True, exist_ok=True)
+    lock = open(held / f"batch-{batch}.lock", "w")
     fcntl.flock(lock, fcntl.LOCK_EX)
     return lock
 

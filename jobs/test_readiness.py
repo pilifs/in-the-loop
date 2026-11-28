@@ -18,6 +18,7 @@ import sys
 import tempfile
 import threading
 import unittest
+import unittest.mock
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -43,6 +44,11 @@ if python3 -c "import socket,sys; socket.create_connection(('127.0.0.1', int(sys
   echo "the repository can be reached: this is not offline"; exit 9
 fi
 if echo tampered >> "$view/m2/g/prepared/1.0/prepared-1.0.pom" 2>/dev/null; then echo "the prepared inputs can be written"; exit 8; fi
+# Prepared inputs alone: nothing the machine holds beside them (a folder of the test's that is no input stands for
+# ~/.m2 and ~/.gradle), an empty /tmp, no build tool's home handed down, and the tools the operation says it reads.
+test -z "${FIXTURE_NOT_AN_INPUT:-}" || test ! -e "$FIXTURE_NOT_AN_INPUT" || { echo "what is no input can be read: this is not a clean worker"; exit 10; }
+test -z "$(ls -A /tmp)" && test -z "${GRADLE_USER_HOME:-}" || { echo "a /tmp or a build tool's home was inherited"; exit 10; }
+test -z "${FIXTURE_TOOLCHAIN:-}" || test -f "$FIXTURE_TOOLCHAIN/jdk" || { echo "the declared toolchain cannot be read"; exit 11; }
 test "$ITL_READINESS_M2" = "$view/m2" && grep -q itlReadiness "$ITL_READINESS_GRADLE_INIT" || { echo "the view's tools are not given"; exit 7; }
 # What a Gradle build is given to read: the fetched modules, each whole, and nothing of the base's own.
 test -f "$ITL_READINESS_FETCHED_M2/g/nested-tool/2.0/nested-tool-2.0.pom" && test -f "$ITL_READINESS_FETCHED_M2/g/nested-tool/2.0/nested-tool-2.0.jar" \
@@ -84,6 +90,15 @@ class NestedBuild(unittest.TestCase):
         (self.base / "tools/launcher").write_text("a wrapper\n")
         self.cwd.mkdir()
         (self.cwd / "build.sh").write_text(BUILD)
+        (self.dir / "toolchain").mkdir()
+        (self.dir / "toolchain/jdk").write_text("a JDK\n")
+        (self.dir / "not-an-input").mkdir()
+        (self.dir / "not-an-input/settings.xml").write_text("what the machine holds beside the prepared inputs\n")
+        inherited = {"GRADLE_USER_HOME": "/somewhere/else", **({"FIXTURE_NOT_AN_INPUT": str(self.dir / "not-an-input/settings.xml")}
+                                                              if Path.home() in self.dir.parents else {})}
+        patched = unittest.mock.patch.dict(os.environ, inherited)
+        patched.start()
+        self.addCleanup(patched.stop)
         Quiet.seen = []
         self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(self.repository)))
         threading.Thread(target=self.server.serve_forever, daemon=True).start()
@@ -107,7 +122,9 @@ class NestedBuild(unittest.TestCase):
             "level": "builds", "base": {"path": str(self.base)}, "view": {"env": "FIXTURE_CACHE"}, "layout": {"maven": "m2"},
             "repositories": [self.url],
             "pinned": [{"path": "downloads/tool-3.tar.gz", "url": self.url + "dist/tool-3.tar.gz", "sha256": hashlib.sha256(self.tool).hexdigest()}],
-            "task": {"steps": [{"name": "build", "run": "bash build.sh"}]}, "outputs": [{"path": "built.txt"}], "rounds": 4}
+            "reads": [str(self.dir / "toolchain")],
+            "task": {"steps": [{"name": "build", "run": "bash build.sh"}], "env": {"FIXTURE_TOOLCHAIN": str(self.dir / "toolchain")}},
+            "outputs": [{"path": "built.txt"}], "rounds": 4}
         operation.update(over)
         return operation
 
@@ -187,6 +204,113 @@ class OneRequestResolvesTheWholeTask(NestedBuild):
         self.assertEqual(tampered.read_bytes(), b"<project><packaging>pom</packaging></project>\n")
 
 
+class WhatARealGraphAsksFor(NestedBuild):
+    """What the S batch's first setup pass left out, in small: a module with a parent, a file beside a module's
+    JAR, two pins that lack different things, and the same files needed by one case after another."""
+
+    def script(self, text):
+        (self.cwd / "build.sh").write_text('set -u\nview="$FIXTURE_CACHE"\n' + text)
+
+    def test_a_module_comes_with_its_parents_and_a_file_the_tool_names_is_fetched_by_its_name(self):
+        parent = b"<project><parent><groupId>g</groupId><artifactId>grand</artifactId><version>1</version></parent><packaging>pom</packaging></project>\n"
+        self.publish("g/child/1.0/child-1.0.pom", b"<project><!-- <parent><groupId>no</groupId><artifactId>no</artifactId><version>0</version></parent> -->\n"
+                     b"<parent>\n <groupId>g</groupId>\n <artifactId>parent</artifactId>\n <version>1</version>\n</parent></project>\n")
+        self.publish("g/child/1.0/child-1.0.jar", b"classes\n")
+        self.publish("g/child/1.0/child-1.0-linux.jar", b"a native library\n")
+        self.publish("g/parent/1/parent-1.pom", parent)                 # its own parent, g:grand:1, is in no repository here
+        self.script('m="$view/m2/g/child/1.0"\n'
+                    'test -f "$m/child-1.0.pom" || { echo "> Could not find g:child:1.0."; exit 1; }\n'
+                    'test -f "$view/m2/g/parent/1/parent-1.pom" || { echo "the parent did not come with its module"; exit 4; }\n'
+                    'test -f "$m/child-1.0-linux.jar" || { echo "   > Could not find child-1.0-linux.jar (g:child:1.0)."; exit 1; }\n'
+                    'echo built > "$ITL_READINESS_OUT/built.txt"\n')
+        receipt = self.resolve(self.operation(pinned=[]))
+        self.assertEqual((receipt["state"], [r["result"] for r in receipt["rounds"]]), ("ready", ["failed", "failed", "passed"]), receipt.get("why"))
+        self.assertEqual([[(f["path"], f.get("for")) for f in r["fetched"]] for r in receipt["rounds"]],
+                         [[], [("m2/g/child/1.0/child-1.0.pom", None), ("m2/g/child/1.0/child-1.0.jar", None),
+                               ("m2/g/parent/1/parent-1.pom", "the parent of g:child:1.0")],
+                          [("m2/g/child/1.0/child-1.0-linux.jar", None)]])
+        self.assertEqual(receipt["rounds"][1]["missingFiles"], ["g:child:1.0 child-1.0-linux.jar"])
+        # The parent's own parent was asked for and is nowhere: that is left to the task, which did not need it.
+        self.assertIn("/g/grand/1/grand-1.pom", Quiet.seen)
+        self.assertEqual(readiness.parent_of(parent.decode()), ("g", "grand", "1"))
+        self.assertIsNone(readiness.parent_of("<project><parent><groupId>g</groupId><artifactId>a</artifactId><version>${revision}</version></parent></project>"))
+
+    def test_steps_that_are_independent_each_run_and_one_round_learns_what_both_pins_lack(self):
+        for pin in ("fix", "parent"):
+            self.publish(f"g/{pin}-only/1.0/{pin}-only-1.0.pom", b"<project><packaging>pom</packaging></project>\n")
+        self.script('test -f "$view/m2/g/$1-only/1.0/$1-only-1.0.pom" || { echo "> Could not find g:$1-only:1.0."; exit 1; }\n'
+                    'echo built > "$ITL_READINESS_OUT/$1.txt"\n')
+        steps = [{"name": pin, "run": f"bash build.sh {pin}"} for pin in ("fix", "parent")]
+        outputs = [{"path": "fix.txt"}, {"path": "parent.txt"}]
+        one_by_one = self.resolve(self.operation(pinned=[], task={"steps": steps}, outputs=outputs))
+        self.assertEqual([r["missing"] for r in one_by_one["rounds"]], [["g:fix-only:1.0"], ["g:parent-only:1.0"], []])
+        together = self.resolve(self.operation(pinned=[], task={"steps": steps, "independent": True}, outputs=outputs), n=2)
+        self.assertEqual((together["state"], [r["missing"] for r in together["rounds"]]), ("ready", [["g:fix-only:1.0", "g:parent-only:1.0"], []]))
+        self.assertEqual([s["exitCode"] for s in together["offline"]["steps"]], [0, 0])
+
+    def test_a_file_this_runner_fetched_and_verified_is_not_asked_of_its_source_again_by_another_operation(self):
+        first = self.resolve()
+        asked = list(Quiet.seen)
+        self.assertEqual((first["fetch"]["files"], first["fetch"]["reused"]), (5, 0))
+        other = self.operation(consumer="T02")
+        other["describes"] = {**other["describes"], "module": "another module that needs the same inputs"}
+        second = self.resolve(other, n=2)
+        self.assertNotEqual(second["key"], first["key"])
+        self.assertEqual((second["state"], second["fetch"]["files"], second["fetch"]["reused"], second["fetch"]["reusedBytes"]),
+                         ("ready", 5, 5, first["fetch"]["bytes"]))
+        self.assertEqual(Quiet.seen, asked)                              # nothing was asked of the repository
+        self.assertTrue(all(f["reused"] and f["verifiedBy"] for r in second["rounds"] for f in r["fetched"]))
+        # Each bundle has bytes of its own, and the checksum beside each file as before.
+        mine, theirs = (self.store.bundle(r["key"]) / "m2/g/nested-tool/2.0/nested-tool-2.0.jar" for r in (first, second))
+        self.assertEqual((mine.read_bytes(), mine.stat().st_ino != theirs.stat().st_ino), (theirs.read_bytes(), True))
+        self.assertEqual(Path(str(theirs) + ".sha1").read_text().split()[0], hashlib.sha1(theirs.read_bytes()).hexdigest())
+        # A pooled file that is no longer the bytes recorded for it is fetched again, not handed on.
+        kept, _ = self.store.pooled(self.url + "g/nested-tool/2.0/nested-tool-2.0.jar")
+        kept.write_text("something else\n")
+        third = self.operation(consumer="T03")
+        third["describes"] = {**third["describes"], "module": "a third"}
+        third = self.resolve(third, n=3)
+        self.assertEqual((third["state"], third["fetch"]["reused"]), ("ready", 4))
+        self.assertEqual(Quiet.seen[len(asked):], ["/g/nested-tool/2.0/nested-tool-2.0.jar", "/g/nested-tool/2.0/nested-tool-2.0.jar.sha1"])
+        # A source the runner no longer authorises is not served from the pool either.
+        fourth = self.operation(consumer="T04")
+        fourth["describes"] = {**fourth["describes"], "module": "a fourth"}
+        self.assertEqual(self.resolve(fourth, allow=[], n=4)["outcome"], "unauthorized-source")
+
+    def test_what_nothing_vouches_for_is_never_published_and_a_line_read_as_a_module_no_source_has_does_not_end_the_rounds(self):
+        # A parent POM with no checksum beside it: fetched to be read, never verified, so not kept, laid or published.
+        self.publish("g/child/1.0/child-1.0.pom", b"<project><parent><groupId>g</groupId><artifactId>unvouched</artifactId><version>1</version></parent>"
+                     b"<packaging>pom</packaging></project>\n")
+        self.publish("g/unvouched/1/unvouched-1.pom", b"<project><packaging>pom</packaging></project>\n", checksum=False)
+        self.script('test -f "$view/m2/g/child/1.0/child-1.0.pom" || { echo "> Could not find g:child:1.0."; echo "> Could not find g:garbled:jar:9."; exit 1; }\n'
+                    'test ! -e "$view/m2/g/unvouched" || { echo "an unverified file was laid"; exit 4; }\n'
+                    'echo built > "$ITL_READINESS_OUT/built.txt"\n')
+        receipt = self.resolve(self.operation(pinned=[]))
+        self.assertEqual((receipt["state"], [r["result"] for r in receipt["rounds"]]), ("ready", ["failed", "passed"]), receipt.get("why"))
+        self.assertEqual(sorted(f["path"] for f in receipt["bundle"]["files"]), ["m2/g/child/1.0/child-1.0.pom", "m2/g/child/1.0/child-1.0.pom.sha1"])
+        self.assertIn("g:garbled:9", receipt["rounds"][1]["absent"][0])       # said in the round, and the task did not need it
+        # Asked for by name, the same file withholds readiness, with a name of its own.
+        self.script('echo "> Could not find g:unvouched:1."; exit 1\n')
+        named = self.resolve(dict(self.operation(pinned=[]), describes={"another": "operation"}), n=2)
+        self.assertEqual((named["state"], named["stage"], named["outcome"]), ("failed", "fetch", "unverifiable"), named.get("why"))
+
+    def test_at_the_level_tests_run_a_task_that_ran_through_and_shows_no_test_is_withheld(self):
+        # R49 and R50 (VF-070, item 11): a job that passed 8 of 8 steps while its builds had stopped before any test.
+        self.script('echo "BUILD SUCCESSFUL"; echo built > "$ITL_READINESS_OUT/built.txt"\n')
+        receipt = self.resolve(self.operation(pinned=[], level="tests-run"))
+        self.assertEqual((receipt["state"], receipt["stage"], receipt["outcome"]), ("failed", "level", "tests-not-shown"), receipt.get("why"))
+        self.assertIn("0 test(s) executed, and the step promised at least 1", receipt["why"])
+        self.assertFalse(self.store.bundle(receipt["key"]).exists())
+        self.assertEqual(self.resolve(self.operation(pinned=[], level="builds"), n=2)["state"], "ready")     # as a build, it is one
+        report = '<testsuite name="a.Tests"><testcase classname="a.Tests" name="one"/><testcase classname="a.Tests" name="two"/></testsuite>'
+        self.script('mkdir -p "$ITL_READINESS_OUT/reports"\n'
+                    f"echo '{report}' > \"$ITL_READINESS_OUT/reports/TEST-a.xml\"\n"
+                    'echo built > "$ITL_READINESS_OUT/built.txt"\n')
+        shown = self.resolve(self.operation(pinned=[], level="tests-run", task={"steps": [{"name": "test", "run": "bash build.sh"}],
+                                                                                 "tests": {"reports": ["reports/*.xml"], "min": 2}}), n=3)
+        self.assertEqual((shown["state"], shown["offline"]["evidence"]["executed"], shown["offline"]["evidence"]["suites"]), ("ready", 2, ["a.Tests"]), shown.get("why"))
+
+
 class WhatIsWithheld(NestedBuild):
     def withheld(self, receipt, stage, outcome):
         self.assertEqual((receipt["state"], receipt["stage"], receipt["outcome"]), ("failed", stage, outcome), receipt.get("why"))
@@ -214,6 +338,12 @@ class WhatIsWithheld(NestedBuild):
         operation["repositories"] = ["http://127.0.0.1:9/"]       # the discard port: nothing listens
         receipt = self.resolve(operation, allow=[self.url, "http://127.0.0.1:9/"])
         self.withheld(receipt, "fetch", "repository-unavailable")
+
+    def test_a_tool_the_operation_says_it_reads_and_the_runner_lacks_withholds_at_the_base(self):
+        receipt = self.resolve(self.operation(reads=[str(self.dir / "toolchain"), "/no/such/jdk"]))
+        self.withheld(receipt, "base", "absent")
+        self.assertIn("/no/such/jdk", receipt["why"])
+        self.assertIn("each begins with / or ~/", " ".join(readiness.problems(self.operation(reads=["relative/jdk"]))))
 
     def test_a_source_the_runner_does_not_authorise_is_not_asked(self):
         receipt = self.resolve(allow=["https://repo.example.invalid/"])
@@ -266,6 +396,74 @@ class AnOperation(unittest.TestCase):
             walked = Path(d) / "walked"
             readiness.overlay(base, ["m2/b"], {"m2/c/c.pom": extra / "new.pom"}, walked, walk=["m2"])
             self.assertEqual(links(walked), ["big", "downloads", "m2/a/a.pom", "m2/c/c.pom"])
+
+    def test_an_earlier_state_of_a_base_is_what_was_written_by_a_time(self):
+        with tempfile.TemporaryDirectory() as d:
+            base = Path(d) / "base"
+            early, late = 1_700_000_000, 1_700_009_000
+            for rel, when in (("cache/files/g/first/1/aa/first-1.pom", early), ("cache/files/g/first/1/bb/first-1.jar", late),
+                              ("cache/files/g/second/2/cc/second-2.pom", late), ("cache/files/h/third/3/dd/third-3.pom", late),
+                              ("cache/records/g/first/1/descriptor.bin", early), ("cache/index.bin", late), ("other/new.txt", late)):
+                (base / rel).parent.mkdir(parents=True, exist_ok=True)
+                (base / rel).write_text(rel)
+                os.utime(base / rel, (when, when))
+            operation = {"base": {"path": str(base), "without": ["tmp/"], "asOf": {"time": "2023-11-14T23:00:00+00:00", "by": "mtime", "under": ["cache/files", "cache/records", "cache/none"]}}}
+            # A folder written whole after the time is left out as one path; beside an older file, only the newer one.
+            self.assertEqual(readiness.left_out(operation), ["tmp/", "cache/files/g/first/1/bb", "cache/files/g/second", "cache/files/h"])
+            view = readiness.overlay(base, readiness.left_out(operation), {}, Path(d) / "view")
+            self.assertEqual(sorted((Path(folder) / name).relative_to(view).as_posix() for folder, _, names in os.walk(view, followlinks=True) for name in names),
+                             ["cache/files/g/first/1/aa/first-1.pom", "cache/index.bin", "cache/records/g/first/1/descriptor.bin", "other/new.txt"])
+            # Everything under a folder written after the time: the folder stays, empty.
+            later = {"base": {"path": str(base), "asOf": {"time": "2023-11-14T20:00:00Z", "by": "mtime", "under": ["cache/files"]}}}
+            self.assertEqual(readiness.left_out(later), ["cache/files/g", "cache/files/h"])
+            # By default a file's time is the later of its content's and its entry's: Maven gives a downloaded file its
+            # repository's last-modified time, years back, and these files, set back just now, count as written now.
+            by_entry = {"base": {"path": str(base), "asOf": {"time": "2023-11-14T23:00:00Z", "under": ["cache/files", "cache/records"]}}}
+            self.assertEqual(readiness.left_out(by_entry), ["cache/files/g", "cache/files/h", "cache/records/g"])
+            # A receipt remembers what its base was laid without, and a view laid later is compared with it.
+            receipt = {"operation": operation, "base": {"asOf": {"time": "t", "leftOut": 3, "digest": readiness.laid_without(operation)["digest"]}}}
+            self.assertIsNone(readiness.drift(receipt))
+            os.utime(base / "cache/files/g/first/1/aa/first-1.pom", (late, late))
+            self.assertIn("leaves out 2 path(s) now and left out 3 when it was resolved", readiness.drift(receipt))
+        said = readiness.problems({"schema": "itl-readiness-operation/v1", "level": "builds", "describes": {"x": 1}, "task": {"steps": [{"run": "true"}]},
+                                   "base": {"path": "/base", "without": ["../outside/", "/etc"], "asOf": {"time": "2026-11-27 09:00", "under": ["cache"]}},
+                                   "pinned": [{"path": "../../x", "url": "u", "sha256": "0"}]})
+        self.assertEqual(len(said), 4, said)
+        self.assertIn("a path is relative to the base and stays inside it: './m2//x'",
+                      readiness.problems({"base": {"path": "/base", "without": ["./m2//x"]}}))
+        # The same request, whatever the prose and the budget of rounds; another earlier state is another.
+        asked = lambda **base: readiness.key({"describes": {"x": 1}, "rounds": base.pop("rounds", 5), "base": {"path": "/base", **base}})
+        self.assertEqual(asked(why="as it was", rounds=5), asked(why="as it was, said better", rounds=14))
+        self.assertNotEqual(asked(without=["a"]), asked(without=["b"]))
+        self.assertIn("base.asOf needs a `time` with its zone (2026-11-27T09:00:00Z) and the folders `under` which it holds", said)
+        self.assertIn("a path is relative to the base and stays inside it: '../outside/'", said)
+
+    def test_a_source_is_allowed_by_its_parts_and_a_line_that_names_no_module_is_not_one(self):
+        allow = ["https://repo.example.org/maven2", "file:///mirror/"]
+        for url in ("https://repo.example.org/maven2/g/a/1/a-1.pom", "file:///mirror/g/a/1/a-1.pom"):
+            readiness.authorise(url, allow)
+        for url in ("https://repo.example.org.evil.example/maven2/g/a-1.pom", "https://repo.example.org@evil.example/maven2/a.pom",
+                    "https://repo.example.org/maven2-other/a.pom", "https://repo.example.org/maven2/../secret", "http://repo.example.org/maven2/a.pom",
+                    "https://repo.example.org:8443/maven2/a.pom", "file:///mirror-of-something-else/a.pom"):
+            with self.assertRaises(readiness.Withheld, msg=url):
+                readiness.authorise(url, allow)
+        log = """> Could not find g:a:.
+[ERROR] Failure to find org.x:lib:jar:tests:1.0 in https://repo.example.org/maven2 was cached in the local repository
+[ERROR] Could not find artifact org.x:dist:tar.gz:bin:2.0 in central
+> Plugin [id: 'com.example.conventions', version: '1.4'] was not found in any of the following sources:"""
+        self.assertEqual(readiness.missing_coordinates(log), [("com.example.conventions", "com.example.conventions.gradle.plugin", "1.4"),
+                                                              ("org.x", "dist", "2.0"), ("org.x", "lib", "1.0")])
+        self.assertEqual(readiness.missing_files(log), [("org.x", "dist", "2.0", "dist-2.0-bin.tar.gz"), ("org.x", "lib", "1.0", "lib-1.0-tests.jar")])
+
+    def test_a_file_of_a_module_that_a_tool_names_is_read_with_its_module(self):
+        log = """   > Could not find netty-transport-native-epoll-4.2.9.Final-linux-x86_64.jar (io.netty:netty-transport-native-epoll:4.2.9.Final).
+     Searched in the following locations:
+         file:/view/itl-readiness-fetched/io/netty/netty-transport-native-epoll/4.2.9.Final/netty-transport-native-epoll-4.2.9.Final-linux-x86_64.jar
+   > Could not download spring-core-7.0.0-SNAPSHOT-test-fixtures.jar (org.springframework:spring-core:7.0.0-SNAPSHOT): No cached version available for offline mode
+> Could not find g:stage-one:1.0."""
+        self.assertEqual(readiness.missing_files(log),
+                         [("io.netty", "netty-transport-native-epoll", "4.2.9.Final", "netty-transport-native-epoll-4.2.9.Final-linux-x86_64.jar"),
+                          ("org.springframework", "spring-core", "7.0.0-SNAPSHOT", "spring-core-7.0.0-SNAPSHOT-test-fixtures.jar")])
 
     def test_what_a_build_tool_says_it_lacks_is_read_as_coordinates(self):
         log = """> Could not find g:stage-one:1.0.

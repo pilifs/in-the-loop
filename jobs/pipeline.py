@@ -639,6 +639,9 @@ def job_problems(job):
         for i, step in enumerate(job.get("steps") or []):
             if step_network(job, step) not in NETWORKS:
                 problems.append(f"steps/{i}: network {step_network(job, step)!r} is not one of {', '.join(NETWORKS)}")
+            if step_network(job, step) != "none" and any("readiness" in need for need in job.get("needs") or []):
+                problems.append(f"steps/{i}: a job that needs a readiness runs on the prepared inputs alone, every step with no network "
+                                f"(`environment.network: none`); this step's is {step_network(job, step)}")
             if step_network(job, step) == "fetch" and job.get("purpose") != "resolve":
                 problems.append(f"steps/{i}: only a resolve job has a fetch step: a {job.get('purpose')} job's "
                                 "prerequisites are resolved by a job of their own")
@@ -1370,17 +1373,25 @@ class Runner:
                 result["attention"].append(f"readiness {key[:12]} could not be handed over: {wrong[0]}")
                 return False
             receipt = store.receipt(key)
+            moved = readiness.drift(receipt)
+            if moved:
+                result["status"] = "error"
+                result["attention"].append(f"readiness {key[:12]} could not be handed over: {moved}; resolve it again")
+                return False
             operation, bundle = receipt["operation"], store.bundle(key)
             view = entry["attempt"].folder / "readiness" / key[:16]
             fetched = {f["path"]: bundle / f["path"] for f in receipt["bundle"]["files"]}
-            readiness.overlay(Path(operation["base"]["path"]).expanduser(), operation["base"].get("without") or [], fetched, view,
+            readiness.overlay(Path(operation["base"]["path"]).expanduser(), readiness.left_out(operation), fetched, view,
                               walk=(operation.get("view") or {}).get("walk") or [])
             laid.append({"key": key, "view": str(view), "env": (operation.get("view") or {}).get("env", "ITL_READINESS_VIEW"),
                          "tools": readiness.equip(view, operation, fetched),
                          "bundleDigest": receipt["bundle"]["digest"], "receiptAt": receipt.get("at"), "level": receipt.get("level"),
                          "resolvedBy": receipt.get("resolvedBy")})
-            # What a step with no network may read and not write: the prepared inputs and the bundle laid over them.
-            entry.setdefault("readonly", []).extend([str(Path(operation["base"]["path"]).expanduser()), str(bundle)])
+            # What a step with no network may read and not write: the prepared inputs, the bundle laid over them, and
+            # the tools the operation declares its task reads. Such a job's steps see nothing else under the home.
+            entry.setdefault("readonly", []).extend([str(Path(operation["base"]["path"]).expanduser()), str(bundle),
+                                                     *(str(Path(p).expanduser()) for p in operation.get("reads") or [])])
+            entry["alone"] = entry["attempt"].folder
         if laid:
             result["readiness"] = laid
         return True
@@ -1430,15 +1441,27 @@ class Runner:
                     # enforce this does not start such a job at all (plan): this is the sandbox failing since.
                     raise RuntimeError(f"step {i} ({name}) is to run with no network, and that cannot be enforced "
                                        f"here ({offline.get('why')}): it was not run")
+            box, step_env = None, env
+            if network == "none" and entry.get("alone"):
+                # A job on prepared inputs (it needs a readiness): an empty home and /tmp of this step's own, its work
+                # to write in, and the view, the base, the bundle and the declared tools to read (jobs/sandbox.py).
+                # The runner's own wrapper runs inside it, and writes the step's counters beside its log.
+                box, tmp = sandbox.alone(entry["alone"] / "box" / str(i), [work, log.parent],
+                                         [self.wrapper, entry["alone"] / "readiness", *entry.get("readonly", [])])
+                step_env = {**sandbox.clean(env, Path("/tmp")), **{k: str(v) for k, v in job_env(job).items()}}   # what the job itself sets stays
+                offline["alone"] = {"home": "empty, of this step", "tmp": "empty, of this step"}
+            elif network == "none":
+                box = sandbox.prefix(binds=[("ro", path, path) for path in entry.get("readonly", [])])
             step = Step(f"vjob-{scope_id(job['id'])}-{i}", self.isolation, result["limits"]["cpus"],
                         result["limits"]["memoryLimitBytes"], self.runner["stall_window"], self.runner["max_timeout"],
-                        self.runner["job_oom_score_adj"],
-                        prefix=sandbox.prefix(binds=[("ro", path, path) for path in entry.get("readonly", [])]) if network == "none" else None)
+                        self.runner["job_oom_score_adj"], prefix=box)
             entry["steps"].append(step)
             if entry.get("memoryStop"):  # stopped between the check above and now
                 step.urgent = step.cancelled = True
-            outcome = step.run(spec["run"], work / spec.get("cwd", "."), env, log, log.with_suffix(".stats"),
+            outcome = step.run(spec["run"], work / spec.get("cwd", "."), step_env, log, log.with_suffix(".stats"),
                                self.wrapper, timeout)
+            if network == "none" and entry.get("alone"):
+                shutil.rmtree(entry["alone"] / "box" / str(i), ignore_errors=True)   # the step's home and /tmp: nothing of them is a result
             record = self.step_record(spec, i, outcome, log, workload_of(job))
             expected = spec.get("expectExit", 0)
             expected = expected if isinstance(expected, list) else [expected]
@@ -1886,7 +1909,24 @@ def cmd_resolve(args):
         try:
             operation = json.loads(path.read_text())
         except (OSError, ValueError) as e:
-            skipped.append({"key": key, "why": f"{path.relative_to(ROOT)} cannot be read here ({e}): the request's operation is committed with the job that asks"})
+            # The job that asks was committed in another workspace, and its operation with it: read it at that
+            # commit, and write it here, so that the commit which admits the resolution job carries what it resolves.
+            operation = None
+            for asking in request["wantedBy"]:
+                found = next((j for j in view["jobs"] if j["id"] == asking), None) or {}
+                try:
+                    operation = json.loads(show((found.get("source") or {}).get("commit") or found.get("commit") or "", f"{readiness.FOLDER}/{key}.json"))
+                    break
+                except Exception:  # noqa: BLE001  (any way of not finding it there is the same answer)
+                    continue
+            if operation is None:
+                skipped.append({"key": key, "why": f"{path.relative_to(ROOT)} cannot be read here ({e}), nor at the commit of a job that asks: "
+                                                   "the request's operation is committed with the job that asks"})
+                continue
+            if not args.dry_run:
+                write_json(path, operation)
+        if readiness.key(operation) != key:
+            skipped.append({"key": key, "why": f"{path.relative_to(ROOT)} is not the operation of that key (its own is {readiness.key(operation)[:12]})"})
             continue
         title = f"Resolve readiness {key[:12]}: {operation.get('title') or 'an operation'}"[:200]
         job = ordered({
@@ -3289,6 +3329,8 @@ def cmd_submit(args):
             job["needs"] = [n for i, n in enumerate(needs) if n not in needs[:i]]
         if args.network:
             job.setdefault("environment", {})["network"] = args.network
+        elif any("readiness" in need for need in needs):
+            job.setdefault("environment", {})["network"] = "none"     # prepared inputs alone: it is what the readiness is for
         outputs += [{"path": path, "required": False} for path in args.optional_output or []]
         seen = {}
         for output in outputs:   # each path once: what was said of it last holds

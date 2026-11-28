@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261128-021235-replay-five-of-the-s-batch-s-first-setup",
+  "title": "Replay five of the S batch's first setup jobs through delayed setup, from the cache as the first pass left it",
+  "description": "The control the generic-jobs-pipeline brief names beside S48 (VF-070): on 2026-11-27, 41 of the S batch's 49 first setup jobs failed for setup reasons, 38 on modules a dry run does not resolve. The gate lays the S cache as it was after the setup's first resolution pass (base.asOf: what Gradle's cache wrote after 09:00 UTC is left out), submits five cases as one manifest (S01, S11, S25, S42, S46), each a job that needs its builds and landed tests ready at both pins, admits the five requests as the watcher does, and lets the resolution jobs find what each task lacks by running it offline in rounds. The authorised source is a folder made from the retained cache (what the second pass fetched), so nothing is asked of a repository. It runs this checkout's pipeline nested in a throwaway repository, four jobs at a time. The record says, for each case, whether it came ready, in how many rounds, what was fetched and reused, and whether its job then ran its tests offline; S11 and S46 are cases whose transplant did not fail in the original run, and S46's first job did not fail on a missing module.",
+  "kind": "real-world",
+  "capabilities": [
+    "jobs:readiness",
+    "jobs:resolution",
+    "jobs:batch"
+  ],
+  "links": {
+    "examples": [
+      "635"
+    ],
+    "paths": [
+      "verification/merged-pr-links/s01-s50/setup-control/gate.py",
+      "verification/merged-pr-links/s01-s50/setup-control/case_task.sh",
+      "jobs/readiness.py"
+    ]
+  },
+  "expected": "exit 0: every check of the gate passed (control.json lists each): one request a case, every case waiting until the admission, one resolution job a request, every resolution ready or withheld with a named outcome, no job failing for want of an input, and every case explained. How many came ready and in how many rounds is the record's summary, a measurement.",
+  "submitted": {
+    "at": "2026-11-28T02:12:35+00:00",
+    "session": "43b290ac-3fdc-4f32-8f05-45e7bcb78ce2",
+    "run": "single-generic-jobs-pipeline"
+  },
+  "requires": [
+    "java",
+    "git",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 16.0,
+    "memory": "16G",
+    "duration": "60m",
+    "timeout": "170m"
+  },
+  "steps": [
+    {
+      "name": "the control",
+      "run": "python3 verification/merged-pr-links/s01-s50/setup-control/gate.py --cases S01,S11,S25,S42,S46 --workers 4 --output verification/merged-pr-links/s01-s50/setup-control/control.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/setup-control/control.json"
+  ]
+}

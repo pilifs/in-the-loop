@@ -70,7 +70,10 @@ class DelayedSetup(unittest.TestCase):
         self.store = readiness.Store(self.dir / "store")
         self.repo = Repo(poll_seconds=1, fetch_allow=[self.url], readiness_dir=str(self.store.root))
         self.addCleanup(self.repo.close)
-        self.env = {"REPOSITORY_PORT": str(self.server.server_address[1])}
+        (self.dir / "not-an-input").mkdir()
+        (self.dir / "not-an-input/settings.xml").write_text("what the machine holds beside the prepared inputs\n")
+        self.env = {"REPOSITORY_PORT": str(self.server.server_address[1]), "GRADLE_USER_HOME": "/somewhere/else",
+                    **({"FIXTURE_NOT_AN_INPUT": str(self.dir / "not-an-input/settings.xml")} if Path.home() in self.dir.parents else {})}
         (self.repo.dir / "build.sh").write_text(BUILD)
         self.runner = None
         self.addCleanup(self.stop)
@@ -170,7 +173,8 @@ class DelayedSetup(unittest.TestCase):
         # Each consumer ran after it, offline and on the prepared inputs, and read what the task builds.
         for consumer in (first, second):
             result = self.staged(consumer)
-            self.assertEqual((result["status"], result["steps"][0]["network"]["enforced"], result["readiness"][0]["key"]), ("passed", True, key))
+            self.assertEqual((result["status"], result["steps"][0]["network"]["enforced"], result["readiness"][0]["key"]), ("passed", True, key),
+                             result["steps"][0].get("tail"))
             self.assertEqual(result["readiness"][0]["bundleDigest"], concluded["readiness"][0]["bundleDigest"])
             self.assertGreaterEqual(result["startedAt"], resolved["finishedAt"])
             read = (self.repo.dir / "verification/.state/results" / consumer / "outputs/read.txt").read_bytes()

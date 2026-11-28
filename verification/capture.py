@@ -139,7 +139,8 @@ def _parts(arch, job, attempt, source, run_dir, work, result, root, status, why=
                                     notes=notes, **meta)
     outputs = (result or {}).get("outputs") or []
     # A declared output the work directory does not hold never materialized; one it holds unchanged is in the commit.
-    never = [spec for spec in job.get("outputs") or [] if work is not None and not (Path(work) / spec).exists()]
+    declared = [spec["path"] if isinstance(spec, dict) else spec for spec in job.get("outputs") or []]   # a second-format job's may be objects
+    never = [spec for spec in declared if work is not None and not (Path(work) / spec).exists()]
     if (run_dir / "outputs").is_dir() or outputs or never:
         made["outputs"] = arch.capture(run_dir / "outputs", "job-outputs", f"{base}/outputs", status=status,
                                        expected=[o["path"] for o in outputs if o["change"] != "deleted"] + never,

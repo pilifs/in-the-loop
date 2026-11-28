@@ -66,6 +66,37 @@ def prefix(home: Path | None = None, binds: list[tuple[str, str, str]] | None = 
     return cmd + ["--"]
 
 
+# What points a build tool at a cache, a home or options of its own, wherever the runner happens to have them set: a
+# task that is to run on prepared inputs alone is not given them. It sets its own (a Gradle home under its work).
+CACHE_VARIABLES = ("GRADLE_USER_HOME", "GRADLE_RO_DEP_CACHE", "GRADLE_OPTS", "MAVEN_OPTS", "MAVEN_ARGS", "MAVEN_HOME", "M2_HOME", "M2_REPO",
+                   "JAVA_TOOL_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVA_OPTIONS", "CARGO_HOME", "RUSTUP_HOME", "GOPATH", "GOMODCACHE", "GOCACHE",
+                   "PIP_CACHE_DIR", "PIP_INDEX_URL", "PYTHONUSERBASE", "PYTHONPATH", "XDG_CACHE_HOME", "XDG_CONFIG_HOME", "XDG_DATA_HOME",
+                   "IVY_HOME", "SBT_OPTS", "COURSIER_CACHE", "YARN_CACHE_FOLDER")
+
+
+def clean(env: dict, tmp: Path | None = None) -> dict:
+    """An environment for a task that runs on prepared inputs alone: the caller's, without the variables that
+    point a build tool at a cache or a home of its own, and with the temporary folder the sandbox gives it."""
+    kept = {k: v for k, v in env.items() if k not in CACHE_VARIABLES and not k.lower().startswith("npm_config_")}
+    if tmp is not None:
+        kept["TMPDIR"] = str(tmp)
+    return kept
+
+
+def alone(box: Path, writable: list, readable: list) -> tuple[list[str] | None, Path]:
+    """The command prefix for a task that is to see prepared inputs and nothing a machine has gathered since: no
+    network, an empty home directory and an empty /tmp of its own (under `box`), `writable` folders (its work),
+    and `readable` ones bound read-only (the prepared inputs, the bundle, the tools it declares it reads). What
+    is under the real home is not there unless it is one of those: no ~/.m2, no ~/.gradle, no settings of the
+    user's. The rest of the machine (/usr, /etc) is as it is. Returns the prefix and the /tmp folder's source."""
+    home, tmp = Path(box) / "home", Path(box) / "tmp"
+    home.mkdir(parents=True, exist_ok=True)
+    tmp.mkdir(parents=True, exist_ok=True)
+    binds = [("rw", str(tmp), "/tmp")] + [("rw", str(p), str(p)) for p in writable] + \
+        [("ro", str(p), str(p)) for p in readable if Path(p).exists()]
+    return prefix(home=home, binds=binds), tmp
+
+
 def probe(home: Path | None = None) -> dict:
     """What a command would find in the sandbox: `enforced` only when the sandbox started, shows no interface
     but loopback, and refused both the connection and the lookup."""
