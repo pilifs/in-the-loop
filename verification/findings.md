@@ -18,6 +18,39 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-082: the examples router links pages that examples 147 and 148 do not have
+
+- **Status**: open, minor. To be settled in the future revamp of examples, not on its own (the user, 2026-11-28).
+- **Raised**: 2026-11-28 by the advisor session (`e61d882b…`), while checking the links of `examples/README.md` for the user's routing pass (workspace `project-structure`, on `3556fdc29e72`).
+- **Found**:
+  - **The links.** The generated table *All examples* in [`examples/README.md`](../examples/README.md#all-examples) (written by `examples/tools/build.py --index-only` from each `example.json`) links the rows of 147 and 148 to `README.md` pages those folders don't have. Each folder holds only `change.patch`, `example.json` and `gaps.contracts`. The link checker of `llm-dlc/tools/test_architecture.py`, run on that page, reports both. The page isn't one the test checks, so nothing fails.
+  - **Why the pages are missing.** Both are constructed B11 examples that never reached a proof ([VF-002](#vf-002-examples-147-148-and-149-never-reach-a-proof)): on 2026-11-07 they failed in 3 s in `build.py`'s contract staging, and the timebox deferred them. No run wrote a `result.json`, so no page was rendered. The router lists them anyway, with a link to the page a run would write.
+- **Needs**: the user's direction (2026-11-28): a larger revamp of `examples/` is planned, likely moving towards "cases". Address this as part of it, not on its own. Whatever replaces the router should not link a page that no run has written: it can show an example that hasn't run without a link, with its reason (here VF-002), or not list it.
+- **Tracked in**: this entry; VF-002 for why the two never ran.
+- **Closes when**: the revamped catalog has no link to a missing page (a link check over it passes), and 147 and 148 are listed with their state, or run.
+
+### VF-081: the two routes a new reader takes from a fresh checkout have not been walked
+
+- **Status**: open, a check to run.
+- **Raised**: 2026-11-28 by the advisor session (`e61d882b…`), at the user's request, from the last item of the user's routing notes for the new `ARCHITECTURE.md` (workspace `project-structure`, on `3556fdc29e72`).
+- **Found**: the routing pass rewrote the front pages and the child pages a reader moves through:
+  - `ARCHITECTURE.md` and `README.md`;
+  - `examples/README.md`'s *Follow the evidence*;
+  - a new `examples/tools/targets/README.md`;
+  - `jobs/README.md`, `verification/README.md` and `lib/README.md`.
+
+  `test_architecture.py` shows that their links lead somewhere. It doesn't show that a reader, or an agent, can follow them to an answer. The notes ask for two walks, which exercise the two handoffs most likely to drift as the product grows:
+  1. **From Commons IO.** Starting from the README, a reader should reach example 338's registered claim (`claims/bytes.json`), its independent controls, and both opposing receipts: `bytes-parent` refuted and `bytes-fix` established.
+  2. **From a blocked build.** Starting from a job that can't start for want of inputs, a reader should reach its lifecycle row (`jobs/pipeline.py view`), the readiness operation it waits on, and the evidence of which task actually ran (the readiness receipt, and for `tests-run`, the tests that ran).
+- **Needs**: a fresh agent, or a person, in a fresh checkout, with no context from the routing pass, starting only from `README.md`. Record each walk:
+  - the pages and files it passed through;
+  - where it stalled, guessed or needed a command not on the page;
+  - whether it reached each record named above.
+
+  Fix what it finds in the page that owns it, in the same change.
+- **Tracked in**: this entry.
+- **Closes when**: both walks reach every record named above from the front page alone, and any page they found wanting is fixed, with the walks' record attached here.
+
 ### VF-080: 947 kept outputs that receipts name are in no commit and no archive; 944 survive in one working copy
 
 - **Status**: open. Nothing is lost that was not already out of the commit; what is still on disk has one copy.
