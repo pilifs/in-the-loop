@@ -343,6 +343,37 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
 The loop statistics count such a run as a moonshot named `single-NAME`, each text it sent a cycle, once its
 record is in the default workspace (see the run records, above).
 
+What the domain agent does inside a cycle (registering a claim, binding it to the code that runs, running the
+controls and the checker, and qualifying what comes back) is described in
+[`ARCHITECTURE.md`, *How a change is proven*](../ARCHITECTURE.md#how-a-change-is-proven).
+
+### From a finding to the next brief
+
+A run's rough edges become the next run's work in five steps. (Moved here from `ARCHITECTURE.md` on 2026-11-28,
+when the user replaced that page; its section [*How execution changes the next
+plan*](../ARCHITECTURE.md#how-execution-changes-the-next-plan) describes the reuse that follows.)
+
+1. **Capture.** The agent or the watcher records the first operation that failed: the actor and phase, the
+   checkout and revision, the case or batch, what the agent was told, what was expected and what was observed.
+   Tell one anomalous attempt from a bottleneck that repeats, and use a finding that exists when one fits.
+2. **Reconcile.** A person, or a watcher with delegation, says which it is: a stale instruction, a missing
+   capability, a defect, capacity, or a choice of the user's. Check the owner in
+   [*Who owns what*](../ARCHITECTURE.md#who-owns-what), the direction already given and the queue before
+   proposing work, and record what has landed and what is open.
+3. **Plan.** The brief's author links the finding and picks one owner, one small cut, one fixture that fails
+   and one clean control. A change that crosses a row of *Who owns what* updates `ARCHITECTURE.md` and says so.
+4. **Land.** The change updates the real owner, the views generated from it and its test together. The
+   capability is called shipped for the mode and version that were tested, and what is left stays visibly open.
+5. **Observe.** Look at the next comparable run that comes up by itself. Did it take the right entry, do the
+   work through the intended jobs, and keep every case's outcome? Attach the answer to the finding, and close,
+   narrow or reopen it.
+
+**An example.** VF-045 was that an agent could start a run. It has a guard, and since 2026-11-27 one run skill
+that is the user's alone to start. VF-072 asks a different question of the same incidents: does an agent with
+49 builds still have to improvise? That one is settled by the next batch, by comparing the jobs submitted with
+the cases expected, the builds made inline, the jobs that passed with no test executed and the waits that
+never ended. A finding has both tests: one of the implementation and one of what happens in use.
+
 ### Claude Code or Codex
 
 A loop's session can be carried by Codex instead of Claude Code, chosen when the run starts: `single_run.py start

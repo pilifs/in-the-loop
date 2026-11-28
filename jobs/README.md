@@ -435,3 +435,17 @@ files by their git ids):
 `test_audit.py` holds the pipeline to it: the census of the pinned revision is recomputed and compared, and every
 row of the manifest must be at the checked-out commit with the same git ids, so a change that moves a pending
 specification or rewrites a receipt fails there.
+
+## What is not settled yet
+
+What the pipeline intends and has not yet shown in use. The open review findings of 2026-11-28 are listed, one by
+one, in [the jobs campaign's results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md#the-review-of-2026-11-28-what-three-fresh-readers-found).
+These conditions were moved here from the old [`ARCHITECTURE.md`](https://github.com/pilifs/in-the-loop/blob/3556fdc29e72/ARCHITECTURE.md#what-is-not-built-yet) when the user replaced that page.
+
+- **Adoption.** The pipeline is settled as the one way to queue work when a watcher has run a whole cycle and a
+  real batch on it. Add no second way to queue work meanwhile (the user's direction, 2026-11-27: `/run-verification`
+  and the idea of a verification job grow into this pipeline).
+- **Network and remote capacity.** The ceiling on fetch-bound jobs (`fetch_slots`, 10) and the pace of the
+  machine's one fetch queue are first guesses. They change only by measurement, from the receipts of a real batch:
+  queue wait, fetch throughput, cache reuse and local work. Image pulls are not counted. Remote workers go through
+  the same job and result contract ([Backends](../verification/README.md#backends-other-machines-and-the-cloud)).
