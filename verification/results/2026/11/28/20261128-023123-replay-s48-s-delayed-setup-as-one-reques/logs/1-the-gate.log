@@ -1,0 +1,20 @@
+ok    the request is one file, the operation under its key
+      the runner is at work; the consumer needs a readiness nobody has resolved
+ok    the unrelated job finished during the wait
+ok    only the consumer waits, and the view says for what
+ok    nothing was fetched or published before the admission
+ok    one resolution job is written for the one request
+      admitted 20261128-023219-resolve-e5e5d0f9a725-build-and-read-the
+FAIL  readiness is established by one resolution job: {"status": "failed", "summary": "failed: 1 failed step(s) in 3m30s, peak 1.6 GiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed", "conclusion": {"key": "e5e5d0f9a725620294f1553b891cbd37f3fdb380d68c13ed0cd59f162e3a64ce", "verdict": "withheld", "stage": "consumer", "outcome": "undiagnosed", "why": "step parent exited 1 offline and named nothing it lacks: s.check_inputs,args.fetch) File \"/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z/repository/verification/.state/attempts/20261128-023219-resolve-e5e5d0f9a725-build-and-read-the/001-549910/work/verification/merged-pr-links
+ok    the resolution's offline run saw no network
+FAIL  what was fetched is what the task asked for, each verified: []
+ok    the base was laid without what the task has to ask for, and the receipt says so
+FAIL  the consumer ran: {"error": "[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z/repository/verification/.state/results/20261128-023215-read-the-task-s-outputs-offline-on-the-p/result.json'", "job": {"id": "20261128-023215-read-the-task-s-outputs-offline-on-the-p", "title": "Read the task's outputs offline on the prepared inputs", "format": "itl-job/v2", "path": "verification/jobs/2026/11/28/20261128-023215-read-the-task-s-outputs-offline-on-the-p.json", "purpose": "test", "workload": "generic", "case": "S48", "batch": null, "labels": null, "submitted": {"at": "
+      control withheld-bom: a resolution that must be withheld (absent)
+ok    control withheld-bom: readiness is withheld at the fetch stage (absent), and nothing is published
+      control wrong-maven-digest: a resolution that must be withheld (digest-mismatch)
+ok    control wrong-maven-digest: readiness is withheld at the fetch stage (digest-mismatch), and nothing is published
+      control unavailable-repository: a resolution that must be withheld (repository-unavailable)
+ok    control unavailable-repository: readiness is withheld at the fetch stage (repository-unavailable), and nothing is published
+
+10 of 13 checks passed; failed: readiness is established by one resolution job; what was fetched is what the task asked for, each verified; the consumer ran
