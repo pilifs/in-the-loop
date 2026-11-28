@@ -193,6 +193,13 @@ never ended. A finding has both tests: one of the implementation and one of what
 5. `python3 llm-dlc/tools/retired.py check` must find nothing, in the checkout the change lands in as well as
    the one it was made in.
 
+A script under `verification/` is a special case, because a committed job runs it by a command line and a test
+may load it by a path it builds: no import shows either. Read its row in
+[`verification/scripts.md`](verification/scripts.md) first (`python3 jobs/script_inventory.py --write`
+regenerates the page, and a test fails when a script was added or removed without it). A script that
+committed jobs ran stays where their commands find it; only an orphan candidate that someone who has read
+its campaign confirms is removed, in a change of its own.
+
 ## How this page is kept
 
 - **When.** In the change that moves a responsibility, changes who may do something, adds or removes a public

@@ -256,10 +256,20 @@ an HTTP server on 127.0.0.1, which a process in the offline sandbox cannot reach
 (`:build-plugin:spring-boot-maven-plugin:intTest --tests ...MavenWarObservation` on both pins, by `replay.py`),
 asks for the level `readable`, pins the Maven 3.9.13 distribution by its SHA-512, names Maven Central, and
 expects readbacks equal to the committed `parent.json` and `fix.json`. Its base is the S cache
-(`~/.cache/in-the-loop/spring-boot-pr-links-s01-s50`) **reconstructed** as it was before VF-076's rounds: without
-the ActiveMQ BOM 6.1.8 in Maven's layout and in Gradle's, and without the Maven distribution. Laid as a view
-(0.2 s, 4,703 links), `replay.py parent --check-inputs` fails on it as it did then ("missing original Maven
-3.9.13 distribution"), and the BOM is in neither place.
+(`~/.cache/in-the-loop/spring-boot-pr-links-s01-s50`) **made insufficient**: without the ActiveMQ BOM 6.1.8
+wherever it is recorded (Maven's local repository, Gradle's file store, Gradle's descriptor of the module),
+and without the Maven distribution. Laid as a view (0.2 s, about 4,700 links), `replay.py parent
+--check-inputs` fails on it ("missing original Maven 3.9.13 distribution"), and the BOM is in none of the three
+places.
+
+**That state is stricter than the one VF-076's rounds began in, and the operation says so** (`base.why`,
+repeated in the receipt). The files' dates show it: the Maven distribution reached the cache at 14:42 UTC on
+2026-11-27, during the rounds, so it was absent when they began; the BOM had been in both caches since 07:47
+and 07:53, from the setup phase. What failed then was Gradle asking, offline, a repository that had not been
+the one to supply the file, and the passing replay got round it with a file mirror of the retained caches and
+a patched BOM resolver, not with a fetch. A gate that started from that state would have one pinned file to
+fetch and nothing to discover. The brief's pass condition names the BOM as something a source can withhold,
+so here it has to be asked for and fetched.
 
 **The replay.** `readiness_gate.py` builds a throwaway repository with this checkout's pipeline, submits the
 consumer (it needs the operation, runs `replay.py` on both pins with no network, brings back the two readbacks)
@@ -279,7 +289,47 @@ inside the offline sandbox, which Gradle's workers need; Gradle's wording for th
 (`Could not download activemq-bom-6.1.8.pom (org.apache.activemq:activemq-bom:6.1.8): No cached version
 available for offline mode`, in 20261127-142145's log) is one the resolver reads.
 
-**Result.** Pending: job `20261128-000950-replay-s48-s-delayed-setup-as-one-reques`.
+**First run: failed, 10 of 13 checks** (job `20261128-000950-replay-s48-s-delayed-setup-as-one-reques`, 5m58s,
+5.3 GiB at its peak; its `readiness-gate.json` is in the result, collected in commit `ff9850bcd48d`).
+
+| Check | Result |
+|---|---|
+| the request is one file, the operation under its key | passed |
+| the unrelated job finished during the wait | passed |
+| only the consumer waits, and the view says for what | passed |
+| nothing was fetched or published before the admission | passed |
+| one resolution job is written for the one request | passed |
+| the resolution's offline run saw no network | passed: `bwrap --unshare-net`, loopback alone, a connection and a name lookup both refused |
+| the base was laid without what the task asks for, and the receipt says so | passed |
+| control: the BOM withheld from the source | passed: withheld at `fetch`, `absent`, nothing published |
+| control: a wrong SHA-512 for the Maven distribution | passed: withheld at `fetch`, `digest-mismatch` |
+| control: a repository that does not answer | passed: withheld at `fetch`, `repository-unavailable` |
+| readiness is established by one resolution job | **failed**: withheld at `consumer`, `no-progress` |
+| what was fetched is what the task asked for, each verified | failed with it: nothing was published |
+| the consumer ran | failed with it: readiness was withheld, so it was never started |
+
+What happened in the resolution. Round 1 fetched the Maven distribution (9.6 MB, its pinned SHA-512) and ran
+the task offline for 73 s, until `createResolvedBom` said it could not get
+`org.apache.activemq:activemq-bom:6.1.8`. Round 2 fetched the BOM's POM from Maven Central (7,881 bytes, the
+repository's SHA-1), laid it in Maven's layout and ran the task for 129 s. It went past `createResolvedBom`
+and through more than a hundred compile tasks, and then `populateResolvedDependenciesMavenRepository` asked
+for the same POM. The resolver stopped there, as it is meant to when a task asks again for what it was given,
+and published nothing.
+
+The cause was the view, not the task or the resolver. It had left out the BOM's file in Gradle's store and
+kept Gradle's descriptor of the module, so Gradle held that Maven Central had supplied a file that was gone,
+went to Central for it, offline, and never looked at the file mirror the replay gives it. No state of the
+cache had ever been like that. The operation now leaves the descriptor out as well (`base.without`), and
+says what its state is and is not (`base.why`).
+
+Two things came of it for the mechanism. The `no-progress` reason now quotes the line that asked and says
+where the files were laid, since the usual cause is a second tool that reads another place. And the limit is
+recorded: the resolver lays a module in Maven's layout only. A task whose Gradle build can read a module from
+nowhere but Gradle's own module cache needs Gradle itself to fetch it, with the network restricted to the
+authorised sources, which is not built.
+
+**Second run.** Job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques` supersedes the first, on the
+corrected operation. Its result is not in yet.
 
 ## The scripts under `verification/`
 
@@ -287,26 +337,44 @@ available for offline mode`, in 20261127-142145's log) is one the resolver reads
 ([`verification/scripts.md`](../../verification/scripts.md), and `scripts.json` for a program), with its callers
 of every kind: the command lines of committed jobs (by the script's path, or from the folder the step runs in
 or changes to), tests (by path, or by an import after the test put the script's folder on the import path),
-other code, and pages, skills and settings. Session logs are not callers.
+other code, live pages, skills and settings, and, apart from those, the records of past runs (a brief, a
+results page, a finding), which show that a script was used and keep nothing usable. Session logs are not
+callers. Each row also has its owner (the campaign's folder), the last job that passed with it and the commit
+that job ran at, and what would re-check it.
 
 | Class | Scripts | What it means for a cleanup |
 |---|---|---|
 | shared runner code | 2 | `layout.py`, `capture.py`: loaded by path from `jobs/` and other tools. They stay |
 | compatibility entry point | 1 | `pipeline.py`: every committed job's and note's command |
 | test | 4 | |
-| supported campaign replay | 67 | a test, a page or other code keeps it usable |
-| historical-only tool | 12 | committed jobs ran it and nothing live names it. It stays where those jobs' commands find it: moving it breaks their replay |
-| orphan candidate | 10 | no caller of any kind was found |
+| supported campaign replay | 40 | a test, a live page or code that is itself supported keeps it usable |
+| historical-only tool | 38 | committed jobs ran it (28), or a run's record names it (7), or only such tools call it (3), and nothing live does. It stays where those jobs' commands find it: moving it breaks their replay |
+| orphan candidate | 11 | no caller of any kind was found (10), or only orphan candidates call it (1) |
+
+The first version of the inventory counted any page as a live caller, and said 77 supported and none
+orphaned: this page's own list of candidates had made each of them "named by a page", and a mention of an
+`audit.py` anywhere in a page that also named a campaign's folder made that campaign's `audit.py` supported.
+Three rules came of it. A run's record is not a live caller. A page names a script on one line (its path, or
+its file name with its folder's name), while code may build the path from parts. And a class is no stronger
+than the callers that give it, followed from what is supported, so that two scripts that only call each
+other support neither.
+
+**What re-checks a script.** 9 rows have a test (the four test files are their own), 49 have a job that
+passed with them (to run again at the commit it ran at, which the row gives), and 38 have neither: 17 of the
+supported, 10 of the historical and the 11 candidates. "Supported" therefore says that something live names
+the script, not that anything shows it still works.
 
 **The two controls hold.** Each of the five scripts in `verification/triage/` is run by a committed job
 (`jobs/test_script_inventory.py` reads that from the repository), and
 `verification/test_merged_pr_qualification.py` is found as the caller of the campaign's `audit.py` and
 `qualify.py`, which it imports after putting their folder on the import path.
 
-**Nothing was removed or moved.** The 10 orphan candidates are a list to look at, not a decision:
-`blind-caller/evaluator/isolation_probe.py`, `blind-caller/evaluator/score_controls.py`, `blind-caller/evaluator/semantic_reference.py`, `blind-caller/evaluator/url_parity.py`, `blind-caller/nominate_histories.py`, `blind-caller/trace_control.py`, `classpath-entry-discovery/check_resource_predictions.py`, `classpath-entry-discovery/replay_frozen.py`, `generated-observers/freeze.py`, `product-behaviour/cases/J07/reference.py`. No job, test, code or page names them by a path or a name the inventory
-recognises; a caller that builds a path at run time from parts would not be seen. Removing any is a separate,
-reversible change through the retirement register (`llm-dlc/retired.md`), by someone who has read the campaign.
+**Nothing was removed or moved.** The orphan candidates are a list to look at, not a decision, and they are
+listed in [`verification/scripts.md`](../../verification/scripts.md) and not here on purpose: this page is a run's
+record, and a record that named them by path would be read by the next inventory as one of their callers. No
+job, test, code, page or record names them by a path or a name the inventory recognises; a caller that builds a
+path at run time from parts kept in data would not be seen. Removing any is a separate, reversible change through
+the retirement register (`llm-dlc/retired.md`), by someone who has read the campaign.
 The retirement check's live paths have covered `jobs/` since the first commit of this run.
 
 ## Gate 1: the census

@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T00:17:31.019Z",
-  "duration_seconds": 32630,
+  "ended": "2026-11-28T00:33:03.069Z",
+  "duration_seconds": 33562,
   "stats": {
     "turns": 33,
-    "api_calls": 758,
-    "tool_calls": 821,
+    "api_calls": 802,
+    "tool_calls": 865,
     "tool_errors": 11,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1542,
-      "output_tokens": 1329419,
-      "cache_read_input_tokens": 242487060,
-      "cache_creation_input_tokens": 2878194
+      "input_tokens": 1630,
+      "output_tokens": 1391956,
+      "cache_read_input_tokens": 247647345,
+      "cache_creation_input_tokens": 2984817
     }
   },
   "tools": {
-    "Bash": 671,
+    "Bash": 715,
     "Read": 82,
     "Write": 35,
     "Edit": 19,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T00:17:31.019Z",
+      "ended": "2026-11-28T00:33:03.069Z",
       "turns": 1,
-      "api_calls": 4,
+      "api_calls": 48,
       "usage": {
-        "input_tokens": 8,
-        "output_tokens": 4384,
-        "cache_read_input_tokens": 200637,
-        "cache_creation_input_tokens": 49237
+        "input_tokens": 96,
+        "output_tokens": 66921,
+        "cache_read_input_tokens": 5360922,
+        "cache_creation_input_tokens": 155860
       },
-      "peak_context_tokens": 64404
+      "peak_context_tokens": 171027
     }
   ],
   "log": {
-    "sha256": "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f",
-    "bytes": 22709281,
-    "lines": 7613,
-    "gzip_bytes": 4364399,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f.jsonl.gz"
+    "sha256": "42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0",
+    "bytes": 23519374,
+    "lines": 8069,
+    "gzip_bytes": 4457457,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -456,20 +456,28 @@
       "log_sha256": "5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4"
     },
     {
-      "change_id": "ylylzttyxlwyltmlztmttwkmppvoonpk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f"
-    },
-    {
       "change_id": "tnwmnzynpotlpwzmnqxtkrvswmmwvqpt",
       "commit_id": null,
       "immutable": false,
       "summary": "Ask for S48's setup as one request from a cache made insufficient, with three controls (verification pending)",
       "body": "The brief's gate 3 names S48 (Spring Boot example 635, PR #51551) as the case that qualifies delayed setup: on 2026-11-27 its two Maven WAR builds were made readable only after a chain of failed jobs, each naming one more missing input. This commit prepares the replay of that case through the new readiness path and queues it as job 20261128-000950-replay-s48-s-delayed-setup-as-one-reques, which has not run yet.\n\nWhat the job runs. verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py builds a throwaway repository holding this line's pipeline, lays the S cache with what the original chain lacked taken out (the ActiveMQ BOM 6.1.8 in both the Maven and the Gradle layout, and the Maven 3.9.13 distribution), and submits one consumer job that needs the operation in readiness-operation.json beside it. It then checks that there was one logical request and one resolution job, that no consumer job failed on the way, that the four WARs were read offline on both pins and equal the committed parent.json and fix.json, that an unrelated job finished during the wait, and three controls that must each refuse with their own reason: a withheld BOM (absent), a wrong digest for the Maven distribution (digest-mismatch) and a repository that does not answer (repository-unavailable). It writes readiness-gate.json with every check and a timeline, and exits 0 only when every check passed. The watcher's runner is still the pipeline of the default checkout, so the job itself is of the first format and runs the new scheduler inside its one step.\n\nWhat changed in the mechanism for it. A view of a cache can now walk named folders file by file (view.walk) instead of linking them whole, so one module can be withheld from a tree of thousands, and a withheld path ending in / leaves an empty folder. What a build tool says it lacks is read as coordinates from Gradle's and Maven's own lines (missing_coordinates), including the line the original failure printed. The resolver lays .sha1 files beside what it fetched.\n\nVerified: the tests of what changed, 35 of 35 Python test files (python3 lib/tools/test_costs.py run --changed), jobs/test_readiness.py among them with 12 tests. Without running the task: the S48 view over the real cache is laid in 0.2 s as 4,703 links and is the intended insufficient state (replay.py parent --check-inputs fails on the missing Maven distribution), and the gate's own logic passes 16 of 16 checks on the made-up nested build. S48 itself is not verified until the job's result is read; the results page says so under Gate 3: S48.\n\njobs/README.md and the results page already name the inventory of the scripts under verification/, which is in the next commit.",
       "log_sha256": "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f"
+    },
+    {
+      "change_id": "znzlssyqyukxysonyrrxokxmprzvkwyr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0"
+    },
+    {
+      "change_id": "vrwpywworqlknoorvtyuuurwmrqzwnvz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Inventory the scripts under verification/ with who calls each, and record what this run changed for each finding",
+      "body": "The brief asks for an inventory of the executable files under verification/ and their callers before any is moved, because a lack of Python imports is weak evidence there: a committed job runs a script by a command line, and a test may load one by a path it builds.\n\njobs/script_inventory.py lists the 96 scripts outside the records with every kind of caller: the command lines of committed jobs (by the script's path, or from the folder the step runs in or changes to), tests (by path, or by an import after the test put the folder on the import path), other code, live pages, skills and settings, and, kept apart, the records of past runs (briefs, results pages, findings), which show a script was used and keep nothing usable. Each row has its owner, the last job that passed with it and the commit that job ran at, and what would re-check it. It writes verification/scripts.md and scripts.json: 2 shared runner code, 1 compatibility entry point, 4 tests, 40 supported campaign replays, 38 historical-only tools and 11 orphan candidates. 38 scripts have neither a test nor a passed job to re-check them.\n\nThree rules came from the first version, which said 77 supported and none orphaned because this run's own results page listed the candidates and so counted as their caller. A run's record is not a live caller. A page names a script on one line, while code may build its path from parts. And a class is no stronger than the callers that give it, followed from what is supported, so two scripts that only call each other support neither.\n\nNothing was moved or removed. The brief's two controls hold and are tested from the repository itself: each of the five scripts in verification/triage/ is run by a committed job and is a historical-only tool, and verification/test_merged_pr_qualification.py is found as the caller of the campaign's audit.py and qualify.py. ARCHITECTURE.md's section on retiring something says to read a script's row first.\n\nverification/findings.md has a dated update on each finding the brief names (VF-076, 070, 072, 069, 051, 060, 020, 029, 030, 025, 077 to 080), saying what this run built against that finding's own closure line. No status changed. VF-076's update also records the first real run of the S48 gate (job 20261128-000950: 10 of 13 checks, stopped in the resolution's second round because the gate's view of the cache was inconsistent for Gradle) and a correction the files' dates give: the BOM was in both caches before the original rounds, and only the Maven distribution was absent. The results page has the checks one by one. The corrected operation and the second run's job are in the next commit.\n\nVerified: jobs/test_script_inventory.py (8 tests), and the tests of what changed, 16 of 16 Python test files (python3 lib/tools/test_costs.py run --changed), before the last regeneration of the page and the edits to the two pages' text; retired.py check finds nothing.",
+      "log_sha256": "42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0"
     }
   ],
   "logs": {
@@ -525,6 +533,12 @@
       "bytes": 4850417,
       "lines": 1517,
       "gzip_bytes": 949744,
+      "url": null
+    },
+    "42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0": {
+      "bytes": 23519374,
+      "lines": 8069,
+      "gzip_bytes": 4457457,
       "url": null
     },
     "50abdc716ccdfed446ba7543f8f9a545102f5ff96a26d15c240e250d4ffb3388": {

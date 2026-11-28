@@ -31,6 +31,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - **The watcher or the user, in the default checkout:** hand the 944 files to the private archive while they exist. `python3 jobs/audit.py --json` there lists each under `gaps` with the kind `artifact-not-committed`.
   - **The pipeline** (this run): a collect that keeps an output says so when the commit will not take its path, and the audit keeps counting what is still outside.
 - **Tracked in**: this entry; [`jobs/README.md`](../jobs/README.md#the-baseline) for the baseline; the run's [results page](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md).
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): the tool to seal them exists and has not been run where the files are: `python3 jobs/pipeline.py recover --kept-outputs`, for the watcher or the user to run in the default checkout once this line lands (a run's agent changes nothing there). The audit goes on listing them as a gap until then.
 - **Closes when**: the audit of the default checkout lists no `artifact-not-committed` gap without a sealed original, or the user decides the 947 are not worth keeping.
 
 ### VF-079: a session's trace line lands on commits it did not make
@@ -48,6 +49,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     - **Done 2026-11-27,** by the advisor's change after `ynzzzokp`: `sync.py`'s `current_here`. Only the session running the command, or a live session whose transcript is the checkout's own, is given its `@`. A live session synced by name from another workspace's transcript is not. The rule for what a trace line means is still the user's to decide.
   - The three commits keep their lines: trace lines are not edited by hand.
 - **Tracked in**: this entry.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): not addressed. What the pipeline now records for attribution is on the job, not on the commit: `submitted.run` and `submitted.session`. How a trace line lands on a commit stays with `sync.py`.
 - **Closes when**: the rule is decided and written down, and a sync of a session from another workspace's transcript leaves that workspace's working copy as it found it.
 
 ### VF-078: a run's reported spend leaves out its last turns, and a run in a workspace of its own is in no published record
@@ -61,6 +63,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   1. Note the cost of every turn of a run, the last cycle, the compacts and the summary included, where the loop ends a turn and not where the watcher is asked.
   2. Have `single_run.py land` copy the run's records into the default workspace before its commit (`run_records.collect` does the copying), and decide whether the records already in a workspace are brought in once.
 - **Tracked in**: this entry.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): not addressed by the jobs pipeline, and said where it shows: a result's `timing` reports queue wait, elapsed time, preparation and the requested steps with a state each (`measured`, `derived`, `partial`, `not-run`, `unknown`), and model spend is not in it: it belongs to the run's record, with its existing owner.
 - **Closes when**: a run's reported spend equals the client's total for its session, and a run that worked in a workspace of its own is a row of `llm-dlc/traces/loops.md` after it lands.
 
 ### VF-077: the redaction review can't see what is already published, and values leave through encodings, wrapped lines and a person's pane
@@ -133,6 +136,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
        - `review` groups a family of findings by its pattern, so that one decision with a reason covers the family.
     7. **Make every `sync.py` subcommand honour `--help`** and print its usage without acting (the hazard in the `sync-push-ignores-help` note).
 - **Tracked in**: this entry. Gap 4 is related to VF-070 item 5, which aims to treat run-made names as non-secret.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): one item of it is built: a new job carries the run its submitter works in (`submitted.run`, read from the loop's systemd scope, apart from the source revision and from who collects), and the lifecycle view gives the ids of the occurrences sealed in the private archive and nothing of their content. The redaction review itself is as it was.
 - **Closes when**:
   - the user has decided `56b88bc7` and the 66 proposals;
   - each of gaps 1 to 7 has a fix, with a test, or is dismissed by the user.
@@ -157,6 +161,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   3. **Wider setup resolution:** the setup also resolves the build-plugin integration paths a brief's claims name (here the Maven plugin's harness), at a cost in setup time.
   4. **A first failure that names everything:** a job's offline failure lists every missing artifact of the task, not the first one, so one resolution pass covers it.
 - **Tracked in**: this entry; VF-070 for setup phases; VF-072 for the worker request.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): direction 2 is built, and its closure evidence is not in yet. A job can need a readiness operation (`submit --needs-readiness`, [`jobs/readiness.py`](../jobs/readiness.py)); it waits alone while a resolution job, admitted by the watcher's commit, runs the task offline in rounds, fetches what each round asks for from the sources the runner authorises, and publishes a bundle with a receipt that wakes it. On a made-up nested build one request took three rounds and no failed consumer job (`jobs/test_delayed_setup.py`). S48 itself is replayed inside one job. Its first run (`20261128-000950-replay-s48-s-delayed-setup-as-one-reques`) passed 10 of 13 checks: the one request, the consumer waiting alone while an unrelated job finished, the admission, the offline sandbox and three controls (the BOM withheld, a wrong digest for Maven, a repository that does not answer) held, and the resolution stopped in its second round because the gate's own view of the cache was inconsistent for Gradle; the corrected run is job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques`, pending. The files' dates also correct item 1 above: the BOM had been in both caches since the setup phase (07:47 and 07:53 UTC), so `createResolvedBom` failed on Gradle asking a repository that had not supplied it, not on an absent file; only the Maven distribution was absent. The status stays open: it closes on a domain run, and none has used this yet. Direction 4 is not built: the resolver reads what each offline round names, not all of a task's needs at once. A module that a Gradle build can read only from Gradle's own module cache is beyond it too: it lays files in Maven's layout.
 - **Closes when**: a domain run that needs an unresolved task gets it resolved by one request or job, verified offline, with no chain of failing jobs.
 
 ### VF-075: a brief author drops the second observation that changes one input, leaves orders open, and picks heavier observations than needed
@@ -307,6 +312,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   5. **Machine-wide run visibility.** `single_run.py list --all` and the doctor show every `feature-loop-*` scope, in every state, with its root.
   6. **Setup hygiene.** Setup dry runs cover the test tasks, and a setup job fails when no test ran.
 - **Tracked in**: this entry; VF-045 for the enforcement; the write-up named above.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): the fan-out part is built and not yet used by a campaign: `python3 jobs/pipeline.py submit --manifest` writes one ordinary job for each row of a validated manifest with a published map from rows to jobs, `wait --batch NAME` is the typed wait, and `batch NAME` the report ([`jobs/README.md`](../jobs/README.md#a-batch-from-a-manifest)); a made-up batch of 49 rows was interrupted, submitted twice, run, watched, collected and one row resubmitted (`jobs/test_fanout.py`). The sealed producer and the request for a model-driven worker are not touched. The status stays as it is: it closes on a real 49-case setup that builds nothing inline.
 - **Closes when**: a 30-to-50-case batch fans out, a blind producer runs sealed, and a model-driven worker runs at the user's word, all through these tools, with no agent reading a run skill to find them.
 
 ### VF-070: what stops or slows an unattended setup phase: a register from the organic PR queue of 2026-11-25 and 26
@@ -405,6 +411,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
       - or the user decides that a setup's builds may run inline within its cap, which would make this the standing practice.
 
 - **Needs**: the user, to choose a direction for each item, or dismiss it.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): two of its items have a mechanism now, shown on fixtures and on no setup phase yet. Item 11 (a job that passed with builds stopped at a test compile): a step of a second-format job that says it runs tests (`promises.tests`) is held to evidence of them, from JUnit XML reports or the log's summary lines, and a step that exited 0 and shows none is `failed` (`jobs/evidence.py`, `jobs/test_formats.py`). Item 12 (offline misses outside a case's own modules): a readiness operation is resolved by running the task itself offline until it runs through (VF-076). The status is unchanged.
 - **Closes when**: items 2, 3, 5 to 7, 11 and 12 have fixes or are dismissed by the user. Item 1 closes with VF-069, and item 4 is already fixed. Items 8 to 10 close with a recorded decision.
 
 ### VF-069: an agent's wait loop matches its own command line in pgrep and never ends; a hung run needs the user
@@ -431,6 +438,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   3. **A sanctioned unhang for the watcher:** a `single_run.py` command that lists and ends a run's idle child processes (sleep or `until` loops older than N minutes, with no live target) without stopping the turn, so the watcher can clear this without the user and without a broad kill.
   4. **Make commits fast enough not to background.** The ~15-minute `check` is the root pressure (see the slow `review show` too).
 - **When it closes**: a setup or domain run can wait for its own long commit without hanging, and a hung wait can be cleared by the watcher with a sanctioned command.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): the waits a keeper or an agent needs are commands with a typed answer, so none has to match a process by its command line: `wait --json` (`finished`, `no-runner`, `timeout`) and `wait --batch NAME --json` (`settled`, `timeout`, `unknown`), and the watcher's keeper reads the runner's state from the lifecycle view. What this finding asks of a hung run (`single_run.py unhang`) is as it was.
 
 ### VF-068: merging a promotion's record back conflicts in the manifest of a session that kept working after the freeze
 
@@ -699,6 +707,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
   - **Cleanup:** the watcher removed the archived (`remote_verified`) work folders.
 - **Needs**: `pipeline.py`'s export (and `submit`) should refuse a source revision that has conflicts, or at least fail the job at once with a clear reason, instead of materialising the conflict layout and running on it.
 - **Tracked in**: this finding.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): preserved across the move of the pipeline to `jobs/pipeline.py`: `verification/test_pipeline.py`'s tests of the conflict check at export run unchanged through the old entry point, and a job whose source is a conflicted commit is still an `error` with nothing of it run. In the lifecycle view such a result has `execution.stopped.reason` `not-run` with the refusal as its reason. No change to the disposition.
 - **Closes when**: a job whose source revision is conflicted is refused before it runs, and a test shows it.
 
 ### VF-059: nothing picks a brief up from the queue while no run is going
@@ -856,6 +865,7 @@ For entries 25–28, released callers reproduced the marked skip on Commons IO 2
   shared across checkouts (the machine's `~/.config/in-the-loop/` or the default workspace's `.state`). Scope names
   could also carry the checkout. A brief or the operating notes may need to tell a run's agent plainly not to start a
   runner. The six jobs also have to run again.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): preserved across the move, and tested between the two versions: the pipeline of `b52a084f5d11` in one workspace and this one in another turn each other away by the same lock, both ways, and on one state directory each sees the other at work (`jobs/test_coexistence.py`). No change to the disposition.
 - **Closes when**: a second `pipeline.py run` from another workspace is refused while one is at work, and the six jobs
   have results that weren't cut off.
 
@@ -1531,6 +1541,7 @@ that did not execute can also cause refusal.
   (cargo's `--no-fail-fast`, or one job per test file, with the three VF-018 tests excluded or expected to fail),
   and the Python proof tests as their own job. I did not change the job's steps myself.
 - **Tracked in**: VF-018.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): used as a control for the result's new blocks, and nothing was backfilled. A step skipped after a failing one is in `execution.skipped` with its reason and leaves the job `unfulfilled` (`skipped`); for a receipt of before, the blocks are computed by the reader and marked `derived`, and no receipt's status was rewritten, so a test after the failing step has no passing result it did not have.
 - **Closes when**: a proof-tier job covering the binaries after `heap` and the Python proof tests passes at a commit
   with these engine changes.
 - **Update 2026-11-16** (job `20261116-053833-the-proof-tier-after-example-287-s-engin`, at `26a42d401510`, passed on
@@ -1636,6 +1647,7 @@ that did not execute can also cause refusal.
   snapshot.max-new-file-size 2097152`), or have `collect` leave out a `changes.diff` over the limit (or compress it),
   or have jobs keep their scratch output out of the declared outputs. The job's `outputs` listed `lib/target/vf009`,
   which is build output; a submitter's call for the jobs that follow.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): used as a control for the move. The compressed and the summarised forms of an oversized `changes.diff` are written by the same code as before (`keep_diff`), the manifest of `b52a084f5d11` (paths and git blob ids of every specification, receipt and collected output) verifies at this line, and the audit reports a kept output a receipt names that is in no commit as a gap with its reason (VF-080 is what that found).
 - **Closes when**: `jj st` shows no refused file after a collect, or the result is recorded as lacking its diff on
   purpose.
 - **Decided** by the user on 2026-11-07: `collect` handles the size. A `changes.diff` over jj's limit is written
@@ -1981,6 +1993,7 @@ that did not execute can also cause refusal.
 - **Decision**: its leftover result was moved to `verification/.state/set-aside/20261115-181435-object-comparisons-cancelled`
   and not collected or triaged. It says nothing about the change. Nothing to rerun: VF-018 is the open entry for the
   same tests.
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): used as a control for the lifecycle view. A cancelled job is still eligible to run again and is still not collected unless named; the view now shows it in the state it is waiting in, with the stopped attempt in its `attempts` and a `cancelled` block, so an intentionally uncollected cancellation is visible without being a result.
 
 ### VF-028: example 307 Phase 5 step 1: `BCrypt.hashpw(String,String)` preservation and mutant-preservation refused at `--nullable password`, so neither is as expected
 
@@ -2025,6 +2038,7 @@ that did not execute can also cause refusal.
 - **Found**: `collect` applied 54 outputs under `runtime-mutant/attempt/`. Three are JARs of 1,482,575-1,482,592 bytes (`prepare/mutant/lib/org.springframework/spring-core-5.3.19.jar`, `prepare/mutant/mutant/spring-core-5.3.19.jar`, `prepare/r5-3-19/lib/org.springframework/spring-core-5.3.19.jar`), above jj's `snapshot.max-new-file-size` (1 MiB), so every `jj` command warns and the commit leaves them out. The other 51 outputs, the result and its logs are committed. The mutant JAR, the one that is the job's point, is among the missing; its classes' hashes are in the committed `prepared.json`. I did not raise the limit or edit the result.
 - **Needs**: the user or the runtime loop to decide: gitignore these JARs (they are acquired by sha256, or rebuilt from the patch), or raise the limit for the repo (same cause as VF-020). The example's notes should say the JARs are not in the history.
 - **Tracked in**: [`llm-dlc/loops/example-targets-runtime.md`](../llm-dlc/loops/example-targets-runtime.md) (R2).
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): used as a control for the audit, which tells the three apart by git's own ids: a file a receipt names is in the commit (a blob id in the manifest), only in a working copy (a gap, with the ignore rule that kept it out), or sealed in the archive (an occurrence id the receipt carries). The audit's first run on the corpus found 947 such files in no commit (VF-080).
 - **Closes when**: the JARs are ignored or committed and `jj st` stops warning.
 - **Corrected** 2026-11-14 by the example-targets loop (Phase 5 step 1, request 11): contrary to **Found**, the three JARs
   are in the history. `jj file list` at the collect commit `msotkvrv` lists all three, at 1,482,575 and 1,482,592 bytes,

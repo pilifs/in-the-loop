@@ -20,7 +20,7 @@ is read in. What is intended and not built is in [`ARCHITECTURE.md`](../ARCHITEC
 | [`readiness.py`](readiness.py) | setup a running case asks for: an operation, its resolution in rounds by running the task offline, the bundle and the receipt; [`workloads/resolution.py`](workloads/resolution.py) is the resolution job's adapter. [`test_readiness.py`](test_readiness.py) resolves a made-up nested build against a repository served on this machine, and [`test_delayed_setup.py`](test_delayed_setup.py) takes it through the pipeline with a runner at work |
 | [`batch.py`](batch.py) | a batch of jobs from one manifest: one ordinary job a row, ids the manifest alone decides, and the map from rows to jobs; [`test_batch.py`](test_batch.py) tests the map's rules in process, and [`test_fanout.py`](test_fanout.py) runs the 49 rows of [`fixtures/batch-49.json`](fixtures/batch-49.json) end to end |
 | [`test_coexistence.py`](test_coexistence.py) | the pipeline of the pinned revision (read from git) and this one on one repository: a runner of before does not run a second-format job and says so, the two share the runner's locks and see each other at work, and a job in flight when the runners are swapped is run again by the other with the first attempt kept |
-| [`script_inventory.py`](script_inventory.py) | the scripts under `verification/` with who calls each (committed jobs' command lines, tests, other code, pages) and a class for each; it writes [`verification/scripts.md`](../verification/scripts.md). [`test_script_inventory.py`](test_script_inventory.py) holds the page to the scripts that are there, and the two controls |
+| [`script_inventory.py`](script_inventory.py) | the scripts under `verification/` with who calls each (committed jobs' command lines, tests, other code, live pages, and the records of past runs, which show use and keep nothing usable) and a class for each, no stronger than the callers that give it; it writes [`verification/scripts.md`](../verification/scripts.md). [`test_script_inventory.py`](test_script_inventory.py) holds the page to the scripts that are there, and the two controls |
 | [`test_view.py`](test_view.py) | the lifecycle view, the typed `wait` and `collect`, and a queue that could not be read, in throwaway repositories |
 | [`test_formats.py`](test_formats.py) | the second format end to end, through `jobs/pipeline.py`, in throwaway repositories: a non-Java job on a PATH with no checker, real tests counted, a missing required output, a refuted claim, a step with no network |
 | [`sandbox.py`](sandbox.py) | runs a command where the network is demonstrably off, and records how that was shown |
@@ -125,7 +125,7 @@ python3 jobs/pipeline.py submit --purpose test --case S48 --title "..." --descri
 |---|---|
 | which task this is | `describes`: the project, revisions, module, task or goal, profiles, wrapper, toolchain, platform, configuration. Anything that would make it another operation |
 | how far "ready" goes | `level`: `configures`, `resolves`, `builds`, `tests-run` or `readable`. A task graph that configures is not dependencies that resolve, and neither is a packaged result that was read |
-| the prepared inputs it starts from | `base.path`, on the runner; `base.without` leaves paths out, to reconstruct an earlier state of it, and the receipt then says `reconstructed` |
+| the prepared inputs it starts from | `base.path`, on the runner. `base.without` leaves paths out, for a gate that needs a state with less in it; the receipt then says `reconstructed` (not the base as it stands) and repeats `base.why`, where the operation says whether that state is one the base was ever in |
 | how the view is laid | `view.env`, the variable the task finds it by; `view.walk`, the folders a tool walks |
 | the task itself | `task.steps`: the commands the consumer will run, run here the same way |
 | what it must leave | `outputs`: files under `$ITL_READINESS_OUT`, optionally equal to a committed JSON file or a digest |
@@ -160,7 +160,7 @@ readiness is withheld, with the stage and a named outcome, and nothing is publis
 | `digest-mismatch` | fetch | what came is not what the repository's checksum or the operation's digest says |
 | `unauthorized-source` | fetch | the source is not one this runner may fetch from. Nothing was asked of it |
 | `undiagnosed` | consumer | the task failed offline and named nothing it lacks |
-| `no-progress` | consumer | it asks again for what it was given |
+| `no-progress` | consumer | it asks again for what it was given: a second tool of the task reads another place than the files were laid in. The reason quotes its line |
 | `round-limit` | rounds | the operation's rounds were not enough |
 | `output-mismatch` | outputs | the task ran, and an output is missing or is not what was declared |
 | `offline-unenforceable` | consumer | this runner cannot take the network away, so nothing was proved |
