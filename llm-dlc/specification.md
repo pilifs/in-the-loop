@@ -75,6 +75,14 @@ These are the stable part of the design. Everything else may change.
 5. `@` stays empty unless someone is working: only `commit` and `push` write tracked trace files, and `push` writes nothing after it pushes.
    So a pushed manifest does not know its own commit's SHA. The next commit records it.
 
+**What a trace line means** (the user's decision, 2026-11-28, VF-079). A commit's `LLM-Trace` line says that the
+session was at work when the commit was made: `sync.py` (`link_commits`) gives a session every mutable ancestor of `@`
+whose author date falls while it ran, and `@` itself while it is live. It does not say that the session's own
+command made the commit, so a commit with several lines does not say which of them wrote it, and a session's line can
+be on a commit another session made on the same line. A session rendered from another workspace's transcript is
+never given the rendering checkout's `@` (`current_here`). Tying a commit to the session whose command made it is
+product work that is not built: [VF-084](../verification/findings.md).
+
 A log's bytes depend on the redaction rules, so `manifest.redaction_policy` records the version.
 A new policy produces new log IDs. Logs that commits already point at are kept.
 

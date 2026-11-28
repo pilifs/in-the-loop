@@ -18,6 +18,19 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-084: a commit's trace line can't say which session's command made it
+
+- **Status**: open, product work. It can be done in parallel with other changes to `sync.py` (the user, 2026-11-28).
+- **Raised**: 2026-11-28 by the advisor session (`e61d882b…`), from the user's decision on VF-079.
+- **Found**: under the rule VF-079 kept, a session's `LLM-Trace` line goes on every mutable commit made while it ran ([`llm-dlc/specification.md`](../llm-dlc/specification.md#identifiers), *What a trace line means*). That's the attribution readers get today. On 2026-11-27, three unpublished commits of other sessions took the line of the session that committed above them (VF-079). A commit with several lines doesn't say which one made it, and the readme and the specification now say so. What the line can't give is the session whose own command made the commit.
+- **Needs**: product work in `sync.py`, for whoever next changes it:
+  - **What gets recorded:** when `sync.py commit` (or the commit hook, for a plain `jj commit`) makes a change, record the session that ran it. That's `CLAUDE_CODE_SESSION_ID` for Claude Code, and the equivalent for Codex.
+  - **Where:** in the commit's own trailer, for example a separate `LLM-Committed-By: <session-id>`. Or else mark one of its `LLM-Trace` lines as the committer's.
+  - **What doesn't change:** the date window stays, for a commit made with no line at all, and for the sessions that were at work beside the committer. Trace lines already pushed are never edited.
+  - **Also update:** the readers (`sync.py trace REV`, the session summaries, the loop statistics' attribution, VF-078's run records), and the specification.
+- **Tracked in**: this entry; VF-079 for the decision and its history.
+- **Closes when**: a commit made by one session's `sync.py commit`, on a line where another session is live, names that session as its maker. `sync.py trace REV` reports it. A test with two made-up live sessions shows it.
+
 ### VF-083: nothing but an operation's own repositories keeps a run from asking outside; a switch was considered and not built
 
 - **Status**: open, for a later review. Nothing is wrong today and nothing is to be done now (the user, 2026-11-28).
@@ -108,7 +121,8 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - The three commits keep their lines: trace lines are not edited by hand.
 - **Tracked in**: this entry.
 - **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): not addressed. What the pipeline now records for attribution is on the job, not on the commit: `submitted.run` and `submitted.session`. How a trace line lands on a commit stays with `sync.py`.
-- **Closes when**: the rule is decided and written down, and a sync of a session from another workspace's transcript leaves that workspace's working copy as it found it.
+- **Decided 2026-11-28 (the user): leave the rule, and write it down.** A line means "a session at work when this was made". A commit with several lines doesn't say which session made it. The rule is in [`llm-dlc/specification.md`](../llm-dlc/specification.md#identifiers), under *What a trace line means*, and the README's *Explore it* says the same. Tying a commit to the session whose command made it is opened as product work in VF-084. The second part, leaving another workspace's working copy alone, was done in `current_here` (above).
+- **Closes when**: (the rule is decided and written down: done 2026-11-28) and a sync of a session from another workspace's transcript leaves that workspace's working copy as it found it.
 
 ### VF-078: a run's reported spend leaves out its last turns, and a run in a workspace of its own is in no published record
 
