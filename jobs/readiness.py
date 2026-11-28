@@ -347,8 +347,10 @@ def resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[st
     earlier = store.receipt(k)
     receipt = {"schema": RECEIPT, "key": k, "operation": operation, "level": operation["level"], "state": "failed", "stage": None,
                "outcome": None, "why": None, "bundle": None, "offline": None, "rounds": [], "fetch": {"files": 0, "bytes": 0, "seconds": 0.0},
-               # An earlier state of the base, reconstructed by leaving paths out, is said: it is not the base as it stands.
-               "base": {"path": str(base), "without": without, "reconstructed": bool(without)},
+               # A base laid without some of its paths is said: it is not the base as it stands. Whether that is a state
+               # the base was ever in is the operation's to say (`base.why`); the receipt repeats it and claims nothing.
+               "base": {"path": str(base), "without": without, "reconstructed": bool(without),
+                        **({"why": operation["base"]["why"]} if operation["base"].get("why") else {})},
                "resolvedBy": {**(by or {}), "host": socket.gethostname()}, "startedAt": now(), "at": None,
                "attempts": [*((earlier or {}).get("attempts") or []),
                             *([{k2: earlier.get(k2) for k2 in ("state", "stage", "outcome", "at", "resolvedBy")}] if earlier else [])]}
@@ -395,7 +397,12 @@ def resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[st
                 raise Withheld("consumer", "undiagnosed", f"step {steps[-1]['name'] or len(steps)} exited {steps[-1]['exitCode']} offline and "
                                                            f"named nothing it lacks: {' '.join(text.split()[-40:])[-400:]}")
             if set(missing) <= asked_before:
-                raise Withheld("consumer", "no-progress", f"it asks again for what it was given: {', '.join(entry['missing'])}")
+                # The usual cause: a second tool of the task reads another place than where the files were laid (S48's
+                # first run: a POM laid in Maven's layout, and Gradle asking its own cache for it). Its line says which.
+                said = next((line.strip() for line in reversed(text.splitlines()) if any(m[1] in line for m in missing)), "")
+                layout = (operation.get("layout") or {}).get("maven", "m2")
+                raise Withheld("consumer", "no-progress", f"it asks again for what it was given: {', '.join(entry['missing'])}. The files are "
+                                                           f"under {layout}/ in Maven's layout, and what asks now does not read them there: {said[:300]}")
             if n > limit:
                 raise Withheld("rounds", "round-limit", f"{limit} round(s) were not enough; still missing: {', '.join(entry['missing'])}")
             asked_before |= set(missing)

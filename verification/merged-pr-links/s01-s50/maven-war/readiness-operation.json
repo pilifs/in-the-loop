@@ -33,9 +33,11 @@
     "without": [
       "m2/org/apache/activemq/activemq-bom/6.1.8",
       "gradle-home/caches/modules-2/files-2.1/org.apache.activemq/activemq-bom/6.1.8",
+      "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.apache.activemq/activemq-bom/6.1.8",
       "downloads/apache-maven-3.9.13-bin.tar.gz",
       "tmp/"
-    ]
+    ],
+    "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress."
   },
   "view": {
     "env": "SPRING_BOOT_S_CACHE",

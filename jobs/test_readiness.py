@@ -208,6 +208,8 @@ class WhatIsWithheld(NestedBuild):
         (self.cwd / "build.sh").write_text("echo 'Could not find g:stage-one:1.0.'; exit 1\n")   # whatever it is given
         receipt = self.resolve(dict(self.operation(), describes={"another": "operation"}), n=2)
         self.withheld(receipt, "consumer", "no-progress")
+        self.assertIn("g:stage-one:1.0. The files are under m2/ in Maven's layout, and what asks now does not read them there: "
+                      "Could not find g:stage-one:1.0.", receipt["why"])
 
     def test_an_output_that_is_not_what_was_declared_withholds_readiness_though_the_task_ran(self):
         operation = self.operation()

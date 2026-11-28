@@ -11,10 +11,10 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 |---|---|---|
 | 1. Protect and measure: the census | done | `jobs/audit.py`, `jobs/records.py`, the frozen census and manifest of `b52a084f5d11` |
 | 1. Protect and measure: retention on retry and prune | done | `jobs/attempts.py`; `prune`, `recover` and a collect that can be run again, in `verification/pipeline.py`; the brief queue's cleanup is that `prune` |
-| 2. Switch one queue | in progress | Done: the pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification workload and a generic one (`jobs/workloads/`); the second job format's schema; a network-off sandbox. The second format is written by `submit --purpose`, run and collected, and a result of either format keeps execution, fulfillment, each declared output's state, a step's test evidence and network, the workload's conclusion and scoped timing apart (`jobs/lifecycle.py`, `jobs/evidence.py`, `jobs/schema/result.schema.json`). Open: see *What is left*, below |
-| 3. Qualify delayed setup (S48) | in progress | Done: readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. Open: S48 itself, on the real cache, as a job |
-| 4. Tune from measurements | open | |
-| 5. Adopt and verify | open | |
+| 2. Switch one queue | done | The pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification, generic and resolution workloads (`jobs/workloads/`); the second job format, written by `submit --purpose`, run and collected, with a result that keeps execution, fulfillment, each declared output, a step's test evidence and network, the workload's conclusion and scoped timing apart (`jobs/lifecycle.py`, `jobs/evidence.py`); one state with its reason for every job, in a view the keepers read as data (`jobs/scheduling.py`, `view`); a batch from one manifest with its map (`jobs/batch.py`, the 49-row fixture); the pipeline of `b52a084f5d11` tested beside this one, with a rollback while a job is in flight. Not done here: a full watcher cycle on the real queue with the new code, which waits for the line to land (the default checkout's runner is the old pipeline until then) |
+| 3. Qualify delayed setup (S48) | in progress | Done: readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. S48 on the real cache has run once as a job: 10 of 13 checks, the three controls among them, and the resolution stopped in its second round on a fault of the gate's own view (see *Gate 3: S48*). Open: the second run, job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques` |
+| 4. Tune from measurements | started | Admission is built (`fetch_allow`, `fetch_slots` with ten as the documented starting ceiling, a receipt's fetched bytes and seconds, `timing.byPhase`). The only real measurements so far are the first S48 run's. No batch has run on the new pipeline, so nothing is tuned |
+| 5. Adopt and verify | in progress | Done: `ARCHITECTURE.md` and the READMEs with each commit, the skills' commands, the inventory of the scripts under `verification/`, a dated update on each finding the brief names. Open: `CLAUDE.md`'s section on jobs, S48's outcome, the comparison on the next natural large batch |
 
 ## Decisions taken in the run, with their reasons
 
@@ -68,19 +68,22 @@ For whoever continues (this run's later cycles): each item is one commit, with i
 4. *Done (see Gate 2: fan-out, below).* Manifest fan-out, the map, the batch's wait and view, the 49-row fixture.
 5. *Done (see Gate 2: the pipeline of before beside this one, below).*
 6. **Delayed setup** (gate 3). *The mechanism and the synthetic fixture are done (see Gate 3, below).*
-   **S48 for real is submitted and pending**: job `20261128-000950-replay-s48-s-delayed-setup-as-one-reques`
-   runs `verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py` on
-   `readiness-operation.json` beside it (see *Gate 3: S48*, below). Read its result
-   (`python3 jobs/pipeline.py report`, and `readiness-gate.json` among its outputs) before anything else of this
-   gate: every check it lists is one line of the brief's pass condition.
+   **S48 for real has run once and is resubmitted**: job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques`
+   runs `verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py` on `readiness-operation.json` beside
+   it (see *Gate 3: S48*, below, for the first run's checks and what was corrected). Read its result before
+   anything else of this gate: `python3 jobs/pipeline.py view --state recorded-elsewhere` names the commit that
+   holds it while it is on the collector's line and not on this one, and `readiness-gate.json` among its
+   outputs has every check, each one line of the brief's pass condition. If the resolution stops again, the
+   receipt in that file says at which stage and why, and the task's own words of each round are in the gate's
+   work folder on the runner (`~/.cache/in-the-loop/readiness-gates/`).
 7. **Fetch admission and its measurements** (gate 4). *Admission is built* (`fetch_allow`, `fetch_slots`, a
    receipt's fetched bytes and seconds, `timing.byPhase`). Left: measurements from a real batch, which none has
    run on yet.
 8. **Adoption** (gate 5). *Done: `ARCHITECTURE.md` and the READMEs with each commit, the `/run-verification`
-   skill, the script inventory (below).* Left: `CLAUDE.md`'s section on jobs (it still names only
-   `verification/pipeline.py submit`; say `--purpose`, `--manifest`, `--needs-readiness`, `view`), the findings
-   the brief names (VF-076, 070, 072, 069, 051, 060, 020, 029, 030, 025, 077 to 080: record what this run changed
-   for each, against its stated closure evidence), and the comparison on the next natural large batch.
+   skill, the script inventory, and a dated update on each finding the brief names (in
+   `verification/findings.md`; no status changed).* Left: `CLAUDE.md`'s section on jobs (it still names only
+   `verification/pipeline.py submit`; say `--purpose`, `--manifest`, `view`, and `--needs-readiness` once S48
+   has passed), and the comparison on the next natural large batch, which needs the line landed and a batch.
 
 ## Gate 2: the second format, and a result that keeps its questions apart
 
@@ -317,9 +320,12 @@ for the same POM. The resolver stopped there, as it is meant to when a task asks
 and published nothing.
 
 The cause was the view, not the task or the resolver. It had left out the BOM's file in Gradle's store and
-kept Gradle's descriptor of the module, so Gradle held that Maven Central had supplied a file that was gone,
-went to Central for it, offline, and never looked at the file mirror the replay gives it. No state of the
-cache had ever been like that. The operation now leaves the descriptor out as well (`base.without`), and
+kept Gradle's descriptor of the module, so Gradle held that Maven Central had supplied a file that was gone.
+Central comes before the replay's file mirror in each subproject's list of repositories (the root build
+script adds it before the replay's init script can add the mirror), and Gradle takes the first repository
+that has a record of a module: it went to Central for the POM, offline, and never looked at the mirror, where
+the POM now was. No state of the cache had ever been like that. With no descriptor, Central has no record,
+and the mirror is the first repository that has the module. The operation now leaves the descriptor out as well (`base.without`), and
 says what its state is and is not (`base.why`).
 
 Two things came of it for the mechanism. The `no-progress` reason now quotes the line that asked and says

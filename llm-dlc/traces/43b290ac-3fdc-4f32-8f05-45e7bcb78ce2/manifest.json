@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T00:33:03.069Z",
-  "duration_seconds": 33562,
+  "ended": "2026-11-28T00:36:23.837Z",
+  "duration_seconds": 33762,
   "stats": {
     "turns": 33,
-    "api_calls": 802,
-    "tool_calls": 865,
+    "api_calls": 813,
+    "tool_calls": 877,
     "tool_errors": 11,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1630,
-      "output_tokens": 1391956,
-      "cache_read_input_tokens": 247647345,
-      "cache_creation_input_tokens": 2984817
+      "input_tokens": 1652,
+      "output_tokens": 1408506,
+      "cache_read_input_tokens": 249636322,
+      "cache_creation_input_tokens": 3007835
     }
   },
   "tools": {
-    "Bash": 715,
+    "Bash": 726,
     "Read": 82,
-    "Write": 35,
+    "Write": 36,
     "Edit": 19,
     "AskUserQuestion": 3,
     "mcp__chrome-devtools__take_screenshot": 3,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T00:33:03.069Z",
+      "ended": "2026-11-28T00:36:23.837Z",
       "turns": 1,
-      "api_calls": 48,
+      "api_calls": 59,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 66921,
-        "cache_read_input_tokens": 5360922,
-        "cache_creation_input_tokens": 155860
+        "input_tokens": 118,
+        "output_tokens": 83471,
+        "cache_read_input_tokens": 7349899,
+        "cache_creation_input_tokens": 178878
       },
-      "peak_context_tokens": 171027
+      "peak_context_tokens": 194045
     }
   ],
   "log": {
-    "sha256": "42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0",
-    "bytes": 23519374,
-    "lines": 8069,
-    "gzip_bytes": 4457457,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0.jsonl.gz"
+    "sha256": "513ded32f5425f2bb5aa387257be146204f910580d5414ec526644877ab83fef",
+    "bytes": 23722822,
+    "lines": 8183,
+    "gzip_bytes": 4482605,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/513ded32f5425f2bb5aa387257be146204f910580d5414ec526644877ab83fef.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -464,20 +464,20 @@
       "log_sha256": "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f"
     },
     {
-      "change_id": "znzlssyqyukxysonyrrxokxmprzvkwyr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0"
-    },
-    {
       "change_id": "vrwpywworqlknoorvtyuuurwmrqzwnvz",
       "commit_id": null,
       "immutable": false,
       "summary": "Inventory the scripts under verification/ with who calls each, and record what this run changed for each finding",
       "body": "The brief asks for an inventory of the executable files under verification/ and their callers before any is moved, because a lack of Python imports is weak evidence there: a committed job runs a script by a command line, and a test may load one by a path it builds.\n\njobs/script_inventory.py lists the 96 scripts outside the records with every kind of caller: the command lines of committed jobs (by the script's path, or from the folder the step runs in or changes to), tests (by path, or by an import after the test put the folder on the import path), other code, live pages, skills and settings, and, kept apart, the records of past runs (briefs, results pages, findings), which show a script was used and keep nothing usable. Each row has its owner, the last job that passed with it and the commit that job ran at, and what would re-check it. It writes verification/scripts.md and scripts.json: 2 shared runner code, 1 compatibility entry point, 4 tests, 40 supported campaign replays, 38 historical-only tools and 11 orphan candidates. 38 scripts have neither a test nor a passed job to re-check them.\n\nThree rules came from the first version, which said 77 supported and none orphaned because this run's own results page listed the candidates and so counted as their caller. A run's record is not a live caller. A page names a script on one line, while code may build its path from parts. And a class is no stronger than the callers that give it, followed from what is supported, so two scripts that only call each other support neither.\n\nNothing was moved or removed. The brief's two controls hold and are tested from the repository itself: each of the five scripts in verification/triage/ is run by a committed job and is a historical-only tool, and verification/test_merged_pr_qualification.py is found as the caller of the campaign's audit.py and qualify.py. ARCHITECTURE.md's section on retiring something says to read a script's row first.\n\nverification/findings.md has a dated update on each finding the brief names (VF-076, 070, 072, 069, 051, 060, 020, 029, 030, 025, 077 to 080), saying what this run built against that finding's own closure line. No status changed. VF-076's update also records the first real run of the S48 gate (job 20261128-000950: 10 of 13 checks, stopped in the resolution's second round because the gate's view of the cache was inconsistent for Gradle) and a correction the files' dates give: the BOM was in both caches before the original rounds, and only the Maven distribution was absent. The results page has the checks one by one. The corrected operation and the second run's job are in the next commit.\n\nVerified: jobs/test_script_inventory.py (8 tests), and the tests of what changed, 16 of 16 Python test files (python3 lib/tools/test_costs.py run --changed), before the last regeneration of the page and the edits to the two pages' text; retired.py check finds nothing.",
       "log_sha256": "42912e974124bc0faea8493513eb89e97409d670e853131478e93fa89e7847f0"
+    },
+    {
+      "change_id": "pxoswmwztkspmsvmunrymxnywrvruslt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Leave Gradle's record of the withheld BOM out of S48's base, and run the gate again (verification pending)",
+      "body": "The S48 gate's first run (job 20261128-000950-replay-s48-s-delayed-setup-as-one-reques) passed 10 of 13 checks and failed where it matters: the resolution job stopped in its second round at no-progress and published nothing, so the consumer never ran. This commit corrects the cause, which was in the gate's own base, and queues the second run as job 20261128-003144-replay-s48-s-delayed-setup-as-one-reques, which supersedes the first and has not run yet.\n\nWhat happened. Round 1 fetched the pinned Maven distribution and ran the task offline until createResolvedBom lacked org.apache.activemq:activemq-bom:6.1.8. Round 2 fetched the BOM's POM from Maven Central, laid it in Maven's layout, and the task went past that stage and a hundred compile tasks before another task asked for the same POM. The base had left out the BOM's file in Gradle's store and kept Gradle's descriptor of the module. Maven Central comes before the replay's file mirror in each subproject's repositories, and Gradle takes the first repository with a record of a module, so it asked Central, offline, for a file that was gone and never read the mirror. readiness-operation.json now leaves the descriptor out too, and says in base.why what its state is: stricter than the one VF-076's rounds began in, where the files' dates show the BOM present since the setup phase and only the Maven distribution absent.\n\nWhat changed in the mechanism. The no-progress reason quotes the line that asked again and says where the files were laid, since the usual cause is a second tool reading another place. A receipt repeats the operation's base.why beside its list of what was left out, and claims nothing itself about whether that state ever existed. The gate's check and the pages no longer call the base a reconstruction of an earlier state.\n\nThe results page has the first run's thirteen checks one by one, the correction, the limit it showed (the resolver lays a module in Maven's layout only, so a build that can read a module from nowhere but Gradle's own cache is beyond it), and the table of where each gate stands brought up to date.\n\nVerified: the tests of what changed, 9 of 9 Python test files (python3 lib/tools/test_costs.py run --changed), jobs/test_readiness.py with the new wording among them; the gate's logic again passes 16 of 16 checks on the made-up nested build; the corrected view is laid in 0.14 s with the BOM absent in all three places. S48 itself is verified only when the second job's result is read.",
+      "log_sha256": "513ded32f5425f2bb5aa387257be146204f910580d5414ec526644877ab83fef"
     }
   ],
   "logs": {
@@ -545,6 +545,12 @@
       "bytes": 11459456,
       "lines": 3734,
       "gzip_bytes": 2164630,
+      "url": null
+    },
+    "513ded32f5425f2bb5aa387257be146204f910580d5414ec526644877ab83fef": {
+      "bytes": 23722822,
+      "lines": 8183,
+      "gzip_bytes": 4482605,
       "url": null
     },
     "586115e8439bc3d06d7865cc9b1c56a55456dd8d2c86d6e0d9e8b371f85aaa55": {

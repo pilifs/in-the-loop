@@ -3,7 +3,8 @@
 
 On 2026-11-27 the domain investigation of Spring Boot S48 (example 635, PR #51551) needed the Maven plugin's
 integration harness, which setup had never exercised. It took five rounds and six jobs (VF-076). This replays it
-as one request, from a cache reconstructed as it was before those rounds (readiness-operation.json, `base.without`):
+as one request, from the same cache made insufficient (readiness-operation.json: `base.without` lists what is
+left out, and `base.why` says how that differs from the state those rounds began in):
 
   1. A consumer job that needs the operation, and an unrelated job, are committed to a throwaway repository with
      this checkout's pipeline in it, and a runner is started there. The consumer waits; the unrelated job finishes.
@@ -203,7 +204,7 @@ class Gate:
         self.check("what was fetched is what the task asked for, each verified",
                    bool(receipt.get("bundle")) and all(f.get("verifiedBy") for f in receipt["bundle"]["files"] if not f["path"].endswith(".sha1")),
                    [{k: f.get(k) for k in ("path", "bytes", "source", "verifiedBy")} for f in (receipt.get("bundle") or {}).get("files") or []])
-        self.check("the base was a reconstructed earlier state, and the receipt says so", (receipt.get("base") or {}).get("reconstructed") is True,
+        self.check("the base was laid without what the task has to ask for, and the receipt says so", (receipt.get("base") or {}).get("reconstructed") is True,
                    receipt.get("base"))
         try:
             consumed = self.staged(consumer)
