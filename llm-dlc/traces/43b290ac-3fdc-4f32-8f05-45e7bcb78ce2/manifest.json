@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T00:48:43.555Z",
-  "duration_seconds": 34502,
+  "ended": "2026-11-28T00:55:51.149Z",
+  "duration_seconds": 34930,
   "stats": {
     "turns": 33,
-    "api_calls": 852,
-    "tool_calls": 916,
-    "tool_errors": 11,
+    "api_calls": 867,
+    "tool_calls": 931,
+    "tool_errors": 13,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1730,
-      "output_tokens": 1445737,
-      "cache_read_input_tokens": 258624869,
-      "cache_creation_input_tokens": 3080932
+      "input_tokens": 1760,
+      "output_tokens": 1468952,
+      "cache_read_input_tokens": 262823510,
+      "cache_creation_input_tokens": 3111372
     }
   },
   "tools": {
-    "Bash": 764,
+    "Bash": 779,
     "Read": 82,
     "Write": 36,
     "Edit": 19,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T00:48:43.555Z",
+      "ended": "2026-11-28T00:55:51.149Z",
       "turns": 1,
-      "api_calls": 98,
+      "api_calls": 113,
       "usage": {
-        "input_tokens": 196,
-        "output_tokens": 120702,
-        "cache_read_input_tokens": 16338446,
-        "cache_creation_input_tokens": 251975
+        "input_tokens": 226,
+        "output_tokens": 143917,
+        "cache_read_input_tokens": 20537087,
+        "cache_creation_input_tokens": 282415
       },
-      "peak_context_tokens": 267142
+      "peak_context_tokens": 297582
     }
   ],
   "log": {
-    "sha256": "e3a36ba00fd9f2f024cea7aab4e5c6ad1a685d2f5891b9ea83bd42f93ec1b130",
-    "bytes": 24412077,
-    "lines": 8558,
-    "gzip_bytes": 4583094,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/e3a36ba00fd9f2f024cea7aab4e5c6ad1a685d2f5891b9ea83bd42f93ec1b130.jsonl.gz"
+    "sha256": "b76a3d6285137e6cf0a8f2559769284f56b237fed8cd0b9065009d0ee501ef1d",
+    "bytes": 24693461,
+    "lines": 8717,
+    "gzip_bytes": 4615268,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/b76a3d6285137e6cf0a8f2559769284f56b237fed8cd0b9065009d0ee501ef1d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -494,6 +494,14 @@
       "summary": "Name the runner of another workspace in the view, and the jobs it has claimed",
       "body": "A repository has one runner at a time, whichever workspace it was started in, and an agent that submits from a workspace of its own is never where it is: the watcher's runner, in the default workspace, runs its jobs. Until now such an agent's view said queued, no runner at work, for the whole time its job ran. That is the commonest reader of the view, given an account that was wrong; this run's second S48 job showed it.\n\nThe view now reads the lock all workspaces of a repository share (it never takes it) and, in the workspace that lock names, the claims of its runner. runner.elsewhere gives that runner's pid, its workspace and the jobs it has claimed. A job it has claimed is running here too, with the workspace in its reason and in its claim; one it has not yet claimed is queued, and the reason names the runner that will find it; a job that needs one running there waits. status prints the same, wait --json carries runner.elsewhere and still answers no-runner at once (there is nothing here to wait for), and nudge says that a runner elsewhere finds the change at its next look at the queue, since it only reaches this workspace's runner. Nothing is written in the other workspace.\n\nA lock nobody holds any more, or one that names this workspace, names no runner elsewhere. The other workspace's state is looked for where a workspace keeps it by default; when it is not there, the runner is named and what it runs is said to be not seen.\n\nAlso in this commit: a control from the brief for readiness levels (a receipt at one level answers no request at another: the S batch's 98 task graphs all configured and 41 of its 49 builds then failed for setup reasons), and three decisions recorded in the results page (30 to 32).\n\nVerified: jobs/test_view.py (7 tests, two new, with a stand-in process as the runner of another workspace), and the tests of what changed, 37 of 37 Python test files (python3 lib/tools/test_costs.py run --changed). On the real queue the view of this workspace showed the gate's job running in the runner of the default workspace while it ran.",
       "log_sha256": "e3a36ba00fd9f2f024cea7aab4e5c6ad1a685d2f5891b9ea83bd42f93ec1b130"
+    },
+    {
+      "change_id": "stpsoytmktmmswkqmrnznopkzzzxvpwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record that S48's delayed setup passed as one request, 17 of 17 checks",
+      "body": "The brief's third gate asks that Spring Boot S48 (example 635, PR #51551), whose Maven WAR check took five rounds and six jobs on 2026-11-27, be replayed from an insufficient cache as one request. Job 20261128-003144-replay-s48-s-delayed-setup-as-one-reques did that and passed every check of the gate in 13m21s (5.5 GiB at its peak). Its result was collected on the watcher's line (jj change tosuzksqrzkx), with the gate's record, readiness-gate.json.\n\nWhat the run showed, line by line of the pass condition, is now a table in the results page. In short: one request file; one resolution job, admitted by a commit; two offline rounds (the pinned Maven distribution, then the BOM's POM once Gradle named it) with 9.6 MB fetched in under a second; a bundle published only after the task ran through with no network and its readbacks equalled parent.json and fix.json; a fresh consumer that read the four WARs itself on both pins in a network namespace with loopback alone, started once and never failed; the parent's readbacks with no pointer and no payload, the fix's with CycloneDX at WEB-INF/classes/META-INF/sbom/application.cdx.json and the original bytes, decoy first included; three controls withheld at the fetch stage, each with its own outcome; and an unrelated job finished while the consumer waited.\n\nThe page also says what the run does not show: the request came from the gate's script and not from a domain agent, so VF-076 stays open; the base was made insufficient and is stricter than the historical state; the nested scheduler ran without isolation of its own; the controls say nothing of a shared store under concurrent requests.\n\nGate 4 gets its first measurements, from this one request: queue waits of 42 s and 19 s, a six-minute wait of the consumer that was all the resolution's local work, and fetching at 0.2 % of the resolution's time. Nothing is tuned on one data point, and the ceiling of ten fetch-bound tasks is neither approached nor tested.\n\nCLAUDE.md now tells agents of --needs-readiness, with its limit (modules are laid in Maven's layout). VF-076's update of today records the passing run. The table of where each gate stands and the list of what is left are brought up to date: what remains needs this line landed and a real batch.\n\nVerified: the tests the three pages select, 21 of 21 Python test files (python3 lib/tools/test_costs.py run --changed). The figures in the page were read from the gate's record and the job's result as collected, and the queue waits from the commits' times.",
+      "log_sha256": "b76a3d6285137e6cf0a8f2559769284f56b237fed8cd0b9065009d0ee501ef1d"
     }
   ],
   "logs": {
@@ -651,6 +659,12 @@
       "bytes": 12987280,
       "lines": 4221,
       "gzip_bytes": 2736434,
+      "url": null
+    },
+    "b76a3d6285137e6cf0a8f2559769284f56b237fed8cd0b9065009d0ee501ef1d": {
+      "bytes": 24693461,
+      "lines": 8717,
+      "gzip_bytes": 4615268,
       "url": null
     },
     "bb5db0bf10c78fd9e1159022b8ad7963d744e163847a099f7be444f9726aeb8d": {
