@@ -1,0 +1,2551 @@
+{
+  "schema": "itl-s-setup-control/v1",
+  "startedAt": "2026-11-28T02:50:59+00:00",
+  "work": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T025059Z-setup-control",
+  "cases": [
+    "S01",
+    "S02",
+    "S08",
+    "S11",
+    "S15",
+    "S25",
+    "S42",
+    "S46"
+  ],
+  "asOf": "2026-11-27T09:00:00Z",
+  "source": "file:///home/filip/.cache/in-the-loop/readiness-gates/s-setup-mirror/",
+  "settings": {
+    "workers": 4,
+    "cpus": 16.0,
+    "memory": "26G",
+    "fetch_slots": 10
+  },
+  "mirror": {
+    "modules": 1398,
+    "files": 2879,
+    "bytes": 902749917,
+    "misfiled": []
+  },
+  "descriptorsLeftOut": 1392,
+  "rows": [
+    {
+      "case": "S01",
+      "key": "68736bdace6a8098fccd5b1663488c0aacad3eb9c65cc47806a93398ed39cc98",
+      "state": "finished",
+      "why": null,
+      "history": {
+        "first": {
+          "job": "20261127-091100-setup-build-spring-boot-52125-s01-at-bot",
+          "status": "failed",
+          "steps": [
+            "failed",
+            "failed",
+            "failed",
+            "passed"
+          ],
+          "seconds": 331.7
+        },
+        "rerun": {
+          "job": "20261127-110819-setup-build-spring-boot-52125-s01-at-bot",
+          "status": "passed",
+          "steps": [
+            "passed",
+            "passed",
+            "passed",
+            "passed"
+          ],
+          "seconds": 358.4
+        }
+      },
+      "readiness": {
+        "state": "ready",
+        "stage": null,
+        "outcome": "ready",
+        "why": null,
+        "rounds": [
+          {
+            "n": 1,
+            "result": "failed",
+            "missing": 1,
+            "missingFiles": 0,
+            "fetched": 0,
+            "offlineSeconds": 158.1
+          },
+          {
+            "n": 2,
+            "result": "failed",
+            "missing": 3,
+            "missingFiles": 0,
+            "fetched": 3,
+            "offlineSeconds": 107.6
+          },
+          {
+            "n": 3,
+            "result": "failed",
+            "missing": 6,
+            "missingFiles": 0,
+            "fetched": 1,
+            "offlineSeconds": 106.3
+          },
+          {
+            "n": 4,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 13,
+            "offlineSeconds": 110.3
+          },
+          {
+            "n": 5,
+            "result": "failed",
+            "missing": 8,
+            "missingFiles": 0,
+            "fetched": 4,
+            "offlineSeconds": 107.3
+          },
+          {
+            "n": 6,
+            "result": "passed",
+            "missing": 0,
+            "missingFiles": 0,
+            "fetched": 17,
+            "offlineSeconds": 125.4
+          }
+        ],
+        "fetch": {
+          "files": 38,
+          "bytes": 9581248,
+          "seconds": 0.029,
+          "reused": 38,
+          "reusedBytes": 9581248
+        },
+        "evidence": {
+          "source": "junit-xml",
+          "reports": 2,
+          "executed": 41,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "suites": [
+            "org.springframework.boot.test.util.TestPropertyValuesTests"
+          ],
+          "promised": {
+            "min": 1
+          },
+          "unmet": []
+        },
+        "leftOut": 1192,
+        "startedAt": "2026-11-28T03:00:30+00:00",
+        "at": "2026-11-28T03:12:27+00:00"
+      },
+      "resolution": {
+        "job": "20261128-025102-resolve-68736bdace6a-build-s01-s-jar-pro",
+        "status": "passed",
+        "timing": {
+          "queueWait": {
+            "seconds": 568.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 717.0,
+            "state": "measured"
+          }
+        }
+      },
+      "consumer": {
+        "job": "20261128-030000-s-setup-control-s01-1818226e",
+        "status": "passed",
+        "summary": "passed: 3 passed step(s) in 3m37s, peak 129.9 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+        "previousAttempts": 0,
+        "startedAt": "2026-11-28T03:14:46+00:00",
+        "finishedAt": "2026-11-28T03:18:25+00:00",
+        "steps": [
+          {
+            "name": "fix",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 99.948,
+            "executed": 21,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S01\", \"classes\": [{\"class\": \"org.springframework.boot.test.util.TestPropertyValuesTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 21}], \"gradle\": \"9.8.1\", \"gradleExit\": 0, \"revision\": \"d3c0359e0196e9d604a65e6ff677d114cc270a0f\", \"step\": \"fix\"}"
+            ]
+          },
+          {
+            "name": "parent",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 60.11,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S01\", \"classes\": [{\"class\": \"org.springframework.boot.test.util.TestPropertyValuesTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 20}], \"gradle\": \"9.8.1\", \"gradleExit\": 0, \"revision\": \"e664baa4001e2a12cfd292771f63d747d86b831f\", \"step\": \"parent\"}"
+            ]
+          },
+          {
+            "name": "transplant",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 57.658,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "gradle-exit=1",
+              "{\"case\": \"S01\", \"classes\": [{\"class\": \"org.springframework.boot.test.util.TestPropertyValuesTests\", \"errors\": 0, \"failures\": 1, \"skipped\": 0, \"suites\": 1, \"tests\": 21}], \"gradle\": \"9.8.1\", \"gradleExit\": 1, \"revision\": \"e664baa4001e2a12cfd292771f63d747d86b831f\", \"step\": \"transplant\"}",
+              "TRANSPLANT-FAILS-AS-EXPECTED"
+            ]
+          }
+        ],
+        "tests": {
+          "fix": {
+            "case": "S01",
+            "classes": [
+              {
+                "class": "org.springframework.boot.test.util.TestPropertyValuesTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 21
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 0,
+            "revision": "d3c0359e0196e9d604a65e6ff677d114cc270a0f",
+            "step": "fix"
+          },
+          "parent": {
+            "case": "S01",
+            "classes": [
+              {
+                "class": "org.springframework.boot.test.util.TestPropertyValuesTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 20
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 0,
+            "revision": "e664baa4001e2a12cfd292771f63d747d86b831f",
+            "step": "parent"
+          },
+          "transplant": {
+            "case": "S01",
+            "classes": [
+              {
+                "class": "org.springframework.boot.test.util.TestPropertyValuesTests",
+                "errors": 0,
+                "failures": 1,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 21
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 1,
+            "revision": "e664baa4001e2a12cfd292771f63d747d86b831f",
+            "step": "transplant"
+          }
+        },
+        "asTheResolutionSaw": {
+          "fix": true,
+          "parent": true
+        },
+        "timing": {
+          "queueWait": {
+            "seconds": 886.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 219.0,
+            "state": "measured"
+          }
+        }
+      },
+      "outcome": "ready, and its job passed"
+    },
+    {
+      "case": "S02",
+      "key": "735580e8fefbf178f6eee237bd3883cf602055bf61737a285cc9bb6fe93bd02b",
+      "state": "finished",
+      "why": null,
+      "history": {
+        "first": {
+          "job": "20261127-091100-setup-build-spring-boot-51661-s02-at-bot",
+          "status": "failed",
+          "steps": [
+            "failed",
+            "failed",
+            "failed",
+            "passed"
+          ],
+          "seconds": 332.1
+        },
+        "rerun": {
+          "job": "20261127-110819-setup-build-spring-boot-51661-s02-at-bot",
+          "status": "passed",
+          "steps": [
+            "passed",
+            "passed",
+            "passed",
+            "passed"
+          ],
+          "seconds": 401.0
+        }
+      },
+      "readiness": {
+        "state": "ready",
+        "stage": null,
+        "outcome": "ready",
+        "why": null,
+        "rounds": [
+          {
+            "n": 1,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 0,
+            "offlineSeconds": 151.0
+          },
+          {
+            "n": 2,
+            "result": "failed",
+            "missing": 6,
+            "missingFiles": 0,
+            "fetched": 5,
+            "offlineSeconds": 107.9
+          },
+          {
+            "n": 3,
+            "result": "failed",
+            "missing": 6,
+            "missingFiles": 0,
+            "fetched": 9,
+            "offlineSeconds": 106.3
+          },
+          {
+            "n": 4,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 13,
+            "offlineSeconds": 105.5
+          },
+          {
+            "n": 5,
+            "result": "failed",
+            "missing": 8,
+            "missingFiles": 0,
+            "fetched": 4,
+            "offlineSeconds": 104.9
+          },
+          {
+            "n": 6,
+            "result": "passed",
+            "missing": 0,
+            "missingFiles": 0,
+            "fetched": 17,
+            "offlineSeconds": 138.8
+          }
+        ],
+        "fetch": {
+          "files": 48,
+          "bytes": 12515015,
+          "seconds": 0.129,
+          "reused": 38,
+          "reusedBytes": 9581248
+        },
+        "evidence": {
+          "source": "junit-xml",
+          "reports": 4,
+          "executed": 320,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "suites": [
+            "org.springframework.boot.context.properties.ConfigurationPropertiesTests",
+            "org.springframework.boot.context.properties.bind.ValueObjectBinderTests"
+          ],
+          "promised": {
+            "min": 1
+          },
+          "unmet": []
+        },
+        "leftOut": 1192,
+        "startedAt": "2026-11-28T03:02:50+00:00",
+        "at": "2026-11-28T03:14:45+00:00"
+      },
+      "resolution": {
+        "job": "20261128-025102-resolve-735580e8fefb-build-s02-s-jar-pro",
+        "status": "passed",
+        "timing": {
+          "queueWait": {
+            "seconds": 707.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 716.0,
+            "state": "measured"
+          }
+        }
+      },
+      "consumer": {
+        "job": "20261128-030000-s-setup-control-s02-a69bad53",
+        "status": "passed",
+        "summary": "passed: 3 passed step(s) in 4m21s, peak 130.4 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+        "previousAttempts": 0,
+        "startedAt": "2026-11-28T03:18:27+00:00",
+        "finishedAt": "2026-11-28T03:22:49+00:00",
+        "steps": [
+          {
+            "name": "fix",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 115.38,
+            "executed": 163,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S02\", \"classes\": [{\"class\": \"org.springframework.boot.context.properties.bind.ValueObjectBinderTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 46}, {\"class\": \"org.springframework.boot.context.properties.ConfigurationPropertiesTests\", \"errors\": 0, \"failures\": 0, \"ski"
+            ]
+          },
+          {
+            "name": "parent",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 73.084,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S02\", \"classes\": [{\"class\": \"org.springframework.boot.context.properties.bind.ValueObjectBinderTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 43}, {\"class\": \"org.springframework.boot.context.properties.ConfigurationPropertiesTests\", \"errors\": 0, \"failures\": 0, \"ski"
+            ]
+          },
+          {
+            "name": "transplant",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 72.882,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "gradle-exit=1",
+              "{\"case\": \"S02\", \"classes\": [{\"class\": \"org.springframework.boot.context.properties.bind.ValueObjectBinderTests\", \"errors\": 0, \"failures\": 1, \"skipped\": 0, \"suites\": 1, \"tests\": 46}, {\"class\": \"org.springframework.boot.context.properties.ConfigurationPropertiesTests\", \"errors\": 0, \"failures\": 2, \"ski",
+              "TRANSPLANT-FAILS-AS-EXPECTED"
+            ]
+          }
+        ],
+        "tests": {
+          "fix": {
+            "case": "S02",
+            "classes": [
+              {
+                "class": "org.springframework.boot.context.properties.bind.ValueObjectBinderTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 46
+              },
+              {
+                "class": "org.springframework.boot.context.properties.ConfigurationPropertiesTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 117
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 0,
+            "revision": "26b0e813b0b82e5683524d1ad817ca9b66228b4d",
+            "step": "fix"
+          },
+          "parent": {
+            "case": "S02",
+            "classes": [
+              {
+                "class": "org.springframework.boot.context.properties.bind.ValueObjectBinderTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 43
+              },
+              {
+                "class": "org.springframework.boot.context.properties.ConfigurationPropertiesTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 114
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 0,
+            "revision": "042c69a4f9c7e7bfb7be14dff6a5dd5af5ff3e72",
+            "step": "parent"
+          },
+          "transplant": {
+            "case": "S02",
+            "classes": [
+              {
+                "class": "org.springframework.boot.context.properties.bind.ValueObjectBinderTests",
+                "errors": 0,
+                "failures": 1,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 46
+              },
+              {
+                "class": "org.springframework.boot.context.properties.ConfigurationPropertiesTests",
+                "errors": 0,
+                "failures": 2,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 117
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 1,
+            "revision": "042c69a4f9c7e7bfb7be14dff6a5dd5af5ff3e72",
+            "step": "transplant"
+          }
+        },
+        "asTheResolutionSaw": {
+          "fix": true,
+          "parent": true
+        },
+        "timing": {
+          "queueWait": {
+            "seconds": 1107.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 262.0,
+            "state": "measured"
+          }
+        }
+      },
+      "outcome": "ready, and its job passed"
+    },
+    {
+      "case": "S08",
+      "key": "2fbf37e8d5af94878f7134bffa197819bb7af133842e0dee5be949e7565798a8",
+      "state": "finished",
+      "why": null,
+      "history": {
+        "first": {
+          "job": "20261127-091101-setup-build-spring-boot-52904-s08-at-bot",
+          "status": "failed",
+          "steps": [
+            "failed",
+            "failed",
+            "failed",
+            "passed"
+          ],
+          "seconds": 336.6
+        },
+        "rerun": {
+          "job": "20261127-110820-setup-build-spring-boot-52904-s08-at-bot",
+          "status": "passed",
+          "steps": [
+            "passed",
+            "passed",
+            "passed",
+            "passed"
+          ],
+          "seconds": 374.6
+        }
+      },
+      "readiness": {
+        "state": "ready",
+        "stage": null,
+        "outcome": "ready",
+        "why": null,
+        "rounds": [
+          {
+            "n": 1,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 0,
+            "offlineSeconds": 139.5
+          },
+          {
+            "n": 2,
+            "result": "failed",
+            "missing": 4,
+            "missingFiles": 0,
+            "fetched": 5,
+            "offlineSeconds": 108.2
+          },
+          {
+            "n": 3,
+            "result": "failed",
+            "missing": 6,
+            "missingFiles": 0,
+            "fetched": 3,
+            "offlineSeconds": 112.2
+          },
+          {
+            "n": 4,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 13,
+            "offlineSeconds": 107.6
+          },
+          {
+            "n": 5,
+            "result": "failed",
+            "missing": 8,
+            "missingFiles": 0,
+            "fetched": 4,
+            "offlineSeconds": 110.4
+          },
+          {
+            "n": 6,
+            "result": "passed",
+            "missing": 0,
+            "missingFiles": 0,
+            "fetched": 17,
+            "offlineSeconds": 126.2
+          }
+        ],
+        "fetch": {
+          "files": 42,
+          "bytes": 10892230,
+          "seconds": 0.071,
+          "reused": 38,
+          "reusedBytes": 9581269
+        },
+        "evidence": {
+          "source": "junit-xml",
+          "reports": 2,
+          "executed": 43,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 2,
+          "suites": [
+            "org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests"
+          ],
+          "promised": {
+            "min": 1
+          },
+          "unmet": []
+        },
+        "leftOut": 1192,
+        "startedAt": "2026-11-28T02:51:03+00:00",
+        "at": "2026-11-28T03:02:49+00:00"
+      },
+      "resolution": {
+        "job": "20261128-025102-resolve-2fbf37e8d5af-build-s08-s-jar-pro",
+        "status": "passed",
+        "timing": {
+          "queueWait": {
+            "seconds": 1.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 706.0,
+            "state": "measured"
+          }
+        }
+      },
+      "consumer": {
+        "job": "20261128-030000-s-setup-control-s08-58082829",
+        "status": "passed",
+        "summary": "passed: 3 passed step(s) in 3m51s, peak 128.5 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+        "previousAttempts": 0,
+        "startedAt": "2026-11-28T03:22:52+00:00",
+        "finishedAt": "2026-11-28T03:26:44+00:00",
+        "steps": [
+          {
+            "name": "fix",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 104.933,
+            "executed": 22,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.2/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S08\", \"classes\": [{\"class\": \"org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 1, \"suites\": 1, \"tests\": 23}], \"gradle\": \"9.9.2\", \"gradleExit\": 0, \"revision\": \"cc44b73aca16f06ebac4f1d8692751a80b2b6615\", \"step\": \"fix\"}"
+            ]
+          },
+          {
+            "name": "parent",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 63.349,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.2/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S08\", \"classes\": [{\"class\": \"org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 1, \"suites\": 1, \"tests\": 22}], \"gradle\": \"9.9.2\", \"gradleExit\": 0, \"revision\": \"906029c2a9b33ef5052141a91eac5de8177ede9d\", \"step\": \"paren"
+            ]
+          },
+          {
+            "name": "transplant",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 63.306,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "gradle-exit=1",
+              "{\"case\": \"S08\", \"classes\": [{\"class\": \"org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests\", \"errors\": 0, \"failures\": 1, \"skipped\": 1, \"suites\": 1, \"tests\": 23}], \"gradle\": \"9.9.2\", \"gradleExit\": 1, \"revision\": \"906029c2a9b33ef5052141a91eac5de8177ede9d\", \"step\": \"trans",
+              "TRANSPLANT-FAILS-AS-EXPECTED"
+            ]
+          }
+        ],
+        "tests": {
+          "fix": {
+            "case": "S08",
+            "classes": [
+              {
+                "class": "org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 1,
+                "suites": 1,
+                "tests": 23
+              }
+            ],
+            "gradle": "9.9.2",
+            "gradleExit": 0,
+            "revision": "cc44b73aca16f06ebac4f1d8692751a80b2b6615",
+            "step": "fix"
+          },
+          "parent": {
+            "case": "S08",
+            "classes": [
+              {
+                "class": "org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 1,
+                "suites": 1,
+                "tests": 22
+              }
+            ],
+            "gradle": "9.9.2",
+            "gradleExit": 0,
+            "revision": "906029c2a9b33ef5052141a91eac5de8177ede9d",
+            "step": "parent"
+          },
+          "transplant": {
+            "case": "S08",
+            "classes": [
+              {
+                "class": "org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigurationTests",
+                "errors": 0,
+                "failures": 1,
+                "skipped": 1,
+                "suites": 1,
+                "tests": 23
+              }
+            ],
+            "gradle": "9.9.2",
+            "gradleExit": 1,
+            "revision": "906029c2a9b33ef5052141a91eac5de8177ede9d",
+            "step": "transplant"
+          }
+        },
+        "asTheResolutionSaw": {
+          "fix": true,
+          "parent": true
+        },
+        "timing": {
+          "queueWait": {
+            "seconds": 1372.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 232.0,
+            "state": "measured"
+          }
+        }
+      },
+      "outcome": "ready, and its job passed"
+    },
+    {
+      "case": "S11",
+      "key": "f9588f96f74c312f1a933c9c26e5648eda6c6917b0e7821c9693e8ad71fad842",
+      "state": "finished",
+      "why": null,
+      "history": {
+        "first": {
+          "job": "20261127-091101-setup-build-spring-boot-51867-s11-at-bot",
+          "status": "failed",
+          "steps": [
+            "failed",
+            "failed",
+            "failed",
+            "passed"
+          ],
+          "seconds": 234.1
+        },
+        "rerun": {
+          "job": "20261127-110820-setup-build-spring-boot-51867-s11-at-bot",
+          "status": "failed",
+          "steps": [
+            "passed",
+            "passed",
+            "failed",
+            "passed"
+          ],
+          "seconds": 379.4
+        }
+      },
+      "readiness": {
+        "state": "ready",
+        "stage": null,
+        "outcome": "ready",
+        "why": null,
+        "rounds": [
+          {
+            "n": 1,
+            "result": "failed",
+            "missing": 3,
+            "missingFiles": 0,
+            "fetched": 0,
+            "offlineSeconds": 117.6
+          },
+          {
+            "n": 2,
+            "result": "failed",
+            "missing": 5,
+            "missingFiles": 0,
+            "fetched": 8,
+            "offlineSeconds": 81.6
+          },
+          {
+            "n": 3,
+            "result": "failed",
+            "missing": 7,
+            "missingFiles": 0,
+            "fetched": 5,
+            "offlineSeconds": 78.3
+          },
+          {
+            "n": 4,
+            "result": "failed",
+            "missing": 3,
+            "missingFiles": 0,
+            "fetched": 15,
+            "offlineSeconds": 83.9
+          },
+          {
+            "n": 5,
+            "result": "failed",
+            "missing": 11,
+            "missingFiles": 0,
+            "fetched": 6,
+            "offlineSeconds": 81.6
+          },
+          {
+            "n": 6,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 23,
+            "offlineSeconds": 115.6
+          },
+          {
+            "n": 7,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 4,
+            "offlineSeconds": 120.8
+          },
+          {
+            "n": 8,
+            "result": "failed",
+            "missing": 8,
+            "missingFiles": 0,
+            "fetched": 4,
+            "offlineSeconds": 115.9
+          },
+          {
+            "n": 9,
+            "result": "failed",
+            "missing": 11,
+            "missingFiles": 0,
+            "fetched": 16,
+            "offlineSeconds": 121.4
+          },
+          {
+            "n": 10,
+            "result": "failed",
+            "missing": 3,
+            "missingFiles": 0,
+            "fetched": 30,
+            "offlineSeconds": 118.9
+          },
+          {
+            "n": 11,
+            "result": "passed",
+            "missing": 0,
+            "missingFiles": 0,
+            "fetched": 9,
+            "offlineSeconds": 129.5
+          }
+        ],
+        "fetch": {
+          "files": 120,
+          "bytes": 44047915,
+          "seconds": 1.145,
+          "reused": 38,
+          "reusedBytes": 9581248
+        },
+        "evidence": {
+          "source": "junit-xml",
+          "reports": 2,
+          "executed": 41,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "suites": [
+            "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests"
+          ],
+          "promised": {
+            "min": 1
+          },
+          "unmet": []
+        },
+        "leftOut": 1192,
+        "startedAt": "2026-11-28T03:14:28+00:00",
+        "at": "2026-11-28T03:33:57+00:00"
+      },
+      "resolution": {
+        "job": "20261128-025102-resolve-f9588f96f74c-build-s11-s-jar-pro",
+        "status": "passed",
+        "timing": {
+          "queueWait": {
+            "seconds": 1406.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 1169.0,
+            "state": "measured"
+          }
+        }
+      },
+      "consumer": {
+        "job": "20261128-030000-s-setup-control-s11-2262def4",
+        "status": "failed",
+        "summary": "failed: 2 passed, 1 failed step(s) in 3m47s, peak 125.7 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+        "previousAttempts": 0,
+        "startedAt": "2026-11-28T03:33:58+00:00",
+        "finishedAt": "2026-11-28T03:37:46+00:00",
+        "steps": [
+          {
+            "name": "fix",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 103.138,
+            "executed": 23,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S11\", \"classes\": [{\"class\": \"org.springframework.boot.autoconfigure.AutoConfigurationSorterTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 23}], \"gradle\": \"9.7.0\", \"gradleExit\": 0, \"revision\": \"b00a873c002d3e5f6edf4cc58313030855ec86cd\", \"step\": \"fix\"}"
+            ]
+          },
+          {
+            "name": "parent",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 62.885,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S11\", \"classes\": [{\"class\": \"org.springframework.boot.autoconfigure.AutoConfigurationSorterTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 18}], \"gradle\": \"9.7.0\", \"gradleExit\": 0, \"revision\": \"ab8d5266fbf617b1462d60f5bba5ade2d0f6302d\", \"step\": \"parent\"}"
+            ]
+          },
+          {
+            "name": "transplant",
+            "status": "failed",
+            "exitCode": 1,
+            "seconds": 61.285,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "gradle-exit=0",
+              "{\"case\": \"S11\", \"classes\": [{\"class\": \"org.springframework.boot.autoconfigure.AutoConfigurationSorterTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 23}], \"gradle\": \"9.7.0\", \"gradleExit\": 0, \"revision\": \"ab8d5266fbf617b1462d60f5bba5ade2d0f6302d\", \"step\": \"transplant\"}",
+              "TRANSPLANT DID NOT FAIL (gradle-exit=0)"
+            ]
+          }
+        ],
+        "tests": {
+          "fix": {
+            "case": "S11",
+            "classes": [
+              {
+                "class": "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 23
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 0,
+            "revision": "b00a873c002d3e5f6edf4cc58313030855ec86cd",
+            "step": "fix"
+          },
+          "parent": {
+            "case": "S11",
+            "classes": [
+              {
+                "class": "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 18
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 0,
+            "revision": "ab8d5266fbf617b1462d60f5bba5ade2d0f6302d",
+            "step": "parent"
+          },
+          "transplant": {
+            "case": "S11",
+            "classes": [
+              {
+                "class": "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 23
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 0,
+            "revision": "ab8d5266fbf617b1462d60f5bba5ade2d0f6302d",
+            "step": "transplant"
+          }
+        },
+        "asTheResolutionSaw": {
+          "fix": true,
+          "parent": true
+        },
+        "timing": {
+          "queueWait": {
+            "seconds": 2038.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 228.0,
+            "state": "measured"
+          }
+        }
+      },
+      "outcome": "ready, and its job failed on the transplant alone"
+    },
+    {
+      "case": "S15",
+      "key": "3431ed2d7877a6218be78500cf973d14d4376fb8d18b574015bed39b1f57156a",
+      "state": "finished",
+      "why": null,
+      "history": {
+        "first": {
+          "job": "20261127-091102-setup-build-spring-boot-50886-s15-at-bot",
+          "status": "failed",
+          "steps": [
+            "failed",
+            "failed",
+            "failed",
+            "passed"
+          ],
+          "seconds": 216.0
+        },
+        "rerun": {
+          "job": "20261127-110820-setup-build-spring-boot-50886-s15-at-bot",
+          "status": "passed",
+          "steps": [
+            "passed",
+            "passed",
+            "passed",
+            "passed"
+          ],
+          "seconds": 413.4
+        }
+      },
+      "readiness": {
+        "state": "ready",
+        "stage": null,
+        "outcome": "ready",
+        "why": null,
+        "rounds": [
+          {
+            "n": 1,
+            "result": "failed",
+            "missing": 3,
+            "missingFiles": 0,
+            "fetched": 0,
+            "offlineSeconds": 112.5
+          },
+          {
+            "n": 2,
+            "result": "failed",
+            "missing": 15,
+            "missingFiles": 0,
+            "fetched": 8,
+            "offlineSeconds": 112.7
+          },
+          {
+            "n": 3,
+            "result": "failed",
+            "missing": 13,
+            "missingFiles": 0,
+            "fetched": 26,
+            "offlineSeconds": 111.5
+          },
+          {
+            "n": 4,
+            "result": "failed",
+            "missing": 8,
+            "missingFiles": 2,
+            "fetched": 24,
+            "offlineSeconds": 108.2
+          },
+          {
+            "n": 5,
+            "result": "failed",
+            "missing": 20,
+            "missingFiles": 0,
+            "fetched": 16,
+            "offlineSeconds": 114.4
+          },
+          {
+            "n": 6,
+            "result": "failed",
+            "missing": 12,
+            "missingFiles": 0,
+            "fetched": 42,
+            "offlineSeconds": 115.1
+          },
+          {
+            "n": 7,
+            "result": "failed",
+            "missing": 9,
+            "missingFiles": 0,
+            "fetched": 22,
+            "offlineSeconds": 114.1
+          },
+          {
+            "n": 8,
+            "result": "failed",
+            "missing": 5,
+            "missingFiles": 0,
+            "fetched": 21,
+            "offlineSeconds": 112.9
+          },
+          {
+            "n": 9,
+            "result": "failed",
+            "missing": 3,
+            "missingFiles": 0,
+            "fetched": 13,
+            "offlineSeconds": 116.5
+          },
+          {
+            "n": 10,
+            "result": "failed",
+            "missing": 1,
+            "missingFiles": 0,
+            "fetched": 7,
+            "offlineSeconds": 115.7
+          },
+          {
+            "n": 11,
+            "result": "passed",
+            "missing": 0,
+            "missingFiles": 0,
+            "fetched": 3,
+            "offlineSeconds": 141.7
+          }
+        ],
+        "fetch": {
+          "files": 182,
+          "bytes": 38165994,
+          "seconds": 1.888,
+          "reused": 33,
+          "reusedBytes": 4423938
+        },
+        "evidence": {
+          "source": "junit-xml",
+          "reports": 5,
+          "executed": 59,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "suites": [
+            "org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCloserTests",
+            "org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests",
+            "org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfigurationTests"
+          ],
+          "promised": {
+            "min": 1
+          },
+          "unmet": []
+        },
+        "leftOut": 1192,
+        "startedAt": "2026-11-28T02:51:03+00:00",
+        "at": "2026-11-28T03:12:23+00:00"
+      },
+      "resolution": {
+        "job": "20261128-025102-resolve-3431ed2d7877-build-s15-s-jar-pro",
+        "status": "passed",
+        "timing": {
+          "queueWait": {
+            "seconds": 1.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 1280.0,
+            "state": "measured"
+          }
+        }
+      },
+      "consumer": {
+        "job": "20261128-030000-s-setup-control-s15-b89449fc",
+        "status": "passed",
+        "summary": "passed: 3 passed step(s) in 4m25s, peak 130.0 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+        "previousAttempts": 0,
+        "startedAt": "2026-11-28T03:26:47+00:00",
+        "finishedAt": "2026-11-28T03:31:13+00:00",
+        "steps": [
+          {
+            "name": "fix",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 122.002,
+            "executed": 33,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S15\", \"classes\": [{\"class\": \"org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCloserTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 5}, {\"class\": \"org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests\", \"erro"
+            ]
+          },
+          {
+            "name": "parent",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 74.13,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S15\", \"classes\": [{\"class\": \"org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 15}, {\"class\": \"org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfigurationTests\","
+            ]
+          },
+          {
+            "name": "transplant",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 69.476,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "/home/filip/.cache/in-the-loop/readiness-gates/20261128T025059Z-setup-control/repository/verification/.state/attempts/20261128-030000-s-setup-control-s15-b89449fc/001-7a22df/work/control/.build-transplant-4ORWqD/tree/module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/microm",
+              "/home/filip/.cache/in-the-loop/readiness-gates/20261128T025059Z-setup-control/repository/verification/.state/attempts/20261128-030000-s-setup-control-s15-b89449fc/001-7a22df/work/control/.build-transplant-4ORWqD/tree/module/spring-boot-micrometer-metrics/src/test/java/org/springframework/boot/microm",
+              "TRANSPLANT-DOES-NOT-COMPILE-AS-EXPECTED"
+            ]
+          }
+        ],
+        "tests": {
+          "fix": {
+            "case": "S15",
+            "classes": [
+              {
+                "class": "org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCloserTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 5
+              },
+              {
+                "class": "org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 17
+              },
+              {
+                "class": "org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfigurationTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 11
+              }
+            ],
+            "gradle": "9.6.1",
+            "gradleExit": 0,
+            "revision": "e1a1e1be824c1720aad9817388394fe55e89e189",
+            "step": "fix"
+          },
+          "parent": {
+            "case": "S15",
+            "classes": [
+              {
+                "class": "org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 15
+              },
+              {
+                "class": "org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfigurationTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 11
+              }
+            ],
+            "gradle": "9.6.1",
+            "gradleExit": 0,
+            "revision": "39c87d595e24091a4966be36404c87d0dffab9a7",
+            "step": "parent"
+          },
+          "transplant": {
+            "case": "S15",
+            "classes": [
+              {
+                "class": "org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCloserTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 0,
+                "tests": 0
+              },
+              {
+                "class": "org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessorTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 0,
+                "tests": 0
+              },
+              {
+                "class": "org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfigurationTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 0,
+                "tests": 0
+              }
+            ],
+            "gradle": "9.6.1",
+            "gradleExit": 1,
+            "revision": "39c87d595e24091a4966be36404c87d0dffab9a7",
+            "step": "transplant"
+          }
+        },
+        "asTheResolutionSaw": {
+          "fix": true,
+          "parent": true
+        },
+        "timing": {
+          "queueWait": {
+            "seconds": 1607.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 266.0,
+            "state": "measured"
+          }
+        }
+      },
+      "outcome": "ready, and its job passed"
+    },
+    {
+      "case": "S25",
+      "key": "c6c0ba67f41999c6746f82cdf59f6ff8172761cc4047f752c417efdb654a5a20",
+      "state": "finished",
+      "why": null,
+      "history": {
+        "first": {
+          "job": "20261127-091103-setup-build-spring-boot-52190-s25-at-bot",
+          "status": "failed",
+          "steps": [
+            "failed",
+            "failed",
+            "failed",
+            "passed"
+          ],
+          "seconds": 323.8
+        },
+        "rerun": {
+          "job": "20261127-110822-setup-build-spring-boot-52190-s25-at-bot",
+          "status": "passed",
+          "steps": [
+            "passed",
+            "passed",
+            "passed",
+            "passed"
+          ],
+          "seconds": 454.5
+        }
+      },
+      "readiness": {
+        "state": "ready",
+        "stage": null,
+        "outcome": "ready",
+        "why": null,
+        "rounds": [
+          {
+            "n": 1,
+            "result": "failed",
+            "missing": 15,
+            "missingFiles": 0,
+            "fetched": 0,
+            "offlineSeconds": 149.0
+          },
+          {
+            "n": 2,
+            "result": "failed",
+            "missing": 15,
+            "missingFiles": 0,
+            "fetched": 40,
+            "offlineSeconds": 109.9
+          },
+          {
+            "n": 3,
+            "result": "failed",
+            "missing": 15,
+            "missingFiles": 0,
+            "fetched": 27,
+            "offlineSeconds": 111.8
+          },
+          {
+            "n": 4,
+            "result": "failed",
+            "missing": 9,
+            "missingFiles": 0,
+            "fetched": 35,
+            "offlineSeconds": 112.8
+          },
+          {
+            "n": 5,
+            "result": "failed",
+            "missing": 13,
+            "missingFiles": 0,
+            "fetched": 16,
+            "offlineSeconds": 116.3
+          },
+          {
+            "n": 6,
+            "result": "failed",
+            "missing": 5,
+            "missingFiles": 0,
+            "fetched": 22,
+            "offlineSeconds": 122.8
+          },
+          {
+            "n": 7,
+            "result": "failed",
+            "missing": 1,
+            "missingFiles": 0,
+            "fetched": 12,
+            "offlineSeconds": 130.6
+          },
+          {
+            "n": 8,
+            "result": "failed",
+            "missing": 1,
+            "missingFiles": 0,
+            "fetched": 3,
+            "offlineSeconds": 125.9
+          },
+          {
+            "n": 9,
+            "result": "failed",
+            "missing": 16,
+            "missingFiles": 0,
+            "fetched": 3,
+            "offlineSeconds": 135.7
+          },
+          {
+            "n": 10,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 32,
+            "offlineSeconds": 123.1
+          },
+          {
+            "n": 11,
+            "result": "failed",
+            "missing": 3,
+            "missingFiles": 0,
+            "fetched": 5,
+            "offlineSeconds": 119.3
+          },
+          {
+            "n": 12,
+            "result": "failed",
+            "missing": 1,
+            "missingFiles": 0,
+            "fetched": 1,
+            "offlineSeconds": 123.2
+          },
+          {
+            "n": 13,
+            "result": "passed",
+            "missing": 0,
+            "missingFiles": 0,
+            "fetched": 2,
+            "offlineSeconds": 118.5
+          }
+        ],
+        "fetch": {
+          "files": 198,
+          "bytes": 34526256,
+          "seconds": 1.039,
+          "reused": 111,
+          "reusedBytes": 14738244
+        },
+        "evidence": {
+          "source": "junit-xml",
+          "reports": 2,
+          "executed": 114,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "suites": [
+            "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests"
+          ],
+          "promised": {
+            "min": 1
+          },
+          "unmet": []
+        },
+        "leftOut": 1192,
+        "startedAt": "2026-11-28T03:12:28+00:00",
+        "at": "2026-11-28T03:39:11+00:00"
+      },
+      "resolution": {
+        "job": "20261128-025102-resolve-c6c0ba67f419-build-s25-s-jar-pro",
+        "status": "passed",
+        "timing": {
+          "queueWait": {
+            "seconds": 1286.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 1603.0,
+            "state": "measured"
+          }
+        }
+      },
+      "consumer": {
+        "job": "20261128-030000-s-setup-control-s25-b852d2a1",
+        "status": "passed",
+        "summary": "passed: 3 passed step(s) in 3m14s, peak 131.7 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+        "previousAttempts": 0,
+        "startedAt": "2026-11-28T03:39:13+00:00",
+        "finishedAt": "2026-11-28T03:42:27+00:00",
+        "steps": [
+          {
+            "name": "fix",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 88.078,
+            "executed": 58,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S25\", \"classes\": [{\"class\": \"org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 58}], \"gradle\": \"9.8.1\", \"gradleExit\": 0, \"revision\": \"ac1b357395ee443a87c6d20a4faf815f40550b88\", \"step\": \"fix\"}"
+            ]
+          },
+          {
+            "name": "parent",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 53.441,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S25\", \"classes\": [{\"class\": \"org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 56}], \"gradle\": \"9.8.1\", \"gradleExit\": 0, \"revision\": \"425bad9c72f10bdd03964c5ed0c0290a4678a663\", \"step\": \"parent"
+            ]
+          },
+          {
+            "name": "transplant",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 52.842,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "gradle-exit=1",
+              "{\"case\": \"S25\", \"classes\": [{\"class\": \"org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests\", \"errors\": 0, \"failures\": 2, \"skipped\": 0, \"suites\": 1, \"tests\": 58}], \"gradle\": \"9.8.1\", \"gradleExit\": 1, \"revision\": \"425bad9c72f10bdd03964c5ed0c0290a4678a663\", \"step\": \"transp",
+              "TRANSPLANT-FAILS-AS-EXPECTED"
+            ]
+          }
+        ],
+        "tests": {
+          "fix": {
+            "case": "S25",
+            "classes": [
+              {
+                "class": "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 58
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 0,
+            "revision": "ac1b357395ee443a87c6d20a4faf815f40550b88",
+            "step": "fix"
+          },
+          "parent": {
+            "case": "S25",
+            "classes": [
+              {
+                "class": "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 56
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 0,
+            "revision": "425bad9c72f10bdd03964c5ed0c0290a4678a663",
+            "step": "parent"
+          },
+          "transplant": {
+            "case": "S25",
+            "classes": [
+              {
+                "class": "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfigurationTests",
+                "errors": 0,
+                "failures": 2,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 58
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 1,
+            "revision": "425bad9c72f10bdd03964c5ed0c0290a4678a663",
+            "step": "transplant"
+          }
+        },
+        "asTheResolutionSaw": {
+          "fix": true,
+          "parent": true
+        },
+        "timing": {
+          "queueWait": {
+            "seconds": 2353.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 194.0,
+            "state": "measured"
+          }
+        }
+      },
+      "outcome": "ready, and its job passed"
+    },
+    {
+      "case": "S42",
+      "key": "3bede8e89085a068b96330fdc296539a3b979201a7ea9b07e8299f768526856b",
+      "state": "finished",
+      "why": null,
+      "history": {
+        "first": {
+          "job": "20261127-091105-setup-build-spring-boot-52285-s42-at-bot",
+          "status": "failed",
+          "steps": [
+            "failed",
+            "passed",
+            "passed",
+            "passed"
+          ],
+          "seconds": 361.1
+        },
+        "rerun": {
+          "job": "20261127-110823-setup-build-spring-boot-52285-s42-at-bot",
+          "status": "passed",
+          "steps": [
+            "passed",
+            "passed",
+            "passed",
+            "passed"
+          ],
+          "seconds": 317.0
+        }
+      },
+      "readiness": {
+        "state": "ready",
+        "stage": null,
+        "outcome": "ready",
+        "why": null,
+        "rounds": [
+          {
+            "n": 1,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 0,
+            "offlineSeconds": 119.8
+          },
+          {
+            "n": 2,
+            "result": "failed",
+            "missing": 6,
+            "missingFiles": 0,
+            "fetched": 5,
+            "offlineSeconds": 85.3
+          },
+          {
+            "n": 3,
+            "result": "failed",
+            "missing": 6,
+            "missingFiles": 0,
+            "fetched": 9,
+            "offlineSeconds": 88.3
+          },
+          {
+            "n": 4,
+            "result": "failed",
+            "missing": 2,
+            "missingFiles": 0,
+            "fetched": 13,
+            "offlineSeconds": 86.4
+          },
+          {
+            "n": 5,
+            "result": "failed",
+            "missing": 8,
+            "missingFiles": 0,
+            "fetched": 4,
+            "offlineSeconds": 86.2
+          },
+          {
+            "n": 6,
+            "result": "passed",
+            "missing": 0,
+            "missingFiles": 0,
+            "fetched": 17,
+            "offlineSeconds": 98.9
+          }
+        ],
+        "fetch": {
+          "files": 48,
+          "bytes": 12659452,
+          "seconds": 0.505,
+          "reused": 0,
+          "reusedBytes": 0
+        },
+        "evidence": {
+          "source": "junit-xml",
+          "reports": 2,
+          "executed": 70,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "suites": [
+            "org.springframework.boot.loader.jar.NestedJarFileTests"
+          ],
+          "promised": {
+            "min": 1
+          },
+          "unmet": []
+        },
+        "leftOut": 1192,
+        "startedAt": "2026-11-28T02:51:03+00:00",
+        "at": "2026-11-28T03:00:30+00:00"
+      },
+      "resolution": {
+        "job": "20261128-025102-resolve-3bede8e89085-build-s42-s-jar-pro",
+        "status": "passed",
+        "timing": {
+          "queueWait": {
+            "seconds": 1.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 567.0,
+            "state": "measured"
+          }
+        }
+      },
+      "consumer": {
+        "job": "20261128-030000-s-setup-control-s42-14da68ca",
+        "status": "passed",
+        "summary": "passed: 3 passed step(s) in 3m09s, peak 130.2 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+        "previousAttempts": 0,
+        "startedAt": "2026-11-28T03:31:16+00:00",
+        "finishedAt": "2026-11-28T03:34:26+00:00",
+        "steps": [
+          {
+            "name": "fix",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 91.121,
+            "executed": 36,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S42\", \"classes\": [{\"class\": \"org.springframework.boot.loader.jar.NestedJarFileTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 36}], \"gradle\": \"9.8.1\", \"gradleExit\": 0, \"revision\": \"57a1ca37c36f3cf355211aa8dea8c500b2dd3a09\", \"step\": \"fix\"}"
+            ]
+          },
+          {
+            "name": "parent",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 48.492,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S42\", \"classes\": [{\"class\": \"org.springframework.boot.loader.jar.NestedJarFileTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 34}], \"gradle\": \"9.8.1\", \"gradleExit\": 0, \"revision\": \"1434d2112bb979f6464e283d7a17ab728bf40ce4\", \"step\": \"parent\"}"
+            ]
+          },
+          {
+            "name": "transplant",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 50.092,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "gradle-exit=1",
+              "{\"case\": \"S42\", \"classes\": [{\"class\": \"org.springframework.boot.loader.jar.NestedJarFileTests\", \"errors\": 0, \"failures\": 1, \"skipped\": 0, \"suites\": 1, \"tests\": 36}], \"gradle\": \"9.8.1\", \"gradleExit\": 1, \"revision\": \"1434d2112bb979f6464e283d7a17ab728bf40ce4\", \"step\": \"transplant\"}",
+              "TRANSPLANT-FAILS-AS-EXPECTED"
+            ]
+          }
+        ],
+        "tests": {
+          "fix": {
+            "case": "S42",
+            "classes": [
+              {
+                "class": "org.springframework.boot.loader.jar.NestedJarFileTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 36
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 0,
+            "revision": "57a1ca37c36f3cf355211aa8dea8c500b2dd3a09",
+            "step": "fix"
+          },
+          "parent": {
+            "case": "S42",
+            "classes": [
+              {
+                "class": "org.springframework.boot.loader.jar.NestedJarFileTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 34
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 0,
+            "revision": "1434d2112bb979f6464e283d7a17ab728bf40ce4",
+            "step": "parent"
+          },
+          "transplant": {
+            "case": "S42",
+            "classes": [
+              {
+                "class": "org.springframework.boot.loader.jar.NestedJarFileTests",
+                "errors": 0,
+                "failures": 1,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 36
+              }
+            ],
+            "gradle": "9.8.1",
+            "gradleExit": 1,
+            "revision": "1434d2112bb979f6464e283d7a17ab728bf40ce4",
+            "step": "transplant"
+          }
+        },
+        "asTheResolutionSaw": {
+          "fix": true,
+          "parent": true
+        },
+        "timing": {
+          "queueWait": {
+            "seconds": 1876.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 190.0,
+            "state": "measured"
+          }
+        }
+      },
+      "outcome": "ready, and its job passed"
+    },
+    {
+      "case": "S46",
+      "key": "768491786d372065e36792ed79fe5e824c2afb55a440401847d966c095c7154d",
+      "state": "finished",
+      "why": null,
+      "history": {
+        "first": {
+          "job": "20261127-091105-setup-build-spring-boot-51653-s46-at-bot",
+          "status": "failed",
+          "steps": [
+            "passed",
+            "passed",
+            "failed",
+            "passed"
+          ],
+          "seconds": 332.6
+        }
+      },
+      "readiness": {
+        "state": "ready",
+        "stage": null,
+        "outcome": "ready",
+        "why": null,
+        "rounds": [
+          {
+            "n": 1,
+            "result": "passed",
+            "missing": 0,
+            "missingFiles": 0,
+            "fetched": 0,
+            "offlineSeconds": 122.9
+          }
+        ],
+        "fetch": {
+          "files": 0,
+          "bytes": 0,
+          "seconds": 0,
+          "reused": 0,
+          "reusedBytes": 0
+        },
+        "evidence": {
+          "source": "junit-xml",
+          "reports": 2,
+          "executed": 17,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "suites": [
+            "org.springframework.boot.jarmode.tools.IndexedLayersTests"
+          ],
+          "promised": {
+            "min": 1
+          },
+          "unmet": []
+        },
+        "leftOut": 1192,
+        "startedAt": "2026-11-28T03:12:24+00:00",
+        "at": "2026-11-28T03:14:27+00:00"
+      },
+      "resolution": {
+        "job": "20261128-025102-resolve-768491786d37-build-s46-s-jar-pro",
+        "status": "passed",
+        "timing": {
+          "queueWait": {
+            "seconds": 1282.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 123.0,
+            "state": "measured"
+          }
+        }
+      },
+      "consumer": {
+        "job": "20261128-030000-s-setup-control-s46-22593be0",
+        "status": "failed",
+        "summary": "failed: 2 passed, 1 failed step(s) in 3m00s, peak 126.1 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+        "previousAttempts": 0,
+        "startedAt": "2026-11-28T03:34:28+00:00",
+        "finishedAt": "2026-11-28T03:37:29+00:00",
+        "steps": [
+          {
+            "name": "fix",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 84.511,
+            "executed": 9,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S46\", \"classes\": [{\"class\": \"org.springframework.boot.jarmode.tools.IndexedLayersTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 9}], \"gradle\": \"9.7.0\", \"gradleExit\": 0, \"revision\": \"c966eca3e7467c2524df980aa52bac517b59a40b\", \"step\": \"fix\"}"
+            ]
+          },
+          {
+            "name": "parent",
+            "status": "passed",
+            "exitCode": 0,
+            "seconds": 47.257,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html",
+              "gradle-exit=0",
+              "{\"case\": \"S46\", \"classes\": [{\"class\": \"org.springframework.boot.jarmode.tools.IndexedLayersTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 8}], \"gradle\": \"9.7.0\", \"gradleExit\": 0, \"revision\": \"59379ae449f15a6d17a333f5505941f4165ab3b2\", \"step\": \"parent\"}"
+            ]
+          },
+          {
+            "name": "transplant",
+            "status": "failed",
+            "exitCode": 1,
+            "seconds": 48.268,
+            "executed": null,
+            "alone": true,
+            "offline": true,
+            "lacksAnInput": false,
+            "tail": [
+              "gradle-exit=0",
+              "{\"case\": \"S46\", \"classes\": [{\"class\": \"org.springframework.boot.jarmode.tools.IndexedLayersTests\", \"errors\": 0, \"failures\": 0, \"skipped\": 0, \"suites\": 1, \"tests\": 9}], \"gradle\": \"9.7.0\", \"gradleExit\": 0, \"revision\": \"59379ae449f15a6d17a333f5505941f4165ab3b2\", \"step\": \"transplant\"}",
+              "TRANSPLANT DID NOT FAIL (gradle-exit=0)"
+            ]
+          }
+        ],
+        "tests": {
+          "fix": {
+            "case": "S46",
+            "classes": [
+              {
+                "class": "org.springframework.boot.jarmode.tools.IndexedLayersTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 9
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 0,
+            "revision": "c966eca3e7467c2524df980aa52bac517b59a40b",
+            "step": "fix"
+          },
+          "parent": {
+            "case": "S46",
+            "classes": [
+              {
+                "class": "org.springframework.boot.jarmode.tools.IndexedLayersTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 8
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 0,
+            "revision": "59379ae449f15a6d17a333f5505941f4165ab3b2",
+            "step": "parent"
+          },
+          "transplant": {
+            "case": "S46",
+            "classes": [
+              {
+                "class": "org.springframework.boot.jarmode.tools.IndexedLayersTests",
+                "errors": 0,
+                "failures": 0,
+                "skipped": 0,
+                "suites": 1,
+                "tests": 9
+              }
+            ],
+            "gradle": "9.7.0",
+            "gradleExit": 0,
+            "revision": "59379ae449f15a6d17a333f5505941f4165ab3b2",
+            "step": "transplant"
+          }
+        },
+        "asTheResolutionSaw": {
+          "fix": true,
+          "parent": true
+        },
+        "timing": {
+          "queueWait": {
+            "seconds": 2068.0,
+            "state": "measured"
+          },
+          "elapsed": {
+            "seconds": 181.0,
+            "state": "measured"
+          }
+        }
+      },
+      "outcome": "ready, and its job failed on the transplant alone"
+    }
+  ],
+  "summary": {
+    "cases": 8,
+    "outcomes": {
+      "ready, and its job passed": 6,
+      "ready, and its job failed on the transplant alone": 2
+    },
+    "history": {
+      "first": {
+        "passed": 0,
+        "failed": 8
+      },
+      "rerun": {
+        "passed": 6,
+        "failed": 1
+      },
+      "third": {
+        "passed": 0,
+        "failed": 0
+      }
+    },
+    "consumerJobsThatFailedForWantOfAnInput": 0,
+    "rounds": {
+      "ofReady": [
+        1,
+        6,
+        6,
+        6,
+        6,
+        11,
+        11,
+        13
+      ],
+      "median": 6.0,
+      "max": 13,
+      "all": 60
+    },
+    "offlineSeconds": {
+      "roundsThatFailed": 5858.7,
+      "roundsThatPassed": 1001.9,
+      "consumerJobs": 1772.0
+    },
+    "fetch": {
+      "files": 676,
+      "bytes": 162388110,
+      "seconds": 4.8,
+      "reusedFiles": 296,
+      "reusedBytes": 57487195
+    },
+    "elapsedSeconds": 3088.8,
+    "firstResultSeconds": 1645.6,
+    "view": {
+      "unit": "jobs",
+      "of": 16,
+      "byState": {
+        "finished": 16
+      },
+      "drillDown": "jobs[].state; `view --state STATE` lists the rows"
+    }
+  },
+  "finishedAt": "2026-11-28T03:42:32+00:00",
+  "checks": [
+    {
+      "check": "the source is the second pass's modules, each file under the SHA-1 Gradle filed it by",
+      "passed": true,
+      "detail": {
+        "modules": 1398,
+        "files": 2879,
+        "bytes": 902749917,
+        "misfiled": []
+      }
+    },
+    {
+      "check": "one request a case: an operation under its key, and one job that needs it",
+      "passed": true,
+      "detail": {
+        "cases": 8,
+        "requests": 8,
+        "submitted": {
+          "schema": "itl-job-batch-submit/v1",
+          "batch": "s-setup-control",
+          "created": "2026-11-28T03:00:00+00:00",
+          "map": "verification/batches/s-setup-control.json",
+          "rows": 8,
+          "jobs": 8,
+          "withdrawn": 0
+        }
+      }
+    },
+    {
+      "check": "every case waits, and nothing is fetched before the admission",
+      "passed": true,
+      "detail": [
+        "waiting"
+      ]
+    },
+    {
+      "check": "one admission writes one resolution job for each request",
+      "passed": true,
+      "detail": {
+        "written": 8,
+        "skipped": []
+      }
+    },
+    {
+      "check": "every resolution ended ready, or withheld at a named stage with a named outcome",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "a case whose readiness was withheld ran nothing, and is blocked with the reason",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "every case that came ready ran once, after its receipt, with no network and nothing of the machine's own to read",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "no job failed for want of an input: a step that failed named no module or file it lacks",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "every case whose fix step passed shows tests that executed, and its counts are the resolution's own",
+      "passed": true,
+      "detail": [
+        [
+          "S01",
+          {
+            "fix": true,
+            "parent": true
+          },
+          [
+            [
+              "fix",
+              "passed",
+              21
+            ],
+            [
+              "parent",
+              "passed",
+              null
+            ],
+            [
+              "transplant",
+              "passed",
+              null
+            ]
+          ]
+        ],
+        [
+          "S02",
+          {
+            "fix": true,
+            "parent": true
+          },
+          [
+            [
+              "fix",
+              "passed",
+              163
+            ],
+            [
+              "parent",
+              "passed",
+              null
+            ],
+            [
+              "transplant",
+              "passed",
+              null
+            ]
+          ]
+        ],
+        [
+          "S08",
+          {
+            "fix": true,
+            "parent": true
+          },
+          [
+            [
+              "fix",
+              "passed",
+              22
+            ],
+            [
+              "parent",
+              "passed",
+              null
+            ],
+            [
+              "transplant",
+              "passed",
+              null
+            ]
+          ]
+        ],
+        [
+          "S11",
+          {
+            "fix": true,
+            "parent": true
+          },
+          [
+            [
+              "fix",
+              "passed",
+              23
+            ],
+            [
+              "parent",
+              "passed",
+              null
+            ],
+            [
+              "transplant",
+              "failed",
+              null
+            ]
+          ]
+        ],
+        [
+          "S15",
+          {
+            "fix": true,
+            "parent": true
+          },
+          [
+            [
+              "fix",
+              "passed",
+              33
+            ],
+            [
+              "parent",
+              "passed",
+              null
+            ],
+            [
+              "transplant",
+              "passed",
+              null
+            ]
+          ]
+        ],
+        [
+          "S25",
+          {
+            "fix": true,
+            "parent": true
+          },
+          [
+            [
+              "fix",
+              "passed",
+              58
+            ],
+            [
+              "parent",
+              "passed",
+              null
+            ],
+            [
+              "transplant",
+              "passed",
+              null
+            ]
+          ]
+        ],
+        [
+          "S42",
+          {
+            "fix": true,
+            "parent": true
+          },
+          [
+            [
+              "fix",
+              "passed",
+              36
+            ],
+            [
+              "parent",
+              "passed",
+              null
+            ],
+            [
+              "transplant",
+              "passed",
+              null
+            ]
+          ]
+        ],
+        [
+          "S46",
+          {
+            "fix": true,
+            "parent": true
+          },
+          [
+            [
+              "fix",
+              "passed",
+              9
+            ],
+            [
+              "parent",
+              "passed",
+              null
+            ],
+            [
+              "transplant",
+              "failed",
+              null
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "check": "every case is explained",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "at least one case came ready and its job ran: the checks above are not passed by nothing having happened",
+      "passed": true,
+      "detail": {}
+    }
+  ],
+  "timeline": [
+    {
+      "at": "2026-11-28T02:51:02+00:00",
+      "what": "admitted 8 resolution job(s)"
+    },
+    {
+      "at": "2026-11-28T03:18:27+00:00",
+      "what": "the first case has a result, 1645.6 s after the runner started"
+    }
+  ],
+  "passed": true,
+  "runnerLog": [
+    "de8e89085 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
+    "20261128-030000-s-setup-control-s46-22593be0: waiting: readiness 768491786d37 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
+    "20261128-025102-resolve-2fbf37e8d5af-build-s08-s-jar-pro: started at 0798b283591d (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-3431ed2d7877-build-s15-s-jar-pro: started at 0798b283591d (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-3bede8e89085-build-s42-s-jar-pro: started at 0798b283591d (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-3bede8e89085-build-s42-s-jar-pro: passed: 1 passed step(s) in 9m27s, peak 1.8 GiB (estimated 45m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-025102-resolve-68736bdace6a-build-s01-s-jar-pro: started at 0798b283591d (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-2fbf37e8d5af-build-s08-s-jar-pro: passed: 1 passed step(s) in 11m45s, peak 131.4 MiB (estimated 45m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-025102-resolve-735580e8fefb-build-s02-s-jar-pro: started at 0798b283591d (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-3431ed2d7877-build-s15-s-jar-pro: passed: 1 passed step(s) in 21m20s, peak 2.0 GiB (estimated 45m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-025102-resolve-768491786d37-build-s46-s-jar-pro: started at 0798b283591d (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-68736bdace6a-build-s01-s-jar-pro: passed: 1 passed step(s) in 11m56s, peak 2.0 GiB (estimated 45m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-025102-resolve-c6c0ba67f419-build-s25-s-jar-pro: started at 0798b283591d (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-768491786d37-build-s46-s-jar-pro: passed: 1 passed step(s) in 2m03s, peak 1.8 GiB (estimated 45m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-025102-resolve-f9588f96f74c-build-s11-s-jar-pro: started at 0798b283591d (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-735580e8fefb-build-s02-s-jar-pro: passed: 1 passed step(s) in 11m56s, peak 2.1 GiB (estimated 45m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-030000-s-setup-control-s01-1818226e: started at a3110273905b (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-030000-s-setup-control-s01-1818226e: passed: 3 passed step(s) in 3m37s, peak 129.9 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+    "20261128-030000-s-setup-control-s02-a69bad53: started at a3110273905b (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-030000-s-setup-control-s02-a69bad53: passed: 3 passed step(s) in 4m21s, peak 130.4 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+    "20261128-030000-s-setup-control-s08-58082829: started at a3110273905b (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-030000-s-setup-control-s11-2262def4: waiting: resolution job 20261128-025102-resolve-f9588f96f74c-build-s11-s-jar-pro for readiness f9588f96f74c has not finished",
+    "20261128-030000-s-setup-control-s08-58082829: passed: 3 passed step(s) in 3m51s, peak 128.5 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+    "20261128-030000-s-setup-control-s15-b89449fc: started at a3110273905b (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-030000-s-setup-control-s25-b852d2a1: waiting: resolution job 20261128-025102-resolve-c6c0ba67f419-build-s25-s-jar-pro for readiness c6c0ba67f419 has not finished",
+    "20261128-030000-s-setup-control-s15-b89449fc: passed: 3 passed step(s) in 4m25s, peak 130.0 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+    "20261128-030000-s-setup-control-s42-14da68ca: started at a3110273905b (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-025102-resolve-f9588f96f74c-build-s11-s-jar-pro: passed: 1 passed step(s) in 19m29s, peak 1.7 GiB (estimated 45m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-030000-s-setup-control-s11-2262def4: started at a3110273905b (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-030000-s-setup-control-s42-14da68ca: passed: 3 passed step(s) in 3m09s, peak 130.2 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+    "20261128-030000-s-setup-control-s46-22593be0: started at a3110273905b (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-030000-s-setup-control-s46-22593be0: failed: 2 passed, 1 failed step(s) in 3m00s, peak 126.1 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+    "20261128-030000-s-setup-control-s11-2262def4: failed: 2 passed, 1 failed step(s) in 3m47s, peak 125.7 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+    "20261128-025102-resolve-c6c0ba67f419-build-s25-s-jar-pro: passed: 1 passed step(s) in 26m43s, peak 134.1 MiB (estimated 45m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-030000-s-setup-control-s25-b852d2a1: started at a3110273905b (4 CPU, limit 8.0 GiB, timeout 3h00m)",
+    "20261128-030000-s-setup-control-s25-b852d2a1: passed: 3 passed step(s) in 3m14s, peak 131.7 MiB (estimated 45m00s, 6.0 GiB); 3 output file(s) changed",
+    "stopping on SIGTERM: running steps are cancelled, their jobs recorded",
+    "finished 16 job(s): 20261128-025102-resolve-3bede8e89085-build-s42-s-jar-pro, 20261128-025102-resolve-2fbf37e8d5af-build-s08-s-jar-pro, 20261128-025102-resolve-3431ed2d7877-build-s15-s-jar-pro, 20261128-025102-resolve-68736bdace6a-build-s01-s-jar-pro, 20261128-025102-resolve-768491786d37-build-s46-s-jar-pro, 20261128-025102-resolve-735580e8fefb-build-s02-s-jar-pro, 20261128-030000-s-setup-control-s01-1818226e, 20261128-030000-s-setup-control-s02-a69bad53, 20261128-030000-s-setup-control-s08-58082829, 20261128-030000-s-setup-control-s15-b89449fc, 20261128-025102-resolve-f9588f96f74c-build-s11-s-jar-pro, 20261128-030000-s-setup-control-s42-14da68ca, 20261128-030000-s-setup-control-s46-22593be0, 20261128-030000-s-setup-control-s11-2262def4, 20261128-025102-resolve-c6c0ba67f419-build-s25-s-jar-pro, 20261128-030000-s-setup-control-s25-b852d2a1; collect them with: python3 verification/pipeline.py collect"
+  ]
+}
