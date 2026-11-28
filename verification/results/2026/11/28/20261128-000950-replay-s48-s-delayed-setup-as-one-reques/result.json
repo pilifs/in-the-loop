@@ -1,0 +1,207 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261128-000950-replay-s48-s-delayed-setup-as-one-reques",
+  "title": "Replay S48's delayed setup as one request through the jobs pipeline",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 5m58s, peak 5.3 GiB (estimated 25m00s, 9.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (the gate) exited 1, expected 0",
+    "step 1 (the gate) was held back 5m42s by its 4-CPU quota in 5m58s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/28/20261128-000950-replay-s48-s-delayed-setup-as-one-reques.json",
+    "sha256": "3a6e1cb3e809c85240c5ff8775819585c08bf68c0b8344c5039cdf913edb93c1",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261128-000950-replay-s48-s-delayed-setup-as-one-reques",
+      "title": "Replay S48's delayed setup as one request through the jobs pipeline",
+      "description": "The third gate of the generic-jobs-pipeline brief, on the real case. VF-076: Spring Boot S48 (example 635, PR #51551) needed the Maven plugin's integration harness, which setup had never exercised, and it took five rounds and six jobs. readiness_gate.py replays it as one request: in a throwaway repository with this checkout's pipeline (jobs/), a consumer job needs the operation in readiness-operation.json, whose base is the S cache reconstructed as it was before those rounds (without the ActiveMQ BOM 6.1.8 in Maven's and Gradle's layout, and without the Maven 3.9.13 distribution). The consumer must wait while an unrelated job finishes; one resolution job, admitted by a commit, must fetch what the task asks for from Maven Central (the distribution, by its pinned SHA-512, and the BOM's POM, by the repository's SHA-1), prove the task offline in a network namespace with loopback alone, and publish a bundle with a receipt; the receipt must wake the consumer, which reads the four WARs offline on the prepared view, and its readbacks must equal parent.json and fix.json. Three controls must each be withheld at the fetch stage with nothing published: the BOM withheld from every authorised source, a wrong digest for the Maven distribution, and a repository that does not answer. It runs as one job of the first format because the default checkout's runner is the pipeline of before this line; the scheduler under test is the one in the throwaway repository, run without isolation inside this job's limits. It fetches about 9 MB from Maven Central three times and one POM once.",
+      "kind": "real-world",
+      "capabilities": [
+        "jobs:readiness",
+        "jobs:resolution"
+      ],
+      "links": {
+        "examples": [
+          "635"
+        ],
+        "paths": [
+          "verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py",
+          "verification/merged-pr-links/s01-s50/maven-war/readiness-operation.json",
+          "jobs/readiness.py"
+        ]
+      },
+      "expected": "exit 0: every check of the gate passed (readiness-gate.json lists each with what was seen): one request, the consumer alone waiting, the unrelated job finished meanwhile, one resolution job, four WAR readbacks equal to parent.json and fix.json read offline, and three controls withheld at the fetch stage",
+      "submitted": {
+        "at": "2026-11-28T00:09:50+00:00",
+        "session": "43b290ac-3fdc-4f32-8f05-45e7bcb78ce2",
+        "run": "single-generic-jobs-pipeline"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "9G",
+        "duration": "25m",
+        "timeout": "100m",
+        "notes": "The passed job of 2026-11-27 (20261127-145103) took 295 s, 5.5 GB and 3 CPUs for the two sides once. Here the task runs about twice in full (the resolution's last round and the consumer) and three times up to its first missing input (about 70 s each, as 20261127-142145 did), one at a time: about 15 minutes."
+      },
+      "steps": [
+        {
+          "name": "the gate",
+          "run": "python3 verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py --output verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json"
+      ]
+    }
+  },
+  "sourceCommit": "82e82ecb9830be515b07cf817c375e464c65aac1",
+  "startedAt": "2026-11-28T00:18:22+00:00",
+  "finishedAt": "2026-11-28T00:24:30+00:00",
+  "wallSeconds": 368.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3693315,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 14495514624,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 9663676416,
+    "durationSeconds": 1500.0,
+    "notes": "The passed job of 2026-11-27 (20261127-145103) took 295 s, 5.5 GB and 3 CPUs for the two sides once. Here the task runs about twice in full (the resolution's last round and the consumer) and three times up to its first missing input (about 70 s each, as 20261127-142145 did), one at a time: about 15 minutes."
+  },
+  "usage": {
+    "peakMemoryBytes": 5644521472,
+    "wallSeconds": 358.7,
+    "cpuSeconds": 954.9,
+    "memoryOfEstimate": 0.58,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the gate",
+      "run": "python3 verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py --output verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 358.654,
+      "cpuSeconds": 954.857,
+      "cpuThrottledSeconds": 342.48,
+      "peakMemoryBytes": 5644521472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-gate.log",
+        "lines": 20,
+        "bytes": 2674,
+        "sha256": "c988b0b771e524a784029bdde6d8c3e2925406933592cc3901a7222ca20ffafd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ok    the request is one file, the operation under its key",
+        "      the runner is at work; the consumer needs a readiness nobody has resolved",
+        "ok    the unrelated job finished during the wait",
+        "ok    only the consumer waits, and the view says for what",
+        "ok    nothing was fetched or published before the admission",
+        "ok    one resolution job is written for the one request",
+        "      admitted 20261128-001835-resolve-90d444d2ae4b-build-and-read-the",
+        "FAIL  readiness is established by one resolution job: {\"status\": \"failed\", \"summary\": \"failed: 1 failed step(s) in 3m27s, peak 1.7 GiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed\", \"conclusion\": {\"key\": \"90d444d2ae4b1ae5a69dd522667d18c4aeab98710868d73369fe3685f234592e\", \"verdict\": \"withhel",
+        "ok    the resolution's offline run saw no network",
+        "FAIL  what was fetched is what the task asked for, each verified: []",
+        "ok    the base was a reconstructed earlier state, and the receipt says so",
+        "FAIL  the consumer ran: {\"error\": \"[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/readiness-gates/20261128T001831Z/repository/verification/.state/results/20261128-001831-read-the-task-s-outputs-offline-on-the-p/result.json'\", \"job\": {\"id\": \"20261128-001831-read-the-task-s-outpu",
+        "      control withheld-bom: a resolution that must be withheld (absent)",
+        "ok    control withheld-bom: readiness is withheld at the fetch stage (absent), and nothing is published",
+        "      control wrong-maven-digest: a resolution that must be withheld (digest-mismatch)",
+        "ok    control wrong-maven-digest: readiness is withheld at the fetch stage (digest-mismatch), and nothing is published",
+        "      control unavailable-repository: a resolution that must be withheld (repository-unavailable)",
+        "ok    control unavailable-repository: readiness is withheld at the fetch stage (repository-unavailable), and nothing is published",
+        "",
+        "10 of 13 checks passed; failed: readiness is established by one resolution job; what was fetched is what the task asked for, each verified; the consumer ran"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json",
+      "change": "added",
+      "bytes": 18725,
+      "sha256": "932f83c8cd64f9c9e8c74137ac34527d976b1ab5207030017b38372c50f282e4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-28T00:24:50+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261128T002430Z-22247219fad160e5",
+      "outputs": "20261128T002430Z-2389540a045afc2a",
+      "diff": "20261128T002430Z-25324427de411afb",
+      "workdir": "20261128T002433Z-926842dd13155f91"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261128-000950-replay-s48-s-delayed-setup-as-one-reques"
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "verification-results-index/v1",
+  "shard": "2026/11/28",
+  "results": [
+    {
+      "id": "20261128-000950-replay-s48-s-delayed-setup-as-one-reques",
+      "title": "Replay S48's delayed setup as one request through the jobs pipeline",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 5m58s, peak 5.3 GiB (estimated 25m00s, 9.0 GiB); 1 output file(s) changed",
+      "attention": [
+        "step 1 (the gate) exited 1, expected 0",
+        "step 1 (the gate) was held back 5m42s by its 4-CPU quota in 5m58s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jobs:readiness",
+        "jobs:resolution"
+      ],
+      "links": {
+        "examples": [
+          "635"
+        ],
+        "paths": [
+          "verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py",
+          "verification/merged-pr-links/s01-s50/maven-war/readiness-operation.json",
+          "jobs/readiness.py"
+        ]
+      },
+      "sourceCommit": "82e82ecb9830be515b07cf817c375e464c65aac1",
+      "finishedAt": "2026-11-28T00:24:30+00:00",
+      "wallSeconds": 358.7,
+      "peakMemoryBytes": 5644521472,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 9663676416,
+        "durationSeconds": 1500.0,
+        "notes": "The passed job of 2026-11-27 (20261127-145103) took 295 s, 5.5 GB and 3 CPUs for the two sides once. Here the task runs about twice in full (the resolution's last round and the consumer) and three times up to its first missing input (about 70 s each, as 20261127-142145 did), one at a time: about 15 minutes."
+      },
+      "host": "vm-1",
+      "result": "2026/11/28/20261128-000950-replay-s48-s-delayed-setup-as-one-reques/result.json"
+    }
+  ]
+}

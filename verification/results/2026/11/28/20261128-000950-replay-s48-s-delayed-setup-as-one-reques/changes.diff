@@ -1,0 +1,455 @@
+--- /dev/null
++++ b/verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json
+@@ -0,0 +1,452 @@
++{
++  "schema": "itl-s48-readiness-gate/v1",
++  "startedAt": "2026-11-28T00:18:31+00:00",
++  "operation": "readiness-operation.json",
++  "work": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T001831Z",
++  "request": {
++    "key": "90d444d2ae4b1ae5a69dd522667d18c4aeab98710868d73369fe3685f234592e",
++    "consumer": "20261128-001831-read-the-task-s-outputs-offline-on-the-p",
++    "resolver": "20261128-001835-resolve-90d444d2ae4b-build-and-read-the",
++    "unrelated": "20261128-001831-an-unrelated-job-to-finish-while-the-con",
++    "receipt": {
++      "state": "failed",
++      "stage": "consumer",
++      "outcome": "no-progress",
++      "why": "it asks again for what it was given: org.apache.activemq:activemq-bom:6.1.8",
++      "level": "readable",
++      "rounds": [
++        {
++          "n": 1,
++          "fetched": [
++            {
++              "path": "downloads/apache-maven-3.9.13-bin.tar.gz",
++              "source": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz",
++              "bytes": 9620438,
++              "verifiedBy": "the operation's sha512",
++              "seconds": 0.768
++            }
++          ],
++          "missing": [
++            "org.apache.activemq:activemq-bom:6.1.8"
++          ],
++          "result": "failed",
++          "offlineSeconds": 72.6
++        },
++        {
++          "n": 2,
++          "fetched": [
++            {
++              "path": "m2/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom",
++              "source": "https://repo.maven.apache.org/maven2/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom",
++              "bytes": 7881,
++              "verifiedBy": "the repository's sha1",
++              "seconds": 5.393
++            }
++          ],
++          "missing": [
++            "org.apache.activemq:activemq-bom:6.1.8"
++          ],
++          "result": "failed",
++          "offlineSeconds": 128.5
++        }
++      ],
++      "fetch": {
++        "files": 2,
++        "bytes": 9628319,
++        "seconds": 6.161
++      },
++      "base": {
++        "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++        "without": [
++          "m2/org/apache/activemq/activemq-bom/6.1.8",
++          "gradle-home/caches/modules-2/files-2.1/org.apache.activemq/activemq-bom/6.1.8",
++          "downloads/apache-maven-3.9.13-bin.tar.gz",
++          "tmp/"
++        ],
++        "reconstructed": true
++      },
++      "offline": {
++        "network": {
++          "mode": "none",
++          "enforced": true,
++          "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
++          "probe": {
++            "interfaces": [
++              "lo"
++            ],
++            "connect": "OSError: Network is unreachable",
++            "lookup": "gaierror: Temporary failure in name resolution"
++          }
++        },
++        "steps": [
++          {
++            "name": "parent",
++            "run": "mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output \"$ITL_READINESS_OUT/parent.json\"",
++            "exitCode": 1,
++            "seconds": 128.4
++          }
++        ],
++        "round": 2,
++        "log": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T001831Z/store/work/90d444d2ae4b1ae5-f2a73a3f/consumer-2.log"
++      },
++      "at": "2026-11-28T00:22:03+00:00",
++      "bundle": {
++        "digest": null,
++        "files": null
++      }
++    }
++  },
++  "controls": [
++    {
++      "control": "withheld-bom",
++      "key": "bfeeced2ad274738145941e91acd974c43e703310444601289e9a3c37c3fc07c",
++      "exit": 1,
++      "state": "failed",
++      "stage": "fetch",
++      "outcome": "absent",
++      "why": "org.apache.activemq:activemq-bom:6.1.8: https://repo.maven.apache.org/maven2/withheld-by-the-readiness-gate/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: HTTP 404",
++      "rounds": [
++        {
++          "n": 1,
++          "missing": [
++            "org.apache.activemq:activemq-bom:6.1.8"
++          ],
++          "result": "failed",
++          "offlineSeconds": 70.3
++        },
++        {
++          "n": 2,
++          "missing": [],
++          "result": null,
++          "offlineSeconds": null
++        }
++      ],
++      "said": "readiness bfeeced2ad27: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (absent): org.apache.activemq:activemq-bom:6.1.8: https://repo.maven.apache.org/maven2/withheld-by-the-readiness-gate/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: HTTP 404"
++    },
++    {
++      "control": "wrong-maven-digest",
++      "key": "79279ea3a15da9d601e3544d135779611f2de6d3f5093d7106efb3e42003eefa",
++      "exit": 1,
++      "state": "failed",
++      "stage": "fetch",
++      "outcome": "digest-mismatch",
++      "why": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz",
++      "rounds": [
++        {
++          "n": 1,
++          "missing": [],
++          "result": null,
++          "offlineSeconds": null
++        }
++      ],
++      "said": "readiness 79279ea3a15d: failed after 1 round(s), 0 file(s) fetched; withheld at the fetch stage (digest-mismatch): https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz"
++    },
++    {
++      "control": "unavailable-repository",
++      "key": "fcac5b64dd2606b66361f01691d7bf3e5067a7819996221c06df52d17e3dc1d6",
++      "exit": 1,
++      "state": "failed",
++      "stage": "fetch",
++      "outcome": "repository-unavailable",
++      "why": "org.apache.activemq:activemq-bom:6.1.8: http://127.0.0.1:9/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: [Errno 111] Connection refused",
++      "rounds": [
++        {
++          "n": 1,
++          "missing": [
++            "org.apache.activemq:activemq-bom:6.1.8"
++          ],
++          "result": "failed",
++          "offlineSeconds": 70.5
++        },
++        {
++          "n": 2,
++          "missing": [],
++          "result": null,
++          "offlineSeconds": null
++        }
++      ],
++      "said": "readiness fcac5b64dd26: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (repository-unavailable): org.apache.activemq:activemq-bom:6.1.8: http://127.0.0.1:9/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: [Errno 111] Connection refused"
++    }
++  ],
++  "finishedAt": "2026-11-28T00:24:30+00:00",
++  "checks": [
++    {
++      "check": "the request is one file, the operation under its key",
++      "passed": true,
++      "detail": [
++        "90d444d2ae4b1ae5a69dd522667d18c4aeab98710868d73369fe3685f234592e.json"
++      ]
++    },
++    {
++      "check": "the unrelated job finished during the wait",
++      "passed": true,
++      "detail": {
++        "job": "20261128-001831-an-unrelated-job-to-finish-while-the-con"
++      }
++    },
++    {
++      "check": "only the consumer waits, and the view says for what",
++      "passed": true,
++      "detail": {
++        "state": "waiting",
++        "why": "readiness 90d444d2ae4b has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++        "request": {
++          "key": "90d444d2ae4b1ae5a69dd522667d18c4aeab98710868d73369fe3685f234592e",
++          "state": "waiting",
++          "why": "readiness 90d444d2ae4b has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++          "operation": "verification/readiness/90d444d2ae4b1ae5a69dd522667d18c4aeab98710868d73369fe3685f234592e.json",
++          "wantedBy": [
++            "20261128-001831-read-the-task-s-outputs-offline-on-the-p"
++          ],
++          "resolvers": [],
++          "unanswered": true
++        }
++      }
++    },
++    {
++      "check": "nothing was fetched or published before the admission",
++      "passed": true,
++      "detail": []
++    },
++    {
++      "check": "one resolution job is written for the one request",
++      "passed": true,
++      "detail": {
++        "schema": "itl-job-resolve/v1",
++        "written": [
++          {
++            "key": "90d444d2ae4b1ae5a69dd522667d18c4aeab98710868d73369fe3685f234592e",
++            "job": "20261128-001835-resolve-90d444d2ae4b-build-and-read-the",
++            "path": "verification/jobs/2026/11/28/20261128-001835-resolve-90d444d2ae4b-build-and-read-the.json",
++            "wantedBy": [
++              "20261128-001831-read-the-task-s-outputs-offline-on-the-p"
++            ]
++          }
++        ],
++        "skipped": []
++      }
++    },
++    {
++      "check": "readiness is established by one resolution job",
++      "passed": false,
++      "detail": {
++        "status": "failed",
++        "summary": "failed: 1 failed step(s) in 3m27s, peak 1.7 GiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed",
++        "conclusion": {
++          "key": "90d444d2ae4b1ae5a69dd522667d18c4aeab98710868d73369fe3685f234592e",
++          "verdict": "withheld",
++          "stage": "consumer",
++          "outcome": "no-progress",
++          "why": "it asks again for what it was given: org.apache.activemq:activemq-bom:6.1.8",
++          "level": "readable",
++          "rounds": 2,
++          "fetch": {
++            "files": 2,
++            "bytes": 9628319,
++            "seconds": 6.161
++          },
++          "reused": false,
++          "bundleDigest": null
++        },
++        "tail": [
++          "readiness 90d444d2ae4b: failed after 2 round(s), 2 file(s) fetched; withheld at the consumer stage (no-progress): it asks again for what it was given: org.apache.activemq:activemq-bom:6.1.8"
++        ]
++      }
++    },
++    {
++      "check": "the resolution's offline run saw no network",
++      "passed": true,
++      "detail": {
++        "mode": "none",
++        "enforced": true,
++        "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
++        "probe": {
++          "interfaces": [
++            "lo"
++          ],
++          "connect": "OSError: Network is unreachable",
++          "lookup": "gaierror: Temporary failure in name resolution"
++        }
++      }
++    },
++    {
++      "check": "what was fetched is what the task asked for, each verified",
++      "passed": false,
++      "detail": []
++    },
++    {
++      "check": "the base was a reconstructed earlier state, and the receipt says so",
++      "passed": true,
++      "detail": {
++        "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++        "without": [
++          "m2/org/apache/activemq/activemq-bom/6.1.8",
++          "gradle-home/caches/modules-2/files-2.1/org.apache.activemq/activemq-bom/6.1.8",
++          "downloads/apache-maven-3.9.13-bin.tar.gz",
++          "tmp/"
++        ],
++        "reconstructed": true
++      }
++    },
++    {
++      "check": "the consumer ran",
++      "passed": false,
++      "detail": {
++        "error": "[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/readiness-gates/20261128T001831Z/repository/verification/.state/results/20261128-001831-read-the-task-s-outputs-offline-on-the-p/result.json'",
++        "job": {
++          "id": "20261128-001831-read-the-task-s-outputs-offline-on-the-p",
++          "title": "Read the task's outputs offline on the prepared inputs",
++          "format": "itl-job/v2",
++          "path": "verification/jobs/2026/11/28/20261128-001831-read-the-task-s-outputs-offline-on-the-p.json",
++          "purpose": "test",
++          "workload": "generic",
++          "case": "S48",
++          "batch": null,
++          "labels": null,
++          "submitted": {
++            "at": "2026-11-28T00:18:31+00:00",
++            "session": "6c5c7798-21e3-46a5-b989-5313736bdc7f"
++          },
++          "supersedes": null,
++          "supersededBy": [],
++          "source": "31a57aec7d454cdb8e7975c441ae352a6f272858",
++          "state": "blocked",
++          "why": "readiness 90d444d2ae4b was withheld at the consumer stage (no-progress): it asks again for what it was given: org.apache.activemq:activemq-bom:6.1.8",
++          "priority": 0,
++          "priorityReason": null,
++          "needs": [
++            {
++              "readiness": "90d444d2ae4b1ae5a69dd522667d18c4aeab98710868d73369fe3685f234592e",
++              "state": "failed",
++              "why": "readiness 90d444d2ae4b was withheld at the consumer stage (no-progress): it asks again for what it was given: org.apache.activemq:activemq-bom:6.1.8",
++              "resolvers": [
++                "20261128-001835-resolve-90d444d2ae4b-build-and-read-the"
++              ]
++            }
++          ],
++          "plan": {
++            "cpus": 3.0,
++            "memoryEstimate": 6442450944,
++            "memoryLimit": 8589934592,
++            "durationEstimate": 1200.0,
++            "timeout": 4800.0
++          },
++          "claim": null,
++          "attempts": [],
++          "result": null
++        }
++      }
++    },
++    {
++      "check": "control withheld-bom: readiness is withheld at the fetch stage (absent), and nothing is published",
++      "passed": true,
++      "detail": {
++        "exit": 1,
++        "state": "failed",
++        "stage": "fetch",
++        "outcome": "absent",
++        "why": "org.apache.activemq:activemq-bom:6.1.8: https://repo.maven.apache.org/maven2/withheld-by-the-readiness-gate/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: HTTP 404",
++        "rounds": [
++          {
++            "n": 1,
++            "missing": [
++              "org.apache.activemq:activemq-bom:6.1.8"
++            ],
++            "result": "failed",
++            "offlineSeconds": 70.3
++          },
++          {
++            "n": 2,
++            "missing": [],
++            "result": null,
++            "offlineSeconds": null
++          }
++        ],
++        "said": "readiness bfeeced2ad27: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (absent): org.apache.activemq:activemq-bom:6.1.8: https://repo.maven.apache.org/maven2/withheld-by-the-readiness-gate/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: HTTP 404"
++      }
++    },
++    {
++      "check": "control wrong-maven-digest: readiness is withheld at the fetch stage (digest-mismatch), and nothing is published",
++      "passed": true,
++      "detail": {
++        "exit": 1,
++        "state": "failed",
++        "stage": "fetch",
++        "outcome": "digest-mismatch",
++        "why": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz",
++        "rounds": [
++          {
++            "n": 1,
++            "missing": [],
++            "result": null,
++            "offlineSeconds": null
++          }
++        ],
++        "said": "readiness 79279ea3a15d: failed after 1 round(s), 0 file(s) fetched; withheld at the fetch stage (digest-mismatch): https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz"
++      }
++    },
++    {
++      "check": "control unavailable-repository: readiness is withheld at the fetch stage (repository-unavailable), and nothing is published",
++      "passed": true,
++      "detail": {
++        "exit": 1,
++        "state": "failed",
++        "stage": "fetch",
++        "outcome": "repository-unavailable",
++        "why": "org.apache.activemq:activemq-bom:6.1.8: http://127.0.0.1:9/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: [Errno 111] Connection refused",
++        "rounds": [
++          {
++            "n": 1,
++            "missing": [
++              "org.apache.activemq:activemq-bom:6.1.8"
++            ],
++            "result": "failed",
++            "offlineSeconds": 70.5
++          },
++          {
++            "n": 2,
++            "missing": [],
++            "result": null,
++            "offlineSeconds": null
++          }
++        ],
++        "said": "readiness fcac5b64dd26: failed after 2 round(s), 1 file(s) fetched; withheld at the fetch stage (repository-unavailable): org.apache.activemq:activemq-bom:6.1.8: http://127.0.0.1:9/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom: [Errno 111] Connection refused"
++      }
++    }
++  ],
++  "timeline": [
++    {
++      "at": "2026-11-28T00:18:31+00:00",
++      "what": "the runner is at work; the consumer needs a readiness nobody has resolved"
++    },
++    {
++      "at": "2026-11-28T00:18:35+00:00",
++      "what": "admitted 20261128-001835-resolve-90d444d2ae4b-build-and-read-the"
++    },
++    {
++      "at": "2026-11-28T00:22:06+00:00",
++      "what": "control withheld-bom: a resolution that must be withheld (absent)"
++    },
++    {
++      "at": "2026-11-28T00:23:17+00:00",
++      "what": "control wrong-maven-digest: a resolution that must be withheld (digest-mismatch)"
++    },
++    {
++      "at": "2026-11-28T00:23:18+00:00",
++      "what": "control unavailable-repository: a resolution that must be withheld (repository-unavailable)"
++    }
++  ],
++  "passed": false,
++  "runnerLog": [
++    "runner: 2 worker(s), 4 CPUs, 9.0 GiB (at most 8.0 GiB a job), isolation none, keeping 0 B of the machine free, jobs at oom_score_adj 1000, state /home/filip/.cache/in-the-loop/readiness-gates/20261128T001831Z/repository/verification/.state",
++    "20261128-001831-an-unrelated-job-to-finish-while-the-con: started at 31a57aec7d45 (1 CPU, limit 384.0 MiB, timeout 5m00s)",
++    "20261128-001831-read-the-task-s-outputs-offline-on-the-p: waiting: readiness 90d444d2ae4b has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++    "20261128-001831-an-unrelated-job-to-finish-while-the-con: passed: 1 passed step(s) in 0.2s, peak 43.4 MiB (estimated 1m00s, 256.0 MiB)",
++    "20261128-001835-resolve-90d444d2ae4b-build-and-read-the: started at 483c2ac682ea (3 CPU, limit 8.0 GiB, timeout 1h20m)",
++    "20261128-001831-read-the-task-s-outputs-offline-on-the-p: waiting: resolution job 20261128-001835-resolve-90d444d2ae4b-build-and-read-the for readiness 90d444d2ae4b has not finished",
++    "20261128-001835-resolve-90d444d2ae4b-build-and-read-the: failed: 1 failed step(s) in 3m27s, peak 1.7 GiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed",
++    "20261128-001831-read-the-task-s-outputs-offline-on-the-p: blocked: readiness 90d444d2ae4b was withheld at the consumer stage (no-progress): it asks again for what it was given: org.apache.activemq:activemq-bom:6.1.8",
++    "stopping on SIGTERM: running steps are cancelled, their jobs recorded",
++    "finished 2 job(s): 20261128-001831-an-unrelated-job-to-finish-while-the-con, 20261128-001835-resolve-90d444d2ae4b-build-and-read-the; collect them with: python3 verification/pipeline.py collect"
++  ]
++}
