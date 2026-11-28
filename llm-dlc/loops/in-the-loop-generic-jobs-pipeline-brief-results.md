@@ -12,7 +12,7 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 | 1. Protect and measure: the census | done | `jobs/audit.py`, `jobs/records.py`, the frozen census and manifest of `b52a084f5d11` |
 | 1. Protect and measure: retention on retry and prune | done | `jobs/attempts.py`; `prune`, `recover` and a collect that can be run again, in `verification/pipeline.py`; the brief queue's cleanup is that `prune` |
 | 2. Switch one queue | done | The pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification, generic and resolution workloads (`jobs/workloads/`); the second job format, written by `submit --purpose`, run and collected, with a result that keeps execution, fulfillment, each declared output, a step's test evidence and network, the workload's conclusion and scoped timing apart (`jobs/lifecycle.py`, `jobs/evidence.py`); one state with its reason for every job, in a view the keepers read as data (`jobs/scheduling.py`, `view`); a batch from one manifest with its map (`jobs/batch.py`, the 49-row fixture); the pipeline of `b52a084f5d11` tested beside this one, with a rollback while a job is in flight. Not done here: a full watcher cycle on the real queue with the new code, which waits for the line to land (the default checkout's runner is the old pipeline until then) |
-| 3. Qualify delayed setup (S48) | **reopened on 2026-11-28**: the mechanism and the synthetic fixture stand, S48's pass does not | Readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. S48 had passed 17 of 17 checks (job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques`). **That pass read a Maven plugin from `~/.m2/repository` in the runner's home**, which is neither the base nor the bundle: the offline proof took the network away and left the home directory readable. Since `typnwnxwvrnt` a task runs on prepared inputs alone (an empty home, declared `reads`), and under that S48's gate failed 10 of 13 (job `20261128-023123-...`); see *Gate 3: S48, read again*. An ordinary Gradle build (Spring Boot's core module, a library taken out of every cache) passes under the same rule, 14 of 14, job `20261128-023123-a-gradle-build-reads-offline-a-library-t` |
+| 3. Qualify delayed setup (S48) | done, **with one declared input that nothing verified** | Readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. **S48 passes on prepared inputs alone, 17 of 17 checks**, in job `20261128-024257-replay-s48-s-delayed-setup-as-one-reques` (17m13s): one request, one resolution job, two offline rounds, four WARs read by a fresh offline consumer in an empty home and equal to the committed readbacks, three controls withheld at the fetch stage, an unrelated job finished during the wait. The pass of the third cycle (job `20261128-003144-...`) had read a Maven plugin from `~/.m2/repository` in the runner's home, which a review and a clean sandbox brought out; that repository (770 files the S setup's online job left there) is now a declared read of the operation, copied with the digest of its tree, and it is the one input of the pass that no resolution fetched and nothing verified (see *Gate 3: S48, read again*). An ordinary Gradle build passes under the same rule, 14 of 14, job `20261128-023123-a-gradle-build-reads-offline-a-library-t` |
 | 4. Tune from measurements | measured twice, nothing tuned | Admission is built (`fetch_allow`, `fetch_slots` with ten as the documented starting ceiling, a receipt's fetched and reused bytes and seconds, `timing.byPhase`). Two real measurements (see *Gate 4*): in S48's resolution fetching was 0.2 % of the time, and in S11's, a real Gradle graph of 53 missing modules, 0.1 %; ten failed rounds took 867 s of its 1,028 s. So the ceiling of ten is untested and is not what limits a resolution: the number of rounds is. Nothing is tuned |
 | 5. Adopt and verify | done but for what needs a batch, and reviewed | `ARCHITECTURE.md` and the READMEs with each commit, the skills' commands, `CLAUDE.md`'s section on jobs, the inventory of the scripts under `verification/` (100 scripts, nothing removed), a dated update on each finding the brief names. In the fourth cycle three reviewers that had not written the line read it against the brief: 42 findings, 21 fixed in whole or in part by the end of that cycle, the rest listed with their state in *The review of 2026-11-28*. Open: those, and the comparison on the next natural large batch, which needs this line landed (the default checkout's runner is the old pipeline until then) and a batch to run |
 
@@ -81,12 +81,12 @@ line: it lists what is known to be wrong in it.
 For whoever continues (a later cycle of this run, or the next run). Items 1 to 8 of the first three cycles are
 done or are in the list below; their sections follow.
 
-1. **Read the two jobs that were running when the fourth cycle ended**, on the collector's line (`python3
+1. **Read the job that was running when the fourth cycle ended**, on the collector's line (`python3
    jobs/pipeline.py view --state recorded-elsewhere` names the commit; a job's record is under its result's
-   `outputs/`, not at the source path): `20261128-024257-replay-s48-s-delayed-setup-as-one-reques` (S48 with the
-   home's Maven repository declared) and `20261128-023835-replay-eight-of-the-s-batch-s-first-setu` (the control
-   with the first pass's snapshots kept). Record both here and in VF-076. If S48 fails again, its task reads
-   something else of the home, and the clean sandbox's log names it.
+   `outputs/`, not at the source path): `20261128-023835-replay-eight-of-the-s-batch-s-first-setu`, the control
+   on eight cases with the first pass's snapshots kept. Record it here (*The S batch's first setup, as a
+   control*) and in VF-070: how many of the six cases whose first job failed on a module came ready, in how many
+   rounds, and whether any file was reused between cases.
 2. **A fetch phase the build tool drives**, for graphs that rounds discover too slowly (S11: ten failed rounds)
    or cannot discover (Maven: one artifact a failure, so S48's plugin closure of some hundred artifacts is out of
    reach of rounds): the task run once with the network reachable only through a proxy that admits the
@@ -371,11 +371,17 @@ cache").
 What was done about it (`qupyszptnvvk`): the input is declared. The gate copies that repository once to a folder
 the operation names under `reads`, records the digest of its tree, and each step lays the copy into the empty
 home it is given. Nothing verified those files when Maven fetched them, and the operation's `base.why` says so.
-Job `20261128-024257-replay-s48-s-delayed-setup-as-one-reques` runs the gate so; it had not ended when this page
-was last written, and its result is on the collector's line. If it passes, S48 is shown ready on the base, the
-bundle and one declared, unverified folder. Getting that folder by a resolution instead (Maven names one
-artifact a failure, so discovery by rounds would take a round an artifact for some hundred artifacts) is the
-case for a fetch phase the build tool drives itself, under *What is left*.
+
+**With it declared, S48 passes: 17 of 17 checks**, job `20261128-024257-replay-s48-s-delayed-setup-as-one-reques`
+(17m13s, 5.4 GiB at its peak, collector's jj change `ymxzxrnxzttn`; the record is the job's output
+`readiness-gate.json`). The resolution took two offline rounds, as before: the Maven distribution by its pinned
+digest, then the ActiveMQ BOM's POM once Gradle named it (9,628,319 bytes, 1.2 s of fetching, the second round
+373 s). The consumer read the four WARs in an empty home, with no network, equal to `parent.json` and `fix.json`,
+and the three controls were withheld at the fetch stage (`absent`, `digest-mismatch`, `repository-unavailable`).
+The record names the copied repository: 770 files, tree digest `6780dd401eda…`. So S48 is shown ready on the
+base, the bundle and one declared folder that nothing verified. Getting that folder by a resolution instead
+(Maven names one artifact a failure, so discovery by rounds would take a round an artifact for some hundred
+artifacts) is the case for a fetch phase the build tool drives itself, under *What is left*.
 
 ## Gate 3: S48 (the runs of the third cycle, as recorded then)
 
