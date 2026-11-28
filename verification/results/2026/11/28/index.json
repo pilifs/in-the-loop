@@ -3,6 +3,41 @@
   "shard": "2026/11/28",
   "results": [
     {
+      "id": "20261128-011602-a-gradle-build-reads-offline-a-library-t",
+      "title": "A Gradle build reads offline a library the resolver fetched, through the readiness view's file repository",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 49.2s, peak 1.9 GiB (estimated 15m00s, 9.0 GiB); 1 output file(s) changed",
+      "attention": [
+        "step 1 (the gate) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jobs:readiness",
+        "jobs:resolution"
+      ],
+      "links": {
+        "examples": [
+          "635"
+        ],
+        "paths": [
+          "verification/merged-pr-links/s01-s50/gradle-module/gate.py",
+          "verification/merged-pr-links/s01-s50/gradle-module/readiness-operation.json",
+          "jobs/readiness.py"
+        ]
+      },
+      "sourceCommit": "bd8271d8cde37f6fec3425597f38cc5f9fed56db",
+      "finishedAt": "2026-11-28T01:24:30+00:00",
+      "wallSeconds": 49.2,
+      "peakMemoryBytes": 1990537216,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 9663676416,
+        "durationSeconds": 900.0,
+        "notes": "Each offline run builds Spring Boot's buildSrc and compiles the modules the core module needs: a few minutes, as in S48's gate, where a hundred compile tasks took about two. Two rounds of the resolution (the first stops at the missing library) and the consumer's own compile, one at a time: about 10 minutes. S48's gate peaked at 5.5 GiB."
+      },
+      "host": "vm-1",
+      "result": "2026/11/28/20261128-011602-a-gradle-build-reads-offline-a-library-t/result.json"
+    },
+    {
       "id": "20261128-003144-replay-s48-s-delayed-setup-as-one-reques",
       "title": "Replay S48's delayed setup as one request through the jobs pipeline",
       "status": "passed",
