@@ -62,15 +62,19 @@ class ARunsState(unittest.TestCase):
         log.write_text('{"type":"tool_use"}\n{"type": "tool_use"} {"type":"text"}\n')
         self.assertEqual(run_common.turn(str(log))["toolCalls"], 2)
 
-    def test_the_queue_is_counted_by_job_and_an_answer_that_is_not_json_is_an_empty_queue(self):
-        (self.root / "verification").mkdir()
-        (self.root / "verification/pipeline.py").write_text(
-            "import json\nprint(json.dumps({'pending': ['20260101-000000-a made up'], 'running': [], "
-            "'finished, not collected': ['20260101-000001-b made up'], 'collected': ['20260101-000002-c made up [passed]']}))\n")
-        self.assertEqual(run_common.jobs(self.root), {"pending": ["20260101-000000-a"], "running": [], "finished": ["20260101-000001-b"],
-                                                      "collected": {"20260101-000002-c": "passed"}})
-        (self.root / "verification/pipeline.py").write_text("print('not JSON')\n")
-        self.assertEqual(run_common.jobs(self.root), {"pending": [], "running": [], "finished": [], "collected": {}})
+    def test_the_queue_is_counted_by_job_and_an_answer_that_is_not_the_view_is_an_unknown_queue_not_an_empty_one(self):
+        (self.root / "jobs").mkdir()
+        rows = [("20260101-000000-a", "queued", None), ("20260101-000001-b", "finished", {"status": "failed"}),
+                ("20260101-000002-c", "collected", {"status": "passed"}), ("20260101-000003-d", "blocked", None),
+                ("20260101-000004-e", "waiting", None)]
+        view = {"schema": "itl-job-lifecycle/v1", "idle": False, "jobs": [{"id": i, "state": s, "result": r} for i, s, r in rows]}
+        (self.root / "jobs/pipeline.py").write_text(f"import json\nprint(json.dumps({view!r}))\n")
+        self.assertEqual(run_common.jobs(self.root), {"pending": ["20260101-000000-a", "20260101-000004-e"], "running": [],
+                                                      "finished": ["20260101-000001-b"], "collected": {"20260101-000002-c": "passed"}})
+        (self.root / "jobs/pipeline.py").write_text("print('not JSON')\n")
+        self.assertIsNone(run_common.jobs(self.root))
+        (self.root / "jobs/pipeline.py").write_text(f"import json\nprint(json.dumps({dict(view, idle=None)!r}))\n")
+        self.assertIsNone(run_common.jobs(self.root))    # the pipeline itself could not read the queue
 
 
 class NestedRuns(unittest.TestCase):

@@ -747,7 +747,11 @@ Ended 2026-11-18 10:21:00 after 2 cycle(s): the run was ended there (the watcher
         self.assertIn("- cycle 3 running, 0 min in: 41 tool calls, last output 2 min ago", text)
         self.assertIn("- commits this run: 2, the last: efgh5678 Two", text)
         self.assertIn("- spend: $12.50 over 2 cycle(s) that have ended", text)
-        self.assertIn("- verification queue: 1 pending, 0 running, 0 back and not collected", text)
+        self.assertIn("- job queue: 1 can start, 0 running, 0 back and not collected", text)
+        # A queue nobody could read is said to be unknown, and is not the quiet of an empty one.
+        unread = single_run.summary({**s, "jobs": {"pending": None, "running": None, "finished": None, "unknown": True}})
+        self.assertIn("- the job queue could not be read", unread)
+        self.assertIn("unknown, not empty", unread)
         self.assertIn("- the continue message was last set 2026-11-18T10:22:00Z: Now the tests.", text)
         quiet = single_run.summary({**s, "running": False, "cycle": None, "commits": [], "cycleCosts": {}, "messagesSet": 1,
                                     "jobs": {"pending": 0, "running": 0, "finished": 0}, "question": {"type": "run", "n": 4}})

@@ -2,7 +2,7 @@
 """Tests for queue_keeping.py: the verification queue as the watcher of a run keeps it. It collects what is back and
 commits it alone, starts the runner when jobs wait, and says only what the watcher has to hear of.
 Run: python3 llm-dlc/tools/test_queue_keeping.py
-Everything is made up: test_landing.py's checkout, with a stand-in for verification/pipeline.py whose state is a
+Everything is made up: test_landing.py's checkout, with a stand-in for jobs/pipeline.py whose state is a
 folder (a finished job is a folder of results, the jobs waiting are the lines of a file)."""
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ import test_landing
 sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 
-# verification/pipeline.py's stand-in: the runner's state is STATUSES/pipeline, a finished job a folder of results/
-# with its result.json, and the jobs waiting the lines of pending; `run` only says it ran.
+# jobs/pipeline.py's stand-in: the runner's state is STATUSES/pipeline, a finished job a folder of results/ with its
+# result.json, and the jobs not started the lines of pending, each an id and its state; `run` only says it ran.
 FAKE_PIPELINE = textwrap.dedent('''\
     import json, os, shutil, sys
     from pathlib import Path
@@ -31,26 +31,42 @@ FAKE_PIPELINE = textwrap.dedent('''\
     results = state / "results"
     done = sorted(p.name for p in results.iterdir()) if results.exists() else []
     cmd = sys.argv[1]
-    if cmd == "status":
-        pending = (state / "pending").read_text().splitlines() if (state / "pending").exists() else []
-        print(json.dumps({"pending": pending, "running": [], "finished, not collected": [f"{d} made up" for d in done]}))
+    if cmd == "view":
+        pending = [line.split(None, 1) for line in (state / "pending").read_text().splitlines()] if (state / "pending").exists() else []
+        jobs = [{"id": i, "state": s, "why": None} for i, s in pending] + [{"id": d, "state": "finished", "why": None} for d in done]
+        asked = json.loads((state / "requests").read_text()) if (state / "requests").exists() else []
+        print(json.dumps({"schema": "itl-job-lifecycle/v1", "idle": not jobs, "runner": {"pid": None, "atWork": False}, "jobs": jobs,
+                          "readiness": asked}))
+    elif cmd == "resolve":
+        asked = json.loads((state / "requests").read_text())
+        written = []
+        for request in asked:
+            if request["unanswered"]:
+                job = "20260101-000100-resolve-" + request["key"][:12]
+                Path("verification/jobs").mkdir(parents=True, exist_ok=True)
+                Path(f"verification/jobs/{job}.json").write_text("{}\\n")
+                written.append({"key": request["key"], "job": job, "wantedBy": request["wantedBy"]})
+                request["unanswered"], request["resolvers"] = False, [job]
+        (state / "requests").write_text(json.dumps(asked))
+        (state / "pending").write_text("".join(f"{row['job']} queued\\n" for row in written))
+        print(json.dumps({"schema": "itl-job-resolve/v1", "written": written, "skipped": []}))
     elif cmd == "collect":
         if os.environ.get("STANDIN_COLLECT_FAILS"):
             sys.exit("the collector could not read a result")
+        collected = []
         for name in done:
             r = json.loads((results / name / "result.json").read_text())
             dest = Path("verification/results") / name
             dest.mkdir(parents=True, exist_ok=True)
             (dest / "result.json").write_text(json.dumps({**r, "collected": {"conflicts": []}}))
             shutil.rmtree(results / name)
-            print(f"{name}: {r['status']}: applied 0, conflicts 0, kept 0")
-        print("\\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
-        print(f"  Record verification results for {len(done)} job(s)")
-        print(f"  Outputs applied for 0 of the {len(done)} job(s).")
+            collected.append({"id": name, "status": r["status"], "applied": [], "conflicts": [], "kept": []})
+        hooks = [{"command": "regenerate the table", "exitCode": 3, "output": "the table's source is missing"}] if os.environ.get("STANDIN_HOOK_FAILS") else []
+        print(json.dumps({"schema": "itl-job-collect/v1", "collected": collected, "already": [], "hooks": hooks,
+                          "commit": {"summary": f"Record verification results for {len(done)} job(s)",
+                                     "body": f"Outputs applied for 0 of the {len(done)} job(s)."}}))
     elif cmd == "commit-paths":
         print("verification")
-    elif cmd == "wait":
-        print("no runner is at work, and nothing waits to be collected")
     elif cmd == "run":
         (state / "ran").write_text("ran\\n")
     elif cmd == "nudge":
@@ -61,7 +77,7 @@ FAKE_PIPELINE = textwrap.dedent('''\
 
 @cost("tool")
 class KeepingTheQueue(test_landing.Fixture):
-    FILES = {"verification/pipeline.py": FAKE_PIPELINE}
+    FILES = {"jobs/pipeline.py": FAKE_PIPELINE}
     JOB, OTHER = "20260101-000000-made-up", "20260101-000001-made-up"
 
     def setUp(self):
@@ -69,6 +85,7 @@ class KeepingTheQueue(test_landing.Fixture):
         self.state = self.statuses / "pipeline"
         self.state.mkdir()
         os.environ.pop("STANDIN_COLLECT_FAILS", None)
+        os.environ.pop("STANDIN_HOOK_FAILS", None)
 
     def back(self, job: str, status: str, attention: list[str] = ()) -> None:
         folder = self.state / "results" / job
@@ -116,16 +133,17 @@ class KeepingTheQueue(test_landing.Fixture):
         self.assertIsNone(self.run.read()["collectFailed"])
 
     def test_jobs_waiting_with_no_runner_start_one_and_a_job_that_comes_while_it_runs_is_announced_once(self):
-        self.waiting(f"{self.JOB} made up, est. 1 min", "20260101-000009-too-big made up; cannot run here: needs 64G")
+        self.waiting(f"{self.JOB} queued", "20260101-000009-too-big unschedulable", "20260101-000010-behind-it blocked")
         thing = queue_keeping.tend(self.run)
-        self.assertEqual((thing["kind"], thing["jobs"]), ("verification", [self.JOB]))  # not the one this machine cannot run
+        # Not the one this machine cannot run, nor the one that waits for it: nobody starts a runner for those.
+        self.assertEqual((thing["kind"], thing["jobs"]), ("verification", [self.JOB]))
         self.assertIn("started the runner", thing["note"])
         end = time.time() + 20
         while not (self.state / "ran").exists():
             self.assertLess(time.time(), end, "the runner was not started")
             time.sleep(0.1)
         self.run.update(runner={"pid": os.getpid()})  # a runner still at work
-        self.waiting(f"{self.JOB} made up, est. 1 min", f"{self.OTHER} made up, est. 1 min")
+        self.waiting(f"{self.JOB} queued", f"{self.OTHER} deferred")
         status = queue_keeping.queue(self.root)
         self.assertIsNone(queue_keeping.start_runner(self.run, status))
         self.assertIsNone(queue_keeping.start_runner(self.run, status))
@@ -135,11 +153,39 @@ class KeepingTheQueue(test_landing.Fixture):
         self.assertIsNone(queue_keeping.start_runner(self.run, queue_keeping.queue(self.root)))
         self.assertEqual(self.run.read()["nudged"], [])  # forgotten once nothing waits
 
-    def test_the_queue_is_read_as_data_and_an_answer_that_is_not_json_is_no_queue(self):
-        self.waiting(f"{self.JOB} made up")
-        self.assertEqual(queue_keeping.queue(self.root)["pending"], [f"{self.JOB} made up"])
-        (self.root / "verification/pipeline.py").write_text("print('not JSON')\n")
-        self.assertIsNone(queue_keeping.queue(self.root))
+    def test_the_queue_is_read_as_data_and_a_queue_nobody_could_read_is_unknown_not_empty(self):
+        self.waiting(f"{self.JOB} queued", f"{self.OTHER} blocked")
+        view = queue_keeping.queue(self.root)
+        self.assertEqual(([j["id"] for j in view["jobs"]], queue_keeping.left(view)), ([self.JOB, self.OTHER], 1))
+        self.waiting()
+        self.assertEqual(queue_keeping.left(queue_keeping.queue(self.root)), 0)
+        for answer in ("print('not JSON')\n",                                      # the pipeline said something else
+                       "import json\nprint(json.dumps({'schema': 'itl-job-lifecycle/v1', 'idle': None, 'jobs': []}))\n"):  # it could not read the queue
+            (self.root / "jobs/pipeline.py").write_text(answer)
+            self.assertIsNone(queue_keeping.queue(self.root))
+            self.assertIsNone(queue_keeping.left(queue_keeping.queue(self.root)))   # unknown: never zero
+
+    @cost("tool")
+    def test_a_readiness_request_nothing_answers_is_admitted_once_by_a_commit_and_then_run(self):
+        key = "ab" * 32
+        (self.state / "requests").write_text(json.dumps([{"key": key, "unanswered": True, "resolvers": [], "wantedBy": [self.JOB]}]))
+        self.waiting(f"{self.JOB} waiting")
+        thing = queue_keeping.tend(self.run)
+        job = "20260101-000100-resolve-" + key[:12]
+        self.assertEqual((thing["kind"], thing["jobs"]), ("resolution", [job]))
+        self.assertIn("Queue the resolution of 1 readiness request(s) (verification pending)", self.head("description"))
+        self.assertEqual(self.jj(self.root, "diff", "-r", "@-", "--name-only").split(), [f"verification/jobs/{job}.json"])
+        # It is on its way now: the next look admits nothing more, and starts the runner for it.
+        thing = queue_keeping.tend(self.run)
+        self.assertEqual((thing["kind"], thing["jobs"]), ("verification", [job]))
+
+    def test_a_hook_that_failed_after_the_results_were_collected_is_for_someone_to_look_at(self):
+        self.back(self.JOB, "passed")
+        with mock.patch.dict(os.environ, {"STANDIN_HOOK_FAILS": "1"}):
+            thing = queue_keeping.tend(self.run)
+        self.assertEqual([r["status"] for r in thing["collected"]], ["passed"])     # the job passed, and
+        self.assertEqual([(a["status"], a["attention"]) for a in thing["attention"]], [("hook failed", ["the table's source is missing"])])
+        self.assertIn("Triage each one in `attention`", thing["note"])
         self.assertIsInstance(self.run, run_common.Run)
 
 

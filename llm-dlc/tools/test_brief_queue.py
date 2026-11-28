@@ -175,26 +175,20 @@ class TheQueuesRules(unittest.TestCase):
         brief_queue.placed(entries, {"name": "prs-brief", "state": "queued"}, *brief_queue.brief_place(brief_queue.DEFAULTS, entry))
         self.assertEqual([e["name"] for e in entries], ["prs", "prs-brief", "other"])
 
-    def test_cleanup_clears_a_failed_jobs_folder_only_once_its_originals_are_in_the_archive(self):
-        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {"HOME": tmp}):
-            root, home = Path(tmp) / "checkout", Path(tmp) / ".cache/in-the-loop"
-            folders = {}
-            for job, where in (("sealed", home / "work/sealed"), ("unsealed", home / "work/unsealed"),
-                               ("elsewhere", Path(tmp) / "elsewhere"), ("passed", None)):
-                result = root / "verification/results/2026/11/23" / job / "result.json"
-                result.parent.mkdir(parents=True)
-                if where:
-                    (where / "build").mkdir(parents=True)
-                    (where / "build/out.bin").write_bytes(b"x" * 4096)
-                    folders[job] = where
-                result.write_text(json.dumps({"status": "failed", **({"workdir": str(where)} if where else {})}))
-            states = {"sealed": ["remote_verified", "remote_verified"], "unsealed": ["remote_verified", "locally_sealed"],
-                      "elsewhere": ["remote_verified"]}
-            with mock.patch.object(brief_queue, "artifact_states", lambda r, job: states.get(job, [])):
-                out = brief_queue.cleanup(root)
-            self.assertEqual((out["cleared"], out["keptNotYetSealed"]), (1, 2))
-            self.assertFalse(folders["sealed"].exists())
-            self.assertTrue(folders["unsealed"].exists() and folders["elsewhere"].exists())
+    def test_cleanup_is_the_pipelines_own_prune_and_reports_what_it_removed_and_kept(self):
+        """The queue has no rule of its own for what may go: it asks the pipeline, which ties a work folder to the
+        attempt whose original is verified (verification/test_capture.py tests the rule)."""
+        report = {"schema": "itl-job-prune/v1", "dryRun": False, "bytes": 3 * 2**30,
+                  "removed": [{"id": "a.001.abc", "bytes": 2**31}, {"id": "b", "bytes": 2**30}],
+                  "kept": [{"id": "c.002.def", "why": "its originals are not sealed (failed)"}]}
+        with mock.patch.object(brief_queue, "pruned", lambda root: report):
+            self.assertEqual(brief_queue.cleanup(Path("/nowhere")), {"cleared": 2, "freedGB": 3.0, "keptNotYetSealed": 1})
+        with mock.patch.object(brief_queue, "pruned", lambda root: None):
+            out = brief_queue.cleanup(Path("/nowhere"))
+        self.assertEqual((out["cleared"], out["keptNotYetSealed"]), (0, 0))
+        self.assertIn("could not be asked", out["problem"])
+        with tempfile.TemporaryDirectory() as tmp:   # no pipeline there: not asked, and nothing removed
+            self.assertIsNone(brief_queue.pruned(Path(tmp)))
 
 
 class HeldQueue(unittest.TestCase):
@@ -309,7 +303,7 @@ class TheHandover(unittest.TestCase):
                                                 "STANDIN_MODES": "commit"}),
                    mock.patch.object(brief_queue, "commit", self.commit),
                    mock.patch.object(brief_queue, "checkpoint", lambda root: self.checkpoints.append(1) or {"checkpoint": "made up"}),
-                   mock.patch.object(brief_queue, "artifact_states", lambda root, job: [])]
+                   mock.patch.object(brief_queue, "pruned", lambda root: {"removed": [], "kept": [], "bytes": 0})]
         for p in patches:
             p.start()
             self.addCleanup(p.stop)

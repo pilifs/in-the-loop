@@ -46,6 +46,7 @@ LIVE = (
     "llm-dlc/*.md", "llm-dlc/*.schema.json", "llm-dlc/tools/*",
     "llm-dlc/loops/brief-generation-template.md", "llm-dlc/loops/setup-agent-template.md", "llm-dlc/loops/domain-prompt-*.md",
     "verification/README.md", "verification/*.py", "verification/pipeline.toml",
+    "jobs/*.md", "jobs/*.py", "jobs/**/*.py", "jobs/**/*.md", "jobs/schema/*.json",
     "lib/README.md", "lib/tools/*.py", "lib/tests/costs.json", "lib/tests/fixtures/*/README.md", "lib/tests/*.rs",
     "examples/README.md", "examples/approaches.md", "examples/tools/*.py", "examples/tools/targets/*.py",
     "examples/schema/*.json",

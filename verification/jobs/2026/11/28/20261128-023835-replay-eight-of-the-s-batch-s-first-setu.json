@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261128-023835-replay-eight-of-the-s-batch-s-first-setu",
+  "title": "Replay eight of the S batch's first setup jobs through delayed setup, with the first pass's snapshots kept",
+  "description": "The control the generic-jobs-pipeline brief names beside S48 (VF-070), second run. The first (20261128-023123-replay-five-of-the-s-batch-s-first-setup) showed a fault of the gate's reconstruction: it left out every descriptor Gradle's cache wrote after the first resolution pass, and the second pass had written the descriptors of the first pass's snapshot modules again, so three of five cases were withheld as absent on a Spring Framework BOM the first pass had. This run leaves out the descriptor of a module version only when all its files are of the second pass. Eight cases as one manifest (S01, S02, S08, S11, S15, S25, S42, S46), each a job that needs its builds and landed tests ready at both pins; the requests are admitted as the watcher admits them, and each resolution job finds what its task lacks by running it offline in rounds, fetching from a folder made of what the second pass fetched. S11 and S46 are cases whose transplant did not fail in the original run; S46's first job did not fail on a missing module. Four jobs at a time in the nested runner.",
+  "kind": "real-world",
+  "capabilities": [
+    "jobs:readiness",
+    "jobs:resolution",
+    "jobs:batch"
+  ],
+  "links": {
+    "examples": [
+      "635"
+    ],
+    "paths": [
+      "verification/merged-pr-links/s01-s50/setup-control/gate.py",
+      "verification/merged-pr-links/s01-s50/setup-control/case_task.sh",
+      "jobs/readiness.py"
+    ]
+  },
+  "expected": "exit 0: every check of the gate passed (control.json lists each), among them that at least one case came ready and ran and that no job failed for want of an input. How many came ready and in how many rounds is the record's summary, a measurement.",
+  "submitted": {
+    "at": "2026-11-28T02:38:35+00:00",
+    "session": "43b290ac-3fdc-4f32-8f05-45e7bcb78ce2",
+    "run": "single-generic-jobs-pipeline"
+  },
+  "requires": [
+    "java",
+    "git",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 16.0,
+    "memory": "16G",
+    "duration": "100m",
+    "timeout": "240m"
+  },
+  "steps": [
+    {
+      "name": "the control",
+      "run": "python3 verification/merged-pr-links/s01-s50/setup-control/gate.py --cases S01,S02,S08,S11,S15,S25,S42,S46 --workers 4 --output verification/merged-pr-links/s01-s50/setup-control/control.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/setup-control/control.json"
+  ]
+}

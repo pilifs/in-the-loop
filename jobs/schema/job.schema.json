@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "itl-job/v2",
+  "title": "Job",
+  "description": "Work that should not run in an agent's session, committed and run later by the pipeline (jobs/README.md): a dependency resolution, a build, a test run, a proof, a maintenance task. The pipeline owns its identity, its attempts, its scheduling, its budget, its outputs and its record. What a Gradle task, a Maven goal, a test selector or a checker's verdict means belongs to the workload the job names. A job of the first format (verification-job/v1, verification/schema/job.schema.json) is read as it always was.",
+  "type": "object",
+  "required": ["schema", "id", "title", "description", "purpose", "resources", "steps"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "itl-job/v2"},
+    "id": {
+      "description": "UTC submission time and a slug of the title; also the file name. A job made from a batch's manifest takes the batch's time, its name, its row and the first characters of the row's work identity, so that submitting the same manifest again gives the same id.",
+      "type": "string",
+      "pattern": "^\\d{8}-\\d{6}-[a-z0-9][a-z0-9-]{0,60}$"
+    },
+    "title": {"description": "One line: what the job does.", "type": "string", "minLength": 3, "maxLength": 200},
+    "description": {
+      "description": "For a reader who did not see the session: what the job does, why it is needed, and anything a reader of the result should know.",
+      "type": "string",
+      "minLength": 20
+    },
+    "purpose": {
+      "description": "What kind of work it is. Kept apart from the labels: a purpose says how to read the result (a resolve job's is a readiness receipt, a test job's is which tests executed, a verify job's is a conclusion about a claim), whatever project or tool it is for.",
+      "enum": ["resolve", "build", "test", "verify", "maintenance"]
+    },
+    "workload": {
+      "description": "The adapter that knows what the steps mean (jobs/workloads/NAME.py). `generic`, the default, knows nothing: commands, exit codes, outputs. `verification` builds the checker a job requires and reads proof verdicts out of the logs. `resolution` prepares what a named build task needs and proves it suffices offline. A runner without the adapter does not run the job, and says so.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "labels": {
+      "description": "What the job is about, for grouping and calibration: `project`, `tool`, `capability` (what the first format called capabilities), or any other key. None of them changes how the job runs.",
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"type": "string", "minLength": 1}}
+    },
+    "links": {
+      "description": "What the job is about, by kind: examples (ids), paths (files), commits, jobs (related jobs), urls, claims.",
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"type": "string"}}
+    },
+    "expected": {"description": "What fulfilment looks like, in words. A reader compares the result with this.", "type": "string"},
+    "case": {"description": "The case the job belongs to, as its batch or brief names it (S48, say).", "type": "string"},
+    "batch": {
+      "description": "Set for a job made from a manifest (jobs/batch.py): the batch, the row's stable identity in it, and the row's work identity. A row whose revision, task or inputs change has another work identity, and so another job.",
+      "type": "object",
+      "required": ["id", "row", "work"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,60}$"},
+        "row": {"type": "string", "minLength": 1},
+        "work": {"description": "SHA-256 of what the row asks to be done.", "type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "submitted": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "at": {"type": "string", "format": "date-time"},
+        "by": {"type": "string"},
+        "session": {"description": "The submitting session, to find the conversation behind the job.", "type": "string"},
+        "run": {"description": "The run the submitting session was working in (single-NAME), read from the scope the loop runs its agent in. Absent when the job was submitted outside a run. It is not the source revision, and not who collects the result.", "type": "string"},
+        "phase": {"description": "The phase of that run: generation, setup, domain, or watcher for the watcher's own.", "type": "string"}
+      }
+    },
+    "source": {
+      "description": "The commit to run at. Leave it out: the runner takes the last commit that touched the job's file, which is the change the job was written for.",
+      "type": "object",
+      "required": ["revision"],
+      "additionalProperties": false,
+      "properties": {"revision": {"type": "string", "minLength": 4}}
+    },
+    "needs": {
+      "description": "What must be there before the job is scheduled. `job`: that job, or one that supersedes it, has a fulfilled result. `readiness`: a readiness receipt with that key is valid on the runner (jobs/readiness.py). A job whose prerequisite is not finished waits; one whose prerequisite ended unfulfilled is blocked, with the reason, and consumes no attempt.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "maxProperties": 1,
+        "properties": {
+          "job": {"type": "string", "pattern": "^\\d{8}-\\d{6}-[a-z0-9][a-z0-9-]{0,60}$"},
+          "readiness": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "priority": {"description": "Higher runs first. 0 by default.", "type": "integer"},
+    "requires": {
+      "description": "What must be on the runner: a command on PATH, or a name the job's workload knows how to look for or to build. A job that requires something the runner lacks is not run there, and says so.",
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "resources": {
+      "description": "A rough estimate. The runner shares its budget out by these numbers, caps the job at its limit, and reports what it used next to them.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpus": {"type": "number", "exclusiveMinimum": 0},
+        "memory": {"type": "string"},
+        "duration": {"type": "string"},
+        "memoryLimit": {"type": "string"},
+        "timeout": {"type": "string"},
+        "fetch": {"description": "How many downloads at once its fetch steps make (a build tool's parallel resolution). Counted against the runner's fetch slots while such a step runs. Default 1.", "type": "integer", "minimum": 1},
+        "notes": {"type": "string"}
+      }
+    },
+    "environment": {
+      "description": "What the steps are permitted beyond the export of the commit.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "network": {
+          "description": "The default for every step. `host`: as the runner's machine gives it (what every job of the first format gets). `none`: the step runs in a network namespace with a loopback interface alone, shown by a probe the result keeps; a runner that cannot enforce it does not run the job. `fetch`: the network, for a step of a resolve job on a runner whose settings authorise fetching, counted against the runner's fetch slots.",
+          "enum": ["host", "none", "fetch"]
+        },
+        "variables": {"description": "Environment variables for every step.", "type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
+    "steps": {
+      "description": "Run in order, each a bash script in a clean export of the job's commit. One command and nothing else is a job.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["run"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string"},
+          "run": {"description": "A bash script, run with bash -c.", "type": "string", "minLength": 1},
+          "cwd": {"description": "Relative to the repository root. Default '.'.", "type": "string"},
+          "expectExit": {
+            "description": "The exit code, or codes, that count as the step going as expected. Default 0.",
+            "oneOf": [{"type": "integer"}, {"type": "array", "items": {"type": "integer"}, "minItems": 1}]
+          },
+          "timeout": {"type": "string"},
+          "phase": {"description": "What the step's time is counted as: resolve, fetch, prepare, build, test, proof or other.", "enum": ["resolve", "fetch", "prepare", "build", "test", "proof", "other"]},
+          "network": {"description": "This step's network, over the job's default.", "enum": ["host", "none", "fetch"]},
+          "promises": {
+            "description": "What the step says it does besides exiting as expected. A promise that is not kept leaves the job unfulfilled, whatever the exit code.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tests": {
+                "description": "The step runs tests. `min`: at least this many must have executed (default 1): a step that compiled and ran none has not kept it. `reports`: where to read what executed, as globs of JUnit XML files relative to the repository root; without it the step's log is read for the summary lines of cargo, unittest, pytest, Maven and Gradle. `failing`: tests expected to fail by assertion, by name: the step's exit code is then its tool's failure code (expectExit), and the promise is kept when exactly these failed and they failed in a test, not in the build.",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "min": {"type": "integer", "minimum": 0},
+                  "reports": {"type": "array", "items": {"type": "string"}},
+                  "failing": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "stopOnFailure": {"description": "Skip the later steps once one does not go as expected. Default true.", "type": "boolean"},
+    "outputs": {
+      "description": "Files or directories, relative to the repository root, that the job writes and that should come back. A plain path is required: when the job ends without it the job is not fulfilled, even if every step exited as expected. `required: false` marks one that may be absent.",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {"type": "string", "minLength": 1},
+          {"type": "object", "required": ["path"], "additionalProperties": false,
+           "properties": {"path": {"type": "string", "minLength": 1}, "required": {"type": "boolean"},
+                          "consumer": {"description": "Who reads it: a job id, a case, a tool.", "type": "string"}}}
+        ]
+      }
+    },
+    "supersedes": {"description": "The job this one replaces: the same work with other resources, or at a newer commit. A rerun of the same job is an attempt, not a new job.", "type": "string"}
+  }
+}

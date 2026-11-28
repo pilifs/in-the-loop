@@ -9,8 +9,11 @@ pipeline's own files and verdicts are what they were. Each test runs the pipelin
 import json
 import os
 import shutil
+import signal
+import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -23,9 +26,16 @@ sys.path.append(str(HERE.parent / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 sys.path.insert(0, str(HERE.parent / "llm-dlc/tools"))
 import artifacts  # noqa: E402
+sys.path.insert(0, str(HERE.parent / "jobs"))
+import attempts  # noqa: E402
+import audit  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[1] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 
-class CaptureTest(unittest.TestCase):
+class Captured(unittest.TestCase):
+    """A throwaway repository whose pipeline captures into a spool and a store on disk of its own."""
+
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp(prefix="capture-test-"))
         self.env = {"ITL_ARTIFACTS": str(HERE.parent / "llm-dlc/tools/artifacts.py"), "ITL_ORIGINALS_HOME": str(self.tmp / "home"),
@@ -61,6 +71,9 @@ class CaptureTest(unittest.TestCase):
         artifacts.Reader(cache=self.tmp / f"cache-{name}").fetch(occurrence, out, flat=True)
         return {p.relative_to(out).as_posix(): p.read_bytes() for p in sorted(out.rglob("*")) if p.is_file()} if out.is_dir() else out.read_bytes()
 
+
+
+class CaptureTest(Captured):
     def test_the_whole_log_is_sealed_before_it_is_cut_and_the_result_names_it(self):
         self.repo.close()
         self.repo = self.new_repo(log_max_bytes="4K")
@@ -153,20 +166,23 @@ class CaptureTest(unittest.TestCase):
         self.assertIn("SpoolFull", (self.repo.dir / "verification/.state/capture.log").read_text())
         self.assertEqual(self.archive().rows(), [])
 
-    def test_an_attempt_that_never_finished_is_sealed_before_its_run_directory_is_reused(self):
-        state, job = self.repo.dir / "verification/.state", {"id": "20261121-000000-made-up"}
-        run_dir = state / "runs" / job["id"]
+    def test_a_run_directory_of_before_attempts_had_folders_is_sealed_by_recover_and_never_cleared(self):
+        """Until 2026-11-27 every run of a job wrote into STATE/runs/ID, and a rerun cleared it after asking the
+        archive to keep what was there. A rerun no longer touches it: `recover` seals it where it is, once."""
+        state, job_id = self.repo.dir / "verification/.state", "20261121-000000-made-up"
+        run_dir = state / "runs" / job_id
         (run_dir / "logs").mkdir(parents=True)
         (run_dir / "logs/1-prove.log").write_text("killed half way\n")
-        attempt = capture.begin(self.repo.dir, state, job, self.repo.git("rev-parse", "HEAD"), run_dir, state / "work" / job["id"])
-        self.assertEqual(attempt, 2)  # the first was the one that never finished
-        rows = self.archive().rows(job=job["id"])
+        said = json.loads(self.repo.pipeline("recover", "--json").stdout)
+        self.assertEqual([(r["what"], r["id"], r["sealed"]) for r in said["recovered"]], [("run directory", job_id, True)])
+        rows = self.archive().rows(job=job_id)
         self.assertEqual([(x["kind"], x["status"], x["attempt"]) for x in rows], [("job-logs", "partial", 1)])
         self.assertIn("did not finish", rows[0]["notes"]["why"])
         self.assertEqual(self.restored(rows[0]["id"]), {"1-prove.log": b"killed half way\n"})
-        (run_dir / capture.MARKER).write_text("{}")  # a sealed run directory is not sealed twice
-        self.assertEqual(capture.begin(self.repo.dir, state, job, None, run_dir, state / "work" / job["id"]), 3)
-        self.assertEqual(len(self.archive().rows(job=job["id"])), 1)
+        self.assertEqual((run_dir / "logs/1-prove.log").read_text(), "killed half way\n")   # sealed where it is, and kept
+        self.assertEqual(json.loads(self.repo.pipeline("recover", "--json").stdout)["recovered"], [])  # sealed once
+        self.assertEqual(len(self.archive().rows(job=job_id)), 1)
+        self.assertEqual(pipeline.legacy_attempt(state, job_id), 1)   # the next attempt of the job is numbered after it
 
     def killed_at(self, point):
         """The repository's capture.py for one command: the real one, and a kill of the collecting process itself at
@@ -226,18 +242,185 @@ def after_collect(*args, **kwargs):
         collected = [x for x in rows if x["notes"].get("stage") == "as collected"]
         self.assertEqual(json.loads(self.restored(collected[-1]["id"], "final")), final)   # what the tree holds is what the store holds
         # One record for each thing a collect did, none of them a false success: the earlier result it wiped, the
-        # folder the kill left empty (replaced by the second collect), the result written twice with the same bytes.
+        # folder the kill left empty (replaced by the second collect), and the collected result, sealed by the collect
+        # that wrote it and again by the one that found it written (the kill came before the first could say so).
+        # The third collect replaced nothing: what the second wrote is what the tree keeps.
         stages = [(x["notes"].get("stage"), x["status"], (x.get("inventory") or {}).get("members")) for x in rows]
         replaced = "a collected result that a later collect replaced"
         self.assertEqual(sorted(s for s in stages if s[0] != "as the runner wrote it"),
-                         [(replaced, "complete", 0), (replaced, "complete", 1), (replaced, "complete", 4),
+                         [(replaced, "complete", 0), (replaced, "complete", 1),
                           ("as collected", "complete", 1), ("as collected", "complete", 1)])
+
+    def test_a_collect_stopped_after_its_result_was_committed_publishes_nothing_twice(self):
+        """The collect wrote and sealed the result and was killed before it released the staged one; the tree was
+        committed as it stood. The next collect finds its work done: the tree stays what the commit holds, to the
+        byte, the staged result goes, and there is nothing new to commit."""
+        (self.repo.dir / "o.txt").write_text("before\n")
+        job_id = self.repo.submit("Committed", "--output", "o.txt", "--run", "echo after > o.txt")
+        self.repo.commit("job")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        staged = self.repo.dir / "verification/.state/results" / job_id
+        self.killed_at("sealed")
+        self.assertEqual(self.repo.pipeline("collect", check=False).returncode, -9)
+        shutil.copy(HERE / "capture.py", self.repo.dir / "verification/capture.py")
+        self.repo.commit("the results, as the stopped collect left them")
+        receipt = (self.repo.collected(job_id) / "result.json").read_bytes()
+        again = self.repo.pipeline("collect").stdout
+        self.assertIn("was collected before", again)
+        self.assertIn("No result is new", again)
+        self.assertNotIn("For the commit message", again)
+        self.assertEqual((self.repo.collected(job_id) / "result.json").read_bytes(), receipt)
+        changed = [line.split()[-1] for line in self.repo.git("status", "--porcelain", "--untracked-files=all", "verification/results").splitlines()]
+        self.assertTrue(changed and all(path.endswith("index.json") for path in changed), changed)   # the indexes the stopped collect never wrote
+        self.assertFalse(staged.exists())                                                 # sealed when it ran, so released
+        self.assertIn("nothing to collect", self.repo.pipeline("collect").stdout)
+        self.assertEqual((self.repo.dir / "o.txt").read_text(), "after\n")
 
     def test_no_archive_tool_no_capture(self):
         os.environ.pop("ITL_ARTIFACTS")
         self.assertIsNone(capture.tool(self.repo.dir))
-        self.assertIsNone(capture.begin(self.repo.dir, self.repo.dir, {"id": "j"}, None, self.repo.dir / "none", self.repo.dir / "none"))
+        self.assertFalse(capture.available(self.repo.dir))
+        self.assertIsNone(capture.begin(self.repo.dir, self.repo.dir, "j"))
+        self.assertIsNone(capture.sealed_run(self.repo.dir, self.repo.dir, {"id": "j"}, 1, None, self.repo.dir / "none", None, None))
         self.assertTrue(capture.before_collect(self.repo.dir, self.repo.dir, "j", self.repo.dir, self.repo.dir, {}))
+
+
+class AttemptsTest(Captured):
+    """Every execution of a job keeps its own bytes until a rule releases them (jobs/attempts.py): a rerun clears
+    nothing, a prune removes only what the archive holds of that very attempt, and what a capture missed is sealed
+    later, where it is."""
+
+    FULL = {"ITL_ORIGINALS_RESERVE": str(1 << 60)}   # a spool with no room: every capture fails
+
+    def state(self):
+        return self.repo.dir / "verification/.state"
+
+    def started(self, job_id, text, env=None):
+        """A runner on the queue, once the job's step has written `text` to its log: (the runner, the step's pid)."""
+        runner = subprocess.Popen([sys.executable, "verification/pipeline.py", "run", "--rev", "HEAD"], cwd=self.repo.dir,
+                                  env=dict(os.environ, VERIFY_REPO=str(self.repo.dir), **(env or {})),
+                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        self.addCleanup(lambda: (runner.poll() is None and runner.kill(), runner.stdout.close()))
+        deadline = time.time() + 60
+        while time.time() < deadline:
+            logs = list((self.state() / "attempts" / job_id).glob("*/run/logs/1-*.log"))
+            if any(text in log.read_text() for log in logs):
+                step = subprocess.run(["pgrep", "-P", str(runner.pid)], capture_output=True, text=True).stdout.split()
+                return runner, [int(pid) for pid in step]
+            time.sleep(0.1)
+        self.fail(f"the step never wrote {text!r}")
+
+    def killed_mid_step(self, job_id):
+        """The runner killed with no handler run, and its step with it: an attempt nobody finished or sealed."""
+        runner, steps = self.started(job_id, "half way")
+        runner.kill()
+        runner.wait()
+        for pid in steps:
+            try:
+                os.killpg(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
+    @cost("tool")
+    def test_a_rerun_clears_nothing_of_a_killed_attempt_when_the_spool_is_full_and_recover_seals_it_later(self):
+        flag = self.tmp / "second-time"
+        job_id = self.repo.submit("Killed, then rerun", "--output", "made.txt", "--run",
+                                  f"echo half way; echo first > made.txt; test -e {flag} || sleep 60; echo done")
+        self.repo.commit("job")
+        self.killed_mid_step(job_id)
+        (first,) = attempts.of(self.state(), job_id)
+        self.assertEqual((first.number, first.state(), first.record["capture"]["state"]), (1, "interrupted", "pending"))
+        log = next((first.run_dir / "logs").glob("1-*.log"))
+        kept = {"log": log.read_bytes(), "made": (first.work_dir / "made.txt").read_bytes()}
+        self.assertIn(b"half way", kept["log"])
+        # The rerun, with a spool that takes nothing: the first attempt cannot be sealed, and is not cleared for it.
+        flag.write_text("")
+        ran = self.repo.pipeline("run", "--rev", "HEAD", env=self.FULL)
+        self.assertIn("still only on this machine", ran.stdout)
+        first, second = attempts.of(self.state(), job_id)
+        self.assertEqual((log.read_bytes(), (first.work_dir / "made.txt").read_bytes()), (kept["log"], kept["made"]))
+        self.assertEqual((first.state(), first.record["capture"]["state"]), ("interrupted", "failed"))
+        self.assertIn("SpoolFull", first.record["capture"]["error"])
+        result = self.repo.result(job_id, False)
+        self.assertEqual((result["status"], result["attempt"]["number"], result["attempt"]["previous"]), ("passed", 2, [first.id]))
+        self.assertEqual((second.number, second.record["status"], second.record["capture"]["state"]), (2, "passed", "failed"))
+        self.assertNotEqual(first.folder, second.folder)
+        # Visible until it is put right: the audit of this checkout lists both attempts' bytes as only here.
+        gaps = audit.Audit(self.repo.dir).run(self.state())["gaps"]
+        self.assertEqual(sorted((g["kind"], g["attempt"]) for g in gaps if g["kind"].startswith("attempt-")),
+                         sorted([("attempt-interrupted-unsealed", first.id), ("attempt-capture-failed", second.id)]))
+        # The archive answers again: both are sealed where they are, and the store gives the killed attempt's bytes back.
+        said = json.loads(self.repo.pipeline("recover", "--json").stdout)["recovered"]
+        self.assertEqual(sorted((r["id"], r["sealed"]) for r in said), sorted([(first.id, True), (second.id, True)]))
+        first, second = attempts.of(self.state(), job_id)
+        self.assertEqual((first.record["capture"]["state"], second.record["capture"]["state"]), ("recovered", "recovered"))
+        rows = {x["id"]: x for x in self.archive().rows(job=job_id)}
+        logs = rows[first.record["capture"]["occurrences"]["logs"]]
+        self.assertEqual((logs["status"], logs["attempt"], logs["notes"]["attemptId"]), ("partial", 1, first.id))
+        self.assertEqual(self.restored(logs["id"], "killed-logs"), {log.name: kept["log"]})
+        work = self.restored(first.record["capture"]["occurrences"]["workdir"], "killed-work")
+        self.assertEqual(work["made.txt"], kept["made"])
+        self.assertEqual([g for g in audit.Audit(self.repo.dir).run(self.state())["gaps"] if g["kind"].startswith("attempt-")], [])
+        self.assertEqual(json.loads(self.repo.pipeline("recover", "--json").stdout)["recovered"], [])
+
+    @cost("tool")
+    def test_prune_keeps_a_later_attempt_whose_capture_failed_though_an_earlier_ones_original_is_verified(self):
+        """What was asked until 2026-11-27 was whether the job's *latest captured* work directory was verified. Here
+        that is the first attempt's, and the folder on disk that matters is the second's, which nothing sealed."""
+        self.repo.close()
+        self.repo = self.new_repo(keep_workdirs="failed")
+        flag = self.tmp / "second-time"
+        job_id = self.repo.submit("Stopped, then failed", "--run",
+                                  f"echo half way; echo $RANDOM$RANDOM > scratch.txt; test -e {flag} || sleep 60; exit 3")
+        self.repo.commit("job")
+        runner, _ = self.started(job_id, "half way")
+        runner.send_signal(signal.SIGTERM)                       # stopped by its handler: cancelled, and sealed
+        runner.wait(timeout=60)
+        (first,) = attempts.of(self.state(), job_id)
+        self.assertEqual((first.record["status"], first.record["capture"]["state"]), ("cancelled", "sealed"))
+        self.archive().upload()                                  # read back from the store: remote_verified
+        flag.write_text("")
+        self.repo.pipeline("run", "--rev", "HEAD", env=self.FULL)   # the second attempt fails, and nothing seals it
+        unsealed = (attempts.of(self.state(), job_id)[1].work_dir / "scratch.txt").read_bytes()
+        collected = self.repo.pipeline("collect", env=self.FULL).stdout   # a collect prunes when it is done
+        first, second = attempts.of(self.state(), job_id)
+        self.assertEqual((second.record["status"], second.record["capture"]["state"]), ("failed", "failed"))
+        self.assertEqual(self.repo.result(job_id)["attempt"]["id"], second.id)
+        # The first attempt's folder went: its own original is verified, and the collected receipt is of a later
+        # attempt. The second's stays, with the bytes nothing sealed.
+        self.assertIn("removed 1 kept work directory", collected)
+        self.assertFalse(first.work_dir.exists())
+        self.assertEqual((second.work_dir / "scratch.txt").read_bytes(), unsealed)
+        said = json.loads(self.repo.pipeline("prune", "--json").stdout)
+        self.assertEqual((said["removed"], [(k["id"], k["why"]) for k in said["kept"]]),
+                         ([], [(second.id, "its originals are not sealed (failed): `recover` seals them")]))
+        first = attempts.find(self.state(), first.id)
+        self.assertEqual([(r["what"], "verified in the store" in r["why"]) for r in first.record["released"]], [("work", True)])
+        # Sealed later, and not removed until the store has read it back; then it goes, and the store gives it back.
+        self.repo.pipeline("recover")
+        self.assertIn("not yet verified in the store", json.loads(self.repo.pipeline("prune", "--json").stdout)["kept"][0]["why"])
+        self.archive().upload()
+        self.assertEqual([r["id"] for r in json.loads(self.repo.pipeline("prune", "--json").stdout)["removed"]], [second.id])
+        second = attempts.find(self.state(), second.id)
+        self.assertFalse(second.work_dir.exists())
+        self.assertEqual(self.restored(second.record["capture"]["occurrences"]["workdir"], "second-work")["scratch.txt"], unsealed)
+
+    def test_prune_keeps_a_work_directory_that_changed_since_it_was_sealed(self):
+        self.repo.close()
+        self.repo = self.new_repo(keep_workdirs="failed")
+        job_id = self.repo.submit("Failed", "--run", "echo x > scratch.txt; exit 3")
+        self.repo.commit("job")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        self.repo.pipeline("collect")
+        self.archive().upload()
+        (attempt,) = attempts.of(self.state(), job_id)
+        (attempt.work_dir / "added-after.txt").write_text("someone looked into it, and left this\n")
+        said = json.loads(self.repo.pipeline("prune", "--json").stdout)
+        self.assertEqual((said["removed"], [k["why"] for k in said["kept"]]),
+                         ([], ["its work directory is not what was sealed: it changed since"]))
+        (attempt.work_dir / "added-after.txt").unlink()
+        os.utime(attempt.work_dir / "scratch.txt")   # touched: its time is no longer the sealed one
+        self.assertEqual(json.loads(self.repo.pipeline("prune", "--json").stdout)["removed"], [])
 
 
 if __name__ == "__main__":

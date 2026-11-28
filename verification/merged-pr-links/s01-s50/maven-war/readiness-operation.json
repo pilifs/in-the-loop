@@ -1,0 +1,100 @@
+{
+  "schema": "itl-readiness-operation/v1",
+  "title": "Build and read the upstream Maven plugin's WARs on both pins of Spring Boot S48",
+  "consumer": "S48",
+  "describes": {
+    "project": "spring-projects/spring-boot",
+    "pullRequest": 51551,
+    "example": "635",
+    "revisions": {
+      "parent": "d34a479879d348a1758196b7d1c696ea4f8ea8f0",
+      "fix": "69ad59c413ec8dfbd884ba0e712e8ada89513d29"
+    },
+    "module": "build-plugin/spring-boot-maven-plugin",
+    "task": ":build-plugin:spring-boot-maven-plugin:intTest --tests org.springframework.boot.maven.MavenWarObservation",
+    "profiles": [],
+    "wrapper": "gradle 9.7.0, from the base (tools/gradle-9.7.0)",
+    "toolchain": {
+      "java": [
+        "8.0.512.0+9-tem",
+        "11.0.33.0+10-tem",
+        "17.0.21.0+9-tem",
+        "21.0.13.0+9-tem",
+        "25.0.5.0+8-tem"
+      ],
+      "maven": "3.9.13"
+    },
+    "platform": "linux-x86_64",
+    "configuration": "replay.py beside this file: Gradle --offline with a read-only dependency cache, a file mirror of the retained caches, the harness's own settings.xml pointed at that mirror, and the Maven distribution unpacked where prepareMavenBinaries would put it"
+  },
+  "level": "readable",
+  "base": {
+    "path": "~/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+    "without": [
+      "m2/org/apache/activemq/activemq-bom/6.1.8",
+      "gradle-home/caches/modules-2/files-2.1/org.apache.activemq/activemq-bom/6.1.8",
+      "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.apache.activemq/activemq-bom/6.1.8",
+      "downloads/apache-maven-3.9.13-bin.tar.gz",
+      "tmp/"
+    ],
+    "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress. The task also reads a Maven local repository in the home directory: the Spring Boot build runs Maven for its plugin's descriptor, with Maven's default local repository, and the setup's online runs of 2026-11-27 left maven-plugin-plugin 3.6.1 and what it needs there (~/.m2/repository, 17 MB). The first runs of this gate read it from the home without saying so, and passed. It is now declared: the gate copies it once to the folder named under `reads` and records the digest of its tree, and each step lays it into the empty home it is given. It is an input the setup never recorded and nothing verified."
+  },
+  "view": {
+    "env": "SPRING_BOOT_S_CACHE",
+    "walk": [
+      "m2"
+    ]
+  },
+  "reads": [
+    "~/.sdkman/candidates/java",
+    "~/.cache/in-the-loop/git-mirrors/spring-boot.git",
+    "~/.cache/in-the-loop/readiness-gates/s48-home-m2"
+  ],
+  "layout": {
+    "maven": "m2"
+  },
+  "repositories": [
+    "https://repo.maven.apache.org/maven2/"
+  ],
+  "pinned": [
+    {
+      "path": "downloads/apache-maven-3.9.13-bin.tar.gz",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz",
+      "sha512": "d9ccd44ba2991586e359c29eb86780ae8ff4ec1b88b0b8af3af074803472690cf2017782a9c4401343c62cbcd056231db9612e1e551cbd9747c21746d732c015"
+    }
+  ],
+  "task": {
+    "timeout": 2400,
+    "steps": [
+      {
+        "name": "parent",
+        "run": "mkdir -p \"$HOME/.m2\" && cp -a ~/.cache/in-the-loop/readiness-gates/s48-home-m2/repository \"$HOME/.m2/repository\" && mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output \"$ITL_READINESS_OUT/parent.json\""
+      },
+      {
+        "name": "fix",
+        "run": "mkdir -p \"$HOME/.m2\" && cp -a ~/.cache/in-the-loop/readiness-gates/s48-home-m2/repository \"$HOME/.m2/repository\" && mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output \"$ITL_READINESS_OUT/fix.json\""
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "path": "parent.json",
+      "equalsJson": "verification/merged-pr-links/s01-s50/maven-war/parent.json"
+    },
+    {
+      "path": "fix.json",
+      "equalsJson": "verification/merged-pr-links/s01-s50/maven-war/fix.json"
+    }
+  ],
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 3,
+    "memory": "6G",
+    "duration": "20m"
+  },
+  "rounds": 4
+}

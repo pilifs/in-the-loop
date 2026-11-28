@@ -3965,11 +3965,11 @@ QUEUE = ("verification/jobs", "verification/priorities.json")  # what a commit c
 
 def nudge_queue() -> None:
     """After a commit: if it changed the verification queue (a job, or the priorities), say so to the pipeline
-    (verification/pipeline.py nudge), so a runner at work takes the job into its run and a loop waiting for work
+    (jobs/pipeline.py nudge), so a runner at work takes the job into its run and a loop waiting for work
     looks at once. Whoever queues a job is the first to know, so nobody has to wait out an interval; the intervals
     are still there when this fails, so it never fails the commit."""
     try:
-        pipeline = REPO / "verification" / "pipeline.py"
+        pipeline = REPO / "jobs" / "pipeline.py"
         changed = jj("diff", "-r", "@-", "--name-only", *QUEUE)
         if pipeline.exists() and changed.returncode == 0 and changed.stdout.strip():
             said = subprocess.run([sys.executable, str(pipeline), "nudge"], capture_output=True, text=True, timeout=30, cwd=REPO)

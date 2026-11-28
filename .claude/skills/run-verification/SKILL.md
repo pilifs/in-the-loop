@@ -13,12 +13,26 @@ job verifies: that belongs to whoever made the change, and your report is how th
 commands by hand to see: the runner is how they run, under limits.
 
 1. **Look first.** `jj st` and `jj log -r 'ancestors(@, 5)'`: another session may have uncommitted files, which a
-   commit of yours would sweep in (see step 6). Then `python3 verification/pipeline.py status`. Say what is pending,
-   what is running (another runner holds those claims), what finished but was not collected, and what cannot run
-   here and why. Read the open entries of `verification/findings.md`: a job in this run may be the one that closes
+   commit of yours would sweep in (see step 6). Then `python3 jobs/pipeline.py status`. Say what is pending,
+   what is running (another runner holds those claims), what finished but was not collected, and what will not
+   start and why: a job is `unschedulable` (this machine cannot run it as written), `blocked` (a prerequisite
+   ended without passing, or nobody submitted it), `waiting` (a prerequisite has not finished) or `invalid`, and
+   `python3 jobs/pipeline.py view` gives every job's state and reason as data. If `status` says the queue was NOT
+   READ, it is unknown, not empty: find out why before anything else. Read the open entries of `verification/findings.md`: a job in this run may be the one that closes
    one.
+   **A job may be waiting for setup it asked for.** A job submitted with `--needs-readiness` is `waiting` until
+   a resolution job has made its operation ready, and `view` lists each request under `readiness`
+   ([`jobs/README.md`](../../../jobs/README.md#setup-a-running-case-asks-for)). Admitting one is yours:
+   `python3 jobs/pipeline.py resolve` writes a resolution job for every request nothing answers, and the commit
+   of those files is the admission (a run's watcher does the same at each look). A resolution job fetches, so it
+   starts only on a runner whose settings name the sources it may fetch from (`fetch_allow`, in the machine's
+   `pipeline.toml`); with none it is `unschedulable` and says so. Which sources a machine fetches from is the
+   user's to decide: ask, do not add one yourself. A readiness that was withheld blocks its job with the
+   outcome's name; once its cause is put right, `python3 jobs/pipeline.py resolve KEY --again`.
+   **A batch** (jobs written from one manifest) is watched with `python3 jobs/pipeline.py wait --batch NAME` and
+   read row by row with `batch NAME`, which also has the rows that never ran and why.
 
-2. **Run.** `python3 verification/pipeline.py run`, in the background (Bash with `run_in_background`), since it runs
+2. **Run.** `python3 jobs/pipeline.py run`, in the background (Bash with `run_in_background`), since it runs
    until the queue is empty and a job can take an hour. It takes the jobs committed while it runs as well (it reads
    the queue again when someone says it changed, and every 30 s besides), and starts each beside the others as the
    budget allows, so a run ends only when nothing is left. Give it the budget the machine has now: check
@@ -33,7 +47,7 @@ commands by hand to see: the runner is how they run, under limits.
    when the user asks for the pipeline to keep going; it does not stop by itself. While it runs, don't start proofs
    of your own, and don't start a second runner: it refuses while the first holds the lock.
 
-   **Collect each result as it comes.** Wait with `python3 verification/pipeline.py wait`: it blocks until a job has
+   **Collect each result as it comes.** Wait with `python3 jobs/pipeline.py wait`: it blocks until a job has
    finished and waits to be collected, or until no runner is at work, for up to 9 minutes (exit 3 means nothing
    yet: run it again). When it names finished jobs, do steps 3 to 6 for them at once, while the others go on
    running, then wait again: whoever queued a job may be waiting on its result, and a long job beside it must not
@@ -41,22 +55,24 @@ commands by hand to see: the runner is how they run, under limits.
    then shows a pending job this machine can run, start the runner again. Never wait with `pgrep -f` on a pattern,
    since it matches the waiting command's own command line.
 
-3. **Collect.** Each time `wait` names finished jobs, `python3 verification/pipeline.py collect`. It moves results into
+3. **Collect.** Each time `wait` names finished jobs, `python3 jobs/pipeline.py collect`. It moves results into
    `verification/results/`, applies the outputs of jobs that passed to the working copy unless a file changed since
    the job's commit, regenerates the examples table, and prints a commit message. Its totals count the jobs whose
    outputs it applied, the ones with none, and the ones kept or in conflict: quote those numbers rather than adding
-   up the per-job lines. If a hook after collecting fails, say so with its output.
+   up the per-job lines. If a hook after collecting fails, say so with its output: the
+   results are collected all the same, and `status` goes on naming the failed hook until a later collect runs it.
 
-4. **Triage.** `python3 verification/pipeline.py report` (Markdown, for you and the user) or `--format json` (to
+4. **Triage.** `python3 jobs/pipeline.py report` (Markdown, for you and the user) or `--format json` (to
    go through many). For each result that needs attention, decide which of these it is, from its `attention`,
    `signals` and the steps' `tail`, and the job's `description` and `expected`:
    - **A verdict**: the verifier ran and found something (a refuted property, a violated invariant, an example whose
      verdict differs from its expectation). That is a finding about the change, not about the pipeline. Report it
      with the evidence: the job, the step, the lines, the commit.
    - **Out of time or memory**: no verdict. If the usage suggests a bigger estimate would fit this machine,
-     `python3 verification/pipeline.py resubmit ID --memory ... --duration ...` and commit the new job (a runner
+     `python3 jobs/pipeline.py resubmit ID --memory ... --duration ...` and commit the new job (a runner
      still at work takes it into its run). If it needs
-     more than this runner allows (`job_memory_max`), leave it deferred and say it needs a bigger machine.
+     more than this runner allows (`job_memory_max`), leave it as it is (the view calls it `unschedulable`) and say it
+     needs a bigger machine.
    - **Stopped for the machine's memory**: `memoryStop` in the result, or `attention` saying the kernel killed it
      when the machine ran out, under its own limit. Not the job's fault and not a verdict: the machine was short.
      Regroup rather than rerun it as it was: fewer workers (`run --workers N`), a higher `--memory` estimate so fewer
@@ -86,7 +102,7 @@ commands by hand to see: the runner is how they run, under limits.
    run, and with `--only`, so the commit takes your files and nothing else:
 
    ```bash
-   python3 llm-dlc/tools/sync.py commit --only $(python3 verification/pipeline.py commit-paths) -m "..." -m "..."
+   python3 llm-dlc/tools/sync.py commit --only $(python3 jobs/pipeline.py commit-paths) -m "..." -m "..."
    ```
 
    `commit-paths` names what a commit of results holds: `verification/` (the results, `findings.md`, any job you

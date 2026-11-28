@@ -185,7 +185,7 @@ stays in its working copy), and once they have set the message `start NAME` cont
 at the user's word only.
 
 The user may also ask about the run at any time: answer from `single_run.py status NAME`, the loop's output (its
-`output`) and the queue (`python3 verification/pipeline.py status`). `single_run.py cycles NAME +N|-N|=N|inf`
+`output`) and the queue (`python3 jobs/pipeline.py status`, or `view` for every job's state and reason as data). `single_run.py cycles NAME +N|-N|=N|inf`
 changes how many cycles are left. `single_run.py stop NAME` ends the run after the cycle under way, which still
 compacts and summarizes, so nothing is cut off. Fix what is small yourself (a runner that died, a workspace jj
 calls stale: `python3 llm-dlc/tools/unstale.py` from that workspace), say what you did, and leave the rest to the
