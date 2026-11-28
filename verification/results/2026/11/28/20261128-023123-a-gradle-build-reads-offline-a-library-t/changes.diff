@@ -1,0 +1,514 @@
+--- /dev/null
++++ b/verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json
+@@ -0,0 +1,511 @@
++{
++  "schema": "itl-gradle-module-readiness-gate/v1",
++  "startedAt": "2026-11-28T02:32:15+00:00",
++  "operation": "verification/merged-pr-links/s01-s50/gradle-module/readiness-operation.json",
++  "work": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module",
++  "request": {
++    "key": "979aacc13f1aaf44c8d9c7730537e820f0cedb76df94ee818aef65eed92ee52b",
++    "consumer": "20261128-023215-read-the-task-s-outputs-offline-on-the-p",
++    "resolver": "20261128-023219-resolve-979aacc13f1a-compile-spring-boot",
++    "unrelated": "20261128-023215-an-unrelated-job-to-finish-while-the-con",
++    "receipt": {
++      "state": "ready",
++      "stage": null,
++      "outcome": "ready",
++      "why": null,
++      "level": "builds",
++      "rounds": [
++        {
++          "n": 1,
++          "fetched": [],
++          "missing": [
++            "org.jspecify:jspecify:1.0.1"
++          ],
++          "result": "failed",
++          "offlineSeconds": 31.1
++        },
++        {
++          "n": 2,
++          "fetched": [
++            {
++              "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom",
++              "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom",
++              "bytes": 1937,
++              "verifiedBy": "the repository's sha1",
++              "seconds": 0.203
++            },
++            {
++              "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module",
++              "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module",
++              "bytes": 2657,
++              "verifiedBy": "the repository's sha1",
++              "seconds": 0.172
++            },
++            {
++              "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
++              "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
++              "bytes": 3064,
++              "verifiedBy": "the repository's sha1",
++              "seconds": 0.166
++            }
++          ],
++          "missing": [],
++          "result": "passed",
++          "offlineSeconds": 111.3
++        }
++      ],
++      "fetch": {
++        "files": 3,
++        "bytes": 7658,
++        "seconds": 0.541,
++        "reused": 0,
++        "reusedBytes": 0
++      },
++      "base": {
++        "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++        "without": [
++          "gradle-home/caches/modules-2/files-2.1/org.jspecify/jspecify",
++          "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.jspecify/jspecify",
++          "m2/org/jspecify/jspecify",
++          "tmp/"
++        ],
++        "reconstructed": true,
++        "why": "A state made insufficient for this gate, not one the cache is known to have been in: org.jspecify:jspecify, which the setup phase cached and every module of the build compiles against, is taken out wherever it is recorded (Gradle's file store, Gradle's descriptors, Maven's local repository), in every version. It stands for the commonest offline miss of a domain run, a library Gradle has no record of, and it is published with Gradle's module metadata, which Gradle then requires beside the POM."
++      },
++      "offline": {
++        "network": {
++          "mode": "none",
++          "enforced": true,
++          "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
++          "probe": {
++            "interfaces": [
++              "lo"
++            ],
++            "connect": "OSError: Network is unreachable",
++            "lookup": "gaierror: Temporary failure in name resolution"
++          },
++          "alone": {
++            "home": "empty, of this run",
++            "tmp": "empty, of this run",
++            "reads": [
++              "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++              "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/store/staging/979aacc13f1aaf44-51298fcc",
++              "/home/filip/.sdkman/candidates/java",
++              "/home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git"
++            ]
++          }
++        },
++        "steps": [
++          {
++            "name": "compile",
++            "run": "bash verification/merged-pr-links/s01-s50/gradle-module/compile.sh",
++            "exitCode": 0,
++            "seconds": 111.3
++          }
++        ],
++        "round": 2,
++        "log": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/store/work/979aacc13f1aaf44-5e529236/consumer-2.log",
++        "outputs": [
++          {
++            "path": "compiled.json",
++            "sha256": "293a5bbe77b61a33a2fd60d2e209730fd39a6d0351f59f7084101235ebb7a16e"
++          }
++        ]
++      },
++      "at": "2026-11-28T02:34:43+00:00",
++      "bundle": {
++        "digest": "e04254411fb20e620e5c15c379f4e2af6b3ab7d401604082352e5beeab246803",
++        "files": [
++          {
++            "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
++            "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66",
++            "bytes": 3064,
++            "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
++            "verifiedBy": "the repository's sha1"
++          },
++          {
++            "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar.sha1",
++            "sha256": "aa939a5ad15c7f00c7517ca166abec87919aa0a12cffd700b2cf95080168239b",
++            "bytes": 40
++          },
++          {
++            "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module",
++            "sha256": "6835d6ac762a99c85e6c3ba6c942be2c6997aaec98f07dedfe9917dae22bda96",
++            "bytes": 2657,
++            "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module",
++            "verifiedBy": "the repository's sha1"
++          },
++          {
++            "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module.sha1",
++            "sha256": "f6fee94871c5619ef1c2b6299ed1526cde54956e35125410ca34b4831a2fcb3b",
++            "bytes": 40
++          },
++          {
++            "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom",
++            "sha256": "55b38bf1a7b1d8ea518cf2f4f3ae9aaa236e61bbf0b6bd31ffb49753a059dd5e",
++            "bytes": 1937,
++            "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom",
++            "verifiedBy": "the repository's sha1"
++          },
++          {
++            "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom.sha1",
++            "sha256": "a112f4e36093c20ca86fd1c5448e7a6c898838a22a14d0ef92ea5273d6efe7ca",
++            "bytes": 40
++          }
++        ]
++      }
++    },
++    "consumerResult": {
++      "status": "passed",
++      "summary": "passed: 1 passed step(s) in 1m44s, peak 112.6 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed",
++      "attention": [],
++      "readiness": [
++        {
++          "key": "979aacc13f1aaf44c8d9c7730537e820f0cedb76df94ee818aef65eed92ee52b",
++          "view": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state/attempts/20261128-023215-read-the-task-s-outputs-offline-on-the-p/001-ddf234/readiness/979aacc13f1aaf44",
++          "env": "SPRING_BOOT_S_CACHE",
++          "tools": {
++            "ITL_READINESS_M2": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state/attempts/20261128-023215-read-the-task-s-outputs-offline-on-the-p/001-ddf234/readiness/979aacc13f1aaf44/m2",
++            "ITL_READINESS_FETCHED_M2": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state/attempts/20261128-023215-read-the-task-s-outputs-offline-on-the-p/001-ddf234/readiness/979aacc13f1aaf44/itl-readiness-fetched",
++            "ITL_READINESS_GRADLE_INIT": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state/attempts/20261128-023215-read-the-task-s-outputs-offline-on-the-p/001-ddf234/readiness/979aacc13f1aaf44/itl-readiness.init.gradle"
++          },
++          "bundleDigest": "e04254411fb20e620e5c15c379f4e2af6b3ab7d401604082352e5beeab246803",
++          "receiptAt": "2026-11-28T02:34:43+00:00",
++          "level": "builds",
++          "resolvedBy": {
++            "job": "20261128-023219-resolve-979aacc13f1a-compile-spring-boot",
++            "host": "claude-vm"
++          }
++        }
++      ],
++      "timing": {
++        "queueWait": {
++          "seconds": 149.0,
++          "state": "measured"
++        },
++        "elapsed": {
++          "seconds": 104.0,
++          "state": "measured"
++        },
++        "preparation": {
++          "seconds": 0.3,
++          "state": "measured"
++        },
++        "requestedSteps": {
++          "seconds": 104.3,
++          "state": "measured",
++          "ran": 1,
++          "planned": 1
++        },
++        "cpuSeconds": 4.3,
++        "source": "the runner's clock; CPU and peak memory from each step's process, as the kernel accounts it",
++        "byPhase": {
++          "test": 104.3
++        }
++      },
++      "startedAt": "2026-11-28T02:34:44+00:00",
++      "finishedAt": "2026-11-28T02:36:28+00:00"
++    },
++    "readbacks": {
++      "compiled.json": {
++        "class": "org/springframework/boot/SpringApplication.class",
++        "classes": 831,
++        "revision": "d34a479879d348a1758196b7d1c696ea4f8ea8f0",
++        "sha256": "320476c41bec2e01b894dd98726392cf501cbd7dfff1e835054c6b2ca647efbc",
++        "task": ":core:spring-boot:compileJava",
++        "withheldModuleInAGradleCache": false
++      }
++    }
++  },
++  "finishedAt": "2026-11-28T02:36:29+00:00",
++  "checks": [
++    {
++      "check": "the request is one file, the operation under its key",
++      "passed": true,
++      "detail": [
++        "979aacc13f1aaf44c8d9c7730537e820f0cedb76df94ee818aef65eed92ee52b.json"
++      ]
++    },
++    {
++      "check": "the unrelated job finished during the wait",
++      "passed": true,
++      "detail": {
++        "job": "20261128-023215-an-unrelated-job-to-finish-while-the-con"
++      }
++    },
++    {
++      "check": "only the consumer waits, and the view says for what",
++      "passed": true,
++      "detail": {
++        "state": "waiting",
++        "why": "readiness 979aacc13f1a has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++        "request": {
++          "key": "979aacc13f1aaf44c8d9c7730537e820f0cedb76df94ee818aef65eed92ee52b",
++          "state": "waiting",
++          "why": "readiness 979aacc13f1a has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++          "operation": "verification/readiness/979aacc13f1aaf44c8d9c7730537e820f0cedb76df94ee818aef65eed92ee52b.json",
++          "wantedBy": [
++            "20261128-023215-read-the-task-s-outputs-offline-on-the-p"
++          ],
++          "resolvers": [],
++          "unanswered": true
++        }
++      }
++    },
++    {
++      "check": "nothing was fetched or published before the admission",
++      "passed": true,
++      "detail": []
++    },
++    {
++      "check": "one resolution job is written for the one request",
++      "passed": true,
++      "detail": {
++        "schema": "itl-job-resolve/v1",
++        "written": [
++          {
++            "key": "979aacc13f1aaf44c8d9c7730537e820f0cedb76df94ee818aef65eed92ee52b",
++            "job": "20261128-023219-resolve-979aacc13f1a-compile-spring-boot",
++            "path": "verification/jobs/2026/11/28/20261128-023219-resolve-979aacc13f1a-compile-spring-boot.json",
++            "wantedBy": [
++              "20261128-023215-read-the-task-s-outputs-offline-on-the-p"
++            ]
++          }
++        ],
++        "skipped": []
++      }
++    },
++    {
++      "check": "readiness is established by one resolution job",
++      "passed": true,
++      "detail": {
++        "status": "passed",
++        "summary": "passed: 1 passed step(s) in 2m23s, peak 930.0 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed",
++        "conclusion": {
++          "key": "979aacc13f1aaf44c8d9c7730537e820f0cedb76df94ee818aef65eed92ee52b",
++          "verdict": "ready",
++          "stage": null,
++          "outcome": "ready",
++          "why": null,
++          "level": "builds",
++          "rounds": 2,
++          "fetch": {
++            "files": 3,
++            "bytes": 7658,
++            "seconds": 0.541,
++            "reused": 0,
++            "reusedBytes": 0
++          },
++          "reused": false,
++          "bundleDigest": "e04254411fb20e620e5c15c379f4e2af6b3ab7d401604082352e5beeab246803"
++        },
++        "tail": [
++          "readiness 979aacc13f1a: ready after 2 round(s), 3 file(s) fetched"
++        ]
++      }
++    },
++    {
++      "check": "the resolution's offline run saw no network",
++      "passed": true,
++      "detail": {
++        "mode": "none",
++        "enforced": true,
++        "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
++        "probe": {
++          "interfaces": [
++            "lo"
++          ],
++          "connect": "OSError: Network is unreachable",
++          "lookup": "gaierror: Temporary failure in name resolution"
++        },
++        "alone": {
++          "home": "empty, of this run",
++          "tmp": "empty, of this run",
++          "reads": [
++            "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++            "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/store/staging/979aacc13f1aaf44-51298fcc",
++            "/home/filip/.sdkman/candidates/java",
++            "/home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git"
++          ]
++        }
++      }
++    },
++    {
++      "check": "what was fetched is what the task asked for, each verified",
++      "passed": true,
++      "detail": [
++        {
++          "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
++          "bytes": 3064,
++          "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
++          "verifiedBy": "the repository's sha1"
++        },
++        {
++          "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar.sha1",
++          "bytes": 40,
++          "source": null,
++          "verifiedBy": null
++        },
++        {
++          "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module",
++          "bytes": 2657,
++          "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module",
++          "verifiedBy": "the repository's sha1"
++        },
++        {
++          "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module.sha1",
++          "bytes": 40,
++          "source": null,
++          "verifiedBy": null
++        },
++        {
++          "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom",
++          "bytes": 1937,
++          "source": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom",
++          "verifiedBy": "the repository's sha1"
++        },
++        {
++          "path": "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom.sha1",
++          "bytes": 40,
++          "source": null,
++          "verifiedBy": null
++        }
++      ]
++    },
++    {
++      "check": "the base was laid without what the task has to ask for, and the receipt says so",
++      "passed": true,
++      "detail": {
++        "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++        "without": [
++          "gradle-home/caches/modules-2/files-2.1/org.jspecify/jspecify",
++          "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.jspecify/jspecify",
++          "m2/org/jspecify/jspecify",
++          "tmp/"
++        ],
++        "reconstructed": true,
++        "why": "A state made insufficient for this gate, not one the cache is known to have been in: org.jspecify:jspecify, which the setup phase cached and every module of the build compiles against, is taken out wherever it is recorded (Gradle's file store, Gradle's descriptors, Maven's local repository), in every version. It stands for the commonest offline miss of a domain run, a library Gradle has no record of, and it is published with Gradle's module metadata, which Gradle then requires beside the POM."
++      }
++    },
++    {
++      "check": "the consumer passed, once, after the resolution",
++      "passed": true,
++      "detail": {
++        "status": "passed",
++        "summary": "passed: 1 passed step(s) in 1m44s, peak 112.6 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed",
++        "attention": [],
++        "previous": [],
++        "tail": [
++          "",
++          "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
++          "",
++          "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
++          "",
++          "For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
++          "",
++          "BUILD SUCCESSFUL in 1m 41s",
++          "17 actionable tasks: 17 executed",
++          "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
++          "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html",
++          "{\"class\": \"org/springframework/boot/SpringApplication.class\", \"classes\": 831, \"revision\": \"d34a479879d348a1758196b7d1c696ea4f8ea8f0\", \"sha256\": \"320476c41bec2e01b894dd98726392cf501cbd7dfff1e835054c6b2ca647efbc\", \"task\": \":core:spring-boot:compileJava\", \"withheldModuleInAGradleCache\": false}"
++        ]
++      }
++    },
++    {
++      "check": "every step of the consumer ran with no network, shown by a probe",
++      "passed": true,
++      "detail": [
++        [
++          "compile",
++          {
++            "mode": "none",
++            "enforced": true,
++            "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
++            "probe": {
++              "interfaces": [
++                "lo"
++              ],
++              "connect": "OSError: Network is unreachable",
++              "lookup": "gaierror: Temporary failure in name resolution"
++            },
++            "alone": {
++              "home": "empty, of this step",
++              "tmp": "empty, of this step"
++            }
++          }
++        ]
++      ]
++    },
++    {
++      "check": "the consumer ran on the bundle the receipt names",
++      "passed": true,
++      "detail": [
++        {
++          "key": "979aacc13f1aaf44c8d9c7730537e820f0cedb76df94ee818aef65eed92ee52b",
++          "view": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state/attempts/20261128-023215-read-the-task-s-outputs-offline-on-the-p/001-ddf234/readiness/979aacc13f1aaf44",
++          "env": "SPRING_BOOT_S_CACHE",
++          "tools": {
++            "ITL_READINESS_M2": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state/attempts/20261128-023215-read-the-task-s-outputs-offline-on-the-p/001-ddf234/readiness/979aacc13f1aaf44/m2",
++            "ITL_READINESS_FETCHED_M2": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state/attempts/20261128-023215-read-the-task-s-outputs-offline-on-the-p/001-ddf234/readiness/979aacc13f1aaf44/itl-readiness-fetched",
++            "ITL_READINESS_GRADLE_INIT": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state/attempts/20261128-023215-read-the-task-s-outputs-offline-on-the-p/001-ddf234/readiness/979aacc13f1aaf44/itl-readiness.init.gradle"
++          },
++          "bundleDigest": "e04254411fb20e620e5c15c379f4e2af6b3ab7d401604082352e5beeab246803",
++          "receiptAt": "2026-11-28T02:34:43+00:00",
++          "level": "builds",
++          "resolvedBy": {
++            "job": "20261128-023219-resolve-979aacc13f1a-compile-spring-boot",
++            "host": "claude-vm"
++          }
++        }
++      ]
++    },
++    {
++      "check": "the consumer's compiled.json is byte for byte what the resolution's offline run wrote",
++      "passed": true,
++      "detail": {
++        "class": "org/springframework/boot/SpringApplication.class",
++        "classes": 831,
++        "revision": "d34a479879d348a1758196b7d1c696ea4f8ea8f0",
++        "sha256": "320476c41bec2e01b894dd98726392cf501cbd7dfff1e835054c6b2ca647efbc",
++        "task": ":core:spring-boot:compileJava",
++        "withheldModuleInAGradleCache": false
++      }
++    },
++    {
++      "check": "the library was fetched with its Gradle module metadata, in Maven's layout",
++      "passed": true,
++      "detail": [
++        "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
++        "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar.sha1",
++        "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module",
++        "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.module.sha1",
++        "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom",
++        "m2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.pom.sha1"
++      ]
++    }
++  ],
++  "timeline": [
++    {
++      "at": "2026-11-28T02:32:15+00:00",
++      "what": "the runner is at work; the consumer needs a readiness nobody has resolved"
++    },
++    {
++      "at": "2026-11-28T02:32:19+00:00",
++      "what": "admitted 20261128-023219-resolve-979aacc13f1a-compile-spring-boot"
++    }
++  ],
++  "passed": true,
++  "runnerLog": [
++    "runner: 2 worker(s), 4 CPUs, 9.0 GiB (at most 8.0 GiB a job), isolation none, keeping 0 B of the machine free, jobs at oom_score_adj 1000, state /home/filip/.cache/in-the-loop/readiness-gates/20261128T023215Z-gradle-module/repository/verification/.state",
++    "20261128-023215-an-unrelated-job-to-finish-while-the-con: started at 8507b178275c (1 CPU, limit 384.0 MiB, timeout 5m00s)",
++    "20261128-023215-read-the-task-s-outputs-offline-on-the-p: waiting: readiness 979aacc13f1a has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++    "20261128-023215-an-unrelated-job-to-finish-while-the-con: passed: 1 passed step(s) in 0.2s, peak 44.2 MiB (estimated 1m00s, 256.0 MiB)",
++    "20261128-023219-resolve-979aacc13f1a-compile-spring-boot: started at c57417b349f4 (3 CPU, limit 8.0 GiB, timeout 48m00s)",
++    "20261128-023215-read-the-task-s-outputs-offline-on-the-p: waiting: resolution job 20261128-023219-resolve-979aacc13f1a-compile-spring-boot for readiness 979aacc13f1a has not finished",
++    "20261128-023219-resolve-979aacc13f1a-compile-spring-boot: passed: 1 passed step(s) in 2m23s, peak 930.0 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed",
++    "20261128-023215-read-the-task-s-outputs-offline-on-the-p: started at 8507b178275c (3 CPU, limit 8.0 GiB, timeout 48m00s)",
++    "20261128-023215-read-the-task-s-outputs-offline-on-the-p: passed: 1 passed step(s) in 1m44s, peak 112.6 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed",
++    "stopping on SIGTERM: running steps are cancelled, their jobs recorded",
++    "finished 3 job(s): 20261128-023215-an-unrelated-job-to-finish-while-the-con, 20261128-023219-resolve-979aacc13f1a-compile-spring-boot, 20261128-023215-read-the-task-s-outputs-offline-on-the-p; collect them with: python3 verification/pipeline.py collect"
++  ]
++}
