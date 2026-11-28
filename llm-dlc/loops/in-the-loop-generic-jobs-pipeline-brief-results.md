@@ -417,10 +417,25 @@ either Gradle cache holds the library after the build, so the file repository is
 been read from. Checked without running Gradle: the view is laid in 0.13 s with the library absent in all
 three places and the pin's worktree readable.
 
-**Result.** Pending: job `20261128-011602-a-gradle-build-reads-offline-a-library-t`. What the init script does
-in a build that keeps its repositories in its settings, and for plugins, is written and not run: this gate's
-build declares its repositories in its projects.
+**First run: failed** (job `20261128-011602-a-gradle-build-reads-offline-a-library-t`), and usefully. Round 1
+stopped in 20 s where it should: Gradle said it had no cached `org.jspecify:jspecify:1.0.1`, for the class path
+of `buildSrc`. The resolver fetched the POM, the `.module` file and the JAR, and in round 2 Gradle read the
+library from the file repository: the init script works in a real build, `buildSrc` included. Then the same
+compile failed on `plexus-utils-3.6.0.jar`, which nobody had withheld. The file repository was over the view's
+whole Maven-layout folder, and that folder is mostly the base's Maven local repository, where `plexus-utils`
+is a POM with no JAR (Maven had needed only its POM). Being first, the file repository answered for the
+module; Gradle then looked for the JAR there and nowhere else, though its own cache had the module whole. The
+resolution ended `undiagnosed`, because Gradle's wording for one missing file of a known module
+(`Could not find a-v.jar (g:a:v)`) was not one the resolver read.
 
+Both are corrected. The file repository is now over the **fetched modules alone**, laid apart in the view
+(`ITL_READINESS_FETCHED_M2`), each whole by the way it is fetched; `ITL_READINESS_M2` stays the whole folder,
+for a Maven build. And the resolver reads that wording, so a module that is a bare POM in a repository Gradle
+does consult is fetched whole in the next round.
+
+**Second run.** Pending: job `20261128-012905-a-gradle-build-reads-offline-a-library-t`, which supersedes the first. What the init script does in a build that
+keeps its repositories in its settings, and for plugins, is written and not run: this gate's build declares
+its repositories in its projects.
 
 ## Gate 4: what has been measured
 

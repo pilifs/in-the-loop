@@ -44,6 +44,9 @@ if python3 -c "import socket,sys; socket.create_connection(('127.0.0.1', int(sys
 fi
 if echo tampered >> "$view/m2/g/prepared/1.0/prepared-1.0.pom" 2>/dev/null; then echo "the prepared inputs can be written"; exit 8; fi
 test "$ITL_READINESS_M2" = "$view/m2" && grep -q itlReadiness "$ITL_READINESS_GRADLE_INIT" || { echo "the view's tools are not given"; exit 7; }
+# What a Gradle build is given to read: the fetched modules, each whole, and nothing of the base's own.
+test -f "$ITL_READINESS_FETCHED_M2/g/nested-tool/2.0/nested-tool-2.0.pom" && test -f "$ITL_READINESS_FETCHED_M2/g/nested-tool/2.0/nested-tool-2.0.jar" \
+  && test ! -e "$ITL_READINESS_FETCHED_M2/g/prepared" || { echo "the fetched modules are not laid apart"; exit 6; }
 cat "$view/m2/g/prepared/1.0/prepared-1.0.pom" "$view/m2/g/stage-one/1.0/stage-one-1.0.pom" "$view/m2/g/nested-tool/2.0/nested-tool-2.0.jar" > "$ITL_READINESS_OUT/built.txt"
 echo built
 '''
@@ -131,6 +134,11 @@ class OneRequestResolvesTheWholeTask(NestedBuild):
                           ["m2/g/nested-tool/2.0/nested-tool-2.0.pom", "m2/g/nested-tool/2.0/nested-tool-2.0.module",
                            "m2/g/nested-tool/2.0/nested-tool-2.0.jar"]])
         self.assertEqual(receipt["fetch"]["files"], 5)
+        # The fetched modules are also laid apart, in the same layout, for a Gradle build's file repository.
+        fetched = self.dir / "work-1/view-3/itl-readiness-fetched"
+        self.assertEqual(sorted(p.relative_to(fetched).as_posix() for p in fetched.rglob("*") if p.suffix in (".pom", ".module", ".jar")),
+                         ["g/nested-tool/2.0/nested-tool-2.0.jar", "g/nested-tool/2.0/nested-tool-2.0.module", "g/nested-tool/2.0/nested-tool-2.0.pom",
+                          "g/stage-one/1.0/stage-one-1.0.pom"])
         # Offline was shown, not assumed: the probe saw loopback alone, and the consumer itself could not reach the repository.
         self.assertEqual((receipt["offline"]["network"]["enforced"], receipt["offline"]["network"]["probe"]["interfaces"]), (True, ["lo"]))
         self.assertEqual(receipt["offline"]["outputs"][0]["path"], "built.txt")
@@ -263,11 +271,13 @@ class AnOperation(unittest.TestCase):
         log = """> Could not find g:stage-one:1.0.
 > Could not download activemq-bom-6.1.8.pom (org.apache.activemq:activemq-bom:6.1.8): No cached version available for offline mode
 [ERROR] Could not find artifact g:nested-tool:jar:2.0 in central (https://repo.example.invalid)
+   > Could not find plexus-utils-3.6.0.jar (org.codehaus.plexus:plexus-utils:3.6.0).
    > No cached version of com.example:lib:3.1 available for offline mode.
 Cannot access central in offline mode and the artifact org.x:y:pom:4 has not been downloaded from it before."""
         self.assertEqual(readiness.missing_coordinates(log),
                          [("com.example", "lib", "3.1"), ("g", "nested-tool", "2.0"), ("g", "stage-one", "1.0"),
-                          ("org.apache.activemq", "activemq-bom", "6.1.8"), ("org.x", "y", "4")])
+                          ("org.apache.activemq", "activemq-bom", "6.1.8"), ("org.codehaus.plexus", "plexus-utils", "3.6.0"),
+                          ("org.x", "y", "4")])
 
 
 if __name__ == "__main__":

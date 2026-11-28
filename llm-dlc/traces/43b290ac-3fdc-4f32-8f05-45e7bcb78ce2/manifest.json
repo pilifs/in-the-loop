@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T01:23:05.206Z",
-  "duration_seconds": 36564,
+  "ended": "2026-11-28T01:34:30.317Z",
+  "duration_seconds": 37249,
   "stats": {
     "turns": 33,
-    "api_calls": 908,
-    "tool_calls": 972,
-    "tool_errors": 13,
+    "api_calls": 920,
+    "tool_calls": 984,
+    "tool_errors": 14,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1842,
-      "output_tokens": 1528202,
-      "cache_read_input_tokens": 276567587,
-      "cache_creation_input_tokens": 3199145
+      "input_tokens": 1866,
+      "output_tokens": 1542600,
+      "cache_read_input_tokens": 281305499,
+      "cache_creation_input_tokens": 3221417
     }
   },
   "tools": {
-    "Bash": 820,
+    "Bash": 832,
     "Read": 82,
     "Write": 36,
     "Edit": 19,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T01:23:05.206Z",
+      "ended": "2026-11-28T01:34:30.317Z",
       "turns": 1,
-      "api_calls": 154,
+      "api_calls": 166,
       "usage": {
-        "input_tokens": 308,
-        "output_tokens": 203167,
-        "cache_read_input_tokens": 34281164,
-        "cache_creation_input_tokens": 370188
+        "input_tokens": 332,
+        "output_tokens": 217565,
+        "cache_read_input_tokens": 39019076,
+        "cache_creation_input_tokens": 392460
       },
-      "peak_context_tokens": 385355
+      "peak_context_tokens": 407627
     }
   ],
   "log": {
-    "sha256": "6c673ab9b230f1a142404a03a95876cbf27597f0a8f4307cfd254d1482f0751c",
-    "bytes": 25406161,
-    "lines": 9139,
-    "gzip_bytes": 4699415,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/6c673ab9b230f1a142404a03a95876cbf27597f0a8f4307cfd254d1482f0751c.jsonl.gz"
+    "sha256": "09daf6538f03abe7a03b28b73ea54d077cf7181dac7447eced7c6c469dcd7ea9",
+    "bytes": 25605647,
+    "lines": 9252,
+    "gzip_bytes": 4720803,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/09daf6538f03abe7a03b28b73ea54d077cf7181dac7447eced7c6c469dcd7ea9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -526,6 +526,14 @@
       "summary": "Let an offline Gradle build read what a resolution fetched, through a file repository in the view (verification pending)",
       "body": "S48's gate passed with a replay that brings its own file mirror of the retained caches. An ordinary Gradle build has none: offline, it reads a remote repository's modules from Gradle's own cache and nowhere else, and only Gradle writes that cache with its records. A module the resolver lays in Maven's layout was therefore invisible to it, and a resolution for such a build would have stopped at no-progress, as S48's first run did. That is the commonest offline miss of a domain run, and it was the limit the results page recorded.\n\nTwo changes close it for the usual case. Every readiness view now carries a Gradle init script and names it to the steps (ITL_READINESS_GRADLE_INIT, with ITL_READINESS_M2 for the view's Maven-layout folder): a build run with -I gets a file repository over that folder, ahead of its own repositories, for its projects, its build scripts' class paths and its plugins. A file repository is read whatever --offline says. A build that keeps its repositories in its settings gets it there, and one that declares no plugin repository keeps Gradle's default beside it. And a module whose POM says it was published with Gradle's module metadata is fetched with its .module file, which Gradle requires beside such a POM. A consumer job's result records what its steps were told (readiness[].tools).\n\nThe gate for it is queued as job 20261128-011602-a-gradle-build-reads-offline-a-library-t and has not run. verification/merged-pr-links/s01-s50/gradle-module/gate.py uses the class of S48's gate on Spring Boot's core module at S48's parent pin: the S cache is laid without org.jspecify:jspecify in Gradle's file store, Gradle's descriptors and Maven's local repository (a made state, said in the operation); one resolution job has to read the library's name from Gradle's own words, fetch its POM, .module and JAR, and prove the compile offline; the consumer then compiles the module itself with no network, and its compiled.json must be byte for byte the resolution's. compile.sh fails if either Gradle cache holds the library after the build, so the file repository is the only place it can have been read from. For that, S48's gate script gained a readback held to the resolution's own output where there is no committed copy, and its record-writing end became a function both gates use.\n\nVerified without Gradle: jobs/test_readiness.py (the made-up module is fetched with its .module file, and the build's step is given both variables), the tests of what changed, 43 of 43 Python test files (python3 lib/tools/test_costs.py run --changed), the S48 gate's logic again 16 of 16 on the made-up nested build after the refactor, and the Gradle gate's view laid in 0.13 s with the library absent in all three places. What the init script does in a real Gradle build is verified only when the job's result is read; its handling of repositories kept in settings and of plugins is written and not run. The script inventory is regenerated (98 scripts, the new ones supported).",
       "log_sha256": "6c673ab9b230f1a142404a03a95876cbf27597f0a8f4307cfd254d1482f0751c"
+    },
+    {
+      "change_id": "rxmsnylqpuxztrrvsxpyrnsywlomlwps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Give Gradle a file repository over the fetched modules alone, and run its gate again (verification pending)",
+      "body": "The first run of the gate for the readiness view's Gradle init script (job 20261128-011602-a-gradle-build-reads-offline-a-library-t) failed, and showed two things. The script works in a real build: after round 1 stopped on org.jspecify:jspecify:1.0.1, missing for buildSrc's class path, the resolver fetched its POM, its Gradle module metadata and its JAR, and in round 2 Gradle read the library from the file repository. And the repository was over too much: the view's whole Maven-layout folder, which is mostly the base's Maven local repository, where plexus-utils 3.6.0 is a POM with no JAR. Being first in the build's list, the file repository answered for that module, and Gradle then looked for the JAR there and nowhere else, though its own cache had the module whole. The resolution ended undiagnosed, because Gradle's wording for one missing file of a known module was not one the resolver read.\n\nBoth are corrected here. A view now lays the fetched modules apart, in Maven's layout, each whole by the way it is fetched (ITL_READINESS_FETCHED_M2), and the init script's file repository is over those alone; ITL_READINESS_M2 stays the whole folder, for a Maven build. And the resolver reads 'Could not find a-v.jar (g:a:v)', so a module that is a bare POM in a repository Gradle does consult is fetched whole in the next round.\n\nThe gate is queued again as job 20261128-012905-a-gradle-build-reads-offline-a-library-t, which supersedes the first and has not run. The results page records the first run and what was corrected.\n\nVerified without Gradle: jobs/test_readiness.py (the fetched modules are laid apart with nothing of the base's own, and Gradle's wording is read as its coordinate), jobs/test_delayed_setup.py, the gate's logic 16 of 16 on the made-up nested build, and the tests of what changed, 43 of 43 Python test files (python3 lib/tools/test_costs.py run --changed). The real build is verified only when the second job's result is read.",
+      "log_sha256": "09daf6538f03abe7a03b28b73ea54d077cf7181dac7447eced7c6c469dcd7ea9"
     }
   ],
   "logs": {
@@ -539,6 +547,12 @@
       "bytes": 16894341,
       "lines": 5492,
       "gzip_bytes": 3445212,
+      "url": null
+    },
+    "09daf6538f03abe7a03b28b73ea54d077cf7181dac7447eced7c6c469dcd7ea9": {
+      "bytes": 25605647,
+      "lines": 9252,
+      "gzip_bytes": 4720803,
       "url": null
     },
     "0c5f71ee9a19ae0482f4bd523298f5afa68c6450578c97f0a72d7f608085064a": {

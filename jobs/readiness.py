@@ -66,6 +66,7 @@ _GAV = r"([A-Za-z0-9_.\-]+):([A-Za-z0-9_.\-]+):(?:[a-z\-]+:)?([A-Za-z0-9_.\-]+)"
 MISSING = [re.compile(p) for p in (
     r"Could not (?:find|resolve|transfer)(?: artifact)? " + _GAV,
     r"\(" + _GAV + r"\): No cached version available for offline mode",
+    r"Could not find \S+ \(" + _GAV + r"\)",          # Gradle, of one file of a module whose POM it has: "Could not find a-v.jar (g:a:v)."
     r"No cached version of " + _GAV + r" available for offline mode",
     r"the artifact " + _GAV + r" has not been downloaded",
 )]
@@ -294,14 +295,17 @@ def fetch_pinned(pin: dict, staging: Path, allow: list[str]) -> dict:
 # For a Gradle build run offline on a view. A module the resolver fetched is laid in Maven's layout, which Gradle's own
 # cache is not: Gradle offline reads a remote repository's modules only from that cache, with its own records of
 # them. A file repository is read whatever --offline says, so this gives every project, every build script's class
-# path and the plugin resolution one over the view's Maven-layout folder, ahead of the build's own repositories
+# path and the plugin resolution one over the modules a resolution fetched, ahead of the build's own repositories
 # (first, so that it also answers for a module whose record in Gradle's cache names a repository that no longer
-# has the file there). A build that keeps its repositories in its settings gets it there, and its projects are
+# has the file there). Over the fetched modules alone, each whole (POM, module metadata, JAR), and not over the
+# view's whole Maven-layout folder: that one holds the base's Maven local repository, where a module is often a
+# POM with no JAR, and Gradle, having read such a POM there first, looks for the JAR nowhere else (the first run
+# of the gate for this script failed so, on a module Gradle's own cache had whole). A build that keeps its repositories in its settings gets it there, and its projects are
 # left alone, since such a build may refuse a repository a project adds. A build that declares no plugin
 # repository keeps Gradle's default beside this one. Plugins of the settings script itself are resolved before
 # this runs, and are not served.
 GRADLE_INIT = '''// Laid in every readiness view by jobs/readiness.py. Use: gradle --offline -I "$ITL_READINESS_GRADLE_INIT" ...
-def laid = System.getenv('ITL_READINESS_M2')
+def laid = System.getenv('ITL_READINESS_FETCHED_M2')
 if (laid && new File(laid).isDirectory()) {
     def readiness = { repositories ->
         if (repositories.findByName('itlReadiness') == null) {
@@ -335,17 +339,27 @@ if (laid && new File(laid).isDirectory()) {
 '''
 
 
-def equip(view: Path, operation: dict) -> dict:
+def equip(view: Path, operation: dict, files: dict | None = None) -> dict:
     """What a step that runs on a view is told beside the view, as environment: where modules are laid in Maven's
-    layout (the base's and the fetched ones, one folder), and a Gradle init script, written into the view, that
-    lets an offline Gradle build read them from there."""
+    layout (ITL_READINESS_M2: the base's and the fetched ones, one folder, for a Maven build), the fetched ones
+    alone in the same layout (ITL_READINESS_FETCHED_M2, a folder of links made here from `files`, the fetched files
+    by their path in the view), and a Gradle init script, written into the view, that lets an offline Gradle
+    build read the fetched ones."""
+    maven = (operation.get("layout") or {}).get("maven", "m2").strip("/")
+    fetched = view / "itl-readiness-fetched"
+    fetched.mkdir(exist_ok=True)
+    for rel, source in (files or {}).items():
+        if rel.startswith(maven + "/"):
+            link = fetched / rel[len(maven) + 1:]
+            link.parent.mkdir(parents=True, exist_ok=True)
+            if not link.is_symlink() and not link.exists():
+                link.symlink_to(source)
     init = view / "itl-readiness.init.gradle"
-    if not init.exists():
-        init.write_text(GRADLE_INIT)
-    return {"ITL_READINESS_M2": str(view / (operation.get("layout") or {}).get("maven", "m2")), "ITL_READINESS_GRADLE_INIT": str(init)}
+    init.write_text(GRADLE_INIT)
+    return {"ITL_READINESS_M2": str(view / maven), "ITL_READINESS_FETCHED_M2": str(fetched), "ITL_READINESS_GRADLE_INIT": str(init)}
 
 
-def run_consumer(operation: dict, view: Path, out: Path, cwd: Path, log: Path, base: Path, extra_ro=()) -> tuple[bool, list[dict], dict]:
+def run_consumer(operation: dict, view: Path, out: Path, cwd: Path, log: Path, base: Path, extra_ro=(), fetched=None) -> tuple[bool, list[dict], dict]:
     """The operation's task with no network and the base read-only: whether every step exited 0, each
     step's record, and what a probe saw in the sandbox it ran in."""
     seen = sandbox.probe()
@@ -353,7 +367,7 @@ def run_consumer(operation: dict, view: Path, out: Path, cwd: Path, log: Path, b
         raise Withheld("consumer", "offline-unenforceable", f"the network cannot be taken away here: {seen.get('why')}")
     binds = [("ro", str(p), str(p)) for p in (base, *extra_ro) if Path(p).exists()]
     env = {**os.environ, (operation.get("view") or {}).get("env", "ITL_READINESS_VIEW"): str(view), "ITL_READINESS_VIEW": str(view),
-           "ITL_READINESS_OUT": str(out), **equip(view, operation)}
+           "ITL_READINESS_OUT": str(out), **equip(view, operation, fetched)}
     steps, ok = [], True
     with open(log, "a") as sink:
         for step in operation["task"]["steps"]:
@@ -438,7 +452,7 @@ def resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[st
             overlay(base, without, laid, view, walk=(operation.get("view") or {}).get("walk") or [])
             out.mkdir(exist_ok=True)
             started = time.monotonic()
-            ok, steps, seen = run_consumer(operation, view, out, cwd, log, base, extra_ro=[staging])
+            ok, steps, seen = run_consumer(operation, view, out, cwd, log, base, extra_ro=[staging], fetched=laid)
             entry["offlineSeconds"] = round(time.monotonic() - started, 1)
             receipt["offline"] = {"network": seen, "steps": steps, "round": n, "log": str(log)}
             if ok:

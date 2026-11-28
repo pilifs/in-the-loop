@@ -145,11 +145,14 @@ a job that fetches is unschedulable), within the runner's fetch slots. Only a re
 those sources.
 
 **What a step on a view is given.** The view by the variable the operation names (and `ITL_READINESS_VIEW`),
-and two things for the build tools. `ITL_READINESS_M2` is the view's Maven-layout folder: the base's modules
-and the fetched ones, one tree, which a Maven build takes as its local repository or a mirror. And
+and three things for the build tools. `ITL_READINESS_M2` is the view's Maven-layout folder: the base's modules
+and the fetched ones, one tree, which a Maven build takes as its local repository or a mirror.
+`ITL_READINESS_FETCHED_M2` is the fetched modules alone, in the same layout, each whole. And
 `ITL_READINESS_GRADLE_INIT` is an init script written into the view: a Gradle build run as `gradle --offline -I
-"$ITL_READINESS_GRADLE_INIT" ...` gets a file repository over that folder, ahead of its own repositories, for its
-projects, its build scripts' class paths and its plugins. It needs one because Gradle offline reads a remote
+"$ITL_READINESS_GRADLE_INIT" ...` gets a file repository over the fetched modules, ahead of its own
+repositories, for its projects, its build scripts' class paths and its plugins. Over the fetched ones alone,
+because a Maven local repository often holds a module's POM with no JAR, and Gradle, having read a POM in a
+repository, looks for the JAR nowhere else. It needs one because Gradle offline reads a remote
 repository's modules from its own cache and nowhere else, and nothing but Gradle can write that cache with its
 records; a file repository is read whatever `--offline` says. A module whose POM says it was published with
 Gradle's module metadata is fetched with its `.module` file, which Gradle then requires. A build that keeps its
