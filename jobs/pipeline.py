@@ -792,7 +792,10 @@ def plan(job, config):
     if cpus > runner["cpus"]:
         reasons.append(f"needs {cpus:g} CPUs, and the runner has {runner['cpus']:g}")
     fetch = fetch_slots_of(job)
-    if fetch and not runner["fetch_allow"]:
+    # A resolution job's fetcher authorises each address itself, and a mirror on this machine needs no permission
+    # (jobs/readiness.py, authorise): it can run where no outside source is allowed. Any other job with a fetch step
+    # has the host's network, and runs only where the machine allows fetching at all.
+    if fetch and not runner["fetch_allow"] and workload_name(job) != "resolution":
         reasons.append("a step of it fetches, and this runner is authorised to fetch from nowhere (its fetch_allow is empty)")
     if fetch > runner["fetch_slots"]:
         reasons.append(f"it fetches {fetch} at once, and this runner has {runner['fetch_slots']} fetch slot(s)")
@@ -2074,12 +2077,12 @@ def request_operation(key, commits=()):
 def sources_not_allowed(config, key, operation):
     """The sources a resolution of this request would fetch from and this runner may not: what its operation names
     (readiness.not_allowed), and what an earlier resolution of it was sent to and refused (a redirect)."""
-    allow = config["runner"]["fetch_allow"]
-    lacking = readiness.not_allowed(operation, allow) if operation else []
+    allow, local = config["runner"]["fetch_allow"], config["runner"]["fetch_local"]     # the settings' own word for "this machine"
+    lacking = readiness.not_allowed(operation, allow, local) if operation else []
     receipt = readiness.Store(config["runner"]["readiness_dir"]).receipt(key) or {}
     if receipt.get("outcome") == "unauthorized-source" and receipt.get("asked") and receipt["asked"] not in [a["url"] for a in lacking]:
         try:
-            readiness.authorise(receipt["asked"], allow)
+            readiness.authorise(receipt["asked"], allow, local=local)
         except readiness.Withheld:
             lacking.append({"url": receipt["asked"], "for": "a file its last resolution was sent to (a redirect, or a file outside its repositories)"})
     return lacking
@@ -2124,11 +2127,13 @@ def cmd_sources(args):
         print(json.dumps({"schema": "itl-fetch-sources/v1", "allowed": allowed, "asked": view["sources"]["asked"],
                           "settings": config["files"], "grants": str(fetch_grants_file()) if fetch_grants_file() else None}, indent=2))
         return 0
-    print("this machine's runner may fetch from:" if allowed else "this machine's runner may fetch from nowhere (fetch_allow is empty)")
+    print("outside this machine, its runner may fetch from:" if allowed else
+          "this machine's runner may fetch from no outside source (fetch_allow is empty)")
     for row in allowed:
         said = f"allowed {row['granted'].get('at')}" + (f": {row['granted']['reason']}" if row["granted"].get("reason") else "") \
             if "granted" in row else row["from"]
         print(f"  {row['url']}  ({said})")
+    print("a mirror on this machine itself (a folder, a repository on its loopback) needs no permission")
     if not view["sources"]["asked"]:
         print("no waiting job asks for another source")
         return 0

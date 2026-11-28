@@ -12,8 +12,8 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-28T15:41:03.604Z",
-  "duration_seconds": 1116817,
+  "ended": "2026-11-28T15:41:45.359Z",
+  "duration_seconds": 1116859,
   "stats": {
     "turns": 1907,
     "api_calls": 7976,
@@ -352,7 +352,7 @@
     {
       "index": 19,
       "started": "2026-11-27T20:35:39.144Z",
-      "ended": "2026-11-28T15:41:03.604Z",
+      "ended": "2026-11-28T15:41:45.359Z",
       "turns": 36,
       "api_calls": 170,
       "usage": {
@@ -365,11 +365,11 @@
     }
   ],
   "log": {
-    "sha256": "d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3",
-    "bytes": 120145405,
-    "lines": 70352,
-    "gzip_bytes": 18488080,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3.jsonl.gz"
+    "sha256": "00dccee4459ceee822c3983481873853039d3844c03466b6446e32dc65a003d9",
+    "bytes": 120156328,
+    "lines": 70355,
+    "gzip_bytes": 18489436,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/00dccee4459ceee822c3983481873853039d3844c03466b6446e32dc65a003d9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -18286,20 +18286,20 @@
       "log_sha256": "06f0677def8241bf60d31f007641eeb0cc9e75b3624fc2a63ddaa9f3db4ce642"
     },
     {
-      "change_id": "utvnvwzvpuoolvlpnqzytspvykmkkznr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3"
-    },
-    {
       "change_id": "pnkoxnsxyxpkluuyvqrzrpvnkxpzosps",
       "commit_id": null,
       "immutable": false,
       "summary": "VF-080: the 944 surviving kept outputs are sealed and verified; 3 stay lost",
       "body": "At the user's request, the watcher checked the recovery of VF-080's kept outputs in the default checkout. jobs/pipeline.py recover --kept-outputs had already sealed them at 13:36Z (17 jobs, 944 files; no commit records who ran it): a dry run now finds nothing left, every occurrence is remote_verified, and one restored with every byte verified. The 3 files of 2026-11-06 that no checkout holds remain the audit's only artifact-not-committed gaps; the finding stays open for the user's word on them.",
       "log_sha256": "d96c84aa7a61f92233f986e476f1bd4a96527b30dc0580bcdddc6697b4aba0d3"
+    },
+    {
+      "change_id": "qlsvxyusmpkrqxsuznpyoprrylxxosxy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Let a mirror on the machine itself be read with no permission",
+      "body": "The user's decision of 2026-11-28, asked whether a folder of local mirrors should be put on the allow list or be exempt: 'If it's a local mirror, then it should be usable as needed -- certainly the risk here is lower than remote mirrors, which is the intent of the allow list.' No setting was wanted for it. Until now a folder (file://) and a repository on the machine's loopback had to be under an allowed source like any other address, so a resolution that reads a local mirror needed a grant only a person can make.\n\njobs/readiness.py's authorise now passes any address that is the machine itself (a file URL, or a host the rule calls local: its loopback), and the allow list governs outside sources only. Redirects stay strict both ways: a local mirror that sends the fetcher on to an outside host is followed only if that host is allowed, and an outside source that redirects into the machine is not followed. This gives the redirect rule its first test (the review's finding R7 said it had none). The admission check (which sources an operation asks for that are not allowed) uses the same judgment with the runner's own settings, so an operation naming only local mirrors is admitted with no question. A resolution job is no longer unschedulable where fetch_allow is empty: its fetcher authorises each address itself, and it can run from a local mirror. Another job with a fetch step of its own still needs the machine to allow fetching at all.\n\nWhere a local mirror can serve, it is the first thing to use, for efficiency and consistency: the operating notes say so beside the rule for outside fetches, with the user's words, and jobs/README.md, CLAUDE.md and the /run-verification skill describe the rule.\n\nVerified: jobs/test_readiness.py, 29 tests (one new: a resolution from a loopback repository with no source allowed is ready and asks nothing outside; a redirect from it to another host is refused with the address named; one into the machine from outside is refused). jobs/test_delayed_setup.py, 6 (one new, through the pipeline with a machine's default settings and no source allowed: nothing is asked of anyone, the resolution is admitted and passes, and its job passes). Two tests that expected a loopback or file address to need permission now make that repository stand for an outside one first, and a third expects a resolution job to run and be withheld by name where it was unschedulable. The tests of what changed, 36 of 36 Python test files. The new tests are in the cost inventory and its lint agrees.",
+      "log_sha256": "00dccee4459ceee822c3983481873853039d3844c03466b6446e32dc65a003d9"
     }
   ],
   "logs": {
@@ -18314,6 +18314,12 @@
       "lines": 47813,
       "gzip_bytes": 13428644,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/00179b522dbe22e85f169db06ae971ad2cb9764bb6247b4d9e3701f7c897422b.jsonl.gz"
+    },
+    "00dccee4459ceee822c3983481873853039d3844c03466b6446e32dc65a003d9": {
+      "bytes": 120156328,
+      "lines": 70355,
+      "gzip_bytes": 18489436,
+      "url": null
     },
     "011d93f108fb748ac90c41e4867fecd6ce34ce19444bf2fcbaa498af3540a895": {
       "bytes": 87205625,

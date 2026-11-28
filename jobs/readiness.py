@@ -473,9 +473,14 @@ class Withheld(Exception):
         self.asked = asked        # for `unauthorized-source`: the URL that was asked for and may not be fetched
 
 
-def authorise(url: str, allow: list[str]) -> None:
+def authorise(url: str, allow: list[str], local_ok: bool = True, local: list | None = None) -> None:
     """Raises unless `url` is under a source the runner allows: the same scheme, host and port, a path under the
-    source's as a folder, no user part and no `..`. `https://repo.example.org` does not allow `repo.example.org.evil`."""
+    source's as a folder, no user part and no `..`. `https://repo.example.org` does not allow `repo.example.org.evil`.
+    A mirror on this machine itself (a folder, a repository on its loopback: `outside`) needs no permission: the
+    allow list is about what the machine asks of others (the user, 2026-11-28). `local_ok=False` is for a redirect
+    from outside, which is never followed back into the machine."""
+    if local_ok and not outside(url, local):
+        return
     asked = urlsplit(url)
 
     def under(source: str) -> bool:
@@ -503,27 +508,29 @@ def asks_of(operation: dict) -> list[dict]:
     return out
 
 
-def not_allowed(operation: dict, allow: list[str]) -> list[dict]:
-    """Of the sources an operation asks for (`asks_of`), those this runner may not fetch from. A resolution of it
+def not_allowed(operation: dict, allow: list[str], local: list | None = None) -> list[dict]:
+    """Of the sources an operation asks for (`asks_of`), those this runner may not fetch from: outside sources
+    that no allowed folder covers (a mirror on this machine is never one of them). A resolution of it
     would be withheld as `unauthorized-source` at its first fetch from one: said before it is admitted, it is a
     question for whoever decides what the machine fetches from, and no job is spent on it."""
     out = []
     for ask in asks_of(operation):
         try:
-            authorise(ask["url"], allow)
+            authorise(ask["url"], allow, local=local)
         except Withheld:
             out.append(ask)
     return out
 
 
 class _EveryHop(HTTPRedirectHandler):
-    """A source that redirects is followed only to an address that is itself allowed."""
+    """A source that redirects is followed only to an address that is itself allowed. A mirror on this machine may
+    send on to another address of this machine; an outside source may not send the fetcher back into it."""
 
-    def __init__(self, allow: list[str]) -> None:
-        self.allow = allow
+    def __init__(self, allow: list[str], from_local: bool = False) -> None:
+        self.allow, self.from_local = allow, from_local
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        authorise(newurl, self.allow)
+        authorise(newurl, self.allow, local_ok=self.from_local)
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
@@ -546,10 +553,11 @@ def fetch_rule() -> dict:
         (list,) if k == "local" else (int, float))}}
 
 
-def outside(url: str) -> bool:
-    """Whether a URL leaves this machine: not a file of its own, and not a host the rule calls local (its loopback)."""
+def outside(url: str, local: list | None = None) -> bool:
+    """Whether a URL leaves this machine: not a file of its own, and not a host the rule calls local (its loopback).
+    `local`: the rule's list as someone who has the runner's settings read it; else the one this process was given."""
     parts = urlsplit(url)
-    return parts.scheme != "file" and parts.hostname not in fetch_rule()["local"]
+    return parts.scheme != "file" and parts.hostname not in (fetch_rule()["local"] if local is None else local)
 
 
 def fetch_queue() -> Path:
@@ -602,7 +610,7 @@ def download(url: str, dest: Path, allow: list[str], timeout: float = 120) -> in
     for attempt in (1, 2):
         try:
             with turn(url):
-                with build_opener(ProxyHandler({}), _EveryHop(allow)).open(url, timeout=timeout) as response, open(tmp, "wb") as out:
+                with build_opener(ProxyHandler({}), _EveryHop(allow, from_local=not outside(url))).open(url, timeout=timeout) as response, open(tmp, "wb") as out:
                     shutil.copyfileobj(response, out)
             break
         except Withheld:

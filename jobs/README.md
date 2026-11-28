@@ -141,9 +141,9 @@ resolution; another toolchain or profile is another key.
 under `readiness`, `unanswered` while no receipt is ready or withheld and no job is on its way. The watcher
 admits a **resolution job** for it by committing what `python3 jobs/pipeline.py resolve` writes
 ([`queue_keeping.py`](../llm-dlc/tools/queue_keeping.py) does it at each look), and that job runs through the same
-scheduler as any other, on a runner whose settings name the sources it may fetch from (`fetch_allow`; with none,
-a job that fetches is unschedulable), within the runner's fetch slots. Only a resolution job's steps are told
-those sources.
+scheduler as any other, within the runner's fetch slots. Its fetcher asks only the outside sources the runner's
+settings allow (`fetch_allow`), and a mirror on the machine itself with no permission (below). Only a
+resolution job's steps are told those sources.
 
 **What a step on a view is given.** The view by the variable the operation names (and `ITL_READINESS_VIEW`),
 and three things for the build tools. `ITL_READINESS_M2` is the view's Maven-layout folder: the base's modules
@@ -225,9 +225,17 @@ snapshot is fetched by its plain name, which a repository of releases and a fold
 repository does not: there it ends `absent`.
 
 **For the runner's operator.** `fetch_allow` is empty until the machine's settings name sources
-(`[runner] fetch_allow = ["https://repo.maven.apache.org/maven2/"]` in the machine's `pipeline.toml`), and with
-none a job that fetches is `unschedulable` and says so: which sources a machine fetches from is its owner's to
-say. `fetch_slots` (ten) is how many fetching jobs run at once.
+(`[runner] fetch_allow = ["https://repo.maven.apache.org/maven2/"]` in the machine's `pipeline.toml`): which
+outside sources a machine fetches from is its owner's to say. With none, a job with a fetch step of its own is
+`unschedulable` and says so, and a resolution job still runs: its fetcher authorises each address itself.
+`fetch_slots` (ten) is how many fetching jobs run at once.
+
+**A mirror on the machine itself needs no permission** (the user, 2026-11-28): a folder (`file://`) or a
+repository on the machine's loopback (`fetch_local`) is read by any operation that names it. The allow list is
+about what the machine asks of others, and a local mirror is the lesser risk and the first thing to use. What a
+resolution takes from one is verified like anything else (the checksum beside it, or the operation's digest),
+takes no turn in the queue and is not counted as asked of outside. A redirect from an outside source into the
+machine is not followed, and one from a local mirror to an outside host needs that host to be allowed.
 
 **Every request to a repository outside the machine takes its turn in one queue**
 ([`operating-notes.md`](../llm-dlc/operating-notes.md#fetches-of-a-builds-inputs-go-through-one-queue); the

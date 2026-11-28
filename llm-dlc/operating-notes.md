@@ -201,8 +201,12 @@ requests are open at once is.
   it has ended, whichever job, checkout or workspace asks, and however many resolutions run at once. Two
   requests to one host are 0.2 seconds apart (`fetch_gap`). A folder and the machine's own loopback take no
   turn (`fetch_local`).
-- **Only the sources the user allowed** (`fetch_allow`, and `python3 jobs/pipeline.py sources`). A job that
-  needs another one waits and asks. An agent never allows a source.
+- **Outside, only the sources the user allowed** (`fetch_allow`, and `python3 jobs/pipeline.py sources`). A job
+  that needs another one waits and asks. An agent never allows a source.
+- **A mirror on the machine itself needs no permission**, and no setting: a folder, or a repository on its
+  loopback, is usable by any operation that names it. The user's words: "If it's a local mirror, then it should
+  be usable as needed -- certainly the risk here is lower than remote mirrors, which is the intent of the allow
+  list." Where a local mirror can serve, use it before asking outside, for efficiency and for consistency.
 - **A repository that says "not now"** (429, 503) is asked once more, after the time it names, and never a
   third time: the resolution ends there as `repository-unavailable`.
 - **Each file once.** What a resolution fetched and verified is kept in the runner's pool, and a later

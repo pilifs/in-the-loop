@@ -16155,19 +16155,19 @@
       "log_sha256": "a629a62c19b702bab104c9eb1c1cbed9151c2ea324d58571679f5ef35fa122ec"
     },
     {
-      "change_id": "utvnvwzvpuoolvlpnqzytspvykmkkznr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
+      "change_id": "pnkoxnsxyxpkluuyvqrzrpvnkxpzosps",
+      "commit_id": "7ff42f2625cdb479470cc213b1fa18447382f32b",
+      "immutable": true,
+      "summary": "VF-080: the 944 surviving kept outputs are sealed and verified; 3 stay lost",
+      "body": "At the user's request, the watcher checked the recovery of VF-080's kept outputs in the default checkout. jobs/pipeline.py recover --kept-outputs had already sealed them at 13:36Z (17 jobs, 944 files; no commit records who ran it): a dry run now finds nothing left, every occurrence is remote_verified, and one restored with every byte verified. The 3 files of 2026-11-06 that no checkout holds remain the audit's only artifact-not-committed gaps; the finding stays open for the user's word on them.",
       "log_sha256": "ac4dc94681bc4a41807dfe0e4c91bbe1f241edf8545f031fc9413326428ab0d1"
     },
     {
-      "change_id": "pnkoxnsxyxpkluuyvqrzrpvnkxpzosps",
+      "change_id": "qlsvxyusmpkrqxsuznpyoprrylxxosxy",
       "commit_id": null,
       "immutable": false,
-      "summary": "VF-080: the 944 surviving kept outputs are sealed and verified; 3 stay lost",
-      "body": "At the user's request, the watcher checked the recovery of VF-080's kept outputs in the default checkout. jobs/pipeline.py recover --kept-outputs had already sealed them at 13:36Z (17 jobs, 944 files; no commit records who ran it): a dry run now finds nothing left, every occurrence is remote_verified, and one restored with every byte verified. The 3 files of 2026-11-06 that no checkout holds remain the audit's only artifact-not-committed gaps; the finding stays open for the user's word on them.",
+      "summary": "Let a mirror on the machine itself be read with no permission",
+      "body": "The user's decision of 2026-11-28, asked whether a folder of local mirrors should be put on the allow list or be exempt: 'If it's a local mirror, then it should be usable as needed -- certainly the risk here is lower than remote mirrors, which is the intent of the allow list.' No setting was wanted for it. Until now a folder (file://) and a repository on the machine's loopback had to be under an allowed source like any other address, so a resolution that reads a local mirror needed a grant only a person can make.\n\njobs/readiness.py's authorise now passes any address that is the machine itself (a file URL, or a host the rule calls local: its loopback), and the allow list governs outside sources only. Redirects stay strict both ways: a local mirror that sends the fetcher on to an outside host is followed only if that host is allowed, and an outside source that redirects into the machine is not followed. This gives the redirect rule its first test (the review's finding R7 said it had none). The admission check (which sources an operation asks for that are not allowed) uses the same judgment with the runner's own settings, so an operation naming only local mirrors is admitted with no question. A resolution job is no longer unschedulable where fetch_allow is empty: its fetcher authorises each address itself, and it can run from a local mirror. Another job with a fetch step of its own still needs the machine to allow fetching at all.\n\nWhere a local mirror can serve, it is the first thing to use, for efficiency and consistency: the operating notes say so beside the rule for outside fetches, with the user's words, and jobs/README.md, CLAUDE.md and the /run-verification skill describe the rule.\n\nVerified: jobs/test_readiness.py, 29 tests (one new: a resolution from a loopback repository with no source allowed is ready and asks nothing outside; a redirect from it to another host is refused with the address named; one into the machine from outside is refused). jobs/test_delayed_setup.py, 6 (one new, through the pipeline with a machine's default settings and no source allowed: nothing is asked of anyone, the resolution is admitted and passes, and its job passes). Two tests that expected a loopback or file address to need permission now make that repository stand for an outside one first, and a third expects a resolution job to run and be withheld by name where it was unschedulable. The tests of what changed, 36 of 36 Python test files. The new tests are in the cost inventory and its lint agrees.",
       "log_sha256": "ac4dc94681bc4a41807dfe0e4c91bbe1f241edf8545f031fc9413326428ab0d1"
     }
   ],

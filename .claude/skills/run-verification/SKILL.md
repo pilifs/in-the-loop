@@ -24,10 +24,10 @@ commands by hand to see: the runner is how they run, under limits.
    a resolution job has made its operation ready, and `view` lists each request under `readiness`
    ([`jobs/README.md`](../../../jobs/README.md#setup-a-running-case-asks-for)). Admitting one is yours:
    `python3 jobs/pipeline.py resolve` writes a resolution job for every request nothing answers, and the commit
-   of those files is the admission (a run's watcher does the same at each look). A resolution job fetches, so it
-   starts only on a runner whose settings name the sources it may fetch from (`fetch_allow`, in the machine's
-   `pipeline.toml`); with none it is `unschedulable` and says so. Which sources a machine fetches from is the
-   user's to decide: ask, do not add one yourself. When a request asks for a source the machine has not
+   of those files is the admission (a run's watcher does the same at each look). A resolution job fetches: from a
+   mirror on the machine itself (a folder, loopback) with no permission, and outside only from the sources the
+   runner's settings allow (`fetch_allow`, in the machine's `pipeline.toml`). Which outside sources a machine
+   fetches from is the user's to decide: ask, do not add one yourself. When a request asks for a source the machine has not
    allowed, `resolve` writes no job for it and says which, `status` has a line for it, and
    `python3 jobs/pipeline.py sources` lists what is asked for and by which job: tell the user that, with the
    command that is theirs alone to run (`python3 jobs/pipeline.py sources allow URL`, refused from an agent's

@@ -307,7 +307,9 @@ class WhatARealGraphAsksFor(NestedBuild):
         # A source the runner no longer authorises is not served from the pool either.
         fourth = self.operation(consumer="T04")
         fourth["describes"] = {**fourth["describes"], "module": "a fourth"}
-        self.assertEqual(self.resolve(fourth, allow=[], n=4)["outcome"], "unauthorized-source")
+        with unittest.mock.patch.dict(os.environ, {"ITL_FETCH_RULE": json.dumps({"gap": 0, "local": []}),      # this repository as one outside
+                                                   "ITL_FETCH_QUEUE": str(self.dir / "fetch-queue.lock")}):
+            self.assertEqual(self.resolve(fourth, allow=[], n=4)["outcome"], "unauthorized-source")
 
     def test_what_nothing_vouches_for_is_never_published_and_a_line_read_as_a_module_no_source_has_does_not_end_the_rounds(self):
         # A parent POM with no checksum beside it: fetched to be read, never verified, so not kept, laid or published.
@@ -387,10 +389,40 @@ class WhatIsWithheld(NestedBuild):
         self.assertEqual((receipt["rounds"], Quiet.seen), ([], []))        # the task did not run on it, and nothing was fetched for it
 
     def test_a_source_the_runner_does_not_authorise_is_not_asked(self):
-        receipt = self.resolve(allow=["https://repo.example.invalid/"])
+        # The loopback repository stands for one outside the machine here: one on the machine needs no permission (below).
+        as_outside = {"ITL_FETCH_RULE": json.dumps({"gap": 0, "local": []}), "ITL_FETCH_QUEUE": str(self.dir / "fetch-queue.lock")}
+        with unittest.mock.patch.dict(os.environ, as_outside):
+            receipt = self.resolve(allow=["https://repo.example.invalid/"])
         self.withheld(receipt, "fetch", "unauthorized-source")
         self.assertEqual(Quiet.seen, [])
         self.assertEqual(receipt["asked"], self.url + "dist/tool-3.tar.gz")      # as data, for whoever decides whether to allow it
+
+    def test_a_mirror_on_this_machine_needs_no_permission_and_does_not_lead_outside(self):
+        # No source is allowed at all, and the repository is on this machine's loopback: resolved, with nothing asked of outside.
+        receipt = self.resolve(allow=[])
+        self.assertEqual((receipt["state"], receipt["fetch"]["files"], receipt["fetch"]["outside"]["files"]), ("ready", 5, 0), receipt.get("why"))
+        asks = {"base": {"path": str(self.base)}, "repositories": ["file:///srv/mirror/", self.url, "https://repo.example.org/maven2/"]}
+        self.assertEqual(readiness.not_allowed(asks, []), [{"url": "https://repo.example.org/maven2/", "for": "a repository"}])
+        # A mirror here that sends the fetcher on to another host: followed only where that host is allowed, and it is not.
+        class SendsOn(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(302)
+                self.send_header("Location", "https://repo.example.invalid/maven2" + self.path)
+                self.end_headers()
+
+            def log_message(self, *args):
+                pass
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), SendsOn)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        with self.assertRaises(readiness.Withheld) as refused:
+            readiness.download(f"http://127.0.0.1:{server.server_address[1]}/g/a/1/a-1.pom", self.dir / "sent-on.pom", [])
+        self.assertEqual((refused.exception.outcome, refused.exception.asked), ("unauthorized-source", "https://repo.example.invalid/maven2/g/a/1/a-1.pom"))
+        self.assertFalse((self.dir / "sent-on.pom").exists())
+        # And the other way: an address outside that redirects into this machine is not followed there.
+        with self.assertRaises(readiness.Withheld):
+            readiness.authorise("http://127.0.0.1:8081/internal", ["https://repo.example.org/"], local_ok=False)
 
     def test_a_consumer_that_fails_and_names_nothing_or_asks_again_for_what_it_was_given_ends_the_rounds(self):
         (self.cwd / "build.sh").write_text("echo 'something else went wrong'; exit 5\n")
@@ -591,12 +623,13 @@ class AnOperation(unittest.TestCase):
             self.assertFalse((Path(d) / "busy.pom").exists())
 
     def test_a_source_is_allowed_by_its_parts_and_a_line_that_names_no_module_is_not_one(self):
-        allow = ["https://repo.example.org/maven2", "file:///mirror/"]
-        for url in ("https://repo.example.org/maven2/g/a/1/a-1.pom", "file:///mirror/g/a/1/a-1.pom"):
+        allow = ["https://repo.example.org/maven2"]
+        # A folder of this machine and its loopback are no one else's to allow: the list is about what is asked of others.
+        for url in ("https://repo.example.org/maven2/g/a/1/a-1.pom", "file:///mirror/g/a/1/a-1.pom", "http://127.0.0.1:8081/g/a/1/a-1.pom"):
             readiness.authorise(url, allow)
         for url in ("https://repo.example.org.evil.example/maven2/g/a-1.pom", "https://repo.example.org@evil.example/maven2/a.pom",
                     "https://repo.example.org/maven2-other/a.pom", "https://repo.example.org/maven2/../secret", "http://repo.example.org/maven2/a.pom",
-                    "https://repo.example.org:8443/maven2/a.pom", "file:///mirror-of-something-else/a.pom"):
+                    "https://repo.example.org:8443/maven2/a.pom"):
             with self.assertRaises(readiness.Withheld, msg=url):
                 readiness.authorise(url, allow)
         log = """> Could not find g:a:.

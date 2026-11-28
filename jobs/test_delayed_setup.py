@@ -319,7 +319,30 @@ class DelayedSetup(unittest.TestCase):
         config.write_text(config.read_text().replace(f'fetch_allow = ["{self.url}"]', "fetch_allow = []"))
         self.repo.commit("resolve it again, where nothing may be fetched")
         out = self.repo.pipeline("run", "--rev", "HEAD", env=self.env).stdout
-        self.assertIn(f"{resolver}: unschedulable: a step of it fetches, and this runner is authorised to fetch from nowhere", out)
+        # A resolution job runs where no source is allowed (a mirror on the machine needs none), and its fetcher refuses
+        # this repository, which stands for one outside the machine in these tests: withheld by name, nothing fetched.
+        self.assertIn(f"{resolver}: failed", out)
+        self.assertEqual((self.store.receipt(key)["stage"], self.store.receipt(key)["outcome"]), ("fetch", "unauthorized-source"))
+        self.assertIn(f"{consumer}: blocked: readiness {key[:12]} was withheld at the fetch stage (unauthorized-source)", out)
+
+    def test_a_mirror_on_this_machine_is_resolved_from_where_no_outside_source_is_allowed(self):
+        # The settings a machine has by default: its loopback is itself, and no outside source is allowed.
+        config = self.repo.dir / "verification/pipeline.toml"
+        text = config.read_text()
+        self.assertIn("fetch_local = []", text)
+        config.write_text(text.replace("fetch_local = []", 'fetch_local = ["127.0.0.1", "localhost", "::1"]')
+                              .replace(f'fetch_allow = ["{self.url}"]', "fetch_allow = []"))
+        key = self.operation()
+        consumer = self.consumer("Build and read the module", "T01")
+        self.repo.commit("the case, with its repository on this machine")
+        self.assertEqual(self.view()["sources"], {"allowed": [], "asked": []})        # nothing to ask anyone for
+        resolver = json.loads(self.repo.pipeline("resolve", "--json", env=self.env).stdout)["written"][0]["job"]
+        self.repo.commit("admit the resolution")
+        out = self.repo.pipeline("run", "--rev", "HEAD", env=self.env).stdout
+        self.assertIn(f"{resolver}: passed", out)
+        self.assertIn(f"{consumer}: passed", out)
+        receipt = self.store.receipt(key)
+        self.assertEqual((receipt["fetch"]["files"], receipt["fetch"]["outside"]["files"], "warnings" in receipt), (4, 0, False))
 
 
 if __name__ == "__main__":
