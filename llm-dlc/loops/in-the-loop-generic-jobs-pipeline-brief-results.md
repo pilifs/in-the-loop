@@ -16,6 +16,19 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 | 4. Tune from measurements | started | Admission is built (`fetch_allow`, `fetch_slots` with ten as the documented starting ceiling, a receipt's fetched bytes and seconds, `timing.byPhase`). The only real measurements are S48's (see *Gate 4*): fetching was under a second of a six-minute resolution. No batch has run on the new pipeline, so the ceiling is untested and nothing is tuned |
 | 5. Adopt and verify | done, but for what needs a batch | `ARCHITECTURE.md` and the READMEs with each commit, the skills' commands, `CLAUDE.md`'s section on jobs, the inventory of the scripts under `verification/`, a dated update on each finding the brief names, S48's outcome. Open: the comparison on the next natural large batch, which needs this line landed (the default checkout's runner is the old pipeline until then) and a batch to run |
 
+**The whole default test run passed on this line** at `oxqyxotxzysr` (2026-11-28: 101 of 101, cargo's 59 test
+binaries and the Python files, in a memory cap of 8G; recorded for tree `9562bc586b6b`). It was run once, by the
+run's agent, because the commits before it had each run only the tests their own change selects, and the
+pipeline is shared code whose reach those cannot show. A commit after it changes the tree, so a promotion
+still runs its own.
+
+**For whoever lands this line.** The default checkout's runner is the pipeline of before until the line is
+merged there, and it does not run a job of the second format: a runner started after the merge does. The two
+S48 jobs' results and the gate's record are on the collector's line (jj changes `vwpuvpmxysoq` and
+`tosuzksqrzkx`), not on this one, and come together with it at the merge. VF-080's 947 kept outputs can be
+sealed then, in the default checkout, with `python3 jobs/pipeline.py recover --kept-outputs`. Nothing in this
+run's commits changes a record under `verification/jobs` or `verification/results` that was there before it.
+
 ## Decisions taken in the run, with their reasons
 
 1. **Records stay where they are.** Specifications and receipts stay under `verification/jobs` and

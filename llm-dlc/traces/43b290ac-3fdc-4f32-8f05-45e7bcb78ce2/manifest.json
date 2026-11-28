@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T01:01:03.308Z",
-  "duration_seconds": 35242,
+  "ended": "2026-11-28T01:09:04.390Z",
+  "duration_seconds": 35723,
   "stats": {
     "turns": 33,
-    "api_calls": 874,
-    "tool_calls": 938,
+    "api_calls": 885,
+    "tool_calls": 949,
     "tool_errors": 13,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1774,
-      "output_tokens": 1473821,
-      "cache_read_input_tokens": 264935892,
-      "cache_creation_input_tokens": 3119307
+      "input_tokens": 1796,
+      "output_tokens": 1480928,
+      "cache_read_input_tokens": 268375418,
+      "cache_creation_input_tokens": 3134235
     }
   },
   "tools": {
-    "Bash": 786,
+    "Bash": 797,
     "Read": 82,
     "Write": 36,
     "Edit": 19,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T01:01:03.308Z",
+      "ended": "2026-11-28T01:09:04.390Z",
       "turns": 1,
-      "api_calls": 120,
+      "api_calls": 131,
       "usage": {
-        "input_tokens": 240,
-        "output_tokens": 148786,
-        "cache_read_input_tokens": 22649469,
-        "cache_creation_input_tokens": 290350
+        "input_tokens": 262,
+        "output_tokens": 155893,
+        "cache_read_input_tokens": 26088995,
+        "cache_creation_input_tokens": 305278
       },
-      "peak_context_tokens": 305517
+      "peak_context_tokens": 320445
     }
   ],
   "log": {
-    "sha256": "c5290c0e6018d05e3f8939939853bd59f2b8215b09d84b73f6c8dcb449dc8f7e",
-    "bytes": 24791079,
-    "lines": 8790,
-    "gzip_bytes": 4625738,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/c5290c0e6018d05e3f8939939853bd59f2b8215b09d84b73f6c8dcb449dc8f7e.jsonl.gz"
+    "sha256": "27deed7b928100d773f30436f078c376e022fc2d3efe5946ccc71078348b80aa",
+    "bytes": 24957166,
+    "lines": 8894,
+    "gzip_bytes": 4646631,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/27deed7b928100d773f30436f078c376e022fc2d3efe5946ccc71078348b80aa.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -510,6 +510,14 @@
       "summary": "Show a job that ended in another workspace as finished, and give a result on another head its jj change",
       "body": "Two gaps in the view that the second S48 job showed, both for the agent that submits from a workspace of its own while the watcher's runner, in the default workspace, runs the job.\n\nBetween the job's end and that workspace's collect, the view here said queued again: the runner's claim was gone, and the staged result is in the other workspace's state. For those seconds or minutes the account was wrong in the way that makes someone resubmit. The view now reads the results staged in the workspace the shared lock names, whether or not its runner is still at work, and such a job is finished, with result.where staged-elsewhere, its root, its status and its summary. A cancelled result there is not one: that job runs again, and stays queued. So a job submitted from a workspace reads queued, running, finished, recorded-elsewhere and collected in that order and is never queued twice.\n\nA result recorded on another head was cited by its commit alone. In jj the collector's working-copy commit gets another id when it is described, so an id read from the view could be out of date an hour later: this run's results page had cited one. The row now carries the jj change beside the commit (result.change), and the reason names both.\n\nVerified: jobs/test_view.py (8 tests, one new: a result staged in the other workspace is finished with its runner at work and after it ended, and a cancelled one is queued), and the tests of what changed, 35 of 35 Python test files (python3 lib/tools/test_costs.py run --changed). On the real queue both S48 jobs now read recorded-elsewhere with the change tosuzksqrzkx.",
       "log_sha256": "c5290c0e6018d05e3f8939939853bd59f2b8215b09d84b73f6c8dcb449dc8f7e"
+    },
+    {
+      "change_id": "rwynvtzkuxtpuywuvnpsmozsosslwmkz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the whole default run on the jobs line, and what landing it needs",
+      "body": "The results page of the generic-jobs-pipeline run gains two short paragraphs for whoever reads it next.\n\nThe whole default test run passed on this line at oxqyxotxzysr: 101 of 101, cargo's 59 test binaries and the Python files, in a memory cap of 8G (python3 lib/tools/default_run.py after-merge --final; recorded for tree 9562bc586b6b). Each commit of the run had run only the tests its own change selects, and the pipeline is shared code whose reach those cannot show, so the whole run was made once, by the run's agent. This commit changes the tree after it, so a promotion still runs its own.\n\nFor landing: the default checkout's runner is the pipeline of before until the merge, and only a runner started after it runs a job of the second format; the two S48 jobs' results and the gate's record are on the collector's line (jj changes vwpuvpmxysoq and tosuzksqrzkx) and meet this line at the merge; VF-080's kept outputs can be sealed in the default checkout then. Across the run's commits no file that was already under verification/jobs or verification/results was modified or deleted (jj diff --summary from the run's base: 2 job files added, none changed).\n\nVerified: no test reads this page (python3 lib/tools/test_costs.py run --changed chooses nothing), and the commit's own check reports no error.",
+      "log_sha256": "27deed7b928100d773f30436f078c376e022fc2d3efe5946ccc71078348b80aa"
     }
   ],
   "logs": {
@@ -547,6 +555,12 @@
       "bytes": 5657533,
       "lines": 1807,
       "gzip_bytes": 1059212,
+      "url": null
+    },
+    "27deed7b928100d773f30436f078c376e022fc2d3efe5946ccc71078348b80aa": {
+      "bytes": 24957166,
+      "lines": 8894,
+      "gzip_bytes": 4646631,
       "url": null
     },
     "2e5f5f0d1fcf1ef8118132313d72bea99090578ca78c58b9fb14fded45982010": {
