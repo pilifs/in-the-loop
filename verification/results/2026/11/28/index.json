@@ -3,6 +3,41 @@
   "shard": "2026/11/28",
   "results": [
     {
+      "id": "20261128-003144-replay-s48-s-delayed-setup-as-one-reques",
+      "title": "Replay S48's delayed setup as one request through the jobs pipeline",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 13m21s, peak 5.5 GiB (estimated 20m00s, 9.0 GiB); 1 output file(s) changed",
+      "attention": [
+        "step 1 (the gate) was held back 16m39s by its 4-CPU quota in 13m21s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jobs:readiness",
+        "jobs:resolution"
+      ],
+      "links": {
+        "examples": [
+          "635"
+        ],
+        "paths": [
+          "verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py",
+          "verification/merged-pr-links/s01-s50/maven-war/readiness-operation.json",
+          "jobs/readiness.py"
+        ]
+      },
+      "sourceCommit": "d12ffc1ce993181132c55978a5e440b822487800",
+      "finishedAt": "2026-11-28T00:50:17+00:00",
+      "wallSeconds": 801.3,
+      "peakMemoryBytes": 5889822720,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 9663676416,
+        "durationSeconds": 1200.0,
+        "notes": "The first run of this gate (20261128-000950) took 5m58s and 5.3 GiB at its peak, and stopped in the resolution's second round. A run that goes through adds the rest of that round on both pins and the consumer's own read of the four WARs: about 15 minutes, one build at a time."
+      },
+      "host": "vm-1",
+      "result": "2026/11/28/20261128-003144-replay-s48-s-delayed-setup-as-one-reques/result.json"
+    },
+    {
       "id": "20261128-000950-replay-s48-s-delayed-setup-as-one-reques",
       "title": "Replay S48's delayed setup as one request through the jobs pipeline",
       "status": "failed",
