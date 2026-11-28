@@ -231,14 +231,29 @@ class AnOperation(unittest.TestCase):
                 (base / rel).write_text(rel)
             extra.mkdir()
             (extra / "new.pom").write_text("new")
-            readiness.overlay(base, ["m2/b", "downloads/old.tar"], {"m2/c/c.pom": extra / "new.pom"}, dest)
-            self.assertEqual(sorted(p.relative_to(dest).as_posix() for p in dest.rglob("*") if p.is_file() or p.is_symlink()),
-                             ["big", "m2/a/a.pom", "m2/c/c.pom"])
-            self.assertTrue((dest / "big").is_symlink())                 # untouched folders are one link each
-            self.assertFalse((dest / "m2").is_symlink())                 # a folder with something laid over is walked
-            self.assertEqual(((dest / "m2/c/c.pom").read_text(), (dest / "big/cache/blob").read_text()), ("new", "big/cache/blob"))
+            links = lambda view: sorted(p.relative_to(view).as_posix() for p in view.rglob("*") if p.is_symlink())
+            readiness.overlay(base, ["m2/b", "downloads/old.tar", "scratch/"], {"m2/c/c.pom": extra / "new.pom"}, dest)
+            # A folder on the way to something laid over or left out is made; everything else is one link.
+            self.assertEqual(links(dest), ["big", "m2/a", "m2/c/c.pom"])
+            self.assertEqual(((dest / "m2/c/c.pom").read_text(), (dest / "m2/a/a.pom").read_text(), (dest / "big/cache/blob").read_text()),
+                             ("new", "m2/a/a.pom", "big/cache/blob"))
             self.assertFalse((dest / "m2/b").exists() or (dest / "downloads/old.tar").exists())
-            self.assertTrue((base / "m2/b/b.pom").exists())
+            self.assertEqual(list((dest / "scratch").iterdir()), [])     # left out, with an empty folder of the view's own
+            self.assertTrue((base / "m2/b/b.pom").exists())              # the base is as it was
+            # A folder a tool walks is laid file by file: a walk does not follow a linked folder.
+            walked = Path(d) / "walked"
+            readiness.overlay(base, ["m2/b"], {"m2/c/c.pom": extra / "new.pom"}, walked, walk=["m2"])
+            self.assertEqual(links(walked), ["big", "downloads", "m2/a/a.pom", "m2/c/c.pom"])
+
+    def test_what_a_build_tool_says_it_lacks_is_read_as_coordinates(self):
+        log = """> Could not find g:stage-one:1.0.
+> Could not download activemq-bom-6.1.8.pom (org.apache.activemq:activemq-bom:6.1.8): No cached version available for offline mode
+[ERROR] Could not find artifact g:nested-tool:jar:2.0 in central (https://repo.example.invalid)
+   > No cached version of com.example:lib:3.1 available for offline mode.
+Cannot access central in offline mode and the artifact org.x:y:pom:4 has not been downloaded from it before."""
+        self.assertEqual(readiness.missing_coordinates(log),
+                         [("com.example", "lib", "3.1"), ("g", "nested-tool", "2.0"), ("g", "stage-one", "1.0"),
+                          ("org.apache.activemq", "activemq-bom", "6.1.8"), ("org.x", "y", "4")])
 
 
 if __name__ == "__main__":

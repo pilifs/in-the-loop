@@ -67,18 +67,20 @@ For whoever continues (this run's later cycles): each item is one commit, with i
    keepers on it and on `jobs/pipeline.py`. Left of it: the batch views, with fan-out (next).
 4. *Done (see Gate 2: fan-out, below).* Manifest fan-out, the map, the batch's wait and view, the 49-row fixture.
 5. *Done (see Gate 2: the pipeline of before beside this one, below).*
-6. **Delayed setup** (gate 3). *The mechanism and the synthetic fixture are done (see Gate 3, below).* Left:
-   **S48 for real**: an operation for `verification/merged-pr-links/s01-s50/maven-war/replay.py` on both pins
-   (base: the S cache, `without` the ActiveMQ BOM 6.1.8 and the Maven 3.9.13 distribution; pinned: that
-   distribution with its SHA-512; repositories: Maven Central; outputs equal to `parent.json` and `fix.json`),
-   its three controls, and an unrelated job, run as **one first-format job** whose step runs this scheduler in a
-   throwaway repository (the default checkout's runner is the old code until this line lands). The passed job
-   of 2026-11-27 took 295 s, 5.5 GB and 3 CPUs for the two sides; a resolution runs the task once a round.
+6. **Delayed setup** (gate 3). *The mechanism and the synthetic fixture are done (see Gate 3, below).*
+   **S48 for real is submitted and pending**: job `20261128-000950-replay-s48-s-delayed-setup-as-one-reques`
+   runs `verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py` on
+   `readiness-operation.json` beside it (see *Gate 3: S48*, below). Read its result
+   (`python3 jobs/pipeline.py report`, and `readiness-gate.json` among its outputs) before anything else of this
+   gate: every check it lists is one line of the brief's pass condition.
 7. **Fetch admission and its measurements** (gate 4). *Admission is built* (`fetch_allow`, `fetch_slots`, a
    receipt's fetched bytes and seconds, `timing.byPhase`). Left: measurements from a real batch, which none has
    run on yet.
-8. **Adoption** (gate 5): `ARCHITECTURE.md`, `CLAUDE.md`, the skills, the script inventory under `verification/`,
-   the findings named by the brief.
+8. **Adoption** (gate 5). *Done: `ARCHITECTURE.md` and the READMEs with each commit, the `/run-verification`
+   skill, the script inventory (below).* Left: `CLAUDE.md`'s section on jobs (it still names only
+   `verification/pipeline.py submit`; say `--purpose`, `--manifest`, `--needs-readiness`, `view`), the findings
+   the brief names (VF-076, 070, 072, 069, 051, 060, 020, 029, 030, 025, 077 to 080: record what this run changed
+   for each, against its stated closure evidence), and the comparison on the next natural large batch.
 
 ## Gate 2: the second format, and a result that keeps its questions apart
 
@@ -247,6 +249,65 @@ an HTTP server on 127.0.0.1, which a process in the offline sandbox cannot reach
     of their own.
 29. **Fetch slots are held for a job's whole run**, not only while its fetch step runs: simpler, and never more
     than the ceiling. Finer accounting waits for a measurement that shows it matters.
+
+## Gate 3: S48
+
+**The request.** `verification/merged-pr-links/s01-s50/maven-war/readiness-operation.json` describes the task
+(`:build-plugin:spring-boot-maven-plugin:intTest --tests ...MavenWarObservation` on both pins, by `replay.py`),
+asks for the level `readable`, pins the Maven 3.9.13 distribution by its SHA-512, names Maven Central, and
+expects readbacks equal to the committed `parent.json` and `fix.json`. Its base is the S cache
+(`~/.cache/in-the-loop/spring-boot-pr-links-s01-s50`) **reconstructed** as it was before VF-076's rounds: without
+the ActiveMQ BOM 6.1.8 in Maven's layout and in Gradle's, and without the Maven distribution. Laid as a view
+(0.2 s, 4,703 links), `replay.py parent --check-inputs` fails on it as it did then ("missing original Maven
+3.9.13 distribution"), and the BOM is in neither place.
+
+**The replay.** `readiness_gate.py` builds a throwaway repository with this checkout's pipeline, submits the
+consumer (it needs the operation, runs `replay.py` on both pins with no network, brings back the two readbacks)
+and an unrelated job, starts a runner, waits for the unrelated job to finish with the consumer waiting, admits
+the one resolution job as the watcher would, and checks the receipt, the consumer's result and the readbacks.
+Then three controls, each a resolution that must be withheld at the fetch stage with nothing published: the BOM
+withheld (a source that answers and does not have it), a wrong SHA-512 for the Maven distribution, and a
+repository that does not answer. It writes `readiness-gate.json`, one row a check.
+
+**Why it is one first-format job.** The default checkout's runner is the pipeline of before this line until
+the line lands, and it does not run a job of the second format (`jobs/test_coexistence.py`). So the scheduler
+under test runs inside the job, in the throwaway repository, without isolation of its own, within the job's limits.
+
+**What was checked before submitting**, without running the task: the gate's own logic passes 16 of 16 checks on
+the made-up nested build (a scratch dry run, with the same class and a repository on 127.0.0.1); loopback works
+inside the offline sandbox, which Gradle's workers need; Gradle's wording for the BOM in the original failed job
+(`Could not download activemq-bom-6.1.8.pom (org.apache.activemq:activemq-bom:6.1.8): No cached version
+available for offline mode`, in 20261127-142145's log) is one the resolver reads.
+
+**Result.** Pending: job `20261128-000950-replay-s48-s-delayed-setup-as-one-reques`.
+
+## The scripts under `verification/`
+
+`python3 jobs/script_inventory.py --write` lists every script under `verification/` outside the records
+([`verification/scripts.md`](../../verification/scripts.md), and `scripts.json` for a program), with its callers
+of every kind: the command lines of committed jobs (by the script's path, or from the folder the step runs in
+or changes to), tests (by path, or by an import after the test put the script's folder on the import path),
+other code, and pages, skills and settings. Session logs are not callers.
+
+| Class | Scripts | What it means for a cleanup |
+|---|---|---|
+| shared runner code | 2 | `layout.py`, `capture.py`: loaded by path from `jobs/` and other tools. They stay |
+| compatibility entry point | 1 | `pipeline.py`: every committed job's and note's command |
+| test | 4 | |
+| supported campaign replay | 67 | a test, a page or other code keeps it usable |
+| historical-only tool | 12 | committed jobs ran it and nothing live names it. It stays where those jobs' commands find it: moving it breaks their replay |
+| orphan candidate | 10 | no caller of any kind was found |
+
+**The two controls hold.** Each of the five scripts in `verification/triage/` is run by a committed job
+(`jobs/test_script_inventory.py` reads that from the repository), and
+`verification/test_merged_pr_qualification.py` is found as the caller of the campaign's `audit.py` and
+`qualify.py`, which it imports after putting their folder on the import path.
+
+**Nothing was removed or moved.** The 10 orphan candidates are a list to look at, not a decision:
+`blind-caller/evaluator/isolation_probe.py`, `blind-caller/evaluator/score_controls.py`, `blind-caller/evaluator/semantic_reference.py`, `blind-caller/evaluator/url_parity.py`, `blind-caller/nominate_histories.py`, `blind-caller/trace_control.py`, `classpath-entry-discovery/check_resource_predictions.py`, `classpath-entry-discovery/replay_frozen.py`, `generated-observers/freeze.py`, `product-behaviour/cases/J07/reference.py`. No job, test, code or page names them by a path or a name the inventory
+recognises; a caller that builds a path at run time from parts would not be seen. Removing any is a separate,
+reversible change through the retirement register (`llm-dlc/retired.md`), by someone who has read the campaign.
+The retirement check's live paths have covered `jobs/` since the first commit of this run.
 
 ## Gate 1: the census
 

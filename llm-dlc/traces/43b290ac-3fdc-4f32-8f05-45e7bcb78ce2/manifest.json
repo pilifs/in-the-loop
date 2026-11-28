@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T00:07:58.705Z",
-  "duration_seconds": 32057,
+  "ended": "2026-11-28T00:17:31.019Z",
+  "duration_seconds": 32630,
   "stats": {
-    "turns": 32,
-    "api_calls": 739,
-    "tool_calls": 802,
+    "turns": 33,
+    "api_calls": 758,
+    "tool_calls": 821,
     "tool_errors": 11,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1504,
-      "output_tokens": 1297238,
-      "cache_read_input_tokens": 234123350,
-      "cache_creation_input_tokens": 2793452
+      "input_tokens": 1542,
+      "output_tokens": 1329419,
+      "cache_read_input_tokens": 242487060,
+      "cache_creation_input_tokens": 2878194
     }
   },
   "tools": {
-    "Bash": 653,
+    "Bash": 671,
     "Read": 82,
-    "Write": 34,
+    "Write": 35,
     "Edit": 19,
     "AskUserQuestion": 3,
     "mcp__chrome-devtools__take_screenshot": 3,
@@ -58,6 +58,7 @@
     "jobs/sandbox.py",
     "jobs/scheduling.py",
     "jobs/schema/job.schema.json",
+    "jobs/script_inventory.py",
     "jobs/test_attempts.py",
     "jobs/test_audit.py",
     "jobs/test_workloads.py",
@@ -155,24 +156,38 @@
     {
       "index": 5,
       "started": "2026-11-27T23:01:49.090Z",
-      "ended": "2026-11-28T00:07:58.705Z",
+      "ended": "2026-11-28T00:14:12.267Z",
       "turns": 1,
-      "api_calls": 144,
+      "api_calls": 159,
       "usage": {
-        "input_tokens": 288,
-        "output_tokens": 319462,
-        "cache_read_input_tokens": 43831386,
-        "cache_creation_input_tokens": 513860
+        "input_tokens": 318,
+        "output_tokens": 347259,
+        "cache_read_input_tokens": 51994459,
+        "cache_creation_input_tokens": 549365
       },
-      "peak_context_tokens": 529027
+      "peak_context_tokens": 564532
+    },
+    {
+      "index": 6,
+      "started": "2026-11-28T00:16:38.934Z",
+      "ended": "2026-11-28T00:17:31.019Z",
+      "turns": 1,
+      "api_calls": 4,
+      "usage": {
+        "input_tokens": 8,
+        "output_tokens": 4384,
+        "cache_read_input_tokens": 200637,
+        "cache_creation_input_tokens": 49237
+      },
+      "peak_context_tokens": 64404
     }
   ],
   "log": {
-    "sha256": "5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4",
-    "bytes": 21799971,
-    "lines": 7370,
-    "gzip_bytes": 4168470,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4.jsonl.gz"
+    "sha256": "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f",
+    "bytes": 22709281,
+    "lines": 7613,
+    "gzip_bytes": 4364399,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -433,20 +448,28 @@
       "log_sha256": "78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9"
     },
     {
-      "change_id": "ktvqtpkzpolxypokunnksmumpsnlnpqv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4"
-    },
-    {
       "change_id": "ytnxopmtrrvzqwzqxrxqxnuxqnymursy",
       "commit_id": null,
       "immutable": false,
       "summary": "Let a running case ask for more setup: one request, a resolution job, a receipt that wakes it",
       "body": "A job can now need a readiness operation (submit --needs-readiness OPERATION.json; jobs/readiness.py): what 'ready' means for one task (the revision, module, task, toolchain and platform it describes, the level asked for, the prepared base it starts from, the task's own steps, the outputs they must leave, the repositories and the pinned inputs with their digests). The operation's key is the digest of all of that but the title, who asks and the estimate, so two cases that need the same thing share one request and one resolution. The job that asks waits, alone; the view lists the request, unanswered until a receipt is ready or withheld or a job is on its way. The watcher admits a resolution job by committing what 'pipeline.py resolve' writes (queue_keeping.admit, at each look), and it runs through the same scheduler, on a runner whose settings name the sources it may fetch from (fetch_allow; with none a job that fetches is unschedulable) and within its fetch slots (fetch_slots, 10). Only a resolution job's steps are told those sources.\n\nThe resolution is rounds: lay the base and what is staged so far into a view, run the task with no network and the base bound read-only, read its log for the module it could not find, fetch exactly that (verified by the repository's checksum, or by the operation's digest for a pinned input), and go again; a second stage that asks for a prerequisite nobody knew of is one more round. It ends ready when the task ran through offline and left its outputs, and only then publishes the staged files as a read-only bundle by one rename, with a receipt: every round, what was fetched from where, the probe of the offline run, the bundle's digest. Otherwise readiness is withheld with the stage and a named outcome (absent, repository-unavailable, digest-mismatch, unauthorized-source, undiagnosed, no-progress, round-limit, output-mismatch) and nothing is published. A ready receipt wakes the job that asked: the runner reads the bundle in full against the receipt (one that changed since blocks the job until it is resolved again), lays it over the base as a view of that attempt's own, and binds the base and the bundle read-only for a step with no network. A withheld readiness blocks its consumer by the outcome's name; 'resolve KEY --again' resolves the same request once the cause is put right.\n\nVerified on a made-up nested build served from 127.0.0.1 (its first stage needs a tool distribution and a BOM, its second asks for a module nobody named; it refuses to pass if it can reach the repository or write into the prepared inputs). jobs/test_readiness.py (11): ready after three rounds with four verified files; an identical request reuses the receipt and another toolchain or task is another key; a changed bundle is refused and resolved again; absent, digest-mismatch, repository-unavailable, unauthorized-source, undiagnosed, no-progress and output-mismatch each withhold with nothing published. jobs/test_delayed_setup.py (3, with a runner at work): the unrelated job finishes while both consumers wait and nothing has been fetched; one resolution job is admitted for the one request; both consumers start after it, run once, offline, on the bundle its conclusion names, and the repository was asked once for each file; a withheld BOM blocks its consumer by name until it is resolved again; a runner that may fetch from nowhere does not start the resolution. llm-dlc/tools/test_queue_keeping.py: the watcher admits once by a commit, then starts the runner. The tests of what changed: 44 of 44 Python test files passed. S48 itself, on the real cache, is the next commit's job.",
       "log_sha256": "5fbdbeba28ebcd433bfaf669ab12be3f19374afe66d036f7fc63d29c31f564b4"
+    },
+    {
+      "change_id": "ylylzttyxlwyltmlztmttwkmppvoonpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f"
+    },
+    {
+      "change_id": "tnwmnzynpotlpwzmnqxtkrvswmmwvqpt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Ask for S48's setup as one request from a cache made insufficient, with three controls (verification pending)",
+      "body": "The brief's gate 3 names S48 (Spring Boot example 635, PR #51551) as the case that qualifies delayed setup: on 2026-11-27 its two Maven WAR builds were made readable only after a chain of failed jobs, each naming one more missing input. This commit prepares the replay of that case through the new readiness path and queues it as job 20261128-000950-replay-s48-s-delayed-setup-as-one-reques, which has not run yet.\n\nWhat the job runs. verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py builds a throwaway repository holding this line's pipeline, lays the S cache with what the original chain lacked taken out (the ActiveMQ BOM 6.1.8 in both the Maven and the Gradle layout, and the Maven 3.9.13 distribution), and submits one consumer job that needs the operation in readiness-operation.json beside it. It then checks that there was one logical request and one resolution job, that no consumer job failed on the way, that the four WARs were read offline on both pins and equal the committed parent.json and fix.json, that an unrelated job finished during the wait, and three controls that must each refuse with their own reason: a withheld BOM (absent), a wrong digest for the Maven distribution (digest-mismatch) and a repository that does not answer (repository-unavailable). It writes readiness-gate.json with every check and a timeline, and exits 0 only when every check passed. The watcher's runner is still the pipeline of the default checkout, so the job itself is of the first format and runs the new scheduler inside its one step.\n\nWhat changed in the mechanism for it. A view of a cache can now walk named folders file by file (view.walk) instead of linking them whole, so one module can be withheld from a tree of thousands, and a withheld path ending in / leaves an empty folder. What a build tool says it lacks is read as coordinates from Gradle's and Maven's own lines (missing_coordinates), including the line the original failure printed. The resolver lays .sha1 files beside what it fetched.\n\nVerified: the tests of what changed, 35 of 35 Python test files (python3 lib/tools/test_costs.py run --changed), jobs/test_readiness.py among them with 12 tests. Without running the task: the S48 view over the real cache is laid in 0.2 s as 4,703 links and is the intended insufficient state (replay.py parent --check-inputs fails on the missing Maven distribution), and the gate's own logic passes 16 of 16 checks on the made-up nested build. S48 itself is not verified until the job's result is read; the results page says so under Gate 3: S48.\n\njobs/README.md and the results page already name the inventory of the scripts under verification/, which is in the next commit.",
+      "log_sha256": "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f"
     }
   ],
   "logs": {
@@ -484,6 +507,12 @@
       "bytes": 15920935,
       "lines": 5043,
       "gzip_bytes": 3327223,
+      "url": null
+    },
+    "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f": {
+      "bytes": 22709281,
+      "lines": 7613,
+      "gzip_bytes": 4364399,
       "url": null
     },
     "3d8f2fe83a520c64703935c98e2b214597e66b2e91c071e18b44b7868977e4dd": {

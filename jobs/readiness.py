@@ -15,7 +15,7 @@ An operation (`itl-readiness-operation/v1`) binds what "ready" means: `describes
 task, profiles, wrapper, toolchain, platform, configuration: anything that makes it another operation), the
 `level` asked for (`configures` < `resolves` < `builds` < `tests-run` < `readable`), the `base` it is laid over
 (prepared inputs on the runner, with `without` to reconstruct an earlier state of them), where the consumer finds
-the result (`view.env`), the `repositories` a discovered Maven coordinate may come from, the `pinned` inputs it
+the result (`view.env`; `view.walk` names folders a tool walks, laid file by file), the `repositories` a discovered Maven coordinate may come from, the `pinned` inputs it
 declares with their digests (a tool distribution), the `task` (the original task's steps, as the consumer will
 run them), and the `outputs` those must leave. Its key is the digest of all of that but the title and who asked
 (`consumer`, `requestedBy`) and the estimate for the resolution job (`resources`): two cases that need the same
@@ -58,8 +58,22 @@ RECEIPT = "itl-readiness-receipt/v1"
 LEVELS = ("configures", "resolves", "builds", "tests-run", "readable")
 FOLDER = "verification/readiness"                   # where a request's operation is committed, by key
 NOT_IDENTITY = ("title", "consumer", "requestedBy", "resources")  # who asks and what it may cost to prepare, not what is asked
-# What a build tool says when it lacks a module: Gradle's and Maven's lines, group:artifact:version.
-COORDINATE = re.compile(r"Could not (?:find|resolve|transfer)(?: artifact)? ([A-Za-z0-9_.\-]+):([A-Za-z0-9_.\-]+):(?:[a-z\-]+:)?([A-Za-z0-9_.\-]+)")
+# What a build tool says when it lacks a module, as group:artifact:version. Gradle: "Could not find g:a:v.",
+# "Could not download a-v.pom (g:a:v): No cached version available for offline mode" (what S48's first replay
+# said of its BOM), "No cached version of g:a:v available for offline mode". Maven: "Could not find artifact
+# g:a:jar:v", "the artifact g:a:jar:v has not been downloaded from it before".
+_GAV = r"([A-Za-z0-9_.\-]+):([A-Za-z0-9_.\-]+):(?:[a-z\-]+:)?([A-Za-z0-9_.\-]+)"
+MISSING = [re.compile(p) for p in (
+    r"Could not (?:find|resolve|transfer)(?: artifact)? " + _GAV,
+    r"\(" + _GAV + r"\): No cached version available for offline mode",
+    r"No cached version of " + _GAV + r" available for offline mode",
+    r"the artifact " + _GAV + r" has not been downloaded",
+)]
+
+
+def missing_coordinates(text: str) -> list[tuple]:
+    """The modules a log says it could not get, each once, as (group, artifact, version)."""
+    return sorted({tuple(part.rstrip(".") for part in m.groups()) for pattern in MISSING for m in pattern.finditer(text)})
 
 
 def now() -> str:
@@ -162,34 +176,35 @@ class Store:
         return {"state": "satisfied", "why": f"readiness {k[:12]} is ready (resolved {receipt.get('at')})"}
 
 
-def overlay(base: Path, without: list[str], files: dict[str, Path], dest: Path) -> Path:
-    """A view of the base with `files` laid over it and the `without` paths absent, as symbolic links. A top-level
-    folder that holds something laid over or left out is made of links file by file (a tool that walks a tree does
-    not follow a linked folder); every other one is one link."""
+def overlay(base: Path, without: list[str], files: dict[str, Path], dest: Path, walk=()) -> Path:
+    """A view of the base with `files` laid over it and the `without` paths absent, as symbolic links. A folder on
+    the way to something laid over or left out is made here, with a link for each thing in it; every other folder
+    is one link, so a base of many gigabytes costs a few hundred links. A folder named in `walk` is laid file by
+    file all the way down, for a tool that walks a tree and does not follow a linked folder. A `without` path
+    that ends in a slash leaves an empty folder in its place (a temporary folder of the view's own)."""
     dest.mkdir(parents=True, exist_ok=True)
     special = {p.strip("/") for p in [*without, *files]}
-    tops = {p.split("/", 1)[0] for p in special}
+    walked = {p.strip("/") for p in walk}
+    on_the_way = lambda rel: any(s.startswith(rel + "/") for s in special)
 
-    def lay(folder: Path, rel: str) -> None:
-        for child in sorted(folder.iterdir()) if folder.is_dir() else []:
+    def lay(folder: Path, rel: str, deep: bool) -> None:
+        for child in sorted(folder.iterdir()):
             here = f"{rel}/{child.name}" if rel else child.name
             if here in special:
-                continue                       # left out, or replaced below
-            if child.is_dir() and not child.is_symlink():
+                continue                       # left out, or laid over below
+            if child.is_dir() and not child.is_symlink() and (deep or here in walked or on_the_way(here)):
                 (dest / here).mkdir(exist_ok=True)
-                lay(child, here)
+                lay(child, here, deep or here in walked)
             else:
                 (dest / here).symlink_to(child)
-    for child in sorted(base.iterdir()) if base.is_dir() else []:
-        if child.name in tops and child.is_dir():
-            (dest / child.name).mkdir(exist_ok=True)
-            lay(child, child.name)
-        elif child.name not in special:
-            (dest / child.name).symlink_to(child)
+    if base.is_dir():
+        lay(base, "", False)
+    for path in without:
+        if path.endswith("/"):
+            (dest / path.strip("/")).mkdir(parents=True, exist_ok=True)
     for rel, source in files.items():
         (dest / rel).parent.mkdir(parents=True, exist_ok=True)
         (dest / rel).symlink_to(source)
-    (dest / "tmp").mkdir(exist_ok=True) if not (dest / "tmp").exists() else None
     return dest
 
 
@@ -357,10 +372,9 @@ def resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[st
                 entry["fetched"] += got
                 staged += got
             view, out, log = work / f"view-{n}", work / f"out-{n}", work / f"consumer-{n}.log"
-            overlay(base, without, {f["path"]: staging / f["path"] for f in staged}, view)
-            for f in staged:   # the checksum files beside what they vouch for
-                if (staging / (f["path"] + ".sha1")).exists() and not (view / (f["path"] + ".sha1")).exists():
-                    (view / (f["path"] + ".sha1")).symlink_to(staging / (f["path"] + ".sha1"))
+            laid = {f["path"]: staging / f["path"] for f in staged}
+            laid.update({rel + ".sha1": staging / (rel + ".sha1") for rel in list(laid) if (staging / (rel + ".sha1")).exists()})   # beside what they vouch for
+            overlay(base, without, laid, view, walk=(operation.get("view") or {}).get("walk") or [])
             out.mkdir(exist_ok=True)
             started = time.monotonic()
             ok, steps, seen = run_consumer(operation, view, out, cwd, log, base, extra_ro=[staging])
@@ -375,7 +389,7 @@ def resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[st
                 break
             entry["result"] = "failed"
             text = log.read_text(errors="replace")
-            missing = sorted({tuple(part.rstrip(".") for part in m.groups()) for m in COORDINATE.finditer(text)})
+            missing = missing_coordinates(text)
             entry["missing"] = [":".join(m) for m in missing]
             if not missing:
                 raise Withheld("consumer", "undiagnosed", f"step {steps[-1]['name'] or len(steps)} exited {steps[-1]['exitCode']} offline and "

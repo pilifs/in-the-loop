@@ -1,0 +1,93 @@
+{
+  "schema": "itl-readiness-operation/v1",
+  "title": "Build and read the upstream Maven plugin's WARs on both pins of Spring Boot S48",
+  "consumer": "S48",
+  "describes": {
+    "project": "spring-projects/spring-boot",
+    "pullRequest": 51551,
+    "example": "635",
+    "revisions": {
+      "parent": "d34a479879d348a1758196b7d1c696ea4f8ea8f0",
+      "fix": "69ad59c413ec8dfbd884ba0e712e8ada89513d29"
+    },
+    "module": "build-plugin/spring-boot-maven-plugin",
+    "task": ":build-plugin:spring-boot-maven-plugin:intTest --tests org.springframework.boot.maven.MavenWarObservation",
+    "profiles": [],
+    "wrapper": "gradle 9.7.0, from the base (tools/gradle-9.7.0)",
+    "toolchain": {
+      "java": [
+        "8.0.512.0+9-tem",
+        "11.0.33.0+10-tem",
+        "17.0.21.0+9-tem",
+        "21.0.13.0+9-tem",
+        "25.0.5.0+8-tem"
+      ],
+      "maven": "3.9.13"
+    },
+    "platform": "linux-x86_64",
+    "configuration": "replay.py beside this file: Gradle --offline with a read-only dependency cache, a file mirror of the retained caches, the harness's own settings.xml pointed at that mirror, and the Maven distribution unpacked where prepareMavenBinaries would put it"
+  },
+  "level": "readable",
+  "base": {
+    "path": "~/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+    "without": [
+      "m2/org/apache/activemq/activemq-bom/6.1.8",
+      "gradle-home/caches/modules-2/files-2.1/org.apache.activemq/activemq-bom/6.1.8",
+      "downloads/apache-maven-3.9.13-bin.tar.gz",
+      "tmp/"
+    ]
+  },
+  "view": {
+    "env": "SPRING_BOOT_S_CACHE",
+    "walk": [
+      "m2"
+    ]
+  },
+  "layout": {
+    "maven": "m2"
+  },
+  "repositories": [
+    "https://repo.maven.apache.org/maven2/"
+  ],
+  "pinned": [
+    {
+      "path": "downloads/apache-maven-3.9.13-bin.tar.gz",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz",
+      "sha512": "d9ccd44ba2991586e359c29eb86780ae8ff4ec1b88b0b8af3af074803472690cf2017782a9c4401343c62cbcd056231db9612e1e551cbd9747c21746d732c015"
+    }
+  ],
+  "task": {
+    "timeout": 2400,
+    "steps": [
+      {
+        "name": "parent",
+        "run": "mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output \"$ITL_READINESS_OUT/parent.json\""
+      },
+      {
+        "name": "fix",
+        "run": "mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py fix --output \"$ITL_READINESS_OUT/fix.json\""
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "path": "parent.json",
+      "equalsJson": "verification/merged-pr-links/s01-s50/maven-war/parent.json"
+    },
+    {
+      "path": "fix.json",
+      "equalsJson": "verification/merged-pr-links/s01-s50/maven-war/fix.json"
+    }
+  ],
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 3,
+    "memory": "6G",
+    "duration": "20m"
+  },
+  "rounds": 4
+}

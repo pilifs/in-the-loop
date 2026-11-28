@@ -20,6 +20,7 @@ is read in. What is intended and not built is in [`ARCHITECTURE.md`](../ARCHITEC
 | [`readiness.py`](readiness.py) | setup a running case asks for: an operation, its resolution in rounds by running the task offline, the bundle and the receipt; [`workloads/resolution.py`](workloads/resolution.py) is the resolution job's adapter. [`test_readiness.py`](test_readiness.py) resolves a made-up nested build against a repository served on this machine, and [`test_delayed_setup.py`](test_delayed_setup.py) takes it through the pipeline with a runner at work |
 | [`batch.py`](batch.py) | a batch of jobs from one manifest: one ordinary job a row, ids the manifest alone decides, and the map from rows to jobs; [`test_batch.py`](test_batch.py) tests the map's rules in process, and [`test_fanout.py`](test_fanout.py) runs the 49 rows of [`fixtures/batch-49.json`](fixtures/batch-49.json) end to end |
 | [`test_coexistence.py`](test_coexistence.py) | the pipeline of the pinned revision (read from git) and this one on one repository: a runner of before does not run a second-format job and says so, the two share the runner's locks and see each other at work, and a job in flight when the runners are swapped is run again by the other with the first attempt kept |
+| [`script_inventory.py`](script_inventory.py) | the scripts under `verification/` with who calls each (committed jobs' command lines, tests, other code, pages) and a class for each; it writes [`verification/scripts.md`](../verification/scripts.md). [`test_script_inventory.py`](test_script_inventory.py) holds the page to the scripts that are there, and the two controls |
 | [`test_view.py`](test_view.py) | the lifecycle view, the typed `wait` and `collect`, and a queue that could not be read, in throwaway repositories |
 | [`test_formats.py`](test_formats.py) | the second format end to end, through `jobs/pipeline.py`, in throwaway repositories: a non-Java job on a PATH with no checker, real tests counted, a missing required output, a refuted claim, a step with no network |
 | [`sandbox.py`](sandbox.py) | runs a command where the network is demonstrably off, and records how that was shown |
@@ -125,6 +126,7 @@ python3 jobs/pipeline.py submit --purpose test --case S48 --title "..." --descri
 | which task this is | `describes`: the project, revisions, module, task or goal, profiles, wrapper, toolchain, platform, configuration. Anything that would make it another operation |
 | how far "ready" goes | `level`: `configures`, `resolves`, `builds`, `tests-run` or `readable`. A task graph that configures is not dependencies that resolve, and neither is a packaged result that was read |
 | the prepared inputs it starts from | `base.path`, on the runner; `base.without` leaves paths out, to reconstruct an earlier state of it, and the receipt then says `reconstructed` |
+| how the view is laid | `view.env`, the variable the task finds it by; `view.walk`, the folders a tool walks |
 | the task itself | `task.steps`: the commands the consumer will run, run here the same way |
 | what it must leave | `outputs`: files under `$ITL_READINESS_OUT`, optionally equal to a committed JSON file or a digest |
 | where a discovered input may come from | `repositories` (Maven layout) and `pinned` inputs with their digests (a tool distribution) |
@@ -175,8 +177,18 @@ the earlier attempts.
 
 What it does not do: it restricts fetching to the operation's repositories under the runner's `fetch_allow` by
 its own fetcher, not by a firewall around the resolution job, whose step has the host's network. It discovers
-Maven coordinates from Gradle's and Maven's "could not find" lines and nothing else: a task that fails offline
-for another kind of missing input ends `undiagnosed`, which is a legitimate outcome and names the log to read.
+Maven coordinates from the lines Gradle and Maven print for a module they could not find or do not have cached
+for offline mode (`readiness.MISSING`), and nothing else: a task that fails offline for another kind of missing
+input ends `undiagnosed`, which is a legitimate outcome and names the log to read.
+
+A view over a large base is cheap: a folder on the way to something laid over or left out is made, and every
+other folder is one link (the S cache of 34 GB is laid in 0.2 s, as 4,700 links). `view.walk` names the folders
+a tool walks, which are laid file by file, since a walk does not follow a linked folder; a `without` path that
+ends in a slash leaves an empty folder of the view's own in its place.
+
+The first real request is S48's
+([`readiness-operation.json`](../verification/merged-pr-links/s01-s50/maven-war/readiness-operation.json)), replayed
+by [`readiness_gate.py`](../verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py) beside it.
 
 ## A batch from a manifest
 

@@ -1365,7 +1365,8 @@ class Runner:
             operation, bundle = receipt["operation"], store.bundle(key)
             view = entry["attempt"].folder / "readiness" / key[:16]
             readiness.overlay(Path(operation["base"]["path"]).expanduser(), operation["base"].get("without") or [],
-                              {f["path"]: bundle / f["path"] for f in receipt["bundle"]["files"]}, view)
+                              {f["path"]: bundle / f["path"] for f in receipt["bundle"]["files"]}, view,
+                              walk=(operation.get("view") or {}).get("walk") or [])
             laid.append({"key": key, "view": str(view), "env": (operation.get("view") or {}).get("env", "ITL_READINESS_VIEW"),
                          "bundleDigest": receipt["bundle"]["digest"], "receiptAt": receipt.get("at"), "level": receipt.get("level"),
                          "resolvedBy": receipt.get("resolvedBy")})
