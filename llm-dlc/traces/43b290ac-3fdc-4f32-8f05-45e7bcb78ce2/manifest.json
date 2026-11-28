@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T00:40:19.161Z",
-  "duration_seconds": 33998,
+  "ended": "2026-11-28T00:48:43.555Z",
+  "duration_seconds": 34502,
   "stats": {
     "turns": 33,
-    "api_calls": 831,
-    "tool_calls": 895,
+    "api_calls": 852,
+    "tool_calls": 916,
     "tool_errors": 11,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1688,
-      "output_tokens": 1424481,
-      "cache_read_input_tokens": 253418507,
-      "cache_creation_input_tokens": 3040952
+      "input_tokens": 1730,
+      "output_tokens": 1445737,
+      "cache_read_input_tokens": 258624869,
+      "cache_creation_input_tokens": 3080932
     }
   },
   "tools": {
-    "Bash": 743,
+    "Bash": 764,
     "Read": 82,
     "Write": 36,
     "Edit": 19,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T00:40:19.161Z",
+      "ended": "2026-11-28T00:48:43.555Z",
       "turns": 1,
-      "api_calls": 77,
+      "api_calls": 98,
       "usage": {
-        "input_tokens": 154,
-        "output_tokens": 99446,
-        "cache_read_input_tokens": 11132084,
-        "cache_creation_input_tokens": 211995
+        "input_tokens": 196,
+        "output_tokens": 120702,
+        "cache_read_input_tokens": 16338446,
+        "cache_creation_input_tokens": 251975
       },
-      "peak_context_tokens": 227162
+      "peak_context_tokens": 267142
     }
   ],
   "log": {
-    "sha256": "1ad100017e05b26554f8cd322f96a9e9cedf63e52252e9bed6d788c7a633b82d",
-    "bytes": 24039507,
-    "lines": 8355,
-    "gzip_bytes": 4538440,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/1ad100017e05b26554f8cd322f96a9e9cedf63e52252e9bed6d788c7a633b82d.jsonl.gz"
+    "sha256": "e3a36ba00fd9f2f024cea7aab4e5c6ad1a685d2f5891b9ea83bd42f93ec1b130",
+    "bytes": 24412077,
+    "lines": 8558,
+    "gzip_bytes": 4583094,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/e3a36ba00fd9f2f024cea7aab4e5c6ad1a685d2f5891b9ea83bd42f93ec1b130.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -486,6 +486,14 @@
       "summary": "Tell agents of the queue's general jobs, batches and the view of every job's state",
       "body": "CLAUDE.md's section on jobs named only the proof path: submit, commit, report. An agent reading it could not know that the same queue now takes a build, a test run or a setup step, that many jobs of one shape are one manifest, or where to read why a job has not started.\n\nThree additions, each with its link into jobs/README.md. A job given a --purpose is of the second format and is held to what it declares: every step ran, every required output is there, and a step declared with --tests shows tests that ran, so a step that exits 0 is not yet a result. A batch is one manifest (submit --manifest, wait --batch, batch NAME), not a loop of submissions. And python3 jobs/pipeline.py view gives every job one state with its reason, including a job that cannot start and one whose result is on another line, to be read before waiting, resubmitting or concluding a job was lost. The command is named jobs/pipeline.py, the code that implements it, and the page says that verification/pipeline.py, its name before 2026-11-27, runs the same.\n\nThe flag for setup a running case asks for (--needs-readiness) is not in the page yet: it goes in when the S48 gate has passed (job 20261128-003144, running).\n\nVerified: the tests that name CLAUDE.md, 18 of 18 Python test files (python3 lib/tools/test_costs.py run --changed), the check that both clients are given the same instructions among them.",
       "log_sha256": "1ad100017e05b26554f8cd322f96a9e9cedf63e52252e9bed6d788c7a633b82d"
+    },
+    {
+      "change_id": "olvzzxqsotxytmsvuznywrvynunmmuky",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Name the runner of another workspace in the view, and the jobs it has claimed",
+      "body": "A repository has one runner at a time, whichever workspace it was started in, and an agent that submits from a workspace of its own is never where it is: the watcher's runner, in the default workspace, runs its jobs. Until now such an agent's view said queued, no runner at work, for the whole time its job ran. That is the commonest reader of the view, given an account that was wrong; this run's second S48 job showed it.\n\nThe view now reads the lock all workspaces of a repository share (it never takes it) and, in the workspace that lock names, the claims of its runner. runner.elsewhere gives that runner's pid, its workspace and the jobs it has claimed. A job it has claimed is running here too, with the workspace in its reason and in its claim; one it has not yet claimed is queued, and the reason names the runner that will find it; a job that needs one running there waits. status prints the same, wait --json carries runner.elsewhere and still answers no-runner at once (there is nothing here to wait for), and nudge says that a runner elsewhere finds the change at its next look at the queue, since it only reaches this workspace's runner. Nothing is written in the other workspace.\n\nA lock nobody holds any more, or one that names this workspace, names no runner elsewhere. The other workspace's state is looked for where a workspace keeps it by default; when it is not there, the runner is named and what it runs is said to be not seen.\n\nAlso in this commit: a control from the brief for readiness levels (a receipt at one level answers no request at another: the S batch's 98 task graphs all configured and 41 of its 49 builds then failed for setup reasons), and three decisions recorded in the results page (30 to 32).\n\nVerified: jobs/test_view.py (7 tests, two new, with a stand-in process as the runner of another workspace), and the tests of what changed, 37 of 37 Python test files (python3 lib/tools/test_costs.py run --changed). On the real queue the view of this workspace showed the gate's job running in the runner of the default workspace while it ran.",
+      "log_sha256": "e3a36ba00fd9f2f024cea7aab4e5c6ad1a685d2f5891b9ea83bd42f93ec1b130"
     }
   ],
   "logs": {
@@ -661,6 +669,12 @@
       "bytes": 13015213,
       "lines": 4237,
       "gzip_bytes": 2739650,
+      "url": null
+    },
+    "e3a36ba00fd9f2f024cea7aab4e5c6ad1a685d2f5891b9ea83bd42f93ec1b130": {
+      "bytes": 24412077,
+      "lines": 8558,
+      "gzip_bytes": 4583094,
       "url": null
     },
     "e41e251cf74bdd726b9e2526eae17026ce816ea3cb03596612ad6945fe78ab66": {

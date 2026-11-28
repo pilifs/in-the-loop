@@ -123,7 +123,7 @@ class OneExclusionForBoth(OldAndNew):
         self.assertNotEqual(refused.returncode, 0)
         self.assertIn("another runner is using", refused.stderr)
         waited = json.loads(self.repo.pipeline("wait", "--json", "--timeout", "0", check=False).stdout)
-        self.assertEqual(waited["runner"], {"pid": before.pid, "atWork": True})
+        self.assertEqual(waited["runner"], {"pid": before.pid, "atWork": True, "elsewhere": None})
         self.assertEqual(json.loads(self.repo.pipeline("view", "--rev", "HEAD").stdout)["runner"]["atWork"], True)
         self.stop(before)
         ours = self.start(new_entry, "--watch", "--rev", "HEAD")

@@ -1709,7 +1709,9 @@ def cmd_nudge(args):
     state.mkdir(parents=True, exist_ok=True)
     (state / NUDGE).write_text(iso(now()) + "\n")
     pid = runner_pid(state)
+    other = None if pid else runner_elsewhere()
     print(f"the runner (pid {pid}) reads the queue again now" if pid else
+          f"no runner is at work here; the runner of {other['root']} (pid {other['pid']}) finds the change when it next reads the queue" if other else
           "no runner is at work: a verification loop waiting for work looks at the queue now")
     return 0
 
@@ -1726,10 +1728,12 @@ def cmd_wait(args):
     while True:
         ready, pid = uncollected(state), runner_pid(state)
         claims = len(list((state / "claims").iterdir())) if (state / "claims").exists() else 0
-        at_work = f"the runner (pid {pid}) is at work, {claims} job(s) running" if pid else "no runner is at work"
+        other = None if pid else runner_elsewhere()
+        at_work = f"the runner (pid {pid}) is at work, {claims} job(s) running" if pid else "no runner is at work" + (
+            f" here (the runner of {other['root']}, pid {other['pid']}, is: what it finishes is collected there)" if other else "")
         # As data for whoever waits by program: the outcome is one word, and the exit code goes with it.
         said = lambda outcome: print(json.dumps({"schema": "itl-job-wait/v1", "outcome": outcome, "finished": ready,
-                                                 "runner": {"pid": pid, "atWork": bool(pid)}, "running": claims}))
+                                                 "runner": {"pid": pid, "atWork": bool(pid), "elsewhere": other}, "running": claims}))
         if ready:
             said("finished") if args.json else print(f"finished, not collected: {' '.join(ready)}\n{at_work}")
             return 0
@@ -1745,7 +1749,11 @@ def cmd_wait(args):
 
 def repo_store(root: Path = None) -> Path | None:
     """jj's store of this repository, which all of its workspaces share (.jj/repo in the default workspace, and a file
-    naming it, relative to .jj, in each other one); None outside jj."""
+    naming it, relative to .jj, in each other one); None outside jj. VERIFY_REPO_STORE names it for a test, which has
+    no jj repository."""
+    named = os.environ.get("VERIFY_REPO_STORE")
+    if named and root is None:
+        return Path(named) if Path(named).is_dir() else None
     j = (root or ROOT) / ".jj" / "repo"
     try:
         if j.is_dir():
@@ -1778,6 +1786,31 @@ def take_repo_lock(state: Path):
     lock.write(f"pid {os.getpid()}, {ROOT}\n")
     lock.flush()
     return lock
+
+
+def runner_elsewhere():
+    """The runner at work in another workspace of this repository, read from the lock all its workspaces share
+    (VF-051; read, never taken): its pid, its workspace, and the jobs it has claimed there. None when no runner
+    holds that lock, or when the one that does is this workspace's own. An agent that submits from a workspace is in
+    this case all the time: the runner that runs its jobs is the watcher's, in the default workspace, and without
+    this its job reads as `queued` with no runner at work for as long as it runs."""
+    store = repo_store()
+    if store is None:
+        return None
+    try:
+        said = re.fullmatch(r"pid (\d+), (.+)", (store / "verification-runner.lock").read_text().strip())
+        if not said:
+            return None
+        pid, root = int(said.group(1)), Path(said.group(2))
+        if root.resolve() == ROOT.resolve() or b"pipeline.py" not in Path(f"/proc/{pid}/cmdline").read_bytes():
+            return None
+    except (OSError, ValueError):
+        return None
+    try:
+        running = sorted(path.name for path in (root / "verification" / ".state" / "claims").iterdir())
+    except OSError:
+        running = None      # its state is not where a workspace keeps it by default: at work, and what it runs is not seen
+    return {"pid": pid, "root": str(root), "running": running}
 
 
 def readiness_answer(config, known):
@@ -2057,6 +2090,8 @@ def lifecycle_view(config, revs, full=()):
         # The queue could not be read. That is not an empty queue: whoever asks is told it is unknown.
         queue, available["queue"] = [], f"unavailable: {e}"
     pid = runner_pid(state)
+    runner_away = None if pid else runner_elsewhere()
+    away = set((runner_away or {}).get("running") or ())
     decided = {}
     if pid:
         try:
@@ -2066,7 +2101,7 @@ def lifecycle_view(config, revs, full=()):
             pass
     priorities = load_priorities(rev) if available["queue"] == "available" else {}
     specs = {job.get("id") or Path(path).stem: job for job, path, _ in queue}
-    known = scheduling.Known(specs, Statuses(state), set(claims))
+    known = scheduling.Known(specs, Statuses(state), set(claims) | away)
     capture = originals()
     rows, seen = [], set()
     for job, path, source in sorted(queue, key=queue_order(priorities)):
@@ -2109,6 +2144,12 @@ def lifecycle_view(config, revs, full=()):
             claim = claims[job_id]
             row.update(state="running", claim={"at": claim.get("at"), "pid": claim.get("pid"), "host": claim.get("host"),
                                                "alive": bool(claim.get("pid")) and Path(f"/proc/{claim.get('pid')}").exists()})
+        elif job_id in away:
+            # Claimed by the one runner of this repository, which is at work in another workspace. Its attempt and its
+            # staged result are in that workspace's state; here the job is known to be running, and by whom.
+            row.update(state="running", why=f"claimed by the runner of {runner_away['root']} (pid {runner_away['pid']}): its attempt is in that "
+                                            f"workspace's state, and its result comes with the collect made there",
+                       claim={"where": "another-workspace", "root": runner_away["root"], "pid": runner_away["pid"], "at": None, "host": None, "alive": True})
         else:
             problems = validate({k: v for k, v in job.items()}, "job.schema.json")
             try:
@@ -2119,6 +2160,8 @@ def lifecycle_view(config, revs, full=()):
             verdict, why = scheduling.decide(job, problems, p["cannotRun"] if p else [], needs)
             if verdict == "queued" and job_id in decided:   # what only a runner at work knows: no room, a priority it leaves
                 verdict, why = decided[job_id].get("state", verdict), decided[job_id].get("why")
+            elif verdict == "queued" and runner_away:
+                why = f"the runner of {runner_away['root']} (pid {runner_away['pid']}) is at work and has not claimed it: it starts it when it next reads the queue and has room"
             row.update(state=verdict, why=why, needs=needs,
                        plan={k: p[k] for k in ("cpus", "memoryEstimate", "memoryLimit", "durationEstimate", "timeout")} if p else None)
             if job_id in staged:   # stopped before it ended: it runs again, and the attempt is in its history
@@ -2183,8 +2226,10 @@ def lifecycle_view(config, revs, full=()):
         "snapshot": {"revision": rev, "queueHeads": revs, "host": config["runner"]["machine_name"], "stateDir": str(state),
                      "views": {**available, "archive": "available" if capture and capture.available(ROOT) else "off"},
                      # What this view cannot see, said: another machine's runner, another checkout's state directory.
-                     "notSeen": ["jobs running on another machine", "another checkout's staged results and attempts"]},
-        "runner": {"pid": pid, "atWork": bool(pid)},
+                     "notSeen": ["jobs running on another machine", "another workspace's staged results and attempts (the jobs its runner "
+                                 "has claimed are seen: runner.elsewhere)"]},
+        # `elsewhere`: the runner of another workspace of this repository, when this one has none (a repository has one).
+        "runner": {"pid": pid, "atWork": bool(pid), "elsewhere": runner_away},
         "idle": idle,
         "totals": {"unit": "jobs", "of": len(rows), "byState": {s: counts[s] for s in lifecycle.STATES if s in counts},
                    "drillDown": "jobs[].state; `view --state STATE` lists the rows"},
@@ -2211,7 +2256,8 @@ def view_of(args):
                              "stateDir": str(config["runner"]["state_dir"]),
                              "views": {"queue": f"unavailable: {e}", "live": "not read", "collected": "not read", "otherHeads": "not read",
                                        "archive": "not read"}},
-                "runner": {"pid": runner_pid(config["runner"]["state_dir"]), "atWork": bool(runner_pid(config["runner"]["state_dir"]))},
+                "runner": {"pid": runner_pid(config["runner"]["state_dir"]), "atWork": bool(runner_pid(config["runner"]["state_dir"])),
+                           "elsewhere": runner_elsewhere()},
                 "idle": None, "totals": {"unit": "jobs", "of": 0, "byState": {}}, "priorities": {"uncommittedChanges": False},
                 "lastCollect": None, "readiness": [], "jobs": []}
     return lifecycle_view(config, revs, full=set(getattr(args, "ids", None) or []))
@@ -2237,7 +2283,8 @@ def legacy_rows(view):
         elif state == "finished":
             rows["finished, not collected"].append(f"{line}  [{job['result']['status']}]")
         elif state == "running":
-            rows["running"].append(f"{line}  (since {job['claim'].get('at')}, pid {job['claim'].get('pid')})")
+            rows["running"].append(f"{line}  (in the runner of {job['claim']['root']}, pid {job['claim'].get('pid')})" if job["claim"].get("where") else
+                                   f"{line}  (since {job['claim'].get('at')}, pid {job['claim'].get('pid')})")
         else:
             p = job.get("plan")
             fit = {"unschedulable": "; cannot run here: ", "invalid": "; cannot run here: not a valid job: ",

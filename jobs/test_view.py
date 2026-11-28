@@ -7,7 +7,9 @@ reason, read by the keepers in place of lines of text. Each in a throwaway repos
 
 import json
 import os
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -17,6 +19,8 @@ os.environ["VERIFY_MACHINE_CONFIG"] = ""
 os.environ.setdefault("ITL_ORIGINALS_OFF", "1")
 import test_formats  # noqa: E402
 from test_formats import DESCRIPTION, Repo  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[1] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 del test_formats   # its tests are its own: only the helper is used here
 
@@ -113,6 +117,63 @@ class EveryJobHasOneStateAndItsReason(View):
         self.assertEqual((seen["runner"]["atWork"], seen["idle"]), (True, False))
         after, _ = self.view(repo)
         self.assertEqual((after["runner"]["atWork"], {j["id"]: j["state"] for j in after["jobs"]}[held]), (False, "finished"))
+
+
+class ARunnerInAnotherWorkspace(View):
+    """A repository has one runner (VF-051), and an agent that submits from a workspace is not where it is: the
+    watcher's runner, in the default workspace, runs its jobs. The lock all workspaces share names that runner."""
+
+    def another_workspace(self, claimed=()):
+        d = Path(self.enterContext(tempfile.TemporaryDirectory(prefix="another-workspace-")))
+        store, root = d / "store", d / "default"
+        (root / "verification/.state/claims").mkdir(parents=True)
+        store.mkdir()
+        for job_id in claimed:
+            (root / "verification/.state/claims" / job_id).write_text("{}")
+        # A process that reads as a runner: the name of the pipeline's file is in its command line.
+        runner = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(120)", "pipeline.py", "run"])
+        self.addCleanup(lambda: (runner.kill(), runner.wait()))
+        (store / "verification-runner.lock").write_text(f"pid {runner.pid}, {root}\n")
+        return {"VERIFY_REPO_STORE": str(store)}, runner, root
+
+    @cost("tool")
+    def test_a_job_its_runner_claimed_is_running_and_one_it_has_not_is_queued_with_the_runner_named(self):
+        repo = self.repo()
+        claimed = repo.submit2("Claimed by the runner of the default workspace", "build", "--run", "true")
+        not_yet = repo.submit2("Committed a moment ago", "build", "--run", "true")
+        needs = repo.submit2("Needs the one that is running there", "build", "--needs", claimed, "--run", "true")
+        repo.commit("jobs")
+        env, runner, root = self.another_workspace(claimed=[claimed])
+        view = json.loads(repo.pipeline("view", "--rev", "HEAD", env=env).stdout)
+        jobs = {job["id"]: job for job in view["jobs"]}
+        self.assertEqual(view["runner"], {"pid": None, "atWork": False, "elsewhere": {"pid": runner.pid, "root": str(root), "running": [claimed]}})
+        self.assertEqual((jobs[claimed]["state"], jobs[claimed]["claim"]["where"], jobs[claimed]["claim"]["root"]), ("running", "another-workspace", str(root)))
+        self.assertIn(f"claimed by the runner of {root} (pid {runner.pid})", jobs[claimed]["why"])
+        self.assertEqual(jobs[not_yet]["state"], "queued")
+        self.assertIn("has not claimed it", jobs[not_yet]["why"])
+        self.assertEqual(jobs[needs]["state"], "waiting")                 # on a job that is running, wherever it runs
+        self.assertIs(view["idle"], False)
+        self.assertIn(f"{claimed}  Claimed by the runner of the default workspace  (in the runner of {root}, pid {runner.pid})",
+                      repo.pipeline("status", "--rev", "HEAD", env=env).stdout)
+        waited = json.loads(repo.pipeline("wait", "--json", "--timeout", "0", env=env).stdout)
+        self.assertEqual((waited["outcome"], waited["runner"]["elsewhere"]["pid"]), ("no-runner", runner.pid))
+        self.assertIn(f"no runner is at work here (the runner of {root}, pid {runner.pid}, is", repo.pipeline("wait", "--timeout", "0", env=env).stdout)
+
+    @cost("tool")
+    def test_a_lock_nobody_holds_any_more_or_this_workspaces_own_names_no_runner_elsewhere(self):
+        repo = self.repo()
+        job = repo.submit2("Waits for a runner", "build", "--run", "true")
+        repo.commit("job")
+        env, runner, root = self.another_workspace(claimed=[job])
+        runner.kill()
+        runner.wait()
+        view = json.loads(repo.pipeline("view", "--rev", "HEAD", env=env).stdout)
+        self.assertEqual((view["runner"]["elsewhere"], view["jobs"][0]["state"], view["jobs"][0]["why"]), (None, "queued", None))
+        # The lock names this workspace: its runner is the one `runner.pid` is about, not one elsewhere.
+        mine = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(120)", "pipeline.py", "run"])
+        self.addCleanup(lambda: (mine.kill(), mine.wait()))
+        Path(env["VERIFY_REPO_STORE"], "verification-runner.lock").write_text(f"pid {mine.pid}, {repo.dir}\n")
+        self.assertIsNone(json.loads(repo.pipeline("view", "--rev", "HEAD", env=env).stdout)["runner"]["elsewhere"])
 
 
 class WhatTheKeepersRead(View):

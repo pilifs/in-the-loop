@@ -152,6 +152,13 @@ class OneRequestResolvesTheWholeTask(NestedBuild):
         steps = self.operation()
         steps["task"] = {"steps": [{"name": "build", "run": "bash build.sh --another-goal"}]}
         self.assertNotEqual(readiness.key(steps), first["key"])            # another task is another request
+        # How far "ready" goes is part of what is asked: a receipt that a task graph configures (the S batch's 98 dry
+        # runs all did, and 41 of its 49 builds then failed for setup reasons) answers no request to build or read,
+        # and one for a build answers none for less: each level is asked for and shown by its own task.
+        for level in (lv for lv in readiness.LEVELS if lv != self.operation()["level"]):
+            lower = self.operation(level=level)
+            self.assertNotEqual(readiness.key(lower), first["key"], level)
+            self.assertEqual(self.store.check(readiness.key(lower))["state"], "waiting", level)
 
     def test_a_bundle_that_changed_since_its_receipt_is_not_handed_out_and_is_resolved_again(self):
         receipt = self.resolve()

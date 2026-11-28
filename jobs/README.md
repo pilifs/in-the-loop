@@ -247,7 +247,7 @@ as data, and nothing else decides what state a job is in.
 | `waiting` | A prerequisite has not finished | The prerequisite passing |
 | `deferred` | It could run, and a runner at work is holding it back: no room, a job ahead of it waiting for room, a priority under the runner's minimum. Only a runner at work says this (`.state/scheduling.json`) | Room, or a runner started without that limit |
 | `queued` | Nothing stands in its way | A runner |
-| `running` | A runner holds its claim | |
+| `running` | A runner holds its claim: this workspace's, or the runner of another workspace of the repository, which the row's `claim` then names (`where: another-workspace`, its root and pid) | |
 | `finished` | Its result is on this machine and not collected | `collect` |
 | `collected` | Its result is in `verification/results/` | |
 | `recorded-elsewhere` | Its result is in a commit this working copy is not on. It is not run again | Merge that commit |
@@ -262,6 +262,16 @@ queue, this machine's state, the collected results, the other heads and the priv
 `idle` is `true` only when nothing is queued, deferred, waiting, running or waiting to be collected; a job that
 is blocked, unschedulable or invalid is nobody's to wait for. Every count in `totals` has its unit and what it is
 out of, and `view --state STATE`, `--case` and `--batch` list the rows behind one (the totals stay the whole queue's).
+
+**The runner may be in another workspace.** A repository has one runner at a time, whichever workspace it was
+started in (the lock all workspaces share, VF-051), and an agent that submits from a workspace of its own is not
+where it is: the watcher's runner, in the default workspace, runs its jobs. The view reads that lock, without
+taking it, and says so in `runner.elsewhere` (the runner's pid, its workspace and the jobs it has claimed
+there). A job it has claimed is `running` here too, with the workspace in its reason; one it has not yet claimed
+is `queued`, and the reason names the runner that will find it. The attempt, the logs and the staged result of
+such a job stay in that workspace's state until its collect commits them, and the job is `recorded-elsewhere`
+here from then until that commit is merged. `wait` in a workspace with no runner still answers `no-runner` at
+once, and names the one elsewhere: it has nothing here to wait for.
 
 `view ID...` opens those jobs' collected receipts and gives each result with its questions apart (`execution`,
 `fulfillment`, `timing`, `conclusion`, `declared`, the attempt, the ids of the occurrences sealed in the private

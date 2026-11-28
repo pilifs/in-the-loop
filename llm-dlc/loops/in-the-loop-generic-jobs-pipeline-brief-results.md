@@ -167,6 +167,13 @@ keepers read the view as data.
     state, names the first cause. `idle` does not wait for it.
 21. **A readiness prerequisite blocks until receipts are read** (gate 3): a job that asks for one is not run
     unprepared in the meantime.
+32. **The view names the runner of another workspace.** A repository has one runner, and an agent that submits
+    from its own workspace is not where it is. Until this run's second S48 job, such an agent's view said
+    `queued`, no runner at work, for the whole time its job ran under the watcher's runner. The view now reads
+    the lock all workspaces share (never takes it) and the claims of the workspace it names: a claimed job is
+    `running` with that workspace in its reason. It reads another workspace's state and writes nothing there;
+    `nudge` still reaches only this workspace's runner, so a runner elsewhere finds a new commit at its next
+    look at the queue.
 
 ## Gate 2: fan-out
 
@@ -337,6 +344,13 @@ authorised sources, which is not built.
 **Second run.** Job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques` supersedes the first, on the
 corrected operation. Its result is not in yet.
 
+**Decision.**
+
+31. **A withheld input is withheld wherever a tool records it.** S48's first run left Gradle's descriptor of the
+    BOM in the base and took out only the file: a state no cache was ever in, on which Gradle asked a repository
+    for a file it believed cached. An operation's `base.without` names every record of what it leaves out, and
+    `base.why` says whether the state is historical. The receipt repeats both and claims neither.
+
 ## The scripts under `verification/`
 
 `python3 jobs/script_inventory.py --write` lists every script under `verification/` outside the records
@@ -382,6 +396,13 @@ job, test, code, page or record names them by a path or a name the inventory rec
 path at run time from parts kept in data would not be seen. Removing any is a separate, reversible change through
 the retirement register (`llm-dlc/retired.md`), by someone who has read the campaign.
 The retirement check's live paths have covered `jobs/` since the first commit of this run.
+
+**Decision.**
+
+30. **A script's class is no stronger than its callers, and a run's record is not a caller.** The inventory of
+    the scripts under `verification/` first counted every page as a live caller and found none orphaned, since
+    this page listed the candidates. Records of runs (briefs, results pages, findings) now show use and support
+    nothing, and support is followed from tests, live pages and code outside the inventory.
 
 ## Gate 1: the census
 
