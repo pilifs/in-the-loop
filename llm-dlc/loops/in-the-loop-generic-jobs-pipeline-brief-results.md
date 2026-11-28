@@ -34,8 +34,11 @@ been the run's agent, with the user:
 | VF-080's kept outputs | Sealed: `recover --kept-outputs` found 17 things nothing had sealed and sealed all 17; the archive reports every sealed original verified off the machine |
 | Gate 3's unverified input | Verified by its digest, at the user's choice: 21 of 21 (`nxwupnxuttrz`, job `20261128-134250-…`, recorded in `sovkqtzyyxmz`; see *Gate 3: S48, read again*) |
 | The review's findings an unattended run could hit | C3, C5, C7 and the rest of R2 fixed, each with a test (`lrwumqxwmvny`), and C6's first fix found not to have worked and put right (`rowlvrkvpkys`); the rows of *The review of 2026-11-28* say how |
-| The control on all 47 offline S cases | The user's decision: after the fetch phase the build tool drives, so that it also measures what that phase saves |
-| What is left | A brief of its own: [`in-the-loop-build-driven-fetch-brief.md`](in-the-loop-build-driven-fetch-brief.md), drafted for the user to review and queue |
+| The control on all 47 offline S cases | The user's decision: after the fetch phase the build tool drives, so that it also measures what that phase saves. Then, the same day: the next brief runs a representative sample (six cases from their pins, and the eight measured cases again), and the whole batch is a later run's |
+| How a build's fetches are paced | The user's decision: a rule of its own, beside the one for an agent's web requests. Every request to a repository outside the machine waits its turn in one queue for the machine, 0.2 s after the last one to that host; a 429 or 503 is asked once more; a resolution that asks outside for more than 1,000 files or 1 GiB warns and is not stopped (`xmqnsyunxpxv`, and [`operating-notes.md`](../operating-notes.md#fetches-of-a-builds-inputs-go-through-one-queue)) |
+| A mirror on the machine itself | The user's decision: it needs no permission and no setting, since the allow list is about what the machine asks of others. A folder or a repository on loopback is read by any operation that names it, and a redirect is followed neither from outside into the machine nor from a local mirror to a host that is not allowed (`qlsvxyusmpkr`) |
+| A switch that turns outside fetching off | Not built, at the user's decision; the question is kept as [VF-083](../../verification/findings.md) |
+| What is left | A brief of its own: [`in-the-loop-setup-as-a-tool-brief.md`](in-the-loop-setup-as-a-tool-brief.md), revised with the user on 2026-11-28 for them to queue. It supersedes the first draft, [`in-the-loop-build-driven-fetch-brief.md`](in-the-loop-build-driven-fetch-brief.md) |
 
 Read *The review of 2026-11-28* below before relying on a part of this line: it lists what is known to be wrong
 in it.
@@ -84,24 +87,31 @@ in it.
 ## What is left, in the order planned
 
 Since the landing, what is left is the subject of a brief of its own,
-[`in-the-loop-build-driven-fetch-brief.md`](in-the-loop-build-driven-fetch-brief.md) (drafted on 2026-11-28 for the
-user to review and queue). In short, and in order:
+[`in-the-loop-setup-as-a-tool-brief.md`](in-the-loop-setup-as-a-tool-brief.md) (revised with the user on
+2026-11-28, for them to queue; it supersedes the first draft,
+[`in-the-loop-build-driven-fetch-brief.md`](in-the-loop-build-driven-fetch-brief.md)). In short, and in order:
 
 1. **A fetch phase the build tool drives**, for graphs that rounds discover too slowly (S11: ten failed rounds
    of thirteen minutes in all) or cannot discover (Maven names one artifact a failure, so S48's plugin closure
-   of 770 files is out of reach of rounds, and is a verified copy today): the task run once with the network
+   of 282 artifacts is out of reach of rounds, and is a verified copy today): the task run once with the network
    reachable only through a proxy that admits the sources the machine allows, into a staging cache that is then
    verified and published as the bundle, and proved by the same offline run as now. It also closes the open half
    of the fetch restriction (a firewall, and not only the fetcher's own rule).
-2. **The control on all 47 offline S cases** (`gate.py --cases all`), after item 1 (the user's decision,
-   2026-11-28), so that it measures what that phase saves: by rounds it is about five hours at four jobs at a
-   time, and its memory estimate has to rise (four jobs peaked at 21 GiB).
-3. **The review's findings that are still open**, in the tables below: C6's last part (whether the keeper goes
-   on to start the runner after a skipped request), C9 (a runner stopped between steps records `failed`, not
-   `cancelled`), C14 (`keep_workdirs = "always"` undone by a collect's prune); the brief's cells B2 to B5, B9,
-   B10, B12 to B14; and R8 to R11. C3, C5, C7 and R2 were fixed after the landing.
-4. **What only use can show**: a watcher's whole cycle on this code with a real queue, and the comparison on
-   the next natural large batch (gate 5).
+2. **Setup as a tool**: a `/run-setup` skill backed by jobs, which writes a verified input lock, a readiness
+   receipt for each pin and task, and a setup record in fixed sections, for the queue's setup phase and for an
+   agent in the middle of its proof work.
+3. **A representative sample of the S batch** set up that way from mirrors on this machine (six cases from
+   their pins, and the eight measured cases again from the first pass's state). The control on all 47 offline
+   cases is a later run's (the user's decisions, 2026-11-28): by rounds it is about five hours at four jobs at
+   a time, and its memory estimate has to rise (four jobs peaked at 21 GiB).
+4. **The review's findings on that path**, in the tables below: C6's last part (whether the keeper goes on to
+   start the runner after a skipped request), C9 (a runner stopped between steps records `failed`, not
+   `cancelled`), C14 (`keep_workdirs = "always"` undone by a collect's prune), B13, R8, and the open parts of
+   B7, C8 and R7. Left for a later cleanup brief: B2 to B5, B9 to B12, B14, R10, R11, and the open parts of B6,
+   B16, R5 and R9. C3, C5, C7 and R2 were fixed after the landing.
+5. **What only use can show**: a watcher's whole cycle on this code with a real queue, the door against a real
+   repository (a small follow-up run the user queues and observes), and the comparison on the next natural
+   large batch (gate 5).
 
 ## The review of 2026-11-28: what three fresh readers found
 
@@ -163,7 +173,7 @@ the audit. Between them, 42 findings. Each is listed here with what became of it
 | R4 | One unfetchable coordinate ended the resolution, and the patterns made such coordinates: `g:a:.` gave an empty version, Maven's `g:a:jar:tests:1.0` the version `tests`. Two wordings were not read at all | **fixed** `typnwnxwvrnt`, with a test |
 | R5 | `overlay`: a symlinked folder on the way to a laid or left-out path was linked whole, and the files were then laid inside the base itself; a nested `view.walk` is ignored unless something special lies under it; `./m2/x` and `m2//y` passed and were silently not left out; `layout.maven: "m2/"` made `equip` write under `/` | **fixed** `typnwnxwvrnt` but for the nested `view.walk`, which is open |
 | R6 | Pinned inputs: one under a left-out folder was not fetched though the view lacks it; one already in the base was never checked against its digest; a pooled copy with another digest raised `digest-mismatch` without asking the source | **fixed** `typnwnxwvrnt` (no test of its own yet) |
-| R7 | Authorisation was a string prefix (`https://repo.example.org` admitted `repo.example.org.evil.example`), and a redirect was followed to any host | **fixed** `typnwnxwvrnt`, with a test of the parts; the redirect rule has none |
+| R7 | Authorisation was a string prefix (`https://repo.example.org` admitted `repo.example.org.evil.example`), and a redirect was followed to any host | **fixed** `typnwnxwvrnt`, with a test of the parts. The redirect rule has its first test since `qlsvxyusmpkr`: a mirror on loopback that sends the fetcher on to a host that is not allowed is refused, with the address named. Open: an outside source that redirects into the machine is tested at `authorise` alone, not end to end |
 | R8 | The Gradle init script: (a) a build with settings repositories under the default `PREFER_PROJECT` and a project with its own `repositories {}` is not served; (b) `exclusiveContent` may exclude the readiness repository; (c) being first, the readiness repository answers for a module whose classifier artifact Gradle's own cache had (now recovered in another round by its file name) | open: (a) and (b) need a real build with those settings |
 | R9 | Batches: (a) work A, then B, then A returns the row to the old job, nothing reruns, and B's pass fulfils needs on A; (b) job files are written before the map, so a submission killed between leaves jobs in no history, which run; (c) two batch names that agree in 20 characters collide; (d) the lock file was created where jj commits it; (e) a non-string `row` raises `TypeError`, not `Problem`; (f) one manifest in two workspaces with different earlier maps writes same-named files with different bytes | (d) **fixed** `typnwnxwvrnt`; the rest open |
 | R10 | The audit crashes instead of reporting on a receipt without `finishedAt` or `sourceCommit`, on a `job` or `steps` of the wrong type, on an index row without `id` (all latent: the 1,906 receipts have every key); the embedded `job.spec` is never hashed, so a changed `case` there with the index following shows nothing; `check_batches` never reads a row's `work`; `--rev` at a conflicted commit would read an empty corpus and exit 0 | open |

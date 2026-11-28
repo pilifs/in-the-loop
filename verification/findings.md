@@ -18,6 +18,24 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-083: nothing but an operation's own repositories keeps a run from asking outside; a switch was considered and not built
+
+- **Status**: open, for a later review. Nothing is wrong today and nothing is to be done now (the user, 2026-11-28).
+- **Raised**: 2026-11-28, by the session that had been the agent of the generic-jobs-pipeline run, while revising the brief that follows it ([`in-the-loop-setup-as-a-tool-brief.md`](../llm-dlc/loops/in-the-loop-setup-as-a-tool-brief.md)) with the user. Machine `vm-1`; no job ran for it.
+- **Found**:
+  - **The permission is the machine's, and it stands.** Since 2026-11-28 this machine's runner may fetch from four outside sources (Maven Central, the Gradle plugin portal, Gradle's distributions, `repo.spring.io`: `fetch_allow` in the machine's settings, the user's decision), and from any source a person grants later (`python3 jobs/pipeline.py sources allow`). That holds for every resolution job on the machine, from any checkout and any run.
+  - **A brief can want less and has no way to say so.** The brief above wants its gates set up from what the machine holds. Nothing lets a run, a brief or a person say "this work asks nothing of outside": a request to an allowed source goes out whoever asks.
+  - **What does hold.** A resolution asks only the repositories its operation names, and its pinned inputs. So an operation that names mirrors on the machine and no other repository asks nothing of outside. Every outside request waits its turn in the machine's one queue, is counted in the receipt (`fetch.outside`), and warns above a ceiling ([`operating-notes.md`](../llm-dlc/operating-notes.md#fetches-of-a-builds-inputs-go-through-one-queue)).
+  - **What does not.** That is a property of how an operation is written, not of the machine. A resolution job's step has the host's network, restricted by its fetcher's own rule alone, and a job of the first format has the host's network outright ([`jobs/README.md`](../jobs/README.md#setup-a-running-case-asks-for)). Two existing gates ask Maven Central for a few files when rerun, since their operations name it: S48's (`verification/merged-pr-links/s01-s50/maven-war/`) fetched 2 files from it in job `20261128-134250-…`, a BOM and Maven's own distribution, 9.6 MB.
+  - **What was proposed, and the answer.** A machine setting, off by default, under which every resolver refuses any host but the machine itself, switched on for a run that is meant to go outside. The user declined it: "I don't want to do the on / off setting because that is a rabbit hole that could have other side effects." Their rule in its place: "If we can avoid downloading outside stuff, we should, for efficiency and consistency." A mirror on the machine was made usable with no permission the same day (`qlsvxyusmpkr`), so preferring one costs nothing.
+- **Needs**: the user's review, when it next comes up. Nothing before. What there is to weigh then:
+  1. leave it as it is: an operation's repositories decide, and the receipts report what was asked outside;
+  2. a declaration on a job or a run ("local only") that the resolver checks, which touches no machine setting;
+  3. the door of the brief above, behind which a fetch run reaches nothing but the door: where a build can reach then is a boundary of the machine's and not the fetcher's care, and a door given no outside repository is local by construction;
+  4. the machine switch, with its side effects looked at first: the jobs of the first format that have the host's network, the gates that name Central, a watcher's runner already at work.
+- **Tracked in**: the brief above, whose gates name local mirrors alone and report `fetch.outside`; this entry.
+- **Closes when**: the user decides whether a declared local-only mode is wanted, or that reporting what was asked outside is enough.
+
 ### VF-082: the examples router links pages that examples 147 and 148 do not have
 
 - **Status**: open, minor. To be settled in the future revamp of examples, not on its own (the user, 2026-11-28).

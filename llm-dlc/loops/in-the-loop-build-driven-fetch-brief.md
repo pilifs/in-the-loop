@@ -1,5 +1,13 @@
 # Let the build tool fetch what it needs, once, through a door the machine controls
 
+> **Superseded on 2026-11-28** by [`in-the-loop-setup-as-a-tool-brief.md`](in-the-loop-setup-as-a-tool-brief.md),
+> which keeps this draft's design for the door and the fetch run (its part B) inside a larger outcome, and is the
+> brief to queue. This page stays as the draft it was. Two things in it no longer hold: section 2 proposes a pace
+> and caps that the user then decided differently
+> ([`operating-notes.md`](../operating-notes.md#fetches-of-a-builds-inputs-go-through-one-queue): one queue for
+> the machine, 0.2 s between two requests to a host, a ceiling that warns), and S48's closure is 282 artifacts,
+> not 770 files (770 counts the copy's checksum and marker files).
+
 **Implementation brief for `pilifs/in-the-loop` · drafted November 28, 2026, for the user to review and queue**
 Written by the agent of the run it follows (`generic-jobs-pipeline`), after that line landed and four of its
 review findings were fixed. Its record is

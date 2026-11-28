@@ -221,7 +221,7 @@ requests are open at once is.
 
 A build tool that an agent starts online by hand, in a setup phase, is outside this queue today, at the tool's
 own pace. A fetch run in which the build tool itself asks through a local door would put that traffic in the
-same queue ([the brief for it](loops/in-the-loop-build-driven-fetch-brief.md), not built).
+same queue ([the brief for it](loops/in-the-loop-setup-as-a-tool-brief.md), not built).
 
 **Why:** the network the machine is on is constrained, and the user's address is theirs. A queue keeps the
 number of open connections at one whatever a build needs, so the count of files stops mattering.
