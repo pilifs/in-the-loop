@@ -1,47 +1,53 @@
 {
   "schema": "llm-trace-metrics/v2",
   "session_id": "01a222d3-fddc-7ce1-8dbf-d2c3fac4a7ec",
-  "source": {"log_sha256":"dd2162019f21943ecb79da89e18aee1d61b77fe69a21c585679394ae0ae2730b","log_lines":69,"redaction_policy":7},
+  "source": {"log_sha256":"709f776a8860c0bb0a2ac7cd44ca6eb563d7dc3167e5a3954484da688e97c3e0","log_lines":360,"redaction_policy":7},
   "pricing_as_of": "2026-11-15",
-  "totals": {"prompts":1,"commands":0,"commits":1,"compactions":0,"subagents":0,"tool_errors":0,"peak_context_tokens":49150,"api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0},
-  "after_last_commit": {"api_calls":0,"tool_calls":0,"input_tokens":0,"output_tokens":0,"thinking_tokens":0,"cache_read_tokens":0,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.0,"uncached_usd":0.0,"unpriced_calls":0},
-  "time": {"elapsed_ms":83789,"agent_ms":83362,"model_ms":76915,"tool_ms":7276,"busy_ms":83362,"compaction_ms":0,"paused_ms":0},
+  "totals": {"prompts":2,"commands":0,"commits":3,"compactions":0,"subagents":0,"tool_errors":2,"peak_context_tokens":101450,"api_calls":58,"tool_calls":111,"input_tokens":86924,"output_tokens":10454,"thinking_tokens":736,"cache_read_tokens":4463744,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":2.899048,"uncached_usd":36.823504,"unpriced_calls":0},
+  "after_last_commit": {"api_calls":5,"tool_calls":6,"input_tokens":1196,"output_tokens":372,"thinking_tokens":10,"cache_read_tokens":504320,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.226176,"uncached_usd":4.059008,"unpriced_calls":0},
+  "time": {"elapsed_ms":3314191,"agent_ms":2838640,"model_ms":397639,"tool_ms":2594286,"busy_ms":2838640,"compaction_ms":0,"paused_ms":0},
   "reported": null,
   "by_model": [
-    {"model":"gpt-6.2-astra","api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0}
+    {"model":"gpt-6.2-astra","api_calls":58,"tool_calls":111,"input_tokens":86924,"output_tokens":10454,"thinking_tokens":736,"cache_read_tokens":4463744,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":2.899048,"uncached_usd":36.823504,"unpriced_calls":0}
   ],
   "by_effort": [
-    {"effort":"high","api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0}
+    {"effort":"high","api_calls":58,"tool_calls":111,"input_tokens":86924,"output_tokens":10454,"thinking_tokens":736,"cache_read_tokens":4463744,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":2.899048,"uncached_usd":36.823504,"unpriced_calls":0}
   ],
   "by_tool": [
-    {"name":"Bash","calls":18,"errors":0,"no_result":0,"total_ms":9891,"median_ms":1,"max_ms":5431,"result_chars":89987},
-    {"name":"exec","calls":6,"errors":0,"no_result":0,"total_ms":7276,"median_ms":288,"max_ms":5737,"result_chars":80679}
+    {"name":"Bash","calls":55,"errors":2,"no_result":0,"total_ms":2888046,"median_ms":1,"max_ms":1278561,"result_chars":293938},
+    {"name":"exec","calls":51,"errors":0,"no_result":0,"total_ms":2444556,"median_ms":449,"max_ms":1227102,"result_chars":235957},
+    {"name":"wait","calls":5,"errors":0,"no_result":0,"total_ms":223,"median_ms":41,"max_ms":78,"result_chars":1965}
   ],
   "by_bash_family": [
+    {"family":"rg","calls":12,"errors":1,"no_result":0,"total_ms":520,"median_ms":1,"max_ms":170,"result_chars":54015},
+    {"family":"sed","calls":12,"errors":0,"no_result":0,"total_ms":6,"median_ms":0,"max_ms":2,"result_chars":84768},
+    {"family":"python3","calls":11,"errors":1,"no_result":0,"total_ms":2602455,"median_ms":18782,"max_ms":1278561,"result_chars":68373},
+    {"family":"jj","calls":7,"errors":0,"no_result":0,"total_ms":279623,"median_ms":0,"max_ms":279621,"result_chars":6575},
     {"family":"git","calls":6,"errors":0,"no_result":0,"total_ms":5435,"median_ms":1,"max_ms":5431,"result_chars":19851},
-    {"family":"rg","calls":3,"errors":0,"no_result":0,"total_ms":172,"median_ms":1,"max_ms":170,"result_chars":9576},
     {"family":"cat","calls":2,"errors":0,"no_result":0,"total_ms":2,"median_ms":1,"max_ms":1,"result_chars":38849},
-    {"family":"python3","calls":2,"errors":0,"no_result":0,"total_ms":4281,"median_ms":4281,"max_ms":4281,"result_chars":4551},
-    {"family":"sed","calls":2,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":12727},
-    {"family":"head","calls":1,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":2663},
-    {"family":"jj","calls":1,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":116},
-    {"family":"ls","calls":1,"errors":0,"no_result":0,"total_ms":1,"median_ms":1,"max_ms":1,"result_chars":1654}
+    {"family":"head","calls":2,"errors":0,"no_result":0,"total_ms":0,"median_ms":0,"max_ms":0,"result_chars":11276},
+    {"family":"ls","calls":1,"errors":0,"no_result":0,"total_ms":1,"median_ms":1,"max_ms":1,"result_chars":1654},
+    {"family":"ps","calls":1,"errors":0,"no_result":0,"total_ms":1,"median_ms":1,"max_ms":1,"result_chars":1828},
+    {"family":"pwd","calls":1,"errors":0,"no_result":0,"total_ms":3,"median_ms":3,"max_ms":3,"result_chars":6749}
   ],
   "by_cache_cause": [],
   "by_day": [
-    {"date":"2026-11-28","api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0}
+    {"date":"2026-11-28","api_calls":58,"tool_calls":111,"input_tokens":86924,"output_tokens":10454,"thinking_tokens":736,"cache_read_tokens":4463744,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":2.899048,"uncached_usd":36.823504,"unpriced_calls":0}
   ],
   "windows": [
-    {"index":0,"started":"2026-11-28T15:45:50.290Z","ended":"2026-11-28T15:47:13.652Z","prompts":1,"peak_context_tokens":49150,"api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0}
+    {"index":0,"started":"2026-11-28T15:45:50.290Z","ended":"2026-11-28T16:41:04.117Z","prompts":2,"peak_context_tokens":101450,"api_calls":58,"tool_calls":111,"input_tokens":86924,"output_tokens":10454,"thinking_tokens":736,"cache_read_tokens":4463744,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":2.899048,"uncached_usd":36.823504,"unpriced_calls":0}
   ],
   "compactions": [],
   "pauses": [],
   "commits": [
-    {"index":0,"change_id":"nuounktqzuvymuqommmztwnxnqnosous","summary":"Add the brief for setup as a tool, revised with the user, and open VF-083 on outside fetching","log_sha256":"dd2162019f21943ecb79da89e18aee1d61b77fe69a21c585679394ae0ae2730b","log_lines":69,"log_bytes":419843,"log_gzip_bytes":96062,"ts":"2026-11-28T15:47:13.832Z","api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0,"prompts":1,"agent_ms":83362,"tool_errors":0}
+    {"index":0,"change_id":"nuounktqzuvymuqommmztwnxnqnosous","summary":"Add the brief for setup as a tool, revised with the user, and open VF-083 on outside fetching","log_sha256":"dd2162019f21943ecb79da89e18aee1d61b77fe69a21c585679394ae0ae2730b","log_lines":69,"log_bytes":419843,"log_gzip_bytes":96062,"ts":"2026-11-28T15:47:13.832Z","api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0,"prompts":1,"agent_ms":83362,"tool_errors":0},
+    {"index":1,"change_id":"rwlutlkmpxzqzmupmtookzzmtkptvoon","summary":"Close VF-080 after verifying all 947 archived outputs","log_sha256":"f2946384458af41ea647975b8402fd33463e3ac088049f49a2a45f2c046cce55","log_lines":293,"log_bytes":972380,"log_gzip_bytes":198834,"ts":"2026-11-28T16:38:56.335Z","api_calls":38,"tool_calls":69,"input_tokens":47853,"output_tokens":6677,"thinking_tokens":644,"cache_read_tokens":2937472,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":1.824892,"uncached_usd":24.14968,"unpriced_calls":0,"prompts":1,"agent_ms":2755278,"tool_errors":1},
+    {"index":2,"change_id":"suozzulvuvznxvqqstosknzoqlzomkmm","summary":"Record each client's last session in the brief queue","log_sha256":"cad74bc3772b8bd84f5e01379da58bb1605b701714cc3269fff642484db02fbf","log_lines":333,"log_bytes":1012557,"log_gzip_bytes":204225,"ts":"2026-11-28T16:39:58.960Z","api_calls":8,"tool_calls":12,"input_tokens":3180,"output_tokens":661,"thinking_tokens":59,"cache_read_tokens":790784,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.368193,"uncached_usd":6.378152,"unpriced_calls":0,"prompts":0,"agent_ms":0,"tool_errors":1}
   ],
   "prompts": [
-    {"index":0,"kind":"human","ts":"2026-11-28T15:45:50.290Z","end":"2026-11-28T15:47:13.652Z","line":13,"window":0,"commit":0,"chars":1485,"text":"I'd like you to do some (read-only!) investigation work on my project here so we can better understand a data loss issue that happened. Here's a note from another agent: The VF-080 recovery you asked…","api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0,"tool_errors":0,"models":["gpt-6.2-astra"],"agent_ms":83362,"model_ms":76915,"tool_ms":7276,"busy_ms":83362,"peak_context_tokens":49150,"efforts":["high"],"by_model":[{"model":"gpt-6.2-astra","api_calls":7,"usd":0.479787}]}
+    {"index":0,"kind":"human","ts":"2026-11-28T15:45:50.290Z","end":"2026-11-28T15:47:13.652Z","line":13,"window":0,"commit":0,"chars":1485,"text":"I'd like you to do some (read-only!) investigation work on my project here so we can better understand a data loss issue that happened. Here's a note from another agent: The VF-080 recovery you asked…","api_calls":7,"tool_calls":24,"input_tokens":34695,"output_tokens":2744,"thinking_tokens":23,"cache_read_tokens":231168,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":0.479787,"uncached_usd":2.236664,"unpriced_calls":0,"tool_errors":0,"models":["gpt-6.2-astra"],"agent_ms":83362,"model_ms":76915,"tool_ms":7276,"busy_ms":83362,"peak_context_tokens":49150,"efforts":["high"],"by_model":[{"model":"gpt-6.2-astra","api_calls":7,"usd":0.479787}]},
+    {"index":1,"kind":"human","ts":"2026-11-28T15:55:08.839Z","end":"2026-11-28T16:41:04.117Z","line":74,"window":0,"commit":1,"chars":169,"text":"Can you execute your recommendations in a new workspace? Feel free to close VF-080 as part of this too. After you're done, let me know and I'll ask the watcher to merge.","api_calls":51,"tool_calls":87,"input_tokens":52229,"output_tokens":7710,"thinking_tokens":713,"cache_read_tokens":4232576,"cache_write_tokens":0,"cache_write_5m_tokens":0,"cache_write_1h_tokens":0,"usd":2.419261,"uncached_usd":34.58684,"unpriced_calls":0,"tool_errors":2,"models":["gpt-6.2-astra"],"agent_ms":2755278,"model_ms":320724,"tool_ms":2587010,"busy_ms":2755278,"peak_context_tokens":101450,"efforts":["high"],"by_model":[{"model":"gpt-6.2-astra","api_calls":51,"usd":2.419261}]}
   ],
-  "events": {"schema":"llm-trace-metrics-events/v1","calls":7,"tools":24,"bytes":10929,"sha256":"ff33b08a0323925a55dacb6f7d39dfa288a22f4e8a2feceef3ad8d5e4ad9e597"},
+  "events": {"schema":"llm-trace-metrics-events/v1","calls":58,"tools":111,"bytes":64551,"sha256":"56319cf0eeb114d8c10c030a9860d00f44db9642736bc76e4d8b3de06d24d0de"},
   "cache_events": []
 }

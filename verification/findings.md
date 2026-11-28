@@ -82,29 +82,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: this entry.
 - **Closes when**: both walks reach every record named above from the front page alone, and any page they found wanting is fixed, with the walks' record attached here.
 
-### VF-080: 947 kept outputs that receipts name are in no commit and no archive; 944 survive in one working copy
-
-- **Status**: open, for the user's word on the 3 lost files. The 944 that survived are sealed and verified off the machine (update of 2026-11-28, 15:45, below).
-- **Raised**: 2026-11-27, by the run on the generic jobs pipeline (`llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief.md`), from the first run of its reconciliation, `python3 jobs/audit.py --rev b52a084f5d11`. Machine `vm-1`; no job ran for it.
-- **Found**:
-  - **What the receipts say.** A job that did not pass keeps its outputs under `results/ID/outputs/`, and its receipt lists them in `collected.kept`. 19 receipts of 2026-11-06 to 2026-11-20 list 947 such files that the pinned revision does not hold.
-  - **Why the commit left them out.** 945 have a path the repository's ignore rules match: 655 are compiled classes (`*.class`, most under `outputs/verification/.work-NNN/`), 288 are under a `target/` folder (`outputs/lib/target/...`), and 2 are in a `__pycache__/`. 2 are over the 1 MiB a commit takes (`lib/target/benchmark-native.json`, twice; the limit is VF-020's and VF-025's). The collect commits succeeded and said nothing: an ignored file is not an error to a commit.
-  - **Where the bytes are.** No original of them was sealed: the 19 jobs ran before originals were captured, or kept them with a collector that had no capture. 944 of the files, 10 MB, are still in the default checkout as ignored files of that one working copy. Three, of 2026-11-06, are in no checkout of this machine.
-  - **By day:** 2026-11-06, 186 files; 11-07, 101; 11-08, 651; 11-14, 2; 11-20, 7.
-- **Needs**:
-  - **The watcher or the user, in the default checkout:** hand the 944 files to the private archive while they exist. `python3 jobs/audit.py --json` there lists each under `gaps` with the kind `artifact-not-committed`.
-  - **The pipeline** (this run): a collect that keeps an output says so when the commit will not take its path, and the audit keeps counting what is still outside.
-- **Tracked in**: this entry; [`jobs/README.md`](../jobs/README.md#the-baseline) for the baseline; the run's [results page](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md).
-- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): the tool to seal them exists and has not been run where the files are: `python3 jobs/pipeline.py recover --kept-outputs`, for the watcher or the user to run in the default checkout once this line lands (a run's agent changes nothing there). The audit goes on listing them as a gap until then.
-- **Update 2026-11-28, 15:45** (the watcher, at the user's request): the 944 are sealed.
-  - **When:** `python3 jobs/pipeline.py recover --kept-outputs` had already run in the default checkout, at 13:36Z. No commit records the session that ran it. It left a marker for each of 17 jobs under `verification/.state/recovered-outputs/`, holding 944 files in all.
-  - **What I checked:** a dry run now finds nothing left to seal. Each of the 17 occurrences (`job-outputs`, `20261128T133637Z-...`) is `remote_verified` in `artifacts.py list --job`, and `artifacts.py status` says no sealed original is exposed to the loss of the machine. A restore of one occurrence (`20261128T133637Z-50377252ffed5630`, 2 files) gave back its files with every byte verified.
-  - **What cannot be recovered:** 3 files of 2 jobs of 2026-11-06 are in no checkout and no archive. The audit (`python3 jobs/audit.py --json`) still lists them as the only `artifact-not-committed` gaps:
-    - `20261106-073804-jbmc-read-through-json-ui-agrees-with-th`: `lib/target/jobs/4b-differential/differential.jsonl` and `build.txt`;
-    - `20261106-082917-jbmc-s-own-approximations-as-gaps-every`: `lib/target/jobs/4c-jbmc-gaps/build.txt`.
-  - **What closes it:** the user deciding these 3 are not worth keeping.
-- **Closes when**: the audit of the default checkout lists no `artifact-not-committed` gap without a sealed original, or the user decides the 947 are not worth keeping.
-
 ### VF-079: a session's trace line lands on commits it did not make
 
 - **Status**: open, for the user to decide whether the rule changes. It did not come with the convergence on one run skill; it was seen twice during it.
@@ -1936,6 +1913,35 @@ that did not execute can also cause refusal.
   through `run()`; then resubmit 147 and 148 unchanged. VF-002 stays open.
 
 ## Decided and closed
+
+### VF-080: all 947 kept outputs verified in the private archive
+
+- **Status**: closed on 2026-11-28. All 947 paths from the original audit match files in 19 remotely verified archive occurrences.
+- **Raised**: 2026-11-27, by the run on the generic jobs pipeline (`llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief.md`), from the first run of its reconciliation, `python3 jobs/audit.py --rev b52a084f5d11`. Machine `vm-1`; no job ran for it.
+- **Found**:
+  - **What the receipts say.** A job that did not pass keeps its outputs under `results/ID/outputs/`, and its receipt lists them in `collected.kept`. 19 receipts of 2026-11-06 to 2026-11-20 list 947 such files that the pinned revision does not hold.
+  - **Why the commit left them out.** 945 have a path the repository's ignore rules match: 655 are compiled classes (`*.class`, most under `outputs/verification/.work-NNN/`), 288 are under a `target/` folder (`outputs/lib/target/...`), and 2 are in a `__pycache__/`. 2 are over the 1 MiB a commit takes (`lib/target/benchmark-native.json`, twice; the limit is VF-020's and VF-025's). The collect commits succeeded and said nothing: an ignored file is not an error to a commit.
+  - **At the November 27 audit.** No original of them was sealed: the 19 jobs ran before originals were captured, or kept them with a collector that had no capture. 944 of the files, 10 MB, were present in the default checkout as ignored files of that one working copy. The three November 6 files had no loose copies in the checkouts examined.
+  - **By day:** 2026-11-06, 186 files; 11-07, 101; 11-08, 651; 11-14, 2; 11-20, 7.
+- **Actions requested when raised**:
+  - **The watcher or the user, in the default checkout:** hand the 944 files to the private archive while they exist. `python3 jobs/audit.py --json` there lists each under `gaps` with the kind `artifact-not-committed`.
+  - **The pipeline** (this run): a collect that keeps an output says so when the commit will not take its path, and the audit keeps counting what is still outside.
+- **Tracked in**: this entry; [`jobs/README.md`](../jobs/README.md#the-baseline) for the baseline; the run's [results page](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md).
+- **Update 2026-11-28** (the generic-jobs-pipeline run, [results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md)): the tool to seal them exists and has not been run where the files are: `python3 jobs/pipeline.py recover --kept-outputs`, for the watcher or the user to run in the default checkout once this line lands (a run's agent changes nothing there). The audit goes on listing them as a gap until then.
+- **Update 2026-11-28, 15:45** (the watcher, at the user's request): the 944 are sealed.
+  - **When:** `python3 jobs/pipeline.py recover --kept-outputs` had already run in the default checkout, at 13:36Z. No commit records the session that ran it. It left a marker for each of 17 jobs under `verification/.state/recovered-outputs/`, holding 944 files in all.
+  - **What I checked:** a dry run now finds nothing left to seal. Each of the 17 occurrences (`job-outputs`, `20261128T133637Z-...`) is `remote_verified` in `artifacts.py list --job`, and `artifacts.py status` says no sealed original is exposed to the loss of the machine. A restore of one occurrence (`20261128T133637Z-50377252ffed5630`, 2 files) gave back its files with every byte verified.
+  - **Still missing at 15:45:** the watcher found no standalone copy or archive occurrence for three outputs from November 6:
+    - `20261106-073804-jbmc-read-through-json-ui-agrees-with-th`: `lib/target/jobs/4b-differential/differential.jsonl` and `build.txt`;
+    - `20261106-082917-jbmc-s-own-approximations-as-gaps-every`: `lib/target/jobs/4c-jbmc-gaps/build.txt`.
+- **Recovery on 2026-11-28 at 16:04 UTC.** Both November 6 result commits included a full addition from `/dev/null` for each missing file in `changes.diff`. The `target/` ignore rule excluded the loose files. We reconstructed the bytes from those commits, checked each size and SHA-256 against the original job receipt, and sealed them with `jobs/pipeline.py recover --kept-outputs`.
+
+  | Job | Result commit | Files recovered | Private archive occurrence |
+  |---|---|---|---|
+  | [20261106-073804](results/20261106-073804-jbmc-read-through-json-ui-agrees-with-th/result.json) | `9797451c7d` | `differential.jsonl` (43,722 bytes) and `build.txt` (21,857 bytes) | `20261128T160425Z-351179cdc63c1d05` |
+  | [20261106-082917](results/20261106-082917-jbmc-s-own-approximations-as-gaps-every/result.json) | `ba5305bc64` | `build.txt` (21,368 bytes) | `20261128T160425Z-3773378f580f2a6a` |
+
+- **Closure check.** Starting with an empty archive-reader cache, we fetched both occurrences and verified all 86,947 restored bytes against the original job receipts. We also reconciled all 947 kept-output paths flagged at `b52a084f5d11` with the 19 remote archive inventories. Every path, byte count and SHA-256 matched, and every occurrence reported `remote_verified`. A revision-only audit still reports the paths absent from that tree. The archive receipts account for each one.
 
 ### VF-071: stock JBMC requires qualification for an active versioned application class
 
