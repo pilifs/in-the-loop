@@ -6,6 +6,7 @@ reason, read by the keepers in place of lines of text. Each in a throwaway repos
 """
 
 import json
+import shutil
 import os
 import subprocess
 import sys
@@ -199,7 +200,74 @@ class ARunnerInAnotherWorkspace(View):
         self.assertIsNone(view["runner"]["elsewhere"])
 
 
+    @cost("tool")
+    def test_a_runner_started_here_does_not_run_again_what_waits_for_a_collect_there_and_keeps_the_way_to_it(self):
+        repo = self.repo()
+        ended = repo.submit2("Ran in the default workspace", "build", "--run", "true")
+        fresh = repo.submit2("Not run anywhere yet", "build", "--run", "true")
+        repo.commit("jobs")
+        env, runner, root = self.another_workspace(staged={ended: "passed"})
+        runner.kill()        # that workspace's runner has ended; its result is staged there, and nobody collected it
+        runner.wait()
+        out = repo.pipeline("run", "--rev", "HEAD", env=env).stdout
+        self.assertIn(f"{fresh}: passed", out)
+        self.assertNotIn(f"{ended}: started", out)
+        self.assertIn(f"note  {ended}: its result is staged in the workspace {root} and not collected there yet; not run again", out)
+        self.assertFalse((repo.dir / "verification/.state/results" / ended).exists())
+        # The lock names this workspace now, and the way to the other one is kept beside it: the job still reads finished, there.
+        store = Path(env["VERIFY_REPO_STORE"])
+        self.assertIn(str(repo.dir), (store / "verification-runner.lock").read_text())
+        self.assertEqual(json.loads((store / "verification-staged.json").read_text()), {"roots": [str(root)]})
+        jobs = {job["id"]: job for job in json.loads(repo.pipeline("view", "--rev", "HEAD", env=env).stdout)["jobs"]}
+        self.assertEqual((jobs[ended]["state"], jobs[ended]["result"]["where"], jobs[ended]["result"]["root"]), ("finished", "staged-elsewhere", str(root)))
+        self.assertEqual(jobs[fresh]["state"], "finished")
+        # Once it is collected there, the next runner here keeps no way to a workspace that holds nothing.
+        shutil.rmtree(root / "verification/.state/results" / ended)
+        repo.pipeline("run", "--rev", "HEAD", env=env)
+        self.assertFalse((store / "verification-staged.json").exists())
+
+
 class WhatTheKeepersRead(View):
+    # C5
+    def test_a_file_that_is_no_job_or_names_a_revision_nobody_has_is_one_invalid_row_and_the_others_run(self):
+        repo = self.repo()
+        good = repo.submit2("Runs", "build", "--run", "true")
+        lost = repo.submit2("Names a revision that is not here", "build", "--run", "true")
+        path = repo.job_path(lost)
+        path.write_text(json.dumps({**json.loads(path.read_text()), "source": {"revision": "0" * 40}}))
+        a_list = lost[:16] + "a-list-and-no-job"
+        (path.parent / f"{a_list}.json").write_text("[]\n")
+        repo.commit("jobs, two of them wrong")
+        view, code = self.view(repo)
+        jobs = {job["id"]: job for job in view["jobs"]}
+        self.assertEqual((code, jobs[good]["state"], jobs[lost]["state"], jobs[a_list]["state"], view["idle"]), (0, "queued", "invalid", "invalid", False))
+        self.assertIn(f"its revision '{'0' * 40}' is not a commit of this repository", jobs[lost]["why"])
+        self.assertIn("not a job: a JSON list where an object is expected", jobs[a_list]["why"])
+        self.assertIn(f"{good}: passed", repo.pipeline("run", "--rev", "HEAD").stdout)       # the runner goes on with what is a job
+
+    # C3
+    def test_results_a_collect_wrote_and_no_commit_followed_are_named_again_until_a_commit_holds_them(self):
+        repo = self.repo(after_collect=["echo regenerated >> hook.log"])
+        job = repo.submit2("Leaves a file", "build", "--output", "made.txt", "--run", "echo made > made.txt")
+        repo.commit("job")
+        repo.pipeline("run", "--rev", "HEAD")
+        first = json.loads(repo.pipeline("collect", "--json").stdout)
+        self.assertEqual(([row["id"] for row in first["collected"]], first["uncommitted"]), ([job], []))
+        # Whoever was to commit after it was stopped. Nothing is staged any more, and what is owed is still said.
+        view, _ = self.view(repo)
+        self.assertEqual(view["collectedNotCommitted"], [job])
+        self.assertIn(f"collected, and in no commit yet: {job}", repo.pipeline("status", "--rev", "HEAD").stdout)
+        again = json.loads(repo.pipeline("collect", "--json").stdout)
+        self.assertEqual((again["collected"], [(row["id"], row["status"], row["applied"]) for row in again["uncommitted"]]), ([], [(job, "passed", ["made.txt"])]))
+        self.assertEqual(again["commit"]["summary"], "Record verification results for 1 job(s)")
+        self.assertIn(f"written into the working copy by an earlier collect that no commit followed, and are recorded with this one: {job}", again["commit"]["body"])
+        self.assertEqual(((repo.dir / "hook.log").read_text(), [h["exitCode"] for h in again["hooks"]]), ("regenerated\nregenerated\n", [0]))   # run again: it may never have run
+        repo.commit("the results")
+        view, _ = self.view(repo)
+        self.assertEqual(view["collectedNotCommitted"], [])
+        last = json.loads(repo.pipeline("collect", "--json").stdout)
+        self.assertEqual((last["uncommitted"], last["commit"]), ([], None))
+
     def test_wait_and_collect_say_what_happened_as_data_and_a_hook_that_failed_stays_visible(self):
         repo = self.repo(after_collect=["echo regenerating; exit 3"])
         self.assertEqual(json.loads(repo.pipeline("collect", "--json").stdout)["collected"], [])     # nothing to collect, as data too

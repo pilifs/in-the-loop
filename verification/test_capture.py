@@ -162,6 +162,9 @@ class CaptureTest(Captured):
         aside = list((self.repo.dir / "verification/.state/uncaptured").iterdir())
         self.assertEqual(len(aside), 1)
         self.assertTrue((aside[0] / "outputs/a.txt").exists())
+        # Nothing is staged any more, and no commit holds the result yet: a collect names it until one does.
+        self.assertIn(f"{job_id}: passed: collected before, and in no commit yet", self.repo.pipeline("collect").stdout)
+        self.repo.commit("the result")
         self.assertIn("nothing to collect", self.repo.pipeline("collect").stdout)
         self.assertIn("SpoolFull", (self.repo.dir / "verification/.state/capture.log").read_text())
         self.assertEqual(self.archive().rows(), [])
@@ -235,6 +238,9 @@ def after_collect(*args, **kwargs):
         final = self.repo.result(job_id)
         self.assertEqual((final["status"], final["collected"]["applied"], (self.repo.dir / "o.txt").read_text()), ("passed", ["o.txt"], "after\n"))
         self.assertFalse(staged.exists())
+        # Nothing is staged any more, and no commit holds the result yet: a collect names it until one does.
+        self.assertIn(f"{job_id}: passed: collected before, and in no commit yet", self.repo.pipeline("collect").stdout)
+        self.repo.commit("the result")
         self.assertIn("nothing to collect", self.repo.pipeline("collect").stdout)
         archive = self.archive()
         rows = [x for x in archive.rows(job=job_id) if x["kind"] == "job-result"]

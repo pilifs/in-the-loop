@@ -304,7 +304,7 @@ as data, and nothing else decides what state a job is in.
 | State | What it means | What changes it |
 |---|---|---|
 | `uncommitted` | Its file is in the working copy and in no commit of the queue | Commit it |
-| `invalid` | Its file is not a job: not JSON, or not as its schema says. The reason carries the path and the revision it was read at | Fix the file |
+| `invalid` | Its file is not a job: not JSON, not a JSON object, not as its schema says, or naming a revision that is not a commit of this repository. The reason carries the path and the revision it was read at. One such file is one row: the runner and the view go on with the others | Fix the file |
 | `unschedulable` | This machine cannot run it as written: more memory or CPUs than the runner allows a job, an adapter this checkout lacks, a step with no network where none can be enforced | Resubmit it, or run it elsewhere. Waiting does not help |
 | `blocked` | A prerequisite ended without passing, is a job nobody submitted, or cannot itself start here. No attempt is consumed | Resubmit the prerequisite: the job that supersedes it releases this one |
 | `waiting` | A prerequisite has not finished | The prerequisite passing |
@@ -337,6 +337,12 @@ then it is `recorded-elsewhere` until the commit is merged. So a job submitted f
 `queued` again between its start and its merge. The attempt and the logs stay in that workspace's state. `wait` in a workspace with no runner still answers `no-runner` at
 once, and names the one elsewhere: it has nothing here to wait for.
 
+The lock names one workspace, the last whose runner started. When a runner starts in another one while results
+are still staged in the first, it keeps the way to them (`verification-staged.json` beside the lock, the
+workspaces that hold a staged result nobody collected): such a job stays `finished`, with its workspace, in every
+view, and the new runner does not run it again; it says so in a `note` line. The entry goes when a runner
+starts and that workspace holds nothing staged any more.
+
 `view ID...` opens those jobs' collected receipts and gives each result with its questions apart (`execution`,
 `fulfillment`, `timing`, `conclusion`, `declared`, the attempt, the ids of the occurrences sealed in the private
 archive and what was collected), derived for a receipt that did not keep them. Without ids a collected job is
@@ -344,7 +350,12 @@ given from the result index, since a queue of 1,900 receipts is otherwise 1,900 
 
 `wait --json` (`itl-job-wait/v1`: `finished`, `no-runner` or `timeout`) and `collect --json` (`itl-job-collect/v1`:
 each result collected with what was applied, each hook's exit code, and the commit message) say as data what
-their lines say. A hook after a collect has an outcome of its own: the results are collected whatever it exits
+their lines say. A collect writes results into the working copy and ends there: the commit is its caller's. So
+it notes each result it wrote (`.state/collected-not-committed.json`) until the latest commit holds it. When
+the caller was stopped before its commit, the view lists those results (`collectedNotCommitted`), `status` has a
+line for them, and the next `collect` names them again under `uncommitted`, with the commit message and with the
+hooks run again, though nothing is staged any more; the watcher's keeper then commits and triages them as it
+would have. A hook after a collect has an outcome of its own: the results are collected whatever it exits
 with, and a hook that failed is kept (`.state/last-collect.json`) and named by `status` and `view` until a later
 collect runs it again.
 

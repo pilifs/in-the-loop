@@ -69,7 +69,8 @@ def collect(run: Run) -> dict | None:
     root = run.root
     with writer(root):
         status = queue(root)
-        if not status or not in_state(status, "finished"):
+        # Results that are back, or results an earlier collect wrote here and no commit followed (its keeper was stopped).
+        if not status or not (in_state(status, "finished") or status.get("collectedNotCommitted")):
             return None
         r = pipeline(root, "collect", "--json")
         try:
@@ -78,9 +79,9 @@ def collect(run: Run) -> dict | None:
             said = None
         if said is None:
             raise Problem(f"pipeline.py collect failed: {(r.stderr or r.stdout).strip()[-600:]}")
-        ids = [row["id"] for row in said["collected"]]
+        ids = [row["id"] for row in said["collected"]] + [row["id"] for row in said.get("uncommitted") or []]
         if not ids:
-            return None  # every result here was collected before (a collect that was stopped): nothing new to commit
+            return None  # every result here was collected before and is committed: nothing new to commit
         title, body = said["commit"]["summary"], said["commit"]["body"]
         hooks = [h for h in said.get("hooks") or [] if h.get("exitCode")]
         paths = pipeline(root, "commit-paths").stdout.split()

@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-28T13:53:54.408Z",
-  "duration_seconds": 954971,
+  "ended": "2026-11-28T14:17:01.327Z",
+  "duration_seconds": 956358,
   "stats": {
-    "turns": 349,
-    "api_calls": 3378,
-    "tool_calls": 2967,
+    "turns": 350,
+    "api_calls": 3381,
+    "tool_calls": 2969,
     "tool_errors": 29,
     "compactions": 11,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 107495,
-      "output_tokens": 2139112,
-      "cache_read_input_tokens": 1136264407,
-      "cache_creation_input_tokens": 7433479
+      "input_tokens": 107503,
+      "output_tokens": 2141932,
+      "cache_read_input_tokens": 1137948273,
+      "cache_creation_input_tokens": 7436799
     }
   },
   "tools": {
-    "Bash": 2616,
+    "Bash": 2618,
     "SendMessage": 109,
     "Edit": 83,
     "Read": 58,
@@ -271,24 +271,24 @@
     {
       "index": 11,
       "started": "2026-11-27T14:06:55.934Z",
-      "ended": "2026-11-28T13:53:54.408Z",
-      "turns": 33,
-      "api_calls": 378,
+      "ended": "2026-11-28T14:17:01.327Z",
+      "turns": 34,
+      "api_calls": 381,
       "usage": {
-        "input_tokens": 946,
-        "output_tokens": 220444,
-        "cache_read_input_tokens": 144046273,
-        "cache_creation_input_tokens": 528735
+        "input_tokens": 954,
+        "output_tokens": 223264,
+        "cache_read_input_tokens": 145730139,
+        "cache_creation_input_tokens": 532055
       },
-      "peak_context_tokens": 560436
+      "peak_context_tokens": 563756
     }
   ],
   "log": {
-    "sha256": "dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062",
-    "bytes": 57450957,
-    "lines": 27871,
-    "gzip_bytes": 9603566,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062.jsonl.gz"
+    "sha256": "616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5",
+    "bytes": 57512327,
+    "lines": 27898,
+    "gzip_bytes": 9613457,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5.jsonl.gz"
   },
   "subagents": [
     {
@@ -16113,6 +16113,22 @@
       "summary": "Record that S48's gate passes with the home's Maven repository verified by its digest, 21 of 21",
       "body": "Job 20261128-134250-replay-s48-s-delayed-setup-as-one-reques passed in 12m44s (5.2 GiB at its peak, estimated 20m and 9 GiB); its one output, the gate's record readiness-gate.json, was applied. It is the run of S48's delayed-setup gate after the operation was made to name the digest of the one folder its task reads that no resolution fetched: the copy of the home's Maven repository (770 files, 13,147,789 bytes, 6780dd401eda...).\n\nWhat the record shows: the 17 checks of the run before; the operation's digest equal to the copy's as the gate computes it; the resolution's receipt and the consumer's result each listing the folder as verified against that digest, and the JDKs and the git mirror as declared and not verified; and four controls withheld with nothing published, the new one (an operation naming another digest for the folder) at the base stage as digest-mismatch with no round run. The resolution took two offline rounds (61 s failed, 262 s passed) and fetched 2 files, 9,628,319 bytes, in 0.9 s.\n\nThe results page moves gate 3 from 'one declared input that nothing verified' to 'verified by its digest, fetched by no resolution', with a paragraph under 'Gate 3: S48, read again'; VF-076 has a dated update saying the same, and that the machine's runner now has sources it may fetch from and a way for a job to ask for another. The pipeline was run for this one job by the session that submitted it, at the user's word (2026-11-28), since no watcher's runner was at work. No new finding: the job passed with nothing flagged.",
       "log_sha256": "dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062"
+    },
+    {
+      "change_id": "xsvqumnlpylntvyzokstolootznxxuux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5"
+    },
+    {
+      "change_id": "lrwumqxwmvnywpxmwpvospmlkpwwslzv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Fix four review findings an unattended run could meet in the pipeline that is now live",
+      "body": "The jobs line landed on 2026-11-28, so the default checkout's runner is its code, and the next queued run uses it. The review of that line had 18 findings open. The user chose to have the four that an unattended run could meet fixed now, and the rest go to a brief. Each fix has a test that showed the fault first.\n\nC3, a collect whose commit never happened. A collect writes results into the working copy and ends; the commit is its caller's. When the caller was stopped in between, the next collect found nothing staged and said nothing, so the keeper committed nothing, triaged nothing, and the hooks never ran for those results. A collect now notes each result it writes (.state/collected-not-committed.json) until the latest commit holds it; the view lists them (collectedNotCommitted), status has a line for them, and the next collect names them again under uncommitted, with the commit message and the hooks run again. The keeper collects when that list is not empty, and commits and triages what it names. Two tests of verification/test_capture.py asserted the old silence ('nothing to collect' with a result in no commit) and now assert that it is named until a commit holds it.\n\nC5, one bad job file taking the queue down. A job file that is JSON and not an object, or a job that names a revision git does not know, raised in the function every reader of the queue calls: the runner died and the view gave no rows. Each is now one invalid row with its reason, and the others run. C7, a job run twice across workspaces. The lock all workspaces share names one workspace, and a runner that started in another took it over, after which nothing knew of results still staged in the first: the view said queued and the new runner ran the job again. The runner that takes the lock now keeps the way to such a workspace (verification-staged.json beside the lock) for as long as it holds a staged result, counts those jobs as done and says so, and the view goes on reading them as finished there. R2, two resolution jobs for one request: resolve writes none for a key while a resolution job for it is written and not committed, or, with --again, on its way; a test that expected the second job (as a dry run) now expects the refusal, and another starts two resolutions of one key at once and finds one resolution and one reuse.\n\nVerified: jobs/test_view.py, 11 tests (three new, each through the pipeline in a throwaway repository); jobs/test_delayed_setup.py, 5; jobs/test_readiness.py, 25 (one new); llm-dlc/tools/test_queue_keeping.py, 9 (one new: results an earlier collect wrote are committed and triaged at the next look); verification/test_capture.py, 12; verification/test_pipeline.py, 52. The tests of what changed (python3 lib/tools/test_costs.py run --changed): 35 of 36 Python test files passed and verification/test_capture.py failed on the two assertions named above, which passes since. The new tests are in the cost inventory and its lint agrees. Not shown: any of the four on a real queue with a watcher at work.",
+      "log_sha256": "616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5"
     }
   ],
   "logs": {
@@ -16985,6 +17001,12 @@
       "lines": 16612,
       "gzip_bytes": 6795173,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/60dc4df66316194eda46c0a787ec86975c2bc553318c24a104035b642d2cc252.jsonl.gz"
+    },
+    "616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5": {
+      "bytes": 57512327,
+      "lines": 27898,
+      "gzip_bytes": 9613457,
+      "url": null
     },
     "62b24695794227dc2c1a76b46e9a30f83877eca23ada476fc7c05bd4657e7a2f": {
       "bytes": 48952035,

@@ -611,13 +611,18 @@ def committed_jobs(rev, needs_source=None, diagnostics=None):
     jobs = []
     jj_workspace = (ROOT / ".jj").exists()
     for path in paths:
+        def not_a_job(problem):
+            if diagnostics is None:
+                print(f"warn  {path}: {problem} at {rev[:12]}", file=sys.stderr)
+            else:  # for a view: the file is in the queue and is not a job, and a reader is told which and where
+                diagnostics.append({"path": path, "revision": rev, "id": layout.job_id_of(path), "problem": problem})
         try:
             job = json.loads(blobs[path])
         except (TypeError, ValueError) as e:
-            if diagnostics is None:
-                print(f"warn  {path}: not JSON at {rev[:12]}: {e}", file=sys.stderr)
-            else:  # for a view: the file is in the queue and is not a job, and a reader is told which and where
-                diagnostics.append({"path": path, "revision": rev, "id": layout.job_id_of(path), "problem": f"not JSON: {e}"})
+            not_a_job(f"not JSON: {e}")
+            continue
+        if not isinstance(job, dict):     # `[]`, a string: JSON, and no job. One such file is one row, never the whole queue's end
+            not_a_job(f"not a job: a JSON {type(job).__name__} where an object is expected")
             continue
         if needs_source is not None and not needs_source(job.get("id") or Path(path).stem):
             jobs.append((job, path, None))
@@ -628,7 +633,12 @@ def committed_jobs(rev, needs_source=None, diagnostics=None):
         # uncommitted work, even when some other workspace polls the queue during that split.
         if jj_workspace and message.partition("\n")[0] == "wip: another session's files":
             continue
-        jobs.append((job, path, resolve(job_revision(job) or commit)))
+        try:
+            source = resolve(job_revision(job) or commit)
+        except RuntimeError:      # a revision git does not know: this job cannot run, and the others can
+            not_a_job(f"its revision {job_revision(job)!r} is not a commit of this repository")
+            continue
+        jobs.append((job, path, source))
     return jobs
 
 
@@ -1168,6 +1178,14 @@ class Runner:
                 self.told_elsewhere.add(job_id)
                 print(f"note  {job_id}: its result is recorded in commit {head[:12]}, which this working copy is not "
                       f"on; not run again. Merge that commit to have the result here", flush=True)
+            done.add(job_id)
+        # A result staged in another workspace of this repository and not collected there yet: done as well. Its
+        # collect is made there, and running the job here would give it a second result.
+        for job_id, row in sorted(((workspace_elsewhere() or {}).get("finished") or {}).items()):
+            if job_id not in done and job_id not in self.told_elsewhere:
+                self.told_elsewhere.add(job_id)
+                print(f"note  {job_id}: its result is staged in the workspace {row.get('root') or 'of another runner'} and not collected "
+                      f"there yet; not run again. A collect in that workspace brings it", flush=True)
             done.add(job_id)
         return done
 
@@ -1889,6 +1907,37 @@ def repo_store(root: Path = None) -> Path | None:
     return None
 
 
+STAGED_ELSEWHERE = "verification-staged.json"   # in the shared store, beside the lock: see carried_workspaces
+
+
+def staged_results(root):
+    """The results staged in a workspace's state and not collected, by job id, each with its status, summary and
+    end (a cancelled one runs again, and is none). None when that state cannot be read."""
+    try:
+        finished = {}
+        for path in sorted((Path(root) / "verification" / ".state" / "results").iterdir()):
+            try:
+                result = json.loads((path / "result.json").read_text())
+            except (OSError, ValueError):
+                continue        # not written yet
+            if result.get("status") != "cancelled":     # a cancelled job runs again: it is not a result to collect
+                finished[path.name] = {k: result.get(k) for k in ("status", "summary", "finishedAt")}
+        return finished
+    except OSError:
+        return None
+
+
+def carried_workspaces(store):
+    """The workspaces of this repository, beside the one the lock names, where results are staged and not
+    collected. The lock names one workspace, the last whose runner started; a runner that starts in another one
+    takes the lock, and what the first left staged would then be known to nobody here: the view would say queued,
+    and the new runner would run the job a second time. So the runner that takes the lock keeps the way to it."""
+    try:
+        return [Path(r) for r in json.loads((store / STAGED_ELSEWHERE).read_text())["roots"] if isinstance(r, str)]
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
+
+
 def take_repo_lock(state: Path):
     """The runner's lock across every workspace of this repository (VF-051). Each workspace has its own .state and so
     its own runner.lock; on 2026-11-21 a run's agent started a second runner in its workspace, which started the jobs
@@ -1905,6 +1954,20 @@ def take_repo_lock(state: Path):
         holder = lock.read().strip() or "another workspace"
         sys.exit(f"another workspace's runner is at work in this repository ({holder}): run the queue from there, "
                  f"or stop that runner first; a runner per repository, since two run the same jobs")
+    # The workspace the lock named until now, and the ones carried before it: each is kept for as long as it holds
+    # a staged result nobody collected, since this runner must not run those jobs again and a view must find them.
+    lock.seek(0)
+    said = re.fullmatch(r"pid (\d+), (.+)", lock.read().strip())
+    keep = []
+    for root in [*([Path(said.group(2))] if said else []), *carried_workspaces(store)]:
+        if root.resolve() != ROOT.resolve() and str(root) not in keep and staged_results(root):
+            keep.append(str(root))
+    if keep:
+        partial = store / (STAGED_ELSEWHERE + ".partial")
+        partial.write_text(json.dumps({"roots": keep}) + "\n")
+        os.replace(partial, store / STAGED_ELSEWHERE)
+    else:
+        (store / STAGED_ELSEWHERE).unlink(missing_ok=True)
     lock.truncate(0)
     lock.write(f"pid {os.getpid()}, {ROOT}\n")
     lock.flush()
@@ -1923,36 +1986,35 @@ def workspace_elsewhere():
     store = repo_store()
     if store is None:
         return None
+    named = None
     try:
         said = re.fullmatch(r"pid (\d+), (.+)", (store / "verification-runner.lock").read_text().strip())
-        if not said:
-            return None
-        pid, root = int(said.group(1)), Path(said.group(2))
-        if root.resolve() == ROOT.resolve():
-            return None
+        if said and Path(said.group(2)).resolve() != ROOT.resolve():
+            named = (int(said.group(1)), Path(said.group(2)))
     except (OSError, ValueError):
-        return None
+        pass
+    # Workspaces the lock named before, which still hold a staged result (carried_workspaces): each of its results
+    # says which workspace it is in. They are read whoever holds the lock now, this workspace's own runner included.
+    carried = {}
+    for root in carried_workspaces(store):
+        if root.resolve() != ROOT.resolve() and (named is None or root.resolve() != named[1].resolve()):
+            for job_id, row in (staged_results(root) or {}).items():
+                carried.setdefault(job_id, {**row, "root": str(root)})
+    if named is None:
+        return {"pid": None, "root": next(iter(carried.values()))["root"], "running": [], "finished": carried} if carried else None
+    pid, root = named
     try:
         at_work = b"pipeline.py" in Path(f"/proc/{pid}/cmdline").read_bytes()
     except OSError:
         at_work = False
-    state = root / "verification" / ".state"
     try:
         # A claim outlives a runner that was killed, until the next one clears it: only a runner at work is running a job.
-        running = sorted(path.name for path in (state / "claims").iterdir()) if at_work else []
+        running = sorted(path.name for path in (root / "verification" / ".state" / "claims").iterdir()) if at_work else []
     except OSError:
         running = None
-    try:
-        finished = {}
-        for path in sorted((state / "results").iterdir()):
-            try:
-                result = json.loads((path / "result.json").read_text())
-            except (OSError, ValueError):
-                continue        # not written yet
-            if result.get("status") != "cancelled":     # a cancelled job runs again: it is not a result to collect
-                finished[path.name] = {k: result.get(k) for k in ("status", "summary", "finishedAt")}
-    except OSError:
-        finished = None
+    finished = staged_results(root)
+    if carried:
+        finished = {**carried, **(finished or {})}
     return {"pid": pid if at_work else None, "root": str(root), "running": running, "finished": finished}
 
 
@@ -2075,6 +2137,15 @@ def cmd_resolve(args):
     wanted = lambda r: (not args.keys or any(r["key"].startswith(k) for k in args.keys)) and (r["unanswered"] or (args.again and args.keys))
     written, skipped = [], []
     at = now()
+    uncommitted_resolvers = {}       # key -> the file of a resolution job in the working copy that no commit of the queue holds
+    for row in view["jobs"]:
+        if row["state"] == "uncommitted" and row.get("path"):
+            try:
+                labels = json.loads((ROOT / row["path"]).read_text()).get("labels") or {}
+            except (OSError, ValueError, AttributeError):
+                continue
+            for k in labels.get("readiness") or []:
+                uncommitted_resolvers.setdefault(k, row["path"])
     for request in view["readiness"]:
         if not wanted(request):
             continue
@@ -2097,6 +2168,16 @@ def cmd_resolve(args):
             write_json(path, operation)
         if readiness.key(operation) != key:
             skipped.append({"key": key, "why": f"{path.relative_to(ROOT)} is not the operation of that key (its own is {readiness.key(operation)[:12]})"})
+            continue
+        # One resolution of a key at a time: a job written and not yet committed counts (a second `resolve` before
+        # the commit wrote a second job), and `--again` does not write beside one that is on its way.
+        on_its_way = request["resolvers"][-1:] if request["state"] == "waiting" and request["resolvers"] else []
+        if on_its_way:
+            skipped.append({"key": key, "why": f"resolution job {on_its_way[0]} for it has not finished: its receipt answers the request"})
+            continue
+        if key in uncommitted_resolvers:
+            skipped.append({"key": key, "why": f"a resolution job for it is written and not committed yet ({uncommitted_resolvers[key]}): "
+                                               "the commit of that file is its admission"})
             continue
         lacking = sources_not_allowed(config, key, operation)
         if lacking:
@@ -2129,6 +2210,7 @@ def cmd_resolve(args):
         if not args.dry_run:
             write_json(target, ordered({"$schema": schema_ref(target, "job.schema.json", True), **job}))
         written.append({"key": key, "job": job["id"], "path": target.relative_to(ROOT).as_posix(), "wantedBy": request["wantedBy"]})
+        uncommitted_resolvers[key] = written[-1]["path"]
     if args.json:
         print(json.dumps({"schema": "itl-job-resolve/v1", "written": written, "skipped": skipped}, indent=2))
         return 0
@@ -2416,9 +2498,10 @@ def lifecycle_view(config, revs, full=()):
                        claim={"where": "another-workspace", "root": runner_away["root"], "pid": runner_away["pid"], "at": None, "host": None, "alive": True})
         elif job_id in staged_away:
             # It ran there and waits for that workspace's collect: not queued, though nothing of it is on this side yet.
-            row.update(state="finished", why=f"its result is staged in the workspace {there['root']}, whose runner ran it, and comes "
+            where = staged_away[job_id].get("root") or there["root"]
+            row.update(state="finished", why=f"its result is staged in the workspace {where}, whose runner ran it, and comes "
                                              f"with the collect made there",
-                       result={"where": "staged-elsewhere", "root": there["root"], **staged_away[job_id]})
+                       result={"where": "staged-elsewhere", "root": where, **staged_away[job_id]})
         else:
             problems = validate({k: v for k, v in job.items()}, "job.schema.json")
             try:
@@ -2538,6 +2621,9 @@ def lifecycle_view(config, revs, full=()):
         # The last collect on this machine: what it collected, and how each hook after it ended. A hook that
         # failed stays here until the next collect, whatever became of the jobs.
         "lastCollect": last_collect and {k: last_collect.get(k) for k in ("at", "collected", "hooks")},
+        # Results a collect wrote into this working copy that the latest commit does not hold: owed a commit, and a
+        # reading, by whoever keeps the queue (`collect` names them again and gives the message).
+        "collectedNotCommitted": collected_not_committed(state),
         "readiness": sorted(requests.values(), key=lambda e: e["key"]),
         # What this machine's runner may fetch from, and what a waiting request asks for beside it.
         "sources": {"allowed": list(config["runner"]["fetch_allow"]), "asked": sorted(asked.values(), key=lambda a: a["url"])},
@@ -2628,6 +2714,9 @@ def cmd_status(args):
     hooks = [h for h in (view.get("lastCollect") or {}).get("hooks") or [] if h.get("exitCode")]
     for hook in hooks:
         print(f"the last collect's hook failed, and nothing has run it since: {hook['command']}: exit {hook['exitCode']}")
+    if view.get("collectedNotCommitted"):
+        print(f"collected, and in no commit yet: {', '.join(view['collectedNotCommitted'])} (`collect` names them again with the "
+              "message for their commit)")
     for ask in (view.get("sources") or {}).get("asked") or []:
         print(f"a source is asked for that this machine may not fetch from, and the user decides (`pipeline.py sources`): {ask['url']}, "
               f"{ask['for']}, for {', '.join(ask['wantedBy'])}")
@@ -3075,8 +3164,11 @@ def cmd_collect(args):
     else:  # a cancelled job runs again; collect it only by name
         ids = [i for i in ids if json.loads((state / i / "result.json").read_text()).get("status") != "cancelled"]
     say = (lambda *a, **k: None) if args.json else print   # with --json the report is the one thing printed
-    report = {"schema": "itl-job-collect/v1", "at": iso(now()), "collected": [], "already": [], "hooks": [], "commit": None}
-    if not ids:
+    report = {"schema": "itl-job-collect/v1", "at": iso(now()), "collected": [], "already": [], "uncommitted": [], "hooks": [], "commit": None}
+    # What an earlier collect wrote into the working copy and no commit holds yet: this collect says it again, so
+    # that whoever commits after it (the keeper) commits, reads and triages those results too.
+    owed = collected_not_committed(config["runner"]["state_dir"], forget=True)
+    if not ids and not owed:
         print(json.dumps(report, indent=2)) if args.json else print("nothing to collect")
         return 0
     applied_any, lines, fresh = False, [], []
@@ -3094,6 +3186,7 @@ def cmd_collect(args):
             kept_result = json.loads((dest / "result.json").read_text())
             if capture and not (src / COLLECTED_MARK).exists():  # stopped between writing the result and sealing it
                 capture.after_collect(ROOT, config["runner"]["state_dir"], job_id, dest, kept_result)
+            note_collected(config["runner"]["state_dir"], job_id)    # in the tree, by a collect stopped before it could say so
             released = release_staged(capture, config, job_id, src, dest, kept_result, result)
             report["already"].append({"id": job_id, "status": kept_result["status"], "released": bool(released)})
             if released:
@@ -3147,6 +3240,7 @@ def cmd_collect(args):
         if "$schema" in result:
             result["$schema"] = schema_ref(dest / "result.json", "result.schema.json", result.get("schema") == RESULT_SCHEMA_V2)
         write_json(dest / "result.json", result)
+        note_collected(config["runner"]["state_dir"], job_id)    # in the tree from here on, and owed a commit
         if capture:
             capture.after_collect(ROOT, config["runner"]["state_dir"], job_id, dest, result)
         (src / COLLECTED_MARK).write_text(iso(now()) + "\n")  # written and sealed: only the release is left
@@ -3164,6 +3258,20 @@ def cmd_collect(args):
                                     "conclusion": (result.get("conclusion") or {}).get("verdict"), "attention": result["attention"]})
         say(f"{job_id}: {result['status']}: applied {len(applied)}, conflicts {len(conflicts)}, kept {len(kept)}")
     write_index()
+    earlier = []
+    for job_id in collected_not_committed(config["runner"]["state_dir"]):
+        if job_id in fresh:
+            continue
+        try:
+            kept_result = json.loads((layout.find_result(ROOT, job_id) / "result.json").read_text())
+        except (OSError, ValueError, TypeError):
+            continue
+        was = kept_result.get("collected") or {}
+        earlier.append(job_id)
+        applied_any = applied_any or bool(was.get("applied"))       # what regenerates from them may never have run
+        report["uncommitted"].append({"id": job_id, "status": kept_result.get("status"), "applied": was.get("applied") or [],
+                                      "conflicts": was.get("conflicts") or [], "attention": kept_result.get("attention") or []})
+        say(f"{job_id}: {kept_result.get('status')}: collected before, and in no commit yet")
     if applied_any:
         # What regenerates from the outputs applied. Its outcome is its own: the results are collected whatever it
         # exits with, and a hook that failed is said, kept (STATE/last-collect.json) and shown by `status` and
@@ -3175,9 +3283,11 @@ def cmd_collect(args):
             say(f"after collect: {command}: exit {proc.returncode}")
             if proc.returncode:
                 say((proc.stdout + proc.stderr)[-2000:])
-    if fresh:
-        report["commit"] = {"summary": f"Record verification results for {len(fresh)} job(s)",
-                            "body": collect_totals(tally, len(fresh)) + " " + " ".join(lines)}
+    if fresh or earlier:
+        told = ([collect_totals(tally, len(fresh)) + " " + " ".join(lines)] if fresh else []) + \
+               ([f"{len(earlier)} result(s) were written into the working copy by an earlier collect that no commit followed, and are "
+                 f"recorded with this one: {', '.join(earlier)}."] if earlier else [])
+        report["commit"] = {"summary": f"Record verification results for {len(fresh) + len(earlier)} job(s)", "body": " ".join(told)}
         say("\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
         say(f"  {report['commit']['summary']}")
         say("  " + report["commit"]["body"])
@@ -3202,6 +3312,49 @@ def cmd_collect(args):
 
 
 COLLECTED_MARK = ".collected"  # in a staged result: its collected form is written and sealed, and it only waits to go
+NOT_COMMITTED = "collected-not-committed.json"   # in the state: the results a collect wrote into the tree, until a commit holds them
+
+
+def note_collected(state_dir, job_id):
+    """Note that a collect wrote this job's result into the working copy. A collect ends there, and the commit is
+    someone else's (the keeper's, a session's): when that someone is stopped first, the next collect finds nothing
+    staged and says nothing, and the results would lie in the working copy with nobody told (finding C3 of the review
+    of 2026-11-28). The note is what the next collect, the view and the keeper read."""
+    path = Path(state_dir) / NOT_COMMITTED
+    try:
+        noted = [i for i in json.loads(path.read_text()) if isinstance(i, str)]
+    except (OSError, ValueError, TypeError):
+        noted = []
+    if job_id not in noted:
+        partial = path.with_name(path.name + ".partial")
+        partial.write_text(json.dumps([*noted, job_id]) + "\n")
+        os.replace(partial, path)
+
+
+def collected_not_committed(state_dir, forget=False):
+    """The results a collect here wrote into the working copy that the latest commit does not hold, by job id, in
+    the order they were collected. `forget`: also drop from the note what is committed by now or is gone."""
+    path = Path(state_dir) / NOT_COMMITTED
+    try:
+        noted = [i for i in json.loads(path.read_text()) if isinstance(i, str)]
+    except (OSError, ValueError, TypeError):
+        return []
+    rels = {}
+    for job_id in noted:
+        folder = layout.find_result(ROOT, job_id)
+        if folder and (folder / "result.json").exists():
+            rels[job_id] = (folder / "result.json").relative_to(ROOT).as_posix()
+    committed = set()
+    if rels:
+        listed = git("ls-tree", "-r", "--name-only", default_rev(), "--", *rels.values(), check=False)
+        committed = set(listed.stdout.split()) if listed.returncode == 0 else set()
+    owed = [i for i in noted if i in rels and rels[i] not in committed]
+    if forget and owed != noted:
+        if owed:
+            path.write_text(json.dumps(owed) + "\n")
+        else:
+            path.unlink(missing_ok=True)
+    return owed
 
 
 def already_collected(dest: Path, staged_digest: str) -> bool:

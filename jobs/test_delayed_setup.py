@@ -157,7 +157,9 @@ class DelayedSetup(unittest.TestCase):
         said = json.loads(self.repo.pipeline("resolve", "--json", env=self.env).stdout)
         resolver = said["written"][0]["job"]
         self.assertEqual((len(said["written"]), said["written"][0]["key"]), (1, key))
-        self.assertEqual(json.loads(self.repo.pipeline("resolve", "--json", "--dry-run", env=self.env).stdout)["written"][0]["key"], key)
+        # Until that commit the job is a file in the working copy, and a second look writes no second one beside it.
+        before_commit = json.loads(self.repo.pipeline("resolve", "--json", "--dry-run", env=self.env).stdout)
+        self.assertEqual((before_commit["written"], [row["key"] for row in before_commit["skipped"]]), ([], [key]))
         self.repo.commit("admit the resolution")
         self.repo.pipeline("nudge")
         self.assertEqual(json.loads(self.repo.pipeline("resolve", "--json", env=self.env).stdout)["written"], [])   # it is on its way: no second one
@@ -191,7 +193,15 @@ class DelayedSetup(unittest.TestCase):
         consumer = self.consumer("Build and read the module", "T01")
         self.repo.commit("the case")
         resolver = json.loads(self.repo.pipeline("resolve", "--json", env=self.env).stdout)["written"][0]["job"]
+        # One resolution job for a request: a second look before the commit writes no second one, and neither does
+        # `--again` while the first is on its way.
+        second = json.loads(self.repo.pipeline("resolve", "--json", env=self.env).stdout)
+        self.assertEqual((second["written"], [row["key"] for row in second["skipped"]]), ([], [key]))
+        self.assertIn("a resolution job for it is written and not committed yet", second["skipped"][0]["why"])
         self.repo.commit("admit the resolution")
+        early = json.loads(self.repo.pipeline("resolve", key[:12], "--again", "--json", env=self.env).stdout)
+        self.assertEqual((early["written"], early["skipped"][0]["why"]),
+                         ([], f"resolution job {resolver} for it has not finished: its receipt answers the request"))
         out = self.repo.pipeline("run", "--rev", "HEAD", env=self.env).stdout
         self.assertIn(f"{resolver}: failed", out)
         self.assertIn(f"{consumer}: blocked: readiness {key[:12]} was withheld at the fetch stage (absent)", out)

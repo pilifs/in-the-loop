@@ -35,8 +35,9 @@ FAKE_PIPELINE = textwrap.dedent('''\
         pending = [line.split(None, 1) for line in (state / "pending").read_text().splitlines()] if (state / "pending").exists() else []
         jobs = [{"id": i, "state": s, "why": None} for i, s in pending] + [{"id": d, "state": "finished", "why": None} for d in done]
         asked = json.loads((state / "requests").read_text()) if (state / "requests").exists() else []
+        owed = json.loads((state / "owed").read_text()) if (state / "owed").exists() else []
         print(json.dumps({"schema": "itl-job-lifecycle/v1", "idle": not jobs, "runner": {"pid": None, "atWork": False}, "jobs": jobs,
-                          "readiness": asked}))
+                          "readiness": asked, "collectedNotCommitted": owed}))
     elif cmd == "resolve":
         asked = json.loads((state / "requests").read_text())
         written, skipped = [], []
@@ -65,8 +66,12 @@ FAKE_PIPELINE = textwrap.dedent('''\
             shutil.rmtree(results / name)
             collected.append({"id": name, "status": r["status"], "applied": [], "conflicts": [], "kept": []})
         hooks = [{"command": "regenerate the table", "exitCode": 3, "output": "the table's source is missing"}] if os.environ.get("STANDIN_HOOK_FAILS") else []
+        # What an earlier collect wrote into the working copy and no commit followed: named again, with the message.
+        owed = json.loads((state / "owed").read_text()) if (state / "owed").exists() else []
+        (state / "owed").unlink(missing_ok=True)
         print(json.dumps({"schema": "itl-job-collect/v1", "collected": collected, "already": [], "hooks": hooks,
-                          "commit": {"summary": f"Record verification results for {len(done)} job(s)",
+                          "uncommitted": [{"id": name, "status": "failed", "applied": [], "conflicts": [], "attention": []} for name in owed],
+                          "commit": {"summary": f"Record verification results for {len(done) + len(owed)} job(s)",
                                      "body": f"Outputs applied for 0 of the {len(done)} job(s)."}}))
     elif cmd == "commit-paths":
         print("verification")
@@ -194,6 +199,20 @@ class KeepingTheQueue(test_landing.Fixture):
         self.assertIn(f"a waiting job asks for a source this machine may not fetch from ({source}): tell the user", thing["note"])
         self.assertIn("never add one to the settings yourself", thing["note"])
         self.assertEqual((self.head("description"), list((self.root / "verification").glob("jobs/*resolve*"))), (before, []))   # nothing written, nothing committed
+
+    @cost("tool")
+    def test_results_an_earlier_collect_wrote_and_nobody_committed_are_committed_and_triaged_at_the_next_look(self):
+        # As a collect leaves them when its keeper is stopped before the commit: in the working copy, and staged nowhere.
+        folder = self.root / "verification/results" / self.JOB
+        folder.mkdir(parents=True)
+        (folder / "result.json").write_text(json.dumps({"status": "failed", "summary": f"{self.JOB} failed", "attention": ["out of memory at 2G"]}))
+        self.assertIsNone(queue_keeping.tend(self.run))                 # nothing is back, and nothing says a result is owed a commit
+        (self.state / "owed").write_text(json.dumps([self.JOB]))
+        thing = queue_keeping.tend(self.run)
+        self.assertEqual([(r["id"], r["status"]) for r in thing["collected"]], [(self.JOB, "failed")])
+        self.assertEqual([(a["id"], a["attention"]) for a in thing["attention"]], [(self.JOB, ["out of memory at 2G"])])
+        self.assertIn("Record verification results for 1 job(s)", self.head("description"))
+        self.assertEqual(self.jj(self.root, "diff", "-r", "@-", "--name-only").split(), [f"verification/results/{self.JOB}/result.json"])
 
     def test_a_hook_that_failed_after_the_results_were_collected_is_for_someone_to_look_at(self):
         self.back(self.JOB, "passed")

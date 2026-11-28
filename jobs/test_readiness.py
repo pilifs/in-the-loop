@@ -192,6 +192,22 @@ class OneRequestResolvesTheWholeTask(NestedBuild):
             self.assertNotEqual(readiness.key(lower), first["key"], level)
             self.assertEqual(self.store.check(readiness.key(lower))["state"], "waiting", level)
 
+    def test_two_resolutions_of_one_request_at_once_are_one_resolution_and_the_second_finds_its_receipt(self):
+        receipts = [None, None]
+
+        def one(n):
+            receipts[n] = readiness.resolve(self.operation(), self.store, self.cwd, self.dir / f"work-{n + 1}", [self.url], by={"job": f"made-up-{n}"})
+        threads = [threading.Thread(target=one, args=(n,)) for n in range(2)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(120)
+        self.assertEqual([r["state"] for r in receipts], ["ready", "ready"], [r.get("why") for r in receipts])
+        self.assertEqual(sorted(bool(r.get("reused")) for r in receipts), [False, True])      # one ran the rounds; the other waited and read its receipt
+        self.assertEqual(len({r["bundle"]["digest"] for r in receipts}), 1)
+        self.assertEqual(len([p for p in Quiet.seen if not p.endswith(".sha1")]), 5)        # each file was asked of the repository once
+        self.assertIsNone(self.store.verify(receipts[0]["key"]) or None)
+
     def test_a_bundle_that_changed_since_its_receipt_is_not_handed_out_and_is_resolved_again(self):
         receipt = self.resolve()
         tampered = self.store.bundle(receipt["key"]) / "m2/g/stage-one/1.0/stage-one-1.0.pom"
