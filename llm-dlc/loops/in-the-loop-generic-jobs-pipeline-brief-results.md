@@ -23,17 +23,22 @@ run's agent, because the commits before it had each run only the tests their own
 pipeline is shared code whose reach those cannot show. A commit after it changes the tree, so a promotion
 still runs its own.
 
-**For whoever lands this line.** The default checkout's runner is the pipeline of before until the line is
-merged there, and it does not run a job of the second format: a runner started after the merge does. The two
-S48 jobs' results and the gate's record are on the collector's line (jj changes `vwpuvpmxysoq` and
-`tosuzksqrzkx`), not on this one, and come together with it at the merge. VF-080's 947 kept outputs can be
-sealed then, in the default checkout, with `python3 jobs/pipeline.py recover --kept-outputs`. Nothing in this
-run's commits changes a record under `verification/jobs` or `verification/results` that was there before it.
-**A resolution job starts only on a runner that may fetch**: `fetch_allow` is empty in every settings file, so
-the first job submitted with `--needs-readiness` waits, and its resolution job is `unschedulable`, until the
-machine's `pipeline.toml` names the sources (Maven Central at least). That is the user's decision, and it is the
-one thing a landing does not bring. And read *The review of 2026-11-28* below before relying on a part of this
-line: it lists what is known to be wrong in it.
+**The line landed on 2026-11-28** (the watcher's landing merge, `develop` at `8fccc17a`), and the pipeline of the
+default checkout is this one since. What was done after it, in the default checkout, by the session that had
+been the run's agent, with the user:
+
+| What | State |
+|---|---|
+| The whole default run on the landed line | It failed in one place, 100 of 101: three unit tests of the fourth cycle were not in the cost inventory (`lib/tools/test_tier_lint.py`). Entered, and nothing else of the inventory changed (`uwtnszwqxsry`); the run then passed, **101 of 101** (recorded for tree `08814bbf7975`; one cargo test was flaky and passed on its second run). Later commits change the tree, so a promotion runs its own |
+| The sources this machine's runner may fetch from | The user's decision: Maven Central, the Gradle plugin portal, Gradle's distributions and `repo.spring.io`, in the machine's `pipeline.local.toml`. A job that needs another source now asks: no resolution is admitted for it, it waits with the source named, `python3 jobs/pipeline.py sources` lists what is asked for, and `sources allow URL` is a person's command (`rowlvrkvpkys`) |
+| VF-080's kept outputs | Sealed: `recover --kept-outputs` found 17 things nothing had sealed and sealed all 17; the archive reports every sealed original verified off the machine |
+| Gate 3's unverified input | Verified by its digest, at the user's choice: 21 of 21 (`nxwupnxuttrz`, job `20261128-134250-…`, recorded in `sovkqtzyyxmz`; see *Gate 3: S48, read again*) |
+| The review's findings an unattended run could hit | C3, C5, C7 and the rest of R2 fixed, each with a test (`lrwumqxwmvny`), and C6's first fix found not to have worked and put right (`rowlvrkvpkys`); the rows of *The review of 2026-11-28* say how |
+| The control on all 47 offline S cases | The user's decision: after the fetch phase the build tool drives, so that it also measures what that phase saves |
+| What is left | A brief of its own: [`in-the-loop-build-driven-fetch-brief.md`](in-the-loop-build-driven-fetch-brief.md), drafted for the user to review and queue |
+
+Read *The review of 2026-11-28* below before relying on a part of this line: it lists what is known to be wrong
+in it.
 
 ## Decisions taken in the run, with their reasons
 
@@ -78,28 +83,25 @@ line: it lists what is known to be wrong in it.
 
 ## What is left, in the order planned
 
-For whoever continues (a later cycle of this run, or the next run). Items 1 to 8 of the first three cycles are
-done or are in the list below; their sections follow.
+Since the landing, what is left is the subject of a brief of its own,
+[`in-the-loop-build-driven-fetch-brief.md`](in-the-loop-build-driven-fetch-brief.md) (drafted on 2026-11-28 for the
+user to review and queue). In short, and in order:
 
-1. **Read the job that was running when the fourth cycle ended**, on the collector's line (`python3
-   jobs/pipeline.py view --state recorded-elsewhere` names the commit; a job's record is under its result's
-   `outputs/`, not at the source path): `20261128-023835-replay-eight-of-the-s-batch-s-first-setu`, the control
-   on eight cases with the first pass's snapshots kept. *Done before the cycle ended: all eight came ready (see
-   The S batch's first setup, as a control).*
-2. **A fetch phase the build tool drives**, for graphs that rounds discover too slowly (S11: ten failed rounds)
-   or cannot discover (Maven: one artifact a failure, so S48's plugin closure of some hundred artifacts is out of
-   reach of rounds): the task run once with the network reachable only through a proxy that admits the
-   operation's repositories, into a staging cache that is then verified and published as the bundle. It also
-   closes the open half of the fetch restriction (a firewall, not the fetcher's own rule) and S48's undeclared
-   home repository, which could then be resolved instead of copied.
-3. **The control on all 47 offline cases** (`gate.py --cases all`), once item 2 or the second run says what a
-   case costs: about 28 minutes a case by rounds, four to six at a time.
-4. **The review's open findings**, in the tables below. In order of what an unattended run would hit first:
-   C3 (a collect stopped part-way), C5 (one bad job file takes the queue down), C6's open half (the keeper after
-   a skipped request), C7 (a job run twice across workspaces), R2's open half (two resolver jobs for one key),
-   C9, C14; then the brief's cells B2 to B5, B9, B10, B12 to B14; then R8 to R11.
-5. **What needs the line landed**: a watcher's whole cycle on this code, `fetch_allow` in the machine's settings
-   (the user's decision), VF-080's 947 kept outputs sealed, and the comparison on the next natural large batch.
+1. **A fetch phase the build tool drives**, for graphs that rounds discover too slowly (S11: ten failed rounds
+   of thirteen minutes in all) or cannot discover (Maven names one artifact a failure, so S48's plugin closure
+   of 770 files is out of reach of rounds, and is a verified copy today): the task run once with the network
+   reachable only through a proxy that admits the sources the machine allows, into a staging cache that is then
+   verified and published as the bundle, and proved by the same offline run as now. It also closes the open half
+   of the fetch restriction (a firewall, and not only the fetcher's own rule).
+2. **The control on all 47 offline S cases** (`gate.py --cases all`), after item 1 (the user's decision,
+   2026-11-28), so that it measures what that phase saves: by rounds it is about five hours at four jobs at a
+   time, and its memory estimate has to rise (four jobs peaked at 21 GiB).
+3. **The review's findings that are still open**, in the tables below: C6's last part (whether the keeper goes
+   on to start the runner after a skipped request), C9 (a runner stopped between steps records `failed`, not
+   `cancelled`), C14 (`keep_workdirs = "always"` undone by a collect's prune); the brief's cells B2 to B5, B9,
+   B10, B12 to B14; and R8 to R11. C3, C5, C7 and R2 were fixed after the landing.
+4. **What only use can show**: a watcher's whole cycle on this code with a real queue, and the comparison on
+   the next natural large batch (gate 5).
 
 ## The review of 2026-11-28: what three fresh readers found
 
@@ -136,11 +138,11 @@ the audit. Between them, 42 findings. Each is listed here with what became of it
 |---|---|---|
 | C1 | `verification/capture.py` raised on an output declared as an object (every resolution job's, any `--optional-output`): the run was reported "not sealed", and `recover` hit the same error at every start | **fixed** `typnwnxwvrnt` (no test of its own yet) |
 | C2 | Anything raised after the `try` in `Runner.execute` strands the job: its claim, worker, CPUs and memory stay held, and after a restart it dies again. Triggers: a duration of `0s`, a `submitted.at` with no offset, a full disk | **fixed** `kmuwxnmxmysk`: the job is released and the runner says so; the two triggers no longer raise (tests of the triggers, none of the release) |
-| C3 | A collect stopped after writing results and before the keeper's commit: the next collect lists them as already collected, so the keeper commits nothing, triages nothing, and `after_collect` hooks never run for them | open |
+| C3 | A collect stopped after writing results and before the keeper's commit: the next collect lists them as already collected, so the keeper commits nothing, triages nothing, and `after_collect` hooks never run for them | **fixed** after the landing (2026-11-28, `lrwumqxwmvny`), with tests: a collect notes each result it writes until the latest commit holds it; the view (`collectedNotCommitted`), `status` and the next `collect` (`uncommitted`, with the message, hooks run again) name what no commit followed, and the keeper commits and triages it |
 | C4 | A runner killed mid-job, with nothing else queued, leaves the job `running` for ever: the claim is dead, `idle` is false, and the keeper starts no runner because nothing can start | **fixed** `kmuwxnmxmysk`: such a job reads `queued`, with the reason (no test of its own yet) |
-| C5 | One job file takes the queue down: a `revision` git cannot resolve makes `committed_jobs` raise (the runner dies, `view` gives no rows and `idle: null`, the keepers do and say nothing); a job file that is `[]` makes `view` exit 1. Inherited from the old runner | open |
-| C6 | A readiness request committed in another workspace (the normal case for a run's agent) could not be admitted: the watcher's `resolve` read the operation from its own working copy and skipped, at every look | **fixed in part** `typnwnxwvrnt`: `resolve` reads the operation at the asking job's commit and writes it into the admitting commit. Not exercised across two workspaces; whether the keeper goes on to start the runner after a skip is open |
-| C7 | A job staged and uncollected in one workspace runs again when a runner starts in another: `done_ids` ignores the other workspace's staged results, and taking the repository lock overwrites the only pointer to it | open |
+| C5 | One job file takes the queue down: a `revision` git cannot resolve makes `committed_jobs` raise (the runner dies, `view` gives no rows and `idle: null`, the keepers do and say nothing); a job file that is `[]` makes `view` exit 1. Inherited from the old runner | **fixed** after the landing (`lrwumqxwmvny`), with a test: a file that is not a JSON object, or a job whose revision git does not know, is one `invalid` row with its reason; the view and the runner go on with the others |
+| C6 | A readiness request committed in another workspace (the normal case for a run's agent) could not be admitted: the watcher's `resolve` read the operation from its own working copy and skipped, at every look | **fixed** `typnwnxwvrnt` and, after the landing, `rowlvrkvpkys`: the first fix read the asking job's commit through a field that is a string, inside a handler that swallowed the error, so it never worked. `resolve` now reads the operation at the job's commit or the queue's head, and a test removes the file from the working copy first. Whether the keeper goes on to start the runner after a skip is still open |
+| C7 | A job staged and uncollected in one workspace runs again when a runner starts in another: `done_ids` ignores the other workspace's staged results, and taking the repository lock overwrites the only pointer to it | **fixed** after the landing (`lrwumqxwmvny`), with a test: a runner that takes the lock keeps the way to a workspace that still holds staged results (`verification-staged.json` beside the lock), counts those jobs as done and says so; the view goes on reading them as `finished` there |
 | C8 | Test evidence counts reports the step did not write (an earlier step's, or committed XML): the promise is kept by tests that did not run. And the reverse: a passing Gradle run and `pytest -q` print no line the log reader knows, so a promise with no `reports` fails | first half **fixed** (the commit after `mpkpzsmworwq`): only reports written since the step began count, with a test. Open: the README does not yet say that a Gradle step needs `--test-reports` |
 | C9 | A runner stopped during preparation or between steps records `error` or `failed`, not `cancelled`: the job is never run again and its dependents are blocked | open |
 | C10 | `idle: true` while a job runs whose file is in no commit of the queue (deleted mid-run, `run --rev`): it has no row | **fixed** `kmuwxnmxmysk` (no test of its own yet) |
@@ -156,7 +158,7 @@ the audit. Between them, 42 findings. Each is listed here with what became of it
 | # | Finding | State |
 |---|---|---|
 | R1 | A parent POM whose `.sha1` could not be fetched stayed in staging and was published and laid, unverified, over the base's good copy | **fixed** `typnwnxwvrnt`, before it was committed: a file is in staging verified or not at all, with a test |
-| R2 | Two resolutions of one key were not serialised: a late failure wrote its receipt over a ready one, and a late success renamed the other's bundle away. `unanswered` counts committed resolver jobs only, so a second `resolve` before the commit writes a second job; `resolve KEY --again` never checks for one on its way | lock a key **fixed** `typnwnxwvrnt`. Open: uncommitted resolver files are not counted, and no test runs two at once |
+| R2 | Two resolutions of one key were not serialised: a late failure wrote its receipt over a ready one, and a late success renamed the other's bundle away. `unanswered` counts committed resolver jobs only, so a second `resolve` before the commit writes a second job; `resolve KEY --again` never checks for one on its way | lock a key **fixed** `typnwnxwvrnt`; the rest **fixed** after the landing (`lrwumqxwmvny`), with tests: `resolve` writes no job for a key while a resolution job for it is written and not committed, or, with `--again`, on its way; and two resolutions of one key started at once end as one, the second reading the first's receipt |
 | R3 | `base.asOf` went by mtime, which Maven sets to the repository's last-modified time (1,102 of the S cache's 4,295 `m2` files are dated before the cache was made); the consumer recomputed what is left out and never compared it with the receipt | **fixed** `typnwnxwvrnt`: the later of a file's two times, and a view laid later is refused when what it leaves out differs (`drift`) |
 | R4 | One unfetchable coordinate ended the resolution, and the patterns made such coordinates: `g:a:.` gave an empty version, Maven's `g:a:jar:tests:1.0` the version `tests`. Two wordings were not read at all | **fixed** `typnwnxwvrnt`, with a test |
 | R5 | `overlay`: a symlinked folder on the way to a laid or left-out path was linked whole, and the files were then laid inside the base itself; a nested `view.walk` is ignored unless something special lies under it; `./m2/x` and `m2//y` passed and were silently not left out; `layout.maven: "m2/"` made `equip` write under `/` | **fixed** `typnwnxwvrnt` but for the nested `view.walk`, which is open |
