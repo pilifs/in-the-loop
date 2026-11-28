@@ -84,9 +84,8 @@ done or are in the list below; their sections follow.
 1. **Read the job that was running when the fourth cycle ended**, on the collector's line (`python3
    jobs/pipeline.py view --state recorded-elsewhere` names the commit; a job's record is under its result's
    `outputs/`, not at the source path): `20261128-023835-replay-eight-of-the-s-batch-s-first-setu`, the control
-   on eight cases with the first pass's snapshots kept. Record it here (*The S batch's first setup, as a
-   control*) and in VF-070: how many of the six cases whose first job failed on a module came ready, in how many
-   rounds, and whether any file was reused between cases.
+   on eight cases with the first pass's snapshots kept. *Done before the cycle ended: all eight came ready (see
+   The S batch's first setup, as a control).*
 2. **A fetch phase the build tool drives**, for graphs that rounds discover too slowly (S11: ten failed rounds)
    or cannot discover (Maven: one artifact a failure, so S48's plugin closure of some hundred artifacts is out of
    reach of rounds): the task run once with the network reachable only through a proxy that admits the
@@ -597,9 +596,29 @@ want of an input (the first run of 2026-11-27 had five failed jobs for these fiv
 transplants, which did not separate the pins then, failed the same way now and nothing else did. What it does
 not show: the three cases the gate's own state withheld; any case beyond five; a batch admitted by a watcher.
 
-**The second run**, with the first pass's snapshots kept: job `20261128-023835-replay-eight-of-the-s-batch-s-first-setu`
-(S01, S02, S08, S11, S15, S25, S42, S46). It was running when this page was last written; its record will be
-its output `control.json` on the collector's line. The gate takes `--cases all` for the 47 offline cases.
+**The second run**, with the first pass's snapshots kept: job `20261128-023835-replay-eight-of-the-s-batch-s-first-setu`,
+eight cases, four jobs at a time, 51m32s, 21.0 GiB at its peak (estimated 16), **11 of 11 checks** (collector's
+jj change `ytqxsqxkstwl`; the record is the job's output `control.json`). **All eight came ready, each by its one
+request. Six jobs then passed every step offline, two failed on the transplant alone, as they did on 2026-11-27,
+and none failed for want of an input.**
+
+| Case | Its jobs on 2026-11-27 | Rounds | Modules named, a round | Fetched (of them from the pool) | Tests in the resolution's last round | Its job, offline |
+|---|---|---|---|---|---|---|
+| S01 | first failed, rerun passed | 6 | 1, 3, 6, 2, 8 | 38 files, 9.6 MB (38) | 41 | passed, 21 tests at the fix |
+| S02 | first failed, rerun passed | 6 | 2, 6, 6, 2, 8 | 48 files, 12.5 MB (38) | 320 | passed, 163 |
+| S08 | first failed, rerun passed | 6 | 2, 4, 6, 2, 8 | 42 files, 10.9 MB (38) | 43 | passed, 22 |
+| S11 | first failed, rerun failed on the transplant alone | 11 | 3, 5, 7, 3, 11, 2, 2, 8, 11, 3 | 120 files, 44.0 MB (38) | 41 | failed on the transplant alone, 23 |
+| S15 | first failed, rerun passed | 11 | 3, 15, 13, 8, 20, 12, 9, 5, 3, 1 | 182 files, 38.2 MB (33) | 59 | passed, 33 |
+| S25 | first failed, rerun passed | 13 | 15, 15, 15, 9, 13, 5, 1, 1, 16, 2, 3, 1 | 198 files, 34.5 MB (111) | 114 | passed, 58 |
+| S42 | first failed, rerun passed | 6 | 2, 6, 6, 2, 8 | 48 files, 12.7 MB (0: it was first) | 70 | passed, 36 |
+| S46 | first failed on the transplant alone | 1 | none | nothing | 17 | failed on the transplant alone, 9 |
+
+Every job's counts at both pins equalled its resolution's own, every step ran with no network in an empty home,
+and each job ran once. On 2026-11-27 these eight cases took eight failed jobs, a second resolution pass over all
+98 worktrees that an agent had to work out and write, and seven reruns; here they took one batch and nobody's
+diagnosis. What that cost in time is under *Gate 4*: it is not faster than the setup's own second pass, which
+let Gradle resolve online in one run a worktree. The gate takes `--cases all` for the 47 offline cases; at four
+jobs at a time that is about five hours, and its memory estimate has to rise (21 GiB for four).
 
 ## Gate 4: what has been measured
 
@@ -635,7 +654,18 @@ consumer that asks for nothing more, is a design question this run leaves open.
 | Batch of five, four at a time | 1,110.6 s from the runner's start to every case settled; the first case's result after 348.9 s |
 | Reuse between cases | none to measure: S11 was the only case that fetched |
 
-So, twice now (S48: 0.2 %), fetching is not where a resolution's time goes: it goes into running the task once
+**From the control's second run** (eight cases, four jobs at a time, 3,088.8 s from the runner's start to the
+last case settled; the first case's result after 1,645.6 s):
+
+| What | Measured |
+|---|---|
+| Rounds until ready | 1, 6, 6, 6, 6, 11, 11, 13: the median 6, 60 in all |
+| Offline time in rounds that failed | 5,858.7 s: two thirds of everything the batch ran (rounds that ran through 1,001.9 s, the eight jobs themselves 1,772.0 s) |
+| Fetching | 676 files, 162.4 MB, 4.8 s in all |
+| Reuse between cases | 296 of the 676 files (57.5 MB) were taken from the runner's pool, fetched and verified by an earlier case's resolution: the first rounds of five cases named the same modules (a shared test-support project's class path) |
+| A case, on average | 6.4 minutes of the batch's clock at four at a time; about 18 minutes of a worker's time |
+
+So, three times now (S48: 0.2 %), fetching is not where a resolution's time goes: it goes into running the task once
 for every level of the graph the cache lacks. The ceiling of ten fetch slots stays untested and is not the
 thing to tune. What the measurements point at instead is the number of rounds: a fetch phase in which the build
 tool resolves its own graph in one run, through a proxy that admits the authorised sources and nothing else,

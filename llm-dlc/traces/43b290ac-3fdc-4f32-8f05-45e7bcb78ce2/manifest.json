@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T03:09:43.834Z",
-  "duration_seconds": 42962,
+  "ended": "2026-11-28T03:44:08.777Z",
+  "duration_seconds": 45027,
   "stats": {
     "turns": 37,
-    "api_calls": 1057,
-    "tool_calls": 1129,
+    "api_calls": 1067,
+    "tool_calls": 1139,
     "tool_errors": 16,
     "compactions": 7,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 2140,
-      "output_tokens": 1808654,
-      "cache_read_input_tokens": 327066172,
-      "cache_creation_input_tokens": 3709762
+      "input_tokens": 2160,
+      "output_tokens": 1818956,
+      "cache_read_input_tokens": 332031498,
+      "cache_creation_input_tokens": 3726574
     }
   },
   "tools": {
-    "Bash": 962,
+    "Bash": 972,
     "Read": 88,
     "Write": 42,
     "Edit": 19,
@@ -190,24 +190,24 @@
     {
       "index": 7,
       "started": "2026-11-28T01:45:40.450Z",
-      "ended": "2026-11-28T03:09:43.834Z",
+      "ended": "2026-11-28T03:44:08.777Z",
       "turns": 4,
-      "api_calls": 129,
+      "api_calls": 139,
       "usage": {
-        "input_tokens": 258,
-        "output_tokens": 257065,
-        "cache_read_input_tokens": 42463211,
-        "cache_creation_input_tokens": 476011
+        "input_tokens": 278,
+        "output_tokens": 267367,
+        "cache_read_input_tokens": 47428537,
+        "cache_creation_input_tokens": 492823
       },
-      "peak_context_tokens": 487850
+      "peak_context_tokens": 504662
     }
   ],
   "log": {
-    "sha256": "48737bfad41756dcf1235c8ab141620e844cb8e7888a8bc7753f1a8bb3ba5f8a",
-    "bytes": 29656460,
-    "lines": 10919,
-    "gzip_bytes": 5360663,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/48737bfad41756dcf1235c8ab141620e844cb8e7888a8bc7753f1a8bb3ba5f8a.jsonl.gz"
+    "sha256": "b03da5363eed4bd1ea0c3117f07b41448f237f7a755910e7cf5f92eea60787cf",
+    "bytes": 29849419,
+    "lines": 11033,
+    "gzip_bytes": 5381729,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/b03da5363eed4bd1ea0c3117f07b41448f237f7a755910e7cf5f92eea60787cf.jsonl.gz"
   },
   "subagents": [
     {
@@ -692,6 +692,14 @@
       "summary": "Record that S48 passes on prepared inputs alone, 17 of 17, with the home's Maven repository declared",
       "body": "Job 20261128-024257-replay-s48-s-delayed-setup-as-one-reques ran S48's gate under the clean sandbox with the one input it had been reading unsaid, ~/.m2/repository, declared as a read of the operation and laid into each step's empty home: 17 of 17 checks in 17m13s (collector's jj change ymxzxrnxzttn). One request, one resolution job of two offline rounds, four WARs read by a fresh offline consumer and equal to the committed readbacks, three controls withheld at the fetch stage. The gate's record names the copied repository (770 files, tree digest 6780dd401eda...). The results page moves gate 3 from reopened to done with that one qualification: the folder was fetched by the S setup's online job, by no resolution, and nothing verified it. VF-076's correction says the same. What is left now begins with the control's second run on eight cases (job 20261128-023835-replay-eight-of-the-s-batch-s-first-setu, still running).\n\nVerified: pages only; the result is the job's.",
       "log_sha256": "48737bfad41756dcf1235c8ab141620e844cb8e7888a8bc7753f1a8bb3ba5f8a"
+    },
+    {
+      "change_id": "pqokmwvmrpwnxuptvrtuypzxoszuxqyp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the control's second run: all eight S cases came ready by one request each",
+      "body": "Job 20261128-023835-replay-eight-of-the-s-batch-s-first-setu replayed eight of the S batch's first setup jobs from the cache as the setup's first resolution pass left it, with the first pass's snapshot modules kept (the correction of the run before): 11 of 11 checks in 51m32s, 21.0 GiB at its peak (collector's jj change ytqxsqxkstwl). All eight came ready, each by its one request, in 1, 6, 6, 6, 6, 11, 11 and 13 offline rounds. Six jobs then passed their three steps with no network and an empty home; S11 and S46 failed on the transplant alone, as they did on 2026-11-27; none failed for want of an input, where the original run had seven failed jobs for these cases on missing modules. 676 files were fetched from the folder made of the second pass's modules, 296 of them taken from the runner's pool because an earlier case's resolution had fetched them.\n\nThe cost is in the page too: 5,859 s, two thirds of what the batch ran, went into rounds that failed, each a Gradle start that named one level of the graph, and fetching took 4.8 s. So the mechanism does what the brief's control asks without an agent's diagnosis, and it is not faster than the second pass the setup's agent wrote by hand; a fetch phase the build tool drives is the first item left.\n\nAlso: CLAUDE.md tells an agent that a readiness task, and the job that runs on its bundle, see prepared inputs alone, and to declare what the task reads beside its base. VF-070 has a dated update.\n\nVerified: pages only; the result is the job's.",
+      "log_sha256": "b03da5363eed4bd1ea0c3117f07b41448f237f7a755910e7cf5f92eea60787cf"
     }
   ],
   "logs": {
@@ -915,6 +923,12 @@
       "bytes": 12987280,
       "lines": 4221,
       "gzip_bytes": 2736434,
+      "url": null
+    },
+    "b03da5363eed4bd1ea0c3117f07b41448f237f7a755910e7cf5f92eea60787cf": {
+      "bytes": 29849419,
+      "lines": 11033,
+      "gzip_bytes": 5381729,
       "url": null
     },
     "b3ffc578839379ac12831f7c9d0a5722081ee86ace0bbfa89b97de5fd14bf8cf": {
