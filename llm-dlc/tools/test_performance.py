@@ -1362,6 +1362,9 @@ class CommitChecks(unittest.TestCase):
             self.assertEqual("found errors" in err.getvalue(), bool(found))
 
     def test_notes_are_counted_when_not_listed(self):
+        layout = sync.verification_layout()
+        layout.REVIEWED_HEAVY_RECEIPTS = {}  # the repository's reviewed receipts would add a note of their own
+
         def report(listed):
             with mock.patch.object(sync, "reviewed_problems", return_value=[]), \
                  mock.patch.object(sync, "allowlist_problems", return_value=([], [])), \
@@ -1371,6 +1374,7 @@ class CommitChecks(unittest.TestCase):
                  mock.patch.object(sync, "check_trailers", return_value=([], [])), \
                  mock.patch.object(sync, "check_global_files", return_value=[]), \
                  mock.patch.object(sync, "run_notes", return_value=[]), \
+                 mock.patch.object(sync, "verification_layout", return_value=layout), \
                  mock.patch.object(sync.redaction_rules, "source_hash", return_value=sync.redaction_rules.RULES_HASH), \
                  mock.patch.object(sync, "Redactor", MadeUpRedactor), mock.patch("sys.stdout", io.StringIO()) as out:
                 self.assertEqual(sync.cmd_check([], notes_listed=listed), 0)

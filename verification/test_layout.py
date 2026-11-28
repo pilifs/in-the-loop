@@ -128,6 +128,12 @@ class Tree(unittest.TestCase):
                                 f"(over 262,144), listing 3,000 output files: a job that writes many small files keeps them as one "
                                 f"pack (examples/tools/targets/case_pack.py)")
         self.assertRegex(second, r"^verification result 20261203-000003-a-made-up-job-with-a-long-text: result.json is [\d,]+ bytes \(over 262,144\)$")
+        # a result a person reviewed is a note instead of a warning, and only while it is there
+        reviewed = {"20261122-000002-a-made-up-job-of-loose-cases": "made-up review", "20261124-000009-not-here": "gone"}
+        self.assertEqual(layout.heavy_receipts(self.root, reviewed), [second])
+        self.assertEqual(layout.reviewed_heavy_receipts(self.root, reviewed),
+                         ["verification result 20261122-000002-a-made-up-job-of-loose-cases: result.json over 262,144 bytes, "
+                          "reviewed and left whole (made-up review)"])
 
 
 if __name__ == "__main__":

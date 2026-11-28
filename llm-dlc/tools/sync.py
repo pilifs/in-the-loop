@@ -4702,7 +4702,9 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
     errors += over
     warnings += large + unpublished_commits()
     with perf.phase("check: result receipts"):  # a new result whose receipt lists thousands of files (verification/layout.py)
-        warnings += verification_layout().heavy_receipts(REPO) if (REPO / "verification").is_dir() else []
+        if (REPO / "verification").is_dir():
+            warnings += verification_layout().heavy_receipts(REPO)
+            notes += verification_layout().reviewed_heavy_receipts(REPO)
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():

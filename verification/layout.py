@@ -21,7 +21,7 @@ the flat one is still what readers get, and `conflicts` reports the id, since tw
 be right.
 
 A result's `result.json` is a receipt, and is held to a size (`heavy_receipts`, which `sync.py check` reports as
-warnings): it lists every output file with its digest, and six results of November 2026 listed 3,000 to 5,900 files
+warnings, apart from the results a person reviewed and left whole, `REVIEWED_HEAVY_RECEIPTS`, which are notes): it lists every output file with its digest, and six results of November 2026 listed 3,000 to 5,900 files
 each, 1.5 to 2.9 MB a receipt, because their jobs wrote two files a case. Those jobs' producer packs its cases now
 (`examples/tools/targets/case_pack.py`); the list itself is left whole, since the readers that verify kept
 outputs against it (`accept.py`, `claim_history.py`) need every row. The complete inventory of what a job wrote
@@ -47,6 +47,13 @@ WRITE = "shards"
 UNDATED = "undated"
 RECEIPT_BYTES = 256 << 10     # a result.json over this is reported: a job that writes many small files packs them
 RECEIPT_RULE_FROM = "20261122"  # the UTC day the rule starts with: earlier results stay as they were collected
+# Results over RECEIPT_BYTES that a person has looked at and left as they are, since a collected result is a record
+# and is never rewritten. Each is a note in `sync.py check`, not a warning. Only a person adds an entry.
+REVIEWED_HEAVY_RECEIPTS = {
+    "20261123-173701-record-all-49-ordinary-native-example-ta": (
+        "the user, 2026-11-28: its 692 outputs are the per-task receipts of 49 examples (14 files a task), which "
+        "case_pack.py does not pack; the record stays whole"),
+}
 _DAY = re.compile(r"^(\d{4})(\d{2})(\d{2})(?=-)")
 _SHARD = r"(?:(\d{4}/\d{2}/\d{2}|" + UNDATED + r")/)?"
 _JOB = re.compile(rf"^{JOBS}/{_SHARD}([^/]+)\.json$")
@@ -187,13 +194,15 @@ def conflicts(root: Path) -> list[str]:
     return problems
 
 
-def heavy_receipts(root: Path) -> list[str]:
+def heavy_receipts(root: Path, reviewed: dict | None = None) -> list[str]:
     """One line for each result submitted since RECEIPT_RULE_FROM whose result.json is over RECEIPT_BYTES, saying
-    what makes it so when that is the list of output files."""
+    what makes it so when that is the list of output files. A result a person reviewed (REVIEWED_HEAVY_RECEIPTS) is
+    left out: `reviewed_heavy_receipts` names it instead."""
     found = []
+    reviewed = REVIEWED_HEAVY_RECEIPTS if reviewed is None else reviewed
     for job_id, folder in results(root).items():
         day = _DAY.match(job_id)
-        if not day or "".join(day.groups()) < RECEIPT_RULE_FROM:
+        if not day or "".join(day.groups()) < RECEIPT_RULE_FROM or job_id in reviewed:
             continue
         size = (folder / "result.json").stat().st_size
         if size <= RECEIPT_BYTES:
@@ -206,3 +215,11 @@ def heavy_receipts(root: Path) -> list[str]:
                      + (f", listing {listed:,} output files: a job that writes many small files keeps them as one pack "
                         f"(examples/tools/targets/case_pack.py)" if listed > 200 else ""))
     return found
+
+
+def reviewed_heavy_receipts(root: Path, reviewed: dict | None = None) -> list[str]:
+    """One note for each reviewed oversized result that is still in the repository, with who reviewed it and why."""
+    reviewed = REVIEWED_HEAVY_RECEIPTS if reviewed is None else reviewed
+    have = results(root)
+    return [f"verification result {job_id}: result.json over {RECEIPT_BYTES:,} bytes, reviewed and left whole ({why})"
+            for job_id, why in sorted(reviewed.items()) if job_id in have]
