@@ -1,0 +1,194 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261128-021235-replay-five-of-the-s-batch-s-first-setup",
+  "title": "Replay five of the S batch's first setup jobs through delayed setup, from the cache as the first pass left it",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.2s, peak 172.7 MiB (estimated 1h00m, 16.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/28/20261128-021235-replay-five-of-the-s-batch-s-first-setup.json",
+    "sha256": "2e17b81c025211ae0e7b815c1be090c25919efa447e4c3ad69fe7f5fffdf7f4d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261128-021235-replay-five-of-the-s-batch-s-first-setup",
+      "title": "Replay five of the S batch's first setup jobs through delayed setup, from the cache as the first pass left it",
+      "description": "The control the generic-jobs-pipeline brief names beside S48 (VF-070): on 2026-11-27, 41 of the S batch's 49 first setup jobs failed for setup reasons, 38 on modules a dry run does not resolve. The gate lays the S cache as it was after the setup's first resolution pass (base.asOf: what Gradle's cache wrote after 09:00 UTC is left out), submits five cases as one manifest (S01, S11, S25, S42, S46), each a job that needs its builds and landed tests ready at both pins, admits the five requests as the watcher does, and lets the resolution jobs find what each task lacks by running it offline in rounds. The authorised source is a folder made from the retained cache (what the second pass fetched), so nothing is asked of a repository. It runs this checkout's pipeline nested in a throwaway repository, four jobs at a time. The record says, for each case, whether it came ready, in how many rounds, what was fetched and reused, and whether its job then ran its tests offline; S11 and S46 are cases whose transplant did not fail in the original run, and S46's first job did not fail on a missing module.",
+      "kind": "real-world",
+      "capabilities": [
+        "jobs:readiness",
+        "jobs:resolution",
+        "jobs:batch"
+      ],
+      "links": {
+        "examples": [
+          "635"
+        ],
+        "paths": [
+          "verification/merged-pr-links/s01-s50/setup-control/gate.py",
+          "verification/merged-pr-links/s01-s50/setup-control/case_task.sh",
+          "jobs/readiness.py"
+        ]
+      },
+      "expected": "exit 0: every check of the gate passed (control.json lists each): one request a case, every case waiting until the admission, one resolution job a request, every resolution ready or withheld with a named outcome, no job failing for want of an input, and every case explained. How many came ready and in how many rounds is the record's summary, a measurement.",
+      "submitted": {
+        "at": "2026-11-28T02:12:35+00:00",
+        "session": "43b290ac-3fdc-4f32-8f05-45e7bcb78ce2",
+        "run": "single-generic-jobs-pipeline"
+      },
+      "requires": [
+        "java",
+        "git",
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 16.0,
+        "memory": "16G",
+        "duration": "60m",
+        "timeout": "170m"
+      },
+      "steps": [
+        {
+          "name": "the control",
+          "run": "python3 verification/merged-pr-links/s01-s50/setup-control/gate.py --cases S01,S11,S25,S42,S46 --workers 4 --output verification/merged-pr-links/s01-s50/setup-control/control.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/setup-control/control.json"
+      ]
+    }
+  },
+  "sourceCommit": "359d6ea6143cb6365af0b087841d4a1f443dbabb",
+  "startedAt": "2026-11-28T02:21:19+00:00",
+  "finishedAt": "2026-11-28T02:21:37+00:00",
+  "wallSeconds": 18.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1015732,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 16.0,
+    "memoryLimitBytes": 25769803776,
+    "timeoutSeconds": 10200.0
+  },
+  "estimate": {
+    "cpus": 16.0,
+    "memoryBytes": 17179869184,
+    "durationSeconds": 3600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 181039104,
+    "wallSeconds": 6.2,
+    "cpuSeconds": 5.7,
+    "memoryOfEstimate": 0.01,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the control",
+      "run": "python3 verification/merged-pr-links/s01-s50/setup-control/gate.py --cases S01,S11,S25,S42,S46 --workers 4 --output verification/merged-pr-links/s01-s50/setup-control/control.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10200.0,
+      "cancelled": false,
+      "wallSeconds": 6.211,
+      "cpuSeconds": 5.701,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 181039104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-control.log",
+        "lines": 13,
+        "bytes": 883,
+        "sha256": "fde837a95326419c9280632b8f0098215b9b115a2607850afdda219d85f22971",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ok    the source is the second pass's modules, each file under the SHA-1 Gradle filed it by",
+        "ok    one request a case: an operation under its key, and one job that needs it",
+        "ok    every case waits, and nothing is fetched before the admission",
+        "ok    one admission writes one resolution job for each request",
+        "      admitted 5 resolution job(s)",
+        "ok    every resolution ended ready, or withheld at a named stage with a named outcome",
+        "ok    a case whose readiness was withheld ran nothing, and is blocked with the reason",
+        "ok    every case that came ready ran once, after its receipt, with no network and nothing of the machine's own to read",
+        "ok    no job failed for want of an input: a step that failed named no module or file it lacks",
+        "ok    every case whose fix step passed shows tests that executed, and its counts are the resolution's own",
+        "ok    every case is explained",
+        "",
+        "10 of 10 checks passed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/s01-s50/setup-control/control.json",
+      "change": "added",
+      "bytes": 25586,
+      "sha256": "24e4a8b15619312a75a9033c0bd2f6beac7295524bb13459bafa79bb50e6bea1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-28T02:21:58+00:00",
+    "applied": [
+      "verification/merged-pr-links/s01-s50/setup-control/control.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261128T022137Z-41137990b5bb4bd6",
+      "outputs": "20261128T022137Z-4332854a0b780f73",
+      "diff": "20261128T022137Z-4514961cb189ba0b"
+    }
+  }
+}

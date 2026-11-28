@@ -1,0 +1,202 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261128-021235-a-gradle-build-reads-offline-a-library-t",
+  "title": "A Gradle build reads offline a library the resolver fetched, through the readiness view's file repository",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 9.0s, peak 109.9 MiB (estimated 15m00s, 9.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (the gate) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/28/20261128-021235-a-gradle-build-reads-offline-a-library-t.json",
+    "sha256": "7cef7577da3230aa8a6db169f786061de2f49c6864877bd4dbac82d4b2e441e9",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261128-021235-a-gradle-build-reads-offline-a-library-t",
+      "title": "A Gradle build reads offline a library the resolver fetched, through the readiness view's file repository",
+      "description": "Delayed setup for an ordinary Gradle build, on a real one. S48's gate passed with a replay that brings its own file mirror; an ordinary Gradle build has none, reads a remote repository's modules offline only from Gradle's own cache, and the resolver lays what it fetches in Maven's layout. Every readiness view now carries an init script (jobs/readiness.py, GRADLE_INIT) that gives the build a file repository over the modules a resolution fetched, laid apart in Maven's layout. gate.py shows it on Spring Boot's core module at S48's parent pin (example 635): the S cache is laid without org.jspecify:jspecify in Gradle's file store, in Gradle's descriptors and in Maven's local repository, a consumer job needs the operation in readiness-operation.json and waits while an unrelated job finishes, one resolution job, admitted by a commit, runs ':core:spring-boot:compileJava' offline until Gradle names the library, fetches its POM, its Gradle module metadata and its JAR from Maven Central (each by the repository's SHA-1), proves the compile offline in a network namespace with loopback alone and publishes the bundle, and the consumer then compiles the module itself with no network. Its compiled.json (the pin, the number of classes, the digest of one class) must be byte for byte what the resolution's own offline run wrote, and compile.sh fails if either Gradle cache holds the library after the build, so the file repository is the only place it can have been read from. One first-format job, because the default checkout's runner is the pipeline of before this line; the scheduler under test runs inside it, in a throwaway repository, without isolation of its own. It fetches three small files from Maven Central once. This is the gate's second run. In the first (20261128-011602) the file repository was over the view's whole Maven-layout folder, which holds the base's Maven local repository: Gradle read the fetched library from it, then took the POM of plexus-utils from it too, found no JAR beside it and looked nowhere else, though its own cache had the module whole. The repository is now over the fetched modules alone.",
+      "kind": "real-world",
+      "capabilities": [
+        "jobs:readiness",
+        "jobs:resolution"
+      ],
+      "links": {
+        "examples": [
+          "635"
+        ],
+        "paths": [
+          "verification/merged-pr-links/s01-s50/gradle-module/gate.py",
+          "verification/merged-pr-links/s01-s50/gradle-module/readiness-operation.json",
+          "jobs/readiness.py"
+        ]
+      },
+      "expected": "exit 0: every check of the gate passed (readiness-gate.json lists each with what was seen): one request, the consumer alone waiting, one resolution job, the library fetched with its Gradle module metadata, and the consumer's compile equal to the resolution's",
+      "submitted": {
+        "at": "2026-11-28T02:12:35+00:00",
+        "session": "43b290ac-3fdc-4f32-8f05-45e7bcb78ce2",
+        "run": "single-generic-jobs-pipeline"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "9G",
+        "duration": "15m",
+        "timeout": "60m",
+        "notes": "The run before this one (20261128-012905) took 2m49s and 3.2 GiB. This one differs in the sandbox alone: an empty home and /tmp, and the JDKs through the operation's reads."
+      },
+      "steps": [
+        {
+          "name": "the gate",
+          "run": "python3 verification/merged-pr-links/s01-s50/gradle-module/gate.py --output verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json"
+      ],
+      "supersedes": "20261128-012905-a-gradle-build-reads-offline-a-library-t"
+    }
+  },
+  "sourceCommit": "359d6ea6143cb6365af0b087841d4a1f443dbabb",
+  "startedAt": "2026-11-28T02:21:19+00:00",
+  "finishedAt": "2026-11-28T02:21:40+00:00",
+  "wallSeconds": 21.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1015732,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 14495514624,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 9663676416,
+    "durationSeconds": 900.0,
+    "notes": "The run before this one (20261128-012905) took 2m49s and 3.2 GiB. This one differs in the sandbox alone: an empty home and /tmp, and the JDKs through the operation's reads."
+  },
+  "usage": {
+    "peakMemoryBytes": 115204096,
+    "wallSeconds": 9.0,
+    "cpuSeconds": 2.8,
+    "memoryOfEstimate": 0.01,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the gate",
+      "run": "python3 verification/merged-pr-links/s01-s50/gradle-module/gate.py --output verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 9.013,
+      "cpuSeconds": 2.766,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 115204096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-gate.log",
+        "lines": 15,
+        "bytes": 2237,
+        "sha256": "9bb06212c300dd7420c4463b44c38160f4a18a017d7acd58c99cb0f09538eaf1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ok    the request is one file, the operation under its key",
+        "      the runner is at work; the consumer needs a readiness nobody has resolved",
+        "ok    the unrelated job finished during the wait",
+        "ok    only the consumer waits, and the view says for what",
+        "ok    nothing was fetched or published before the admission",
+        "ok    one resolution job is written for the one request",
+        "      admitted 20261128-022135-resolve-7603002d7ae8-compile-spring-boot",
+        "FAIL  readiness is established by one resolution job: {\"status\": \"failed\", \"summary\": \"failed: 1 failed step(s) in 0.4s, peak 44.3 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed\", \"conclusion\": {\"key\": \"7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4\", \"verdict\": \"withhel",
+        "ok    the resolution's offline run saw no network",
+        "FAIL  what was fetched is what the task asked for, each verified: []",
+        "ok    the base was laid without what the task has to ask for, and the receipt says so",
+        "FAIL  the consumer ran: {\"error\": \"[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z-gradle-module/repository/verification/.state/results/20261128-022131-read-the-task-s-outputs-offline-on-the-p/result.json'\", \"job\": {\"id\": \"20261128-022131-read-th",
+        "FAIL  the library was fetched with its Gradle module metadata, in Maven's layout: []",
+        "",
+        "7 of 11 checks passed; failed: readiness is established by one resolution job; what was fetched is what the task asked for, each verified; the consumer ran; the library was fetched with its Gradle module metadata, in Maven's layout"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json",
+      "change": "added",
+      "bytes": 13808,
+      "sha256": "4346cbe41da9a1d4eb87b908bdd041d8603594fb18c19c69be020e1405e3b401",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-28T02:21:57+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261128T022140Z-24389278ad1b51f5",
+      "outputs": "20261128T022140Z-268044f3bb3c78ed",
+      "diff": "20261128T022140Z-288962c363498939",
+      "workdir": "20261128T022149Z-086351f02dc3fe84"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261128-021235-a-gradle-build-reads-offline-a-library-t"
+}

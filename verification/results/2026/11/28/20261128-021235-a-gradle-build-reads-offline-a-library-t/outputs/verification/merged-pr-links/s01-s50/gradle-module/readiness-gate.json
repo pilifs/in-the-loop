@@ -1,0 +1,294 @@
+{
+  "schema": "itl-gradle-module-readiness-gate/v1",
+  "startedAt": "2026-11-28T02:21:31+00:00",
+  "operation": "verification/merged-pr-links/s01-s50/gradle-module/readiness-operation.json",
+  "work": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z-gradle-module",
+  "request": {
+    "key": "7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4",
+    "consumer": "20261128-022131-read-the-task-s-outputs-offline-on-the-p",
+    "resolver": "20261128-022135-resolve-7603002d7ae8-compile-spring-boot",
+    "unrelated": "20261128-022131-an-unrelated-job-to-finish-while-the-con",
+    "receipt": {
+      "state": "failed",
+      "stage": "consumer",
+      "outcome": "undiagnosed",
+      "why": "step compile exited 2 offline and named nothing it lacks: --- compile fatal: not a git repository: /home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git/worktrees/S48-parent wrong upstream revision",
+      "level": "builds",
+      "rounds": [
+        {
+          "n": 1,
+          "fetched": [],
+          "missing": [],
+          "result": "failed",
+          "offlineSeconds": 0.0
+        }
+      ],
+      "fetch": {
+        "files": 0,
+        "bytes": 0,
+        "seconds": 0,
+        "reused": 0,
+        "reusedBytes": 0
+      },
+      "base": {
+        "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "without": [
+          "gradle-home/caches/modules-2/files-2.1/org.jspecify/jspecify",
+          "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.jspecify/jspecify",
+          "m2/org/jspecify/jspecify",
+          "tmp/"
+        ],
+        "reconstructed": true,
+        "why": "A state made insufficient for this gate, not one the cache is known to have been in: org.jspecify:jspecify, which the setup phase cached and every module of the build compiles against, is taken out wherever it is recorded (Gradle's file store, Gradle's descriptors, Maven's local repository), in every version. It stands for the commonest offline miss of a domain run, a library Gradle has no record of, and it is published with Gradle's module metadata, which Gradle then requires beside the POM."
+      },
+      "offline": {
+        "network": {
+          "mode": "none",
+          "enforced": true,
+          "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
+          "probe": {
+            "interfaces": [
+              "lo"
+            ],
+            "connect": "OSError: Network is unreachable",
+            "lookup": "gaierror: Temporary failure in name resolution"
+          },
+          "alone": {
+            "home": "empty, of this run",
+            "tmp": "empty, of this run",
+            "reads": [
+              "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+              "/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z-gradle-module/store/staging/7603002d7ae89b28-36e0e014",
+              "/home/filip/.sdkman/candidates/java"
+            ]
+          }
+        },
+        "steps": [
+          {
+            "name": "compile",
+            "run": "bash verification/merged-pr-links/s01-s50/gradle-module/compile.sh",
+            "exitCode": 2,
+            "seconds": 0.0
+          }
+        ],
+        "round": 1,
+        "log": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z-gradle-module/store/work/7603002d7ae89b28-6c3c63a0/consumer-1.log"
+      },
+      "at": "2026-11-28T02:21:36+00:00",
+      "bundle": {
+        "digest": null,
+        "files": null
+      }
+    }
+  },
+  "finishedAt": "2026-11-28T02:21:40+00:00",
+  "checks": [
+    {
+      "check": "the request is one file, the operation under its key",
+      "passed": true,
+      "detail": [
+        "7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4.json"
+      ]
+    },
+    {
+      "check": "the unrelated job finished during the wait",
+      "passed": true,
+      "detail": {
+        "job": "20261128-022131-an-unrelated-job-to-finish-while-the-con"
+      }
+    },
+    {
+      "check": "only the consumer waits, and the view says for what",
+      "passed": true,
+      "detail": {
+        "state": "waiting",
+        "why": "readiness 7603002d7ae8 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
+        "request": {
+          "key": "7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4",
+          "state": "waiting",
+          "why": "readiness 7603002d7ae8 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
+          "operation": "verification/readiness/7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4.json",
+          "wantedBy": [
+            "20261128-022131-read-the-task-s-outputs-offline-on-the-p"
+          ],
+          "resolvers": [],
+          "unanswered": true
+        }
+      }
+    },
+    {
+      "check": "nothing was fetched or published before the admission",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "check": "one resolution job is written for the one request",
+      "passed": true,
+      "detail": {
+        "schema": "itl-job-resolve/v1",
+        "written": [
+          {
+            "key": "7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4",
+            "job": "20261128-022135-resolve-7603002d7ae8-compile-spring-boot",
+            "path": "verification/jobs/2026/11/28/20261128-022135-resolve-7603002d7ae8-compile-spring-boot.json",
+            "wantedBy": [
+              "20261128-022131-read-the-task-s-outputs-offline-on-the-p"
+            ]
+          }
+        ],
+        "skipped": []
+      }
+    },
+    {
+      "check": "readiness is established by one resolution job",
+      "passed": false,
+      "detail": {
+        "status": "failed",
+        "summary": "failed: 1 failed step(s) in 0.4s, peak 44.3 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed",
+        "conclusion": {
+          "key": "7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4",
+          "verdict": "withheld",
+          "stage": "consumer",
+          "outcome": "undiagnosed",
+          "why": "step compile exited 2 offline and named nothing it lacks: --- compile fatal: not a git repository: /home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git/worktrees/S48-parent wrong upstream revision",
+          "level": "builds",
+          "rounds": 1,
+          "fetch": {
+            "files": 0,
+            "bytes": 0,
+            "seconds": 0,
+            "reused": 0,
+            "reusedBytes": 0
+          },
+          "reused": false,
+          "bundleDigest": null
+        },
+        "tail": [
+          "readiness 7603002d7ae8: failed after 1 round(s), 0 file(s) fetched; withheld at the consumer stage (undiagnosed): step compile exited 2 offline and named nothing it lacks: --- compile fatal: not a git repository: /home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git/worktrees/S48-parent wrong u"
+        ]
+      }
+    },
+    {
+      "check": "the resolution's offline run saw no network",
+      "passed": true,
+      "detail": {
+        "mode": "none",
+        "enforced": true,
+        "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
+        "probe": {
+          "interfaces": [
+            "lo"
+          ],
+          "connect": "OSError: Network is unreachable",
+          "lookup": "gaierror: Temporary failure in name resolution"
+        },
+        "alone": {
+          "home": "empty, of this run",
+          "tmp": "empty, of this run",
+          "reads": [
+            "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+            "/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z-gradle-module/store/staging/7603002d7ae89b28-36e0e014",
+            "/home/filip/.sdkman/candidates/java"
+          ]
+        }
+      }
+    },
+    {
+      "check": "what was fetched is what the task asked for, each verified",
+      "passed": false,
+      "detail": []
+    },
+    {
+      "check": "the base was laid without what the task has to ask for, and the receipt says so",
+      "passed": true,
+      "detail": {
+        "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+        "without": [
+          "gradle-home/caches/modules-2/files-2.1/org.jspecify/jspecify",
+          "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.jspecify/jspecify",
+          "m2/org/jspecify/jspecify",
+          "tmp/"
+        ],
+        "reconstructed": true,
+        "why": "A state made insufficient for this gate, not one the cache is known to have been in: org.jspecify:jspecify, which the setup phase cached and every module of the build compiles against, is taken out wherever it is recorded (Gradle's file store, Gradle's descriptors, Maven's local repository), in every version. It stands for the commonest offline miss of a domain run, a library Gradle has no record of, and it is published with Gradle's module metadata, which Gradle then requires beside the POM."
+      }
+    },
+    {
+      "check": "the consumer ran",
+      "passed": false,
+      "detail": {
+        "error": "[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z-gradle-module/repository/verification/.state/results/20261128-022131-read-the-task-s-outputs-offline-on-the-p/result.json'",
+        "job": {
+          "id": "20261128-022131-read-the-task-s-outputs-offline-on-the-p",
+          "title": "Read the task's outputs offline on the prepared inputs",
+          "format": "itl-job/v2",
+          "path": "verification/jobs/2026/11/28/20261128-022131-read-the-task-s-outputs-offline-on-the-p.json",
+          "purpose": "test",
+          "workload": "generic",
+          "case": "the gate beside this file",
+          "batch": null,
+          "labels": null,
+          "submitted": {
+            "at": "2026-11-28T02:21:31+00:00",
+            "session": "6c5c7798-21e3-46a5-b989-5313736bdc7f"
+          },
+          "supersedes": null,
+          "supersededBy": [],
+          "source": "aa9f296929796d8d5128a371ec4cee07fccb6da7",
+          "state": "blocked",
+          "why": "readiness 7603002d7ae8 was withheld at the consumer stage (undiagnosed): step compile exited 2 offline and named nothing it lacks: --- compile fatal: not a git repository: /home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git/worktrees/S48-parent wrong upstream revision",
+          "priority": 0,
+          "priorityReason": null,
+          "needs": [
+            {
+              "readiness": "7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4",
+              "state": "failed",
+              "why": "readiness 7603002d7ae8 was withheld at the consumer stage (undiagnosed): step compile exited 2 offline and named nothing it lacks: --- compile fatal: not a git repository: /home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git/worktrees/S48-parent wrong upstream revision",
+              "resolvers": [
+                "20261128-022135-resolve-7603002d7ae8-compile-spring-boot"
+              ]
+            }
+          ],
+          "plan": {
+            "cpus": 3.0,
+            "memoryEstimate": 6442450944,
+            "memoryLimit": 8589934592,
+            "durationEstimate": 720.0,
+            "timeout": 2880.0
+          },
+          "claim": null,
+          "attempts": [],
+          "result": null
+        }
+      }
+    },
+    {
+      "check": "the library was fetched with its Gradle module metadata, in Maven's layout",
+      "passed": false,
+      "detail": []
+    }
+  ],
+  "timeline": [
+    {
+      "at": "2026-11-28T02:21:31+00:00",
+      "what": "the runner is at work; the consumer needs a readiness nobody has resolved"
+    },
+    {
+      "at": "2026-11-28T02:21:35+00:00",
+      "what": "admitted 20261128-022135-resolve-7603002d7ae8-compile-spring-boot"
+    }
+  ],
+  "passed": false,
+  "runnerLog": [
+    "runner: 2 worker(s), 4 CPUs, 9.0 GiB (at most 8.0 GiB a job), isolation none, keeping 0 B of the machine free, jobs at oom_score_adj 1000, state /home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z-gradle-module/repository/verification/.state",
+    "20261128-022131-an-unrelated-job-to-finish-while-the-con: started at aa9f29692979 (1 CPU, limit 384.0 MiB, timeout 5m00s)",
+    "20261128-022131-read-the-task-s-outputs-offline-on-the-p: waiting: readiness 7603002d7ae8 has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
+    "20261128-022131-an-unrelated-job-to-finish-while-the-con: passed: 1 passed step(s) in 0.2s, peak 44.1 MiB (estimated 1m00s, 256.0 MiB)",
+    "20261128-022135-resolve-7603002d7ae8-compile-spring-boot: started at 51a7c297a583 (3 CPU, limit 8.0 GiB, timeout 48m00s)",
+    "20261128-022131-read-the-task-s-outputs-offline-on-the-p: waiting: resolution job 20261128-022135-resolve-7603002d7ae8-compile-spring-boot for readiness 7603002d7ae8 has not finished",
+    "20261128-022135-resolve-7603002d7ae8-compile-spring-boot: failed: 1 failed step(s) in 0.4s, peak 44.3 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed",
+    "20261128-022131-read-the-task-s-outputs-offline-on-the-p: blocked: readiness 7603002d7ae8 was withheld at the consumer stage (undiagnosed): step compile exited 2 offline and named nothing it lacks: --- compile fatal: not a git repository: /home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git/worktrees/S48-parent wrong upstream revision",
+    "stopping on SIGTERM: running steps are cancelled, their jobs recorded",
+    "finished 2 job(s): 20261128-022131-an-unrelated-job-to-finish-while-the-con, 20261128-022135-resolve-7603002d7ae8-compile-spring-boot; collect them with: python3 verification/pipeline.py collect"
+  ]
+}

@@ -1,0 +1,20 @@
+ok    the request is one file, the operation under its key
+      the runner is at work; the consumer needs a readiness nobody has resolved
+ok    the unrelated job finished during the wait
+ok    only the consumer waits, and the view says for what
+ok    nothing was fetched or published before the admission
+ok    one resolution job is written for the one request
+      admitted 20261128-022135-resolve-3a16e23cc5dd-build-and-read-the
+FAIL  readiness is established by one resolution job: {"status": "failed", "summary": "failed: 1 failed step(s) in 1.0s, peak 44.4 MiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed", "conclusion": {"key": "3a16e23cc5ddd6ff3c3b7208a2ea632d4eb52a5469a054ff5063da6ce183be30", "verdict": "withheld", "stage": "consumer", "outcome": "undiagnosed", "why": "step parent exited 1 offline and named nothing it lacks: ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-th
+ok    the resolution's offline run saw no network
+FAIL  what was fetched is what the task asked for, each verified: []
+ok    the base was laid without what the task has to ask for, and the receipt says so
+FAIL  the consumer ran: {"error": "[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/repository/verification/.state/results/20261128-022131-read-the-task-s-outputs-offline-on-the-p/result.json'", "job": {"id": "20261128-022131-read-the-task-s-outputs-offline-on-the-p", "title": "Read the task's outputs offline on the prepared inputs", "format": "itl-job/v2", "path": "verification/jobs/2026/11/28/20261128-022131-read-the-task-s-outputs-offline-on-the-p.json", "purpose": "test", "workload": "generic", "case": "S48", "batch": null, "labels": null, "submitted": {"at": "
+      control withheld-bom: a resolution that must be withheld (absent)
+FAIL  control withheld-bom: readiness is withheld at the fetch stage (absent), and nothing is published: {"exit": 1, "state": "failed", "stage": "consumer", "outcome": "undiagnosed", "why": "step parent exited 1 offline and named nothing it lacks: gs).stdout ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-withheld-bom-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.", "rounds": [{"n": 1, "missing": [], "result": "failed
+      control wrong-maven-digest: a resolution that must be withheld (digest-mismatch)
+ok    control wrong-maven-digest: readiness is withheld at the fetch stage (digest-mismatch), and nothing is published
+      control unavailable-repository: a resolution that must be withheld (repository-unavailable)
+FAIL  control unavailable-repository: readiness is withheld at the fetch stage (repository-unavailable), and nothing is published: {"exit": 1, "state": "failed", "stage": "consumer", "outcome": "undiagnosed", "why": "step parent exited 1 offline and named nothing it lacks:  ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-unavailable-repository-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.", "rounds": [{"n": 1, "missing": [], "result": "failed
+
+8 of 13 checks passed; failed: readiness is established by one resolution job; what was fetched is what the task asked for, each verified; the consumer ran; control withheld-bom: readiness is withheld at the fetch stage (absent), and nothing is published; control unavailable-repository: readiness is withheld at the fetch stage (repository-unavailable), and nothing is published

@@ -1,0 +1,430 @@
+--- /dev/null
++++ b/verification/merged-pr-links/s01-s50/maven-war/readiness-gate.json
+@@ -0,0 +1,427 @@
++{
++  "schema": "itl-s48-readiness-gate/v1",
++  "startedAt": "2026-11-28T02:21:31+00:00",
++  "operation": "readiness-operation.json",
++  "work": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z",
++  "request": {
++    "key": "3a16e23cc5ddd6ff3c3b7208a2ea632d4eb52a5469a054ff5063da6ce183be30",
++    "consumer": "20261128-022131-read-the-task-s-outputs-offline-on-the-p",
++    "resolver": "20261128-022135-resolve-3a16e23cc5dd-build-and-read-the",
++    "unrelated": "20261128-022131-an-unrelated-job-to-finish-while-the-con",
++    "receipt": {
++      "state": "failed",
++      "stage": "consumer",
++      "outcome": "undiagnosed",
++      "why": "step parent exited 1 offline and named nothing it lacks: ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/store/work/3a16e23cc5ddd6ff-9e98a9e2/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++      "level": "readable",
++      "rounds": [
++        {
++          "n": 1,
++          "fetched": [
++            {
++              "path": "downloads/apache-maven-3.9.13-bin.tar.gz",
++              "source": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz",
++              "bytes": 9620438,
++              "verifiedBy": "the operation's sha512",
++              "seconds": 0.573
++            }
++          ],
++          "missing": [],
++          "result": "failed",
++          "offlineSeconds": 0.1
++        }
++      ],
++      "fetch": {
++        "files": 1,
++        "bytes": 9620438,
++        "seconds": 0.573,
++        "reused": 0,
++        "reusedBytes": 0
++      },
++      "base": {
++        "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++        "without": [
++          "m2/org/apache/activemq/activemq-bom/6.1.8",
++          "gradle-home/caches/modules-2/files-2.1/org.apache.activemq/activemq-bom/6.1.8",
++          "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.apache.activemq/activemq-bom/6.1.8",
++          "downloads/apache-maven-3.9.13-bin.tar.gz",
++          "tmp/"
++        ],
++        "reconstructed": true,
++        "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress."
++      },
++      "offline": {
++        "network": {
++          "mode": "none",
++          "enforced": true,
++          "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
++          "probe": {
++            "interfaces": [
++              "lo"
++            ],
++            "connect": "OSError: Network is unreachable",
++            "lookup": "gaierror: Temporary failure in name resolution"
++          },
++          "alone": {
++            "home": "empty, of this run",
++            "tmp": "empty, of this run",
++            "reads": [
++              "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++              "/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/store/staging/3a16e23cc5ddd6ff-5853a9ac",
++              "/home/filip/.sdkman/candidates/java"
++            ]
++          }
++        },
++        "steps": [
++          {
++            "name": "parent",
++            "run": "mkdir -p \"$ITL_READINESS_OUT/tmp\" && TMPDIR=\"$ITL_READINESS_OUT/tmp\" python3 verification/merged-pr-links/s01-s50/maven-war/replay.py parent --output \"$ITL_READINESS_OUT/parent.json\"",
++            "exitCode": 1,
++            "seconds": 0.1
++          }
++        ],
++        "round": 1,
++        "log": "/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/store/work/3a16e23cc5ddd6ff-9e98a9e2/consumer-1.log"
++      },
++      "at": "2026-11-28T02:21:36+00:00",
++      "bundle": {
++        "digest": null,
++        "files": null
++      }
++    }
++  },
++  "controls": [
++    {
++      "control": "withheld-bom",
++      "key": "4e9650193f199cfaab547c434f0d66f122a3acf9abb9d93e540014da8848c1c7",
++      "exit": 1,
++      "state": "failed",
++      "stage": "consumer",
++      "outcome": "undiagnosed",
++      "why": "step parent exited 1 offline and named nothing it lacks: gs).stdout ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-withheld-bom-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++      "rounds": [
++        {
++          "n": 1,
++          "missing": [],
++          "result": "failed",
++          "offlineSeconds": 0.1
++        }
++      ],
++      "said": "readiness 4e9650193f19: failed after 1 round(s), 1 file(s) fetched; withheld at the consumer stage (undiagnosed): step parent exited 1 offline and named nothing it lacks: gs).stdout ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-withheld-bom-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128."
++    },
++    {
++      "control": "wrong-maven-digest",
++      "key": "c3b2af9bb2279abe0f06b24ff256273c0b900212feb1453ec5d290de615eb03c",
++      "exit": 1,
++      "state": "failed",
++      "stage": "fetch",
++      "outcome": "digest-mismatch",
++      "why": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz",
++      "rounds": [
++        {
++          "n": 1,
++          "missing": [],
++          "result": null,
++          "offlineSeconds": null
++        }
++      ],
++      "said": "readiness c3b2af9bb227: failed after 1 round(s), 0 file(s) fetched; withheld at the fetch stage (digest-mismatch): https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz"
++    },
++    {
++      "control": "unavailable-repository",
++      "key": "77eaed73581c59abbba6553d7b78779bef6931b5fbd036410784d08089815fe0",
++      "exit": 1,
++      "state": "failed",
++      "stage": "consumer",
++      "outcome": "undiagnosed",
++      "why": "step parent exited 1 offline and named nothing it lacks:  ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-unavailable-repository-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++      "rounds": [
++        {
++          "n": 1,
++          "missing": [],
++          "result": "failed",
++          "offlineSeconds": 0.1
++        }
++      ],
++      "said": "readiness 77eaed73581c: failed after 1 round(s), 1 file(s) fetched; withheld at the consumer stage (undiagnosed): step parent exited 1 offline and named nothing it lacks:  ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-unavailable-repository-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128."
++    }
++  ],
++  "finishedAt": "2026-11-28T02:21:42+00:00",
++  "checks": [
++    {
++      "check": "the request is one file, the operation under its key",
++      "passed": true,
++      "detail": [
++        "3a16e23cc5ddd6ff3c3b7208a2ea632d4eb52a5469a054ff5063da6ce183be30.json"
++      ]
++    },
++    {
++      "check": "the unrelated job finished during the wait",
++      "passed": true,
++      "detail": {
++        "job": "20261128-022131-an-unrelated-job-to-finish-while-the-con"
++      }
++    },
++    {
++      "check": "only the consumer waits, and the view says for what",
++      "passed": true,
++      "detail": {
++        "state": "waiting",
++        "why": "readiness 3a16e23cc5dd has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++        "request": {
++          "key": "3a16e23cc5ddd6ff3c3b7208a2ea632d4eb52a5469a054ff5063da6ce183be30",
++          "state": "waiting",
++          "why": "readiness 3a16e23cc5dd has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++          "operation": "verification/readiness/3a16e23cc5ddd6ff3c3b7208a2ea632d4eb52a5469a054ff5063da6ce183be30.json",
++          "wantedBy": [
++            "20261128-022131-read-the-task-s-outputs-offline-on-the-p"
++          ],
++          "resolvers": [],
++          "unanswered": true
++        }
++      }
++    },
++    {
++      "check": "nothing was fetched or published before the admission",
++      "passed": true,
++      "detail": []
++    },
++    {
++      "check": "one resolution job is written for the one request",
++      "passed": true,
++      "detail": {
++        "schema": "itl-job-resolve/v1",
++        "written": [
++          {
++            "key": "3a16e23cc5ddd6ff3c3b7208a2ea632d4eb52a5469a054ff5063da6ce183be30",
++            "job": "20261128-022135-resolve-3a16e23cc5dd-build-and-read-the",
++            "path": "verification/jobs/2026/11/28/20261128-022135-resolve-3a16e23cc5dd-build-and-read-the.json",
++            "wantedBy": [
++              "20261128-022131-read-the-task-s-outputs-offline-on-the-p"
++            ]
++          }
++        ],
++        "skipped": []
++      }
++    },
++    {
++      "check": "readiness is established by one resolution job",
++      "passed": false,
++      "detail": {
++        "status": "failed",
++        "summary": "failed: 1 failed step(s) in 1.0s, peak 44.4 MiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed",
++        "conclusion": {
++          "key": "3a16e23cc5ddd6ff3c3b7208a2ea632d4eb52a5469a054ff5063da6ce183be30",
++          "verdict": "withheld",
++          "stage": "consumer",
++          "outcome": "undiagnosed",
++          "why": "step parent exited 1 offline and named nothing it lacks: ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/store/work/3a16e23cc5ddd6ff-9e98a9e2/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++          "level": "readable",
++          "rounds": 1,
++          "fetch": {
++            "files": 1,
++            "bytes": 9620438,
++            "seconds": 0.573,
++            "reused": 0,
++            "reusedBytes": 0
++          },
++          "reused": false,
++          "bundleDigest": null
++        },
++        "tail": [
++          "readiness 3a16e23cc5dd: failed after 1 round(s), 1 file(s) fetched; withheld at the consumer stage (undiagnosed): step parent exited 1 offline and named nothing it lacks: ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdou"
++        ]
++      }
++    },
++    {
++      "check": "the resolution's offline run saw no network",
++      "passed": true,
++      "detail": {
++        "mode": "none",
++        "enforced": true,
++        "how": "bwrap --unshare-net: a network namespace with a loopback interface alone",
++        "probe": {
++          "interfaces": [
++            "lo"
++          ],
++          "connect": "OSError: Network is unreachable",
++          "lookup": "gaierror: Temporary failure in name resolution"
++        },
++        "alone": {
++          "home": "empty, of this run",
++          "tmp": "empty, of this run",
++          "reads": [
++            "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++            "/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/store/staging/3a16e23cc5ddd6ff-5853a9ac",
++            "/home/filip/.sdkman/candidates/java"
++          ]
++        }
++      }
++    },
++    {
++      "check": "what was fetched is what the task asked for, each verified",
++      "passed": false,
++      "detail": []
++    },
++    {
++      "check": "the base was laid without what the task has to ask for, and the receipt says so",
++      "passed": true,
++      "detail": {
++        "path": "/home/filip/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
++        "without": [
++          "m2/org/apache/activemq/activemq-bom/6.1.8",
++          "gradle-home/caches/modules-2/files-2.1/org.apache.activemq/activemq-bom/6.1.8",
++          "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.apache.activemq/activemq-bom/6.1.8",
++          "downloads/apache-maven-3.9.13-bin.tar.gz",
++          "tmp/"
++        ],
++        "reconstructed": true,
++        "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress."
++      }
++    },
++    {
++      "check": "the consumer ran",
++      "passed": false,
++      "detail": {
++        "error": "[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/repository/verification/.state/results/20261128-022131-read-the-task-s-outputs-offline-on-the-p/result.json'",
++        "job": {
++          "id": "20261128-022131-read-the-task-s-outputs-offline-on-the-p",
++          "title": "Read the task's outputs offline on the prepared inputs",
++          "format": "itl-job/v2",
++          "path": "verification/jobs/2026/11/28/20261128-022131-read-the-task-s-outputs-offline-on-the-p.json",
++          "purpose": "test",
++          "workload": "generic",
++          "case": "S48",
++          "batch": null,
++          "labels": null,
++          "submitted": {
++            "at": "2026-11-28T02:21:31+00:00",
++            "session": "6c5c7798-21e3-46a5-b989-5313736bdc7f"
++          },
++          "supersedes": null,
++          "supersededBy": [],
++          "source": "28703620316c277114db77e9ddd6e2ac7889ec1f",
++          "state": "blocked",
++          "why": "readiness 3a16e23cc5dd was withheld at the consumer stage (undiagnosed): step parent exited 1 offline and named nothing it lacks: ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/store/work/3a16e23cc5ddd6ff-9e98a9e2/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++          "priority": 0,
++          "priorityReason": null,
++          "needs": [
++            {
++              "readiness": "3a16e23cc5ddd6ff3c3b7208a2ea632d4eb52a5469a054ff5063da6ce183be30",
++              "state": "failed",
++              "why": "readiness 3a16e23cc5dd was withheld at the consumer stage (undiagnosed): step parent exited 1 offline and named nothing it lacks: ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/store/work/3a16e23cc5ddd6ff-9e98a9e2/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++              "resolvers": [
++                "20261128-022135-resolve-3a16e23cc5dd-build-and-read-the"
++              ]
++            }
++          ],
++          "plan": {
++            "cpus": 3.0,
++            "memoryEstimate": 6442450944,
++            "memoryLimit": 8589934592,
++            "durationEstimate": 1200.0,
++            "timeout": 4800.0
++          },
++          "claim": null,
++          "attempts": [],
++          "result": null
++        }
++      }
++    },
++    {
++      "check": "control withheld-bom: readiness is withheld at the fetch stage (absent), and nothing is published",
++      "passed": false,
++      "detail": {
++        "exit": 1,
++        "state": "failed",
++        "stage": "consumer",
++        "outcome": "undiagnosed",
++        "why": "step parent exited 1 offline and named nothing it lacks: gs).stdout ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-withheld-bom-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++        "rounds": [
++          {
++            "n": 1,
++            "missing": [],
++            "result": "failed",
++            "offlineSeconds": 0.1
++          }
++        ],
++        "said": "readiness 4e9650193f19: failed after 1 round(s), 1 file(s) fetched; withheld at the consumer stage (undiagnosed): step parent exited 1 offline and named nothing it lacks: gs).stdout ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-withheld-bom-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128."
++      }
++    },
++    {
++      "check": "control wrong-maven-digest: readiness is withheld at the fetch stage (digest-mismatch), and nothing is published",
++      "passed": true,
++      "detail": {
++        "exit": 1,
++        "state": "failed",
++        "stage": "fetch",
++        "outcome": "digest-mismatch",
++        "why": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz",
++        "rounds": [
++          {
++            "n": 1,
++            "missing": [],
++            "result": null,
++            "offlineSeconds": null
++          }
++        ],
++        "said": "readiness c3b2af9bb227: failed after 1 round(s), 0 file(s) fetched; withheld at the fetch stage (digest-mismatch): https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.13/apache-maven-3.9.13-bin.tar.gz is not the sha512 the operation pins for downloads/apache-maven-3.9.13-bin.tar.gz"
++      }
++    },
++    {
++      "check": "control unavailable-repository: readiness is withheld at the fetch stage (repository-unavailable), and nothing is published",
++      "passed": false,
++      "detail": {
++        "exit": 1,
++        "state": "failed",
++        "stage": "consumer",
++        "outcome": "undiagnosed",
++        "why": "step parent exited 1 offline and named nothing it lacks:  ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-unavailable-repository-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++        "rounds": [
++          {
++            "n": 1,
++            "missing": [],
++            "result": "failed",
++            "offlineSeconds": 0.1
++          }
++        ],
++        "said": "readiness 77eaed73581c: failed after 1 round(s), 1 file(s) fetched; withheld at the consumer stage (undiagnosed): step parent exited 1 offline and named nothing it lacks:  ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/control-unavailable-repository-work/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128."
++      }
++    }
++  ],
++  "timeline": [
++    {
++      "at": "2026-11-28T02:21:31+00:00",
++      "what": "the runner is at work; the consumer needs a readiness nobody has resolved"
++    },
++    {
++      "at": "2026-11-28T02:21:35+00:00",
++      "what": "admitted 20261128-022135-resolve-3a16e23cc5dd-build-and-read-the"
++    },
++    {
++      "at": "2026-11-28T02:21:40+00:00",
++      "what": "control withheld-bom: a resolution that must be withheld (absent)"
++    },
++    {
++      "at": "2026-11-28T02:21:40+00:00",
++      "what": "control wrong-maven-digest: a resolution that must be withheld (digest-mismatch)"
++    },
++    {
++      "at": "2026-11-28T02:21:41+00:00",
++      "what": "control unavailable-repository: a resolution that must be withheld (repository-unavailable)"
++    }
++  ],
++  "passed": false,
++  "runnerLog": [
++    "runner: 2 worker(s), 4 CPUs, 9.0 GiB (at most 8.0 GiB a job), isolation none, keeping 0 B of the machine free, jobs at oom_score_adj 1000, state /home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/repository/verification/.state",
++    "20261128-022131-an-unrelated-job-to-finish-while-the-con: started at 28703620316c (1 CPU, limit 384.0 MiB, timeout 5m00s)",
++    "20261128-022131-read-the-task-s-outputs-offline-on-the-p: waiting: readiness 3a16e23cc5dd has no receipt here yet, and no job in the queue resolves it: `python3 jobs/pipeline.py resolve` admits one (the watcher does)",
++    "20261128-022131-an-unrelated-job-to-finish-while-the-con: passed: 1 passed step(s) in 0.2s, peak 44.2 MiB (estimated 1m00s, 256.0 MiB)",
++    "20261128-022135-resolve-3a16e23cc5dd-build-and-read-the: started at 1ad96fc0ad8e (3 CPU, limit 8.0 GiB, timeout 1h20m)",
++    "20261128-022131-read-the-task-s-outputs-offline-on-the-p: waiting: resolution job 20261128-022135-resolve-3a16e23cc5dd-build-and-read-the for readiness 3a16e23cc5dd has not finished",
++    "20261128-022135-resolve-3a16e23cc5dd-build-and-read-the: failed: 1 failed step(s) in 1.0s, peak 44.4 MiB (estimated 20m00s, 6.0 GiB); 1 output file(s) changed",
++    "20261128-022131-read-the-task-s-outputs-offline-on-the-p: blocked: readiness 3a16e23cc5dd was withheld at the consumer stage (undiagnosed): step parent exited 1 offline and named nothing it lacks: ^^^^^^^^^ File \"/usr/lib/python3.14/subprocess.py\", line 578, in run raise CalledProcessError(retcode, process.args, output=stdout, stderr=stderr) subprocess.CalledProcessError: Command '['git', '-C', PosixPath('/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z/store/work/3a16e23cc5ddd6ff-9e98a9e2/view-1/worktrees/S48-parent'), 'rev-parse', 'HEAD']' returned non-zero exit status 128.",
++    "stopping on SIGTERM: running steps are cancelled, their jobs recorded",
++    "finished 2 job(s): 20261128-022131-an-unrelated-job-to-finish-while-the-con, 20261128-022135-resolve-3a16e23cc5dd-build-and-read-the; collect them with: python3 verification/pipeline.py collect"
++  ]
++}

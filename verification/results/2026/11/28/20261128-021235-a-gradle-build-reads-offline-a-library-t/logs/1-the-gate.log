@@ -1,0 +1,15 @@
+ok    the request is one file, the operation under its key
+      the runner is at work; the consumer needs a readiness nobody has resolved
+ok    the unrelated job finished during the wait
+ok    only the consumer waits, and the view says for what
+ok    nothing was fetched or published before the admission
+ok    one resolution job is written for the one request
+      admitted 20261128-022135-resolve-7603002d7ae8-compile-spring-boot
+FAIL  readiness is established by one resolution job: {"status": "failed", "summary": "failed: 1 failed step(s) in 0.4s, peak 44.3 MiB (estimated 12m00s, 6.0 GiB); 1 output file(s) changed", "conclusion": {"key": "7603002d7ae89b28ab25b4ac6552f22b8e3b2ba63aeaf8f4fbec30a94cbdbcb4", "verdict": "withheld", "stage": "consumer", "outcome": "undiagnosed", "why": "step compile exited 2 offline and named nothing it lacks: --- compile fatal: not a git repository: /home/filip/.cache/in-the-loop/git-mirrors/spring-boot.git/worktrees/S48-parent wrong upstream revision", "level": "builds", "rounds": 1, "fetch": {"files": 0, "bytes": 0, "seconds": 0, "reused": 
+ok    the resolution's offline run saw no network
+FAIL  what was fetched is what the task asked for, each verified: []
+ok    the base was laid without what the task has to ask for, and the receipt says so
+FAIL  the consumer ran: {"error": "[Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/readiness-gates/20261128T022131Z-gradle-module/repository/verification/.state/results/20261128-022131-read-the-task-s-outputs-offline-on-the-p/result.json'", "job": {"id": "20261128-022131-read-the-task-s-outputs-offline-on-the-p", "title": "Read the task's outputs offline on the prepared inputs", "format": "itl-job/v2", "path": "verification/jobs/2026/11/28/20261128-022131-read-the-task-s-outputs-offline-on-the-p.json", "purpose": "test", "workload": "generic", "case": "the gate beside this file", "batch": null, "
+FAIL  the library was fetched with its Gradle module metadata, in Maven's layout: []
+
+7 of 11 checks passed; failed: readiness is established by one resolution job; what was fetched is what the task asked for, each verified; the consumer ran; the library was fetched with its Gradle module metadata, in Maven's layout
