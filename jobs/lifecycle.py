@@ -121,10 +121,13 @@ def fulfillment(job: dict, result: dict) -> dict:
 
 
 def _when(text):
+    """A time, with its zone: one written without (a job file made by hand) is taken as UTC, so that it can be
+    measured against the runner's own."""
     try:
-        return dt.datetime.fromisoformat(text) if text else None
-    except ValueError:
+        when = dt.datetime.fromisoformat(text) if text else None
+    except (ValueError, TypeError):
         return None
+    return when.replace(tzinfo=dt.timezone.utc) if when and when.tzinfo is None else when
 
 
 def _measure(seconds, state):

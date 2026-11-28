@@ -1061,6 +1061,7 @@ class Runner:
         self.lock = threading.Lock()
         self.running = {}      # id -> {"plan", "thread", "steps": [Step]}
         self.finished = []     # ids finished in this run
+        self.broken = set()    # ids whose run the pipeline itself failed around: released, and not taken again by this runner
         self.stopping = False
         self.told_elsewhere = set()
         self.wrapper = self.state / "step-wrapper.sh"
@@ -1112,12 +1113,12 @@ class Runner:
         done, claimed = self.done_ids(), {p.name for p in (self.state / "claims").iterdir()}
         priorities = load_priorities(revs[0])
         out = []
-        settled = lambda job_id: job_id in done or job_id in claimed or job_id in self.running
+        settled = lambda job_id: job_id in done or job_id in claimed or job_id in self.running or job_id in self.broken
         self.specs, self.held = {}, {}   # every job's file as this scan read it, and the ones this runner leaves
         for job, path, source in queued_jobs(revs, lambda job_id: not settled(job_id)):
             job_id = job.get("id") or Path(path).stem
             self.specs[job_id] = job
-            if job_id in done or job_id in claimed or job_id in self.running:
+            if job_id in done or job_id in claimed or job_id in self.running or job_id in self.broken:
                 continue
             if wanted and job_id not in wanted:
                 self.held[job_id] = "this runner was started for other jobs by name"
@@ -1219,6 +1220,22 @@ class Runner:
         return workload("verification").jvmcontract_cached(self, source)
 
     def execute(self, job, path, source, job_plan, entry):
+        """Run a job, and never leave it claimed and counted as running: whatever the run of it raises outside the
+        steps' own guard (a full disk while its result is written, a field of its file nobody foresaw), the job is
+        released, its room is given back, and the runner says what was raised. It is not taken again by this
+        runner; the next one runs it again, which is right for a full disk and loud for a fault of the pipeline's."""
+        try:
+            self._execute(job, path, source, job_plan, entry)
+        except Exception as e:  # noqa: BLE001
+            job_id = job["id"]
+            print(f"{job_id}: NOT FINISHED: the pipeline failed around the job's run ({type(e).__name__}: {e}); "
+                  f"it is released, and this runner leaves it for the next", flush=True)
+            with self.lock:
+                self.running.pop(job_id, None)
+                self.broken.add(job_id)
+            self.release(job_id)
+
+    def _execute(self, job, path, source, job_plan, entry):
         job_id = job["id"]
         started = now()
         capture = originals()
@@ -1567,7 +1584,7 @@ class Runner:
         cpu = sum(s["cpuSeconds"] or 0 for s in measured)
         result["usage"] = {"peakMemoryBytes": peak, "wallSeconds": round(wall, 1), "cpuSeconds": round(cpu, 1),
                            "memoryOfEstimate": round(peak / job_plan["memoryEstimate"], 2) if peak else None,
-                           "durationOfEstimate": round(wall / job_plan["durationEstimate"], 2) if wall else None}
+                           "durationOfEstimate": round(wall / job_plan["durationEstimate"], 2) if wall and job_plan["durationEstimate"] else None}
         attention = result["attention"]
         for s in steps:
             where = f"step {s['index']} ({s['name']})"
@@ -2222,8 +2239,15 @@ def lifecycle_view(config, revs, full=()):
             row.update(state="finished", result=result_view(staged[job_id], "staged"))
         elif job_id in claims:
             claim = claims[job_id]
-            row.update(state="running", claim={"at": claim.get("at"), "pid": claim.get("pid"), "host": claim.get("host"),
-                                               "alive": bool(claim.get("pid")) and Path(f"/proc/{claim.get('pid')}").exists()})
+            alive = bool(claim.get("pid")) and Path(f"/proc/{claim.get('pid')}").exists()
+            row["claim"] = {"at": claim.get("at"), "pid": claim.get("pid"), "host": claim.get("host"), "alive": alive}
+            if alive or pid or claim.get("host") != socket.gethostname():
+                row["state"] = "running"
+            else:
+                # The runner that claimed it is gone (killed, a reboot) and none is at work: it is not running, and
+                # saying so for ever would keep every keeper waiting. The next runner clears the claim and runs it.
+                row.update(state="queued", why=f"claimed by a runner that is gone (pid {claim.get('pid')}, {claim.get('at')}), with nothing "
+                                               "recorded of how it ended: the next runner clears the claim and runs it again")
         elif job_id in away:
             # Claimed by the one runner of this repository, which is at work in another workspace. Its attempt and its
             # staged result are in that workspace's state; here the job is known to be running, and by whom.
@@ -2255,6 +2279,12 @@ def lifecycle_view(config, revs, full=()):
     for job_id in sorted(finished - seen):
         rows.append({"id": job_id, "title": staged[job_id].get("title"), "path": None, "state": "finished",
                      "why": f"its job file is no longer in {rev[:12]}", "result": result_view(staged[job_id], "staged"), "attempts": []})
+    for job_id in sorted(set(claims) - seen - finished):
+        claim = claims[job_id]            # at work on a job whose file is in no commit of the queue: still work, and the queue is not clear
+        if claim.get("pid") and Path(f"/proc/{claim.get('pid')}").exists():
+            rows.append({"id": job_id, "title": None, "path": None, "state": "running", "attempts": [], "result": None,
+                         "why": f"claimed by a runner at work (pid {claim.get('pid')}), and its job file is not in {rev[:12]}",
+                         "claim": {"at": claim.get("at"), "pid": claim.get("pid"), "host": claim.get("host"), "alive": True}})
     for item in diagnostics:
         rows.append({"id": item["id"], "title": None, "path": item["path"], "revision": item["revision"], "state": "invalid",
                      "why": f"{item['path']} at {item['revision'][:12]}: {item['problem']}", "attempts": [], "result": None})

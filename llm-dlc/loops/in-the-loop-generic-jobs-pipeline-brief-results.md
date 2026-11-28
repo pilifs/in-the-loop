@@ -97,6 +97,72 @@ For whoever continues (this run's later cycles): each item is one commit, with i
    fetch restriction is the resolver's own fetcher, not a firewall. A watcher's whole cycle on the real queue
    with this code has not run: it cannot until the line lands.
 
+## The review of 2026-11-28: what three fresh readers found
+
+At the start of the run's fourth cycle the line was read by three reviewers that had not written it (subagents of
+the run's agent, each given the brief and the code, not this page's conclusions): one held every sentence of the
+brief against the code and its tests, one read the pipeline's core for defects, one read readiness, batches and
+the audit. Between them, 42 findings. Each is listed here with what became of it; **fixed** names the commit, and
+**open** is work for whoever continues, in the order given. None was dismissed.
+
+**Conformance with the brief** (the brief's line in brackets).
+
+| # | Finding | State |
+|---|---|---|
+| B1 | [65] The offline proof was not a clean worker: the runner's whole home (`~/.m2`, `~/.gradle`) was readable and writable in a resolution's rounds and in the consumer's steps, and a job with a readiness need could have a step with the host's network. This page had said no mutable cache was inherited | **fixed** `typnwnxwvrnt`: `sandbox.alone` (empty home and `/tmp`, declared `reads`), the fixtures fail when a non-input is readable, such a job has no network in any step |
+| B2 | [51, 79] Cost: nothing names model spend or links it to `submitted.run`; no aggregate gives elapsed beside per-attempt work; `timing.queueWait` lumps the wait for a prerequisite with the wait for room; `cpuSeconds` and peak memory are bare nulls with no state | open |
+| B3 | [43, 93] `report` is still built from receipts: it shows no `execution`, `fulfillment`, `conclusion` or `purpose`, and omits a job that never ran (a blocked row is in `batch` and `view`, not in `report`) | open |
+| B4 | [50, 79] `collected` means "in the working copy": nothing says whether a receipt is committed, or published to a remote | open |
+| B5 | [50, 54] Archive metadata: the audit hard-codes the archive as unavailable, manifest rows carry no occurrence, `verify` is git-only, and the view says `sealed` for any receipt with `originals` without a verified state | open |
+| B6 | [62] `level` was validated, keyed and copied, and never used: `tests-run` was granted to a task that ran no test, which is VF-070's own fault | **fixed** `typnwnxwvrnt` for `tests-run` (evidence of executed tests, or `tests-not-shown`). Open: `readable` does not require a compared output, and `describes` is free-form |
+| B7 | [60, 64] Discovery: a Gradle plugin missing by its id and a wrapper's own download name nothing (`undiagnosed`); a classifier's or non-JAR artifact ended `no-progress`; a file with no `.sha1` was reported `absent` and a JAR in that case silently dropped | **fixed** `typnwnxwvrnt`: a plugin by its marker module, a file by its name, Maven's four- and five-part coordinates, `unverifiable` as its own outcome. Open: a wrapper's distribution the operation did not pin |
+| B8 | [93, 63] Operator guidance: `fetch_allow` is set nowhere, so after landing the first resolution job is `unschedulable`; neither skill mentions readiness, `resolve`, `fetch_allow` or `wait --batch`; `/run-verification` still says "leave it deferred" for what is now `unschedulable` | README part **fixed** `typnwnxwvrnt` (*For the runner's operator*). Open: the two skills, and the landing note |
+| B9 | [43, 77] A withdrawn job (its file deleted) with a cancelled attempt gets no row; one that finished is collected like any other; no test asserts the `cancelled` block. `findings.md` says VF-029's control holds, and no test shows it | open |
+| B10 | [49] `declared[]` has no digest (an `unchanged` output has none anywhere); `consumer` is a free string no flag sets and nothing derives from `needs`; `producer` is stamped on unchanged and missing outputs too | open |
+| B11 | [66] View totals and `report` counts mix resolve jobs with the rest: preparation attempts are not reported apart from the questions answered | open (`totals.byPurpose`) |
+| B12 | [78] VF-025: applied outputs are explicitly unchecked by the audit, nothing checks remote publication, no test uses the JARs' blob ids. `findings.md` claims more than is shown | open |
+| B13 | [92] Fetch slots are one more condition inside the same `fits`; with two workers ten is unreachable; no test names `fetch_slots`; the schema says slots are held while a fetch step runs, and the code holds them for the whole job | open |
+| B14 | [93] Two schema files cover about twenty versioned documents (view, batch manifest, map and view, operation, receipt, attempt, wait, collect); the result schema lacks `evidence[].suites/erroring/unreadable/why`, `conclusion.readiness` and the verdicts `ready` and `withheld` | open |
+| B15 | [93] `ARCHITECTURE.md`'s row on the job pipeline still says it "is to be designed", and this run's known gaps are here, not in its table | open |
+| B16 | Smaller: test evidence is read only when the exit was as expected, so a failing test step records no suite; `no-attempt-identity` keys on `originals`, not `attempt`; `views.collected` is a constant; the watcher's resolution jobs carry no `submitted.run`; no test runs two resolutions at once on one store; no test compares old and new `status` or `report`; no sealed-producer profile; 40 of 98 inventory rows have no last working revision and no replay check | open, but for two resolutions at once (a lock a key, `typnwnxwvrnt`, with no test yet) |
+
+**The pipeline's core** (`jobs/pipeline.py` unless said).
+
+| # | Finding | State |
+|---|---|---|
+| C1 | `verification/capture.py` raised on an output declared as an object (every resolution job's, any `--optional-output`): the run was reported "not sealed", and `recover` hit the same error at every start | **fixed** `typnwnxwvrnt` (no test of its own yet) |
+| C2 | Anything raised after the `try` in `Runner.execute` strands the job: its claim, worker, CPUs and memory stay held, and after a restart it dies again. Triggers: a duration of `0s`, a `submitted.at` with no offset, a full disk | open |
+| C3 | A collect stopped after writing results and before the keeper's commit: the next collect lists them as already collected, so the keeper commits nothing, triages nothing, and `after_collect` hooks never run for them | open |
+| C4 | A runner killed mid-job, with nothing else queued, leaves the job `running` for ever: the claim is dead, `idle` is false, and the keeper starts no runner because nothing can start | open |
+| C5 | One job file takes the queue down: a `revision` git cannot resolve makes `committed_jobs` raise (the runner dies, `view` gives no rows and `idle: null`, the keepers do and say nothing); a job file that is `[]` makes `view` exit 1. Inherited from the old runner | open |
+| C6 | A readiness request committed in another workspace (the normal case for a run's agent) could not be admitted: the watcher's `resolve` read the operation from its own working copy and skipped, at every look | **fixed in part** `typnwnxwvrnt`: `resolve` reads the operation at the asking job's commit and writes it into the admitting commit. Not exercised across two workspaces; whether the keeper goes on to start the runner after a skip is open |
+| C7 | A job staged and uncollected in one workspace runs again when a runner starts in another: `done_ids` ignores the other workspace's staged results, and taking the repository lock overwrites the only pointer to it | open |
+| C8 | Test evidence counts reports the step did not write (an earlier step's, or committed XML): the promise is kept by tests that did not run. And the reverse: a passing Gradle run and `pytest -q` print no line the log reader knows, so a promise with no `reports` fails | open (count only reports written since the step began; say in the README that Gradle needs `--test-reports`) |
+| C9 | A runner stopped during preparation or between steps records `error` or `failed`, not `cancelled`: the job is never run again and its dependents are blocked | open |
+| C10 | `idle: true` while a job runs whose file is in no commit of the queue (deleted mid-run, `run --rev`): it has no row | open |
+| C11 | An empty directory satisfies a required output | open |
+| C12 | The bundle was read in full at every scheduling decision and once a waiting job in every `view` | **fixed** `typnwnxwvrnt` (`verify_once`: read again only when a file's size or time changed; the handover reads it in full) |
+| C13 | `queue_keeping.start_runner` ignores `runner.elsewhere`: with a runner at work in another workspace every look launches one that exits on the lock, and reports "started the runner" | open |
+| C14 | `keep_workdirs = "always"` is undone by the next collect's own prune | open |
+| C15 | A prerequisite cycle (reachable with hand-set ids only) is never detected: all stay `waiting`, `idle` stays false | open |
+| C16 | The clean environment was applied after the job's own variables, dropping a job's own `MAVEN_OPTS` | **fixed** `typnwnxwvrnt`, before it was committed |
+
+**Readiness, batches, the audit.**
+
+| # | Finding | State |
+|---|---|---|
+| R1 | A parent POM whose `.sha1` could not be fetched stayed in staging and was published and laid, unverified, over the base's good copy | **fixed** `typnwnxwvrnt`, before it was committed: a file is in staging verified or not at all, with a test |
+| R2 | Two resolutions of one key were not serialised: a late failure wrote its receipt over a ready one, and a late success renamed the other's bundle away. `unanswered` counts committed resolver jobs only, so a second `resolve` before the commit writes a second job; `resolve KEY --again` never checks for one on its way | lock a key **fixed** `typnwnxwvrnt`. Open: uncommitted resolver files are not counted, and no test runs two at once |
+| R3 | `base.asOf` went by mtime, which Maven sets to the repository's last-modified time (1,102 of the S cache's 4,295 `m2` files are dated before the cache was made); the consumer recomputed what is left out and never compared it with the receipt | **fixed** `typnwnxwvrnt`: the later of a file's two times, and a view laid later is refused when what it leaves out differs (`drift`) |
+| R4 | One unfetchable coordinate ended the resolution, and the patterns made such coordinates: `g:a:.` gave an empty version, Maven's `g:a:jar:tests:1.0` the version `tests`. Two wordings were not read at all | **fixed** `typnwnxwvrnt`, with a test |
+| R5 | `overlay`: a symlinked folder on the way to a laid or left-out path was linked whole, and the files were then laid inside the base itself; a nested `view.walk` is ignored unless something special lies under it; `./m2/x` and `m2//y` passed and were silently not left out; `layout.maven: "m2/"` made `equip` write under `/` | **fixed** `typnwnxwvrnt` but for the nested `view.walk`, which is open |
+| R6 | Pinned inputs: one under a left-out folder was not fetched though the view lacks it; one already in the base was never checked against its digest; a pooled copy with another digest raised `digest-mismatch` without asking the source | **fixed** `typnwnxwvrnt` (no test of its own yet) |
+| R7 | Authorisation was a string prefix (`https://repo.example.org` admitted `repo.example.org.evil.example`), and a redirect was followed to any host | **fixed** `typnwnxwvrnt`, with a test of the parts; the redirect rule has none |
+| R8 | The Gradle init script: (a) a build with settings repositories under the default `PREFER_PROJECT` and a project with its own `repositories {}` is not served; (b) `exclusiveContent` may exclude the readiness repository; (c) being first, the readiness repository answers for a module whose classifier artifact Gradle's own cache had (now recovered in another round by its file name) | open: (a) and (b) need a real build with those settings |
+| R9 | Batches: (a) work A, then B, then A returns the row to the old job, nothing reruns, and B's pass fulfils needs on A; (b) job files are written before the map, so a submission killed between leaves jobs in no history, which run; (c) two batch names that agree in 20 characters collide; (d) the lock file was created where jj commits it; (e) a non-string `row` raises `TypeError`, not `Problem`; (f) one manifest in two workspaces with different earlier maps writes same-named files with different bytes | (d) **fixed** `typnwnxwvrnt`; the rest open |
+| R10 | The audit crashes instead of reporting on a receipt without `finishedAt` or `sourceCommit`, on a `job` or `steps` of the wrong type, on an index row without `id` (all latent: the 1,906 receipts have every key); the embedded `job.spec` is never hashed, so a changed `case` there with the index following shows nothing; `check_batches` never reads a row's `work`; `--rev` at a conflicted commit would read an empty corpus and exit 0 | open |
+| R11 | Smaller: `key()` covered the prose of `base.why` and the budget of `rounds` (**fixed**), and does not bind the base's content, the task's scripts or the source commit (open); with two readiness needs the last one's `ITL_READINESS_*` wins; an exception other than `Withheld` leaves staging and no receipt; the consumer's view is read-only and the resolver's was writable (**fixed**); `script_inventory.py` takes the last of sorted job paths, which is an old flat one where a script has both | open but for the two marked |
+
 ## Gate 2: the second format, and a result that keeps its questions apart
 
 **What is built.** `submit --purpose` writes a job of `itl-job/v2`; the runner runs it beside jobs of the first

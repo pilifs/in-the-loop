@@ -49,6 +49,24 @@ class Known:
             todo += sorted(self.superseders.get(current, []))
         return seen
 
+    def ring(self, job_id: str) -> list[str] | None:
+        """The jobs from `job_id` back to itself through what each needs, when its needs lead back to it: none of
+        them can ever start. Only jobs that have not finished are followed."""
+        def walk(current: str, path: list[str]) -> list[str] | None:
+            for need in (self.specs.get(current) or {}).get("needs") or []:
+                other = need.get("job") if isinstance(need, dict) else None
+                found = self.outcome(other) if other else None
+                if not found or found["state"] != "pending":
+                    continue
+                if found["by"] == job_id:
+                    return [*path, job_id]
+                if found["by"] not in path:
+                    back = walk(found["by"], [*path, found["by"]])
+                    if back:
+                        return back
+            return None
+        return walk(job_id, [job_id])
+
     def outcome(self, job_id: str) -> dict:
         """What became of the work a job id stands for: `fulfilled` (it, or a job that supersedes it, passed),
         `pending` (one of them has not finished), `unfulfilled` (every one of them ended, none passed) or
@@ -71,11 +89,16 @@ def prerequisites(job: dict, known: Known, readiness=None) -> list[dict]:
     answers for a readiness receipt with the same four words and a reason (jobs/readiness.py); without it a
     readiness prerequisite is `unknown`."""
     out = []
+    ring = known.ring(job["id"]) if job.get("id") and any("job" in need for need in job.get("needs") or []) else None
     for need in job.get("needs") or []:
         if "job" in need:
             found = known.outcome(need["job"])
             other = found["by"]
             via = f" (which supersedes {need['job']})" if other != need["job"] else ""
+            if ring and found["state"] == "pending" and other == ring[1 % len(ring)]:
+                out.append({"job": need["job"], "state": "failed", "by": other,
+                            "why": f"its needs lead back to itself ({' needs '.join(ring)}): none of them can start; resubmit one without the need"})
+                continue
             state, why = {
                 "fulfilled": ("satisfied", f"{other}{via} passed"),
                 "pending": ("waiting", f"{other}{via} has not finished"),

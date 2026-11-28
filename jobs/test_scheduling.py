@@ -37,6 +37,20 @@ class WhatBecameOfAPrerequisite(unittest.TestCase):
         self.assertEqual(state, "blocked")
         self.assertIn(f"{A} ended out-of-memory: resubmit it", why)
 
+    def test_jobs_whose_needs_lead_back_to_themselves_are_blocked_and_say_the_ring(self):
+        ring = {A: {"id": A, "needs": [{"job": B}]}, B: {"id": B, "needs": [{"job": C}]}, C: {"id": C, "needs": [{"job": A}]}}
+        known = Known(ring, {})
+        self.assertEqual(known.ring(A), [A, B, C, A])
+        state, why = decide(ring[A], [], [], prerequisites(ring[A], known))
+        self.assertEqual(state, "blocked")
+        self.assertIn(f"its needs lead back to itself ({A} needs {B} needs {C} needs {A})", why)
+        alone = {A: {"id": A, "needs": [{"job": A}]}}
+        self.assertEqual(decide(alone[A], [], [], prerequisites(alone[A], Known(alone, {})))[0], "blocked")
+        # A chain that ends is waited for as before, and one whose far end passed is not a ring.
+        chain = {A: {"id": A, "needs": [{"job": B}]}, B: {"id": B, "needs": [{"job": C}]}, C: {"id": C}}
+        self.assertEqual(decide(chain[A], [], [], prerequisites(chain[A], Known(chain, {})))[0], "waiting")
+        self.assertIsNone(Known(ring, {C: "passed"}).ring(A))
+
     def test_a_cancelled_job_runs_again_so_it_has_not_finished_and_a_running_one_has_not_either(self):
         self.assertEqual(Known({A: {}}, {A: "cancelled"}).outcome(A)["state"], "pending")
         self.assertEqual(Known({A: {}}, {}, running=[A]).outcome(A)["state"], "pending")

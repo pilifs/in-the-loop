@@ -122,7 +122,8 @@ def start_runner(run: Run, status: dict) -> dict | None:
             run.update(nudged=[])
         return None
     ours = (data.get("runner") or {}).get("pid")
-    at_work = alive(ours) or status["runner"]["atWork"]
+    # The repository has one runner, wherever it is: one at work in another workspace takes these jobs at its next look.
+    at_work = alive(ours) or status["runner"]["atWork"] or bool((status["runner"].get("elsewhere") or {}).get("pid"))
     if at_work:
         if [j for j in waiting if j not in (data.get("nudged") or [])]:
             nudge(root)

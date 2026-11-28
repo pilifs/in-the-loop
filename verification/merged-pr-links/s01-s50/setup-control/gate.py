@@ -49,6 +49,7 @@ CACHE = "~/.cache/in-the-loop/spring-boot-pr-links-s01-s50"
 AS_OF = "2026-11-27T09:00:00Z"          # between the first pass's last file (08:42 UTC) and the second's first (09:40)
 UNDER = ["gradle-home/caches/modules-2/files-2.1", "gradle-home/caches/modules-2/metadata-2.107/descriptors"]
 JDKS = "~/.sdkman/candidates/java"
+MIRROR = "~/.cache/in-the-loop/git-mirrors/spring-boot.git"     # the worktrees of the base keep their objects here, outside it
 BATCH = "s-setup-control"
 
 
@@ -94,7 +95,7 @@ def operation(case: str, row: list, cache: Path, source: str, resources: dict) -
                         "file Gradle's cache wrote after 09:00 UTC on 2026-11-27 is left out, by the files' own times (the first pass's last "
                         "file is of 08:42, the second pass's first of 09:40). Gradle's index files are as they are now; a module's files and "
                         "its descriptor are what Gradle reads, and both are left out."},
-        "view": {"env": "SPRING_BOOT_S_CACHE"}, "reads": [JDKS], "layout": {"maven": "m2"}, "repositories": [source],
+        "view": {"env": "SPRING_BOOT_S_CACHE"}, "reads": [JDKS, MIRROR], "layout": {"maven": "m2"}, "repositories": [source],
         "task": {"independent": True, "timeout": 3000, "tests": {"reports": ["reports/**/*.xml"], "min": 1},
                  "steps": [{"name": pin, "run": f'bash {REL}/case_task.sh {case} {pin} "$ITL_READINESS_OUT"'} for pin in ("fix", "parent")]},
         "outputs": [{"path": "tests-fix.json"}, {"path": "tests-parent.json"}],
@@ -248,6 +249,8 @@ def main(argv=None) -> int:
                    and all(all(e["consumer"]["asTheResolutionSaw"].values()) for e in ran if e["consumer"]["status"] == "passed"),
                    [(e["case"], e["consumer"]["asTheResolutionSaw"], [(s["name"], s["status"], s["executed"]) for s in e["consumer"]["steps"]]) for e in ran][:8])
         gate.check("every case is explained", not [e for e in out if e["outcome"] == "unexplained"], [e["case"] for e in out if e["outcome"] == "unexplained"])
+        gate.check("at least one case came ready and its job ran: the checks above are not passed by nothing having happened", bool(ran),
+                   {e["case"]: (e["readiness"]["outcome"], (e["readiness"]["why"] or "")[:300]) for e in out if not e["consumer"]})
         rounds = [len(e["readiness"]["rounds"]) for e in ready]
         seconds = lambda which: round(sum(r["offlineSeconds"] or 0 for e in out for r in e["readiness"]["rounds"] if which(r)), 1)
         fetch = lambda field: sum((e["readiness"]["fetch"] or {}).get(field, 0) for e in out)

@@ -62,6 +62,12 @@ class WhatIsNotThere(unittest.TestCase):
         self.assertEqual(lifecycle.timing({}, result)["queueWait"], {"seconds": None, "state": "unknown"})
         self.assertEqual(lifecycle.timing({"submitted": {"at": "2026-11-28T10:00:00+00:00"}}, result)["queueWait"], {"seconds": 10.0, "state": "measured"})
 
+    def test_a_submission_time_written_without_its_zone_is_measured_as_utc_and_does_not_raise(self):
+        job, result = committed("20261127-145103-read-both-original-maven-wars-with-a-pin")
+        by_hand = {**job, "submitted": {**job["submitted"], "at": job["submitted"]["at"][:19]}}      # 2026-11-27T14:51:03, no offset
+        self.assertEqual(lifecycle.timing(by_hand, result)["queueWait"], lifecycle.timing(job, result)["queueWait"])
+        self.assertEqual(lifecycle.timing({**job, "submitted": {"at": 5}}, result)["queueWait"]["state"], "unknown")
+
     def test_steps_that_were_skipped_leave_the_requested_time_partial_and_a_measured_zero_stays_one(self):
         job = {"steps": [{"run": "a"}, {"run": "b"}, {"run": "c"}]}
         result = self.result(status="failed", steps=[self.step(1, wallSeconds=0.0, phase="build"), self.step(2, "failed", exitCode=2, phase="test"),
