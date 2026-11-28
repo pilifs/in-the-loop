@@ -12,7 +12,7 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 | 1. Protect and measure: the census | done | `jobs/audit.py`, `jobs/records.py`, the frozen census and manifest of `b52a084f5d11` |
 | 1. Protect and measure: retention on retry and prune | done | `jobs/attempts.py`; `prune`, `recover` and a collect that can be run again, in `verification/pipeline.py`; the brief queue's cleanup is that `prune` |
 | 2. Switch one queue | done | The pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification, generic and resolution workloads (`jobs/workloads/`); the second job format, written by `submit --purpose`, run and collected, with a result that keeps execution, fulfillment, each declared output, a step's test evidence and network, the workload's conclusion and scoped timing apart (`jobs/lifecycle.py`, `jobs/evidence.py`); one state with its reason for every job, in a view the keepers read as data (`jobs/scheduling.py`, `view`); a batch from one manifest with its map (`jobs/batch.py`, the 49-row fixture); the pipeline of `b52a084f5d11` tested beside this one, with a rollback while a job is in flight. Not done here: a full watcher cycle on the real queue with the new code, which waits for the line to land (the default checkout's runner is the old pipeline until then) |
-| 3. Qualify delayed setup (S48) | done | Readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. **S48 passed on the real cache, 17 of 17 checks**, in job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques` (13m21s): one request, one resolution job, two offline rounds, four WARs read by a fresh offline consumer on both pins and equal to the committed readbacks, three controls withheld at the fetch stage, an unrelated job finished during the wait, no failed consumer job. The first run had failed on a fault of the gate's own base (see *Gate 3: S48*) |
+| 3. Qualify delayed setup (S48) | done | Readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. **S48 passed on the real cache, 17 of 17 checks**, in job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques` (13m21s): one request, one resolution job, two offline rounds, four WARs read by a fresh offline consumer on both pins and equal to the committed readbacks, three controls withheld at the fetch stage, an unrelated job finished during the wait, no failed consumer job. The first run had failed on a fault of the gate's own base (see *Gate 3: S48*). **Beyond the brief's gate, an ordinary Gradle build passed too**, 14 of 14 checks, in job `20261128-012905-a-gradle-build-reads-offline-a-library-t`: a library Gradle had no record of, named by Gradle, fetched with its module metadata and read offline through a file repository every view now carries (see *Gate 3, beyond S48*) |
 | 4. Tune from measurements | started | Admission is built (`fetch_allow`, `fetch_slots` with ten as the documented starting ceiling, a receipt's fetched bytes and seconds, `timing.byPhase`). The only real measurements are S48's (see *Gate 4*): fetching was under a second of a six-minute resolution. No batch has run on the new pipeline, so the ceiling is untested and nothing is tuned |
 | 5. Adopt and verify | done, but for what needs a batch | `ARCHITECTURE.md` and the READMEs with each commit, the skills' commands, `CLAUDE.md`'s section on jobs, the inventory of the scripts under `verification/`, a dated update on each finding the brief names, S48's outcome. Open: the comparison on the next natural large batch, which needs this line landed (the default checkout's runner is the old pipeline until then) and a batch to run |
 
@@ -91,9 +91,9 @@ For whoever continues (this run's later cycles): each item is one commit, with i
    batch (avoidable consumer retries, unexplained cases, missing telemetry, offline readiness, capture
    failures, time to the first useful result), which needs the line landed and a batch.
 9. **Known gaps, each small and none started.** `nudge` reaches only this workspace's runner, so a runner in
-   another workspace finds a new commit at its next look at the queue. The resolver lays a module in Maven's
-   layout only, which a Gradle build reads through the view's init script (its gate is pending, above) and
-   not otherwise. Discovery reads Gradle's and Maven's "not found" and "not cached" lines and nothing else. The
+   another workspace finds a new commit at its next look at the queue. A Gradle build reads what was fetched
+   only when its command names the view's init script; for a build that keeps its repositories in its settings,
+   and for plugins, that script is written and has not run in a real build. Discovery reads Gradle's and Maven's "not found" and "not cached" lines and nothing else. The
    fetch restriction is the resolver's own fetcher, not a firewall. A watcher's whole cycle on the real queue
    with this code has not run: it cannot until the line lands.
 
@@ -433,9 +433,25 @@ Both are corrected. The file repository is now over the **fetched modules alone*
 for a Maven build. And the resolver reads that wording, so a module that is a bare POM in a repository Gradle
 does consult is fetched whole in the next round.
 
-**Second run.** Pending: job `20261128-012905-a-gradle-build-reads-offline-a-library-t`, which supersedes the first. What the init script does in a build that
-keeps its repositories in its settings, and for plugins, is written and not run: this gate's build declares
-its repositories in its projects.
+**Second run: passed, 14 of 14 checks** (job `20261128-012905-a-gradle-build-reads-offline-a-library-t`, which
+supersedes the first: 2m49s, 3.2 GiB at its peak; collected on the watcher's line in jj change `mzxmopoovqlu`,
+with the gate's record at `verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json`, SHA-256
+`24421c2e…2be2c54`).
+
+| What the gate asks | What the run showed |
+|---|---|
+| One request, the consumer alone waiting, an unrelated job finishing meanwhile | As in S48's gate: one request file, the consumer `waiting` with the readiness named, the unrelated job finished, nothing fetched before the admission, one resolution job |
+| The library is named by Gradle's own words | Round 1 ran the task offline for 21.1 s and read `org.jspecify:jspecify:1.0.1` from "No cached version of ... available for offline mode", for `buildSrc`'s class path |
+| It is fetched whole, verified | Its POM (1,937 bytes), its `.module` file (2,657) and its JAR (3,064), each by the repository's SHA-1, in Maven's layout: 7,658 bytes in 0.56 s |
+| Gradle reads it offline from the file repository | Round 2 ran the same command through in 69.1 s: `BUILD SUCCESSFUL`, 831 classes. `compile.sh` found the library in neither Gradle cache afterwards, so the file repository over the fetched modules is where it was read |
+| The handoff is proved offline, and the consumer does the work itself | The consumer compiled the module in 1m09s, each step in a network namespace with loopback alone, on the bundle the receipt names, and passed once |
+| The same result both times | The consumer's `compiled.json` is byte for byte the resolution's: 831 classes, and `SpringApplication.class` with SHA-256 `320476c4…647efbc` |
+
+What it does not show. The build declares its repositories in its projects, so the init script's branch for
+repositories kept in settings did not run, and no plugin was among what was fetched. One library was withheld,
+in a made state. And the request again came from a gate's script. What it does show is that the route from
+Gradle's own error to a build that passes offline works on a real multi-project build with a `buildSrc`,
+without Gradle's cache being written by anything but Gradle.
 
 ## Gate 4: what has been measured
 

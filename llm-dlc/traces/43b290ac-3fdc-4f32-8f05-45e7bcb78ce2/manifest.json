@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T01:34:30.317Z",
-  "duration_seconds": 37249,
+  "ended": "2026-11-28T01:42:19.792Z",
+  "duration_seconds": 37718,
   "stats": {
     "turns": 33,
-    "api_calls": 920,
-    "tool_calls": 984,
+    "api_calls": 926,
+    "tool_calls": 990,
     "tool_errors": 14,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1866,
-      "output_tokens": 1542600,
-      "cache_read_input_tokens": 281305499,
-      "cache_creation_input_tokens": 3221417
+      "input_tokens": 1878,
+      "output_tokens": 1549168,
+      "cache_read_input_tokens": 283767870,
+      "cache_creation_input_tokens": 3230728
     }
   },
   "tools": {
-    "Bash": 832,
+    "Bash": 838,
     "Read": 82,
     "Write": 36,
     "Edit": 19,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T01:34:30.317Z",
+      "ended": "2026-11-28T01:42:19.792Z",
       "turns": 1,
-      "api_calls": 166,
+      "api_calls": 172,
       "usage": {
-        "input_tokens": 332,
-        "output_tokens": 217565,
-        "cache_read_input_tokens": 39019076,
-        "cache_creation_input_tokens": 392460
+        "input_tokens": 344,
+        "output_tokens": 224133,
+        "cache_read_input_tokens": 41481447,
+        "cache_creation_input_tokens": 401771
       },
-      "peak_context_tokens": 407627
+      "peak_context_tokens": 416938
     }
   ],
   "log": {
-    "sha256": "09daf6538f03abe7a03b28b73ea54d077cf7181dac7447eced7c6c469dcd7ea9",
-    "bytes": 25605647,
-    "lines": 9252,
-    "gzip_bytes": 4720803,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/09daf6538f03abe7a03b28b73ea54d077cf7181dac7447eced7c6c469dcd7ea9.jsonl.gz"
+    "sha256": "98d5669e6909550e445224a86c6f54ea84249429735c7e46e6457ced82413dab",
+    "bytes": 25712106,
+    "lines": 9313,
+    "gzip_bytes": 4732405,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/98d5669e6909550e445224a86c6f54ea84249429735c7e46e6457ced82413dab.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -534,6 +534,14 @@
       "summary": "Give Gradle a file repository over the fetched modules alone, and run its gate again (verification pending)",
       "body": "The first run of the gate for the readiness view's Gradle init script (job 20261128-011602-a-gradle-build-reads-offline-a-library-t) failed, and showed two things. The script works in a real build: after round 1 stopped on org.jspecify:jspecify:1.0.1, missing for buildSrc's class path, the resolver fetched its POM, its Gradle module metadata and its JAR, and in round 2 Gradle read the library from the file repository. And the repository was over too much: the view's whole Maven-layout folder, which is mostly the base's Maven local repository, where plexus-utils 3.6.0 is a POM with no JAR. Being first in the build's list, the file repository answered for that module, and Gradle then looked for the JAR there and nowhere else, though its own cache had the module whole. The resolution ended undiagnosed, because Gradle's wording for one missing file of a known module was not one the resolver read.\n\nBoth are corrected here. A view now lays the fetched modules apart, in Maven's layout, each whole by the way it is fetched (ITL_READINESS_FETCHED_M2), and the init script's file repository is over those alone; ITL_READINESS_M2 stays the whole folder, for a Maven build. And the resolver reads 'Could not find a-v.jar (g:a:v)', so a module that is a bare POM in a repository Gradle does consult is fetched whole in the next round.\n\nThe gate is queued again as job 20261128-012905-a-gradle-build-reads-offline-a-library-t, which supersedes the first and has not run. The results page records the first run and what was corrected.\n\nVerified without Gradle: jobs/test_readiness.py (the fetched modules are laid apart with nothing of the base's own, and Gradle's wording is read as its coordinate), jobs/test_delayed_setup.py, the gate's logic 16 of 16 on the made-up nested build, and the tests of what changed, 43 of 43 Python test files (python3 lib/tools/test_costs.py run --changed). The real build is verified only when the second job's result is read.",
       "log_sha256": "09daf6538f03abe7a03b28b73ea54d077cf7181dac7447eced7c6c469dcd7ea9"
+    },
+    {
+      "change_id": "mozxsuwtuqznkvmyrzyukupuxwmoqutk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record that an ordinary Gradle build passed delayed setup, 14 of 14 checks",
+      "body": "The gate for the readiness view's Gradle init script passed in its second run: job 20261128-012905-a-gradle-build-reads-offline-a-library-t, 2m49s, 3.2 GiB at its peak, collected on the watcher's line (jj change mzxmopoovqlu) with the gate's record.\n\nOn Spring Boot's core module at S48's parent pin, with org.jspecify:jspecify taken out of Gradle's file store, Gradle's descriptors and Maven's local repository: round 1 ran the task offline for 21 s and read the library's name from Gradle's own words (for buildSrc's class path); the resolver fetched its POM, its Gradle module metadata and its JAR from Maven Central, 7,658 bytes, each by the repository's SHA-1; round 2 ran the same command through in 69 s, BUILD SUCCESSFUL, 831 classes, with the library in neither Gradle cache afterwards, so the file repository over the fetched modules is where Gradle read it; and a fresh consumer compiled the module itself in 1m09s with no network, to a compiled.json byte for byte the resolution's. The results page has the checks as a table, and says what the run does not show: the build declares its repositories in its projects, so the init script's branch for repositories kept in settings did not run, no plugin was among what was fetched, the state was made, and the request came from a gate's script.\n\nWith it the limit the pages recorded after S48 (a module a Gradle build can read only from Gradle's own cache is beyond the resolver) is replaced by what is true now, in CLAUDE.md, in VF-076's update and in the list of known gaps: a Gradle build reads what was fetched when its command names the view's init script, and a Maven build takes the view's Maven-layout folder as its local repository.\n\nVerified: the tests the three pages select, 21 of 21 Python test files (python3 lib/tools/test_costs.py run --changed). The figures were read from the gate's record and the job's result as collected.",
+      "log_sha256": "98d5669e6909550e445224a86c6f54ea84249429735c7e46e6457ced82413dab"
     }
   ],
   "logs": {
@@ -697,6 +705,12 @@
       "bytes": 9475486,
       "lines": 2918,
       "gzip_bytes": 1777883,
+      "url": null
+    },
+    "98d5669e6909550e445224a86c6f54ea84249429735c7e46e6457ced82413dab": {
+      "bytes": 25712106,
+      "lines": 9313,
+      "gzip_bytes": 4732405,
       "url": null
     },
     "a9c7f9f0158e4fccffcabb7036499996b6264bca77594c53dc99e20cd633d3e1": {
