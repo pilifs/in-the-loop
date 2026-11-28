@@ -12,12 +12,13 @@ with the commit, and what is still open. The operator's page is [`jobs/README.md
 | 1. Protect and measure: the census | done | `jobs/audit.py`, `jobs/records.py`, the frozen census and manifest of `b52a084f5d11` |
 | 1. Protect and measure: retention on retry and prune | done | `jobs/attempts.py`; `prune`, `recover` and a collect that can be run again, in `verification/pipeline.py`; the brief queue's cleanup is that `prune` |
 | 2. Switch one queue | done | The pipeline is `jobs/pipeline.py`, with `verification/pipeline.py` as its entry point of before; the verification, generic and resolution workloads (`jobs/workloads/`); the second job format, written by `submit --purpose`, run and collected, with a result that keeps execution, fulfillment, each declared output, a step's test evidence and network, the workload's conclusion and scoped timing apart (`jobs/lifecycle.py`, `jobs/evidence.py`); one state with its reason for every job, in a view the keepers read as data (`jobs/scheduling.py`, `view`); a batch from one manifest with its map (`jobs/batch.py`, the 49-row fixture); the pipeline of `b52a084f5d11` tested beside this one, with a rollback while a job is in flight. Not done here: a full watcher cycle on the real queue with the new code, which waits for the line to land (the default checkout's runner is the old pipeline until then) |
-| 3. Qualify delayed setup (S48) | done | Readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. **S48 passed on the real cache, 17 of 17 checks**, in job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques` (13m21s): one request, one resolution job, two offline rounds, four WARs read by a fresh offline consumer on both pins and equal to the committed readbacks, three controls withheld at the fetch stage, an unrelated job finished during the wait, no failed consumer job. The first run had failed on a fault of the gate's own base (see *Gate 3: S48*). **Beyond the brief's gate, an ordinary Gradle build passed too**, 14 of 14 checks, in job `20261128-012905-a-gradle-build-reads-offline-a-library-t`: a library Gradle had no record of, named by Gradle, fetched with its module metadata and read offline through a file repository every view now carries (see *Gate 3, beyond S48*) |
-| 4. Tune from measurements | started | Admission is built (`fetch_allow`, `fetch_slots` with ten as the documented starting ceiling, a receipt's fetched bytes and seconds, `timing.byPhase`). The only real measurements are S48's (see *Gate 4*): fetching was under a second of a six-minute resolution. No batch has run on the new pipeline, so the ceiling is untested and nothing is tuned |
-| 5. Adopt and verify | done, but for what needs a batch | `ARCHITECTURE.md` and the READMEs with each commit, the skills' commands, `CLAUDE.md`'s section on jobs, the inventory of the scripts under `verification/`, a dated update on each finding the brief names, S48's outcome. Open: the comparison on the next natural large batch, which needs this line landed (the default checkout's runner is the old pipeline until then) and a batch to run |
+| 3. Qualify delayed setup (S48) | **reopened on 2026-11-28**: the mechanism and the synthetic fixture stand, S48's pass does not | Readiness operations, resolution in rounds, bundles and receipts (`jobs/readiness.py`), the scheduler's wait and wake, the watcher's admission, the fetch authorisation and slots, and the synthetic nested fixture with its controls. S48 had passed 17 of 17 checks (job `20261128-003144-replay-s48-s-delayed-setup-as-one-reques`). **That pass read a Maven plugin from `~/.m2/repository` in the runner's home**, which is neither the base nor the bundle: the offline proof took the network away and left the home directory readable. Since `typnwnxwvrnt` a task runs on prepared inputs alone (an empty home, declared `reads`), and under that S48's gate failed 10 of 13 (job `20261128-023123-...`); see *Gate 3: S48, read again*. An ordinary Gradle build (Spring Boot's core module, a library taken out of every cache) passes under the same rule, 14 of 14, job `20261128-023123-a-gradle-build-reads-offline-a-library-t` |
+| 4. Tune from measurements | measured twice, nothing tuned | Admission is built (`fetch_allow`, `fetch_slots` with ten as the documented starting ceiling, a receipt's fetched and reused bytes and seconds, `timing.byPhase`). Two real measurements (see *Gate 4*): in S48's resolution fetching was 0.2 % of the time, and in S11's, a real Gradle graph of 53 missing modules, 0.1 %; ten failed rounds took 867 s of its 1,028 s. So the ceiling of ten is untested and is not what limits a resolution: the number of rounds is. Nothing is tuned |
+| 5. Adopt and verify | done but for what needs a batch, and reviewed | `ARCHITECTURE.md` and the READMEs with each commit, the skills' commands, `CLAUDE.md`'s section on jobs, the inventory of the scripts under `verification/` (100 scripts, nothing removed), a dated update on each finding the brief names. In the fourth cycle three reviewers that had not written the line read it against the brief: 42 findings, 21 fixed in whole or in part by the end of that cycle, the rest listed with their state in *The review of 2026-11-28*. Open: those, and the comparison on the next natural large batch, which needs this line landed (the default checkout's runner is the old pipeline until then) and a batch to run |
 
-**The whole default test run passed on this line** at `oxqyxotxzysr` (2026-11-28: 101 of 101, cargo's 59 test
-binaries and the Python files, in a memory cap of 8G; recorded for tree `9562bc586b6b`). It was run once, by the
+**The whole default test run last passed on this line** at `oxqyxotxzysr` (2026-11-28: 101 of 101, cargo's 59 test
+binaries and the Python files, in a memory cap of 8G; recorded for tree `9562bc586b6b`), before the fourth
+cycle's changes, which ran the tests each change selects (47 of 47 for its first two commits). It was run once, by the
 run's agent, because the commits before it had each run only the tests their own change selects, and the
 pipeline is shared code whose reach those cannot show. A commit after it changes the tree, so a promotion
 still runs its own.
@@ -77,30 +78,29 @@ line: it lists what is known to be wrong in it.
 
 ## What is left, in the order planned
 
-For whoever continues (this run's later cycles): each item is one commit, with its test.
+For whoever continues (a later cycle of this run, or the next run). Items 1 to 8 of the first three cycles are
+done or are in the list below; their sections follow.
 
-1. *Done (see Gate 2, below).* The second format in `submit`, `validate` and the runner, and the result's blocks.
-2. *Done (see Gate 2: states and the view, below).* Scheduling by prerequisites, and the states with their reasons.
-3. *Done (same section).* The lifecycle view, `status` rendered from it, the typed `wait` and `collect`, and the
-   keepers on it and on `jobs/pipeline.py`. Left of it: the batch views, with fan-out (next).
-4. *Done (see Gate 2: fan-out, below).* Manifest fan-out, the map, the batch's wait and view, the 49-row fixture.
-5. *Done (see Gate 2: the pipeline of before beside this one, below).*
-6. *Done (see Gate 3 and Gate 3: S48, below).* Delayed setup: the mechanism, the synthetic fixture, and S48 on
-   the real cache, which passed in its second run.
-7. **Fetch admission and its measurements** (gate 4). *Admission is built, and S48's numbers are recorded (see
-   Gate 4, below).* Left: measurements from a real batch, which none has run on yet. Until one has, leave the
-   ceiling of ten as it is.
-8. **Adoption** (gate 5). *Done: `ARCHITECTURE.md` and the READMEs with each commit, the `/run-verification`
-   skill, `CLAUDE.md`'s section on jobs, the script inventory, and a dated update on each finding the brief
-   names (in `verification/findings.md`; no status changed).* Left: the comparison on the next natural large
-   batch (avoidable consumer retries, unexplained cases, missing telemetry, offline readiness, capture
-   failures, time to the first useful result), which needs the line landed and a batch.
-9. **Known gaps, each small and none started.** `nudge` reaches only this workspace's runner, so a runner in
-   another workspace finds a new commit at its next look at the queue. A Gradle build reads what was fetched
-   only when its command names the view's init script; for a build that keeps its repositories in its settings,
-   and for plugins, that script is written and has not run in a real build. Discovery reads Gradle's and Maven's "not found" and "not cached" lines and nothing else. The
-   fetch restriction is the resolver's own fetcher, not a firewall. A watcher's whole cycle on the real queue
-   with this code has not run: it cannot until the line lands.
+1. **Read the two jobs that were running when the fourth cycle ended**, on the collector's line (`python3
+   jobs/pipeline.py view --state recorded-elsewhere` names the commit; a job's record is under its result's
+   `outputs/`, not at the source path): `20261128-024257-replay-s48-s-delayed-setup-as-one-reques` (S48 with the
+   home's Maven repository declared) and `20261128-023835-replay-eight-of-the-s-batch-s-first-setu` (the control
+   with the first pass's snapshots kept). Record both here and in VF-076. If S48 fails again, its task reads
+   something else of the home, and the clean sandbox's log names it.
+2. **A fetch phase the build tool drives**, for graphs that rounds discover too slowly (S11: ten failed rounds)
+   or cannot discover (Maven: one artifact a failure, so S48's plugin closure of some hundred artifacts is out of
+   reach of rounds): the task run once with the network reachable only through a proxy that admits the
+   operation's repositories, into a staging cache that is then verified and published as the bundle. It also
+   closes the open half of the fetch restriction (a firewall, not the fetcher's own rule) and S48's undeclared
+   home repository, which could then be resolved instead of copied.
+3. **The control on all 47 offline cases** (`gate.py --cases all`), once item 2 or the second run says what a
+   case costs: about 28 minutes a case by rounds, four to six at a time.
+4. **The review's open findings**, in the tables below. In order of what an unattended run would hit first:
+   C3 (a collect stopped part-way), C5 (one bad job file takes the queue down), C6's open half (the keeper after
+   a skipped request), C7 (a job run twice across workspaces), R2's open half (two resolver jobs for one key),
+   C9, C14; then the brief's cells B2 to B5, B9, B10, B12 to B14; then R8 to R11.
+5. **What needs the line landed**: a watcher's whole cycle on this code, `fetch_allow` in the machine's settings
+   (the user's decision), VF-080's 947 kept outputs sealed, and the comparison on the next natural large batch.
 
 ## The review of 2026-11-28: what three fresh readers found
 
@@ -347,7 +347,37 @@ an HTTP server on 127.0.0.1, which a process in the offline sandbox cannot reach
 29. **Fetch slots are held for a job's whole run**, not only while its fetch step runs: simpler, and never more
     than the ceiling. Finer accounting waits for a measurement that shows it matters.
 
-## Gate 3: S48
+## Gate 3: S48, read again
+
+**The pass recorded below did not show what it was taken to show.** The fourth cycle's review (finding B1) said
+the offline proof was not a clean worker: no network, a read-only base, and the runner's whole home directory
+there to read. So the sandbox was made what the brief asks for (`jobs/sandbox.py`, `alone`: an empty home and
+`/tmp`, the base, the bundle and the operation's declared `reads` read-only), and both gates were run again.
+
+| Run | Job | Result |
+|---|---|---|
+| Gradle gate, clean worker | `20261128-021235-a-gradle-build-...` | failed in 9 s: the task could not read `~/.cache/in-the-loop/git-mirrors/spring-boot.git`, where the base's worktrees keep their objects. No operation had declared it |
+| Gradle gate, the mirror declared | `20261128-023123-a-gradle-build-...` | **passed, 14 of 14**, 4m14s (collector's jj change `zvzrpyxwvwrz`): two rounds, the library fetched with its module metadata, the consumer's compile equal to the resolution's |
+| S48, clean worker, the mirror declared | `20261128-023123-replay-s48-...` | **failed, 10 of 13**, 6m28s (jj change `spvyotykrmmk`). Round 1 named the ActiveMQ BOM and, new, `org.apache.maven.plugins:maven-plugin-plugin:3.6.1`: the Spring Boot build runs Maven for its plugin's descriptor, with Maven's default local repository. Both were fetched (the plugin with its JAR and three parent POMs), and round 2 failed the same way, because that Maven run reads `~/.m2/repository`, not the view; the replay prints only the end of Maven's output, the line naming the plugin was cut, and the round ended `undiagnosed`. The three controls held |
+
+`~/.m2/repository` on the runner holds 770 files, all written on 2026-11-27 between 10:00 and 11:00 UTC: the S
+setup's job for S48 ran online (its Maven integration tests fetch plugins from Maven Central) and left them in
+the home. The S setup's record does not mention them, the S cache does not hold them, and every earlier run of
+this gate read them there. So the 17 of 17 below shows one request, the wait, the admission, the rounds, the
+controls and the readbacks, **on a machine that happened to hold an undeclared input**; it does not show the task
+ready on the prepared inputs and the bundle alone, which is the brief's condition ("with no inherited mutable
+cache").
+
+What was done about it (`qupyszptnvvk`): the input is declared. The gate copies that repository once to a folder
+the operation names under `reads`, records the digest of its tree, and each step lays the copy into the empty
+home it is given. Nothing verified those files when Maven fetched them, and the operation's `base.why` says so.
+Job `20261128-024257-replay-s48-s-delayed-setup-as-one-reques` runs the gate so; it had not ended when this page
+was last written, and its result is on the collector's line. If it passes, S48 is shown ready on the base, the
+bundle and one declared, unverified folder. Getting that folder by a resolution instead (Maven names one
+artifact a failure, so discovery by rounds would take a round an artifact for some hundred artifacts) is the
+case for a fetch phase the build tool drives itself, under *What is left*.
+
+## Gate 3: S48 (the runs of the third cycle, as recorded then)
 
 **The request.** `verification/merged-pr-links/s01-s50/maven-war/readiness-operation.json` describes the task
 (`:build-plugin:spring-boot-maven-plugin:intTest --tests ...MavenWarObservation` on both pins, by `replay.py`),
@@ -524,6 +554,47 @@ in a made state. And the request again came from a gate's script. What it does s
 Gradle's own error to a build that passes offline works on a real multi-project build with a `buildSrc`,
 without Gradle's cache being written by anything but Gradle.
 
+## The S batch's first setup, as a control
+
+The brief names a second control beside S48: the S batch's initial setup, where all 98 task-graph dry runs
+configured and 41 of 49 first build jobs then failed for setup reasons, 38 on modules a dry run does not resolve
+(VF-070). Until the fourth cycle it had been shown on made-up fixtures only. It is now replayed on the real
+cases ([`verification/merged-pr-links/s01-s50/setup-control/`](../../verification/merged-pr-links/s01-s50/setup-control/)).
+
+**How.** The setup resolved in two passes: the first ended at 08:42 UTC on 2026-11-27, the jobs were submitted at
+09:11, and the second pass (09:40 to 10:39) added 1,398 module versions, 2,879 files, 903 MB. The gate lays the S
+cache as the first pass left it (`base.asOf`: every file Gradle's cache wrote after 09:00 UTC is left out, and
+the descriptor of each module version all of whose files are of the second pass), and makes of what the second
+pass fetched a folder in Maven's layout, each file with its SHA-1, checked against the name Gradle filed it under:
+that folder is the one authorised source, so nothing is asked of a repository and the modules are the builds the
+setup itself used. Each case is a row of one manifest: a job of three steps (`case_task.sh CASE fix`, `parent`,
+`transplant`: the cache's own table of projects and landed test classes, its Gradle and its options) that needs
+one readiness operation, the case's builds and landed tests at both pins, at the level `tests-run`. The gate
+submits the manifest, starts a runner, admits the requests as the watcher does, and waits. Everything runs on
+prepared inputs alone (an empty home).
+
+**The first full run**: job `20261128-023123-replay-five-of-the-s-batch-s-first-setup`, five cases, four jobs at
+a time, 18m32s, 7.9 GiB at its peak, 11 of 11 checks (collector's jj change `xrrtuuqtppms`; the record is the
+job's output `control.json`).
+
+| Case | On 2026-11-27 | In the control |
+|---|---|---|
+| S11 (`:core:spring-boot-autoconfigure`) | first job failed, three steps, on an offline miss; the rerun failed on its transplant alone, which stands as a result | **Ready by one request, after 11 offline rounds**: ten rounds each named between 2 and 11 modules it lacked (53 in all: Cassandra's driver and what it needs, Selenium and HtmlUnit, Kotlin's scripting compiler, a Reactor BOM), 120 files and 44 MB were fetched, and the eleventh round ran 41 tests at the two pins. Its job then ran once, offline: 23 tests at the fix, 18 at the parent, the same counts as the resolution's own run, and the transplant did not fail (23 tests, none failing), so the job failed **on the transplant alone**, as on 2026-11-27 |
+| S46 (`:loader:spring-boot-jarmode-tools`) | first job passed all but the transplant (it had not failed on a module) | **Ready in one round, nothing fetched**, 17 tests at the two pins; its job failed on the transplant alone, as on 2026-11-27 |
+| S01, S25, S42 | first jobs failed on offline misses; reruns passed | **Withheld at the fetch stage, `absent`**, after one round, on `org.springframework:spring-framework-bom` at a snapshot version: a fault of the gate's own reconstruction, not of the cases. The run left out every descriptor Gradle's cache wrote after 09:00, and the second pass had written the descriptors of the first pass's snapshot modules again. Each job was `blocked` with that reason and ran nothing |
+
+What the run shows of the brief's sentence ("Verify task-specific readiness and suite evidence. Preserve
+legitimate transplant failures, absent historical inputs…"): readiness was decided by running each case's own
+task offline, not its task graph (S11's dry run had configured, and its task lacked 53 modules); a ready
+receipt carries the count of tests that executed, and the consumer's counts equalled it; no job failed for
+want of an input (the first run of 2026-11-27 had five failed jobs for these five cases); and S11's and S46's
+transplants, which did not separate the pins then, failed the same way now and nothing else did. What it does
+not show: the three cases the gate's own state withheld; any case beyond five; a batch admitted by a watcher.
+
+**The second run**, with the first pass's snapshots kept: job `20261128-023835-replay-eight-of-the-s-batch-s-first-setu`
+(S01, S02, S08, S11, S15, S25, S42, S46). It was running when this page was last written; its record will be
+its output `control.json` on the collector's line. The gate takes `--cases all` for the 47 offline cases.
+
 ## Gate 4: what has been measured
 
 One real request, S48's second run, on a machine with nothing else queued. It is one data point and tunes nothing.
@@ -546,6 +617,25 @@ resolution proves the task offline, and then the consumer runs it), and a runner
 not remove it. Whether the second run can be spared, by handing the resolution's own verified outputs to a
 consumer that asks for nothing more, is a design question this run leaves open.
 
+
+**From the control's first run** (S11, the one case that needed modules; all times of the runner's clock):
+
+| What | Measured |
+|---|---|
+| Rounds until ready | 11 (10 that failed, 1 that ran through) |
+| Offline time in rounds that failed | 867 s of the resolution's 1,028 s; a round is one Gradle start at each pin, 62 to 149 s |
+| Fetching | 120 files, 44 MB, 1.2 s from a folder: 0.1 % of the resolution |
+| The consumer's own job | 163 s for three builds (the resolution's last round had compiled the same things) |
+| Batch of five, four at a time | 1,110.6 s from the runner's start to every case settled; the first case's result after 348.9 s |
+| Reuse between cases | none to measure: S11 was the only case that fetched |
+
+So, twice now (S48: 0.2 %), fetching is not where a resolution's time goes: it goes into running the task once
+for every level of the graph the cache lacks. The ceiling of ten fetch slots stays untested and is not the
+thing to tune. What the measurements point at instead is the number of rounds: a fetch phase in which the build
+tool resolves its own graph in one run, through a proxy that admits the authorised sources and nothing else,
+would replace ten Gradle starts by one, and is the only way to get what Maven needs (it names one artifact a
+failure). That is the first item of *What is left*, and it is a design decision the brief leaves open ("Use
+those measurements to decide whether remote execution is worth adding").
 
 ## The scripts under `verification/`
 

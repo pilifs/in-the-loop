@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T02:42:57.763Z",
-  "duration_seconds": 41356,
+  "ended": "2026-11-28T02:53:28.788Z",
+  "duration_seconds": 41987,
   "stats": {
     "turns": 37,
-    "api_calls": 1043,
-    "tool_calls": 1114,
-    "tool_errors": 15,
+    "api_calls": 1052,
+    "tool_calls": 1123,
+    "tool_errors": 16,
     "compactions": 7,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 2112,
-      "output_tokens": 1785258,
-      "cache_read_input_tokens": 320434190,
-      "cache_creation_input_tokens": 3681994
+      "input_tokens": 2130,
+      "output_tokens": 1800095,
+      "cache_read_input_tokens": 324648468,
+      "cache_creation_input_tokens": 3702107
     }
   },
   "tools": {
-    "Bash": 948,
+    "Bash": 957,
     "Read": 88,
     "Write": 41,
     "Edit": 19,
@@ -190,24 +190,24 @@
     {
       "index": 7,
       "started": "2026-11-28T01:45:40.450Z",
-      "ended": "2026-11-28T02:42:57.763Z",
+      "ended": "2026-11-28T02:53:28.788Z",
       "turns": 4,
-      "api_calls": 115,
+      "api_calls": 124,
       "usage": {
-        "input_tokens": 230,
-        "output_tokens": 233669,
-        "cache_read_input_tokens": 35831229,
-        "cache_creation_input_tokens": 448243
+        "input_tokens": 248,
+        "output_tokens": 248506,
+        "cache_read_input_tokens": 40045507,
+        "cache_creation_input_tokens": 468356
       },
-      "peak_context_tokens": 460082
+      "peak_context_tokens": 480195
     }
   ],
   "log": {
-    "sha256": "b3ffc578839379ac12831f7c9d0a5722081ee86ace0bbfa89b97de5fd14bf8cf",
-    "bytes": 29352737,
-    "lines": 10774,
-    "gzip_bytes": 5323869,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/b3ffc578839379ac12831f7c9d0a5722081ee86ace0bbfa89b97de5fd14bf8cf.jsonl.gz"
+    "sha256": "77df5391f634250e9704eba5c31053a3675cd5568a0796af07aab68eb68acd91",
+    "bytes": 29534893,
+    "lines": 10856,
+    "gzip_bytes": 5345653,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/77df5391f634250e9704eba5c31053a3675cd5568a0796af07aab68eb68acd91.jsonl.gz"
   },
   "subagents": [
     {
@@ -676,6 +676,14 @@
       "summary": "Declare the home's Maven repository that S48's task reads, and run its gate again (verification pending)",
       "body": "S48's gate ran again under the clean sandbox (job 20261128-023123-replay-s48-s-delayed-setup-as-one-reques) and failed, 10 of 13 checks: with an empty home directory, the Spring Boot build's own Maven run (for the Maven plugin's descriptor) could not read org.apache.maven.plugins:maven-plugin-plugin:3.6.1. The earlier runs of this gate, the one recorded as 17 of 17 among them, had read it from ~/.m2/repository: 770 files that the S setup's online job for S48 left in the home on 2026-11-27 at 10:05 UTC, in neither the base nor the bundle, and recorded nowhere. So that pass did not show the task ready on prepared inputs alone, and the record of it is corrected in the commit that follows this run.\n\nThe input is now said: the gate copies that repository once to a folder the operation declares under reads, records the digest of its tree, and each step lays it into the empty home it is given. Nothing verified those 770 files when Maven fetched them, and the operation says so. Job 20261128-0?????-replay-s48-s-delayed-setup-as-one-reques (the newest of that name) runs it; whether the task needs anything else of the home is what it will show.\n\nAlso here, from the review's list: a test report written before its step began is no longer counted as tests the step ran (with a test); a folder a step made and wrote nothing into is a missing output, not an unchanged one; the view's totals give the states by purpose, so resolve jobs are counted apart from the work that was asked.\n\nVerified: jobs/test_evidence.py (6, one new), test_formats.py, test_view.py and test_fanout.py pass; the S48 gate is the job.",
       "log_sha256": "b3ffc578839379ac12831f7c9d0a5722081ee86ace0bbfa89b97de5fd14bf8cf"
+    },
+    {
+      "change_id": "kuvxspwkormnskoqmzulyrzpntuzyprp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record what the control showed on real S cases, and that S48's pass had read the home's Maven repository",
+      "body": "The results page and the findings register now say what the fourth cycle's jobs found.\n\nS48: the pass recorded as 17 of 17 read org.apache.maven.plugins:maven-plugin-plugin from ~/.m2/repository in the runner's home, 770 files the S setup's online job left there and no record names. Under a clean worker the gate failed 10 of 13 (job 20261128-023123-replay-s48-s-delayed-setup-as-one-reques, jj change spvyotykrmmk). Gate 3 is marked reopened; the run with that repository declared (20261128-024257) had not ended.\n\nThe Gradle gate passes under the clean worker, 14 of 14 (job 20261128-023123-a-gradle-build-reads-offline-a-library-t).\n\nThe S batch's first setup, replayed on five real cases from the cache as the setup's first pass left it (job 20261128-023123-replay-five-of-the-s-batch-s-first-setup, 18m32s, 11 of 11 checks, jj change xrrtuuqtppms): S11, whose first job failed on a missing module on 2026-11-27, came ready by one request after 11 offline rounds (53 modules named, 120 files fetched from a folder made of the second pass's modules), ran 23 and 18 tests offline at the two pins, and failed on its transplant alone, as it did then; S46 came ready in one round with nothing fetched and failed on its transplant alone, as then; three cases were withheld by a fault of the gate's own reconstruction, corrected for the second run (20261128-023835, running).\n\nGate 4 has a second measurement: fetching was 0.1 % of S11's resolution and ten failed rounds were 84 % of it, so what limits a resolution is the number of rounds, not fetch slots. What is left is rewritten around that: a fetch phase the build tool drives, the control on all 47 cases, and the review's open findings in order.\n\nVerified: pages only, and the tests the change selects passed.",
+      "log_sha256": "77df5391f634250e9704eba5c31053a3675cd5568a0796af07aab68eb68acd91"
     }
   ],
   "logs": {
@@ -833,6 +841,12 @@
       "bytes": 1424507,
       "lines": 248,
       "gzip_bytes": 329046,
+      "url": null
+    },
+    "77df5391f634250e9704eba5c31053a3675cd5568a0796af07aab68eb68acd91": {
+      "bytes": 29534893,
+      "lines": 10856,
+      "gzip_bytes": 5345653,
       "url": null
     },
     "78d8b435e12c2c3a2539cbcc36eb90e517d52375ff4770395cfa82fef81706c9": {
