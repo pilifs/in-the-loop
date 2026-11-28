@@ -152,7 +152,8 @@ Two kinds of example differ:
 - **A report written by hand**, for an older real-world example. It has no receipts: each finding names its
   witness and the command that reproduces it.
 
-[`ARCHITECTURE.md`](../ARCHITECTURE.md#how-a-change-is-proven) describes how these records come to exist.
+[`ARCHITECTURE.md`](../ARCHITECTURE.md#how-a-change-is-proven) describes how these records come to exist, and
+[`tools/targets/README.md`](tools/targets/README.md) says which route a question takes and which module owns each step.
 
 ## All examples
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Tests for the pages a reader starts from, ARCHITECTURE.md and README.md: every file they send a reader to is in
-the repository, and every heading they link to is on the page they name.
+"""Tests for the pages a reader starts from, ARCHITECTURE.md and README.md, and the guide to the target routes
+(examples/tools/targets/README.md): every file they send a reader to is in the repository, and every heading they
+link to is on the page they name.
 
 ARCHITECTURE.md says which file owns each decision, so a link there that leads nowhere is the page describing a
 repository that is not this one: a file was moved or removed and the map was not updated with it. The check is of
@@ -15,7 +16,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-PAGES = ("ARCHITECTURE.md", "README.md")
+PAGES = ("ARCHITECTURE.md", "README.md", "examples/tools/targets/README.md")
 LINK = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 HEADING = re.compile(r"^#{1,6} +(.+?)\s*$")
 
