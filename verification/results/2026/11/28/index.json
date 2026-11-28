@@ -3,6 +3,42 @@
   "shard": "2026/11/28",
   "results": [
     {
+      "id": "20261128-024257-replay-s48-s-delayed-setup-as-one-reques",
+      "title": "Replay S48's delayed setup as one request through the jobs pipeline",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 17m13s, peak 5.4 GiB (estimated 20m00s, 9.0 GiB); 1 output file(s) changed",
+      "attention": [
+        "step 1 (the gate) was held back 22m08s by its 4-CPU quota in 17m13s: it would run faster with more CPUs (a JVM needs 2)",
+        "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+      ],
+      "capabilities": [
+        "jobs:readiness",
+        "jobs:resolution"
+      ],
+      "links": {
+        "examples": [
+          "635"
+        ],
+        "paths": [
+          "verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py",
+          "verification/merged-pr-links/s01-s50/maven-war/readiness-operation.json",
+          "jobs/readiness.py"
+        ]
+      },
+      "sourceCommit": "501289eaa2ed4685e93023c80ee5243e83eeee95",
+      "finishedAt": "2026-11-28T03:08:13+00:00",
+      "wallSeconds": 1033.9,
+      "peakMemoryBytes": 5811486720,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 9663676416,
+        "durationSeconds": 1200.0,
+        "notes": "The run before this one (20261128-023123) took 6m28s and 3.3 GiB and failed 10 of 13: with an empty home the build's own Maven run could not read maven-plugin-plugin, which the earlier, passing runs had read from ~/.m2 unsaid. This run declares that repository as a read and lays a copy into each step's home; a run that goes through took 13m21s and 5.5 GiB before."
+      },
+      "host": "vm-1",
+      "result": "2026/11/28/20261128-024257-replay-s48-s-delayed-setup-as-one-reques/result.json"
+    },
+    {
       "id": "20261128-023123-replay-five-of-the-s-batch-s-first-setup",
       "title": "Replay five of the S batch's first setup jobs through delayed setup, from the cache as the first pass left it",
       "status": "passed",
