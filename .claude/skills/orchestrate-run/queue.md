@@ -61,6 +61,7 @@ watcher's place reads `brief_queue.py status` and carries on.
   hand:
   - use a new name and a new session, with the queue's prompt files (`~/.cache/in-the-loop/prompts/NAME-*.txt`);
   - point the queue at it with `brief_queue.py set NAME run=NEWNAME`;
-  - for later briefs to continue the new session, nothing is needed: `previous` follows the queue's last start.
-    For a run started by hand, record it with `brief_queue.py defaults --last-session ID`.
+  - for later briefs to continue the new session, nothing is needed: `previous` follows the queue's last start of
+    the same client, kept per client, so a Codex brief never continues a Claude session or the reverse. For a run
+    started by hand, record it with `brief_queue.py defaults --last-session ID --last-session-client CLIENT`.
 - **Report from the queue:** `brief_queue.py report` gives each brief's runs, legs and landing.

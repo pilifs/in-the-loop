@@ -190,6 +190,23 @@ class TheQueuesRules(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:   # no pipeline there: not asked, and nothing removed
             self.assertIsNone(brief_queue.pruned(Path(tmp)))
 
+    def test_previous_continues_the_last_session_of_the_same_client_only(self):
+        # backlog #10: a Codex brief after a Claude (Fable) run starts its own session, and the reverse
+        claude, codex, other = "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "3" * 32
+        data = {}
+        self.assertIsNone(brief_queue.previous_session(data, "codex"), "nothing yet: a new session")
+        brief_queue.record_session(data, "claude", claude)
+        self.assertEqual(brief_queue.previous_session(data, "claude"), claude)
+        self.assertIsNone(brief_queue.previous_session(data, "codex"), "a Claude session is never a Codex run's previous")
+        brief_queue.record_session(data, "codex", codex)
+        brief_queue.record_session(data, "codex", None)  # a start that reported no session changes nothing
+        self.assertEqual((brief_queue.previous_session(data, "claude"), brief_queue.previous_session(data, "codex")),
+                         (claude, codex))
+        self.assertEqual((data["lastSession"], data["lastSessionClient"]), (codex, "codex"))
+        # a last session from before the queue kept one per client: its client is unknown, so it is refused
+        with self.assertRaisesRegex(brief_queue.Problem, "recorded without its client"):
+            brief_queue.previous_session({"lastSession": other}, "codex")
+
 
 class HeldQueue(unittest.TestCase):
     """A queue with one ended run and one waiting brief, and `next`'s steps recorded instead of taken."""
@@ -491,6 +508,9 @@ class TheHandover(unittest.TestCase):
         self.assertIn("under way", self.queue("remove", "thing", ok=False)[2])
         self.assertIn("not a session id", self.queue("defaults", "--last-session", "nope", ok=False)[2])
         self.assertEqual(self.data("defaults", "--last-session", test_single_run.PARENT)["lastSession"], test_single_run.PARENT)
+        named = self.data("defaults", "--last-session", test_single_run.PARENT, "--last-session-client", "codex")
+        self.assertEqual(named["lastSessions"], {"claude": test_single_run.PARENT, "codex": test_single_run.PARENT},
+                         "the defaults' client (claude here) unless another is named")
 
 
 if __name__ == "__main__":

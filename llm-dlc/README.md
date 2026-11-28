@@ -333,8 +333,9 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   other, each with its setup phase and then its domain run. The queue is data: `llm-dlc/loop-summaries/queue.json`,
   with every change logged in the committed `loops/queue.jsonl`. A brief copied into the user's inbox
   (`~/code/scripts/analysis/queue/`) is added in file-name order; `brief_queue.py add` adds any other. Each brief
-  takes the defaults of 2026-11-23 (Opus setup; Codex Astra at max effort, continuing the previous domain session;
-  the "aspirational" texts of [`loops/domain-prompt-aspirational.md`](loops/domain-prompt-aspirational.md)) unless it
+  takes the defaults of 2026-11-23 (Opus setup; Codex Astra at max effort, continuing the previous domain session
+  of the same client; the "aspirational" texts of
+  [`loops/domain-prompt-aspirational.md`](loops/domain-prompt-aspirational.md)) unless it
   overrides them. `brief_queue.py next [--finished]` is the whole handover between two briefs: it lands, checkpoints
   develop, clears failed jobs' work folders whose originals are archived, moves the workspace onto the line and
   starts the next run. It records each step, so it resumes after a failure. It never promotes `main` or runs the

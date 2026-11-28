@@ -30,10 +30,12 @@ Commands (python3 llm-dlc/tools/brief_queue.py COMMAND ...):
   remove NAME                   take a brief off the queue (not one whose run is under way)
   set NAME KEY=VALUE ...        change a brief's settings; `run=RUN` makes the queue follow another run (a fresh
                                 session started by hand after a client refused the old one, say)
-  defaults [KEY=VALUE ...] [--last-session ID] [--last-generate-session ID]
+  defaults [KEY=VALUE ...] [--last-session ID [--last-session-client CLIENT]] [--last-generate-session ID]
                                 print or change the queue's defaults; --last-session names the session `previous`
-                                continues when the queue has started no domain run yet (the run before the queue's),
-                                and --last-generate-session the brief author's, which is kept apart from it
+                                continues for that client (the defaults' client unless named) when the queue has
+                                started no domain run of it yet; `previous` is kept per client, so a Codex brief never
+                                continues a Claude session or the reverse; --last-generate-session the brief author's,
+                                which is kept apart from both
   next [--finished]             the handover. It does every step that is due, in order, and records each, so that it
         can be run again after a failure or a crash and carries on where it stopped: bring the inbox in; for a list
         of pull requests at the head, start its generation run, and when that has finished, land it, check that the
@@ -102,7 +104,7 @@ DEFAULTS = {
     "client": "codex",
     "model": "gpt-6.2-astra",
     "effort": "max",
-    "session": "previous",             # previous (the last domain run's session), new, or a session id
+    "session": "previous",             # previous (the last domain run's session of the same client), new, or an id
     "workspace": "foundation-domain-streams",
     # yes: when this brief is done (landed, checkpointed, cleared), the queue holds itself (`hold`) before the next
     # one starts, for a person to look at what it did (the user, 2026-11-27, after an architecture refactor).
@@ -118,6 +120,30 @@ STEPS_SETUP = ("setup-start", "setup-land", "notes")
 PULL = re.compile(r"https?://github\.com/([\w.-]+)/([\w.-]+)/pull/(\d+)")
 STEPS_DOMAIN = ("domain-start", "domain-land", "checkpoint", "cleanup")
 ORDER = ("first", "after", "before")
+
+
+def previous_session(data: dict, client: str) -> str | None:
+    """The session `session=previous` continues for a domain run of CLIENT: the last one the queue started, or was
+    told of, for that client (`lastSessions`). None when there is none, so the run starts a new session: a Codex brief
+    after a Claude (Fable) run must not be given the Claude session to continue, and the reverse (backlog #10,
+    2026-11-27, when entry 28 had to be pinned to its session by hand). A last session recorded before the queue kept
+    one per client says nothing of its client, so it is refused rather than guessed."""
+    by_client = data.get("lastSessions") or {}
+    if client in by_client:
+        return by_client[client]
+    if data.get("lastSession") and not by_client and not data.get("lastSessionClient"):
+        raise Problem(f"the queue's last session {data['lastSession']} was recorded without its client, so `previous` "
+                      f"cannot tell whether a {client} run may continue it: give the brief `session=new` or a session "
+                      f"id, or record it with `defaults --last-session ID --last-session-client CLIENT`")
+    return None
+
+
+def record_session(data: dict, client: str, session: str | None) -> None:
+    """Remember SESSION as the last domain session of CLIENT, and as the queue's last session overall."""
+    if not session:
+        return
+    data.setdefault("lastSessions", {})[client] = session
+    data["lastSession"], data["lastSessionClient"] = session, client
 
 
 class Problem(Exception):
@@ -565,11 +591,12 @@ def step(root: Path, data: dict, entry: dict, s: dict, name: str, finished: bool
             out = run_tool(root, "setup", run, "--brief", entry["copy"], "--model", s["setup"], "--effort", s["setupEffort"], *common)
         else:
             first, cont = prompt_files(root, entry, s)
-            session = data.get("lastSession") if s["session"] == "previous" else None if s["session"] == "new" else s["session"]
+            session = (previous_session(data, s["client"]) if s["session"] == "previous" else None
+                       if s["session"] == "new" else s["session"])
             out = run_tool(root, "start", run, "--prompt-file", first, "--continue-file", cont, "--brief", entry["copy"],
                            "--client", s["client"], "--model", s["model"], "--effort", s["effort"], *common,
                            *(["--session", session] if session else []))
-            data["lastSession"] = out.get("session") or session
+            record_session(data, s["client"], out.get("session") or session)
         entry["runs"][kind] = run
         entry["state"] = kind
         return {"started": run, "workspace": moved, "session": out.get("session"), "model": out.get("model"),
@@ -783,7 +810,7 @@ def describe(root: Path) -> dict:
     waiting = [shown(p) for p in inbox_briefs(folder)] if folder.is_dir() else []
     waiting = [w for w in waiting if Path(w).expanduser().resolve() not in known]
     return {"queue": rows, "inboxNotYetAdded": waiting, **({"hold": data["hold"]} if data.get("hold") else {}),
-            "lastSession": data.get("lastSession"),
+            "lastSession": data.get("lastSession"), "lastSessions": data.get("lastSessions") or {},
             "lastGenerateSession": data.get("lastGenerateSession"), "defaults": {**DEFAULTS, **data["defaults"]}}
 
 
@@ -834,6 +861,7 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     d = sub.add_parser("defaults", help="print or change the defaults")
     d.add_argument("settings", nargs="*", metavar="KEY=VALUE")
     d.add_argument("--last-session")
+    d.add_argument("--last-session-client", help="the client of --last-session (default: the defaults' client)")
     d.add_argument("--last-generate-session")
     sub.add_parser("next", help="the handover: every step that is due").add_argument("--finished", action="store_true")
     sub.add_parser("report", help="each brief's runs and state").add_argument("--json", action="store_true")
@@ -919,12 +947,14 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
                 with locked(root) as data:
                     data["defaults"].update(over)
                     if args.last_session:
-                        data["lastSession"] = args.last_session
+                        record_session(data, args.last_session_client or {**DEFAULTS, **data["defaults"]}["client"],
+                                       args.last_session)
                     if args.last_generate_session:
                         data["lastGenerateSession"] = args.last_generate_session
                 log(root, "defaults", None, settings=over, **({"lastSession": args.last_session} if args.last_session else {}),
                     **({"lastGenerateSession": args.last_generate_session} if args.last_generate_session else {}))
             print(json.dumps({**DEFAULTS, **read(root)["defaults"], "lastSession": read(root).get("lastSession"),
+                              "lastSessions": read(root).get("lastSessions") or {},
                               "lastGenerateSession": read(root).get("lastGenerateSession")}, indent=1))
         elif args.command == "hold":
             with locked(root) as data:
