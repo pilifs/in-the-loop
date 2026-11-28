@@ -60,7 +60,7 @@ Every test, Rust and Python, has a cost tier, listed in `lib/tests/costs.json` (
 
 ## Architecture
 
-- [`ARCHITECTURE.md`](ARCHITECTURE.md) says which file owns each decision, who may do what, which record answers which question, and what is not built yet. Read it before adding a tool, moving a responsibility between files, or changing a public command.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) follows the path a change takes, from a brief to a landed result, and how a change is proven on it (a claim registered, bound to the code that runs, checked with its controls, and qualified). It also says which file owns each decision, who may do what, which record answers which question, and what is not built yet. Read it before adding a tool, moving a responsibility between files, or changing a public command.
 - Keep it true: a change that moves a responsibility, changes who may do something, adds or removes a public command, or changes what a record means updates that page in the same commit. Its section *What is not built yet* is the one place for what is intended and does not run.
 
 ## Operating notes
