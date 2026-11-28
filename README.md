@@ -1,21 +1,28 @@
 # in-the-loop
 
-**Formal proofs of changes to Java code, made by models and checked by a model checker.**
+**What a change to Java code does to its callers, stated as claims and answered by a checker or the original JVM.**
 
-Given a change to Java code (a pull request, a commit, a release), the work here states what the change must keep
-and what it is meant to do as claims. A model checker then proves each claim from the compiled bytecode, or hands
-back the input where it breaks. Nobody writes a specification. The repository holds the verifier, more than 500
-changes it has been run on, and the whole record of how models built both.
+Given two revisions of a Java application or library, in-the-loop checks what a caller should see change and what
+it should still be able to rely on. A domain agent states the claims. A checker can establish one within its
+stated bounds, find a counterexample, or leave it open with a reason. Runs can also report exactly what an original
+JVM did on a registered call history. Each result identifies the evidence and scope behind it. Nobody writes a
+specification. The repository holds the verifier, more than 500 changes it has been run on, and the whole record
+of how models built both.
 
 ## Three answers, and none is the model's opinion
 
-The model writes the claims and drives the tools. The answer to each claim comes from a model checker.
+The model writes the claims and drives the tools. The answer to each claim comes from a model checker, or from
+the original JVM running a registered call history.
 
 | Answer | What it means |
 |---|---|
 | **Established** | The claim holds for every input within the bounds the report states, not for a sample of them |
 | **Refuted** | A concrete input, shrunk to a small one and run on a real JVM. It is a finding about the change |
 | **Left open** | The tools could not decide, and the report says why. It never counts as a pass |
+
+An **observation** is a fourth kind of result, and a narrower one: what the original JVM did on the inputs,
+history and environment recorded, not on every input. A declared finite domain run exhaustively can establish that
+domain.
 
 [Example 285](examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels/README.md) is the first real
 target, a Spring Boot security fix (CVE-2023-34055, 2.7.17 → 2.7.18) proved on the released JARs:
@@ -32,6 +39,12 @@ Does the fix bound the "method" metric label?
 Its proof tasks first stopped at things the verifier could not model. The work extended the verifier, reran the
 unchanged claims on the same JARs, and each came out as expected.
 
+[Example 586](examples/586-junit-dynamic-suite-leaves/README.md) is an observation, with no proof. It ran the same
+compiled caller on both JUnit deployments. On the fix, a suite with two dynamically registered tests succeeded,
+where the parent failed it with `NoTestsDiscoveredException`. The control, an empty dynamic container, still failed
+on both. [Example 338](examples/338-commons-io-bom-reset/README.md), Commons IO's byte-order-mark stream after a
+reset, is followed claim by claim in [`ARCHITECTURE.md`](ARCHITECTURE.md#how-a-change-is-proven).
+
 ## What is here
 
 Each part's page has its own layout that says where things are. The folders will be reorganized at some point, so
@@ -41,7 +54,8 @@ follow the links from these pages instead of remembered paths.
 |---|---|---|
 | [`examples/`](examples/README.md) | More than 500 changes run through a formal verifier, each with its verdict and the input or trace behind it. More than half are changes to published libraries, such as Spring Boot, Spring Framework and Kafka; the rest were written for small systems built to be provable. The [router](examples/README.md#all-examples) lists them all, with current counts | [Find an example](examples/README.md#find-an-example), [Layout](examples/README.md#layout) |
 | [`lib/`](lib/README.md) | `jvmcontract`, the verifier, in Rust: a class-file reader, a bytecode interpreter and its own bounded model checker, with JBMC as a second engine. It derives contracts without a JVM and proves without `javac` | [Layout](lib/README.md#layout) |
-| [`verification/`](verification/README.md) | The pipeline: proofs are queued as jobs, not run inside a session, and run under memory and CPU caps, each with a recorded result | [Layout](verification/README.md#layout) |
+| [`jobs/`](jobs/README.md) | The job pipeline: builds, tests, setup and proofs are queued as jobs, not run inside a session, and run under memory and CPU caps, each with a recorded result. `python3 jobs/pipeline.py view` gives every job one state and its reason | [What it owns](jobs/README.md#what-the-pipeline-owns-and-what-a-workload-owns) |
+| [`verification/`](verification/README.md) | The verification workload on that pipeline (preparing and interpreting proof jobs), its artifacts, and the historical jobs and results | [Layout](verification/README.md#layout) |
 | [`llm-dlc/`](llm-dlc/README.md) | How the repository is built: runs and the tools under them, every commit published with the redacted session that made it, and [what was retired](llm-dlc/retired.md) | [Layout](llm-dlc/README.md#layout) |
 
 ## Explore it, or reproduce a result
@@ -53,8 +67,9 @@ Everything here is linked, and all of it is public:
   `result.json` the page is generated from. `python3 examples/tools/find.py` searches them all.
 - **A proof that ran as a job** has its description in `verification/jobs/`, which names the session that
   submitted it, and its recorded result in `verification/results/`, which names the commit it ran on.
-- **A commit** ends its message with an `LLM-Trace` line: the session that made it, and the SHA-256 of that
-  session's log.
+- **A commit** ends its message with one or more `LLM-Trace` lines. Each links a session and the SHA-256 of its
+  redacted log. A line says the session was at work when the commit was made; several lines on one commit do not
+  say which session wrote it ([VF-079](verification/findings.md)).
 - **A session** has a summary at `llm-dlc/traces/<session-id>/summary.md`, with what it was asked, what it
   committed, and a link to its full redacted transcript; `metrics.json` beside it has its tokens and costs.
 - **What went wrong and what was decided** is in [`verification/findings.md`](verification/findings.md) and in
@@ -63,7 +78,8 @@ Everything here is linked, and all of it is public:
 So a question such as "which session proved example 285, what did the verifier lack at first, and what did the
 work cost?" can be answered from a checkout alone.
 
-**Reproduce one result.** On Ubuntu 24.04 or 26.04 ([`examples/setup/`](examples/setup/README.md) has the
+**Reproduce one result.** [The path a change takes](ARCHITECTURE.md#the-path-the-project-is-built-around) shows
+where a result like this one comes from. On Ubuntu 24.04 or 26.04 ([`examples/setup/`](examples/setup/README.md) has the
 components and what each installs):
 
 ```bash
@@ -91,20 +107,12 @@ The repository is written almost entirely by models, in **runs**: one agent work
 watcher session outside it judges, after each of the agent's context windows, whether it gets another. A run
 starts from a prompt, from a brief, or from a list of pull requests that a first phase writes into a brief
 (`/orchestrate-run`: [`llm-dlc/README.md`](llm-dlc/README.md#a-single-agents-run)). The proofs it needs are
-queued as jobs and run beside it, under memory and CPU caps. Every session is public: each commit names the
-session that made it and carries the SHA-256 of its log.
+queued as jobs and run beside it, under memory and CPU caps. Every session is public: each commit links the
+sessions at work when it was made, with the SHA-256 of each one's log.
 
-```mermaid
-flowchart LR
-    P(["A person"]) -->|"steers"| W["Watcher"]
-    W -->|"cycles"| A["Run's agent"]
-    A -->|"queues proofs"| Q["Job queue"]
-    Q -->|"runs capped"| V["Checker"]
-    V -->|"answers"| E["Published record"]
-```
-
-[`ARCHITECTURE.md`](ARCHITECTURE.md) is the map: which file owns each decision, who may do what, which record
-answers which question, and what is not built yet.
+[`ARCHITECTURE.md`](ARCHITECTURE.md) is the map, and [its diagram](ARCHITECTURE.md#the-path-the-project-is-built-around)
+follows a brief from the queue through setup, the domain agent's claims and the checkers to landing. It also says
+who owns what, which record answers which question, and what is not built yet.
 
 ## Status
 
@@ -118,8 +126,8 @@ machine. It is retired with its last release, 0.10.0:
 - [`CLAUDE.md`](CLAUDE.md) is the procedure: every session is traced and published with the commits it made.
 - To find examples close to a task: `python3 examples/tools/find.py`
   ([`examples/README.md`](examples/README.md#find-an-example)).
-- Proofs and model checks are queued as jobs
-  ([`verification/README.md`](verification/README.md#for-agents-making-changes-submitting-a-job)). `CLAUDE.md` says
+- Proofs, model checks, builds and setup are queued as jobs ([`jobs/README.md`](jobs/README.md); for proof jobs,
+  [`verification/README.md`](verification/README.md#for-agents-making-changes-submitting-a-job)). `CLAUDE.md` says
   the little that may run inline.
 - A run is started by a person, or by a watcher at a person's word, with `/orchestrate-run`; an agent never starts
   one as a step of its own work. [`llm-dlc/retired.md`](llm-dlc/retired.md) lists the workflows that came before it.
