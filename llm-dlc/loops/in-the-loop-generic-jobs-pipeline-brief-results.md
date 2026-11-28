@@ -28,6 +28,11 @@ S48 jobs' results and the gate's record are on the collector's line (jj changes 
 `tosuzksqrzkx`), not on this one, and come together with it at the merge. VF-080's 947 kept outputs can be
 sealed then, in the default checkout, with `python3 jobs/pipeline.py recover --kept-outputs`. Nothing in this
 run's commits changes a record under `verification/jobs` or `verification/results` that was there before it.
+**A resolution job starts only on a runner that may fetch**: `fetch_allow` is empty in every settings file, so
+the first job submitted with `--needs-readiness` waits, and its resolution job is `unschedulable`, until the
+machine's `pipeline.toml` names the sources (Maven Central at least). That is the user's decision, and it is the
+one thing a landing does not bring. And read *The review of 2026-11-28* below before relying on a part of this
+line: it lists what is known to be wrong in it.
 
 ## Decisions taken in the run, with their reasons
 
@@ -116,14 +121,14 @@ the audit. Between them, 42 findings. Each is listed here with what became of it
 | B5 | [50, 54] Archive metadata: the audit hard-codes the archive as unavailable, manifest rows carry no occurrence, `verify` is git-only, and the view says `sealed` for any receipt with `originals` without a verified state | open |
 | B6 | [62] `level` was validated, keyed and copied, and never used: `tests-run` was granted to a task that ran no test, which is VF-070's own fault | **fixed** `typnwnxwvrnt` for `tests-run` (evidence of executed tests, or `tests-not-shown`). Open: `readable` does not require a compared output, and `describes` is free-form |
 | B7 | [60, 64] Discovery: a Gradle plugin missing by its id and a wrapper's own download name nothing (`undiagnosed`); a classifier's or non-JAR artifact ended `no-progress`; a file with no `.sha1` was reported `absent` and a JAR in that case silently dropped | **fixed** `typnwnxwvrnt`: a plugin by its marker module, a file by its name, Maven's four- and five-part coordinates, `unverifiable` as its own outcome. Open: a wrapper's distribution the operation did not pin |
-| B8 | [93, 63] Operator guidance: `fetch_allow` is set nowhere, so after landing the first resolution job is `unschedulable`; neither skill mentions readiness, `resolve`, `fetch_allow` or `wait --batch`; `/run-verification` still says "leave it deferred" for what is now `unschedulable` | README part **fixed** `typnwnxwvrnt` (*For the runner's operator*). Open: the two skills, and the landing note |
+| B8 | [93, 63] Operator guidance: `fetch_allow` is set nowhere, so after landing the first resolution job is `unschedulable`; neither skill mentions readiness, `resolve`, `fetch_allow` or `wait --batch`; `/run-verification` still says "leave it deferred" for what is now `unschedulable` | **fixed**: the README (`typnwnxwvrnt`, *For the runner's operator*), the `/run-verification` skill and the landing note above (the commit after `kmuwxnmxmysk`). `fetch_allow` itself stays empty: which sources a machine fetches from is its owner's to say |
 | B9 | [43, 77] A withdrawn job (its file deleted) with a cancelled attempt gets no row; one that finished is collected like any other; no test asserts the `cancelled` block. `findings.md` says VF-029's control holds, and no test shows it | open |
 | B10 | [49] `declared[]` has no digest (an `unchanged` output has none anywhere); `consumer` is a free string no flag sets and nothing derives from `needs`; `producer` is stamped on unchanged and missing outputs too | open |
 | B11 | [66] View totals and `report` counts mix resolve jobs with the rest: preparation attempts are not reported apart from the questions answered | open (`totals.byPurpose`) |
 | B12 | [78] VF-025: applied outputs are explicitly unchecked by the audit, nothing checks remote publication, no test uses the JARs' blob ids. `findings.md` claims more than is shown | open |
 | B13 | [92] Fetch slots are one more condition inside the same `fits`; with two workers ten is unreachable; no test names `fetch_slots`; the schema says slots are held while a fetch step runs, and the code holds them for the whole job | open |
 | B14 | [93] Two schema files cover about twenty versioned documents (view, batch manifest, map and view, operation, receipt, attempt, wait, collect); the result schema lacks `evidence[].suites/erroring/unreadable/why`, `conclusion.readiness` and the verdicts `ready` and `withheld` | open |
-| B15 | [93] `ARCHITECTURE.md`'s row on the job pipeline still says it "is to be designed", and this run's known gaps are here, not in its table | open |
+| B15 | [93] `ARCHITECTURE.md`'s row on the job pipeline still says it "is to be designed", and this run's known gaps are here, not in its table | **fixed** (the commit after `kmuwxnmxmysk`): the row says what is built, what has not run, and points at this table |
 | B16 | Smaller: test evidence is read only when the exit was as expected, so a failing test step records no suite; `no-attempt-identity` keys on `originals`, not `attempt`; `views.collected` is a constant; the watcher's resolution jobs carry no `submitted.run`; no test runs two resolutions at once on one store; no test compares old and new `status` or `report`; no sealed-producer profile; 40 of 98 inventory rows have no last working revision and no replay check | open, but for two resolutions at once (a lock a key, `typnwnxwvrnt`, with no test yet) |
 
 **The pipeline's core** (`jobs/pipeline.py` unless said).
@@ -131,20 +136,20 @@ the audit. Between them, 42 findings. Each is listed here with what became of it
 | # | Finding | State |
 |---|---|---|
 | C1 | `verification/capture.py` raised on an output declared as an object (every resolution job's, any `--optional-output`): the run was reported "not sealed", and `recover` hit the same error at every start | **fixed** `typnwnxwvrnt` (no test of its own yet) |
-| C2 | Anything raised after the `try` in `Runner.execute` strands the job: its claim, worker, CPUs and memory stay held, and after a restart it dies again. Triggers: a duration of `0s`, a `submitted.at` with no offset, a full disk | open |
+| C2 | Anything raised after the `try` in `Runner.execute` strands the job: its claim, worker, CPUs and memory stay held, and after a restart it dies again. Triggers: a duration of `0s`, a `submitted.at` with no offset, a full disk | **fixed** `kmuwxnmxmysk`: the job is released and the runner says so; the two triggers no longer raise (tests of the triggers, none of the release) |
 | C3 | A collect stopped after writing results and before the keeper's commit: the next collect lists them as already collected, so the keeper commits nothing, triages nothing, and `after_collect` hooks never run for them | open |
-| C4 | A runner killed mid-job, with nothing else queued, leaves the job `running` for ever: the claim is dead, `idle` is false, and the keeper starts no runner because nothing can start | open |
+| C4 | A runner killed mid-job, with nothing else queued, leaves the job `running` for ever: the claim is dead, `idle` is false, and the keeper starts no runner because nothing can start | **fixed** `kmuwxnmxmysk`: such a job reads `queued`, with the reason (no test of its own yet) |
 | C5 | One job file takes the queue down: a `revision` git cannot resolve makes `committed_jobs` raise (the runner dies, `view` gives no rows and `idle: null`, the keepers do and say nothing); a job file that is `[]` makes `view` exit 1. Inherited from the old runner | open |
 | C6 | A readiness request committed in another workspace (the normal case for a run's agent) could not be admitted: the watcher's `resolve` read the operation from its own working copy and skipped, at every look | **fixed in part** `typnwnxwvrnt`: `resolve` reads the operation at the asking job's commit and writes it into the admitting commit. Not exercised across two workspaces; whether the keeper goes on to start the runner after a skip is open |
 | C7 | A job staged and uncollected in one workspace runs again when a runner starts in another: `done_ids` ignores the other workspace's staged results, and taking the repository lock overwrites the only pointer to it | open |
 | C8 | Test evidence counts reports the step did not write (an earlier step's, or committed XML): the promise is kept by tests that did not run. And the reverse: a passing Gradle run and `pytest -q` print no line the log reader knows, so a promise with no `reports` fails | open (count only reports written since the step began; say in the README that Gradle needs `--test-reports`) |
 | C9 | A runner stopped during preparation or between steps records `error` or `failed`, not `cancelled`: the job is never run again and its dependents are blocked | open |
-| C10 | `idle: true` while a job runs whose file is in no commit of the queue (deleted mid-run, `run --rev`): it has no row | open |
+| C10 | `idle: true` while a job runs whose file is in no commit of the queue (deleted mid-run, `run --rev`): it has no row | **fixed** `kmuwxnmxmysk` (no test of its own yet) |
 | C11 | An empty directory satisfies a required output | open |
 | C12 | The bundle was read in full at every scheduling decision and once a waiting job in every `view` | **fixed** `typnwnxwvrnt` (`verify_once`: read again only when a file's size or time changed; the handover reads it in full) |
-| C13 | `queue_keeping.start_runner` ignores `runner.elsewhere`: with a runner at work in another workspace every look launches one that exits on the lock, and reports "started the runner" | open |
+| C13 | `queue_keeping.start_runner` ignores `runner.elsewhere`: with a runner at work in another workspace every look launches one that exits on the lock, and reports "started the runner" | **fixed** `kmuwxnmxmysk` (no test of its own yet) |
 | C14 | `keep_workdirs = "always"` is undone by the next collect's own prune | open |
-| C15 | A prerequisite cycle (reachable with hand-set ids only) is never detected: all stay `waiting`, `idle` stays false | open |
+| C15 | A prerequisite cycle (reachable with hand-set ids only) is never detected: all stay `waiting`, `idle` stays false | **fixed** `kmuwxnmxmysk`, with a test: they are `blocked` and name the ring |
 | C16 | The clean environment was applied after the job's own variables, dropping a job's own `MAVEN_OPTS` | **fixed** `typnwnxwvrnt`, before it was committed |
 
 **Readiness, batches, the audit.**

@@ -47,7 +47,8 @@ import readiness  # noqa: E402
 
 CACHE = "~/.cache/in-the-loop/spring-boot-pr-links-s01-s50"
 AS_OF = "2026-11-27T09:00:00Z"          # between the first pass's last file (08:42 UTC) and the second's first (09:40)
-UNDER = ["gradle-home/caches/modules-2/files-2.1", "gradle-home/caches/modules-2/metadata-2.107/descriptors"]
+FILES = "gradle-home/caches/modules-2/files-2.1"
+DESCRIPTORS = "gradle-home/caches/modules-2/metadata-2.107/descriptors"
 JDKS = "~/.sdkman/candidates/java"
 MIRROR = "~/.cache/in-the-loop/git-mirrors/spring-boot.git"     # the worktrees of the base keep their objects here, outside it
 BATCH = "s-setup-control"
@@ -58,7 +59,7 @@ def mirror(cache: Path, dest: Path) -> dict:
     to the cache's files, and beside each its SHA-1, which must be the name Gradle filed it under (Gradle drops
     leading zeros there). The folder is the control's one authorised source."""
     when = dt.datetime.fromisoformat(AS_OF.replace("Z", "+00:00")).timestamp()
-    files = cache / UNDER[0]
+    files = cache / FILES
     late = sorted({p.parents[1] for p in files.glob("*/*/*/*/*") if p.is_file() and p.stat().st_mtime > when})
     made = {"modules": len(late), "files": 0, "bytes": 0, "misfiled": []}
     for version in late:
@@ -79,7 +80,22 @@ def mirror(cache: Path, dest: Path) -> dict:
     return made
 
 
-def operation(case: str, row: list, cache: Path, source: str, resources: dict) -> dict:
+def unknown_then(cache: Path) -> list[str]:
+    """The descriptors of the module versions the first pass did not know: those whose every file Gradle's cache
+    wrote after AS_OF. A descriptor alone says nothing of when its module arrived: the second pass wrote the
+    descriptors of the first pass's snapshots again (a changing module's is refreshed), and the run of this gate
+    that left out every late descriptor had Gradle ask for a BOM the first pass had (S25, withheld as absent)."""
+    when = dt.datetime.fromisoformat(AS_OF.replace("Z", "+00:00")).timestamp()
+    out = []
+    for version in sorted(p for p in (cache / FILES).glob("*/*/*") if p.is_dir()):
+        times = [f.stat().st_mtime for f in version.glob("*/*") if f.is_file()]
+        rel = f"{DESCRIPTORS}/{version.relative_to(cache / FILES).as_posix()}"
+        if times and min(times) > when and (cache / rel).is_dir():
+            out.append(rel)
+    return out
+
+
+def operation(case: str, row: list, cache: Path, source: str, resources: dict, unknown: list) -> dict:
     revisions = {pin: subprocess.run(["git", "-C", str(cache / "worktrees" / f"{case}-{pin}"), "rev-parse", "HEAD"], check=True,
                                      capture_output=True, text=True).stdout.strip() for pin in ("fix", "parent")}
     return {
@@ -90,11 +106,12 @@ def operation(case: str, row: list, cache: Path, source: str, resources: dict) -
                       "toolchain": {"java": ["8.0.512.0+9-tem", "11.0.33.0+10-tem", "17.0.21.0+9-tem", "21.0.13.0+9-tem", "25.0.5.0+8-tem"]},
                       "platform": "linux-x86_64"},
         "level": "tests-run",
-        "base": {"path": CACHE, "asOf": {"time": AS_OF, "under": UNDER},
+        "base": {"path": CACHE, "asOf": {"time": AS_OF, "under": [FILES]}, "without": unknown,
                  "why": "The S cache as it was after the setup's first resolution pass, when its 49 build jobs were first submitted: every "
                         "file Gradle's cache wrote after 09:00 UTC on 2026-11-27 is left out, by the files' own times (the first pass's last "
-                        "file is of 08:42, the second pass's first of 09:40). Gradle's index files are as they are now; a module's files and "
-                        "its descriptor are what Gradle reads, and both are left out."},
+                        "file is of 08:42, the second pass's first of 09:40), and with it the descriptor of each module version all of whose "
+                        "files are of the second pass. A descriptor the second pass wrote again for a module the first pass had (a snapshot's) "
+                        "stays, as the second pass left it. Gradle's index files are as they are now."},
         "view": {"env": "SPRING_BOOT_S_CACHE"}, "reads": [JDKS, MIRROR], "layout": {"maven": "m2"}, "repositories": [source],
         "task": {"independent": True, "timeout": 3000, "tests": {"reports": ["reports/**/*.xml"], "min": 1},
                  "steps": [{"name": pin, "run": f'bash {REL}/case_task.sh {case} {pin} "$ITL_READINESS_OUT"'} for pin in ("fix", "parent")]},
@@ -140,9 +157,10 @@ def main(argv=None) -> int:
         gate.check("the source is the second pass's modules, each file under the SHA-1 Gradle filed it by", made["modules"] > 1000 and not made["misfiled"],
                    {**made, "misfiled": made["misfiled"][:5]})
         gate.build_repository([REL, "verification/merged-pr-links/s01-s50/maven-war/readiness_gate.py"])
-        keys = {}
+        keys, unknown = {}, unknown_then(cache)
+        record["descriptorsLeftOut"] = len(unknown)
         for case in cases:
-            op = operation(case, table[case], cache, source, resources)
+            op = operation(case, table[case], cache, source, resources, unknown)
             keys[case] = readiness.key(op)
             path = gate.repo / readiness.FOLDER / f"{keys[case]}.json"
             path.parent.mkdir(parents=True, exist_ok=True)

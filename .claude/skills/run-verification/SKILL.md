@@ -20,6 +20,17 @@ commands by hand to see: the runner is how they run, under limits.
    `python3 jobs/pipeline.py view` gives every job's state and reason as data. If `status` says the queue was NOT
    READ, it is unknown, not empty: find out why before anything else. Read the open entries of `verification/findings.md`: a job in this run may be the one that closes
    one.
+   **A job may be waiting for setup it asked for.** A job submitted with `--needs-readiness` is `waiting` until
+   a resolution job has made its operation ready, and `view` lists each request under `readiness`
+   ([`jobs/README.md`](../../../jobs/README.md#setup-a-running-case-asks-for)). Admitting one is yours:
+   `python3 jobs/pipeline.py resolve` writes a resolution job for every request nothing answers, and the commit
+   of those files is the admission (a run's watcher does the same at each look). A resolution job fetches, so it
+   starts only on a runner whose settings name the sources it may fetch from (`fetch_allow`, in the machine's
+   `pipeline.toml`); with none it is `unschedulable` and says so. Which sources a machine fetches from is the
+   user's to decide: ask, do not add one yourself. A readiness that was withheld blocks its job with the
+   outcome's name; once its cause is put right, `python3 jobs/pipeline.py resolve KEY --again`.
+   **A batch** (jobs written from one manifest) is watched with `python3 jobs/pipeline.py wait --batch NAME` and
+   read row by row with `batch NAME`, which also has the rows that never ran and why.
 
 2. **Run.** `python3 jobs/pipeline.py run`, in the background (Bash with `run_in_background`), since it runs
    until the queue is empty and a job can take an hour. It takes the jobs committed while it runs as well (it reads
@@ -60,7 +71,8 @@ commands by hand to see: the runner is how they run, under limits.
    - **Out of time or memory**: no verdict. If the usage suggests a bigger estimate would fit this machine,
      `python3 jobs/pipeline.py resubmit ID --memory ... --duration ...` and commit the new job (a runner
      still at work takes it into its run). If it needs
-     more than this runner allows (`job_memory_max`), leave it deferred and say it needs a bigger machine.
+     more than this runner allows (`job_memory_max`), leave it as it is (the view calls it `unschedulable`) and say it
+     needs a bigger machine.
    - **Stopped for the machine's memory**: `memoryStop` in the result, or `attention` saying the kernel killed it
      when the machine ran out, under its own limit. Not the job's fault and not a verdict: the machine was short.
      Regroup rather than rerun it as it was: fewer workers (`run --workers N`), a higher `--memory` estimate so fewer

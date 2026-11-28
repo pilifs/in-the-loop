@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T02:31:23.015Z",
-  "duration_seconds": 40662,
+  "ended": "2026-11-28T02:38:30.788Z",
+  "duration_seconds": 41089,
   "stats": {
     "turns": 37,
-    "api_calls": 1020,
-    "tool_calls": 1090,
+    "api_calls": 1030,
+    "tool_calls": 1101,
     "tool_errors": 15,
     "compactions": 7,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 2066,
-      "output_tokens": 1755594,
-      "cache_read_input_tokens": 310388790,
-      "cache_creation_input_tokens": 3638441
+      "input_tokens": 2086,
+      "output_tokens": 1769255,
+      "cache_read_input_tokens": 314638645,
+      "cache_creation_input_tokens": 3657902
     }
   },
   "tools": {
-    "Bash": 924,
+    "Bash": 935,
     "Read": 88,
     "Write": 41,
     "Edit": 19,
@@ -190,24 +190,24 @@
     {
       "index": 7,
       "started": "2026-11-28T01:45:40.450Z",
-      "ended": "2026-11-28T02:31:23.015Z",
+      "ended": "2026-11-28T02:38:30.788Z",
       "turns": 4,
-      "api_calls": 92,
+      "api_calls": 102,
       "usage": {
-        "input_tokens": 184,
-        "output_tokens": 204005,
-        "cache_read_input_tokens": 25785829,
-        "cache_creation_input_tokens": 404690
+        "input_tokens": 204,
+        "output_tokens": 217666,
+        "cache_read_input_tokens": 30035684,
+        "cache_creation_input_tokens": 424151
       },
-      "peak_context_tokens": 416529
+      "peak_context_tokens": 435990
     }
   ],
   "log": {
-    "sha256": "2f18dafa1436c6b6981e11c5d166797e2854aa0e9cd9d55389d2887349e2629f",
-    "bytes": 28970008,
-    "lines": 10548,
-    "gzip_bytes": 5281422,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/2f18dafa1436c6b6981e11c5d166797e2854aa0e9cd9d55389d2887349e2629f.jsonl.gz"
+    "sha256": "341640bcb5ac328c29e5875bace6ecaab4003bf3c4492f7672ca0db964e7ba45",
+    "bytes": 29151006,
+    "lines": 10652,
+    "gzip_bytes": 5301626,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/341640bcb5ac328c29e5875bace6ecaab4003bf3c4492f7672ca0db964e7ba45.jsonl.gz"
   },
   "subagents": [
     {
@@ -660,6 +660,14 @@
       "summary": "Declare the git mirror the S tasks read, fix what a review found in the runner's core, and run the three jobs again (verification pending)",
       "body": "The three jobs of the commit before ended in seconds, and for the right reason: with an empty home, the tasks could not read ~/.cache/in-the-loop/git-mirrors/spring-boot.git, where the base's worktrees keep their objects. No operation had declared it, and until now nothing would have noticed. The three operations name it under reads. The control's gate passed all ten checks with every case withheld, which a gate must not: it now also requires that at least one case came ready and ran. Jobs, each superseding the one before: 20261128-0?????-replay-s48-s-delayed-setup-as-one-reques, -a-gradle-build-reads-offline-a-library-t and -replay-five-of-the-s-batch-s-first-setup (the ids are in verification/jobs/2026/11/28, the newest of each name).\n\nThe results page gains the review of 2026-11-28: 42 findings of three readers that had not written the line, each with what became of it. Fixed in this commit, from the reading of the runner's core: whatever is raised around a job's run no longer leaves it claimed and counted as running (the job is released and the runner says so); a time of submission written without its zone is read as UTC instead of raising; a zero estimate no longer divides; a job whose claim is of a runner that is gone, with none at work, reads queued with the reason, where it read running for ever and kept the keeper from starting a runner; a claim at work on a job whose file is in no commit of the queue has a row, so the queue is not called clear; jobs whose needs lead back to themselves are blocked and name the ring; the keeper counts a runner at work in another workspace and does not launch one beside it.\n\nVerified: jobs/test_scheduling.py (9, one new), test_lifecycle.py (7, one new), test_view.py, test_formats.py, test_delayed_setup.py, test_coexistence.py, llm-dlc/tools/test_queue_keeping.py and verification/test_capture.py pass. verification/test_pipeline.py's 52 tests passed in two runs of three; in the first, one failed and its name was not kept, so it is not known which. The dead-claim, unlisted-claim and keeper changes have no test of their own yet.",
       "log_sha256": "2f18dafa1436c6b6981e11c5d166797e2854aa0e9cd9d55389d2887349e2629f"
+    },
+    {
+      "change_id": "mpkpzsmworwqzyvyxpynupqyynklnynz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep the first pass's snapshots in the control's earlier state, tell the operator about setup jobs wait for, and run the control on eight cases (verification pending)",
+      "body": "The control's first real run (job 20261128-023123-replay-five-of-the-s-batch-s-first-setup, still running when this was committed) withheld three of five cases as absent on a Spring Framework BOM snapshot that the setup's first pass had: the gate left out every descriptor Gradle's cache wrote after 09:00 UTC, and the second pass had written the descriptors of the first pass's snapshot modules again. The gate now leaves out the descriptor of a module version only when every file of it is of the second pass (1,392 of them), and the files by their own times as before. S46, whose first job had not failed on a module, came ready in one round with nothing fetched, and its job then failed on the transplant alone, as it did on 2026-11-27. Job 20261128-0?????-replay-eight-of-the-s-batch-s-first-setup (the newest of that name in verification/jobs/2026/11/28) runs eight cases with the corrected state.\n\nThe Gradle gate passed again under the clean sandbox: job 20261128-023123-a-gradle-build-reads-offline-a-library-t, 14 of 14 checks in 4m14s, on the collector's line (jj change zvzrpyxwvwrz).\n\nFor the operator: the /run-verification skill says what a job waiting for setup is, that admitting a resolution job is a commit of what resolve writes, that such a job starts only where fetch_allow names sources (the user's to decide), and how a batch is watched; its stale word for a job this machine cannot run is corrected. ARCHITECTURE.md's row on the job pipeline says what is built and what has not run, and points at the review's table. The results page marks which findings the commit before this one fixed.\n\nVerified: the 47 test files that this cycle's first two commits select all passed (test_costs.py run --changed --from mozxsuwtuqzn); this commit changes a gate script and pages, and the tests it selects passed.",
+      "log_sha256": "341640bcb5ac328c29e5875bace6ecaab4003bf3c4492f7672ca0db964e7ba45"
     }
   ],
   "logs": {
@@ -727,6 +735,12 @@
       "bytes": 28970008,
       "lines": 10548,
       "gzip_bytes": 5281422,
+      "url": null
+    },
+    "341640bcb5ac328c29e5875bace6ecaab4003bf3c4492f7672ca0db964e7ba45": {
+      "bytes": 29151006,
+      "lines": 10652,
+      "gzip_bytes": 5301626,
       "url": null
     },
     "36cbbb71f59139efb70dc19c7c229d0c1225c3b6088f854fadc5683882dacf3f": {
