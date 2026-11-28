@@ -248,9 +248,9 @@ as data, and nothing else decides what state a job is in.
 | `deferred` | It could run, and a runner at work is holding it back: no room, a job ahead of it waiting for room, a priority under the runner's minimum. Only a runner at work says this (`.state/scheduling.json`) | Room, or a runner started without that limit |
 | `queued` | Nothing stands in its way | A runner |
 | `running` | A runner holds its claim: this workspace's, or the runner of another workspace of the repository, which the row's `claim` then names (`where: another-workspace`, its root and pid) | |
-| `finished` | Its result is on this machine and not collected | `collect` |
+| `finished` | Its result is on this machine and not collected: in this workspace's state, or staged in the workspace whose runner ran it (`result.where` is then `staged-elsewhere`, with its root) | `collect`, in the workspace that holds it |
 | `collected` | Its result is in `verification/results/` | |
-| `recorded-elsewhere` | Its result is in a commit this working copy is not on. It is not run again | Merge that commit |
+| `recorded-elsewhere` | Its result is in a commit this working copy is not on (`result.commit`, and `result.change` in jj, where a working-copy commit gets another id when it is described and the change stays). It is not run again | Merge that commit |
 
 A job stopped before it ended (cancelled) is none of the last four: it runs again, so it is `queued` or whatever
 stands in its way, and the stopped attempt is in its `attempts`, with a `cancelled` block.
@@ -268,9 +268,10 @@ started in (the lock all workspaces share, VF-051), and an agent that submits fr
 where it is: the watcher's runner, in the default workspace, runs its jobs. The view reads that lock, without
 taking it, and says so in `runner.elsewhere` (the runner's pid, its workspace and the jobs it has claimed
 there). A job it has claimed is `running` here too, with the workspace in its reason; one it has not yet claimed
-is `queued`, and the reason names the runner that will find it. The attempt, the logs and the staged result of
-such a job stay in that workspace's state until its collect commits them, and the job is `recorded-elsewhere`
-here from then until that commit is merged. `wait` in a workspace with no runner still answers `no-runner` at
+is `queued`, and the reason names the runner that will find it. When the job has ended there it is `finished`
+here, whether or not that runner is still at work, until that workspace's collect commits its result; from
+then it is `recorded-elsewhere` until the commit is merged. So a job submitted from a workspace is never
+`queued` again between its start and its merge. The attempt and the logs stay in that workspace's state. `wait` in a workspace with no runner still answers `no-runner` at
 once, and names the one elsewhere: it has nothing here to wait for.
 
 `view ID...` opens those jobs' collected receipts and gives each result with its questions apart (`execution`,

@@ -444,6 +444,9 @@ def queue_revs():
 _RECORDED = {}  # a commit's tree doesn't change: the results it records are read once
 
 
+_CHANGE_OF = {}     # a head's commit -> its jj change, for whoever cites where a result is
+
+
 def recorded_on_heads():
     """The jobs whose result some head of the repository records, by job id, with that head's commit: jj's visible
     heads, or git's branches outside jj. A result is collected into this working copy and committed there, but the
@@ -452,11 +455,16 @@ def recorded_on_heads():
     here, ran the job a second time). Such a job is done, and its result is one merge away."""
     if (ROOT / ".jj").exists() and shutil.which("jj"):
         proc = run_quiet(["jj", "log", "--no-graph", "--ignore-working-copy", "-r", "visible_heads()", "-T",
-                          'commit_id ++ "\n"'], cwd=ROOT)
+                          'commit_id ++ " " ++ change_id.short() ++ "\n"'], cwd=ROOT)
     else:
         proc = run_quiet(["git", "for-each-ref", "--format=%(objectname)", "refs/heads"], cwd=ROOT)
     found = {}
-    for head in (proc.stdout.split() if proc.returncode == 0 else []):
+    for line in (proc.stdout.splitlines() if proc.returncode == 0 else []):
+        head, _, change = line.strip().partition(" ")
+        if not head:
+            continue
+        if change:
+            _CHANGE_OF[head] = change
         if head not in _RECORDED:
             listed = git("ls-tree", "-r", "--name-only", head, "--", f"{RESULTS}/", check=False)
             _RECORDED[head] = layout.recorded(listed.stdout.splitlines()) if listed.returncode == 0 else set()
@@ -1788,12 +1796,15 @@ def take_repo_lock(state: Path):
     return lock
 
 
-def runner_elsewhere():
-    """The runner at work in another workspace of this repository, read from the lock all its workspaces share
-    (VF-051; read, never taken): its pid, its workspace, and the jobs it has claimed there. None when no runner
-    holds that lock, or when the one that does is this workspace's own. An agent that submits from a workspace is in
-    this case all the time: the runner that runs its jobs is the watcher's, in the default workspace, and without
-    this its job reads as `queued` with no runner at work for as long as it runs."""
+def workspace_elsewhere():
+    """The other workspace of this repository whose runner ran last, read from the lock all its workspaces share
+    (VF-051; read, never taken), with what its state says of jobs: `pid`, its runner's while it is at work and None
+    once it has ended; `running`, the jobs that runner has claimed; `finished`, the results staged there and not
+    collected, each with its status. None when the lock names no workspace, or this one. An agent that submits from
+    a workspace is in this case all the time: the runner that runs its jobs is the watcher's, in the default
+    workspace, and without this its job reads as `queued` with no runner at work while it runs there, and again
+    between its end and the collect. `running` and `finished` are None when that workspace keeps its state somewhere
+    other than the default place: what it runs is then not seen, and that is said."""
     store = repo_store()
     if store is None:
         return None
@@ -1802,15 +1813,39 @@ def runner_elsewhere():
         if not said:
             return None
         pid, root = int(said.group(1)), Path(said.group(2))
-        if root.resolve() == ROOT.resolve() or b"pipeline.py" not in Path(f"/proc/{pid}/cmdline").read_bytes():
+        if root.resolve() == ROOT.resolve():
             return None
     except (OSError, ValueError):
         return None
     try:
-        running = sorted(path.name for path in (root / "verification" / ".state" / "claims").iterdir())
+        at_work = b"pipeline.py" in Path(f"/proc/{pid}/cmdline").read_bytes()
     except OSError:
-        running = None      # its state is not where a workspace keeps it by default: at work, and what it runs is not seen
-    return {"pid": pid, "root": str(root), "running": running}
+        at_work = False
+    state = root / "verification" / ".state"
+    try:
+        # A claim outlives a runner that was killed, until the next one clears it: only a runner at work is running a job.
+        running = sorted(path.name for path in (state / "claims").iterdir()) if at_work else []
+    except OSError:
+        running = None
+    try:
+        finished = {}
+        for path in sorted((state / "results").iterdir()):
+            try:
+                result = json.loads((path / "result.json").read_text())
+            except (OSError, ValueError):
+                continue        # not written yet
+            if result.get("status") != "cancelled":     # a cancelled job runs again: it is not a result to collect
+                finished[path.name] = {k: result.get(k) for k in ("status", "summary", "finishedAt")}
+    except OSError:
+        finished = None
+    return {"pid": pid if at_work else None, "root": str(root), "running": running, "finished": finished}
+
+
+def runner_elsewhere():
+    """The runner at work in another workspace of this repository (its pid, its workspace, the jobs it has claimed),
+    or None when none is."""
+    there = workspace_elsewhere()
+    return {k: there[k] for k in ("pid", "root", "running")} if there and there["pid"] else None
 
 
 def readiness_answer(config, known):
@@ -2090,8 +2125,10 @@ def lifecycle_view(config, revs, full=()):
         # The queue could not be read. That is not an empty queue: whoever asks is told it is unknown.
         queue, available["queue"] = [], f"unavailable: {e}"
     pid = runner_pid(state)
-    runner_away = None if pid else runner_elsewhere()
+    there = workspace_elsewhere()
+    runner_away = {k: there[k] for k in ("pid", "root", "running")} if there and there["pid"] and not pid else None
     away = set((runner_away or {}).get("running") or ())
+    staged_away = (there or {}).get("finished") or {}
     decided = {}
     if pid:
         try:
@@ -2121,9 +2158,10 @@ def lifecycle_view(config, revs, full=()):
                                 "occurrences": (a.record.get("capture") or {}).get("occurrences")}
                                for a in attempts.of(state, job_id)]
         if job_id in elsewhere:
-            row.update(state="recorded-elsewhere", why=f"its result is in commit {elsewhere[job_id][:12]}, which this working copy is not on: "
-                                                       f"merge it; the job is not run again",
-                       result={"where": "other-head", "commit": elsewhere[job_id]})
+            change = _CHANGE_OF.get(elsewhere[job_id])    # jj rewrites a working-copy commit when it is described: the change stays
+            row.update(state="recorded-elsewhere", why=f"its result is in commit {elsewhere[job_id][:12]}{f' (jj change {change})' if change else ''}, "
+                                                       f"which this working copy is not on: merge it; the job is not run again",
+                       result={"where": "other-head", "commit": elsewhere[job_id], "change": change})
         elif job_id in collected:
             entry = index.get(job_id)
             folder = layout.find_result(ROOT, job_id)
@@ -2150,6 +2188,11 @@ def lifecycle_view(config, revs, full=()):
             row.update(state="running", why=f"claimed by the runner of {runner_away['root']} (pid {runner_away['pid']}): its attempt is in that "
                                             f"workspace's state, and its result comes with the collect made there",
                        claim={"where": "another-workspace", "root": runner_away["root"], "pid": runner_away["pid"], "at": None, "host": None, "alive": True})
+        elif job_id in staged_away:
+            # It ran there and waits for that workspace's collect: not queued, though nothing of it is on this side yet.
+            row.update(state="finished", why=f"its result is staged in the workspace {there['root']}, whose runner ran it, and comes "
+                                             f"with the collect made there",
+                       result={"where": "staged-elsewhere", "root": there["root"], **staged_away[job_id]})
         else:
             problems = validate({k: v for k, v in job.items()}, "job.schema.json")
             try:
@@ -2281,7 +2324,8 @@ def legacy_rows(view):
         elif state == "finished" and job.get("path") is None:
             rows["finished, not collected"].append(f"{job['id']}  (job file no longer in {rev[:12]})")
         elif state == "finished":
-            rows["finished, not collected"].append(f"{line}  [{job['result']['status']}]")
+            there = f", staged in {job['result']['root']}: its collect brings it" if job["result"].get("where") == "staged-elsewhere" else ""
+            rows["finished, not collected"].append(f"{line}  [{job['result']['status']}{there}]")
         elif state == "running":
             rows["running"].append(f"{line}  (in the runner of {job['claim']['root']}, pid {job['claim'].get('pid')})" if job["claim"].get("where") else
                                    f"{line}  (since {job['claim'].get('at')}, pid {job['claim'].get('pid')})")

@@ -123,13 +123,16 @@ class ARunnerInAnotherWorkspace(View):
     """A repository has one runner (VF-051), and an agent that submits from a workspace is not where it is: the
     watcher's runner, in the default workspace, runs its jobs. The lock all workspaces share names that runner."""
 
-    def another_workspace(self, claimed=()):
+    def another_workspace(self, claimed=(), staged=None):
         d = Path(self.enterContext(tempfile.TemporaryDirectory(prefix="another-workspace-")))
         store, root = d / "store", d / "default"
         (root / "verification/.state/claims").mkdir(parents=True)
         store.mkdir()
         for job_id in claimed:
             (root / "verification/.state/claims" / job_id).write_text("{}")
+        for job_id, status in (staged or {}).items():
+            (root / "verification/.state/results" / job_id).mkdir(parents=True)
+            (root / "verification/.state/results" / job_id / "result.json").write_text(json.dumps({"id": job_id, "status": status, "summary": f"{status}: a stand-in"}))
         # A process that reads as a runner: the name of the pipeline's file is in its command line.
         runner = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(120)", "pipeline.py", "run"])
         self.addCleanup(lambda: (runner.kill(), runner.wait()))
@@ -174,6 +177,26 @@ class ARunnerInAnotherWorkspace(View):
         self.addCleanup(lambda: (mine.kill(), mine.wait()))
         Path(env["VERIFY_REPO_STORE"], "verification-runner.lock").write_text(f"pid {mine.pid}, {repo.dir}\n")
         self.assertIsNone(json.loads(repo.pipeline("view", "--rev", "HEAD", env=env).stdout)["runner"]["elsewhere"])
+
+    @cost("tool")
+    def test_a_job_that_ended_there_and_waits_for_its_collect_is_finished_not_queued_again(self):
+        repo = self.repo()
+        ended = repo.submit2("Ran in the default workspace", "build", "--run", "true")
+        stopped = repo.submit2("Was stopped there", "build", "--run", "true")
+        repo.commit("jobs")
+        env, runner, root = self.another_workspace(staged={ended: "passed", stopped: "cancelled"})
+        for at_work in (True, False):       # whether or not its runner is still at work: the result is there either way
+            view = json.loads(repo.pipeline("view", "--rev", "HEAD", env=env).stdout)
+            jobs = {job["id"]: job for job in view["jobs"]}
+            self.assertEqual((jobs[ended]["state"], jobs[ended]["result"]), ("finished", {
+                "where": "staged-elsewhere", "root": str(root), "status": "passed", "summary": "passed: a stand-in", "finishedAt": None}), at_work)
+            self.assertIn(f"staged in the workspace {root}", jobs[ended]["why"])
+            self.assertEqual(jobs[stopped]["state"], "queued", at_work)          # a cancelled job runs again
+            self.assertIs(view["idle"], False)
+            self.assertIn(f"[passed, staged in {root}: its collect brings it]", repo.pipeline("status", "--rev", "HEAD", env=env).stdout)
+            runner.kill()
+            runner.wait()
+        self.assertIsNone(view["runner"]["elsewhere"])
 
 
 class WhatTheKeepersRead(View):

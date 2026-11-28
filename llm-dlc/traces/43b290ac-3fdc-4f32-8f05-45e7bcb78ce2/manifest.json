@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-27T15:13:41.381Z",
-  "ended": "2026-11-28T00:55:51.149Z",
-  "duration_seconds": 34930,
+  "ended": "2026-11-28T01:01:03.308Z",
+  "duration_seconds": 35242,
   "stats": {
     "turns": 33,
-    "api_calls": 867,
-    "tool_calls": 931,
+    "api_calls": 874,
+    "tool_calls": 938,
     "tool_errors": 13,
     "compactions": 6,
     "peak_context_tokens": 567323,
     "usage": {
-      "input_tokens": 1760,
-      "output_tokens": 1468952,
-      "cache_read_input_tokens": 262823510,
-      "cache_creation_input_tokens": 3111372
+      "input_tokens": 1774,
+      "output_tokens": 1473821,
+      "cache_read_input_tokens": 264935892,
+      "cache_creation_input_tokens": 3119307
     }
   },
   "tools": {
-    "Bash": 779,
+    "Bash": 786,
     "Read": 82,
     "Write": 36,
     "Edit": 19,
@@ -170,24 +170,24 @@
     {
       "index": 6,
       "started": "2026-11-28T00:16:38.934Z",
-      "ended": "2026-11-28T00:55:51.149Z",
+      "ended": "2026-11-28T01:01:03.308Z",
       "turns": 1,
-      "api_calls": 113,
+      "api_calls": 120,
       "usage": {
-        "input_tokens": 226,
-        "output_tokens": 143917,
-        "cache_read_input_tokens": 20537087,
-        "cache_creation_input_tokens": 282415
+        "input_tokens": 240,
+        "output_tokens": 148786,
+        "cache_read_input_tokens": 22649469,
+        "cache_creation_input_tokens": 290350
       },
-      "peak_context_tokens": 297582
+      "peak_context_tokens": 305517
     }
   ],
   "log": {
-    "sha256": "b76a3d6285137e6cf0a8f2559769284f56b237fed8cd0b9065009d0ee501ef1d",
-    "bytes": 24693461,
-    "lines": 8717,
-    "gzip_bytes": 4615268,
-    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/b76a3d6285137e6cf0a8f2559769284f56b237fed8cd0b9065009d0ee501ef1d.jsonl.gz"
+    "sha256": "c5290c0e6018d05e3f8939939853bd59f2b8215b09d84b73f6c8dcb449dc8f7e",
+    "bytes": 24791079,
+    "lines": 8790,
+    "gzip_bytes": 4625738,
+    "path": "llm-dlc/traces/43b290ac-3fdc-4f32-8f05-45e7bcb78ce2/logs/c5290c0e6018d05e3f8939939853bd59f2b8215b09d84b73f6c8dcb449dc8f7e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -502,6 +502,14 @@
       "summary": "Record that S48's delayed setup passed as one request, 17 of 17 checks",
       "body": "The brief's third gate asks that Spring Boot S48 (example 635, PR #51551), whose Maven WAR check took five rounds and six jobs on 2026-11-27, be replayed from an insufficient cache as one request. Job 20261128-003144-replay-s48-s-delayed-setup-as-one-reques did that and passed every check of the gate in 13m21s (5.5 GiB at its peak). Its result was collected on the watcher's line (jj change tosuzksqrzkx), with the gate's record, readiness-gate.json.\n\nWhat the run showed, line by line of the pass condition, is now a table in the results page. In short: one request file; one resolution job, admitted by a commit; two offline rounds (the pinned Maven distribution, then the BOM's POM once Gradle named it) with 9.6 MB fetched in under a second; a bundle published only after the task ran through with no network and its readbacks equalled parent.json and fix.json; a fresh consumer that read the four WARs itself on both pins in a network namespace with loopback alone, started once and never failed; the parent's readbacks with no pointer and no payload, the fix's with CycloneDX at WEB-INF/classes/META-INF/sbom/application.cdx.json and the original bytes, decoy first included; three controls withheld at the fetch stage, each with its own outcome; and an unrelated job finished while the consumer waited.\n\nThe page also says what the run does not show: the request came from the gate's script and not from a domain agent, so VF-076 stays open; the base was made insufficient and is stricter than the historical state; the nested scheduler ran without isolation of its own; the controls say nothing of a shared store under concurrent requests.\n\nGate 4 gets its first measurements, from this one request: queue waits of 42 s and 19 s, a six-minute wait of the consumer that was all the resolution's local work, and fetching at 0.2 % of the resolution's time. Nothing is tuned on one data point, and the ceiling of ten fetch-bound tasks is neither approached nor tested.\n\nCLAUDE.md now tells agents of --needs-readiness, with its limit (modules are laid in Maven's layout). VF-076's update of today records the passing run. The table of where each gate stands and the list of what is left are brought up to date: what remains needs this line landed and a real batch.\n\nVerified: the tests the three pages select, 21 of 21 Python test files (python3 lib/tools/test_costs.py run --changed). The figures in the page were read from the gate's record and the job's result as collected, and the queue waits from the commits' times.",
       "log_sha256": "b76a3d6285137e6cf0a8f2559769284f56b237fed8cd0b9065009d0ee501ef1d"
+    },
+    {
+      "change_id": "oxqyxotxzysrzzuonozmosxlkwtkxutn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Show a job that ended in another workspace as finished, and give a result on another head its jj change",
+      "body": "Two gaps in the view that the second S48 job showed, both for the agent that submits from a workspace of its own while the watcher's runner, in the default workspace, runs the job.\n\nBetween the job's end and that workspace's collect, the view here said queued again: the runner's claim was gone, and the staged result is in the other workspace's state. For those seconds or minutes the account was wrong in the way that makes someone resubmit. The view now reads the results staged in the workspace the shared lock names, whether or not its runner is still at work, and such a job is finished, with result.where staged-elsewhere, its root, its status and its summary. A cancelled result there is not one: that job runs again, and stays queued. So a job submitted from a workspace reads queued, running, finished, recorded-elsewhere and collected in that order and is never queued twice.\n\nA result recorded on another head was cited by its commit alone. In jj the collector's working-copy commit gets another id when it is described, so an id read from the view could be out of date an hour later: this run's results page had cited one. The row now carries the jj change beside the commit (result.change), and the reason names both.\n\nVerified: jobs/test_view.py (8 tests, one new: a result staged in the other workspace is finished with its runner at work and after it ended, and a cancelled one is queued), and the tests of what changed, 35 of 35 Python test files (python3 lib/tools/test_costs.py run --changed). On the real queue both S48 jobs now read recorded-elsewhere with the change tosuzksqrzkx.",
+      "log_sha256": "c5290c0e6018d05e3f8939939853bd59f2b8215b09d84b73f6c8dcb449dc8f7e"
     }
   ],
   "logs": {
@@ -683,6 +691,12 @@
       "bytes": 13015213,
       "lines": 4237,
       "gzip_bytes": 2739650,
+      "url": null
+    },
+    "c5290c0e6018d05e3f8939939853bd59f2b8215b09d84b73f6c8dcb449dc8f7e": {
+      "bytes": 24791079,
+      "lines": 8790,
+      "gzip_bytes": 4625738,
       "url": null
     },
     "e3a36ba00fd9f2f024cea7aab4e5c6ad1a685d2f5891b9ea83bd42f93ec1b130": {

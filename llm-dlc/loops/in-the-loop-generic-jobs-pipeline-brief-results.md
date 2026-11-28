@@ -169,7 +169,11 @@ keepers read the view as data.
     from its own workspace is not where it is. Until this run's second S48 job, such an agent's view said
     `queued`, no runner at work, for the whole time its job ran under the watcher's runner. The view now reads
     the lock all workspaces share (never takes it) and the claims of the workspace it names: a claimed job is
-    `running` with that workspace in its reason. It reads another workspace's state and writes nothing there;
+    `running` with that workspace in its reason, and one that has ended there and waits for its collect is
+    `finished`, not `queued` again (the second S48 job read as queued for the seconds between its end and the
+    collect). A result on another head carries its jj change beside the commit, since the collector's
+    working-copy commit gets another id when it is described: this page had cited one such id that was then
+    rewritten. It reads another workspace's state and writes nothing there;
     `nudge` still reaches only this workspace's runner, so a runner elsewhere finds a new commit at its next
     look at the queue.
 
