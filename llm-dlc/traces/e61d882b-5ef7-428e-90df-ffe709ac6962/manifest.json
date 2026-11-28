@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-28T03:53:53.463Z",
-  "duration_seconds": 918970,
+  "ended": "2026-11-28T13:12:20.437Z",
+  "duration_seconds": 952477,
   "stats": {
-    "turns": 346,
-    "api_calls": 3309,
-    "tool_calls": 2921,
+    "turns": 348,
+    "api_calls": 3366,
+    "tool_calls": 2959,
     "tool_errors": 29,
     "compactions": 11,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 107311,
-      "output_tokens": 2117519,
-      "cache_read_input_tokens": 1099106982,
-      "cache_creation_input_tokens": 7394577
+      "input_tokens": 107465,
+      "output_tokens": 2131520,
+      "cache_read_input_tokens": 1129600228,
+      "cache_creation_input_tokens": 7421903
     }
   },
   "tools": {
-    "Bash": 2570,
+    "Bash": 2608,
     "SendMessage": 109,
     "Edit": 83,
     "Read": 58,
@@ -271,24 +271,24 @@
     {
       "index": 11,
       "started": "2026-11-27T14:06:55.934Z",
-      "ended": "2026-11-28T03:53:53.463Z",
-      "turns": 30,
-      "api_calls": 309,
+      "ended": "2026-11-28T13:12:20.437Z",
+      "turns": 32,
+      "api_calls": 366,
       "usage": {
-        "input_tokens": 762,
-        "output_tokens": 198851,
-        "cache_read_input_tokens": 106888848,
-        "cache_creation_input_tokens": 489833
+        "input_tokens": 916,
+        "output_tokens": 212852,
+        "cache_read_input_tokens": 137382094,
+        "cache_creation_input_tokens": 517159
       },
-      "peak_context_tokens": 521534
+      "peak_context_tokens": 548860
     }
   ],
   "log": {
-    "sha256": "274472873e979bca77653b84e6a4975a21208103118f9faea01423d2aff06497",
-    "bytes": 56715288,
-    "lines": 27314,
-    "gzip_bytes": 9533346,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/274472873e979bca77653b84e6a4975a21208103118f9faea01423d2aff06497.jsonl.gz"
+    "sha256": "4c41bac77d19ec8e5485369220f16a6a38ba30ff2711faed551cbace9f7afda8",
+    "bytes": 57310210,
+    "lines": 27776,
+    "gzip_bytes": 9582507,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/4c41bac77d19ec8e5485369220f16a6a38ba30ff2711faed551cbace9f7afda8.jsonl.gz"
   },
   "subagents": [
     {
@@ -16081,6 +16081,14 @@
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "274472873e979bca77653b84e6a4975a21208103118f9faea01423d2aff06497"
+    },
+    {
+      "change_id": "uwtnszwqxsryqkxnvvzslprqrllzkmwy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Enter three tests of the jobs line in the cost inventory",
+      "body": "The whole default run on the landed line failed in one place, 100 of 101: lib/tools/test_tier_lint.py, because three unit tests added in the last cycle of the generic-jobs-pipeline run were never entered in lib/tests/costs.json. They are jobs/test_evidence.py (a report that was there before the step began is not tests the step ran), jobs/test_lifecycle.py (a submission time written without its zone) and jobs/test_scheduling.py (jobs whose needs lead back to themselves). The run's agent added them with the fixes of a review and ran the tests themselves, but not the estimate that enters a new test, and the tests each commit selects do not include the lint.\n\nThis commit adds those three rows and the three files' counts, and nothing else. test_costs.py estimate, run in the default workspace, also rewrites some 600 lines of figures that depend on which session logs a workspace holds; those were put back as they were, row by row, so every test that was already in the inventory keeps the row it had. The three new rows are unit tier with an estimated cost, as their neighbours in the same files are.\n\nVerified: python3 lib/tools/test_costs.py lint says the tags, the sources and the inventory agree; lib/tools/test_tier_lint.py passes, 12 tests; the three test files pass (6, 7 and 9 tests). The whole default run has not been run again on this tree by this commit.",
+      "log_sha256": "4c41bac77d19ec8e5485369220f16a6a38ba30ff2711faed551cbace9f7afda8"
     }
   ],
   "logs": {
@@ -16743,6 +16751,12 @@
       "lines": 11736,
       "gzip_bytes": 5047524,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f.jsonl.gz"
+    },
+    "4c41bac77d19ec8e5485369220f16a6a38ba30ff2711faed551cbace9f7afda8": {
+      "bytes": 57310210,
+      "lines": 27776,
+      "gzip_bytes": 9582507,
+      "url": null
     },
     "4d92e43d1f59c2c2c8e23e076e2029dd199a6287f1851dc1fec5267fbfd6013f": {
       "bytes": 38741210,
