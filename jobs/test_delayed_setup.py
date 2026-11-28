@@ -68,11 +68,15 @@ class DelayedSetup(unittest.TestCase):
         self.addCleanup(self.server.shutdown)
         self.url = f"http://127.0.0.1:{self.server.server_address[1]}/"
         self.store = readiness.Store(self.dir / "store")
-        self.repo = Repo(poll_seconds=1, fetch_allow=[self.url], readiness_dir=str(self.store.root))
+        # The loopback repository counts as outside here, and two files as many: every fetch takes its turn in a
+        # queue of the test's own, and a resolution that passes the rule's number says so without being stopped.
+        self.repo = Repo(poll_seconds=1, fetch_allow=[self.url], readiness_dir=str(self.store.root),
+                         fetch_gap=0, fetch_warn_files=2, fetch_local=[])
         self.addCleanup(self.repo.close)
         (self.dir / "not-an-input").mkdir()
         (self.dir / "not-an-input/settings.xml").write_text("what the machine holds beside the prepared inputs\n")
         self.env = {"REPOSITORY_PORT": str(self.server.server_address[1]), "GRADLE_USER_HOME": "/somewhere/else",
+                    "ITL_FETCH_QUEUE": str(self.dir / "fetch-queue.lock"),
                     **({"FIXTURE_NOT_AN_INPUT": str(self.dir / "not-an-input/settings.xml")} if Path.home() in self.dir.parents else {})}
         (self.repo.dir / "build.sh").write_text(BUILD)
         self.runner = None
@@ -171,6 +175,10 @@ class DelayedSetup(unittest.TestCase):
         self.assertEqual((resolved["status"], concluded["verdict"], concluded["readiness"][0]["rounds"], concluded["readiness"][0]["fetch"]["files"]),
                          ("passed", "ready", 3, 4))
         self.assertEqual((resolved["steps"][0]["network"]["mode"], list(resolved["timing"]["byPhase"])), ("fetch", ["resolve"]))
+        # It asked for more files than the runner's settings expect of a resolution: said for whoever triages, and it passed.
+        self.assertEqual((concluded["readiness"][0]["fetch"]["outside"]["files"], len(concluded["warnings"])), (4, 1))
+        self.assertIn("asked repositories outside the machine for 4 file(s)", " ".join(resolved["attention"]))
+        self.assertTrue((self.dir / "fetch-queue.lock").exists())
         self.assertEqual(json.loads((self.repo.dir / "verification/.state/results" / resolver / "outputs/verification/readiness/receipts" / f"{key}.json").read_text())["state"], "ready")
         # Each consumer ran after it, offline and on the prepared inputs, and read what the task builds.
         for consumer in (first, second):

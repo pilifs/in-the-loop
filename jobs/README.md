@@ -229,6 +229,19 @@ repository does not: there it ends `absent`.
 none a job that fetches is `unschedulable` and says so: which sources a machine fetches from is its owner's to
 say. `fetch_slots` (ten) is how many fetching jobs run at once.
 
+**Every request to a repository outside the machine takes its turn in one queue**
+([`operating-notes.md`](../llm-dlc/operating-notes.md#fetches-of-a-builds-inputs-go-through-one-queue); the
+user's decision of 2026-11-28). The queue is one file for the machine
+(`~/.cache/in-the-loop/fetch-queue.lock`, found by the user's own home and not `$HOME`), so however many
+resolutions run at once, in whichever checkout, one request is open at a time and a new one begins as the one
+before it ends. Two requests to one host are `fetch_gap` seconds apart (0.2). A folder (`file://`) and the hosts
+in `fetch_local` (the machine's loopback) take no turn. A repository that answers 429 or 503 is asked once
+more, after its `Retry-After` (two minutes at most), and a second refusal ends the resolution as
+`repository-unavailable`. A receipt says what left the machine (`fetch.outside`: files and bytes, not counting
+what the pool gave). A resolution that asks outside for more than `fetch_warn_files` (1,000) or
+`fetch_warn_bytes` (1 GiB) is not stopped: its receipt has a line under `warnings`, and its job's result
+carries that line in `attention`, where whoever triages results reads it.
+
 **A job asks for a source by needing an operation that names it, and a person answers.** A source is a folder:
 everything under it may be fetched, redirects included, and nothing beside it. When an operation names a
 repository, or a pinned input its view will not have, outside the sources the machine allows, no resolution is

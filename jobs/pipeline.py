@@ -142,6 +142,13 @@ DEFAULTS = {
         # (a job counts its resources.fetch, 1 by default): fetch-bound work is admitted apart from CPU and memory.
         "fetch_allow": [],            # URL prefixes; empty: this runner fetches nothing
         "fetch_slots": 10,
+        # How a resolution asks a repository outside the machine (jobs/readiness.py, FETCH_RULE): every request waits
+        # its turn in one queue for the whole machine, fetch_gap seconds after the last one to the same host; a
+        # resolution that asks for more than fetch_warn_files files or fetch_warn_bytes says so and is not stopped.
+        "fetch_gap": 0.2,
+        "fetch_warn_files": 1000,
+        "fetch_warn_bytes": "1G",
+        "fetch_local": ["127.0.0.1", "localhost", "::1"],   # hosts that are this machine itself: no turn in the queue, not counted
         "readiness_dir": "~/.cache/in-the-loop/readiness",   # bundles and receipts (jobs/readiness.py), for every checkout
         "after_collect": [],          # commands run at the repo root after outputs are applied
     },
@@ -437,6 +444,10 @@ def load_config(args=None):
     runner["workers"] = int(runner["workers"])
     runner["machine_name"] = str(runner.get("machine_name") or "").strip() or socket.gethostname()
     runner["fetch_slots"] = int(runner["fetch_slots"])
+    runner["fetch_gap"] = float(runner["fetch_gap"])
+    runner["fetch_warn_files"] = int(runner["fetch_warn_files"])
+    runner["fetch_warn_bytes"] = parse_bytes(str(runner["fetch_warn_bytes"]))
+    runner["fetch_local"] = [str(host) for host in runner["fetch_local"]]
     # From the settings, and from the grants a person made one by one (`sources allow`), which are the machine's too.
     runner["fetch_allow"] = [str(prefix) for prefix in runner["fetch_allow"]]
     runner["fetch_allow"] += [g["url"] for g in fetch_grants() if g["url"] not in runner["fetch_allow"]]
@@ -1723,6 +1734,8 @@ class Runner:
         concluded = adapter.conclusion(job, result)
         if concluded is not None:
             result["conclusion"] = concluded
+            # What a workload warns of without failing the job is for whoever triages the result.
+            result["attention"] = list(dict.fromkeys([*result["attention"], *(concluded.get("warnings") or [])]))
         verdicts = adapter.verdicts(steps)
         # What a step's exit does not already say: a promise not kept, a required output that is not there.
         undelivered = [u for u in delivered["unmet"] if u["kind"] in ("promise", "output")]

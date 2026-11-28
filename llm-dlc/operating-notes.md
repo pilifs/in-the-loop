@@ -184,6 +184,43 @@ targeted requests at a low volume. This holds for every tool: `curl`, a script, 
 
 **Why:** the user's address is theirs, used for everything else they do. On 2026-11-19 a check of a page's 60 links
 sent 12 requests at a time with a browser-like User-Agent: the kind of traffic this rule is there to prevent.
+The user added on 2026-11-28 what the note was for: many sockets open at once strain a constrained WiFi network,
+and "with a solid queue mechanism, it should not matter how many requests there are as new requests will begin
+as old ones finish. If anything, it should reduce error rate and therefore improve overall efficiency." So of
+this note's parts, *one at a time* is the one that protects the network. The note is unchanged for an agent
+reading the web. What a build tool fetches has a rule of its own, next.
+
+## Fetches of a build's inputs go through one queue
+
+The user's decision of 2026-11-28, taken when delayed setup was given sources to fetch from. A build's
+dependencies are what a repository is for, and how many files a build needs is not what is limited. How many
+requests are open at once is.
+
+- **One queue for the machine.** Every request the pipeline sends to a repository outside the machine waits its
+  turn in one queue ([`jobs/readiness.py`](../jobs/readiness.py), `turn`): a new one begins when the one before
+  it has ended, whichever job, checkout or workspace asks, and however many resolutions run at once. Two
+  requests to one host are 0.2 seconds apart (`fetch_gap`). A folder and the machine's own loopback take no
+  turn (`fetch_local`).
+- **Only the sources the user allowed** (`fetch_allow`, and `python3 jobs/pipeline.py sources`). A job that
+  needs another one waits and asks. An agent never allows a source.
+- **A repository that says "not now"** (429, 503) is asked once more, after the time it names, and never a
+  third time: the resolution ends there as `repository-unavailable`.
+- **Each file once.** What a resolution fetched and verified is kept in the runner's pool, and a later
+  resolution takes it from there.
+- **A ceiling warns, it does not stop.** A resolution that asks outside for more than 1,000 files or 1 GiB
+  (`fetch_warn_files`, `fetch_warn_bytes`) says so in its receipt and in its job's `attention`, and goes on.
+  The user's words: "I'd rather fix it after than have the entire job stop when I may not always be available
+  to provide resolution in a timely manner." Read this as the rule for a soft limit of the pipeline's in
+  general: say it where the one who triages will read it, and let the work finish. It is not the rule for a
+  permission, which waits for the person whose it is (a new source, an allow-list approval).
+- **Plain.** No header names the user or the project; the client's own User-Agent.
+
+A build tool that an agent starts online by hand, in a setup phase, is outside this queue today, at the tool's
+own pace. A fetch run in which the build tool itself asks through a local door would put that traffic in the
+same queue ([the brief for it](loops/in-the-loop-build-driven-fetch-brief.md), not built).
+
+**Why:** the network the machine is on is constrained, and the user's address is theirs. A queue keeps the
+number of open connections at one whatever a build needs, so the count of files stops mattering.
 
 ## Check for a decision before fixing an infrastructure problem met mid-task
 

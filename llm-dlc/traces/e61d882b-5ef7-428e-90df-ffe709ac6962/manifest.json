@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-28T14:17:01.327Z",
-  "duration_seconds": 956358,
+  "ended": "2026-11-28T14:42:05.959Z",
+  "duration_seconds": 957862,
   "stats": {
-    "turns": 350,
-    "api_calls": 3381,
-    "tool_calls": 2969,
+    "turns": 357,
+    "api_calls": 3396,
+    "tool_calls": 2979,
     "tool_errors": 29,
-    "compactions": 11,
+    "compactions": 12,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 107503,
-      "output_tokens": 2141932,
-      "cache_read_input_tokens": 1137948273,
-      "cache_creation_input_tokens": 7436799
+      "input_tokens": 107543,
+      "output_tokens": 2166246,
+      "cache_read_input_tokens": 1146669212,
+      "cache_creation_input_tokens": 7476611
     }
   },
   "tools": {
-    "Bash": 2618,
+    "Bash": 2626,
     "SendMessage": 109,
     "Edit": 83,
-    "Read": 58,
-    "Write": 41,
+    "Read": 59,
+    "Write": 42,
     "ToolSearch": 20,
     "ListAgents": 9,
     "Agent": 7,
@@ -111,6 +111,7 @@
     "~/code/in-the-loop-codex-apps/.codex/config.toml",
     "~/code/in-the-loop-codex-apps/llm-dlc/tools/agent_client.py",
     "~/code/in-the-loop-setup-phase/llm-dlc/loops/setup-agent-template.md",
+    "~/code/scripts/analysis/in-the-loop-setup-as-a-tool-brief.md",
     "~/code/scripts/analysis/organic-java-pr-capability-composition-fast-follow.md"
   ],
   "context_windows": [
@@ -271,24 +272,38 @@
     {
       "index": 11,
       "started": "2026-11-27T14:06:55.934Z",
-      "ended": "2026-11-28T14:17:01.327Z",
-      "turns": 34,
-      "api_calls": 381,
+      "ended": "2026-11-28T14:36:08.863Z",
+      "turns": 38,
+      "api_calls": 396,
       "usage": {
-        "input_tokens": 954,
-        "output_tokens": 223264,
-        "cache_read_input_tokens": 145730139,
-        "cache_creation_input_tokens": 532055
+        "input_tokens": 994,
+        "output_tokens": 247578,
+        "cache_read_input_tokens": 154451078,
+        "cache_creation_input_tokens": 571867
       },
-      "peak_context_tokens": 563756
+      "peak_context_tokens": 605586
+    },
+    {
+      "index": 12,
+      "started": "2026-11-28T14:42:05.996Z",
+      "ended": "2026-11-28T14:42:05.959Z",
+      "turns": 3,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5",
-    "bytes": 57512327,
-    "lines": 27898,
-    "gzip_bytes": 9613457,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5.jsonl.gz"
+    "sha256": "a629a62c19b702bab104c9eb1c1cbed9151c2ea324d58571679f5ef35fa122ec",
+    "bytes": 58196171,
+    "lines": 28078,
+    "gzip_bytes": 9752868,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/a629a62c19b702bab104c9eb1c1cbed9151c2ea324d58571679f5ef35fa122ec.jsonl.gz"
   },
   "subagents": [
     {
@@ -16076,59 +16091,67 @@
     },
     {
       "change_id": "zrtwuqpwvxutqslzzssmmwwyourttwps",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4f38a5c1a8228f43fd7d08c90ded9642078b0a30",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "274472873e979bca77653b84e6a4975a21208103118f9faea01423d2aff06497"
     },
     {
       "change_id": "uwtnszwqxsryqkxnvvzslprqrllzkmwy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6548d47316b8f2028ece2f317510a682d19050e8",
+      "immutable": true,
       "summary": "Enter three tests of the jobs line in the cost inventory",
       "body": "The whole default run on the landed line failed in one place, 100 of 101: lib/tools/test_tier_lint.py, because three unit tests added in the last cycle of the generic-jobs-pipeline run were never entered in lib/tests/costs.json. They are jobs/test_evidence.py (a report that was there before the step began is not tests the step ran), jobs/test_lifecycle.py (a submission time written without its zone) and jobs/test_scheduling.py (jobs whose needs lead back to themselves). The run's agent added them with the fixes of a review and ran the tests themselves, but not the estimate that enters a new test, and the tests each commit selects do not include the lint.\n\nThis commit adds those three rows and the three files' counts, and nothing else. test_costs.py estimate, run in the default workspace, also rewrites some 600 lines of figures that depend on which session logs a workspace holds; those were put back as they were, row by row, so every test that was already in the inventory keeps the row it had. The three new rows are unit tier with an estimated cost, as their neighbours in the same files are.\n\nVerified: python3 lib/tools/test_costs.py lint says the tags, the sources and the inventory agree; lib/tools/test_tier_lint.py passes, 12 tests; the three test files pass (6, 7 and 9 tests). The whole default run has not been run again on this tree by this commit.",
       "log_sha256": "4c41bac77d19ec8e5485369220f16a6a38ba30ff2711faed551cbace9f7afda8"
     },
     {
       "change_id": "nxwupnxuttrzrmkqkuwwrluzmzzmsmlv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6c4322fa3a18222b16af34a9f457f6b667cc3c70",
+      "immutable": true,
       "summary": "Read what a readiness task reads against a digest the operation names, and run S48's gate on it (verification pending)",
       "body": "A readiness task runs on prepared inputs alone, and what it must still read from elsewhere on the runner is listed under the operation's reads. Until now each entry was a bare path: declared, bound read-only, and verified by nothing. S48's gate passed that way, 17 of 17, with a copy of the home's Maven repository (770 files the S setup's online job had left there) as such a path. The user chose on 2026-11-28 to have that copy verified by its digest rather than leave gate 3 qualified as it was.\n\nAn entry of reads may now be {path, sha256}. The digest of a file is that of its bytes; of a folder, that of its files by relative path, each with its own digest, as a bundle's is made, with a link listed by where it points. jobs/readiness.py reads such a path in full against its digest before a resolution's first round, and jobs/pipeline.py does so again before a job is handed the bundle. One that differs withholds readiness at the stage base as digest-mismatch with no round run, or ends the job with an error that names both digests. The receipt and the job's result list every read with whether it was verified, and with the files and bytes when it was. A bare path stays allowed, for a tool the machine provides, and is recorded as not verified. python3 jobs/readiness.py digest PATH prints the digest to name.\n\nS48's operation names the copy's digest (6780dd401eda..., 770 files, 13.1 MB), which is the one the gate had recorded on its own; its base.why says what that vouches for: that the folder is that copy, not that a repository would serve those files. The gate gains three checks (the operation's digest is the copy's; the resolution and the consumer's job each read the folder against it) and a fourth control: an operation naming another digest must be withheld at the base stage with nothing published. Job 20261128-134250-replay-s48-s-delayed-setup-as-one-reques runs it, 21 checks, and supersedes 20261128-024257.\n\nVerified: jobs/test_readiness.py, 23 tests (two new: the digest of a folder with a link, a path only declared, a changed file refused, what problems() says of a malformed entry; and a resolution withheld at the base before any round or fetch); jobs/test_delayed_setup.py, 4 tests (one new, through the pipeline in a throwaway repository: a job is handed the bundle with the read verified in its result, and after the folder changes the next job is not). The tests of what changed, 44 of 44 Python test files (python3 lib/tools/test_costs.py run --changed). The three new tests are in the cost inventory and its lint agrees. The real build is verified only when the job's result is read.",
       "log_sha256": "1467b7a46a98a42b877ad4a7279ac93378ec3417b93d75e7ebbca112ddc1fdc5"
     },
     {
       "change_id": "rowlvrkvpkyslmywkwvlqqtstoxuqlyo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9a30cdfa3ffeab527b55076578766a14419d2dfe",
+      "immutable": true,
       "summary": "Let a job ask for a source the machine has not allowed, and a person answer",
       "body": "The user asked on 2026-11-28 whether a job can ask permission to fetch from a source outside the runner's fetch_allow. It could not: a resolution was admitted, ran its task offline until the first fetch, and was withheld there as unauthorized-source; the job that asked was then blocked, and the answer was a hand edit of the machine's settings and resolve KEY --again.\n\nNow the question is put before anything runs. An operation's own words say what a resolution of it fetches from: its repositories, and each pinned input its view will not have (readiness.asks_of). When one of those is outside the sources the machine allows, pipeline.py resolve writes no resolution job for the request and says which source; the job that asks stays waiting, with the source in its reason; the view lists it under sources.asked, with the operation and the jobs it is for; status has a line for it; and the watcher's keeper relays it with a note that allowing a source is the user's alone. python3 jobs/pipeline.py sources prints what the machine may fetch from and what is asked for beside it (--json: itl-fetch-sources/v1). The answer is python3 jobs/pipeline.py sources allow URL [--reason WHY], refused from an agent's session by the same test sync.py uses for the allow list: it records the grant, with its date and reason, in fetch-sources.json beside the machine's settings, which every checkout and workspace reads together with fetch_allow. A source is a folder; one with a user part, a query or a .. is refused. A source that only shows during a resolution (a redirect to another host) still withholds it, and the receipt now keeps the URL as data (asked), so it is listed the same way.\n\nFound on the way, and fixed: resolve read a request's operation at the asking job's commit through a field that is a string, inside a handler that swallowed the error, so a request committed in another workspace was skipped at every look (finding C6 of the review of 2026-11-28, which the results page had as fixed in part and not exercised). It now reads the operation at the job's commit or the queue's head, and a test removes the file from the working copy first. Also on this machine, at the user's word: fetch_allow in its settings names Maven Central, the Gradle plugin portal, Gradle's distributions and repo.spring.io.\n\nVerified: jobs/test_delayed_setup.py, 5 tests (one new, through the pipeline in a throwaway repository: a request on a machine that may fetch from nowhere waits with the source named, resolve writes nothing, status and sources say what is asked, sources allow is refused from the test's shell, and after the grant the request is admitted, resolved and its job passes); jobs/test_readiness.py, 24 (one new: which sources an operation asks for, a pinned input the base holds not among them); llm-dlc/tools/test_queue_keeping.py, 8 (one new: the keeper relays the request and commits nothing). The tests of what changed, 37 of 37 Python test files, before the keeper's test was added. The new tests are in the cost inventory and its lint agrees. Not shown by a test: sources allow run by a person at a terminal (the grant it records is tested through the function it calls), and the redirect case end to end.",
       "log_sha256": "dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062"
     },
     {
       "change_id": "sovkqtzyyxmztolyrnqtnkkyltkwntnx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "636e7d8b5cca242cba3b08038e96f165adea712d",
+      "immutable": true,
       "summary": "Record that S48's gate passes with the home's Maven repository verified by its digest, 21 of 21",
       "body": "Job 20261128-134250-replay-s48-s-delayed-setup-as-one-reques passed in 12m44s (5.2 GiB at its peak, estimated 20m and 9 GiB); its one output, the gate's record readiness-gate.json, was applied. It is the run of S48's delayed-setup gate after the operation was made to name the digest of the one folder its task reads that no resolution fetched: the copy of the home's Maven repository (770 files, 13,147,789 bytes, 6780dd401eda...).\n\nWhat the record shows: the 17 checks of the run before; the operation's digest equal to the copy's as the gate computes it; the resolution's receipt and the consumer's result each listing the folder as verified against that digest, and the JDKs and the git mirror as declared and not verified; and four controls withheld with nothing published, the new one (an operation naming another digest for the folder) at the base stage as digest-mismatch with no round run. The resolution took two offline rounds (61 s failed, 262 s passed) and fetched 2 files, 9,628,319 bytes, in 0.9 s.\n\nThe results page moves gate 3 from 'one declared input that nothing verified' to 'verified by its digest, fetched by no resolution', with a paragraph under 'Gate 3: S48, read again'; VF-076 has a dated update saying the same, and that the machine's runner now has sources it may fetch from and a way for a job to ask for another. The pipeline was run for this one job by the session that submitted it, at the user's word (2026-11-28), since no watcher's runner was at work. No new finding: the job passed with nothing flagged.",
       "log_sha256": "dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062"
     },
     {
       "change_id": "lrwumqxwmvnywpxmwpvospmlkpwwslzv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b211acef85bf9cc6756c415edba6856795e703b7",
+      "immutable": true,
       "summary": "Fix four review findings an unattended run could meet in the pipeline that is now live",
       "body": "The jobs line landed on 2026-11-28, so the default checkout's runner is its code, and the next queued run uses it. The review of that line had 18 findings open. The user chose to have the four that an unattended run could meet fixed now, and the rest go to a brief. Each fix has a test that showed the fault first.\n\nC3, a collect whose commit never happened. A collect writes results into the working copy and ends; the commit is its caller's. When the caller was stopped in between, the next collect found nothing staged and said nothing, so the keeper committed nothing, triaged nothing, and the hooks never ran for those results. A collect now notes each result it writes (.state/collected-not-committed.json) until the latest commit holds it; the view lists them (collectedNotCommitted), status has a line for them, and the next collect names them again under uncommitted, with the commit message and the hooks run again. The keeper collects when that list is not empty, and commits and triages what it names. Two tests of verification/test_capture.py asserted the old silence ('nothing to collect' with a result in no commit) and now assert that it is named until a commit holds it.\n\nC5, one bad job file taking the queue down. A job file that is JSON and not an object, or a job that names a revision git does not know, raised in the function every reader of the queue calls: the runner died and the view gave no rows. Each is now one invalid row with its reason, and the others run. C7, a job run twice across workspaces. The lock all workspaces share names one workspace, and a runner that started in another took it over, after which nothing knew of results still staged in the first: the view said queued and the new runner ran the job again. The runner that takes the lock now keeps the way to such a workspace (verification-staged.json beside the lock) for as long as it holds a staged result, counts those jobs as done and says so, and the view goes on reading them as finished there. R2, two resolution jobs for one request: resolve writes none for a key while a resolution job for it is written and not committed, or, with --again, on its way; a test that expected the second job (as a dry run) now expects the refusal, and another starts two resolutions of one key at once and finds one resolution and one reuse.\n\nVerified: jobs/test_view.py, 11 tests (three new, each through the pipeline in a throwaway repository); jobs/test_delayed_setup.py, 5; jobs/test_readiness.py, 25 (one new); llm-dlc/tools/test_queue_keeping.py, 9 (one new: results an earlier collect wrote are committed and triaged at the next look); verification/test_capture.py, 12; verification/test_pipeline.py, 52. The tests of what changed (python3 lib/tools/test_costs.py run --changed): 35 of 36 Python test files passed and verification/test_capture.py failed on the two assertions named above, which passes since. The new tests are in the cost inventory and its lint agrees. Not shown: any of the four on a real queue with a watcher at work.",
       "log_sha256": "616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5"
     },
     {
       "change_id": "qrlmwprvwlupplykrvxtosrnmlvrqytq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "605ed10cd7b64987c18be9268867f1617d66eb4f",
+      "immutable": true,
       "summary": "Draft a brief for the fetch phase a build tool drives, and record what was done after the jobs line landed",
       "body": "The results page of the generic-jobs-pipeline run now says that the line landed on 2026-11-28 and what was done after it, in the default checkout, with the user: the whole default run brought to 101 of 101 (three tests entered in the cost inventory); the sources this machine's runner may fetch from, and a way for a job to ask for another; VF-080's kept outputs sealed, 17 of 17; gate 3's one unverified input verified by its digest, 21 of 21; and the review's findings C3, C5, C7 and R2 fixed and C6's first fix put right, each row of the review's table naming its commit. 'What is left' is rewritten: four items, in order.\n\nWhat is left is drafted as a brief of its own, llm-dlc/loops/in-the-loop-build-driven-fetch-brief.md, for the user to review and queue; nothing queues it. Its case is the measurements of 2026-11-28: fetching is 0.1 to 0.2 % of a resolution, and the time goes into running the build tool once for every level of the graph the cache lacks (60 rounds for eight S cases, 5,859 s in the rounds that failed), while a Maven plugin's closure cannot be found by rounds at all (S48's 770 files are a verified copy). It asks for a repository door on loopback that admits the sources the machine allows, a fetch run behind it in a network namespace where nothing else answers, and the same offline proof as now; then S48 without the copy, the S control on all 47 offline cases, and the review's open findings. It names one decision as the user's before the run: how the operating note on requests to the web applies to a build tool resolving hundreds of files through that door, with a proposal (one request at a time, each file once, tests and controls from loopback or a folder, a cap an operation may set).\n\nVerified: pages only; no test reads them (python3 lib/tools/test_costs.py run --changed chooses nothing), and retired.py check finds nothing.",
       "log_sha256": "616793b9b197dc0230f6856f13afcc30901566b1f77dd8f8e8227f44e7b5d7c5"
+    },
+    {
+      "change_id": "xmqnsyunxpxvpszvpwvwnnrywmxnukmt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Send every fetch to an outside repository through one queue for the machine, and warn above a ceiling without stopping",
+      "body": "The user's decisions of 2026-11-28, taken in a review of how delayed setup may ask repositories now that this machine's runner has sources it may fetch from. A build's dependency fetches get a rule of their own, apart from the note on agents reading the web. The user said what that note was for: many sockets open at once strain a constrained WiFi network, and with a queue in which a new request begins as an old one ends, the number of requests stops mattering. So the rule limits how many requests are open, not how many files a build needs.\n\nWhat is built, in the resolver as it stands (jobs/readiness.py). Every request to a repository outside the machine takes its turn in one queue for the whole machine: one lock file under the user's own home as the system knows it, so that every resolution, checkout and store shares it. Until now each resolution job fetched one file at a time, and up to ten such jobs could run at once. Two requests to one host are 0.2 seconds apart (fetch_gap); a folder and the machine's loopback take no turn (fetch_local). A repository that answers 429 or 503 is asked once more, after its Retry-After, and never a third time. A receipt says what left the machine (fetch.outside). A resolution that asks outside for more than 1,000 files or 1 GiB (fetch_warn_files, fetch_warn_bytes) is not stopped, as the user asked: its receipt has a line under warnings, the resolution workload's conclusion carries it, and the job's result has it in attention, where whoever triages results reads it.\n\nllm-dlc/operating-notes.md has the rule as a section of its own, 'Fetches of a build's inputs go through one queue', with the user's words, and the note on web requests has a dated addition saying what it was for; its rule for an agent reading the web is unchanged. The new section also records the user's preference as a rule for the pipeline's soft limits in general (say it where it is triaged, and let the work finish), and that a permission is different and waits for its person. jobs/README.md and ARCHITECTURE.md describe the queue and its settings. A build tool an agent starts online by hand in a setup phase is outside the queue, and the note says so.\n\nVerified: jobs/test_readiness.py, 28 tests (three new: four requests from four threads never overlap and keep the gap to one host; a repository that says not now is asked twice and no more; a resolution over the ceiling is ready and warns), and the first test now asserts that a loopback repository counts as nothing outside. jobs/test_delayed_setup.py, 5, with the loopback repository counted as outside and a ceiling of two files: the resolution job passes and its result's attention has the warning. The tests of what changed, 37 of 37 Python test files. The new tests are in the cost inventory and its lint agrees. Not shown: the queue against a real repository, since no test asks one.",
+      "log_sha256": "a629a62c19b702bab104c9eb1c1cbed9151c2ea324d58571679f5ef35fa122ec"
     }
   ],
   "logs": {
@@ -17661,6 +17684,12 @@
       "lines": 21726,
       "gzip_bytes": 8033103,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/a5fa967a5bd9d985f978a405a4ab0bc74d13239bbcb98daefa90a545c65d2adb.jsonl.gz"
+    },
+    "a629a62c19b702bab104c9eb1c1cbed9151c2ea324d58571679f5ef35fa122ec": {
+      "bytes": 58196171,
+      "lines": 28078,
+      "gzip_bytes": 9752868,
+      "url": null
     },
     "a6a009f33f53e86e55e4b0daefebf76e1b20f82e9856c20bbd9dcf789fa0245d": {
       "bytes": 5954277,

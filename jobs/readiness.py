@@ -40,11 +40,13 @@ Standard library only.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
 import fcntl
 import hashlib
 import json
 import os
+import pwd
 import re
 import secrets
 import shutil
@@ -525,29 +527,103 @@ class _EveryHop(HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
+# How this machine asks a repository outside it (llm-dlc/operating-notes.md, "Fetches of a build's inputs go through
+# one queue"; the user, 2026-11-28). One request at a time for the whole machine, whichever job, checkout or store
+# it is made for: a new one begins as the one before it ends, so that the number of files a build needs decides
+# how long fetching takes and never how many connections are open. `gap`: seconds between two requests to one
+# host. `warnFiles`, `warnBytes`: above either, a resolution says so and goes on. `local`: the hosts that are this
+# machine itself, which take no turn and are not counted. The runner's settings replace them (ITL_FETCH_RULE, from
+# fetch_gap, fetch_warn_files, fetch_warn_bytes and fetch_local).
+FETCH_RULE = {"gap": 0.2, "warnFiles": 1000, "warnBytes": 2 ** 30, "local": ["127.0.0.1", "localhost", "::1"]}
+
+
+def fetch_rule() -> dict:
+    try:
+        said = json.loads(os.environ.get("ITL_FETCH_RULE") or "{}")
+    except ValueError:
+        said = {}
+    return {**FETCH_RULE, **{k: v for k, v in (said.items() if isinstance(said, dict) else ()) if k in FETCH_RULE and type(v) in (
+        (list,) if k == "local" else (int, float))}}
+
+
+def outside(url: str) -> bool:
+    """Whether a URL leaves this machine: not a file of its own, and not a host the rule calls local (its loopback)."""
+    parts = urlsplit(url)
+    return parts.scheme != "file" and parts.hostname not in fetch_rule()["local"]
+
+
+def fetch_queue() -> Path:
+    """The one file every fetch to outside on this machine takes its turn by. Under the user's own home as the
+    system knows it, not $HOME, which a job may have been given another of; ITL_FETCH_QUEUE names another (a test)."""
+    return Path(os.environ.get("ITL_FETCH_QUEUE") or Path(pwd.getpwuid(os.getuid()).pw_dir) / ".cache/in-the-loop/fetch-queue.lock")
+
+
+@contextlib.contextmanager
+def turn(url: str):
+    """This request's turn in the machine's queue. A request to this machine itself (a folder, loopback) takes none."""
+    if not outside(url):
+        yield
+        return
+    path, host = fetch_queue(), urlsplit(url).hostname or ""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a+") as held:
+        fcntl.flock(held, fcntl.LOCK_EX)
+        held.seek(0)
+        try:
+            last = json.loads(held.read() or "{}")
+        except ValueError:
+            last = {}
+        wait = float(last.get(host) or 0) + fetch_rule()["gap"] - time.time()
+        if 0 < wait <= 60:
+            time.sleep(wait)
+        try:
+            yield
+        finally:
+            last[host] = time.time()
+            held.seek(0)
+            held.truncate()
+            held.write(json.dumps(last))
+            held.flush()
+
+
+def _retry_after(headers) -> float:
+    """What a repository that refuses for now asks this client to wait, in seconds: at most two minutes, five when it says nothing."""
+    said = str((headers or {}).get("Retry-After") or "").strip()
+    return min(float(said), 120.0) if said.isdigit() else 5.0
+
+
 def download(url: str, dest: Path, allow: list[str], timeout: float = 120) -> int:
-    """One file from an authorised source, with no proxy. Raises Withheld with `unauthorized-source`,
-    `absent` (the source answers and does not have it) or `repository-unavailable`."""
+    """One file from an authorised source, with no proxy, in its turn (`turn`). Raises Withheld with
+    `unauthorized-source`, `absent` (the source answers and does not have it) or `repository-unavailable`. A
+    repository that says "not now" (429, 503) is asked once more, after the time it names; a second refusal ends it."""
     authorise(url, allow)
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_name(f".{dest.name}.part")
-    try:
-        with build_opener(ProxyHandler({}), _EveryHop(allow)).open(url, timeout=timeout) as response, open(tmp, "wb") as out:
-            shutil.copyfileobj(response, out)
-    except Withheld:
-        tmp.unlink(missing_ok=True)
-        raise
-    except urllib.error.HTTPError as e:
-        e.close()
-        tmp.unlink(missing_ok=True)
-        if e.code in (404, 410):
-            raise Withheld("fetch", "absent", f"{url}: HTTP {e.code}") from None
-        raise Withheld("fetch", "repository-unavailable", f"{url}: HTTP {e.code}") from None
-    except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, OSError) as e:
-        tmp.unlink(missing_ok=True)
-        if isinstance(getattr(e, "reason", e), FileNotFoundError):     # a repository that is a folder (file://), and has no such file
-            raise Withheld("fetch", "absent", f"{url}: no such file") from None
-        raise Withheld("fetch", "repository-unavailable", f"{url}: {getattr(e, 'reason', e)}") from None
+    for attempt in (1, 2):
+        try:
+            with turn(url):
+                with build_opener(ProxyHandler({}), _EveryHop(allow)).open(url, timeout=timeout) as response, open(tmp, "wb") as out:
+                    shutil.copyfileobj(response, out)
+            break
+        except Withheld:
+            tmp.unlink(missing_ok=True)
+            raise
+        except urllib.error.HTTPError as e:
+            wait = _retry_after(e.headers)
+            e.close()
+            tmp.unlink(missing_ok=True)
+            if e.code in (404, 410):
+                raise Withheld("fetch", "absent", f"{url}: HTTP {e.code}") from None
+            if e.code in (429, 503) and attempt == 1:
+                time.sleep(wait)
+                continue
+            raise Withheld("fetch", "repository-unavailable", f"{url}: HTTP {e.code}" + (
+                ", twice: the repository asks this client to stop, and it is not asked a third time" if e.code in (429, 503) else "")) from None
+        except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, OSError) as e:
+            tmp.unlink(missing_ok=True)
+            if isinstance(getattr(e, "reason", e), FileNotFoundError):     # a repository that is a folder (file://), and has no such file
+                raise Withheld("fetch", "absent", f"{url}: no such file") from None
+            raise Withheld("fetch", "repository-unavailable", f"{url}: {getattr(e, 'reason', e)}") from None
     os.replace(tmp, dest)
     return dest.stat().st_size
 
@@ -956,8 +1032,17 @@ def _resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[s
         os.rename(staging, failed)
     fetched = [f for r in receipt["rounds"] for f in r["fetched"]]
     again = [f for f in fetched if f.get("reused")]      # taken from the pool: this runner had fetched and verified them before
+    asked = [f for f in fetched if not f.get("reused") and outside(f.get("source") or "file:")]     # what left this machine as requests
     receipt["fetch"] = {"files": len(fetched), "bytes": sum(f["bytes"] for f in fetched), "seconds": round(sum(f["seconds"] for f in fetched), 3),
-                        "reused": len(again), "reusedBytes": sum(f["bytes"] for f in again)}
+                        "reused": len(again), "reusedBytes": sum(f["bytes"] for f in again),
+                        "outside": {"files": len(asked), "bytes": sum(f["bytes"] for f in asked)}}
+    rule = fetch_rule()
+    if len(asked) > rule["warnFiles"] or receipt["fetch"]["outside"]["bytes"] > rule["warnBytes"]:
+        # Said, and not stopped: the user decides afterwards whether this operation should fetch so much (2026-11-28).
+        receipt["warnings"] = [f"this resolution asked repositories outside the machine for {len(asked)} file(s), "
+                               f"{receipt['fetch']['outside']['bytes']:,} bytes: more than the {rule['warnFiles']:g} files or "
+                               f"{rule['warnBytes']:,.0f} bytes a resolution is expected to need (fetch_warn_files, fetch_warn_bytes). "
+                               "It was not stopped; see what its task resolves before it runs on another machine or again from a cold pool"]
     receipt["at"] = now()
     store.write_receipt(receipt)
     return receipt

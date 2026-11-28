@@ -17,9 +17,11 @@ import shutil
 import sys
 import tempfile
 import threading
+import time
 import unittest
 import unittest.mock
 from pathlib import Path
+from urllib.parse import urlsplit
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -151,6 +153,8 @@ class OneRequestResolvesTheWholeTask(NestedBuild):
                           ["m2/g/nested-tool/2.0/nested-tool-2.0.pom", "m2/g/nested-tool/2.0/nested-tool-2.0.module",
                            "m2/g/nested-tool/2.0/nested-tool-2.0.jar"]])
         self.assertEqual(receipt["fetch"]["files"], 5)
+        # The repository is this machine's own loopback: nothing left the machine, no request took a turn, nothing to warn of.
+        self.assertEqual((receipt["fetch"]["outside"], "warnings" in receipt), ({"files": 0, "bytes": 0}, False))
         # What the task reads beside its base is in the receipt: a bare path is declared, and nothing vouches for it.
         self.assertEqual(receipt["reads"], [{"path": str(self.dir / "toolchain"), "verified": False}])
         # The fetched modules are also laid apart, in the same layout, for a Gradle build's file repository.
@@ -191,6 +195,16 @@ class OneRequestResolvesTheWholeTask(NestedBuild):
             lower = self.operation(level=level)
             self.assertNotEqual(readiness.key(lower), first["key"], level)
             self.assertEqual(self.store.check(readiness.key(lower))["state"], "waiting", level)
+
+    def test_a_resolution_that_asks_outside_for_more_than_expected_says_so_and_is_not_stopped(self):
+        # The loopback repository counted as outside, and two files as already many: the rule's numbers, not its code.
+        rule = {"gap": 0, "warnFiles": 2, "local": []}
+        with unittest.mock.patch.dict(os.environ, {"ITL_FETCH_RULE": json.dumps(rule), "ITL_FETCH_QUEUE": str(self.dir / "fetch-queue.lock")}):
+            receipt = self.resolve()
+        self.assertEqual((receipt["state"], receipt["fetch"]["outside"]["files"], len(receipt["warnings"])), ("ready", 5, 1), receipt.get("why"))
+        self.assertIn("asked repositories outside the machine for 5 file(s)", receipt["warnings"][0])
+        self.assertIn("It was not stopped", receipt["warnings"][0])
+        self.assertTrue((self.dir / "fetch-queue.lock").exists())          # each request took its turn in the queue it was given
 
     def test_two_resolutions_of_one_request_at_once_are_one_resolution_and_the_second_finds_its_receipt(self):
         receipts = [None, None]
@@ -518,6 +532,63 @@ class AnOperation(unittest.TestCase):
         with self.assertRaises(readiness.Withheld) as refused:
             readiness.authorise("https://elsewhere.example.org/x.jar", [repo])
         self.assertEqual((refused.exception.outcome, refused.exception.asked), ("unauthorized-source", "https://elsewhere.example.org/x.jar"))
+
+    def test_requests_to_outside_take_turns_in_one_queue_and_keep_their_distance_to_a_host(self):
+        self.assertEqual([readiness.outside(u) for u in ("file:///srv/mirror/a.pom", "http://127.0.0.1:8081/a.pom", "https://repo.maven.apache.org/maven2/a.pom")],
+                         [False, False, True])
+        seen, gap = [], 0.15
+        with tempfile.TemporaryDirectory() as d, unittest.mock.patch.dict(os.environ, {
+                "ITL_FETCH_QUEUE": str(Path(d) / "queue.lock"), "ITL_FETCH_RULE": json.dumps({"gap": gap, "local": []})}):
+            def ask(url):
+                with readiness.turn(url):
+                    entered = time.monotonic()
+                    time.sleep(0.05)                 # the request itself
+                    seen.append((entered, time.monotonic(), urlsplit(url).hostname))
+            threads = [threading.Thread(target=ask, args=(url,)) for url in ("http://one.example/a", "http://one.example/b", "http://two.example/c", "http://one.example/d")]
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join(30)
+        seen.sort()
+        self.assertEqual(len(seen), 4)
+        # One at a time, whichever host: a request begins when the one before it has ended.
+        self.assertTrue(all(later[0] >= earlier[1] for earlier, later in zip(seen, seen[1:])), seen)
+        # And two requests to one host keep the rule's distance; one to another host does not wait for it.
+        one = [row for row in seen if row[2] == "one.example"]
+        self.assertTrue(all(later[0] - earlier[1] >= gap - 0.02 for earlier, later in zip(one, one[1:])), one)
+        self.assertLess(seen[-1][1] - seen[0][0], 4 * 0.05 + 3 * gap + 0.5)
+
+    def test_a_repository_that_says_not_now_is_asked_once_more_and_never_a_third_time(self):
+        asked = []
+
+        class NotNow(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                asked.append(self.path)
+                if self.path == "/busy.pom" or asked.count(self.path) == 1:      # busy.pom: always; the others: the first time
+                    self.send_response(429 if self.path != "/later.jar" else 503)
+                    self.send_header("Retry-After", "0")
+                    self.end_headers()
+                    return
+                self.send_response(200)
+                self.send_header("Content-Length", "5")
+                self.end_headers()
+                self.wfile.write(b"bytes")
+
+            def log_message(self, *args):
+                pass
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), NotNow)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        url = f"http://127.0.0.1:{server.server_address[1]}/"
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual((readiness.download(url + "once.pom", Path(d) / "once.pom", [url]), asked), (5, ["/once.pom", "/once.pom"]))
+            self.assertEqual(readiness.download(url + "later.jar", Path(d) / "later.jar", [url]), 5)
+            with self.assertRaises(readiness.Withheld) as refused:
+                readiness.download(url + "busy.pom", Path(d) / "busy.pom", [url])
+            self.assertEqual((refused.exception.outcome, asked.count("/busy.pom")), ("repository-unavailable", 2))
+            self.assertIn("HTTP 429, twice", refused.exception.why)
+            self.assertFalse((Path(d) / "busy.pom").exists())
 
     def test_a_source_is_allowed_by_its_parts_and_a_line_that_names_no_module_is_not_one(self):
         allow = ["https://repo.example.org/maven2", "file:///mirror/"]

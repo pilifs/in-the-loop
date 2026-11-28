@@ -7,6 +7,7 @@ readiness was established or withheld, at which stage and with which named outco
 Everything else is the generic workload's.
 """
 import json
+import os
 
 NAME = "resolution"
 core = None
@@ -24,6 +25,11 @@ def __getattr__(name):
 def step_env(runner, job, result, work, env) -> None:
     env["ITL_READINESS_STORE"] = str(runner.runner["readiness_dir"])
     env["ITL_FETCH_ALLOW"] = json.dumps(runner.runner["fetch_allow"])
+    # How it asks: the gap between two requests to one host, and above what a resolution warns (readiness.FETCH_RULE).
+    env["ITL_FETCH_RULE"] = json.dumps({"gap": runner.runner["fetch_gap"], "warnFiles": runner.runner["fetch_warn_files"],
+                                        "warnBytes": runner.runner["fetch_warn_bytes"], "local": runner.runner["fetch_local"]})
+    if os.environ.get("ITL_FETCH_QUEUE"):      # another queue than the machine's own (a test's)
+        env["ITL_FETCH_QUEUE"] = os.environ["ITL_FETCH_QUEUE"]
 
 
 def keys(job) -> list:
@@ -43,8 +49,11 @@ def conclusion(job, result):
         said.append({"key": key, "verdict": "ready" if receipt["state"] == "ready" else "withheld", "stage": receipt.get("stage"),
                      "outcome": receipt.get("outcome"), "why": receipt.get("why"), "level": receipt.get("level"),
                      "rounds": len(receipt.get("rounds") or []), "fetch": receipt.get("fetch"),
-                     "reused": bool(receipt.get("reused")), "bundleDigest": (receipt.get("bundle") or {}).get("digest")})
+                     "reused": bool(receipt.get("reused")), "bundleDigest": (receipt.get("bundle") or {}).get("digest"),
+                     "warnings": receipt.get("warnings") or []})
     verdicts = {row["verdict"] for row in said}
     return {"verdict": "ready" if verdicts == {"ready"} else "withheld" if "withheld" in verdicts else "none",
             "scope": "the operation as its file describes it, on this runner, with the base as the receipt records it",
+            # What a resolution says without being stopped for it (it fetched more than expected): the result flags it.
+            "warnings": [w for row in said for w in row.get("warnings") or []],
             "readiness": said}
