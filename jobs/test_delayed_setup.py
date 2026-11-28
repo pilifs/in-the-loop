@@ -235,6 +235,54 @@ class DelayedSetup(unittest.TestCase):
         self.assertIn(f"readiness {key[:12]} could not be handed over: {declared} is not what the operation says its task reads", " ".join(result["attention"]))
         self.assertIn(f"the operation names {named}", " ".join(result["attention"]))
 
+    def test_a_request_for_a_source_the_machine_has_not_allowed_waits_for_a_person_and_is_admitted_once_they_allow_it(self):
+        import pipeline                      # for the grant as the person's command records it; nothing of this checkout's queue
+        config = self.repo.dir / "verification/pipeline.toml"
+        config.write_text(config.read_text().replace(f'fetch_allow = ["{self.url}"]', "fetch_allow = []"))
+        machine = self.dir / "machine/pipeline.local.toml"       # the machine's settings: none yet, and its grants go beside them
+        env = {**self.env, "VERIFY_MACHINE_CONFIG": str(machine)}
+        key = self.operation()
+        consumer = self.repo.submit2("Build and read the module", "build", "--case", "T01", "--needs-readiness", "op.json", "--network", "none",
+                                     "--output", "read.txt", "--run", CONSUME, env=env)
+        self.repo.commit("the case, on a machine that may fetch from nowhere")
+        # As for a job committed in another workspace: its operation is in the commit, and not in this working copy.
+        request = self.repo.dir / "verification/readiness" / f"{key}.json"
+        request.unlink()
+        asked = sorted([self.url, self.url + "dist/tool-3.tar.gz"])
+        view = json.loads(self.repo.pipeline("view", env=env).stdout)
+        waiting = next(job for job in view["jobs"] if job["id"] == consumer)
+        self.assertEqual(waiting["state"], "waiting", waiting)
+        self.assertIn(f"readiness {key[:12]} asks for a source this machine has not been allowed to fetch from", waiting["why"])
+        self.assertEqual((view["sources"]["allowed"], [(a["url"], a["wantedBy"], a["readiness"][0]["key"]) for a in view["sources"]["asked"]]),
+                         ([], [(url, [consumer], key) for url in asked]))
+        self.assertEqual(view["sources"]["asked"][asked.index(self.url)]["for"], "a repository")
+        # No resolution is admitted for it, and the one that keeps the queue is told what to ask the user.
+        said = json.loads(self.repo.pipeline("resolve", "--json", env=env).stdout)
+        self.assertEqual((said["written"], [(row["key"], sorted(row["sources"])) for row in said["skipped"]]), ([], [(key, asked)]))
+        self.assertIn("allowing one is the user's decision", said["skipped"][0]["why"])
+        self.assertIn(f"a source is asked for that this machine may not fetch from, and the user decides (`pipeline.py sources`): {self.url}, a repository",
+                      self.repo.pipeline("status", env=env).stdout)
+        # An agent's shell cannot allow one: it has no terminal. Nothing is recorded.
+        refused = self.repo.pipeline("sources", "allow", self.url, env=env, check=False)
+        self.assertEqual(refused.returncode, 1, refused.stdout)
+        self.assertIn("refused: a person allows a source, from their own terminal", refused.stderr)
+        self.assertEqual((pipeline.fetch_grants(machine.with_name(pipeline.GRANTS)), machine.parent.exists()), ([], False))
+        # The person allows the repository's folder, which holds the tool distribution too: one answer for both.
+        self.assertIsNotNone(pipeline.grant_source(machine.with_name(pipeline.GRANTS), self.url, "the made-up repository", pipeline.now()))
+        self.assertIsNone(pipeline.grant_source(machine.with_name(pipeline.GRANTS), self.url, "again", pipeline.now()))
+        listed = json.loads(self.repo.pipeline("sources", "--json", env=env).stdout)
+        self.assertEqual(([(a["url"], a["granted"]["reason"]) for a in listed["allowed"]], listed["asked"]), ([(self.url, "the made-up repository")], []))
+        resolver = json.loads(self.repo.pipeline("resolve", "--json", env=env).stdout)["written"][0]["job"]
+        self.assertEqual(readiness.key(json.loads(request.read_text())), key)     # read at the asking job's commit, and written here
+        self.repo.commit("admit the resolution, now that its source is allowed")
+        out = self.repo.pipeline("run", "--rev", "HEAD", env=env).stdout
+        self.assertIn(f"{resolver}: passed", out)
+        self.assertIn(f"{consumer}: passed", out)
+        for wrong, why in (("ftp://repo.example.org/", "scheme"), ("https://user@repo.example.org/", "a user"), ("https:///maven2/", "no host"),
+                           ("https://repo.example.org/a/../b/", "`..`"), ("https://repo.example.org/maven2/?x=1", "a query")):
+            self.assertIn(why, pipeline.source_problem(wrong) or "", wrong)
+        self.assertIsNone(pipeline.source_problem("https://repo.example.org/maven2/"))
+
     def test_a_bundle_changed_after_its_receipt_is_handed_to_nobody_and_a_runner_that_may_not_fetch_resolves_nothing(self):
         key = self.operation()
         with mock.patch.dict(os.environ, self.env):   # resolved before the case arrived, as an initial setup would have
@@ -247,10 +295,10 @@ class DelayedSetup(unittest.TestCase):
         tampered.write_text("another tool\n")
         out = self.repo.pipeline("run", "--rev", "HEAD", env=self.env).stdout
         self.assertIn(f"{consumer}: blocked: readiness {key[:12]}: its bundle is not what the receipt names: downloads/tool-3.tar.gz", out)
-        # A resolution is admitted for it again, on a runner whose settings name no source to fetch from.
+        # A resolution is admitted for it again, and the runner's settings then name no source to fetch from.
+        resolver = json.loads(self.repo.pipeline("resolve", key[:12], "--again", "--json", env=self.env).stdout)["written"][0]["job"]
         config = self.repo.dir / "verification/pipeline.toml"
         config.write_text(config.read_text().replace(f'fetch_allow = ["{self.url}"]', "fetch_allow = []"))
-        resolver = json.loads(self.repo.pipeline("resolve", key[:12], "--again", "--json", env=self.env).stdout)["written"][0]["job"]
         self.repo.commit("resolve it again, where nothing may be fetched")
         out = self.repo.pipeline("run", "--rev", "HEAD", env=self.env).stdout
         self.assertIn(f"{resolver}: unschedulable: a step of it fetches, and this runner is authorised to fetch from nowhere", out)

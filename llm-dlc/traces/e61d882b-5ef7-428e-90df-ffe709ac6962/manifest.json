@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-28T13:47:48.052Z",
-  "duration_seconds": 954605,
+  "ended": "2026-11-28T13:53:54.408Z",
+  "duration_seconds": 954971,
   "stats": {
     "turns": 349,
-    "api_calls": 3374,
-    "tool_calls": 2964,
+    "api_calls": 3378,
+    "tool_calls": 2967,
     "tool_errors": 29,
     "compactions": 11,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 107485,
-      "output_tokens": 2136722,
-      "cache_read_input_tokens": 1134031286,
-      "cache_creation_input_tokens": 7429935
+      "input_tokens": 107495,
+      "output_tokens": 2139112,
+      "cache_read_input_tokens": 1136264407,
+      "cache_creation_input_tokens": 7433479
     }
   },
   "tools": {
-    "Bash": 2613,
+    "Bash": 2616,
     "SendMessage": 109,
     "Edit": 83,
     "Read": 58,
@@ -271,24 +271,24 @@
     {
       "index": 11,
       "started": "2026-11-27T14:06:55.934Z",
-      "ended": "2026-11-28T13:47:48.052Z",
+      "ended": "2026-11-28T13:53:54.408Z",
       "turns": 33,
-      "api_calls": 374,
+      "api_calls": 378,
       "usage": {
-        "input_tokens": 936,
-        "output_tokens": 218054,
-        "cache_read_input_tokens": 141813152,
-        "cache_creation_input_tokens": 525191
+        "input_tokens": 946,
+        "output_tokens": 220444,
+        "cache_read_input_tokens": 144046273,
+        "cache_creation_input_tokens": 528735
       },
-      "peak_context_tokens": 556892
+      "peak_context_tokens": 560436
     }
   ],
   "log": {
-    "sha256": "1467b7a46a98a42b877ad4a7279ac93378ec3417b93d75e7ebbca112ddc1fdc5",
-    "bytes": 57405276,
-    "lines": 27840,
-    "gzip_bytes": 9597091,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/1467b7a46a98a42b877ad4a7279ac93378ec3417b93d75e7ebbca112ddc1fdc5.jsonl.gz"
+    "sha256": "dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062",
+    "bytes": 57450957,
+    "lines": 27871,
+    "gzip_bytes": 9603566,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062.jsonl.gz"
   },
   "subagents": [
     {
@@ -16097,6 +16097,14 @@
       "summary": "Read what a readiness task reads against a digest the operation names, and run S48's gate on it (verification pending)",
       "body": "A readiness task runs on prepared inputs alone, and what it must still read from elsewhere on the runner is listed under the operation's reads. Until now each entry was a bare path: declared, bound read-only, and verified by nothing. S48's gate passed that way, 17 of 17, with a copy of the home's Maven repository (770 files the S setup's online job had left there) as such a path. The user chose on 2026-11-28 to have that copy verified by its digest rather than leave gate 3 qualified as it was.\n\nAn entry of reads may now be {path, sha256}. The digest of a file is that of its bytes; of a folder, that of its files by relative path, each with its own digest, as a bundle's is made, with a link listed by where it points. jobs/readiness.py reads such a path in full against its digest before a resolution's first round, and jobs/pipeline.py does so again before a job is handed the bundle. One that differs withholds readiness at the stage base as digest-mismatch with no round run, or ends the job with an error that names both digests. The receipt and the job's result list every read with whether it was verified, and with the files and bytes when it was. A bare path stays allowed, for a tool the machine provides, and is recorded as not verified. python3 jobs/readiness.py digest PATH prints the digest to name.\n\nS48's operation names the copy's digest (6780dd401eda..., 770 files, 13.1 MB), which is the one the gate had recorded on its own; its base.why says what that vouches for: that the folder is that copy, not that a repository would serve those files. The gate gains three checks (the operation's digest is the copy's; the resolution and the consumer's job each read the folder against it) and a fourth control: an operation naming another digest must be withheld at the base stage with nothing published. Job 20261128-134250-replay-s48-s-delayed-setup-as-one-reques runs it, 21 checks, and supersedes 20261128-024257.\n\nVerified: jobs/test_readiness.py, 23 tests (two new: the digest of a folder with a link, a path only declared, a changed file refused, what problems() says of a malformed entry; and a resolution withheld at the base before any round or fetch); jobs/test_delayed_setup.py, 4 tests (one new, through the pipeline in a throwaway repository: a job is handed the bundle with the read verified in its result, and after the folder changes the next job is not). The tests of what changed, 44 of 44 Python test files (python3 lib/tools/test_costs.py run --changed). The three new tests are in the cost inventory and its lint agrees. The real build is verified only when the job's result is read.",
       "log_sha256": "1467b7a46a98a42b877ad4a7279ac93378ec3417b93d75e7ebbca112ddc1fdc5"
+    },
+    {
+      "change_id": "rowlvrkvpkyslmywkwvlqqtstoxuqlyo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Let a job ask for a source the machine has not allowed, and a person answer",
+      "body": "The user asked on 2026-11-28 whether a job can ask permission to fetch from a source outside the runner's fetch_allow. It could not: a resolution was admitted, ran its task offline until the first fetch, and was withheld there as unauthorized-source; the job that asked was then blocked, and the answer was a hand edit of the machine's settings and resolve KEY --again.\n\nNow the question is put before anything runs. An operation's own words say what a resolution of it fetches from: its repositories, and each pinned input its view will not have (readiness.asks_of). When one of those is outside the sources the machine allows, pipeline.py resolve writes no resolution job for the request and says which source; the job that asks stays waiting, with the source in its reason; the view lists it under sources.asked, with the operation and the jobs it is for; status has a line for it; and the watcher's keeper relays it with a note that allowing a source is the user's alone. python3 jobs/pipeline.py sources prints what the machine may fetch from and what is asked for beside it (--json: itl-fetch-sources/v1). The answer is python3 jobs/pipeline.py sources allow URL [--reason WHY], refused from an agent's session by the same test sync.py uses for the allow list: it records the grant, with its date and reason, in fetch-sources.json beside the machine's settings, which every checkout and workspace reads together with fetch_allow. A source is a folder; one with a user part, a query or a .. is refused. A source that only shows during a resolution (a redirect to another host) still withholds it, and the receipt now keeps the URL as data (asked), so it is listed the same way.\n\nFound on the way, and fixed: resolve read a request's operation at the asking job's commit through a field that is a string, inside a handler that swallowed the error, so a request committed in another workspace was skipped at every look (finding C6 of the review of 2026-11-28, which the results page had as fixed in part and not exercised). It now reads the operation at the job's commit or the queue's head, and a test removes the file from the working copy first. Also on this machine, at the user's word: fetch_allow in its settings names Maven Central, the Gradle plugin portal, Gradle's distributions and repo.spring.io.\n\nVerified: jobs/test_delayed_setup.py, 5 tests (one new, through the pipeline in a throwaway repository: a request on a machine that may fetch from nowhere waits with the source named, resolve writes nothing, status and sources say what is asked, sources allow is refused from the test's shell, and after the grant the request is admitted, resolved and its job passes); jobs/test_readiness.py, 24 (one new: which sources an operation asks for, a pinned input the base holds not among them); llm-dlc/tools/test_queue_keeping.py, 8 (one new: the keeper relays the request and commits nothing). The tests of what changed, 37 of 37 Python test files, before the keeper's test was added. The new tests are in the cost inventory and its lint agrees. Not shown by a test: sources allow run by a person at a terminal (the grant it records is tested through the function it calls), and the redirect case end to end.",
+      "log_sha256": "dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062"
     }
   ],
   "logs": {
@@ -18133,6 +18141,12 @@
       "lines": 4093,
       "gzip_bytes": 2036516,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz"
+    },
+    "dff45189b6598e568ec899fd129cf95931543c4c9c49e129effd4d92f7a4c062": {
+      "bytes": 57450957,
+      "lines": 27871,
+      "gzip_bytes": 9603566,
+      "url": null
     },
     "e05d1c3830a55f72949fc0029f7b333b11cc4c98a87c8f82a9e2b4a47edf0292": {
       "bytes": 25617733,

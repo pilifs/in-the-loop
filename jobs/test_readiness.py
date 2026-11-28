@@ -360,6 +360,7 @@ class WhatIsWithheld(NestedBuild):
         receipt = self.resolve(allow=["https://repo.example.invalid/"])
         self.withheld(receipt, "fetch", "unauthorized-source")
         self.assertEqual(Quiet.seen, [])
+        self.assertEqual(receipt["asked"], self.url + "dist/tool-3.tar.gz")      # as data, for whoever decides whether to allow it
 
     def test_a_consumer_that_fails_and_names_nothing_or_asks_again_for_what_it_was_given_ends_the_rounds(self):
         (self.cwd / "build.sh").write_text("echo 'something else went wrong'; exit 5\n")
@@ -477,6 +478,30 @@ class AnOperation(unittest.TestCase):
         self.assertEqual(readiness.problems({**written, "reads": ["/jdk", {"path": "~/inputs", "sha256": "0" * 64}]}), [])
         for wrong in ({"path": "/jdk", "sha256": "abc"}, {"path": "inputs", "sha256": "0" * 64}, {"path": "/jdk"}, {"path": "/jdk", "sha256": "0" * 64, "more": 1}):
             self.assertIn("with the digest it must have", " ".join(readiness.problems({**written, "reads": [wrong]})), wrong)
+
+    def test_what_an_operation_asks_to_fetch_from_is_known_before_any_of_it_is_fetched(self):
+        repo, other = "https://repo.example.org/maven2/", "https://other.example.org/releases/"
+        with tempfile.TemporaryDirectory() as d:
+            base = Path(d) / "base"
+            (base / "downloads").mkdir(parents=True)
+            (base / "downloads/held.tar.gz").write_text("in the base")
+            (base / "downloads/left-out.tar.gz").write_text("in the base, and left out of the view")
+            operation = {"base": {"path": str(base), "without": ["downloads/left-out.tar.gz"]}, "repositories": [repo, other],
+                         "pinned": [{"path": "downloads/held.tar.gz", "url": "https://dist.example.org/held.tar.gz", "sha256": "0"},
+                                    {"path": "downloads/left-out.tar.gz", "url": "https://dist.example.org/a/left-out.tar.gz", "sha256": "0"},
+                                    {"path": "downloads/absent.tar.gz", "url": repo + "x/absent.tar.gz", "sha256": "0"}]}
+            # A pinned input the view will have is not fetched, so its source is not asked for.
+            self.assertEqual([a["url"] for a in readiness.asks_of(operation)],
+                             [repo, other, "https://dist.example.org/a/left-out.tar.gz", repo + "x/absent.tar.gz"])
+            self.assertEqual(readiness.not_allowed(operation, [repo]),
+                             [{"url": other, "for": "a repository"},
+                              {"url": "https://dist.example.org/a/left-out.tar.gz", "for": "the pinned input downloads/left-out.tar.gz"}])
+            # A source is a folder: the host's root allows what is under it, and a file is allowed by the folder it is in.
+            self.assertEqual(readiness.not_allowed(operation, ["https://repo.example.org/", other, "https://dist.example.org/a/"]), [])
+            self.assertEqual(len(readiness.not_allowed(operation, [])), 4)
+        with self.assertRaises(readiness.Withheld) as refused:
+            readiness.authorise("https://elsewhere.example.org/x.jar", [repo])
+        self.assertEqual((refused.exception.outcome, refused.exception.asked), ("unauthorized-source", "https://elsewhere.example.org/x.jar"))
 
     def test_a_source_is_allowed_by_its_parts_and_a_line_that_names_no_module_is_not_one(self):
         allow = ["https://repo.example.org/maven2", "file:///mirror/"]

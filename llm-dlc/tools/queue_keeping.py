@@ -154,8 +154,14 @@ def admit(run: Run, status: dict) -> dict | None:
         if said is None:
             raise Problem(f"pipeline.py resolve failed: {(r.stderr or r.stdout).strip()[-600:]}")
         if not said["written"]:
+            # A request that asks for a source the machine has not allowed is the user's to answer, and is said as that.
+            asked = sorted({url for row in said["skipped"] for url in row.get("sources") or []})
             return {"kind": "attention", "what": "a readiness request is unanswered and no resolution job could be written: " +
-                    "; ".join(row["why"] for row in said["skipped"]), "note": "read why; the job that asks stays waiting until this is put right"} \
+                    "; ".join(row["why"] for row in said["skipped"]),
+                    "note": (f"a waiting job asks for a source this machine may not fetch from ({', '.join(asked)}): tell the user which source "
+                             "and which job. Allowing one is theirs alone (`python3 jobs/pipeline.py sources allow URL`, from their own "
+                             "terminal); never add one to the settings yourself. The job waits until they decide") if asked else
+                            "read why; the job that asks stays waiting until this is put right"} \
                 if said["skipped"] else None
         jobs = [row["job"] for row in said["written"]]
         c = subprocess.run([sys.executable, str(root / "llm-dlc" / "tools" / "sync.py"), "commit", "--only", "verification/jobs",

@@ -27,7 +27,11 @@ commands by hand to see: the runner is how they run, under limits.
    of those files is the admission (a run's watcher does the same at each look). A resolution job fetches, so it
    starts only on a runner whose settings name the sources it may fetch from (`fetch_allow`, in the machine's
    `pipeline.toml`); with none it is `unschedulable` and says so. Which sources a machine fetches from is the
-   user's to decide: ask, do not add one yourself. A readiness that was withheld blocks its job with the
+   user's to decide: ask, do not add one yourself. When a request asks for a source the machine has not
+   allowed, `resolve` writes no job for it and says which, `status` has a line for it, and
+   `python3 jobs/pipeline.py sources` lists what is asked for and by which job: tell the user that, with the
+   command that is theirs alone to run (`python3 jobs/pipeline.py sources allow URL`, refused from an agent's
+   session). The job waits until they decide; once they have, `resolve` admits it. A readiness that was withheld blocks its job with the
    outcome's name; once its cause is put right, `python3 jobs/pipeline.py resolve KEY --again`.
    **A batch** (jobs written from one manifest) is watched with `python3 jobs/pipeline.py wait --batch NAME` and
    read row by row with `batch NAME`, which also has the rows that never ran and why.

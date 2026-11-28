@@ -226,8 +226,23 @@ repository does not: there it ends `absent`.
 
 **For the runner's operator.** `fetch_allow` is empty until the machine's settings name sources
 (`[runner] fetch_allow = ["https://repo.maven.apache.org/maven2/"]` in the machine's `pipeline.toml`), and with
-none a resolution job is `unschedulable` and says so: which sources a machine fetches from is its owner's to
+none a job that fetches is `unschedulable` and says so: which sources a machine fetches from is its owner's to
 say. `fetch_slots` (ten) is how many fetching jobs run at once.
+
+**A job asks for a source by needing an operation that names it, and a person answers.** A source is a folder:
+everything under it may be fetched, redirects included, and nothing beside it. When an operation names a
+repository, or a pinned input its view will not have, outside the sources the machine allows, no resolution is
+admitted for it (`resolve` skips it and says which source, and the watcher's keeper relays that): the job that
+asks stays `waiting`, with the source in its reason, and the view lists it under `sources.asked` with the
+operation and the jobs it is for. `python3 jobs/pipeline.py sources` prints what the machine may fetch from and
+what is asked for beside it (`--json`: `itl-fetch-sources/v1`). The answer is `python3 jobs/pipeline.py sources
+allow URL [--reason WHY]`, which is refused from an agent's session, as approving the allow list is: it records
+the grant, with its date and reason, in `fetch-sources.json` beside the machine's settings, where every checkout
+and workspace reads it with `fetch_allow`. The request is then admitted at the watcher's next look. A source
+that only shows during a resolution (a repository that redirects to another host) withholds it as
+`unauthorized-source`; the receipt keeps the URL (`asked`), it is listed the same way, and after the grant
+`resolve KEY --again` resolves it. An agent never allows a source and never edits either file: it submits the
+job, and tells the user what is asked for.
 
 A view over a large base is cheap: a folder on the way to something laid over or left out is made, and every
 other folder is one link (the S cache of 34 GB is laid in 0.2 s, as 4,700 links). `view.walk` names the folders

@@ -465,9 +465,10 @@ def overlay(base: Path, without: list[str], files: dict[str, Path], dest: Path, 
 class Withheld(Exception):
     """A resolution that cannot go on: the stage, the named outcome, and why."""
 
-    def __init__(self, stage: str, outcome: str, why: str) -> None:
+    def __init__(self, stage: str, outcome: str, why: str, asked: str | None = None) -> None:
         super().__init__(why)
         self.stage, self.outcome, self.why = stage, outcome, why
+        self.asked = asked        # for `unauthorized-source`: the URL that was asked for and may not be fetched
 
 
 def authorise(url: str, allow: list[str]) -> None:
@@ -484,7 +485,33 @@ def authorise(url: str, allow: list[str]) -> None:
             return False
         return same and asked.username is None and asked.path.startswith(folder) and ".." not in asked.path.split("/")
     if not any(under(source) for source in allow):
-        raise Withheld("fetch", "unauthorized-source", f"{url} is not under a source this runner may fetch from ({', '.join(allow) or 'none'})")
+        raise Withheld("fetch", "unauthorized-source", f"{url} is not under a source this runner may fetch from ({', '.join(allow) or 'none'})", asked=url)
+
+
+def asks_of(operation: dict) -> list[dict]:
+    """The sources an operation's own words say a resolution of it fetches from: each repository, and each pinned
+    input that the view will not have (the base lacks it, or it is under a path the operation leaves out)."""
+    base = Path((operation.get("base") or {}).get("path") or "/nowhere").expanduser()
+    without = [w.strip("/") for w in (operation.get("base") or {}).get("without") or []]
+    out = [{"url": url, "for": "a repository"} for url in operation.get("repositories") or []]
+    for pin in operation.get("pinned") or []:
+        rel = str(pin.get("path") or "").strip("/")
+        if pin.get("url") and (not (base / rel).exists() or any(rel == w or rel.startswith(w + "/") for w in without)):
+            out.append({"url": pin["url"], "for": f"the pinned input {rel}"})
+    return out
+
+
+def not_allowed(operation: dict, allow: list[str]) -> list[dict]:
+    """Of the sources an operation asks for (`asks_of`), those this runner may not fetch from. A resolution of it
+    would be withheld as `unauthorized-source` at its first fetch from one: said before it is admitted, it is a
+    question for whoever decides what the machine fetches from, and no job is spent on it."""
+    out = []
+    for ask in asks_of(operation):
+        try:
+            authorise(ask["url"], allow)
+        except Withheld:
+            out.append(ask)
+    return out
 
 
 class _EveryHop(HTTPRedirectHandler):
@@ -923,7 +950,7 @@ def _resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[s
         os.rename(staging, store.bundle(k))
         receipt.update(state="ready", outcome="ready", bundle={"path": str(store.bundle(k)), "digest": manifest["digest"], "files": manifest["files"]})
     except Withheld as e:
-        receipt.update(state="failed", stage=e.stage, outcome=e.outcome, why=e.why)
+        receipt.update(state="failed", stage=e.stage, outcome=e.outcome, why=e.why, **({"asked": e.asked} if e.asked else {}))
         failed = store.root / "failed" / staging.name      # kept for whoever reads the diagnosis; never a bundle
         failed.parent.mkdir(parents=True, exist_ok=True)
         os.rename(staging, failed)

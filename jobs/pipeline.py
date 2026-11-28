@@ -349,6 +349,67 @@ def machine_config():
     return Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "in-the-loop" / "pipeline.local.toml"
 
 
+GRANTS = "fetch-sources.json"      # beside the machine's settings: the sources a person allowed one by one
+
+
+def fetch_grants_file():
+    """Where this machine keeps the sources a person allowed with `pipeline.py sources allow`: beside its settings
+    file, so that every checkout and workspace on it reads the same. None when the machine has no settings file."""
+    machine = machine_config()
+    return machine.with_name(GRANTS) if machine is not None else None
+
+
+def fetch_grants(path=None):
+    """The grants in that file, each {"url", "at", "reason", "by"}: none when there is no file, or it is not one."""
+    path = fetch_grants_file() if path is None else path
+    try:
+        return [g for g in json.loads(path.read_text())["allowed"] if isinstance(g, dict) and isinstance(g.get("url"), str)]
+    except (AttributeError, OSError, ValueError, KeyError, TypeError):
+        return []
+
+
+def source_problem(url):
+    """Why a URL cannot be a source a runner fetches from, or None. A source is a folder on a named host (or of
+    this machine's files): everything under it may be fetched, and nothing beside it."""
+    from urllib.parse import urlsplit
+    try:
+        parts = urlsplit(url)
+        parts.port
+    except ValueError as e:
+        return f"it is not a URL ({e})"
+    if parts.scheme not in ("https", "http", "file"):
+        return "its scheme is not https, http or file"
+    if parts.scheme != "file" and not parts.hostname:
+        return "it names no host"
+    if parts.username is not None or parts.password is not None:
+        return "it carries a user or a password"
+    if parts.query or parts.fragment:
+        return "it carries a query or a fragment, and a source is a folder"
+    if ".." in parts.path.split("/"):
+        return "its path has a `..`"
+    return None
+
+
+def grant_source(path, url, reason, at):
+    """Record that a person allowed a source, in the machine's grants. None when it was allowed there already."""
+    grants = fetch_grants(path)
+    if any(g["url"] == url for g in grants):
+        return None
+    grant = {"url": url, "at": iso(at), "reason": reason, "by": "a person, at their own terminal"}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    partial = path.with_name(path.name + ".partial")
+    partial.write_text(json.dumps({"schema": "itl-fetch-sources/v1", "allowed": [*grants, grant]}, indent=2) + "\n")
+    os.replace(partial, path)
+    return grant
+
+
+def person_at_terminal():
+    """A check that an agent's shell fails, as sync.py's does for the allow list: it has no terminal, and Claude
+    Code and Codex each mark the environment of the commands they run."""
+    return sys.stdin.isatty() and sys.stdout.isatty() and not \
+        (os.environ.get("CLAUDECODE") or os.environ.get("CODEX_THREAD_ID") or os.environ.get("CODEX_SESSION_ID"))
+
+
 def load_config(args=None):
     config = DEFAULTS
     files = [ROOT / HERE / "pipeline.toml", machine_config(), ROOT / HERE / "pipeline.local.toml"]
@@ -376,7 +437,9 @@ def load_config(args=None):
     runner["workers"] = int(runner["workers"])
     runner["machine_name"] = str(runner.get("machine_name") or "").strip() or socket.gethostname()
     runner["fetch_slots"] = int(runner["fetch_slots"])
+    # From the settings, and from the grants a person made one by one (`sources allow`), which are the machine's too.
     runner["fetch_allow"] = [str(prefix) for prefix in runner["fetch_allow"]]
+    runner["fetch_allow"] += [g["url"] for g in fetch_grants() if g["url"] not in runner["fetch_allow"]]
     runner["readiness_dir"] = Path(os.environ.get("VERIFY_READINESS_DIR") or runner["readiness_dir"]).expanduser()
     state = Path(runner["state_dir"])
     runner["state_dir"] = state if state.is_absolute() else ROOT / state
@@ -1919,12 +1982,96 @@ def readiness_answer(config, known):
     return answer
 
 
+def request_operation(key, commits=()):
+    """A readiness request's operation: in the working copy, or at the commit of a job that asks for it (it is
+    committed with that job, which may have been in another workspace). None when it is in neither."""
+    try:
+        return json.loads((ROOT / readiness.FOLDER / f"{key}.json").read_text())
+    except (OSError, ValueError):
+        for commit in commits:
+            try:
+                return json.loads(show(commit or "", f"{readiness.FOLDER}/{key}.json"))
+            except Exception:  # noqa: BLE001  (any way of not finding it there is the same answer)
+                continue
+    return None
+
+
+def sources_not_allowed(config, key, operation):
+    """The sources a resolution of this request would fetch from and this runner may not: what its operation names
+    (readiness.not_allowed), and what an earlier resolution of it was sent to and refused (a redirect)."""
+    allow = config["runner"]["fetch_allow"]
+    lacking = readiness.not_allowed(operation, allow) if operation else []
+    receipt = readiness.Store(config["runner"]["readiness_dir"]).receipt(key) or {}
+    if receipt.get("outcome") == "unauthorized-source" and receipt.get("asked") and receipt["asked"] not in [a["url"] for a in lacking]:
+        try:
+            readiness.authorise(receipt["asked"], allow)
+        except readiness.Withheld:
+            lacking.append({"url": receipt["asked"], "for": "a file its last resolution was sent to (a redirect, or a file outside its repositories)"})
+    return lacking
+
+
+def cmd_sources(args):
+    """What this machine's runner may fetch from, and what a waiting job asks for beside it. `allow URL` is how a
+    person answers such a request, from their own terminal: an agent proposes by committing the job that asks,
+    and never allows."""
+    config = load_config(args)
+    grants = fetch_grants()
+    granted = {g["url"]: g for g in grants}
+    if args.action == "allow":
+        if not args.urls:
+            sys.exit("sources allow: name the source, a folder URL such as https://repo.example.org/maven2/")
+        if not person_at_terminal():
+            print("refused: a person allows a source, from their own terminal. Ask them to run this command; "
+                  "`python3 jobs/pipeline.py sources` shows them what is asked for and by which job.", file=sys.stderr)
+            return 1
+        target = fetch_grants_file()
+        if target is None:
+            sys.exit("this machine has no settings file to keep a grant beside ($VERIFY_MACHINE_CONFIG is empty)")
+        at = now()
+        for url in args.urls:
+            url = url if url.endswith("/") else url + "/"
+            wrong = source_problem(url)
+            if wrong:
+                sys.exit(f"{url} cannot be a source: {wrong}")
+            if url in config["runner"]["fetch_allow"]:
+                print(f"{url} is allowed already")
+                continue
+            grant_source(target, url, args.reason, at)
+            print(f"allowed {url}: recorded in {target}. A request that waited for it is admitted at the watcher's next look "
+                  "(`python3 jobs/pipeline.py resolve`); one that was withheld for it needs `resolve KEY --again`.")
+        return 0
+    if args.urls:
+        sys.exit("sources: to allow a source, `sources allow URL`")
+    view = view_of(args)
+    allowed = [{"url": url, **({"granted": granted[url]} if url in granted else {"from": "the runner's settings (fetch_allow)"})}
+               for url in config["runner"]["fetch_allow"]]
+    if args.json:
+        print(json.dumps({"schema": "itl-fetch-sources/v1", "allowed": allowed, "asked": view["sources"]["asked"],
+                          "settings": config["files"], "grants": str(fetch_grants_file()) if fetch_grants_file() else None}, indent=2))
+        return 0
+    print("this machine's runner may fetch from:" if allowed else "this machine's runner may fetch from nowhere (fetch_allow is empty)")
+    for row in allowed:
+        said = f"allowed {row['granted'].get('at')}" + (f": {row['granted']['reason']}" if row["granted"].get("reason") else "") \
+            if "granted" in row else row["from"]
+        print(f"  {row['url']}  ({said})")
+    if not view["sources"]["asked"]:
+        print("no waiting job asks for another source")
+        return 0
+    print("asked for, and not allowed:")
+    for ask in view["sources"]["asked"]:
+        whose = "; ".join(f"readiness {r['key'][:12]}" + (f" ({r['title']})" if r.get("title") else "") for r in ask["readiness"])
+        print(f"  {ask['url']}  {ask['for']} of {whose}, for {', '.join(ask['wantedBy'])}")
+    print("To allow one, a person runs, from their own terminal: python3 jobs/pipeline.py sources allow URL [--reason WHY]\n"
+          "(a source is a folder: everything under it may be fetched; for a single file, allow the folder it is in)")
+    return 0
+
+
 def cmd_resolve(args):
     """Admit a resolution job for each readiness request that nothing answers: no ready receipt, no failed one, no
     job on its way. One job a key, however many jobs ask for it. With keys (or their first characters) and
     --again, resolve those once more, a failed one after its cause was put right. The jobs are written, not
     committed: whoever keeps the queue commits them (the watcher), and that is the admission."""
-    view = view_of(args)
+    view, config = view_of(args), load_config(args)
     wanted = lambda r: (not args.keys or any(r["key"].startswith(k) for k in args.keys)) and (r["unanswered"] or (args.again and args.keys))
     written, skipped = [], []
     at = now()
@@ -1934,26 +2081,29 @@ def cmd_resolve(args):
         key = request["key"]
         path = ROOT / readiness.FOLDER / f"{key}.json"
         try:
-            operation = json.loads(path.read_text())
-        except (OSError, ValueError) as e:
-            # The job that asks was committed in another workspace, and its operation with it: read it at that
-            # commit, and write it here, so that the commit which admits the resolution job carries what it resolves.
-            operation = None
-            for asking in request["wantedBy"]:
-                found = next((j for j in view["jobs"] if j["id"] == asking), None) or {}
-                try:
-                    operation = json.loads(show((found.get("source") or {}).get("commit") or found.get("commit") or "", f"{readiness.FOLDER}/{key}.json"))
-                    break
-                except Exception:  # noqa: BLE001  (any way of not finding it there is the same answer)
-                    continue
-            if operation is None:
-                skipped.append({"key": key, "why": f"{path.relative_to(ROOT)} cannot be read here ({e}), nor at the commit of a job that asks: "
-                                                   "the request's operation is committed with the job that asks"})
-                continue
-            if not args.dry_run:
-                write_json(path, operation)
+            here = isinstance(json.loads(path.read_text()), dict)
+        except (OSError, ValueError):
+            here = False
+        # The job that asks may have been committed in another workspace, and its operation with it: it is then read
+        # at that job's commit (a row's `source`) or at the queue's head, and written here, so that the commit which
+        # admits the resolution job carries what it resolves.
+        asking = [j.get("source") for j in view["jobs"] if j["id"] in request["wantedBy"] and isinstance(j.get("source"), str)]
+        operation = request_operation(key, [*asking, *view["snapshot"]["queueHeads"]])
+        if operation is None:
+            skipped.append({"key": key, "why": f"{path.relative_to(ROOT)} cannot be read here, nor at the commit of a job that asks: "
+                                               "the request's operation is committed with the job that asks"})
+            continue
+        if not here and not args.dry_run:
+            write_json(path, operation)
         if readiness.key(operation) != key:
             skipped.append({"key": key, "why": f"{path.relative_to(ROOT)} is not the operation of that key (its own is {readiness.key(operation)[:12]})"})
+            continue
+        lacking = sources_not_allowed(config, key, operation)
+        if lacking:
+            skipped.append({"key": key, "sources": [a["url"] for a in lacking],
+                            "why": "it asks for a source this machine has not been allowed to fetch from (" +
+                                   "; ".join(f"{a['url']}, {a['for']}" for a in lacking) + "): allowing one is the user's decision "
+                                   "(`python3 jobs/pipeline.py sources allow URL`, from their own terminal), and the job that asks waits until then"})
             continue
         title = f"Resolve readiness {key[:12]}: {operation.get('title') or 'an operation'}"[:200]
         job = ordered({
@@ -2320,6 +2470,28 @@ def lifecycle_view(config, revs, full=()):
     for entry in requests.values():
         # Unanswered: nothing is ready, nothing is on its way, and nothing has failed. Someone has to admit a resolution.
         entry["unanswered"] = entry["state"] == "waiting" and not entry["resolvers"]
+    # A request whose operation asks for a source this machine has not been allowed to fetch from: no resolution is
+    # admitted for it, and the jobs that wait say what is asked for. Allowing a source is a person's (`sources`).
+    asked, commit_of = {}, {row["id"]: row.get("source") for row in rows}       # a row's source: the commit its job was written at
+    for entry in requests.values():
+        if entry["state"] == "satisfied":
+            continue
+        operation = request_operation(entry["key"], [*(commit_of.get(i) for i in entry["wantedBy"]), *revs])
+        lacking = sources_not_allowed(config, entry["key"], operation)
+        if not lacking:
+            continue
+        entry["sourcesNotAllowed"] = lacking
+        for ask in lacking:
+            row = asked.setdefault(ask["url"], {"url": ask["url"], "for": ask["for"], "readiness": [], "wantedBy": []})
+            row["readiness"].append({"key": entry["key"], "title": (operation or {}).get("title")})
+            row["wantedBy"] += [i for i in entry["wantedBy"] if i not in row["wantedBy"]]
+    for row in rows:
+        for need in row.get("needs") or []:
+            entry = requests.get(need.get("readiness")) or {}
+            if row["state"] == "waiting" and entry.get("unanswered") and entry.get("sourcesNotAllowed"):
+                row["why"] = (f"readiness {entry['key'][:12]} asks for a source this machine has not been allowed to fetch from: "
+                              f"{', '.join(a['url'] for a in entry['sourcesNotAllowed'])}. Allowing one is the user's decision: "
+                              "`python3 jobs/pipeline.py sources` lists what is asked for, and no resolution is admitted until then")
     # A job that waits for one that cannot start here is not going to start either: it is blocked, and its reason
     # goes back to the first cause. Until nothing changes, for a chain of them.
     by_id, changed = {row["id"]: row for row in rows}, True
@@ -2367,6 +2539,8 @@ def lifecycle_view(config, revs, full=()):
         # failed stays here until the next collect, whatever became of the jobs.
         "lastCollect": last_collect and {k: last_collect.get(k) for k in ("at", "collected", "hooks")},
         "readiness": sorted(requests.values(), key=lambda e: e["key"]),
+        # What this machine's runner may fetch from, and what a waiting request asks for beside it.
+        "sources": {"allowed": list(config["runner"]["fetch_allow"]), "asked": sorted(asked.values(), key=lambda a: a["url"])},
         "jobs": rows,
     }
 
@@ -2454,6 +2628,9 @@ def cmd_status(args):
     hooks = [h for h in (view.get("lastCollect") or {}).get("hooks") or [] if h.get("exitCode")]
     for hook in hooks:
         print(f"the last collect's hook failed, and nothing has run it since: {hook['command']}: exit {hook['exitCode']}")
+    for ask in (view.get("sources") or {}).get("asked") or []:
+        print(f"a source is asked for that this machine may not fetch from, and the user decides (`pipeline.py sources`): {ask['url']}, "
+              f"{ask['for']}, for {', '.join(ask['wantedBy'])}")
     return 0
 
 
@@ -3550,6 +3727,14 @@ def main(argv=None):
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_resolve)
 
+    p = sub.add_parser("sources", help="what this machine's runner may fetch from, and what a waiting job asks for beside it; "
+                       "`sources allow URL` is a person's answer, from their own terminal")
+    p.add_argument("action", nargs="?", choices=["allow"], help="allow: record that a person allows a source (a folder URL)")
+    p.add_argument("urls", nargs="*")
+    p.add_argument("--reason", help="with allow: why, kept with the grant")
+    p.add_argument("--state-dir")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_sources)
     p = sub.add_parser("batch", help="a batch row by row: each row's job, state, reason and result; no name lists the batches")
     p.add_argument("name", nargs="?")
     p.add_argument("--state-dir")

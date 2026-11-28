@@ -39,9 +39,12 @@ FAKE_PIPELINE = textwrap.dedent('''\
                           "readiness": asked}))
     elif cmd == "resolve":
         asked = json.loads((state / "requests").read_text())
-        written = []
+        written, skipped = [], []
         for request in asked:
-            if request["unanswered"]:
+            if request["unanswered"] and request.get("sourcesNotAllowed"):      # a source the machine has not allowed: no job
+                skipped.append({"key": request["key"], "sources": request["sourcesNotAllowed"],
+                                "why": "it asks for a source this machine has not been allowed to fetch from"})
+            elif request["unanswered"]:
                 job = "20260101-000100-resolve-" + request["key"][:12]
                 Path("verification/jobs").mkdir(parents=True, exist_ok=True)
                 Path(f"verification/jobs/{job}.json").write_text("{}\\n")
@@ -49,7 +52,7 @@ FAKE_PIPELINE = textwrap.dedent('''\
                 request["unanswered"], request["resolvers"] = False, [job]
         (state / "requests").write_text(json.dumps(asked))
         (state / "pending").write_text("".join(f"{row['job']} queued\\n" for row in written))
-        print(json.dumps({"schema": "itl-job-resolve/v1", "written": written, "skipped": []}))
+        print(json.dumps({"schema": "itl-job-resolve/v1", "written": written, "skipped": skipped}))
     elif cmd == "collect":
         if os.environ.get("STANDIN_COLLECT_FAILS"):
             sys.exit("the collector could not read a result")
@@ -178,6 +181,19 @@ class KeepingTheQueue(test_landing.Fixture):
         # It is on its way now: the next look admits nothing more, and starts the runner for it.
         thing = queue_keeping.tend(self.run)
         self.assertEqual((thing["kind"], thing["jobs"]), ("verification", [job]))
+
+    @cost("tool")
+    def test_a_request_for_a_source_the_machine_has_not_allowed_is_relayed_to_the_user_and_nothing_is_admitted(self):
+        key, source = "cd" * 32, "https://repo.example.org/maven2/"
+        (self.state / "requests").write_text(json.dumps([{"key": key, "unanswered": True, "resolvers": [], "wantedBy": [self.JOB],
+                                                          "sourcesNotAllowed": [source]}]))
+        self.waiting(f"{self.JOB} waiting")
+        before = self.head("description")
+        thing = queue_keeping.tend(self.run)
+        self.assertEqual(thing["kind"], "attention", thing)
+        self.assertIn(f"a waiting job asks for a source this machine may not fetch from ({source}): tell the user", thing["note"])
+        self.assertIn("never add one to the settings yourself", thing["note"])
+        self.assertEqual((self.head("description"), list((self.root / "verification").glob("jobs/*resolve*"))), (before, []))   # nothing written, nothing committed
 
     def test_a_hook_that_failed_after_the_results_were_collected_is_for_someone_to_look_at(self):
         self.back(self.JOB, "passed")
