@@ -239,7 +239,8 @@ def download(url: str, dest: Path, allow: list[str], timeout: float = 120) -> in
 
 
 def fetch_coordinate(coordinate: tuple, repositories: list[str], staging: Path, under: str, allow: list[str]) -> list[dict]:
-    """A Maven module's POM (and its JAR, when it is not a POM-only module) from the first repository that has it,
+    """A Maven module's POM, its Gradle module metadata when the POM says it was published with it (Gradle then
+    refuses the POM alone), and its JAR when it is not a POM-only module, from the first repository that has it,
     each verified against the repository's own SHA-1. `absent` only when every repository answered and none has
     it; a repository that could not be asked makes the answer `repository-unavailable`."""
     group, artifact, version = coordinate
@@ -248,23 +249,27 @@ def fetch_coordinate(coordinate: tuple, repositories: list[str], staging: Path, 
     for repository in repositories:
         base = repository.rstrip("/") + "/"
         try:
-            for suffix in (".pom", ".jar"):
+            wanted = [".pom"]
+            while wanted:
+                suffix = wanted.pop(0)
                 rel = f"{under}/{stem}{suffix}"
                 started = time.monotonic()
                 try:
                     size = download(base + stem + suffix, staging / rel, allow)
                     download(base + stem + suffix + ".sha1", staging / (rel + ".sha1"), allow)
                 except Withheld as e:
-                    if suffix == ".jar" and e.outcome == "absent":
-                        break          # a module with a POM and no JAR: a BOM, a parent
+                    if suffix != ".pom" and e.outcome == "absent":
+                        (staging / rel).unlink(missing_ok=True)
+                        continue       # a module with a POM and no JAR (a BOM, a parent), or with no metadata of Gradle's after all
                     raise
                 expected = (staging / (rel + ".sha1")).read_text().split()[0].lower()
                 if digest(staging / rel, "sha1") != expected:
                     raise Withheld("fetch", "digest-mismatch", f"{base + stem + suffix} is not what the repository's own .sha1 says")
                 got.append({"path": rel, "source": base + stem + suffix, "bytes": size, "verifiedBy": "the repository's sha1",
                             "seconds": round(time.monotonic() - started, 3)})
-                if suffix == ".pom" and "<packaging>pom</packaging>" in (staging / rel).read_text(errors="replace"):
-                    break
+                if suffix == ".pom":
+                    pom = (staging / rel).read_text(errors="replace")
+                    wanted += [".module"] * ("published-with-gradle-metadata" in pom) + [".jar"] * ("<packaging>pom</packaging>" not in pom)
             return got
         except Withheld as e:
             if e.outcome not in ("absent", "repository-unavailable"):
@@ -286,6 +291,60 @@ def fetch_pinned(pin: dict, staging: Path, allow: list[str]) -> dict:
     return {"path": pin["path"], "source": pin["url"], "bytes": size, "verifiedBy": f"the operation's {kind}", "seconds": round(time.monotonic() - started, 3)}
 
 
+# For a Gradle build run offline on a view. A module the resolver fetched is laid in Maven's layout, which Gradle's own
+# cache is not: Gradle offline reads a remote repository's modules only from that cache, with its own records of
+# them. A file repository is read whatever --offline says, so this gives every project, every build script's class
+# path and the plugin resolution one over the view's Maven-layout folder, ahead of the build's own repositories
+# (first, so that it also answers for a module whose record in Gradle's cache names a repository that no longer
+# has the file there). A build that keeps its repositories in its settings gets it there, and its projects are
+# left alone, since such a build may refuse a repository a project adds. A build that declares no plugin
+# repository keeps Gradle's default beside this one. Plugins of the settings script itself are resolved before
+# this runs, and are not served.
+GRADLE_INIT = '''// Laid in every readiness view by jobs/readiness.py. Use: gradle --offline -I "$ITL_READINESS_GRADLE_INIT" ...
+def laid = System.getenv('ITL_READINESS_M2')
+if (laid && new File(laid).isDirectory()) {
+    def readiness = { repositories ->
+        if (repositories.findByName('itlReadiness') == null) {
+            def repository = repositories.maven {
+                name = 'itlReadiness'
+                url = new File(laid).toURI()
+                metadataSources { gradleMetadata(); mavenPom(); artifact() }
+            }
+            repositories.remove(repository)
+            repositories.addFirst(repository)
+        }
+    }
+    settingsEvaluated { settings ->
+        def plugins = settings.pluginManagement.repositories
+        if (plugins.isEmpty()) {
+            plugins.gradlePluginPortal()
+        }
+        readiness(plugins)
+        def managed = settings.dependencyResolutionManagement.repositories
+        if (managed.isEmpty()) {
+            gradle.allprojects { project ->
+                readiness(project.buildscript.repositories)
+                readiness(project.repositories)
+            }
+        } else {
+            readiness(managed)
+            gradle.allprojects { project -> readiness(project.buildscript.repositories) }
+        }
+    }
+}
+'''
+
+
+def equip(view: Path, operation: dict) -> dict:
+    """What a step that runs on a view is told beside the view, as environment: where modules are laid in Maven's
+    layout (the base's and the fetched ones, one folder), and a Gradle init script, written into the view, that
+    lets an offline Gradle build read them from there."""
+    init = view / "itl-readiness.init.gradle"
+    if not init.exists():
+        init.write_text(GRADLE_INIT)
+    return {"ITL_READINESS_M2": str(view / (operation.get("layout") or {}).get("maven", "m2")), "ITL_READINESS_GRADLE_INIT": str(init)}
+
+
 def run_consumer(operation: dict, view: Path, out: Path, cwd: Path, log: Path, base: Path, extra_ro=()) -> tuple[bool, list[dict], dict]:
     """The operation's task with no network and the base read-only: whether every step exited 0, each
     step's record, and what a probe saw in the sandbox it ran in."""
@@ -294,7 +353,7 @@ def run_consumer(operation: dict, view: Path, out: Path, cwd: Path, log: Path, b
         raise Withheld("consumer", "offline-unenforceable", f"the network cannot be taken away here: {seen.get('why')}")
     binds = [("ro", str(p), str(p)) for p in (base, *extra_ro) if Path(p).exists()]
     env = {**os.environ, (operation.get("view") or {}).get("env", "ITL_READINESS_VIEW"): str(view), "ITL_READINESS_VIEW": str(view),
-           "ITL_READINESS_OUT": str(out)}
+           "ITL_READINESS_OUT": str(out), **equip(view, operation)}
     steps, ok = [], True
     with open(log, "a") as sink:
         for step in operation["task"]["steps"]:

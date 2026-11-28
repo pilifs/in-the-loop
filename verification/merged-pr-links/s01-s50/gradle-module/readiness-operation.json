@@ -1,0 +1,71 @@
+{
+  "schema": "itl-readiness-operation/v1",
+  "title": "Compile Spring Boot's core module offline with a library Gradle's cache has no record of",
+  "consumer": "the gate beside this file",
+  "describes": {
+    "project": "spring-projects/spring-boot",
+    "pullRequest": 51551,
+    "example": "635",
+    "revisions": {
+      "parent": "d34a479879d348a1758196b7d1c696ea4f8ea8f0"
+    },
+    "module": "core/spring-boot",
+    "task": ":core:spring-boot:compileJava",
+    "profiles": [],
+    "wrapper": "gradle 9.7.0, from the base (tools/gradle-9.7.0)",
+    "toolchain": {
+      "java": [
+        "8.0.512.0+9-tem",
+        "11.0.33.0+10-tem",
+        "17.0.21.0+9-tem",
+        "21.0.13.0+9-tem",
+        "25.0.5.0+8-tem"
+      ]
+    },
+    "platform": "linux-x86_64",
+    "configuration": "compile.sh beside this file: Gradle --offline with a read-only dependency cache, a fresh Gradle home, and the readiness view's init script, which adds a file repository over the view's Maven-layout folder"
+  },
+  "level": "builds",
+  "base": {
+    "path": "~/.cache/in-the-loop/spring-boot-pr-links-s01-s50",
+    "without": [
+      "gradle-home/caches/modules-2/files-2.1/org.jspecify/jspecify",
+      "gradle-home/caches/modules-2/metadata-2.107/descriptors/org.jspecify/jspecify",
+      "m2/org/jspecify/jspecify",
+      "tmp/"
+    ],
+    "why": "A state made insufficient for this gate, not one the cache is known to have been in: org.jspecify:jspecify, which the setup phase cached and every module of the build compiles against, is taken out wherever it is recorded (Gradle's file store, Gradle's descriptors, Maven's local repository), in every version. It stands for the commonest offline miss of a domain run, a library Gradle has no record of, and it is published with Gradle's module metadata, which Gradle then requires beside the POM."
+  },
+  "view": {
+    "env": "SPRING_BOOT_S_CACHE",
+    "walk": [
+      "m2"
+    ]
+  },
+  "layout": {
+    "maven": "m2"
+  },
+  "repositories": [
+    "https://repo.maven.apache.org/maven2/"
+  ],
+  "task": {
+    "steps": [
+      {
+        "name": "compile",
+        "run": "bash verification/merged-pr-links/s01-s50/gradle-module/compile.sh"
+      }
+    ],
+    "timeout": 1500
+  },
+  "outputs": [
+    {
+      "path": "compiled.json"
+    }
+  ],
+  "resources": {
+    "cpus": 3,
+    "memory": "6G",
+    "duration": "12m"
+  },
+  "rounds": 4
+}

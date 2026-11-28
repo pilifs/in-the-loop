@@ -1,0 +1,51 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261128-011602-a-gradle-build-reads-offline-a-library-t",
+  "title": "A Gradle build reads offline a library the resolver fetched, through the readiness view's file repository",
+  "description": "Delayed setup for an ordinary Gradle build, on a real one. S48's gate passed with a replay that brings its own file mirror; an ordinary Gradle build has none, reads a remote repository's modules offline only from Gradle's own cache, and the resolver lays what it fetches in Maven's layout. Every readiness view now carries an init script (jobs/readiness.py, GRADLE_INIT) that gives the build a file repository over the view's Maven-layout folder. gate.py shows it on Spring Boot's core module at S48's parent pin (example 635): the S cache is laid without org.jspecify:jspecify in Gradle's file store, in Gradle's descriptors and in Maven's local repository, a consumer job needs the operation in readiness-operation.json and waits while an unrelated job finishes, one resolution job, admitted by a commit, runs ':core:spring-boot:compileJava' offline until Gradle names the library, fetches its POM, its Gradle module metadata and its JAR from Maven Central (each by the repository's SHA-1), proves the compile offline in a network namespace with loopback alone and publishes the bundle, and the consumer then compiles the module itself with no network. Its compiled.json (the pin, the number of classes, the digest of one class) must be byte for byte what the resolution's own offline run wrote, and compile.sh fails if either Gradle cache holds the library after the build, so the file repository is the only place it can have been read from. One first-format job, because the default checkout's runner is the pipeline of before this line; the scheduler under test runs inside it, in a throwaway repository, without isolation of its own. It fetches three small files from Maven Central once.",
+  "kind": "real-world",
+  "capabilities": [
+    "jobs:readiness",
+    "jobs:resolution"
+  ],
+  "links": {
+    "examples": [
+      "635"
+    ],
+    "paths": [
+      "verification/merged-pr-links/s01-s50/gradle-module/gate.py",
+      "verification/merged-pr-links/s01-s50/gradle-module/readiness-operation.json",
+      "jobs/readiness.py"
+    ]
+  },
+  "expected": "exit 0: every check of the gate passed (readiness-gate.json lists each with what was seen): one request, the consumer alone waiting, one resolution job, the library fetched with its Gradle module metadata, and the consumer's compile equal to the resolution's",
+  "submitted": {
+    "at": "2026-11-28T01:16:02+00:00",
+    "session": "43b290ac-3fdc-4f32-8f05-45e7bcb78ce2",
+    "run": "single-generic-jobs-pipeline"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "9G",
+    "duration": "15m",
+    "timeout": "60m",
+    "notes": "Each offline run builds Spring Boot's buildSrc and compiles the modules the core module needs: a few minutes, as in S48's gate, where a hundred compile tasks took about two. Two rounds of the resolution (the first stops at the missing library) and the consumer's own compile, one at a time: about 10 minutes. S48's gate peaked at 5.5 GiB."
+  },
+  "steps": [
+    {
+      "name": "the gate",
+      "run": "python3 verification/merged-pr-links/s01-s50/gradle-module/gate.py --output verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/s01-s50/gradle-module/readiness-gate.json"
+  ]
+}

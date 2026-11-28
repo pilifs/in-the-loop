@@ -43,6 +43,7 @@ if python3 -c "import socket,sys; socket.create_connection(('127.0.0.1', int(sys
   echo "the repository can be reached: this is not offline"; exit 9
 fi
 if echo tampered >> "$view/m2/g/prepared/1.0/prepared-1.0.pom" 2>/dev/null; then echo "the prepared inputs can be written"; exit 8; fi
+test "$ITL_READINESS_M2" = "$view/m2" && grep -q itlReadiness "$ITL_READINESS_GRADLE_INIT" || { echo "the view's tools are not given"; exit 7; }
 cat "$view/m2/g/prepared/1.0/prepared-1.0.pom" "$view/m2/g/stage-one/1.0/stage-one-1.0.pom" "$view/m2/g/nested-tool/2.0/nested-tool-2.0.jar" > "$ITL_READINESS_OUT/built.txt"
 echo built
 '''
@@ -67,7 +68,9 @@ class NestedBuild(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.dir, True)
         self.repository, self.base, self.cwd = self.dir / "repository", self.dir / "base", self.dir / "checkout"
         self.publish("g/stage-one/1.0/stage-one-1.0.pom", b"<project><packaging>pom</packaging></project>\n")
-        self.publish("g/nested-tool/2.0/nested-tool-2.0.pom", b"<project><artifactId>nested-tool</artifactId></project>\n")
+        self.publish("g/nested-tool/2.0/nested-tool-2.0.pom",
+                     b"<project><!-- do_not_remove: published-with-gradle-metadata --><artifactId>nested-tool</artifactId></project>\n")
+        self.publish("g/nested-tool/2.0/nested-tool-2.0.module", b'{"formatVersion": "1.1"}\n')
         self.publish("g/nested-tool/2.0/nested-tool-2.0.jar", b"the nested tool's classes\n")
         self.tool = b"the tool distribution, version 3\n"
         self.publish("dist/tool-3.tar.gz", self.tool, checksum=False)
@@ -124,8 +127,10 @@ class OneRequestResolvesTheWholeTask(NestedBuild):
                          [(["g:stage-one:1.0"], "failed"), (["g:nested-tool:2.0"], "failed"), ([], "passed")])
         self.assertEqual([[f["path"] for f in r["fetched"]] for r in receipt["rounds"]],
                          [["downloads/tool-3.tar.gz"], ["m2/g/stage-one/1.0/stage-one-1.0.pom"],
-                          ["m2/g/nested-tool/2.0/nested-tool-2.0.pom", "m2/g/nested-tool/2.0/nested-tool-2.0.jar"]])
-        self.assertEqual(receipt["fetch"]["files"], 4)
+                          # Its POM says it was published with Gradle's metadata, which Gradle then requires: fetched with it.
+                          ["m2/g/nested-tool/2.0/nested-tool-2.0.pom", "m2/g/nested-tool/2.0/nested-tool-2.0.module",
+                           "m2/g/nested-tool/2.0/nested-tool-2.0.jar"]])
+        self.assertEqual(receipt["fetch"]["files"], 5)
         # Offline was shown, not assumed: the probe saw loopback alone, and the consumer itself could not reach the repository.
         self.assertEqual((receipt["offline"]["network"]["enforced"], receipt["offline"]["network"]["probe"]["interfaces"]), (True, ["lo"]))
         self.assertEqual(receipt["offline"]["outputs"][0]["path"], "built.txt")

@@ -27,6 +27,7 @@ Exit 0 when every check passed; the record (FILE) has each check with what was s
 import argparse
 import copy
 import datetime as dt
+import hashlib
 import json
 import os
 import shutil
@@ -225,6 +226,15 @@ class Gate:
         readbacks = {}
         for path, committed in self.expected.items():
             got = self.repo / "verification/.state/results" / consumer / "outputs" / path
+            if committed is None:   # no committed copy: byte for byte what the resolution's own offline run wrote, by its receipt
+                wrote = {row["path"]: row.get("sha256") for row in (receipt.get("offline") or {}).get("outputs") or []}
+                try:
+                    readbacks[path] = json.loads(got.read_text())
+                    same = hashlib.sha256(got.read_bytes()).hexdigest() == wrote.get(Path(path).name)
+                except (OSError, ValueError) as e:
+                    readbacks[path], same = f"not read: {e}", False
+                self.check(f"the consumer's {path} is byte for byte what the resolution's offline run wrote", same, readbacks[path])
+                continue
             try:
                 readbacks[path] = json.loads(got.read_text())
                 same = readbacks[path] == json.loads((ROOT / committed).read_text())
@@ -298,14 +308,19 @@ def main(argv=None) -> int:
         gate.check("the gate ran to its end", False, f"{type(e).__name__}: {e}")
     finally:
         gate.stop_runner()
+    return conclude(gate, record, work, args.output)
+
+
+def conclude(gate: Gate, record: dict, work: Path, output: Path) -> int:
+    """Write the gate's record (every check, the timeline, the runner's last lines) and say how it ended."""
     record.update(finishedAt=now(), checks=gate.checks, timeline=gate.timeline,
                   passed=bool(gate.checks) and all(c["passed"] for c in gate.checks))
     try:
         record["runnerLog"] = (work / "runner.log").read_text()[-6000:].splitlines()
     except OSError:
         pass
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(record, indent=2) + "\n")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(record, indent=2) + "\n")
     failed = [c["check"] for c in gate.checks if not c["passed"]]
     print(f"\n{len(gate.checks) - len(failed)} of {len(gate.checks)} checks passed" + (f"; failed: {'; '.join(failed)}" if failed else ""))
     return 0 if record["passed"] else 1

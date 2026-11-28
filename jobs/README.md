@@ -144,6 +144,20 @@ scheduler as any other, on a runner whose settings name the sources it may fetch
 a job that fetches is unschedulable), within the runner's fetch slots. Only a resolution job's steps are told
 those sources.
 
+**What a step on a view is given.** The view by the variable the operation names (and `ITL_READINESS_VIEW`),
+and two things for the build tools. `ITL_READINESS_M2` is the view's Maven-layout folder: the base's modules
+and the fetched ones, one tree, which a Maven build takes as its local repository or a mirror. And
+`ITL_READINESS_GRADLE_INIT` is an init script written into the view: a Gradle build run as `gradle --offline -I
+"$ITL_READINESS_GRADLE_INIT" ...` gets a file repository over that folder, ahead of its own repositories, for its
+projects, its build scripts' class paths and its plugins. It needs one because Gradle offline reads a remote
+repository's modules from its own cache and nowhere else, and nothing but Gradle can write that cache with its
+records; a file repository is read whatever `--offline` says. A module whose POM says it was published with
+Gradle's module metadata is fetched with its `.module` file, which Gradle then requires. A build that keeps its
+repositories in its settings gets the repository there; plugins of the settings script itself are resolved
+before the script runs and are not served. The gate for it is
+[`verification/merged-pr-links/s01-s50/gradle-module/gate.py`](../verification/merged-pr-links/s01-s50/gradle-module/gate.py),
+on a compile of Spring Boot's core module with a library taken out of every cache.
+
 The resolution is **rounds**: lay the base and what is staged so far into a view; run the task with no network
 (a network namespace with loopback alone, the base bound read-only) and read its log for what it could not find;
 fetch exactly that, verified (a repository's own checksum for a coordinate, the operation's digest for a pinned

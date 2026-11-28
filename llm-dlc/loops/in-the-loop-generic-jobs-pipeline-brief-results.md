@@ -92,7 +92,8 @@ For whoever continues (this run's later cycles): each item is one commit, with i
    failures, time to the first useful result), which needs the line landed and a batch.
 9. **Known gaps, each small and none started.** `nudge` reaches only this workspace's runner, so a runner in
    another workspace finds a new commit at its next look at the queue. The resolver lays a module in Maven's
-   layout only. Discovery reads Gradle's and Maven's "not found" and "not cached" lines and nothing else. The
+   layout only, which a Gradle build reads through the view's init script (its gate is pending, above) and
+   not otherwise. Discovery reads Gradle's and Maven's "not found" and "not cached" lines and nothing else. The
    fetch restriction is the resolver's own fetcher, not a firewall. A watcher's whole cycle on the real queue
    with this code has not run: it cannot until the line lands.
 
@@ -390,6 +391,37 @@ concurrent requests, which only the synthetic fixture's tests cover.
     for a file it believed cached. An operation's `base.without` names every record of what it leaves out, and
     `base.why` says whether the state is historical. The receipt repeats both and claims neither.
 
+## Gate 3, beyond S48: an ordinary Gradle build
+
+S48 passed with a replay that brings its own file mirror of the retained caches. An ordinary Gradle build has
+none. Offline it reads a remote repository's modules from Gradle's own cache and nowhere else, and only Gradle
+writes that cache with its records, so a module the resolver lays in Maven's layout is invisible to it: the
+resolution would stop at `no-progress`, as S48's first run did. That is the commonest miss of a domain run
+(38 of the S batch's first 49 builds were offline misses), and the limit the first version of this page recorded.
+
+**What was built for it.** Every readiness view now carries a Gradle init script and names it
+(`ITL_READINESS_GRADLE_INIT`, with `ITL_READINESS_M2` for the view's Maven-layout folder): a build run with `-I`
+gets a file repository over that folder, ahead of its own repositories, for projects, build scripts and
+plugins. A file repository is read whatever `--offline` says. And a module whose POM says it was published
+with Gradle's module metadata is fetched with its `.module` file, which Gradle requires beside such a POM
+(`jobs/test_readiness.py` shows both on the made-up build).
+
+**The gate.** `verification/merged-pr-links/s01-s50/gradle-module/gate.py`, with the same class as S48's gate,
+on Spring Boot's core module at S48's parent pin: the S cache is laid without `org.jspecify:jspecify` in
+Gradle's file store, in Gradle's descriptors and in Maven's local repository (a made state, said in the
+operation); the task is `gradle --offline -I ... :core:spring-boot:compileJava` with a read-only dependency
+cache and a fresh Gradle home (`compile.sh`); one resolution job has to name the library from Gradle's own
+words, fetch its POM, `.module` and JAR, and prove the compile offline; and the consumer has to compile the
+module itself, with no network, to a `compiled.json` byte for byte the resolution's. `compile.sh` fails if
+either Gradle cache holds the library after the build, so the file repository is the only place it can have
+been read from. Checked without running Gradle: the view is laid in 0.13 s with the library absent in all
+three places and the pin's worktree readable.
+
+**Result.** Pending: job `20261128-011602-a-gradle-build-reads-offline-a-library-t`. What the init script does
+in a build that keeps its repositories in its settings, and for plugins, is written and not run: this gate's
+build declares its repositories in its projects.
+
+
 ## Gate 4: what has been measured
 
 One real request, S48's second run, on a machine with nothing else queued. It is one data point and tunes nothing.
@@ -429,7 +461,7 @@ that job ran at, and what would re-check it.
 | shared runner code | 2 | `layout.py`, `capture.py`: loaded by path from `jobs/` and other tools. They stay |
 | compatibility entry point | 1 | `pipeline.py`: every committed job's and note's command |
 | test | 4 | |
-| supported campaign replay | 40 | a test, a live page or code that is itself supported keeps it usable |
+| supported campaign replay | 42 | a test, a live page or code that is itself supported keeps it usable (this run's two gates and the Gradle gate's task among them) |
 | historical-only tool | 38 | committed jobs ran it (28), or a run's record names it (7), or only such tools call it (3), and nothing live does. It stays where those jobs' commands find it: moving it breaks their replay |
 | orphan candidate | 11 | no caller of any kind was found (10), or only orphan candidates call it (1) |
 
@@ -441,9 +473,9 @@ its file name with its folder's name), while code may build the path from parts.
 than the callers that give it, followed from what is supported, so that two scripts that only call each
 other support neither.
 
-**What re-checks a script.** 9 rows have a test (the four test files are their own), 49 have a job that
-passed with them (to run again at the commit it ran at, which the row gives), and 38 have neither: 17 of the
-supported, 10 of the historical and the 11 candidates. "Supported" therefore says that something live names
+**What re-checks a script.** Of the 98, 9 rows have a test (the four test files are their own), 49 have a job
+that passed with them (to run again at the commit it ran at, which the row gives), and 40 have neither: 19 of
+the supported, 10 of the historical and the 11 candidates. "Supported" therefore says that something live names
 the script, not that anything shows it still works.
 
 **The two controls hold.** Each of the five scripts in `verification/triage/` is run by a committed job

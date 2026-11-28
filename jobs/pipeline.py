@@ -1376,6 +1376,7 @@ class Runner:
                               {f["path"]: bundle / f["path"] for f in receipt["bundle"]["files"]}, view,
                               walk=(operation.get("view") or {}).get("walk") or [])
             laid.append({"key": key, "view": str(view), "env": (operation.get("view") or {}).get("env", "ITL_READINESS_VIEW"),
+                         "tools": readiness.equip(view, operation),
                          "bundleDigest": receipt["bundle"]["digest"], "receiptAt": receipt.get("at"), "level": receipt.get("level"),
                          "resolvedBy": receipt.get("resolvedBy")})
             # What a step with no network may read and not write: the prepared inputs and the bundle laid over them.
@@ -1402,6 +1403,7 @@ class Runner:
         for laid in result.get("readiness") or []:   # where each prepared bundle is, as its operation names it
             env[laid["env"]] = laid["view"]
             env["ITL_READINESS_VIEW"] = laid["view"]
+            env.update(laid.get("tools") or {})   # the view's Maven-layout folder, and the init script for a Gradle build
         env.update({k: str(v) for k, v in job_env(job).items()})
         return env
 
