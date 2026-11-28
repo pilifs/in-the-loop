@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-28T13:12:20.437Z",
-  "duration_seconds": 952477,
+  "ended": "2026-11-28T13:47:48.052Z",
+  "duration_seconds": 954605,
   "stats": {
-    "turns": 348,
-    "api_calls": 3366,
-    "tool_calls": 2959,
+    "turns": 349,
+    "api_calls": 3374,
+    "tool_calls": 2964,
     "tool_errors": 29,
     "compactions": 11,
     "peak_context_tokens": 666209,
     "usage": {
-      "input_tokens": 107465,
-      "output_tokens": 2131520,
-      "cache_read_input_tokens": 1129600228,
-      "cache_creation_input_tokens": 7421903
+      "input_tokens": 107485,
+      "output_tokens": 2136722,
+      "cache_read_input_tokens": 1134031286,
+      "cache_creation_input_tokens": 7429935
     }
   },
   "tools": {
-    "Bash": 2608,
+    "Bash": 2613,
     "SendMessage": 109,
     "Edit": 83,
     "Read": 58,
@@ -271,24 +271,24 @@
     {
       "index": 11,
       "started": "2026-11-27T14:06:55.934Z",
-      "ended": "2026-11-28T13:12:20.437Z",
-      "turns": 32,
-      "api_calls": 366,
+      "ended": "2026-11-28T13:47:48.052Z",
+      "turns": 33,
+      "api_calls": 374,
       "usage": {
-        "input_tokens": 916,
-        "output_tokens": 212852,
-        "cache_read_input_tokens": 137382094,
-        "cache_creation_input_tokens": 517159
+        "input_tokens": 936,
+        "output_tokens": 218054,
+        "cache_read_input_tokens": 141813152,
+        "cache_creation_input_tokens": 525191
       },
-      "peak_context_tokens": 548860
+      "peak_context_tokens": 556892
     }
   ],
   "log": {
-    "sha256": "4c41bac77d19ec8e5485369220f16a6a38ba30ff2711faed551cbace9f7afda8",
-    "bytes": 57310210,
-    "lines": 27776,
-    "gzip_bytes": 9582507,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/4c41bac77d19ec8e5485369220f16a6a38ba30ff2711faed551cbace9f7afda8.jsonl.gz"
+    "sha256": "1467b7a46a98a42b877ad4a7279ac93378ec3417b93d75e7ebbca112ddc1fdc5",
+    "bytes": 57405276,
+    "lines": 27840,
+    "gzip_bytes": 9597091,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/1467b7a46a98a42b877ad4a7279ac93378ec3417b93d75e7ebbca112ddc1fdc5.jsonl.gz"
   },
   "subagents": [
     {
@@ -16089,6 +16089,14 @@
       "summary": "Enter three tests of the jobs line in the cost inventory",
       "body": "The whole default run on the landed line failed in one place, 100 of 101: lib/tools/test_tier_lint.py, because three unit tests added in the last cycle of the generic-jobs-pipeline run were never entered in lib/tests/costs.json. They are jobs/test_evidence.py (a report that was there before the step began is not tests the step ran), jobs/test_lifecycle.py (a submission time written without its zone) and jobs/test_scheduling.py (jobs whose needs lead back to themselves). The run's agent added them with the fixes of a review and ran the tests themselves, but not the estimate that enters a new test, and the tests each commit selects do not include the lint.\n\nThis commit adds those three rows and the three files' counts, and nothing else. test_costs.py estimate, run in the default workspace, also rewrites some 600 lines of figures that depend on which session logs a workspace holds; those were put back as they were, row by row, so every test that was already in the inventory keeps the row it had. The three new rows are unit tier with an estimated cost, as their neighbours in the same files are.\n\nVerified: python3 lib/tools/test_costs.py lint says the tags, the sources and the inventory agree; lib/tools/test_tier_lint.py passes, 12 tests; the three test files pass (6, 7 and 9 tests). The whole default run has not been run again on this tree by this commit.",
       "log_sha256": "4c41bac77d19ec8e5485369220f16a6a38ba30ff2711faed551cbace9f7afda8"
+    },
+    {
+      "change_id": "nxwupnxuttrzrmkqkuwwrluzmzzmsmlv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Read what a readiness task reads against a digest the operation names, and run S48's gate on it (verification pending)",
+      "body": "A readiness task runs on prepared inputs alone, and what it must still read from elsewhere on the runner is listed under the operation's reads. Until now each entry was a bare path: declared, bound read-only, and verified by nothing. S48's gate passed that way, 17 of 17, with a copy of the home's Maven repository (770 files the S setup's online job had left there) as such a path. The user chose on 2026-11-28 to have that copy verified by its digest rather than leave gate 3 qualified as it was.\n\nAn entry of reads may now be {path, sha256}. The digest of a file is that of its bytes; of a folder, that of its files by relative path, each with its own digest, as a bundle's is made, with a link listed by where it points. jobs/readiness.py reads such a path in full against its digest before a resolution's first round, and jobs/pipeline.py does so again before a job is handed the bundle. One that differs withholds readiness at the stage base as digest-mismatch with no round run, or ends the job with an error that names both digests. The receipt and the job's result list every read with whether it was verified, and with the files and bytes when it was. A bare path stays allowed, for a tool the machine provides, and is recorded as not verified. python3 jobs/readiness.py digest PATH prints the digest to name.\n\nS48's operation names the copy's digest (6780dd401eda..., 770 files, 13.1 MB), which is the one the gate had recorded on its own; its base.why says what that vouches for: that the folder is that copy, not that a repository would serve those files. The gate gains three checks (the operation's digest is the copy's; the resolution and the consumer's job each read the folder against it) and a fourth control: an operation naming another digest must be withheld at the base stage with nothing published. Job 20261128-134250-replay-s48-s-delayed-setup-as-one-reques runs it, 21 checks, and supersedes 20261128-024257.\n\nVerified: jobs/test_readiness.py, 23 tests (two new: the digest of a folder with a link, a path only declared, a changed file refused, what problems() says of a malformed entry; and a resolution withheld at the base before any round or fetch); jobs/test_delayed_setup.py, 4 tests (one new, through the pipeline in a throwaway repository: a job is handed the bundle with the read verified in its result, and after the folder changes the next job is not). The tests of what changed, 44 of 44 Python test files (python3 lib/tools/test_costs.py run --changed). The three new tests are in the cost inventory and its lint agrees. The real build is verified only when the job's result is read.",
+      "log_sha256": "1467b7a46a98a42b877ad4a7279ac93378ec3417b93d75e7ebbca112ddc1fdc5"
     }
   ],
   "logs": {
@@ -16217,6 +16225,12 @@
       "lines": 1726,
       "gzip_bytes": 943999,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/143756e2ea1f4f78e4948178f2d67096414daec8edb5528f61f6c41d8512af60.jsonl.gz"
+    },
+    "1467b7a46a98a42b877ad4a7279ac93378ec3417b93d75e7ebbca112ddc1fdc5": {
+      "bytes": 57405276,
+      "lines": 27840,
+      "gzip_bytes": 9597091,
+      "url": null
     },
     "14fa4380a76eddc9ff085d5fbcfb9227879db0fe1e5440d616aade55267184a2": {
       "bytes": 26262742,

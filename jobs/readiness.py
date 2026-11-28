@@ -168,8 +168,13 @@ def problems(operation: dict) -> list[str]:
         if not zoned or not isinstance(as_of.get("under"), list) or not as_of.get("under"):
             found.append("base.asOf needs a `time` with its zone (2026-11-27T09:00:00Z) and the folders `under` which it holds")
     # Every path an operation names is laid inside a view or a staging folder: none may lead out of it.
-    if not isinstance(operation.get("reads") or [], list) or not all(isinstance(p, str) and p.startswith(("/", "~/")) for p in operation.get("reads") or []):
-        found.append("`reads` lists whole paths on the runner that the task reads beside its base (a JDK): each begins with / or ~/")
+    reads = operation.get("reads") or []
+    whole = lambda r: isinstance(r, str) and r.startswith(("/", "~/"))                    # noqa: E731
+    with_digest = lambda r: isinstance(r, dict) and whole(r.get("path")) and set(r) <= {"path", "sha256"} \
+        and re.fullmatch(r"[0-9a-f]{64}", str(r.get("sha256") or ""))                       # noqa: E731
+    if not isinstance(reads, list) or not all(whole(r) or with_digest(r) for r in reads):
+        found.append("`reads` lists whole paths on the runner that the task reads beside its base (a JDK): each begins with / or ~/, "
+                     "alone or as {\"path\", \"sha256\"} with the digest it must have (readiness.py digest PATH prints it)")
     named = [*(base.get("without") or []), *((as_of or {}).get("under") or [] if isinstance(as_of, dict) else []),
              *((operation.get("view") or {}).get("walk") or []), (operation.get("layout") or {}).get("maven", "m2"),
              *(pin.get("path") or "" for pin in operation.get("pinned") or [])]
@@ -194,6 +199,54 @@ def tree(folder: Path) -> list[dict]:
 
 def tree_digest(files: list[dict]) -> str:
     return hashlib.sha256(json.dumps([[f["path"], f["sha256"]] for f in files]).encode()).hexdigest()
+
+
+def reads_of(operation: dict) -> list[dict]:
+    """What the operation says its task reads beside the base, each as {"path"} or {"path", "sha256"}. A bare path
+    is declared and no more (a JDK the machine provides); one with a digest is an input, and is read in full against
+    it before the task runs (`check_reads`)."""
+    return [{"path": r} if isinstance(r, str) else dict(r) for r in operation.get("reads") or []]
+
+
+def read_digest(path: Path) -> tuple[str, int, int]:
+    """The digest a `reads` entry names, with the files and the bytes it covers. Of a file, the SHA-256 of its
+    bytes. Of a folder, that of the list of its files by relative path, each with its own SHA-256, as a bundle's
+    digest is made. A link is listed by where it points and not followed: in the task's sandbox it leads only to
+    what is bound there, which is declared in its own right."""
+    if not path.is_dir():
+        return digest(path), 1, path.stat().st_size
+    rows, size = [], 0
+    for folder, names, files in os.walk(path):
+        for name in (*files, *(n for n in names if (Path(folder) / n).is_symlink())):
+            p = Path(folder) / name
+            if p.is_symlink():
+                rows.append((p.relative_to(path), "link:" + os.readlink(p)))
+            elif p.is_file():
+                rows.append((p.relative_to(path), digest(p)))
+                size += p.stat().st_size
+    rows.sort()
+    return hashlib.sha256(json.dumps([[rel.as_posix(), d] for rel, d in rows]).encode()).hexdigest(), len(rows), size
+
+
+def check_reads(operation: dict) -> list[dict]:
+    """Each thing the task reads beside its base, as it is on this runner now: whether it was verified, and
+    against which digest. Raises Withheld at the stage `base`: `absent` when one is not there, `digest-mismatch`
+    when one is not what the operation names."""
+    reads = reads_of(operation)
+    gone = [r["path"] for r in reads if not Path(r["path"]).expanduser().exists()]
+    if gone:
+        raise Withheld("base", "absent", f"what the operation says its task reads is not on this runner: {', '.join(str(Path(p).expanduser()) for p in gone)}")
+    found = []
+    for read in reads:
+        if not read.get("sha256"):
+            found.append({"path": read["path"], "verified": False})
+            continue
+        got, files, size = read_digest(Path(read["path"]).expanduser())
+        if got != read["sha256"]:
+            raise Withheld("base", "digest-mismatch", f"{read['path']} is not what the operation says its task reads: its digest is {got} "
+                                                      f"({files} file(s), {size} bytes), and the operation names {read['sha256']}")
+        found.append({"path": read["path"], "verified": True, "sha256": got, "files": files, "bytes": size})
+    return found
 
 
 class Store:
@@ -655,7 +708,7 @@ def run_consumer(operation: dict, view: Path, out: Path, cwd: Path, log: Path, b
     seen = sandbox.probe()
     if not seen["enforced"]:
         raise Withheld("consumer", "offline-unenforceable", f"the network cannot be taken away here: {seen.get('why')}")
-    reads = [Path(p).expanduser() for p in operation.get("reads") or []]
+    reads = [Path(r["path"]).expanduser() for r in reads_of(operation)]
     gone = [str(p) for p in reads if not p.exists()]
     if gone:
         raise Withheld("base", "absent", f"what the operation says its task reads is not on this runner: {', '.join(gone)}")
@@ -739,7 +792,7 @@ def _resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[s
                "base": {"path": str(base), "without": listed, "reconstructed": bool(without),
                         **({"asOf": {**as_of, "leftOut": laid_as["leftOut"], "digest": laid_as["digest"]}} if as_of else {}),
                         **({"why": operation["base"]["why"]} if operation["base"].get("why") else {})},
-               "resolvedBy": {**(by or {}), "host": socket.gethostname()}, "startedAt": now(), "at": None,
+               "reads": [], "resolvedBy": {**(by or {}), "host": socket.gethostname()}, "startedAt": now(), "at": None,
                "attempts": [*((earlier or {}).get("attempts") or []),
                             *([{k2: earlier.get(k2) for k2 in ("state", "stage", "outcome", "at", "resolvedBy")}] if earlier else [])]}
     if earlier and earlier.get("state") == "ready" and not store.verify(k):
@@ -775,6 +828,8 @@ def _resolve(operation: dict, store: Store, cwd: Path, work: Path, allow: list[s
     try:
         if not base.is_dir():
             raise Withheld("base", "absent", f"the base {base} is not on this runner")
+        # What the task reads beside the base is read against its digest once, before the first round runs on it.
+        receipt["reads"] = check_reads(operation)
         # A pinned input is fetched when the view will not have it: the base lacks it, or it is under a path left out.
         gone = lambda path: any(path.strip("/") == w.strip("/") or path.strip("/").startswith(w.strip("/") + "/") for w in without)
         need = [("pinned", pin) for pin in operation.get("pinned") or [] if gone(pin["path"]) or not (base / pin["path"]).exists()]
@@ -891,12 +946,18 @@ def main(argv=None) -> int:
     p.add_argument("--store", default=os.environ.get("ITL_READINESS_STORE") or "~/.cache/in-the-loop/readiness")
     p.add_argument("--work", help="a folder for this attempt's views and logs (default: a new one under the store)")
     p.add_argument("--receipt", help="also write the receipt here (a job's declared output)")
+    p = sub.add_parser("digest", help="the digest a `reads` entry names for a file or a folder")
+    p.add_argument("path")
     p = sub.add_parser("status")
     p.add_argument("key")
     p.add_argument("--store", default=os.environ.get("ITL_READINESS_STORE") or "~/.cache/in-the-loop/readiness")
     args = parser.parse_args(argv)
     if args.command == "status":
         print(json.dumps(Store(Path(args.store)).check(args.key), indent=2))
+        return 0
+    if args.command == "digest":
+        got, files, size = read_digest(Path(args.path).expanduser())
+        print(json.dumps({"path": args.path, "sha256": got, "files": files, "bytes": size}))
         return 0
     operation = json.loads(Path(args.operation).read_text())
     wrong = problems(operation)

@@ -209,6 +209,32 @@ class DelayedSetup(unittest.TestCase):
         self.assertIn(f"{consumer}: passed", out)
         self.assertEqual([a["outcome"] for a in self.store.receipt(key)["attempts"]], ["absent"])   # the first attempt is on record
 
+    def test_what_a_task_reads_is_read_against_its_digest_again_before_a_job_is_handed_the_bundle(self):
+        declared = self.dir / "declared"
+        declared.mkdir()
+        text = "an input the operation names by its digest\n"
+        (declared / "settings.xml").write_text(text)
+        named = readiness.read_digest(declared)[0]
+        read = {"path": str(declared), "verified": True, "sha256": named, "files": 1, "bytes": len(text)}
+        key = self.operation(reads=[{"path": str(declared), "sha256": named}])
+        with mock.patch.dict(os.environ, self.env):   # resolved before the cases arrived
+            receipt = readiness.resolve(json.loads((self.repo.dir / "op.json").read_text()), self.store, self.repo.dir, self.dir / "work", [self.url])
+        self.assertEqual((receipt["state"], receipt["reads"]), ("ready", [read]), receipt.get("why"))
+        first = self.consumer("Build and read the module", "T01")
+        self.repo.commit("a case, for a readiness that is already certified")
+        self.repo.pipeline("run", "--rev", "HEAD", env=self.env)
+        result = self.staged(first)
+        self.assertEqual((result["status"], result["readiness"][0]["key"], result["readiness"][0]["reads"]), ("passed", key, [read]), result["attention"])
+        # The folder changes after the resolution: the next job is not handed the bundle, and is told what changed.
+        (declared / "settings.xml").write_text("changed since the resolution read it\n")
+        second = self.consumer("Build and read the module, later", "T02")
+        self.repo.commit("a later case, for the same readiness")
+        self.repo.pipeline("run", "--rev", "HEAD", env=self.env)
+        result = self.staged(second)
+        self.assertEqual(result["status"], "error", result["attention"])
+        self.assertIn(f"readiness {key[:12]} could not be handed over: {declared} is not what the operation says its task reads", " ".join(result["attention"]))
+        self.assertIn(f"the operation names {named}", " ".join(result["attention"]))
+
     def test_a_bundle_changed_after_its_receipt_is_handed_to_nobody_and_a_runner_that_may_not_fetch_resolves_nothing(self):
         key = self.operation()
         with mock.patch.dict(os.environ, self.env):   # resolved before the case arrived, as an initial setup would have

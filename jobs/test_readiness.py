@@ -151,6 +151,8 @@ class OneRequestResolvesTheWholeTask(NestedBuild):
                           ["m2/g/nested-tool/2.0/nested-tool-2.0.pom", "m2/g/nested-tool/2.0/nested-tool-2.0.module",
                            "m2/g/nested-tool/2.0/nested-tool-2.0.jar"]])
         self.assertEqual(receipt["fetch"]["files"], 5)
+        # What the task reads beside its base is in the receipt: a bare path is declared, and nothing vouches for it.
+        self.assertEqual(receipt["reads"], [{"path": str(self.dir / "toolchain"), "verified": False}])
         # The fetched modules are also laid apart, in the same layout, for a Gradle build's file repository.
         fetched = self.dir / "work-1/view-3/itl-readiness-fetched"
         self.assertEqual(sorted(p.relative_to(fetched).as_posix() for p in fetched.rglob("*") if p.suffix in (".pom", ".module", ".jar")),
@@ -345,6 +347,15 @@ class WhatIsWithheld(NestedBuild):
         self.assertIn("/no/such/jdk", receipt["why"])
         self.assertIn("each begins with / or ~/", " ".join(readiness.problems(self.operation(reads=["relative/jdk"]))))
 
+    def test_what_the_task_reads_is_not_what_the_operation_names_by_its_digest_and_no_round_runs_on_it(self):
+        tools = self.dir / "toolchain"
+        named = readiness.read_digest(tools)[0]
+        (tools / "added-since").write_text("not there when the digest was taken\n")
+        receipt = self.resolve(self.operation(reads=[{"path": str(tools), "sha256": named}]))
+        self.withheld(receipt, "base", "digest-mismatch")
+        self.assertIn(f"the operation names {named}", receipt["why"])
+        self.assertEqual((receipt["rounds"], Quiet.seen), ([], []))        # the task did not run on it, and nothing was fetched for it
+
     def test_a_source_the_runner_does_not_authorise_is_not_asked(self):
         receipt = self.resolve(allow=["https://repo.example.invalid/"])
         self.withheld(receipt, "fetch", "unauthorized-source")
@@ -437,6 +448,35 @@ class AnOperation(unittest.TestCase):
         self.assertNotEqual(asked(without=["a"]), asked(without=["b"]))
         self.assertIn("base.asOf needs a `time` with its zone (2026-11-27T09:00:00Z) and the folders `under` which it holds", said)
         self.assertIn("a path is relative to the base and stays inside it: '../outside/'", said)
+
+    def test_a_read_with_a_digest_is_read_in_full_against_it_and_a_bare_path_is_only_declared(self):
+        sha = lambda data: hashlib.sha256(data).hexdigest()         # noqa: E731
+        with tempfile.TemporaryDirectory() as d:
+            folder = Path(d) / "repository"
+            (folder / "g/a/1").mkdir(parents=True)
+            (folder / "g/a/1/a-1.pom").write_bytes(b"<project/>")
+            (folder / "g/a/1/a-1.jar").write_bytes(b"jar")
+            os.symlink("a-1.jar", folder / "g/a/1/a-latest.jar")
+            named, files, size = readiness.read_digest(folder)
+            # As a bundle's digest is made: the files by their paths, each with its own digest; a link by where it points.
+            self.assertEqual(named, sha(json.dumps([["g/a/1/a-1.jar", sha(b"jar")], ["g/a/1/a-1.pom", sha(b"<project/>")],
+                                                    ["g/a/1/a-latest.jar", "link:a-1.jar"]]).encode()))
+            self.assertEqual((files, size), (3, 13))
+            pom = folder / "g/a/1/a-1.pom"
+            operation = {"reads": [str(pom.parent), {"path": str(folder), "sha256": named}, {"path": str(pom), "sha256": sha(b"<project/>")}]}
+            self.assertEqual(readiness.check_reads(operation),
+                             [{"path": str(pom.parent), "verified": False},
+                              {"path": str(folder), "verified": True, "sha256": named, "files": 3, "bytes": 13},
+                              {"path": str(pom), "verified": True, "sha256": sha(b"<project/>"), "files": 1, "bytes": 10}])
+            pom.write_bytes(b"<project>changed</project>")
+            with self.assertRaises(readiness.Withheld) as refused:
+                readiness.check_reads(operation)
+            self.assertEqual((refused.exception.stage, refused.exception.outcome), ("base", "digest-mismatch"))
+            self.assertIn(f"the operation names {named}", refused.exception.why)
+        written = {"schema": "itl-readiness-operation/v1", "level": "builds", "describes": {"x": 1}, "task": {"steps": [{"run": "true"}]}, "base": {"path": "/base"}}
+        self.assertEqual(readiness.problems({**written, "reads": ["/jdk", {"path": "~/inputs", "sha256": "0" * 64}]}), [])
+        for wrong in ({"path": "/jdk", "sha256": "abc"}, {"path": "inputs", "sha256": "0" * 64}, {"path": "/jdk"}, {"path": "/jdk", "sha256": "0" * 64, "more": 1}):
+            self.assertIn("with the digest it must have", " ".join(readiness.problems({**written, "reads": [wrong]})), wrong)
 
     def test_a_source_is_allowed_by_its_parts_and_a_line_that_names_no_module_is_not_one(self):
         allow = ["https://repo.example.org/maven2", "file:///mirror/"]

@@ -197,7 +197,7 @@ class Gate:
             return out
         concluded = (resolved.get("conclusion") or {}).get("readiness") or [{}]
         receipt = json.loads((self.store / "receipts" / f"{key}.json").read_text()) if (self.store / "receipts" / f"{key}.json").exists() else {}
-        out["receipt"] = {k: receipt.get(k) for k in ("state", "stage", "outcome", "why", "level", "rounds", "fetch", "base", "offline", "at")}
+        out["receipt"] = {k: receipt.get(k) for k in ("state", "stage", "outcome", "why", "level", "rounds", "fetch", "base", "reads", "offline", "at")}
         out["receipt"]["bundle"] = {k: (receipt.get("bundle") or {}).get(k) for k in ("digest", "files")}
         self.check("readiness is established by one resolution job", resolved["status"] == "passed" and concluded[0].get("verdict") == "ready",
                    {"status": resolved["status"], "summary": resolved["summary"], "conclusion": concluded[0], "tail": resolved["steps"][-1].get("tail", [])[-12:]})
@@ -299,10 +299,20 @@ def main(argv=None) -> int:
                 expected={"readbacks/parent.json": f"{REL}/parent.json", "readbacks/fix.json": f"{REL}/fix.json"}, settings=settings)
     record = {"schema": "itl-s48-readiness-gate/v1", "startedAt": now(), "operation": args.operation.name, "work": str(work),
               "homeMavenRepository": {"copiedTo": HOME_M2, "files": len(files), "treeSha256": digest,
-                                      "note": "declared under the operation's reads; the setup never recorded it and nothing verified it"}}
+                                      "note": "declared under the operation's reads with this digest, and read against it before the task runs and "
+                                              "before a job is handed the bundle: it is verified to be the copy made on 2026-11-28, which the setup "
+                                              "never recorded and no resolution fetched from a source"}}
     try:
         gate.build_repository([REL])
         record["request"] = gate.one_request(args.wait)
+        named = [r for r in operation.get("reads") or [] if isinstance(r, dict) and r.get("path") == HOME_M2]
+        gate.check("the operation names the home's Maven repository by the digest of the copy that is here", [r.get("sha256") for r in named] == [digest],
+                   {"operation": named, "snapshot": digest, "files": len(files)})
+        for who, reads in (("the resolution", (record["request"].get("receipt") or {}).get("reads")),
+                           ("the consumer's job", [r for laid in (record["request"].get("consumerResult") or {}).get("readiness") or [] for r in laid.get("reads") or []])):
+            said = [r for r in reads or [] if r.get("path") == HOME_M2]
+            gate.check(f"{who} read the home's Maven repository in full against that digest before it ran",
+                       len(said) == 1 and said[0].get("verified") is True and said[0].get("sha256") == digest, said)
         if not args.no_controls:
             def withheld(op):      # the BOM is in no authorised source: one that answers, and does not have it
                 op["repositories"] = [CENTRAL + "withheld-by-the-readiness-gate/"]
@@ -312,9 +322,13 @@ def main(argv=None) -> int:
 
             def unavailable(op):   # a cold cache, and a repository that does not answer
                 op["repositories"] = [NOWHERE]
+
+            def another_home(op):  # the home's Maven repository is not the copy the operation names
+                op["reads"] = [{**r, "sha256": "0" * 64} if isinstance(r, dict) else r for r in op["reads"]]
             record["controls"] = [gate.control("withheld-bom", withheld, "fetch", "absent", [CENTRAL]),
                                   gate.control("wrong-maven-digest", wrong_digest, "fetch", "digest-mismatch", [CENTRAL]),
-                                  gate.control("unavailable-repository", unavailable, "fetch", "repository-unavailable", [CENTRAL, NOWHERE])]
+                                  gate.control("unavailable-repository", unavailable, "fetch", "repository-unavailable", [CENTRAL, NOWHERE]),
+                                  gate.control("another-home-repository", another_home, "base", "digest-mismatch", [CENTRAL])]
     except Exception as e:  # noqa: BLE001  (the record says what stopped it)
         gate.check("the gate ran to its end", False, f"{type(e).__name__}: {e}")
     finally:

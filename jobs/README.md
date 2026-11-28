@@ -126,7 +126,7 @@ python3 jobs/pipeline.py submit --purpose test --case S48 --title "..." --descri
 | which task this is | `describes`: the project, revisions, module, task or goal, profiles, wrapper, toolchain, platform, configuration. Anything that would make it another operation |
 | how far "ready" goes | `level`: `configures`, `resolves`, `builds`, `tests-run` or `readable`. A task graph that configures is not dependencies that resolve, and neither is a packaged result that was read. `tests-run` is shown, not said: the offline run must leave evidence of tests that executed (`task.tests`: `reports`, JUnit XML under `$ITL_READINESS_OUT`, and `min`; with no reports the log's summary lines are read), and a task that ran through with none is withheld as `tests-not-shown` |
 | the prepared inputs it starts from | `base.path`, on the runner. `base.without` leaves paths out, and `base.asOf` (`time`, and the folders `under` which it holds) leaves out every file written after a time, by the files' own times: an earlier state of a cache in one line. The receipt then says `reconstructed` (not the base as it stands), how many paths `asOf` left out, and repeats `base.why`, where the operation says whether that state is one the base was ever in |
-| what else on the runner the task reads | `reads`: whole paths beside the base, bound read-only (a JDK under `~/.sdkman`). Nothing else under the runner's home is there (below) |
+| what else on the runner the task reads | `reads`: whole paths beside the base, bound read-only. A bare path is declared and no more (a JDK under `~/.sdkman`, which the machine provides). `{"path", "sha256"}` is an input: the file or folder is read in full against that digest before the first round and again before a job is handed the bundle, and the receipt and the job's result say `verified` with the files and bytes (`python3 jobs/readiness.py digest PATH` prints the digest: of a folder, that of its files by path, as a bundle's). Nothing else under the runner's home is there (below) |
 | how the view is laid | `view.env`, the variable the task finds it by; `view.walk`, the folders a tool walks |
 | the task itself | `task.steps`: the commands the consumer will run, run here the same way; `task.env` for variables they need. `task.independent` says the steps do not depend on each other (one a pin): then each runs though another failed, and one round learns what all of them lack |
 | what it must leave | `outputs`: files under `$ITL_READINESS_OUT`, optionally equal to a committed JSON file or a digest |
@@ -175,7 +175,9 @@ in every step of a job that needs a readiness (such a job's steps all have no ne
 job that says otherwise is not valid). Its home directory is an empty folder of that run's own and so is `/tmp`;
 it can write in its work, and read the view, the base, the bundle and what the operation `reads`. So no
 `~/.m2`, no `~/.gradle`, no settings of the user's: a build that passes read its inputs from the base and the
-bundle, or it did not pass. The variables that point a build tool at a cache or a home of its own
+bundle, or it did not pass. What a build must still read from elsewhere is named under `reads`, with its digest
+when it is an input and not a tool: verified so, it is known to be the same bytes each time, which is less than
+fetched from a source by a resolution, and the operation's `base.why` is where to say which it is. The variables that point a build tool at a cache or a home of its own
 (`GRADLE_USER_HOME`, `MAVEN_OPTS` and the like, `sandbox.CACHE_VARIABLES`) are not handed down, and the task sets
 its own. A resolution's task also gets `ITL_READINESS_SCRATCH`, a folder that lasts from round to round, for a
 build's compiled scripts. The rest of the machine (`/usr`, `/etc`) is as it is.
@@ -194,6 +196,7 @@ readiness is withheld, with the stage and a named outcome, and nothing is publis
 | `absent` | fetch | every authorised source answered, and none has it |
 | `repository-unavailable` | fetch | a source could not be asked. Not the same as absent |
 | `digest-mismatch` | fetch | what came is not what the repository's checksum or the operation's digest says |
+| `digest-mismatch` | base | a path under `reads` is not what the operation names by its digest: no round ran on it |
 | `unauthorized-source` | fetch | the source is not one this runner may fetch from. Nothing was asked of it |
 | `undiagnosed` | consumer | the task failed offline and named nothing it lacks |
 | `no-progress` | consumer | it asks again for what it was given: a second tool of the task reads another place than the files were laid in. The reason quotes its line |

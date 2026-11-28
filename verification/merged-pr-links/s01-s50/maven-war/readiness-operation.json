@@ -37,7 +37,7 @@
       "downloads/apache-maven-3.9.13-bin.tar.gz",
       "tmp/"
     ],
-    "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress. The task also reads a Maven local repository in the home directory: the Spring Boot build runs Maven for its plugin's descriptor, with Maven's default local repository, and the setup's online runs of 2026-11-27 left maven-plugin-plugin 3.6.1 and what it needs there (~/.m2/repository, 17 MB). The first runs of this gate read it from the home without saying so, and passed. It is now declared: the gate copies it once to the folder named under `reads` and records the digest of its tree, and each step lays it into the empty home it is given. It is an input the setup never recorded and nothing verified."
+    "why": "A state made insufficient for this gate, not one the cache is known to have been in. The Maven 3.9.13 distribution was absent when VF-076's rounds began (it was fetched during them, on 2026-11-27 at 14:42 UTC), and it is left out as it was. The ActiveMQ BOM 6.1.8 was in both caches by then (since 07:47 and 07:53 UTC, from the setup phase): what failed was Gradle asking, offline, a repository that had not been the one to supply it. Here the BOM is taken out everywhere it is recorded (Maven's local repository, Gradle's file store, and Gradle's descriptor of the module, without which Gradle has no record that any repository supplied it), so that the task has to ask for it and it has to be fetched. The gate's first run (job 20261128-000950) left the descriptor in: Gradle then held that Maven Central had supplied a file that was gone, asked for it again after it was laid in Maven's layout, and the resolver stopped at no-progress. The task also reads a Maven local repository in the home directory: the Spring Boot build runs Maven for its plugin's descriptor, with Maven's default local repository, and the setup's online runs of 2026-11-27 left maven-plugin-plugin 3.6.1 and what it needs there (~/.m2/repository, 17 MB). The first runs of this gate read it from the home without saying so, and passed. It is now declared, with its digest: the gate copied it once (2026-11-28, 770 files) to the folder named under `reads`, the operation names the digest of that copy, the resolution and every job handed its bundle read the folder in full against it before they run, and each step lays it into the empty home it is given. So it is verified to be that copy. It is still an input the setup never recorded and no resolution fetched: what a repository would serve for those 770 files is not what the digest vouches for."
   },
   "view": {
     "env": "SPRING_BOOT_S_CACHE",
@@ -48,7 +48,10 @@
   "reads": [
     "~/.sdkman/candidates/java",
     "~/.cache/in-the-loop/git-mirrors/spring-boot.git",
-    "~/.cache/in-the-loop/readiness-gates/s48-home-m2"
+    {
+      "path": "~/.cache/in-the-loop/readiness-gates/s48-home-m2",
+      "sha256": "6780dd401edaf77a2972790ce5c8bf8ae94b865467b6046c5e81d19a5b018b38"
+    }
   ],
   "layout": {
     "maven": "m2"

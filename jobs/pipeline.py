@@ -1396,6 +1396,12 @@ class Runner:
                 result["attention"].append(f"readiness {key[:12]} could not be handed over: {moved}; resolve it again")
                 return False
             operation, bundle = receipt["operation"], store.bundle(key)
+            try:      # what the task reads beside its base, against the digests the operation names, as the resolution read it
+                reads = readiness.check_reads(operation)
+            except readiness.Withheld as e:
+                result["status"] = "error"
+                result["attention"].append(f"readiness {key[:12]} could not be handed over: {e.why}")
+                return False
             view = entry["attempt"].folder / "readiness" / key[:16]
             fetched = {f["path"]: bundle / f["path"] for f in receipt["bundle"]["files"]}
             readiness.overlay(Path(operation["base"]["path"]).expanduser(), readiness.left_out(operation), fetched, view,
@@ -1403,11 +1409,12 @@ class Runner:
             laid.append({"key": key, "view": str(view), "env": (operation.get("view") or {}).get("env", "ITL_READINESS_VIEW"),
                          "tools": readiness.equip(view, operation, fetched),
                          "bundleDigest": receipt["bundle"]["digest"], "receiptAt": receipt.get("at"), "level": receipt.get("level"),
+                         "reads": reads,
                          "resolvedBy": receipt.get("resolvedBy")})
             # What a step with no network may read and not write: the prepared inputs, the bundle laid over them, and
             # the tools the operation declares its task reads. Such a job's steps see nothing else under the home.
             entry.setdefault("readonly", []).extend([str(Path(operation["base"]["path"]).expanduser()), str(bundle),
-                                                     *(str(Path(p).expanduser()) for p in operation.get("reads") or [])])
+                                                     *(str(Path(r["path"]).expanduser()) for r in readiness.reads_of(operation))])
             entry["alone"] = entry["attempt"].folder
         if laid:
             result["readiness"] = laid
