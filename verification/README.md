@@ -14,27 +14,34 @@ it at once can exhaust the machine. So they go through a queue instead.
 
 Everything goes through one command. Since 2026-11-27 it is [`jobs/pipeline.py`](../jobs/pipeline.py), the
 pipeline for every kind of job ([`jobs/README.md`](../jobs/README.md)); verification is one workload of it
-([`jobs/workloads/verification.py`](../jobs/workloads/verification.py)). [`pipeline.py`](pipeline.py) here is the
-same command under the name it always had, and the commands below work with either path:
+([`jobs/workloads/verification.py`](../jobs/workloads/verification.py)). The commands below use it.
+[`pipeline.py`](pipeline.py) here is the same command under the name it always had: committed jobs and older pages
+use that name, and it keeps working.
+
+Where to read what: an operator reads every job's state and the reason for it with `view`, and the collected
+results with `report` (which leaves out a job with no receipt). An investigator reads a verdict in the job's
+result and, for an example, in the per-claim receipt it names ([`jobs/README.md`, *The state of every job*](../jobs/README.md#the-state-of-every-job-and-its-reason);
+[reading results](#reading-results)). What is still open in the pipeline's reporting is listed in [the jobs
+campaign's results](../llm-dlc/loops/in-the-loop-generic-jobs-pipeline-brief-results.md#where-the-work-stands).
 
 ```bash
-python3 verification/pipeline.py submit ...      # write verification/jobs/ID.json
-python3 verification/pipeline.py submit --manifest FILE   # a batch: one job a row, and the rows' map in verification/batches/
-python3 verification/pipeline.py batch NAME      # a batch row by row; wait --batch NAME blocks until every row is settled
-python3 verification/pipeline.py resolve         # write a resolution job for each readiness request nothing answers (the watcher's)
-python3 verification/pipeline.py status          # the queue
-python3 verification/pipeline.py view            # every job's state and its reason, as data (itl-job-lifecycle/v1)
-python3 verification/pipeline.py run             # run what is pending and what is committed meanwhile, then stop
-python3 verification/pipeline.py nudge           # say that the queue changed: whoever waits looks at once
-python3 verification/pipeline.py wait            # block until a job has finished, or no runner is at work (--json: as data)
-python3 verification/pipeline.py prioritize ID --priority 10 --reason "..."   # move jobs up the queue
-python3 verification/pipeline.py run --min-priority 10   # run only the jobs at that priority or above
-python3 verification/pipeline.py collect         # bring finished results into the repo (--json: as data)
-python3 verification/pipeline.py report          # Markdown digest; --format json for agents
-python3 verification/pipeline.py resubmit ID --memory 8G
-python3 verification/pipeline.py validate        # check job and result files against their schemas
-python3 verification/pipeline.py prune --why     # remove kept work directories whose originals are verified, and say why the rest stay
-python3 verification/pipeline.py recover         # seal what a killed runner or a failed capture left unsealed
+python3 jobs/pipeline.py submit ...      # write verification/jobs/ID.json
+python3 jobs/pipeline.py submit --manifest FILE   # a batch: one job a row, and the rows' map in verification/batches/
+python3 jobs/pipeline.py batch NAME      # a batch row by row; wait --batch NAME blocks until every row is settled
+python3 jobs/pipeline.py resolve         # write a resolution job for each readiness request nothing answers (the watcher's)
+python3 jobs/pipeline.py status          # the queue
+python3 jobs/pipeline.py view            # every job's state and its reason, as data (itl-job-lifecycle/v1)
+python3 jobs/pipeline.py run             # run what is pending and what is committed meanwhile, then stop
+python3 jobs/pipeline.py nudge           # say that the queue changed: whoever waits looks at once
+python3 jobs/pipeline.py wait            # block until a job has finished, or no runner is at work (--json: as data)
+python3 jobs/pipeline.py prioritize ID --priority 10 --reason "..."   # move jobs up the queue
+python3 jobs/pipeline.py run --min-priority 10   # run only the jobs at that priority or above
+python3 jobs/pipeline.py collect         # bring finished results into the repo (--json: as data)
+python3 jobs/pipeline.py report          # Markdown digest; --format json for agents
+python3 jobs/pipeline.py resubmit ID --memory 8G
+python3 jobs/pipeline.py validate        # check job and result files against their schemas
+python3 jobs/pipeline.py prune --why     # remove kept work directories whose originals are verified, and say why the rest stay
+python3 jobs/pipeline.py recover         # seal what a killed runner or a failed capture left unsealed
 python3 jobs/audit.py                            # reconcile specifications, receipts, indexes and the runner's state (read-only)
 ```
 
@@ -137,7 +144,7 @@ gets the verifier built at the job's commit and the build memory reserved. An ex
 with the reason:
 
 ```bash
-python3 verification/pipeline.py submit --example 146 \
+python3 jobs/pipeline.py submit --example 146 \
   --title "Example 146: a follower that truncates on a stale append, refuted" \
   --description "The new example 146 changes AppendRule#decide to truncate on any mismatch, stale or not. TLC should find a run under RaftReplicationDelayed.cfg in which a committed entry is lost." \
   --capability jvmcontract:tlc --cpus 1 --memory 2G --duration 8m \
@@ -147,7 +154,7 @@ python3 verification/pipeline.py submit --example 146 \
 Anything else is a list of bash steps, run from the repo root (or `--cwd`), with the files to bring back:
 
 ```bash
-python3 verification/pipeline.py submit --kind library \
+python3 jobs/pipeline.py submit --kind library \
   --title "Liveness checking in jvmcontract tlc: integration tests" \
   --description "lib/src/tla.rs now passes PROPERTY lines to TLC and parses its temporal violations. The integration tests run TLC on three small models." \
   --capability jvmcontract:tlc --capability tlc:liveness --requires tlc --requires cargo \
@@ -373,7 +380,7 @@ before 2026-11-17, when it was only the default workspace's, `submit` in a side 
 laptop's defaults (4 GB a job on a machine that allows 24 GB):
 
 ```bash
-python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memory-max 4G
+python3 jobs/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memory-max 4G
 ```
 
 - `workers`, `cpus`, `memory`: how many jobs at once, and the CPUs and memory shared out among them. A job starts
